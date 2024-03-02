@@ -127,7 +127,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			# label.set_justify(gtk.Justification.LEFT)
 			label.set_xalign(0)
 			label.set_use_markup(True)
-			item.set_right_justified(True)  ##?????????
+			item.set_right_justified(True)  # ?????????
 			item.connect("activate", self.itemActivate, i)
 			self.menu.append(item)
 			self.menuLabels.append(label)
@@ -166,16 +166,16 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 				s = self.getActiveStr(s)
 			self.menuLabels[i].set_label(s)
 
-	def itemActivate(self, item, index):
+	def itemActivate(self, _item, index):
 		y, m, d = ui.cell.dates[self.calType]
 		m = index + 1
 		ui.changeDate(y, m, d, self.calType)
 		self.onDateChange()
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, gevent):
 		if gevent.button == 3:
 			self.createMenuLabels()
-			foo, x, y = self.get_window().get_origin()
+			_foo, x, y = self.get_window().get_origin()
 			# foo == 1, doc says "not meaningful, ignore"
 			y += self.get_allocation().height
 			# align menu to center:
@@ -185,7 +185,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			self.menu.popup(
 				None,
 				None,
-				lambda *args: (x, y, True),
+				lambda *_args: (x, y, True),
 				None,
 				gevent.button,
 				gevent.time,
@@ -249,7 +249,7 @@ class IntLabel(BaseLabel):
 		)
 		# item.set_border_width(0)
 		# log.debug(item.style_get_property("horizontal-padding") ## OK)
-		###???????????????????????????????????
+		# ???????????????????????????????????
 		# item.config("horizontal-padding"=0)
 		# style = item.get_style()
 		# style.set_property("horizontal-padding", 0)
@@ -257,7 +257,7 @@ class IntLabel(BaseLabel):
 		self.menu.append(item)
 		item.connect("select", self.arrowSelect, -1)
 		item.connect("deselect", self.arrowDeselect)
-		item.connect("activate", lambda wid: False)
+		item.connect("activate", lambda _w: False)
 		##########
 		for i in range(self.height):
 			item = MenuItem()
@@ -294,20 +294,20 @@ class IntLabel(BaseLabel):
 			else:
 				self.menuLabels[i].set_label(_(start + i))
 
-	def itemActivate(self, widget, item):
+	def itemActivate(self, _widget, item):
 		self.setActive(self.start + item)
 		self.emit("changed", self.start + item)
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, gevent):
 		if gevent.button == 3:
 			self.updateMenu()
-			foo, x, y = self.get_window().get_origin()
+			_foo, x, y = self.get_window().get_origin()
 			y += self.get_allocation().height
 			x -= 6  # FIXME: because of menu padding
 			self.menu.popup(
 				None,
 				None,
-				lambda *args: (x, y, True),
+				lambda *_args: (x, y, True),
 				None,
 				gevent.button,
 				gevent.time,
@@ -317,7 +317,7 @@ class IntLabel(BaseLabel):
 
 		return False
 
-	def arrowSelect(self, item, plus):
+	def arrowSelect(self, _item, plus):
 		self.remain = plus
 		timeout_add(
 			int(ui.labelMenuDelay * 1000),
@@ -325,7 +325,7 @@ class IntLabel(BaseLabel):
 			plus,
 		)
 
-	def arrowDeselect(self, item):
+	def arrowDeselect(self, _item):
 		self.remain = 0
 
 	def arrowRemain(self, plus):
@@ -346,7 +346,7 @@ class IntLabel(BaseLabel):
 
 		return False
 
-	def menuScroll(self, widget, gevent):
+	def menuScroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
@@ -392,9 +392,9 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 		###
 		self.connect("changed", self.onChanged)
 
-	def onChanged(self, label, item):
+	def onChanged(self, _label, item):
 		calType = self.calType
-		y, m, d = ui.cell.dates[calType]
+		_y, m, d = ui.cell.dates[calType]
 		ui.changeDate(item, m, d, calType)
 		self.onDateChange()
 
@@ -456,11 +456,11 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		###
 		pack(self, self.addButton)
 
-	def onPrevClick(self, button):
+	def onPrevClick(self, _button):
 		ui.yearPlus(-1)
 		self.label.onDateChange()
 
-	def onNextClick(self, button):
+	def onNextClick(self, _button):
 		ui.yearPlus(1)
 		self.label.onDateChange()
 
@@ -494,11 +494,11 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		###
 		pack(self, self.addButton)
 
-	def onPrevClick(self, button):
+	def onPrevClick(self, _button):
 		ui.monthPlus(-1)
 		self.label.onDateChange()
 
-	def onNextClick(self, button):
+	def onNextClick(self, _button):
 		ui.monthPlus(1)
 		self.label.onDateChange()
 

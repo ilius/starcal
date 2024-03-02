@@ -61,7 +61,7 @@ class WidgetClass(gtk.Box):
 		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
-def notify(notifier, finishFunc):  ## FIXME
+def notify(notifier, finishFunc):  # FIXME
 	cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
 	text = notifier.event.getText()
 	msg = cls(

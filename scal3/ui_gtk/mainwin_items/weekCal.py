@@ -204,7 +204,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 			return 0, 0
 		return width, width
 
-	def onExposeEvent(self, widget=None, event=None):
+	def onExposeEvent(self, _widget=None, _event=None):
 		if ui.disableRedraw:
 			return
 		if self.wcal.status is None:
@@ -383,7 +383,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 					show_layout(cr, layout)
 					lineI += 1
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, _gevent):
 		return False
 
 	def onDateChange(self, *a, **kw):
@@ -448,7 +448,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			y0 + h // 2,
 		)
 
-	def onButtonPress(self, widget=None, gevent=None):
+	def onButtonPress(self, _widget=None, _gevent=None):
 		x, y = self.getMenuPos()
 		self._wcal.emit(
 			"popup-main-menu",
@@ -479,7 +479,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		LabelToolBoxItem.onDateChange(self, *a, **ka)
 		self.updateLabel()
 
-	def onClick(self, *a):
+	def onClick(self, *_a):
 		ui.wcal_toolbar_weekNum_negative = not ui.wcal_toolbar_weekNum_negative
 		self.updateLabel()
 		ui.saveLiveConf()
@@ -840,7 +840,7 @@ class EventsBoxColumn(Column):
 		#####
 		Column.__init__(self, wcal)
 		#####
-		self.connect("realize", lambda w: self.updateData())
+		self.connect("realize", lambda _w: self.updateData())
 		self.connect("draw", self.onExposeEvent)
 
 	def updateData(self):
@@ -968,7 +968,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 			font = ui.getFont()
 		self.fontb.set_font(font)
 
-	def onChange(self, obj=None, event=None):
+	def onChange(self, _obj=None, _event=None):
 		ui.wcalTypeParams[self.index] = self.get()
 		self.wcal.queue_draw()
 
@@ -1482,16 +1482,16 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		# for item in self.items:
 		# 	item.queue_draw()
 
-	def goBackward4(self, obj=None):
+	def goBackward4(self, _obj=None):
 		self.jdPlus(-28)
 
-	def goBackward(self, obj=None):
+	def goBackward(self, _obj=None):
 		self.jdPlus(-7)
 
-	def goForward(self, obj=None):
+	def goForward(self, _obj=None):
 		self.jdPlus(7)
 
-	def goForward4(self, obj=None):
+	def goForward4(self, _obj=None):
 		self.jdPlus(28)
 
 	def itemContainsGdkWindow(self, item, col_win):
@@ -1515,7 +1515,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 					return item
 		return None
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, gevent):
 		# gevent is Gdk.EventButton
 		col = self.findColumnWidgetByGdkWindow(gevent.get_window())
 		if not col:
@@ -1566,7 +1566,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			return False
 		return True
 
-	def scroll(self, widget, gevent):
+	def scroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)
@@ -1576,7 +1576,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *args):
+	def getCellPos(self, *_args):
 		alloc = self.get_allocation()
 		return (
 			int(alloc.width / 2),
@@ -1589,7 +1589,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 				return item
 		return None
 
-	def getMainMenuPos(self, *args):
+	def getMainMenuPos(self, *_args):
 		toolbar = self.getToolbar()
 		if toolbar:
 			for item in toolbar.items:

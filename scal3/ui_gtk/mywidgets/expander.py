@@ -98,7 +98,7 @@ class ExpanderFrame(gtk.Frame):
 	def add(self, child: gtk.Widget) -> None:
 		pack(self._box, child, 1, 1)
 
-	def _onTitleClick(self, button):
+	def _onTitleClick(self, _button):
 		self.set_expanded(not self.get_expanded())
 		self.emit("activate")
 

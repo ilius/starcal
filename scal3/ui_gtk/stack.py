@@ -108,7 +108,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, arg, gevent):
+	def onKeyPress(self, _arg, gevent):
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -153,7 +153,7 @@ class MyStack(gtk.Stack):
 		backButton.add(backHbox)
 		backButton.connect(
 			"clicked",
-			lambda w: self.gotoPage(parentName, backward=True),
+			lambda _w: self.gotoPage(parentName, backward=True),
 		)
 		pack(hbox, backButton)
 		pack(hbox, gtk.Label(), 1, 1)

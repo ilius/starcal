@@ -27,7 +27,7 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateVars(self)
 		self.event.setDate(*self.dateInput.get_value())
 
-	def calTypeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, _obj=None):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.dateInput.changeCalType(self.event.calType, newCalType)

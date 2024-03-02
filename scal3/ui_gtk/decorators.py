@@ -5,8 +5,8 @@ log = logger.get()
 from gi.repository import GObject
 
 __all__ = [
-	"registerType",
 	"registerSignals",
+	"registerType",
 ]
 
 

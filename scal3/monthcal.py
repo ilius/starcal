@@ -39,7 +39,7 @@ class MonthStatus(list):  # FIXME
 		initJd = core.primary_to_jd(year, month, 1)
 		self.weekNum = [getWeekNumberByJd(initJd + i * 7) for i in range(6)]
 		#########
-		startJd, endJd = getJdRangeForMonth(year, month, calTypes.primary)
+		startJd, _endJd = getJdRangeForMonth(year, month, calTypes.primary)
 		tableStartJd = startJd - self.offset
 		#####
 		list.__init__(
