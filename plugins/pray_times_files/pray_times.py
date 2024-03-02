@@ -295,7 +295,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		if dt > 256 * 24 * 3600:
 			return True
 
-		hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
+		_hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
 		if hmonth == 9 and dt > hday * 24 * 3600:  # Ramadan
 			return True
 
@@ -324,7 +324,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 
 	def getFormattedTime(self, tm):  # tm is float hour
 		try:
-			h, m, s = floatHourToTime(float(tm))
+			h, m, _s = floatHourToTime(float(tm))
 		except ValueError:
 			return tm
 		else:
@@ -445,5 +445,5 @@ if __name__ == "__main__":
 	# dialog.connect("response", gtk.main_quit)
 	dialog.resize(600, 600)
 	result = dialog.run()
-	log.info("{result}")
+	log.info(f"{result}")
 	# gtk.main()

@@ -21,7 +21,7 @@ class ConButtonBase:
 	def doTrigger(self):
 		return self.emit("con-clicked")
 
-	def onPress(self, widget, event):
+	def onPress(self, _widget, event):
 		if self._button is not None and event.button != self._button:
 			return
 		self.pressTm = now()
@@ -35,7 +35,7 @@ class ConButtonBase:
 		)
 		return True
 
-	def onRelease(self, widget, event):
+	def onRelease(self, _widget, _event):
 		self.counter += 1
 		return True
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 	win = gtk.Dialog()
 	button = ConButton("Press")
 
-	def con_clicked(arg):
+	def con_clicked(_arg):
 		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)
