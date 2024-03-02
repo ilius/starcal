@@ -56,7 +56,7 @@ class AutoSizeEntry(gtk.Entry):
 			self.maxPixelWidth = pixelWidth
 		return pixelWidth, pixelWidth
 
-	def onChange(self, entry):
+	def onChange(self, _entry):
 		self.queue_resize()
 
 
@@ -186,10 +186,10 @@ class MultiSpinButton(gtk.Box):
 		####
 		# self.select_region(0, 0)
 
-	def _entry_changed(self, widget):
+	def _entry_changed(self, _widget):
 		self.emit("changed")
 
-	def _entry_activate(self, widget):
+	def _entry_activate(self, _widget):
 		# log.debug("_entry_activate", self.entry.get_text())
 		self.update()
 		# log.debug(self.entry.get_text())
@@ -235,7 +235,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def onKeyPress(self, widget, gevent):
+	def onKeyPress(self, _widget, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		step_inc = self.step_inc
@@ -274,7 +274,7 @@ class MultiSpinButton(gtk.Box):
 			# else:
 			# 	i1 = strFindNth(text, sep, fieldIndex) + len(sep)
 			# i2 = strFindNth(text, sep, fieldIndex+1)
-			##self.grab_focus()
+			# self.grab_focus()
 			# self.select_region(i1, i2)
 			return True
 
@@ -301,13 +301,13 @@ class MultiSpinButton(gtk.Box):
 		# log.debug(kname, kval)
 		return False
 
-	def onDownButtonPress(self, button, gevent):
+	def onDownButtonPress(self, _button, _gevent):
 		self._arrow_press(-self.step_inc)
 
-	def onUpButtonPress(self, button, gevent):
+	def onUpButtonPress(self, _button, _gevent):
 		self._arrow_press(self.step_inc)
 
-	def _scroll(self, widget, gevent):
+	def _scroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
 		if d in ("up", "down"):
 			if not self.entry.has_focus():
@@ -342,7 +342,7 @@ class MultiSpinButton(gtk.Box):
 				plus,
 			)
 
-	def onButtonRelease(self, widget, gevent):
+	def onButtonRelease(self, _widget, _gevent):
 		self._remain = False
 
 	"""## ????????????????????????????????

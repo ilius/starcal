@@ -310,7 +310,7 @@ def saveBsonObject(data: "dict | list", fs: FileSystem):
 
 
 def loadBsonObject(_hash, fs: FileSystem):
-	dpath, fpath = getObjectPath(_hash)
+	_dpath, fpath = getObjectPath(_hash)
 	with fs.open(fpath, "rb") as fp:
 		bsonBytes = fp.read()
 	if _hash != sha1(bsonBytes).hexdigest():

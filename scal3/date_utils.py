@@ -15,8 +15,8 @@ def dateEncode(date: tuple[int, int, int]) -> str:
 	return f"{date[0]:04d}/{date[1]:02d}/{date[2]:02d}"
 
 
-def dateEncodeDash(date: tuple[int, int, int]) -> str:
-	return f"{date[0]:04d}-{date[1]:02d}-{date[2]:02d}"
+# def dateEncodeDash(date: tuple[int, int, int]) -> str:
+# 	return f"{date[0]:04d}-{date[1]:02d}-{date[2]:02d}"
 
 
 def checkDate(date: tuple[int, int, int]) -> None:
@@ -100,7 +100,7 @@ def getJdRangeForMonth(year: int, month: int, calType: int) -> tuple[int, int]:
 def getFloatYearFromJd(jd: int, calType: int) -> float:
 	if calType not in calTypes:
 		raise RuntimeError(f"cal type '{calType}' not found")
-	year, month, day = jd_to(jd, calType)
+	year, _month, _day = jd_to(jd, calType)
 	yearStartJd = to_jd(year, 1, 1, calType)
 	nextYearStartJd = to_jd(year + 1, 1, 1, calType)
 	dayOfYear = jd - yearStartJd

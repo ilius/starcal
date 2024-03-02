@@ -65,10 +65,6 @@ def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	return monthNameAb[m - 1]
 
 
-def getMonthsInYear(_y):
-	return 12
-
-
 # Monday	Somavãra
 # Tuesday	Mañgalvã
 # Wednesday Budhavãra
@@ -157,7 +153,7 @@ def jd_to(jd):
 	# the Indian year and subtracting off the required number of months and
 	# days to get the final date
 
-	gregorianYear, gregorianMonth, gregorianDay = gregorian.jd_to(jd)
+	gregorianYear, _gregorianMonth, _gregorianDay = gregorian.jd_to(jd)
 	jdGregorianFirstDayOfYear = gregorian.to_jd(gregorianYear, 1, 1)
 	gregorianDayOfYear = jd - jdGregorianFirstDayOfYear + 1
 

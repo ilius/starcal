@@ -35,7 +35,7 @@ class EventEditorDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		###
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		###
 		self.activeWidget = None
 		self._group = event.parent
@@ -48,7 +48,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.event = event
 		#######
 		if isNew and not event.timeZone:
-			event.timeZone = str(locale_man.localTz)  ## why? FIXME
+			event.timeZone = str(locale_man.localTz)  # why? FIXME
 		#######
 		hbox = HBox()
 		pack(
@@ -119,7 +119,7 @@ class EventEditorDialog(gtk.Dialog):
 			self.activeWidget.destroy()
 		eventType = self.eventTypeOptions[combo.get_active()]
 		self.replaceEventWithType(eventType)
-		self._group.updateCache(self.event)  ## needed? FIXME
+		self._group.updateCache(self.event)  # needed? FIXME
 		self.activeWidget = makeWidget(self.event)
 		if self.isNew:
 			self.activeWidget.focusSummary()

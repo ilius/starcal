@@ -29,7 +29,7 @@ class GroupSortDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		##
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		####
 		hbox = HBox()
 		pack(
@@ -95,7 +95,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		##
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		####
 		label = gtk.Label(
 			label=_(
@@ -134,7 +134,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 					event.save()
 				else:
 					failedSummaryList.append(event.summary)
-			if failedSummaryList:  ## FIXME
+			if failedSummaryList:  # FIXME
 				log.error(f"{failedSummaryList=}")
 			return True
 		self.destroy()

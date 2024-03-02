@@ -919,7 +919,7 @@ class PreferencesWindow(gtk.Window):
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled)
 		titleLabel = gtk.Label(
-			label=f"<span font='{size*0.7}'>" + _("Enable") + "</span>",
+			label=f"<span font='{size * 0.7}'>" + _("Enable") + "</span>",
 			use_markup=True,
 		)
 		titleLabel.show()
@@ -935,7 +935,7 @@ class PreferencesWindow(gtk.Window):
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled2)
 		titleLabel = gtk.Label(
-			label=f"<span font='{size*0.5}'>" + _("Show\nDate") + "</span>",
+			label=f"<span font='{size * 0.5}'>" + _("Show\nDate") + "</span>",
 			use_markup=True,
 		)
 		titleLabel.show()
@@ -1238,14 +1238,14 @@ class PreferencesWindow(gtk.Window):
 		self.vbox.show_all()
 		self.vbox.connect("realize", self.onMainVBoxRealize)
 
-	def onMainVBoxRealize(self, *args):
+	def onMainVBoxRealize(self, *_args):
 		ud.windowList.updateCSS()
 
-	def onClearImageCacheClick(self, button):
+	def onClearImageCacheClick(self, _button):
 		pixcache.clearFiles()
 		pixcache.clear()
 
-	def onPageButtonClicked(self, button, page):
+	def onPageButtonClicked(self, _button, page):
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
@@ -1268,7 +1268,7 @@ class PreferencesWindow(gtk.Window):
 		button.connect("clicked", self.onPageButtonClicked, page)
 		return button
 
-	def comboFirstWDChanged(self, combo):
+	def comboFirstWDChanged(self, _combo):
 		f = self.comboFirstWD.get_active()  # 0 means Sunday
 		if f == 7:  # auto
 			with suppress(Exception):
@@ -1276,22 +1276,22 @@ class PreferencesWindow(gtk.Window):
 		# core.firstWeekDay will be later = f
 		self.holiWDItem.setStart(f)
 
-	def onDelete(self, obj=None, data=None):
+	def onDelete(self, _obj=None, _data=None):
 		self.hide()
 		return True
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		if gdk.keyval_name(gevent.keyval) == "Escape":
 			self.hide()
 			return True
 		return False
 
-	def ok(self, widget):
+	def ok(self, _widget):
 		self.hide()
 
 		self.apply()
 
-	def cancel(self, widget=None):
+	def cancel(self, _widget=None):
 		self.hide()
 		self.updatePrefGui()
 		return True
@@ -1315,7 +1315,7 @@ class PreferencesWindow(gtk.Window):
 		core.allPlugList[plugI] = plug
 		return plug
 
-	def apply(self, widget=None):
+	def apply(self, _widget=None):
 		from scal3.ui_gtk.font_utils import gfontDecode
 
 		# log.debug(f"{ui.fontDefault=}")
@@ -1488,7 +1488,7 @@ class PreferencesWindow(gtk.Window):
 	# 		self.plugTitleCol.get_width() + 2
 	# 	)
 
-	def plugTreevCursorChanged(self, selection=None):
+	def plugTreevCursorChanged(self, _selection=None):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1499,7 +1499,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugButtonAbout.set_sensitive(bool(plug.about))
 		self.plugButtonConf.set_sensitive(plug.hasConfig)
 
-	def onPlugAboutClick(self, obj=None):
+	def onPlugAboutClick(self, _obj=None):
 		from scal3.ui_gtk.about import AboutDialog
 
 		cur = self.plugTreeview.get_cursor()[0]
@@ -1520,14 +1520,14 @@ class PreferencesWindow(gtk.Window):
 			comments=plug.about,
 		)
 		about.set_transient_for(self)
-		about.connect("delete-event", lambda w, e: w.destroy())
-		about.connect("response", lambda w, e: w.destroy())
+		about.connect("delete-event", lambda w, _e: w.destroy())
+		about.connect("response", lambda w, _e: w.destroy())
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
 		return None
 
-	def onPlugConfClick(self, obj=None):
+	def onPlugConfClick(self, _obj=None):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1539,16 +1539,16 @@ class PreferencesWindow(gtk.Window):
 			return
 		plug.open_configure()
 
-	def onPlugExportToIcsClick(self, menu, plug):
+	def onPlugExportToIcsClick(self, _menu, plug):
 		from scal3.ui_gtk.export import ExportToIcsDialog
 
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
 
-	def plugTreevRActivate(self, treev, path, col):
+	def plugTreevRActivate(self, _treev, _path, col):
 		if col.get_title() == _("Title"):  # FIXME
 			self.onPlugAboutClick()
 
-	def plugTreevButtonPress(self, widget, gevent):
+	def plugTreevButtonPress(self, _widget, gevent):
 		b = gevent.button
 		if b == 3:
 			cur = self.plugTreeview.get_cursor()[0]
@@ -1589,11 +1589,11 @@ class PreferencesWindow(gtk.Window):
 			return True
 		return False
 
-	def onPlugAddClick(self, button):
+	def onPlugAddClick(self, _button):
 		# FIXME
 		# Reize window to show all texts
 		# self.plugAddTreeview.columns_autosize()  # FIXME
-		x, y, w, h = self.plugAddTreeview.get_column(0).cell_get_size()
+		_x, _y, w, _h = self.plugAddTreeview.get_column(0).cell_get_size()
 		# log.debug(x, y, w, h)
 		self.plugAddDialog.resize(
 			w + 30,
@@ -1603,7 +1603,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddDialog.run()
 		self.pluginsToolbar.setCanAdd(len(self.plugAddItems) > 0)
 
-	def plugAddDialogClose(self, obj, gevent=None):
+	def plugAddDialogClose(self, _obj, _gevent=None):
 		self.plugAddDialog.hide()
 		return True
 
@@ -1625,7 +1625,7 @@ class PreferencesWindow(gtk.Window):
 		itr = model.get_iter(path)
 		model.set_value(itr, 2, active)
 
-	def plugTreeviewTop(self, button):
+	def plugTreeviewTop(self, _button):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1638,7 +1638,7 @@ class PreferencesWindow(gtk.Window):
 		t.remove(t.get_iter(i + 1))
 		self.plugTreeview.set_cursor(0)
 
-	def plugTreeviewBottom(self, button):
+	def plugTreeviewBottom(self, _button):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1651,7 +1651,7 @@ class PreferencesWindow(gtk.Window):
 		t.remove(t.get_iter(i))
 		self.plugTreeview.set_cursor(len(t) - 1)
 
-	def plugTreeviewUp(self, button):
+	def plugTreeviewUp(self, _button):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1663,7 +1663,7 @@ class PreferencesWindow(gtk.Window):
 		t.swap(t.get_iter(i - 1), t.get_iter(i))
 		self.plugTreeview.set_cursor(i - 1)
 
-	def plugTreeviewDown(self, button):
+	def plugTreeviewDown(self, _button):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1675,7 +1675,16 @@ class PreferencesWindow(gtk.Window):
 		t.swap(t.get_iter(i), t.get_iter(i + 1))
 		self.plugTreeview.set_cursor(i + 1)
 
-	def plugTreevDragReceived(self, treev, context, x, y, selec, info, etime):
+	def plugTreevDragReceived(
+		self,
+		treev,
+		_context,
+		x,
+		y,
+		_selec,
+		_info,
+		_etime,
+	):
 		t = treev.get_model()  # self.plugAddTreeModel
 		cur = treev.get_cursor()[0]
 		if cur is None:
@@ -1701,7 +1710,7 @@ class PreferencesWindow(gtk.Window):
 				t.get_iter(dest[0][0]),
 			)
 
-	def onPlugDeleteClick(self, button):
+	def onPlugDeleteClick(self, _button):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1722,7 +1731,7 @@ class PreferencesWindow(gtk.Window):
 		if n > 1:
 			self.plugTreeview.set_cursor(min(n - 2, i))
 
-	def plugAddDialogOK(self, obj):
+	def plugAddDialogOK(self, _obj):
 		cur = self.plugAddTreeview.get_cursor()[0]
 		if cur is None:
 			gdk.beep()
@@ -1748,7 +1757,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddDialog.hide()
 		self.plugTreeview.set_cursor(pos)  # pos == -1 ## FIXME
 
-	def plugAddTreevRActivate(self, treev, path, col):
+	def plugAddTreevRActivate(self, _treev, _path, _col):
 		self.plugAddDialogOK(None)  # FIXME
 
 	def editAccount(self, index):
@@ -1766,20 +1775,20 @@ class PreferencesWindow(gtk.Window):
 		ui.eventAccounts.save()
 		self.accountsTreeModel[index][2] = account.title
 
-	def onAccountsEditClick(self, button):
+	def onAccountsEditClick(self, _button):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur[0]
 		self.editAccount(index)
 
-	def onAccountsRegisterClick(self, button):
+	def onAccountsRegisterClick(self, _button):
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 
 		win = StarCalendarRegisterDialog(transient_for=self)
 		win.run()
 
-	def onAccountsAddClick(self, button):
+	def onAccountsAddClick(self, _button):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		account = AccountEditorDialog(transient_for=self).run()
@@ -1804,7 +1813,7 @@ class PreferencesWindow(gtk.Window):
 			return
 		account.save()
 
-	def onAccountsDeleteClick(self, button):
+	def onAccountsDeleteClick(self, _button):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1822,7 +1831,7 @@ class PreferencesWindow(gtk.Window):
 		ui.eventAccounts.save()
 		del self.accountsTreeModel[index]
 
-	def onAccountsUpClick(self, button):
+	def onAccountsUpClick(self, _button):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1839,7 +1848,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.accountsTreeview.set_cursor(index - 1)
 
-	def onAccountsDownClick(self, button):
+	def onAccountsDownClick(self, _button):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1853,11 +1862,11 @@ class PreferencesWindow(gtk.Window):
 		t.swap(t.get_iter(index), t.get_iter(index + 1))
 		self.accountsTreeview.set_cursor(index + 1)
 
-	def accountsTreevRActivate(self, treev, path, col):
+	def accountsTreevRActivate(self, _treev, path, _col):
 		index = path[0]
 		self.editAccount(index)
 
-	def accountsTreevButtonPress(self, widget, gevent):
+	def accountsTreevButtonPress(self, _widget, gevent):
 		b = gevent.button
 		if b == 3:
 			# FIXME
