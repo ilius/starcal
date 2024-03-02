@@ -65,10 +65,6 @@ def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	return monthNameAb[m - 1]
 
 
-def getMonthsInYear(_y):
-	return 12
-
-
 from math import floor
 
 

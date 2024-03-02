@@ -74,8 +74,10 @@ def allDayTaskDecoder(remoteEvent):
 		)
 	return {"rules": rules}
 
+
 def _emptyDecoder(_ev):
 	return {}
+
 
 remoteEventTypeDecoders = {
 	"allDayTask": allDayTaskDecoder,
@@ -319,7 +321,7 @@ class StarCalendarAccount(Account):
 			for remoteEvent in remoteModifiedEvents:
 				# remoteEvent is a dict
 				log.info(remoteEvent)
-				event, error = decodeRemoteEvent(
+				_event, error = decodeRemoteEvent(
 					remoteEvent,
 					self.id,
 					group,

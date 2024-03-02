@@ -36,22 +36,22 @@ from scal3.ui_gtk.font_utils import (
 from scal3.utils import toBytes
 
 __all__ = [
-	"setColor",
-	"fillColor",
-	"newTextLayout",
 	"calcTextPixelSize",
 	"calcTextPixelWidth",
+	"drawArcOutline",
+	"drawCircle",
+	"drawCircleOutline",
+	"drawLineLengthAngle",
+	"drawOutlineRoundedRect",
+	"drawPieOutline",
+	"drawRoundedRect",
+	"fillColor",
+	"goAngle",
 	"newColorCheckPixbuf",
 	"newDndDatePixbuf",
 	"newDndFontNamePixbuf",
-	"drawRoundedRect",
-	"drawOutlineRoundedRect",
-	"drawCircle",
-	"drawCircleOutline",
-	"drawPieOutline",
-	"goAngle",
-	"drawLineLengthAngle",
-	"drawArcOutline",
+	"newTextLayout",
+	"setColor",
 ]
 
 if not ui.fontCustom:
@@ -216,7 +216,7 @@ def calcTextPixelWidth(
 	text: str,
 	font: "ui.Font | None" = None,
 ) -> float:
-	width, height = calcTextPixelSize(widget, text, font=font)
+	width, _height = calcTextPixelSize(widget, text, font=font)
 	return width
 
 
@@ -531,9 +531,9 @@ def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 	a1: end angle (radians).
 	"""
 	x1, y1 = goAngle(xc, yc, a0, r - d)
-	x2, y2 = goAngle(xc, yc, a1, r - d)
+	# x2, y2 = goAngle(xc, yc, a1, r - d)
 	x3, y3 = goAngle(xc, yc, a1, r)
-	x4, y4 = goAngle(xc, yc, a0, r)
+	# x4, y4 = goAngle(xc, yc, a0, r)
 	####
 	cr.move_to(x1, y1)
 	cr.arc(xc, yc, r - d, a0, a1)

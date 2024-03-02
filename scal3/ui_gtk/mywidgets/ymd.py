@@ -58,7 +58,7 @@ class YearMonthDayBox(gtk.Box):
 			self.comboMonthChanged,
 		)
 
-	def changeCalType(self, calType, newCalType):  ## FIXME naming standard?
+	def changeCalType(self, _calType, newCalType):  # FIXME naming standard?
 		self.setCalType(newCalType)
 
 	def set_value(self, date):
@@ -74,7 +74,7 @@ class YearMonthDayBox(gtk.Box):
 			self.spinD.get_value(),
 		)
 
-	def comboMonthChanged(self, widget=None):
+	def comboMonthChanged(self, _widget=None):
 		monthIndex = self.comboMonth.get_active()
 		if monthIndex == -1:
 			return
