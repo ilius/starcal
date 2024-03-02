@@ -3,14 +3,6 @@ import typing
 ColorType: "typing.TypeAlias" = "tuple[int,int,int] | tuple[int,int,int,int]"
 
 
-def invertColor(r, g, b):
-	return (
-		255 - r,
-		255 - g,
-		255 - b,
-	)
-
-
 def rgbToInt(r, g, b):
 	"""For example (170, 85, 52) or "#aa5534" becomes 0xaa5534."""
 	return b + g * 256 + r * 256**2

@@ -124,9 +124,6 @@ class CalTypesHolder:
 		for i in self.inactive:
 			yield i, modules[i]
 
-	def allIndexes(self):
-		return self.active + self.inactive
-
 	def __contains__(self, key) -> bool:
 		if isinstance(key, str):
 			return key in self.byName
