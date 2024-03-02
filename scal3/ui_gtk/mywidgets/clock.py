@@ -100,8 +100,8 @@ class FClockLabel(gtk.Label):
 		self.running = False
 
 
-class FClockWidget(gtk.DrawingArea):  ## Time is in Local
-	def __init__(self, clockFormat="%T", selectable=False):
+class FClockWidget(gtk.DrawingArea):  # Time is in Local
+	def __init__(self, clockFormat="%T", _selectable=False):
 		"""
 		clockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -133,7 +133,7 @@ class FClockWidget(gtk.DrawingArea):  ## Time is in Local
 		self.text = text
 		self.queue_draw()
 
-	def onDraw(self, widget=None, event=None):
+	def onDraw(self, _widget=None, _event=None):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.

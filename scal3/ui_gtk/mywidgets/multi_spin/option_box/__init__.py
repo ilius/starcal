@@ -10,7 +10,7 @@ class MultiSpinOptionBox(gtk.Box):
 		("activate", []),
 	]
 
-	def _entry_activate(self, widget):
+	def _entry_activate(self, _widget):
 		# self.spin.update() #?????
 		# self.add_history()
 		self.emit("activate")
@@ -50,7 +50,7 @@ class MultiSpinOptionBox(gtk.Box):
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
-	def option_pressed(self, widget, gevent):
+	def option_pressed(self, _widget, gevent):
 		# x, y, w, h = self.option.
 		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
 
@@ -70,7 +70,7 @@ class MultiSpinOptionBox(gtk.Box):
 			self.menu.remove(self.menuItems.pop(index))
 		# m.prepend([text]) # self.combo.prepend_text(text)
 		item = MenuItem(text)
-		item.connect("activate", lambda obj: self.spin.set_text(text))
+		item.connect("activate", lambda _obj: self.spin.set_text(text))
 		item.text = text
 		self.menu.add(item)
 		self.menu.reorder_child(item, 0)
