@@ -46,7 +46,7 @@ class DemoWizardWindow(WizardWindow):
 			##
 			self.radioJson.set_active(True)
 			# self.radioJson.connect("clicked", self.formatRadioChanged)
-			##self.radioIcs.connect("clicked", self.formatRadioChanged)
+			# self.radioIcs.connect("clicked", self.formatRadioChanged)
 			##
 			frame.add(radioBox)
 			pack(hbox, frame, 0, 0, 10)
@@ -66,10 +66,10 @@ class DemoWizardWindow(WizardWindow):
 		def run(self):
 			pass
 
-		def onCancelClick(self, obj):
+		def onCancelClick(self, _obj):
 			self.win.destroy()
 
-		def onNextClick(self, obj):
+		def onNextClick(self, _obj):
 			fpath = self.fcb.get_filename()
 			format_ = None
 			if self.radioJson.get_active():
@@ -105,10 +105,10 @@ class DemoWizardWindow(WizardWindow):
 		def _runJson(self, fpath):
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
-		def onBackClick(self, obj):
+		def onBackClick(self, _obj):
 			self.win.showStep(0)
 
-		def onCloseClick(self, obj):
+		def onCloseClick(self, _obj):
 			self.win.destroy()
 
 	stepClasses = [

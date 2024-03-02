@@ -101,7 +101,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 
 	def initVars(self) -> None:
 		ud.BaseCalObj.initVars(self)
-		self.itemWidgets = {}  ## for lazy construction of widgets
+		self.itemWidgets = {}  # for lazy construction of widgets
 		self.optionsWidget = None
 		try:
 			self.connect("key-press-event", self.onKeyPress)

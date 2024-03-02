@@ -47,42 +47,42 @@ from scal3.ui_gtk.svg_utils import pixbufFromSvgFile
 from scal3.utils import toBytes, toStr
 
 __all__ = [
-	"hideList",
-	"showList",
-	"set_tooltip",
 	"buffer_get_text",
-	"show_event",
-	"setClipboard",
-	"imageFromIconName",
-	"imageFromIconNameWithPixelSize",
-	"imageFromFile",
-	"resolveImagePath",
-	"pixbufFromFile",
-	"newButtonImageBox",
-	"labelIconButton",
-	"labelImageButton",
-	"imageClassButton",
-	"setImageClassButton",
-	"getStyleColor",
-	"modify_bg_all",
-	"rectangleContainsPoint",
-	"dialog_add_button",
 	"confirm",
-	"showMsg",
-	"showError",
-	"showWarning",
-	"showInfo",
-	"openWindow",
-	"get_menu_width",
-	"get_menu_height",
-	"get_pixbuf_hash",
-	"window_set_size_aspect",
-	"newHSep",
-	"newAlignLabel",
 	"cssTextStyle",
+	"dialog_add_button",
 	"getBackgroundColor",
 	"getBackgroundColorCSS",
 	"getGtkWindow",
+	"getStyleColor",
+	"get_menu_height",
+	"get_menu_width",
+	"get_pixbuf_hash",
+	"hideList",
+	"imageClassButton",
+	"imageFromFile",
+	"imageFromIconName",
+	"imageFromIconNameWithPixelSize",
+	"labelIconButton",
+	"labelImageButton",
+	"modify_bg_all",
+	"newAlignLabel",
+	"newButtonImageBox",
+	"newHSep",
+	"openWindow",
+	"pixbufFromFile",
+	"rectangleContainsPoint",
+	"resolveImagePath",
+	"setClipboard",
+	"setImageClassButton",
+	"set_tooltip",
+	"showError",
+	"showInfo",
+	"showList",
+	"showMsg",
+	"showWarning",
+	"show_event",
+	"window_set_size_aspect",
 ]
 
 
@@ -572,7 +572,7 @@ def get_pixbuf_hash(pbuf):
 
 	md5 = hashlib.md5()
 
-	def save_func(chunkBytes, size, unknown):
+	def save_func(chunkBytes, _size, _unknown):
 		# len(chunkBytes) == size
 		md5.update(chunkBytes)
 		return True
@@ -639,7 +639,7 @@ class CopyLabelMenuItem(MenuItem):
 		self.set_label(label)
 		self.connect("activate", self.on_activate)
 
-	def on_activate(self, item):
+	def on_activate(self, _item):
 		setClipboard(self.get_property("label"))
 
 

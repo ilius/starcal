@@ -12,7 +12,7 @@ def processDroppedDate(text, dtype):
 		if text.startswith("file://"):
 			path = core.urlToPath(text)
 			try:
-				t = os.stat(path).st_mtime  ## modification time
+				t = os.stat(path).st_mtime  # modification time
 			except OSError:
 				log.error(f"Dropped invalid file {path!r}")
 			else:
@@ -38,7 +38,7 @@ def processDroppedDate(text, dtype):
 		path = core.urlToPath(text)
 		# print(f"{text = }, {path = }")
 		try:
-			t = os.stat(path).st_mtime  ## modification time
+			t = os.stat(path).st_mtime  # modification time
 		except OSError:
 			log.error(f"Dropped invalid uri {path!r}")
 			return True

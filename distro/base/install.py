@@ -30,7 +30,7 @@ def printAsError(msg):
 
 
 def printUsage():
-	## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
+	# echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
 	U = "\x1b[4m"  # Start Underline # len=4
 	E = "\x1b[0;0;0m"  # End Format # len=8
 	print(
@@ -42,7 +42,7 @@ def printUsage():
 
 
 def getVersion():
-	outputB, error = subprocess.Popen(
+	outputB, _error = subprocess.Popen(
 		["python3", f"{sourceDir}/scripts/version.py"],
 		stdout=subprocess.PIPE,
 	).communicate()

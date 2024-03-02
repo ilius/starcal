@@ -50,12 +50,12 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.colorButton = MyColorButton()
-		self.colorButton.set_use_alpha(True)  ## FIXME
+		self.colorButton.set_use_alpha(True)  # FIXME
 		pack(hbox, self.colorButton)
 		pack(self, hbox)
 		#####
 		hbox = HBox()
-		label = gtk.Label(label=_("Default Icon"))  ## FIXME
+		label = gtk.Label(label=_("Default Icon"))  # FIXME
 		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)

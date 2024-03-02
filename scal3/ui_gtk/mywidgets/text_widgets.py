@@ -10,7 +10,7 @@ from scal3.utils import findWordByPos, toStr
 
 
 class ReadOnlyTextWidget:
-	def copyAll(self, item):
+	def copyAll(self, _item):
 		return setClipboard(toStr(self.get_text()))
 
 	def has_selection():
@@ -30,14 +30,14 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 	def has_selection(self):
 		return self.get_cursor_position() != self.get_selection_bound()
 
-	def copy(self, item):
+	def copy(self, _item):
 		bound = self.get_selection_bound()
 		cursor = self.get_cursor_position()
 		start = min(bound, cursor)
 		end = max(bound, cursor)
 		setClipboard(toStr(self.get_text())[start:end])
 
-	def onPopup(self, widget, menu):
+	def onPopup(self, _widget, menu):
 		# instead of creating a new menu, we should remove all the
 		# current items from current menu
 		for item in menu.get_children():
@@ -66,7 +66,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 
 	def __init__(self, **kwargs):
 		gtk.Label.__init__(self, **kwargs)
-		self.set_selectable(True)  ## to be selectable, with visible cursor
+		self.set_selectable(True)  # to be selectable, with visible cursor
 		self.connect("populate-popup", self.onPopup)
 
 
@@ -80,27 +80,27 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	def has_selection(self):
 		buf = self.get_buffer()
 		try:
-			start_iter, end_iter = buf.get_selection_bounds()
+			buf.get_selection_bounds()
 		except ValueError:
 			return False
 		else:
 			return True
 
-	def copy(self, item):
+	def copy(self, _item):
 		buf = self.get_buffer()
 		start_iter, end_iter = buf.get_selection_bounds()
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
-	def copyWordByIter(self, item, _iter):
-		text = self.get_text()
-		pos = _iter.get_offset()
-		word = findWordByPos(text, pos)[0]
-		setClipboard(word)
+	# def copyWordByIter(self, _item, _iter):
+	# 	text = self.get_text()
+	# 	pos = _iter.get_offset()
+	# 	word = findWordByPos(text, pos)[0]
+	# 	setClipboard(word)
 
-	def copyText(self, item, text):
+	def copyText(self, _item, text):
 		setClipboard(text)
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, gevent):
 		if gevent.button != 3:
 			return False
 		####

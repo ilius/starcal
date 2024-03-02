@@ -35,9 +35,9 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		past = jd1 - jd0
 		fraction = past / length
 		if rtl:
-			percent = f"{int(fraction*100)}%"
+			percent = f"{int(fraction * 100)}%"
 		else:
-			percent = f"%{int(fraction*100)}"
+			percent = f"%{int(fraction * 100)}"
 		self.pbar.set_text(
 			_("Year")
 			+ ":  "
