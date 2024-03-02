@@ -93,13 +93,13 @@ class MaxHeap(list):
 			return True
 		try:
 			if self[2 * i + 1] < k:
-				log.info(f"[{2*i+1}] > [{i}]")
+				log.info(f"[{2 * i + 1}] > [{i}]")
 				return False
 		except IndexError:
 			return True
 		try:
 			if self[2 * i + 2] < k:
-				log.info(f"[{2*i+2}] > [{i}]")
+				log.info(f"[{2 * i + 2}] > [{i}]")
 				return False
 		except IndexError:
 			return True
@@ -126,7 +126,7 @@ class MaxHeap(list):
 					** int(
 						math_log2(len(self)),
 					)
-				) :
+				):
 			],
 		)
 		return -k, v
@@ -144,7 +144,7 @@ class MaxHeap(list):
 	"""
 
 
-def getMinTest(N):
+def testGetMin(N):
 	from random import randint
 
 	h = MaxHeap()

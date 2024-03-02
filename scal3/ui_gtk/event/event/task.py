@@ -72,7 +72,7 @@ class WidgetClass(common.WidgetClass):
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
-	def endTypeComboChanged(self, combo=None):
+	def endTypeComboChanged(self, _combo=None):
 		active = self.endTypeCombo.get_active()
 		if active == 0:  # duration
 			self.durationBox.show()
@@ -83,7 +83,7 @@ class WidgetClass(common.WidgetClass):
 		else:
 			raise RuntimeError
 
-	def updateWidget(self):  ## FIXME
+	def updateWidget(self):  # FIXME
 		common.WidgetClass.updateWidget(self)
 		###
 		startDate, startTime = self.event.getStart()
@@ -94,8 +94,8 @@ class WidgetClass(common.WidgetClass):
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationBox.setDuration(*values)
-			self.endDateInput.set_value(startDate)  ## FIXME
-			self.endTimeInput.set_value(startTime)  ## FIXME
+			self.endDateInput.set_value(startDate)  # FIXME
+			self.endTimeInput.set_value(startTime)  # FIXME
 		elif endType == "date":
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(values[0])
@@ -121,7 +121,7 @@ class WidgetClass(common.WidgetClass):
 				self.endTimeInput.get_value(),
 			)
 
-	def calTypeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, _obj=None):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.event.calType, newCalType)

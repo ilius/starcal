@@ -64,7 +64,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		########
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
-		self.vbox.set_focus_child(self.fcw)  ## FIXME
+		self.vbox.set_focus_child(self.fcw)  # FIXME
 		self.vbox.show_all()
 		combo.connect("changed", self.comboChanged)
 		##
@@ -86,7 +86,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.connect("delete-event", self.onDelete)
 		self.fcw.set_current_folder(deskDir)
 
-	def comboChanged(self, widget=None, ym=None):
+	def comboChanged(self, _widget=None, ym=None):
 		i = self.combo.get_active()
 		if ym is None:
 			ym = (ui.cell.year, ui.cell.month)
@@ -101,7 +101,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			self.hbox2.show()
 		# select_region(0, -4) # FIXME
 
-	def onDelete(self, widget=None, event=None):
+	def onDelete(self, _widget=None, _event=None):
 		# hide(close) File Chooser Dialog
 		self.hide()
 		return True
@@ -136,7 +136,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		exportToHtml(path, months, title)
 		self.hide()
 
-	def save(self, widget=None):
+	def save(self, _widget=None):
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
@@ -199,13 +199,13 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		pack(hbox, self.endDateInput)
 		pack(self.vbox, hbox)
 		####
-		year, month, day = ui.todayCell.dates[calTypes.primary]
+		year, _month, _day = ui.todayCell.dates[calTypes.primary]
 		self.startDateInput.set_value((year, 1, 1))
 		self.endDateInput.set_value((year + 1, 1, 1))
 		########
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
-		self.vbox.set_focus_child(self.fcw)  ## FIXME
+		self.vbox.set_focus_child(self.fcw)  # FIXME
 		self.vbox.show_all()
 		##
 		dialog_add_button(
@@ -231,7 +231,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 			defaultFileName += ".ics"
 		self.fcw.set_current_name(defaultFileName)
 
-	def onDelete(self, widget=None, event=None):  ## hide(close) File Chooser Dialog
+	def onDelete(self, _widget=None, _event=None):  # hide(close) File Chooser Dialog
 		self.destroy()
 		return True
 
@@ -239,7 +239,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		self.saveIcsFunc(path, startJd, endJd)
 		self.destroy()
 
-	def save(self, widget=None):
+	def save(self, _widget=None):
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()

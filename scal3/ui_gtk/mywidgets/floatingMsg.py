@@ -43,7 +43,7 @@ screenWidth = rootWin.get_width()
 
 @registerType
 class FloatingMsg(gtk.DrawingArea):
-	def on_realize(self, widget):
+	def on_realize(self, _widget):
 		self.animateStart()
 
 	def __init__(
@@ -116,14 +116,14 @@ class FloatingMsg(gtk.DrawingArea):
 		self.startXpos = -self.textWidth if self.rtl else screenWidth
 		self.xpos = self.startXpos
 
-	def finish(self, w=None, e=None):
+	def finish(self, _w=None, _e=None):
 		self.isFinished = True
 		self.win.destroy()
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
 
-	def onExposeEvent(self, widget, gevent):
+	def onExposeEvent(self, _widget, _gevent):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -189,7 +189,7 @@ class MyLabel(gtk.DrawingArea):
 		self.rtl = self.isRtl()
 		self.rtlSign = 1 if self.rtl else -1
 
-	def onExposeEvent(self, widget, gevent):
+	def onExposeEvent(self, _widget, _gevent):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -261,14 +261,14 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.lines = lines
 		self.index = 0
 		########
-		self.connect("realize", lambda widget: self.animateStart())
+		self.connect("realize", lambda _w: self.animateStart())
 
 	def updateLine(self):
 		self.label.set_label(self.lines[self.index])
 		self.startXpos = -self.label.width if self.label.rtl else screenWidth
 		self.startTime = now()
 
-	def finish(self, w=None, e=None):
+	def finish(self, _w=None, _e=None):
 		self.isFinished = True
 		self.destroy()
 		if self.finishFunc:

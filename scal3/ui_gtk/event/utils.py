@@ -12,13 +12,13 @@ from scal3.ui_gtk.utils import (
 )
 
 __all__ = [
+	"checkEventsReadOnly",
 	"confirmEventTrash",
 	"confirmEventsTrash",
-	"checkEventsReadOnly",
-	"eventWriteMenuItem",
-	"eventWriteImageMenuItem",
-	"menuItemFromEventGroup",
 	"eventTreeIconPixbuf",
+	"eventWriteImageMenuItem",
+	"eventWriteMenuItem",
+	"menuItemFromEventGroup",
 ]
 
 

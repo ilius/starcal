@@ -202,7 +202,7 @@ class TimeLineTree:
 		refList = self.byEvent.get(eid)
 		if not refList:  # None or []
 			return None
-		node, ev_tuple = refList[-1]
+		_node, ev_tuple = refList[-1]
 		# self.byEvent is sorted by time? FIXME
 		return ev_tuple[0], ev_tuple[1]
 
@@ -210,7 +210,7 @@ class TimeLineTree:
 		refList = self.byEvent.get(eid)
 		if not refList:  # None or []
 			return None
-		node, ev_tuple = refList[0]
+		_node, ev_tuple = refList[0]
 		return ev_tuple[0], ev_tuple[1]
 
 	def getDepth(self):

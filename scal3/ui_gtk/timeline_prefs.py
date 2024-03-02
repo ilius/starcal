@@ -967,7 +967,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		####
 		self.vbox.show_all()
 
-	def gotoPageClicked(self, button, page):
+	def gotoPageClicked(self, _button, page):
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
@@ -985,16 +985,16 @@ class TimeLinePreferencesWindow(gtk.Window):
 		button.connect("clicked", self.gotoPageClicked, page)
 		return button
 
-	def onDelete(self, obj=None, data=None):
+	def onDelete(self, _obj=None, _data=None):
 		self.hide()
 		return True
 
-	def onSaveClick(self, obj=None):
+	def onSaveClick(self, _obj=None):
 		self.hide()
 		tl.saveConf()
 		return True
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		if gdk.keyval_name(gevent.keyval) == "Escape":
 			self.hide()
 			return True

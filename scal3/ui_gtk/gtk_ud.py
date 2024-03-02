@@ -230,7 +230,7 @@ class IntegatedWindowList(BaseCalObj):
 		pixcache.clear()
 		self.lastAlphabetHeight = height
 
-	def onEventUpdate(self, record: "EventUpdateRecord") -> None:
+	def onEventUpdate(self, _record: "EventUpdateRecord") -> None:
 		# ui.cellCache.clear()  # causes crash, no idea why!
 		ui.cellCache.clearEventsData()
 		self.onDateChange()
@@ -536,6 +536,7 @@ setDefault_adjustTimeCmd()  # FIXME
 
 ############################################################
 
+
 def getMonitor():
 	display = gdk.Display.get_default()
 
@@ -556,6 +557,7 @@ def getMonitor():
 
 	return None
 
+
 def getScreenSize():
 	# includes panels/docks
 	monitor = getMonitor()
@@ -563,6 +565,7 @@ def getScreenSize():
 		return None
 	rect = monitor.get_geometry()
 	return rect.width, rect.height
+
 
 def getWorkAreaSize() -> "tuple[int, int] | None":
 	monitor = getMonitor()
@@ -603,7 +606,7 @@ else:
 # rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
 
 
-def screenSizeChanged(screen):
+def screenSizeChanged(_screen):
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return

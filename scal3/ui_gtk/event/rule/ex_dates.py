@@ -130,7 +130,7 @@ class WidgetClass(gtk.Box):
 		pack(self.dialog.vbox, dialogHbox, 1, 1)
 		self.dialog.vbox.show_all()
 		self.dialog.resize(200, 300)
-		self.dialog.connect("response", lambda w, e: self.dialog.hide())
+		self.dialog.connect("response", lambda _w, _e: self.dialog.hide())
 		##
 		_okButton = dialog_add_button(
 			self.dialog,
@@ -139,12 +139,12 @@ class WidgetClass(gtk.Box):
 			res=gtk.ResponseType.OK,
 		)
 
-	def showDialog(self, w=None):
+	def showDialog(self, _w=None):
 		self.createDialog()
 		self.dialog.run()
 		self.updateCountLabel()
 
-	def dateCellEdited(self, cell, path, newText):
+	def dateCellEdited(self, _cell, path, newText):
 		index = int(path)
 		self.treeModel[index][0] = validate(newText)
 
@@ -156,9 +156,9 @@ class WidgetClass(gtk.Box):
 			return None
 		return path[0]
 
-	def onAddClick(self, button):
+	def onAddClick(self, _button):
 		index = self.getSelectedIndex()
-		calType = self.rule.getCalType()  ## FIXME
+		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
 		if index is None:
 			newIter = self.treeModel.append(row)
@@ -169,13 +169,13 @@ class WidgetClass(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) ## FIXME
 
-	def onDeleteClick(self, button):
+	def onDeleteClick(self, _button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, button):
+	def onMoveUpClick(self, _button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -189,7 +189,7 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, button):
+	def onMoveDownClick(self, _button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return

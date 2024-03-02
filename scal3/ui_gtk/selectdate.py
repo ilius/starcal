@@ -126,7 +126,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.resize(1, 1)
 
-	def dragRec(self, obj, context, x, y, selection, target_id, etime):
+	def dragRec(self, _obj, _context, _x, _y, selection, _target_id, _etime):
 		text = selection.get_text()
 		if text is None:
 			return
@@ -163,7 +163,7 @@ class SelectDateDialog(gtk.Dialog):
 		if parentWin is not None:
 			parentWin.present()
 
-	def onCancel(self, widget, event=None):
+	def onCancel(self, _widget, _event=None):
 		self.onResponse()
 		return True
 
@@ -181,7 +181,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.ymdBox.setCalType(calType)
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
-	def calTypeComboChanged(self, widget=None):
+	def calTypeComboChanged(self, _widget=None):
 		prevCalType = self.calType
 		prevDate = self.get()
 		calType = self.calTypeCombo.get_active()
@@ -209,7 +209,7 @@ class SelectDateDialog(gtk.Dialog):
 			y0, m0, d0 = jd_to(jd, calType)
 		return (y0, m0, d0)
 
-	def ok(self, widget):
+	def ok(self, _widget):
 		calType = self.calTypeCombo.get_active()
 		if calType is None:
 			return
@@ -229,7 +229,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.dateInput.set_value((y0, m0, d0))
 		self.dateInput.add_history()
 
-	def radioChanged(self, widget=None):
+	def radioChanged(self, _widget=None):
 		if self.radio1.get_active():
 			self.ymdBox.set_sensitive(True)
 			self.hbox2.set_sensitive(False)

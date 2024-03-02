@@ -50,8 +50,8 @@ class IndicatorStatusIconWrapper:
 	def __init__(self, mainWin):
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
-			APP_NAME,  ## app id
-			"",  ## icon
+			APP_NAME,  # app id
+			"",  # icon
 			appindicator.IndicatorCategory.APPLICATION_STATUS,
 		)
 		self.c.set_status(appindicator.IndicatorStatus.ACTIVE)

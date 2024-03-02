@@ -59,7 +59,7 @@ class EventHistoryDialog(gtk.Dialog):
 		"Change (JSON Diff)",
 	]
 
-	def onResponse(self, w, e):
+	def onResponse(self, _w, _e):
 		self.hide()
 		ud.windowList.onConfigChange()
 
@@ -225,14 +225,14 @@ class EventHistoryDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
 
-	def setColumnWidth(self, col, widthParam, cell):
+	def setColumnWidth(self, col, _widthParam, cell):
 		width = col.get_width()
 		cell.set_property("wrap_width", width)
 
-	def treeviewCursorChanged(self, treev, e=None):
+	def treeviewCursorChanged(self, _treev, _gevent=None):
 		self.updateViewType()
 
-	def viewTypeComboChanged(self, combo):
+	def viewTypeComboChanged(self, _combo):
 		self.updateViewType()
 
 	def setButtonsSensitive(self, sensitive: bool):
@@ -333,7 +333,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self.load()
 		ui.eventUpdateQueue.put("e", newEvent, self)
 
-	def onCheckoutAfterClick(self, button):
+	def onCheckoutAfterClick(self, _button):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -343,7 +343,7 @@ class EventHistoryDialog(gtk.Dialog):
 		hashAfter = row[1]
 		self.switchToRevision(hashAfter)
 
-	def onCheckoutBeforeClick(self, button):
+	def onCheckoutBeforeClick(self, _button):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return

@@ -4,7 +4,7 @@ from scal3.ui_gtk import timeout_add
 def setupMenuHideOnLeave(menu):
 	from time import time as now
 
-	def menuLeaveNotify(m, e):
+	def menuLeaveNotify(m, _e):
 		t0 = now()
 		if t0 - m.lastLeaveNotify < 0.001:
 			timeout_add(500, m.hide)

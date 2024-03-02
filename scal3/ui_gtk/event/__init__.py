@@ -1,7 +1,7 @@
 __all__ = [
-	"rules",
 	"notifiers",
 	"occurrenceViews",
+	"rules",
 ]
 
 ############################################
@@ -47,7 +47,7 @@ def makeWidget(obj):
 		widget.show_all()
 	except AttributeError:
 		widget.show()
-	widget.updateWidget()  ## FIXME
+	widget.updateWidget()  # FIXME
 	return widget
 
 

@@ -11,9 +11,11 @@ from scal3.s_object import DefaultFileSystem
 
 myTmpDir = tempfile.mkdtemp(prefix="starcal-event_lib_test-")
 
+
 def removeTempDir():
 	print(f"Removing {myTmpDir}")
 	shutil.rmtree(myTmpDir)
+
 
 atexit.register(removeTempDir)
 fs = DefaultFileSystem(myTmpDir)

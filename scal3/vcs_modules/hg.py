@@ -75,11 +75,11 @@ def getShortStat(obj, node1, node2):
 		),
 	)
 	(
-		maxname,
-		maxtotal,
+		_maxname,
+		_maxtotal,
 		insertions,
 		deletions,
-		hasbinary,
+		_hasbinary,
 	) = diffstatsum(stats)
 	return len(stats), insertions, deletions
 

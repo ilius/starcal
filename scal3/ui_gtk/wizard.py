@@ -14,7 +14,7 @@ class WizardWindow(gtk.Window, MyDialog):
 	def __init__(self, title):
 		gtk.Window.__init__(self)
 		self.set_title(title)
-		self.connect("delete-event", lambda obj, e: self.destroy())
+		self.connect("delete-event", lambda _w, _e: self.destroy())
 		self.connect("key-press-event", self.onKeyPress)
 		self.vbox = VBox()
 		self.stack = MyStack(
@@ -50,7 +50,7 @@ class WizardWindow(gtk.Window, MyDialog):
 		self.show_all()
 		# log.debug(id(self.get_action_area()))
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.EventKey):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "escape":
 			self.destroy()

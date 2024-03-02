@@ -10,10 +10,10 @@ from scal3.ui_gtk.utils import (
 )
 
 __all__ = [
-	"BaseWidgetClass",
 	"AccountCombo",
-	"AccountGroupCombo",
 	"AccountGroupBox",
+	"AccountGroupCombo",
+	"BaseWidgetClass",
 ]
 
 

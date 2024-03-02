@@ -128,7 +128,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			),
 		]
 
-	def onHomeClick(self, arg=None):
+	def onHomeClick(self, _arg=None):
 		self.angleOffset = 0.0
 		self.queue_draw()
 
@@ -141,7 +141,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			gevent.time,
 		)
 
-	def onDraw(self, widget=None, event=None):
+	def onDraw(self, _widget=None, _event=None):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -242,7 +242,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			drawCircleOutline(cr, cx, cy, r, self.lineWidth)
 			fillColor(cr, self.lineColor)
 			####
-			year0, month0, day0 = jd_to(jd0, calType)
+			year0, month0, _day0 = jd_to(jd0, calType)
 			ym0 = year0 * 12 + (month0 - 1)
 			cr.set_line_width(self.lineWidth)
 			for ym in range(ym0, ym0 + 12):
@@ -362,7 +362,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			maximizeScale=1.0,
 			# truncate=False,
 		)
-		layoutW, layoutH = layout.get_pixel_size()
+		_layoutW, layoutH = layout.get_pixel_size()
 		tickX, tickY = goAngle(
 			cx,
 			cy,
@@ -382,14 +382,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		show_layout(cr, layout)
 		cr.rotate(-rotateAngle)
 
-	def onScroll(self, widget, gevent):
+	def onScroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
 		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
 		self.queue_draw()
 		return True
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		k = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug("%.3f"%now())
 		if k in ("space", "home"):
@@ -412,7 +412,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, _obj, gevent):
 		x = gevent.x
 		y = gevent.y
 		w = self.get_allocation().width
@@ -461,7 +461,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self._widget.show()
 		self.appendItem(self._widget)
 
-	def onCloseClick(self, arg=None, event=None):
+	def onCloseClick(self, _arg=None, _event=None):
 		if ui.mainWin:
 			self.hide()
 		else:
@@ -470,7 +470,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 			gtk.main_quit()
 		return True
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, _obj, gevent):
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

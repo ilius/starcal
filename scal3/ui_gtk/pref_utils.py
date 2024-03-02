@@ -42,32 +42,32 @@ from scal3.ui_gtk.utils import (
 ColorType: "typing.TypeAlias" = "tuple[int, int, int] | tuple[int, int, int, int]"
 
 __all__ = [
-	"ModuleOptionItem",
-	"ModuleOptionButton",
-	"PrefItem",
-	"ComboTextPrefItem",
-	"FontFamilyPrefItem",
-	"ComboEntryTextPrefItem",
-	"ComboImageTextPrefItem",
-	"FontPrefItem",
-	"CheckPrefItem",
-	"ColorPrefItem",
 	"CheckColorPrefItem",
 	"CheckFontPrefItem",
+	"CheckPrefItem",
+	"ColorPrefItem",
+	"ComboEntryTextPrefItem",
+	"ComboImageTextPrefItem",
+	"ComboTextPrefItem",
+	"DirectionPrefItem",
+	"FileChooserPrefItem",
+	"FontFamilyPrefItem",
+	"FontPrefItem",
+	"HListPrefItem",
+	"IconChooserPrefItem",
+	"ImageFileChooserPrefItem",
+	"JustificationPrefItem",
+	"ListPrefItem",
+	"ModuleOptionButton",
+	"ModuleOptionItem",
+	"PrefItem",
+	"RadioHListPrefItem",
+	"RadioListPrefItem",
+	"RadioVListPrefItem",
 	"SpinPrefItem",
 	"TextPrefItem",
-	"WidthHeightPrefItem",
-	"FileChooserPrefItem",
-	"ImageFileChooserPrefItem",
-	"IconChooserPrefItem",
-	"RadioListPrefItem",
-	"RadioHListPrefItem",
-	"RadioVListPrefItem",
-	"ListPrefItem",
-	"HListPrefItem",
 	"VListPrefItem",
-	"DirectionPrefItem",
-	"JustificationPrefItem",
+	"WidthHeightPrefItem",
 ]
 
 
@@ -86,28 +86,28 @@ class ModuleOptionItem:
 		opt: tuple,
 	) -> None:
 		t = opt[1]
-		self.opt = opt  ## needed??
+		self.opt = opt  # needed??
 		self.obj = obj
 		self.type = t
 		self.attrName = opt[0]
 		hbox = HBox()
-		if t == bool:
+		if t is bool:
 			w = gtk.CheckButton(label=_(opt[2]))
 			self.get = w.get_active
 			self.set = w.set_active
-		elif t == list:
+		elif t is list:
 			pack(hbox, gtk.Label(label=_(opt[2])))
 			w = gtk.ComboBoxText()  # or RadioButton
 			for s in opt[3]:
 				w.append_text(_(s))
 			self.get = w.get_active
 			self.set = w.set_active
-		elif t == int:
+		elif t is int:
 			pack(hbox, gtk.Label(label=_(opt[2])))
 			w = IntSpinButton(opt[3], opt[4])
 			self.get = w.get_value
 			self.set = w.set_value
-		elif t == float:
+		elif t is float:
 			pack(hbox, gtk.Label(label=_(opt[2])))
 			w = FloatSpinButton(opt[3], opt[4], opt[5])
 			self.get = w.get_value
@@ -239,7 +239,7 @@ class ComboTextPrefItem(PrefItem):
 		elif onChangeFunc is not None:
 			raise ValueError("onChangeFunc is given without live=True")
 
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -292,7 +292,7 @@ class FontFamilyPrefItem(PrefItem):
 		hbox.show_all()
 		self._widget = hbox
 
-	def onFontButtonClick(self, w: gtk.Widget) -> None:
+	def onFontButtonClick(self, _w: gtk.Widget) -> None:
 		if not self.hasAuto:
 			return
 		self.fontRadio.set_active(True)
@@ -313,7 +313,7 @@ class FontFamilyPrefItem(PrefItem):
 			self.fontRadio.set_active(True)
 		self.fontButton.set_font(gfontEncode(ui.Font(family=value, size=15)))
 
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -483,7 +483,7 @@ class CheckPrefItem(PrefItem):
 	def set(self, value: bool):
 		self._widget.set_active(value)
 
-	def onClick(self, w: gtk.Widget) -> None:
+	def onClick(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -548,7 +548,7 @@ class ColorPrefItem(PrefItem):
 			return
 		self._widget.set_rgba(color)
 
-	def onColorSet(self, w: gtk.Widget):
+	def onColorSet(self, _w: gtk.Widget):
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -599,7 +599,7 @@ class CheckColorPrefItem(PrefItem):
 		self._colorItem.updateWidget()
 		self._colorItem.getWidget().set_sensitive(self._checkItem.get())
 
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self._colorItem.getWidget().set_sensitive(self._checkItem.get())
 		if self.live:
 			self.updateVar()
@@ -653,7 +653,7 @@ class CheckFontPrefItem(PrefItem):
 		self._fontItem.updateWidget()
 		self._fontItem.getWidget().set_sensitive(self._checkItem.get())
 
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self._fontItem.getWidget().set_sensitive(self._checkItem.get())
 		if self.live:
 			self.updateVar()
@@ -713,7 +713,7 @@ class SpinPrefItem(PrefItem):
 		self._spinb.set_value(value)
 
 	# FIXME: updateWidget is triggering onChange func, can we avoid that?
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -757,7 +757,7 @@ class TextPrefItem(PrefItem):
 	def set(self, text: str) -> None:
 		self.textInput.set_text(text)
 
-	def onTextChange(self, w: gtk.Widget) -> None:
+	def onTextChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -847,7 +847,7 @@ class FileChooserPrefItem(PrefItem):
 	def set(self, value: str) -> None:
 		self._widget.set_filename(value)
 
-	def onRevertClick(self, button: gtk.Button) -> None:
+	def onRevertClick(self, _button: gtk.Button) -> None:
 		defaultValue = getattr(self.obj, self.defaultVarName)
 		setattr(
 			self.obj,
@@ -865,7 +865,7 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 		self._widget.set_preview_widget_active(True)
 		self._widget.connect("update-preview", self._updatePreview)
 
-	def _updatePreview(self, w: gtk.Widget) -> None:
+	def _updatePreview(self, _w: gtk.Widget) -> None:
 		fpath = self._widget.get_preview_filename()
 		self._preview.set_from_file(fpath)
 
@@ -913,7 +913,7 @@ class IconChooserPrefItem(PrefItem):
 				iconPath = join(pixDir, iconPath)
 		self.iconSelect.set_filename(iconPath)
 
-	def onIconChanged(self, widget: gtk.Widget, iconPath: str) -> None:
+	def onIconChanged(self, _widget: gtk.Widget, iconPath: str) -> None:
 		if not iconPath:
 			self.updateWidget()
 		self.updateVar()
@@ -948,7 +948,7 @@ class RadioListPrefItem(PrefItem):
 			pack(box, gtk.Label(), 1, 1)
 			pack(box, r)
 			r.join_group(first)
-		pack(box, gtk.Label(), 1, 1)  ## FIXME
+		pack(box, gtk.Label(), 1, 1)  # FIXME
 
 	def get(self) -> "int | None":
 		for i in range(self.num):
@@ -1046,7 +1046,7 @@ class DirectionPrefItem(PrefItem):
 		"""Value must be one of "ltr", "rtl", "auto"."""
 		self._combo.setValue(value)
 
-	def onComboChange(self, w: gtk.Widget) -> None:
+	def onComboChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -1086,7 +1086,7 @@ class JustificationPrefItem(PrefItem):
 		"""Value must be one of "left", "right", "center", "fill"."""
 		self._combo.setValue(value)
 
-	def onComboChange(self, w: gtk.Widget) -> None:
+	def onComboChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()

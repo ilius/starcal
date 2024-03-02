@@ -18,8 +18,8 @@
 from scal3 import ui
 
 __all__ = [
-	"fontFamily",
 	"dayLen",
+	"fontFamily",
 	"minYearLenSec",
 	"minYearLenSec",
 	"unitSteps",

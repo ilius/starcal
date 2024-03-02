@@ -45,7 +45,7 @@ class WidgetClass(BaseWidgetClass):
 		label = gtk.Label(label=_("Account"))
 		label.set_xalign(0)
 		pack(hbox, label)
-		sizeGroup.add_widget(label)  ## FIXME
+		sizeGroup.add_widget(label)  # FIXME
 		self.accountCombo = AccountCombo()
 		pack(hbox, self.accountCombo)
 		pack(vbox, hbox)
@@ -54,7 +54,7 @@ class WidgetClass(BaseWidgetClass):
 		label = gtk.Label(label=_("Remote Group"))
 		label.set_xalign(0)
 		pack(hbox, label)
-		sizeGroup.add_widget(label)  ## FIXME
+		sizeGroup.add_widget(label)  # FIXME
 		accountGroupBox = AccountGroupBox(self.accountCombo)
 		pack(hbox, accountGroupBox, 1, 1)
 		pack(vbox, hbox)
@@ -118,7 +118,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
 		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
-	def calTypeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, _obj=None):
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.group.calType, newCalType)
 		self.endDateInput.changeCalType(self.group.calType, newCalType)

@@ -279,7 +279,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.getOptionsWidget()
 		return self.subPages
 
-	def drawAll(self, widget=None, cursor=True):
+	def drawAll(self, _widget=None, cursor=True):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -513,7 +513,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.wdaysWidth = wm * 7 * 0.7 + ui.mcalLeftMargin
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, _obj, gevent):
 		# self.winActivate() #?????????
 		b = gevent.button
 		(
@@ -609,7 +609,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, widget, gevent):
+	def scroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
@@ -619,13 +619,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *args):
+	def getCellPos(self, *_args):
 		return (
 			int(self.cx[ui.cell.monthPos[0]]),
 			int(self.cy[ui.cell.monthPos[1]] + self.dy / 2),
 		)
 
-	def getMainMenuPos(self, *args):  # FIXME
+	def getMainMenuPos(self, *_args):  # FIXME
 		if rtl:
 			return (
 				int(self.get_allocation().width - ui.mcalLeftMargin / 2),

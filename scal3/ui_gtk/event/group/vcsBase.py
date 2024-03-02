@@ -17,7 +17,7 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		pack(hbox, label)
 		self.vcsTypeCombo = gtk.ComboBoxText()
 		for name in vcsModuleNames:
-			self.vcsTypeCombo.append_text(name)  ## descriptive name FIXME
+			self.vcsTypeCombo.append_text(name)  # descriptive name FIXME
 		pack(hbox, self.vcsTypeCombo)
 		hbox.show_all()
 		pack(self, hbox)

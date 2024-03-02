@@ -8,13 +8,13 @@ from collections import OrderedDict
 from json import JSONEncoder
 
 __all__ = [
-	"dataToPrettyJson",
 	"dataToCompactJson",
+	"dataToPrettyJson",
 	"jsonToData",
 	"jsonToOrderedData",
 	"loadJsonConf",
-	"saveJsonConf",
 	"loadModuleJsonConf",
+	"saveJsonConf",
 	"saveModuleJsonConf",
 ]
 

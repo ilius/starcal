@@ -110,7 +110,7 @@ class NumRangesEntry(gtk.Entry):
 			endI - len(thisNumStr) + len(newNumStr),
 		)
 
-	def onKeyPress(self, obj: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _obj: gtk.Widget, gevent: gdk.EventKey):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(kval, kname)

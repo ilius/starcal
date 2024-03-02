@@ -275,9 +275,9 @@ class PrayTimes:
 			return f"{hours:d}:{minutes:02d}"
 		if timeFormat == "12h":
 			ampm = tr("AM") if hours < 12 else tr("PM")
-			return f"{(hours-1)%12+1:d}:{minutes:02d} {ampm}"
+			return f"{(hours - 1) % 12 + 1:d}:{minutes:02d} {ampm}"
 		if timeFormat == "12hNS":
-			return f"{(hours-1)%12+1:d}:{minutes:02d}"
+			return f"{(hours - 1) % 12 + 1:d}:{minutes:02d}"
 		raise ValueError(f"bad time format '{timeFormat}'")
 
 	def midDay(self, tm):

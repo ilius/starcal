@@ -80,7 +80,7 @@ def saveConf() -> None:
 ##########################################################
 
 langDir = join(sourceDir, "conf", "lang")
-localeDir = "/usr/share/locale"
+# localeDir = "/usr/share/locale"
 
 # point FIXME
 digits = {
@@ -115,7 +115,7 @@ def getLangDigits(
 # except for Zero that is named ARABIC-INDIC DIGIT ZERO in unicode database
 
 LRM = "\u200e"  # left to right mark
-RLM = "\u200f"  # right to left mark
+# RLM = "\u200f"  # right to left mark
 ZWNJ = "\u200c"  # zero width non-joiner
 ZWJ = "\u200d"  # zero width joiner
 

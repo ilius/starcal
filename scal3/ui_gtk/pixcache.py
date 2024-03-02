@@ -90,7 +90,7 @@ def clearFiles():
 
 
 def getKey(name: str, size: float) -> str:
-	return f"{name}_{int(size*10)}"
+	return f"{name}_{int(size * 10)}"
 
 
 def getFilePath(key: str) -> str:

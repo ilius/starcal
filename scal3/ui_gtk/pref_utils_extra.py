@@ -37,20 +37,20 @@ from scal3.ui_gtk.utils import (
 )
 
 __all__ = [
-	"newBox",
-	"FixedSizeOrRatioPrefItem",
-	"WeekDayCheckListPrefItem",
-	# "ToolbarIconSizePrefItem",
-	"CalTypePrefItem",
-	"LangPrefItem",
-	"CheckStartupPrefItem",
+	"AICalsPrefItem",
+	"AICalsPrefItemToolbar",
 	"AICalsTreeview",
 	"ActiveCalsTreeView",
+	"CalTypePrefItem",
+	"CheckStartupPrefItem",
+	"FixedSizeOrRatioPrefItem",
 	"InactiveCalsTreeView",
-	"AICalsPrefItemToolbar",
-	"treeviewSelect",
-	"AICalsPrefItem",
 	"KeyBindingPrefItem",
+	"LangPrefItem",
+	"WeekDayCheckListPrefItem",
+	"newBox",
+	"treeviewSelect",
+	# "ToolbarIconSizePrefItem",
 ]
 
 
@@ -130,7 +130,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self.fixedItem.updateWidget()
 		self.ratioItem.updateWidget()
 
-	def onChange(self, w: gtk.Widget) -> None:
+	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -257,7 +257,7 @@ class CalTypePrefItem(PrefItem):
 	def set(self, value: int) -> None:
 		self._combo.set_active(value)
 
-	def onClick(self, w):
+	def onClick(self, _w):
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -366,12 +366,12 @@ class AICalsTreeview(gtk.TreeView):
 	def dragDataGet(
 		self,
 		treev: gtk.TreeView,
-		context: gdk.DragContext,
-		selection: gtk.SelectionData,
-		dragId: int,
-		etime: int,
+		_context: gdk.DragContext,
+		_selection: gtk.SelectionData,
+		_dragId: int,
+		_etime: int,
 	) -> bool:
-		path, col = treev.get_cursor()
+		path, _col = treev.get_cursor()
 		if path is None:
 			return False
 		self.dragPath = path
@@ -383,9 +383,9 @@ class AICalsTreeview(gtk.TreeView):
 		context: gdk.DragContext,
 		x: int,
 		y: int,
-		selection: gtk.SelectionData,
-		dragId: int,
-		etime: int,
+		_selection: gtk.SelectionData,
+		_dragId: int,
+		_etime: int,
 	) -> None:
 		srcTreev = gtk.drag_get_source_widget(context)
 		if not isinstance(srcTreev, AICalsTreeview):
@@ -394,7 +394,7 @@ class AICalsTreeview(gtk.TreeView):
 		model = treev.get_model()
 		dest = treev.get_dest_row_at_pos(x, y)
 		if srcDragId == self.dragId:
-			path, col = treev.get_cursor()
+			path, _col = treev.get_cursor()
 			if path is None:
 				return
 			i = path[0]
@@ -566,21 +566,21 @@ class AICalsPrefItem(PrefItem):
 
 	def activeTreevFocus(
 		self,
-		treev: gtk.TreeView,
-		gevent: "gdk.EventFocus | None" = None,
+		_treev: gtk.TreeView,
+		_gevent: "gdk.EventFocus | None" = None,
 	) -> None:
 		self.toolbar.setLeftRight(True)
 		self.inactiveTreev.get_selection().unselect_all()
 
 	def inactiveTreevFocus(
 		self,
-		treev: gtk.TreeView,
-		gevent: "gdk.EventFocus | None" = None,
+		_treev: gtk.TreeView,
+		_gevent: "gdk.EventFocus | None" = None,
 	) -> None:
 		self.toolbar.setLeftRight(False)
 		self.activeTreev.get_selection().unselect_all()
 
-	def onLeftRightClick(self, obj: "gtk.Button | None" = None) -> None:
+	def onLeftRightClick(self, _obj: "gtk.Button | None" = None) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
 			model, _iter = self.inactiveTreev.get_selection()
@@ -600,7 +600,7 @@ class AICalsPrefItem(PrefItem):
 			return self.inactiveTreev
 		return None
 
-	def onUpClick(self, obj: "gtk.Button | None" = None) -> None:
+	def onUpClick(self, _obj: "gtk.Button | None" = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
@@ -617,7 +617,7 @@ class AICalsPrefItem(PrefItem):
 		)
 		selection.select_path(gtk.TreePath.new_from_indices((i - 1,)))
 
-	def onDownClick(self, obj: "gtk.Button | None" = None) -> None:
+	def onDownClick(self, _obj: "gtk.Button | None" = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
@@ -680,17 +680,17 @@ class AICalsPrefItem(PrefItem):
 
 	def activeTreevRActivate(
 		self,
-		treev: gtk.TreeView,
+		_treev: gtk.TreeView,
 		path: list[int],
-		col: gtk.TreeViewColumn,
+		_col: gtk.TreeViewColumn,
 	) -> None:
 		self.inactivateIndex(path[0])
 
 	def inactiveTreevRActivate(
 		self,
-		treev: gtk.TreeView,
+		_treev: gtk.TreeView,
 		path: list[int],
-		col: gtk.TreeViewColumn,
+		_col: gtk.TreeViewColumn,
 	):
 		self.activateIndex(path[0])
 
@@ -767,7 +767,7 @@ class KeyBindingPrefItem(PrefItem):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		self._widget = swin
 
-	def onMenuModifyKeyClick(self, menu: gtk.Menu, rowI: int):
+	def onMenuModifyKeyClick(self, _menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()
 		row = trees[rowI]
 		print(f"Modify Key: {row=}")  # noqa: T201
@@ -777,11 +777,11 @@ class KeyBindingPrefItem(PrefItem):
 	# 	row = trees[rowI]
 	# 	print(f"Default Key: {row=}")
 
-	def onMenuDeleteClick(self, menu: gtk.Menu, rowI: int):
+	def onMenuDeleteClick(self, _menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()
 		trees.remove(trees.get_iter(rowI))
 
-	def onTreeviewButtonPress(self, widget, gevent):
+	def onTreeviewButtonPress(self, _widget, gevent):
 		from scal3.ui_gtk.menuitems import ImageMenuItem
 
 		b = gevent.button

@@ -13,7 +13,7 @@ dayLen = 24 * 3600
 
 class DateChangeListener:
 	def __init__(self, timeout=1):
-		self.timeout = timeout  ## seconds
+		self.timeout = timeout  # seconds
 		self.receivers = []
 		self.gdate = localtime()[:3]
 		self.check()

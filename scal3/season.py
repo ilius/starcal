@@ -28,7 +28,7 @@ def getSeasonValueFromJd(jd):
 
 
 def getSpringJdAfter(fromJd):
-	d, m = divmod(fromJd - 1 - springRefJd, avgYearLen)
+	d = (fromJd - 1 - springRefJd) // avgYearLen
 	return int(fromJd + (d + 1) * avgYearLen)
 
 

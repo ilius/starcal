@@ -123,7 +123,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 
 		return True
 
-	def updateOkSensitive(self, *args):
+	def updateOkSensitive(self, *_args):
 		ok = self.canSubmit()
 		self.okButton.set_sensitive(ok)
 		if ok:
@@ -185,17 +185,17 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		account.save()
 		return None
 
-	def onOkClick(self, widget):
+	def onOkClick(self, _widget):
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
 		return True
 
-	def onCancelClick(self, widget):
+	def onCancelClick(self, _widget):
 		self.destroy()
 		return True
 
-	def onDeleteEvent(self, obj, event):
+	def onDeleteEvent(self, _widget, _event):
 		self.destroy()
 		return True
 
