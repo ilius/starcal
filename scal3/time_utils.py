@@ -232,7 +232,7 @@ for item in durationUnitsRel:
 
 durationUnitValueToName: "dict[int, str]" = dict(durationUnitsAbs)
 durationUnitValues: "list[int]" = [item[0] for item in durationUnitsAbs]
-durationUnitNames: "list[str]" = [item[1] for item in durationUnitsAbs]
+# durationUnitNames: "list[str]" = [item[1] for item in durationUnitsAbs]
 
 
 def timeEncode(

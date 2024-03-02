@@ -326,7 +326,7 @@ class CustomizeWindow(gtk.Dialog):
 		pagePath = page.pagePath
 		item = page.pageItem
 
-		childrenTreev, childrenBox = self.newItemList(
+		_childrenTreev, childrenBox = self.newItemList(
 			pagePath,
 			item,
 			scrolled=True,

@@ -207,7 +207,7 @@ class MPlayer:
 		return True
 
 	# Handle EOF in mplayerOut
-	def handleEof(self, source, condition):
+	def handleEof(self, _source, _condition):
 		self.stopStatusQuery()
 		self.mplayerIn, self.mplayerOut = None, None
 		self.pbox.seekAdj.value = 0
@@ -268,9 +268,9 @@ class PlayerBox(gtk.Box):
 		self.connect("key-press-event", self.divert)
 		self.connect(
 			"destroy",
-			lambda *args: mplayer.close(),
+			lambda *_args: mplayer.close(),
 		)  # FIXME
-		##self.toolbar.connect("key-press-event", self.toolbarKey)#??????????
+		# self.toolbar.connect("key-press-event", self.toolbarKey)#??????????
 		##############
 		self.playPauseBut = gtk.Button()
 		self.playPauseBut.add(
@@ -321,7 +321,7 @@ class PlayerBox(gtk.Box):
 			scale.connect("key-press-event", self.divert)
 			pack(self, scale, False, False, 5)  # noqa: FURB120
 
-	def divert(self, widget, gevent):
+	def divert(self, _widget, gevent):
 		key = gevent.hardware_keycode
 		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
@@ -345,7 +345,7 @@ class PlayerBox(gtk.Box):
 
 		return False
 
-	def displaySongString(self, seekBar, value):
+	def displaySongString(self, _seekBar, value):
 		if self.mplayer.playTime:
 			return str(int(value)) + "% of " + self.mplayer.playTime
 		if self.mplayer.mplayerIn:
@@ -353,7 +353,7 @@ class PlayerBox(gtk.Box):
 			# + self.playlist.getCurrentSongTime()  # FIXME
 		return str(int(value)) + "%"
 
-	def seek(self, widget, gevent):  # Seek on changing the seekBar
+	def seek(self, _widget, _gevent):  # Seek on changing the seekBar
 		# log.debug("seek", self.seekAdj.value, self.mplayer.mplayerIn)
 		if not self.mplayer.mplayerIn:
 			log.info("abc")
@@ -367,7 +367,7 @@ class PlayerBox(gtk.Box):
 			self.mplayer.seek(int(self.seekAdj.value), 1)
 
 	# Return formatted volume string
-	def displayVolString(self, scale, value):
+	def displayVolString(self, _scale, value):
 		return "Volume: " + str(int(value)) + "%"
 
 	def setVolume(self, adj):  # Set volume when the volume range widget is changed
@@ -379,7 +379,7 @@ class PlayerBox(gtk.Box):
 			self.vollevel0 = int(adj.value)
 			self.mplayer.setVolume(self.vollevel0)
 
-	def playPause(self, button=None):
+	def playPause(self, _button=None):
 		imageName = "media-playback-start.svg"
 		if self.mplayer.mplayerIn:
 			if not self.mplayer.paused:
@@ -414,20 +414,20 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
 
-	def decVol(self, widget):
+	def decVol(self, _widget):
 		self.mplayer.stepVolume(False)
 
-	def incVol(self, widget):
+	def incVol(self, _widget):
 		self.mplayer.stepVolume(True)
 
-	def toolbarKey(self, widget, gevent):
+	def toolbarKey(self, _widget, gevent):
 		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
 		if keycode in (98, 104):
 			return True
 		return False
 
-	def quit(self, event=None):
+	def quit(self, _event=None):
 		self.mplayer.close()
 		gtk.main_quit()
 

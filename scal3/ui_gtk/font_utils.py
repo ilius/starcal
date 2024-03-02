@@ -3,11 +3,11 @@ from gi.repository import Pango as pango
 from scal3 import ui
 
 __all__ = [
-	"pfontDecode",
-	"pfontEncode",
+	"getFontFamilyList",
 	"gfontDecode",
 	"gfontEncode",
-	"getFontFamilyList",
+	"pfontDecode",
+	"pfontEncode",
 ]
 
 W_NORMAL = pango.Weight.NORMAL
