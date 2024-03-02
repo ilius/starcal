@@ -22,7 +22,7 @@ class SourceEditor(GtkSource.View):
 		if onTextChange is not None:
 			self.textbuffer.connect("changed", onTextChange)
 
-	def _key_press_event(self, widget, event):
+	def _key_press_event(self, _widget, event):
 		keyvalobjName = gdk.keyval_name(event.keyval)
 		ctrl = event.state & gdk.ModifierType.CONTROL_MASK
 		if ctrl and keyvalobjName == "y":  # noqa: SIM102

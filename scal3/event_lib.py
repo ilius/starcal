@@ -118,7 +118,7 @@ from scal3.utils import (
 dayLen = 24 * 3600
 
 icsMinStartYear = 1970
-icsMaxEndYear = 2050
+# icsMaxEndYear = 2050
 
 eventsDir = join("event", "events")
 groupsDir = join("event", "groups")
@@ -355,12 +355,10 @@ class classes:
 	account = ClassGroup("account")
 
 
-defaultEventTypeIndex = 0  # FIXME
 defaultGroupTypeIndex = 0  # FIXME
 
 __plugin_api_get__ = [
 	"classes",
-	"defaultEventTypeIndex",
 	"defaultGroupTypeIndex",
 	"EventRule",
 	"EventNotifier",
@@ -1045,8 +1043,8 @@ class WeekMonthEventRule(EventRule):
 		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		calType = self.getCalType()
-		startYear, startMonth, startDay = jd_to(startJd, calType)
-		endYear, endMonth, endDay = jd_to(endJd, calType)
+		startYear, _startMonth, _startDay = jd_to(startJd, calType)
+		endYear, _endMonth, _endDay = jd_to(endJd, calType)
 		jds = set()
 		monthList = range(1, 13) if self.month == 0 else [self.month]
 		for year in range(startYear, endYear):
@@ -3078,7 +3076,7 @@ class YearlyEvent(Event):
 
 	def setDefaults(self, group=None):
 		Event.setDefaults(self, group=group)
-		y, m, d = getSysDate(self.calType)
+		_y, m, d = getSysDate(self.calType)
 		self.setMonth(m)
 		self.setDay(d)
 
@@ -3590,8 +3588,8 @@ class LifetimeEvent(SingleStartEndEvent):
 		SingleStartEndEvent.addRule(self, rule)
 
 	def modifyPos(self, newStartEpoch):
-		start, ok = self["start"]
-		end, ok = self["end"]
+		start, _ok = self["start"]
+		end, _ok = self["end"]
 		newStartJd = round(getFloatJdFromEpoch(newStartEpoch))
 		end.setJdExact(end.getJd() + newStartJd - start.getJd())
 		start.setJdExact(newStartJd)
@@ -4022,7 +4020,7 @@ class EventGroup(EventContainer):
 	desc = _("Event Group")
 	canConvertTo = ()
 	actions = []  # [("Export to ICS", "exportToIcs")]
-	eventActions = []  # FIXME
+	# eventActions = []  # not implemented yet!
 	eventCacheSizeMin = 0  # minimum cache size for events
 	basicParams = EventContainer.basicParams + (
 		# "enable",  # FIXME
@@ -4200,7 +4198,7 @@ class EventGroup(EventContainer):
 		self.resetCache()
 		# eventCache: key is eid, value is Event object
 		###
-		year, month, day = getSysDate(self.calType)
+		year, _month, _day = getSysDate(self.calType)
 		self.startJd = to_jd(
 			year - 10,
 			1,
@@ -4862,6 +4860,7 @@ class YearlyGroup(EventGroup):
 	def __init__(self, _id: "int | None" = None) -> None:
 		EventGroup.__init__(self, _id)
 		self.showDate = True
+
 
 class WeeklyScheduleItem(NamedTuple):
 	name: str  # Course Name
@@ -6271,10 +6270,10 @@ class Account(BsonHistEventObj):
 	def fetchGroups(self):
 		raise NotImplementedError
 
-	def fetchAllEventsInGroup(self, remoteGroupId):
+	def fetchAllEventsInGroup(self, _remoteGroupId):
 		raise NotImplementedError
 
-	def sync(self, group, remoteGroupId):
+	def sync(self, _group, _remoteGroupId):
 		raise NotImplementedError
 
 	def getData(self):
@@ -6296,11 +6295,13 @@ class DayOccurData(NamedTuple):
 	show: tuple[bool, bool, bool]  # (showInDCal, showInWCal, showInMCal)
 	showInStatusIcon: bool
 
+
 class WeekOccurData(NamedTuple):
 	weekDay: int
 	time: str
 	text: str
 	icon: str
+
 
 class MonthOccurData(NamedTuple):
 	day: int

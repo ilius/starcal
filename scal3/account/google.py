@@ -51,6 +51,11 @@ from scal3.ics import getIcsTimeByEpoch
 from scal3.locale_man import tr as _
 from scal3.os_utils import openUrl
 from scal3.utils import toBytes, toStr
+from scal3.os_utils import getUserDisplayName
+
+
+userDisplayName = getUserDisplayName()
+
 
 auth_local_webserver = True
 auth_host_name = "localhost"
@@ -562,7 +567,7 @@ class GoogleAccount(Account):
 				"calendarId": remoteGroupId,
 				"sequence": group.index(event.id),
 				"organizer": {
-					"displayName": core.userDisplayName,  # FIXME
+					"displayName": userDisplayName,  # FIXME
 					"email": self.email,
 				},
 			})
