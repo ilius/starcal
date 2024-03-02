@@ -25,9 +25,9 @@ class TimeButton(MultiSpinButton):
 		return h * 3600 + m * 60 + s
 
 	def set_seconds(self, seconds):
-		day, s = divmod(seconds, 86400)
+		_day, s = divmod(seconds, 86400)
 		# do what with "day" ?
 		h, s = divmod(s, 3600)
 		m, s = divmod(s, 60)
 		self.set_value((h, m, s))
-		##return day
+		# return day

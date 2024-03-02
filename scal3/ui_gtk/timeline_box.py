@@ -122,7 +122,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		return
 
 	font = ui.getFont()
-	layout = widget.create_pango_layout(text)  ## a Pango.Layout object
+	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
 	# log.debug(f"orig font size: {font.size}")
@@ -161,5 +161,5 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		cr.rotate(tl.rotateBoxLabel * pi / 2)
 	except Exception:
 		log.warning(
-			f"could not rotate by {tl.rotateBoxLabel*pi/2 = }",
+			f"could not rotate by {tl.rotateBoxLabel * pi / 2 = }",
 		)

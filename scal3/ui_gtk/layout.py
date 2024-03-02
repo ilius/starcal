@@ -289,7 +289,7 @@ class WinLayoutBox(WinLayoutBase):
 
 	def onItemMoveClick(
 		self,
-		button: gtk.Button,
+		_button: gtk.Button,
 		item: "WinLayoutBox | WinLayoutObj",
 	):
 		index = self.items.index(item)

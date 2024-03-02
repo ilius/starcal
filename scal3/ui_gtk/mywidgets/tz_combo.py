@@ -57,7 +57,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			else:
 				itr = model.append(parentIter, [key, True])
 
-	def onChanged(self, widget):
+	def onChanged(self, _widget):
 		model = self.c.get_model()
 		itr = self.c.get_active_iter()
 		if itr is None:

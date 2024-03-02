@@ -69,22 +69,14 @@ def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	return monthNameAb[m - 1]
 
 
-def getMonthsInYear(_y):
-	return 12
-
-
 epoch = 1948440
 minMonthLen = 29
 maxMonthLen = 30
 avgYearLen = 354.3666  # FIXME
 
-
-hijriAlg = 0
 hijriUseDB = True
 
 
-# ("hijriAlg", list, "Hijri Calculation Algorithm",
-# 	("Internal", "ITL (idate command)", "ITL (idate command) Umm Alqura")),
 options = (
 	(
 		"hijriUseDB",
@@ -144,7 +136,6 @@ def save():
 		__name__,
 		confPath,
 		(
-			"hijriAlg",
 			"hijriUseDB",
 		),
 	)
@@ -270,7 +261,7 @@ class MonthDbHolder:
 
 	def getJdFromDate(self, year, month, day):
 		ym = year * 12 + month - 1
-		y0, m0, d0 = monthDb.startDate
+		y0, m0, _d0 = monthDb.startDate
 		if ym - 1 not in monthDb.monthLenByYm:
 			return
 		ym0 = y0 * 12 + m0 - 1
@@ -302,7 +293,7 @@ def to_jd_c(year, month, day):
 
 
 def to_jd(year, month, day):
-	if hijriUseDB:  # and hijriAlg == 0
+	if hijriUseDB:
 		jd = monthDb.getJdFromDate(year, month, day)
 		if jd is not None:
 			return jd
@@ -310,7 +301,6 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd):
-	# hijriAlg == 0
 	if hijriUseDB:
 		# jd = ifloor(jd)
 		date = monthDb.getDateFromJd(jd)
@@ -328,7 +318,7 @@ def jd_to(jd):
 
 
 def getMonthLen(y, m):
-	# if hijriUseDB:## and hijriAlg==0
+	# if hijriUseDB:
 	# 	try:
 	# 		return monthDb.monthLenByYm[y*12+m]
 	# 	except KeyError:
