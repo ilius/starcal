@@ -33,7 +33,7 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 			),
 		)
 
-	def onSwapClick(self, widget):
+	def onSwapClick(self, _widget):
 		self.rightPanel.swapItems()
 
 
@@ -55,7 +55,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 				),
 			)
 
-	def onSwapClick(self, widget):
+	def onSwapClick(self, _widget):
 		self.rightPanel.swapItems()
 
 
@@ -171,10 +171,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		ui.mainWinRightPanelRatio = self.get_position() / height
 		ui.saveLiveConf()
 
-	def onSizeAllocate(self, widget, requisition):
+	def onSizeAllocate(self, _widget, requisition):
 		self.updatePosition(requisition.height)
 
-	def onWindowSizeChange(self, *a, **kw):
+	def onWindowSizeChange(self, *_a, **_kw):
 		self.queue_resize()
 
 	"""
@@ -210,7 +210,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			width = ui.mainWinRightPanelWidth
 		return width, width
 
-	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
+	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
 		return self.do_get_preferred_width()
 
 	def getOptionsWidget(self):

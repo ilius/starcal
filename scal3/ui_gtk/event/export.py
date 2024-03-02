@@ -31,7 +31,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		####
 		hbox = HBox()
 		frame = gtk.Frame()
@@ -69,7 +69,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, widget=None):
+	def formatRadioChanged(self, _widget=None):
 		from scal3.os_utils import fixStrForFileName
 
 		fpath = self.fcw.get_filename()
@@ -201,13 +201,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.formatRadioChanged()
 		self.resize(600, 600)
 
-	def disableAllClicked(self, widget=None):
+	def disableAllClicked(self, _widget=None):
 		self.groupSelect.disableAll()
 
-	def enableAllClicked(self, widget=None):
+	def enableAllClicked(self, _widget=None):
 		self.groupSelect.enableAll()
 
-	def formatRadioChanged(self, widget=None):
+	def formatRadioChanged(self, _widget=None):
 		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
 		###
 		fpath = self.fpathEntry.get_text()
@@ -265,7 +265,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		####
 		hbox = HBox()
 		frame = gtk.Frame()
@@ -302,7 +302,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, widget=None):
+	def formatRadioChanged(self, _widget=None):
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])
