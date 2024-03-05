@@ -211,9 +211,9 @@ class JsonSObj(SObj):
 				with fs.open(fpath) as fp:
 					jsonStr = fp.read()
 				data = jsonToData(jsonStr)
-			except Exception as e:
+			except Exception:
 				if not cls.skipLoadExceptions:
-					raise e
+					raise
 		else:
 			if not cls.skipLoadNoFile:
 				raise FileNotFoundError(f"{fpath} : file not found")
@@ -369,10 +369,10 @@ class BsonHistObj(SObj):
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
 				raise FileNotFoundError(f"{_file} : file not found") from None
-		except Exception as e:
+		except Exception:
 			if not cls.skipLoadExceptions:
 				log.error(f'error while opening json file "{_file}"')
-				raise e
+				raise
 		else:
 			lastEpoch, lastHash = updateBasicDataFromBson(data, _file, cls.name, fs)
 
