@@ -113,18 +113,14 @@ lint.ignore = [
 	"SIM105",  # Use contextlib.suppress({exception}) instead of try-except-pass
 	"SIM108",  # Use ternary operator {contents} instead of if-else-block
 	"SIM117",  # Use a single with statement with multiple contexts...
-	"W191",
 	# ERA, PD,
-
-	"UP009", # UTF-8 encoding declaration is unnecessary
-	"UP010", # Unnecessary `__future__`"
-	"UP035", # Import from `collections.abc` instead: `Generator`
-	"UP037", # Remove quotes from type annotation
 
 	"RET502", # Do not implicitly `return None` in function able to return non-`None` value
 
 	# S: global
 	"S101", # Use of `assert` detected
+
+	"W191",    # Indentation contains tabs
 ]
 
 # UP033: (Since Python 3.9) Use `@functools.cache`
@@ -134,30 +130,23 @@ lint.ignore = [
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = [
-	# "SIM",
-	"F401",
-	"E", "F", "W",
-	"RET",
-	"I",
-	"COM",
-	"TCH",
-	"ANN",
-	"W291",
-	"W293",
-	"D",
-	"UP004",
-	"UP006",
-	"UP008",
-	"UP015",
-	"UP024",
-	"UP028",
-	"UP030",
-	"UP031",
-	"UP032",
-	"UP033",
-	"UP034",
-	"UP039",
-	"PIE790",
+    "ANN",
+    "C408", # Unnecessary `dict` call (rewrite as a literal)
+    "COM",
+    "D",
+    "E",
+    "F",
+    "W",
+    "F401",
+    "I",
+    "Q",
+    "PIE790",
+    "RET",
+    "RUF",
+    # "SIM",
+    "SIM108", # Use ternary operator {contents} instead of if-else-block
+    "TCH",
+    "UP",
 ]
 lint.unfixable = []
 

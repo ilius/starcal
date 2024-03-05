@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from scal3.core import jd_to
 from scal3.locale_man import tr as _
