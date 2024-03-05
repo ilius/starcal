@@ -161,7 +161,7 @@ class StrOrderedDict(dict):
 				self.keyList.append(arg)
 			dict.__setitem__(self, arg, value)
 		else:
-			raise ValueError(
+			raise TypeError(
 				"Bad type argument given to StrOrderedDict.__setitem__"
 				f": {type(arg)}",
 			)
@@ -178,7 +178,7 @@ class StrOrderedDict(dict):
 				dict.__delitem__(self, key)
 			self.keyList.__delitem__(arg)
 		else:
-			raise ValueError(
+			raise TypeError(
 				"Bad type argument given to StrOrderedDict.__delitem__"
 				f": {type(arg)}",
 			)

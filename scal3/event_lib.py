@@ -4615,7 +4615,7 @@ class EventGroup(EventContainer):
 				vevent += "\n".join(parts)
 				fp.write(vevent)
 		else:
-			raise RuntimeError
+			raise TypeError(f"invalid type {type(occur)} for occur")
 
 	def exportToIcsFp(self, fp: "io.TextIOBase") -> None:
 		currentTimeStamp = ics.getIcsTimeByEpoch(now())
