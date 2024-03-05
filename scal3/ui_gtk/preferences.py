@@ -1403,7 +1403,7 @@ class PreferencesWindow(gtk.Window):
 			d.set_keep_above(True)
 			label = gtk.Label(
 				label=(
-					_(f"Some preferences need restarting {core.APP_DESC} to apply.")
+					_(f"Some preferences need restarting {core.APP_DESC} to apply.")  # noqa: INT001
 					+ " "
 					+ _("Restart Now?")
 				),
