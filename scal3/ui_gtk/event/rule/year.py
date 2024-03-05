@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from scal3.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
 
