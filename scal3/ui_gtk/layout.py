@@ -101,7 +101,7 @@ class WinLayoutObj(WinLayoutBase):
 			return self._item
 		item = self.initializer()
 		if not isinstance(item, gtk.Widget):
-			raise ValueError(f"initializer returned non-widget: {type(item)}")
+			raise TypeError(f"initializer returned non-widget: {type(item)}")
 		item.enableParam = self.enableParam
 		if item.enableParam:
 			item.enable = getattr(ui, item.enableParam)

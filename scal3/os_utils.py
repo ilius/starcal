@@ -102,7 +102,7 @@ def kill(pid, signal=0):
 		# no permissions
 		if e.errno == 1:
 			return False
-		raise e
+		raise
 
 
 def dead(pid):
@@ -118,7 +118,7 @@ def dead(pid):
 		# pid is not a child
 		if e.errno == 10:
 			return False
-		raise e
+		raise
 	return dead
 
 

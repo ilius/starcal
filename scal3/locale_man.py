@@ -241,9 +241,9 @@ for fname in langFileList:
 	try:
 		with open(fpath, encoding="utf-8") as fp:
 			data = jsonToData(fp.read())
-	except Exception as e:
+	except Exception:
 		log.error(f"failed to load json file {fpath}")
-		raise e
+		raise
 	langObj = LangData(fpath)
 	langObj.setData(data)
 	langDict[langObj.code] = langObj
