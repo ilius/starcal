@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -19,7 +18,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Callable
+from collections.abc import Callable
 
 from scal3 import ui
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
@@ -72,7 +71,7 @@ class WinLayoutObj(WinLayoutBase):
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
-		initializer: "Callable[[], CustomizableCalObj] | None" = None,
+		initializer: Callable[[], CustomizableCalObj] | None = None,
 	):
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")

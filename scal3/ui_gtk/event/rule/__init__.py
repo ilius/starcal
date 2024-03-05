@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # class MultiValueRule(gtk.Box):
 # 	def __init__(self, rule, ValueWidgetClass):
