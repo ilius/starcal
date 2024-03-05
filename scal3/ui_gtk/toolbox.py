@@ -5,7 +5,7 @@ log = logger.get()
 import typing
 
 if typing.TYPE_CHECKING:
-	from typing import Callable, Iterable
+	from collections.abc import Callable, Iterable
 
 from typing import Any
 

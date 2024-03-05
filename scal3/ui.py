@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -23,13 +22,13 @@ import os
 import os.path
 import typing
 from collections import OrderedDict
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from os.path import isabs, isdir, isfile, join
 from time import time as now
 from typing import (
 	Any,
-	Callable,
 )
 
 from cachetools import LRUCache
