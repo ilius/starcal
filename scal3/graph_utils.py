@@ -1,9 +1,10 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from igraph import Graph
 
 
-def colorGraph(g: Graph, vertexSortKey: "Callable[[int], [Any]]"):
+def colorGraph(g: Graph, vertexSortKey: Callable[[int], [Any]]):
 	"""VertexSortKey is the key function for sorting vertices."""
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
