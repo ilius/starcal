@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from scal3 import core
 from scal3.ui_gtk import gtk, pack
 
