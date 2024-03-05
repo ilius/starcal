@@ -2292,7 +2292,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def moveUp(self, path: list[int]) -> None:
 		srcIter = self.treeModel.get_iter(path)
 		if not isinstance(path, list):
-			raise RuntimeError(f"invalid {path = }")
+			raise TypeError(f"invalid {path = }")
 		if len(path) == 1:
 			if path[0] == 0:
 				return
@@ -2336,7 +2336,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				newGroup.save()
 			ui.eventUpdateQueue.put("r", parentObj, self)
 		else:
-			raise RuntimeError(f"invalid tree path {path}")
+			raise ValueError(f"invalid tree path {path}")
 		newPath = self.treeModel.get_path(srcIter)
 		if len(path) == 2:
 			self.treev.expand_to_path(newPath)
@@ -2345,7 +2345,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def moveDown(self, path: list[int]) -> None:
 		if not isinstance(path, list):
-			raise RuntimeError(f"invalid {path = }")
+			raise TypeError(f"invalid {path = }")
 		srcIter = self.treeModel.get_iter(path)
 		if len(path) == 1:
 			if self.getRowId(srcIter) == -1:

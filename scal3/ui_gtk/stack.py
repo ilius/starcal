@@ -183,7 +183,7 @@ class MyStack(gtk.Stack):
 			raise ValueError(f"addPage: duplicate {pagePath=}")
 
 		if not isinstance(widget, gtk.Widget):
-			raise ValueError(f"invalid {widget=}, {pagePath=}")
+			raise TypeError(f"invalid {widget=}, {pagePath=}")
 
 		widget.show()
 		if self._header and parentName:
