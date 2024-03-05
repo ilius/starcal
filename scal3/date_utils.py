@@ -1,5 +1,5 @@
 import math
-from typing import Generator
+from collections.abc import Generator
 
 from scal3 import cal_types
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
