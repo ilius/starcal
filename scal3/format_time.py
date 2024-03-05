@@ -382,7 +382,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 						+ _(tm[2], fillZero=2)
 						+ " "
 						+ _("AM" if tm[0] < 12 else "PM"),
-					)
+					),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -391,7 +391,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 				funcs.append(
 					lambda _cell, _calType, tm: (
 						_(tm[0], fillZero=2) + ":" + _(tm[1], fillZero=2),
-					)
+					),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -470,7 +470,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 						+ _(tm[1], fillZero=2)
 						+ ":"
 						+ _(tm[2], fillZero=2),
-					)
+					),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -483,7 +483,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 						+ _(tm[1], fillZero=2)
 						+ ":"
 						+ _(tm[2], fillZero=2),
-					)
+					),
 				)
 				pyFmt += "%s"
 				i += 2
