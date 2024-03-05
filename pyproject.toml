@@ -2,6 +2,7 @@
 target-version = "py310"
 line-length = 88
 
+# see https://docs.astral.sh/ruff/rules/
 lint.select = [
 	"F", # Pyflakes
 	"E", # pycodestyle Error
@@ -14,7 +15,7 @@ lint.select = [
 	"UP",  # pyupgrade
 	"YTT", # flake8-2020
 	# "ANN", # flake8-annotationsq, still gives errors for `self`
-	# ASYNC, # flake8-async
+	# "ASYNC", # flake8-async
 	"TRIO", # flake8-trio
 	# "S", # flake8-bandit
 	"BLE", # flake8-blind-except
@@ -54,12 +55,12 @@ lint.select = [
 	# "PD",  # pandas-vet: full of false positives
 	"PGH", # pygrep-hooks
 	# "PL",    # Pylint
-	# "TRY",   # tryceratops, they all sound BS
+	"TRY",   # tryceratops, some are BS
 	# "FLY",   # flynt
 	"NPY",  # NumPy-specific rules
 	"AIR",  # Airflow
 	"PERF", # Perflint
-	# "FURB",  # refurb   --preview
+	# "FURB",  # refurb, ruff --preview
 	"LOG", # flake8-logging
 	"RUF", # Ruff-specific rules
 ]
@@ -99,9 +100,9 @@ lint.ignore = [
 	"RUF005",  # Consider `[*_list, x]` instead of concatenation
 	"RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
 	"RUF100",  # Unused `noqa` directive (non-enabled: ...)
-	"TRY003",  # Avoid specifying long messages outside the exception class, ???
-	"TRY400",  # Use `logging.exception` instead of `logging.error`
 
+	"TRY003",  # BS: Avoid specifying long messages outside the exception class
+	"TRY400",  # BS: Use `logging.exception` instead of `logging.error`
 	"SIM105",  # Use contextlib.suppress({exception}) instead of try-except-pass
 	"SIM108",  # Use ternary operator {contents} instead of if-else-block
 	"SIM117",  # Use a single with statement with multiple contexts...
@@ -120,6 +121,7 @@ lint.ignore = [
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = [
+	"TRY",   # tryceratops
     "ANN",
     "C408", # Unnecessary `dict` call (rewrite as a literal)
     "COM",
