@@ -51,7 +51,7 @@ from scal3.plugin_man import loadPlugin
 from scal3.time_utils import getJhmsFromEpoch
 
 try:
-	__file__
+	__file__  # noqa: B018
 except NameError:
 	import inspect
 
@@ -119,13 +119,11 @@ def loadConf() -> None:
 	###########
 	loadModuleJsonConf(__name__)
 	###########
-	try:
-		version
-	except NameError:
-		prefVersion = ""
-	else:
+	if "version" in globals():
 		prefVersion = version
 		del version
+	else:
+		prefVersion = ""
 	###########
 	with suppress(NameError):
 		# activeCalTypes and inactiveCalType might be

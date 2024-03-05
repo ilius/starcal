@@ -31,7 +31,7 @@ lint.select = [
 	"EXE", # flake8-executable
 	"FA",  # flake8-future-annotations
 	"ISC", # flake8-implicit-str-concat
-	# "G",     # flake8-logging-format
+	# "G",     # flake8-logging-format, non-sense!
 	"INP",  # flake8-no-pep420
 	"PIE",  # flake8-pie
 	"T20",  # flake8-print
@@ -51,7 +51,7 @@ lint.select = [
 	# "TD",    # flake8-todos
 	# "FIX",   # flake8-fixme: just shows me FIXMEs and TODOs
 	# "ERA",   # eradicate
-	"PD",  # pandas-vet
+	# "PD",  # pandas-vet: full of false positives
 	"PGH", # pygrep-hooks
 	# "PL",    # Pylint
 	# "TRY",   # tryceratops, they all sound BS
@@ -69,31 +69,11 @@ lint.select = [
 
 lint.ignore = [
 	"PYI034",  # py3.11: `__iadd__` methods in classes like `SqEntryList` usually return `self` at runtime
-	"INT001",  # f-string is resolved before function call; consider `_("string %s") % arg`
-	"PERF203", # `try`-`except` within a loop incurs performance overhead
-	"RUF001",  # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
-	"RUF003",  # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
-	"DTZ001",  # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
-	"DTZ005",  # The use of `datetime.datetime.now()` without `tz` argument is not allowed
-	"PGH003",  # Use specific rule codes when ignoring type issues
-	"PT027",   # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
-	"PD011",   # Use `.to_numpy()` instead of `.values`, WTF?
-	"RUF005",  # Consider `[*_list, x]` instead of concatenation
-	"PT009",   # Use a regular `assert` instead of unittest-style `assertEqual`, why?
-	"PLR0911", # Too many return statements (x > 6)
-	"RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
-	"BLE001",  # Do not catch blind exception: `Exception`
-	"G004",    # Logging statement uses f-string, WTF?
-	"TRY400",  # Use `logging.exception` instead of `logging.error`
-	"TRY003",  # Avoid specifying long messages outside the exception class, ???
-	"RUF100",  # Unused `noqa` directive (non-enabled: ...)
-	"FURB101", # `open` and `read` should be replaced by `Path(rootConfJsonFile).read_text()`
+
 	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-	"COM812",
-	"PGH003",  # Use specific rule codes when ignoring type issues
-	"B018",    # Found useless expression. Either assign it to a variable or remove it.
 	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
 	"B028",    # No explicit `stacklevel` keyword argument found. Huh???
+	"BLE001",  # Do not catch blind exception: `Exception`
 	"C408",    # Unnecessary `dict` call (rewrite as a literal)
 	"D100",    # Missing docstring in public module
 	"D101",    # Missing docstring in public class
@@ -109,17 +89,27 @@ lint.ignore = [
 	"D212",    # multi-line-summary-first-line, conflicts with D213:multi-line-summary-second-line
 	"D401",    # First line of docstring should be in imperative mood
 	"D417",    # Missing argument descriptions in the docstring
-	"E402",    # Module level import not at top of file
+	"DTZ001",  # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
+	"DTZ005",  # The use of `datetime.datetime.now()` without `tz` argument is not allowed
+	"FURB101", # `open` and `read` should be replaced by `Path(rootConfJsonFile).read_text()`
+	"PERF203", # `try`-`except` within a loop incurs performance overhead
+	"PLR0911", # Too many return statements (x > 6)
+	"RUF001",  # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
+	"RUF003",  # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
+	"RUF005",  # Consider `[*_list, x]` instead of concatenation
+	"RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
+	"RUF100",  # Unused `noqa` directive (non-enabled: ...)
+	"TRY003",  # Avoid specifying long messages outside the exception class, ???
+	"TRY400",  # Use `logging.exception` instead of `logging.error`
+
 	"SIM105",  # Use contextlib.suppress({exception}) instead of try-except-pass
 	"SIM108",  # Use ternary operator {contents} instead of if-else-block
 	"SIM117",  # Use a single with statement with multiple contexts...
-	# ERA, PD,
-
+	"PT009",   # Use a regular `assert` instead of unittest-style `assertEqual`, why?
+	"PT027",   # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
 	"RET502", # Do not implicitly `return None` in function able to return non-`None` value
-
-	# S: global
+	"E402",    # Module level import not at top of file
 	"S101", # Use of `assert` detected
-
 	"W191",    # Indentation contains tabs
 ]
 
