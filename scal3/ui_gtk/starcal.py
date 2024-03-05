@@ -163,8 +163,8 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 						fromlist=["CalObj"],
 					)
 					CalObj = module.CalObj
-				except RuntimeError as e:
-					raise e
+				except RuntimeError:
+					raise
 				except Exception:
 					log.error(f"error importing mainWinItem {name}")
 					log.exception("")
@@ -172,9 +172,9 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 					continue
 				try:
 					item = CalObj(win)
-				except Exception as e:
+				except Exception:
 					log.error(f"{name=}, {module=}")
-					raise e
+					raise
 				item.enable = enable
 				# modify_bg_all(
 				# 	item,
