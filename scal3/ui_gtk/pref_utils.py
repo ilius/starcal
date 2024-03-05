@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -20,8 +19,9 @@ from scal3 import logger
 log = logger.get()
 
 import typing
+from collections.abc import Callable
 from os.path import isabs, join
-from typing import Any, Callable
+from typing import Any
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -212,7 +212,7 @@ class ComboTextPrefItem(PrefItem):
 		label: str = "",
 		labelSizeGroup: "gtk.SizeGroup | None" = None,
 		live: bool = False,
-		onChangeFunc: "Callable | None" = None,
+		onChangeFunc: Callable | None = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
