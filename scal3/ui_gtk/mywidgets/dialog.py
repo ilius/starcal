@@ -38,8 +38,6 @@ class MyDialog:
 			return result
 		try:
 			result = func(*args, **kwargs)
-		except Exception as e:
-			raise e
 		finally:
 			self.endWaiting()
 		return result
