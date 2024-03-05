@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
