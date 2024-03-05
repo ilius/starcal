@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton

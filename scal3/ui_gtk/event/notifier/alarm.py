@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from subprocess import PIPE, Popen
 
 from scal3.locale_man import tr as _

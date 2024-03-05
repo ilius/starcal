@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -19,7 +18,8 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.ui_gtk import HBox, gtk, pack
@@ -52,7 +52,7 @@ class ImageMenuItem(gtk.MenuItem):
 		label: str = "",
 		imageName: str = "",
 		pixbuf: "GdkPixbuf.Pixbuf | None" = None,
-		func: "Callable | None" = None,
+		func: Callable | None = None,
 		signalName="activate",
 		args: "tuple | None" = None,
 	):

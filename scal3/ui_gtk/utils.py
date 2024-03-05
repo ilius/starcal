@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -19,8 +18,8 @@ from scal3 import logger
 
 log = logger.get()
 
+from collections.abc import Callable
 from os.path import isabs, join
-from typing import Callable
 
 from scal3 import ui
 from scal3.color_utils import ColorType, rgbToCSS
@@ -281,7 +280,7 @@ def labelImageButton(
 	label: str = "",
 	imageName: str = "",
 	size: int = 0,
-	func: "Callable | None" = None,
+	func: Callable | None = None,
 	tooltip: str = "",
 	spacing: int = 10,
 ):

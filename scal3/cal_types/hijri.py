@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 # Copyright (C) 2007 Mehdi Bayazee <Bayazee@Gmail.com>

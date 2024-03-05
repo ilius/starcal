@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -19,8 +18,9 @@ from scal3 import logger
 
 log = logger.get()
 
+from collections.abc import Callable
 from contextlib import suppress
-from typing import Any, Callable
+from typing import Any
 
 from scal3 import core, locale_man, startup
 from scal3.cal_types import calTypes
@@ -75,7 +75,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		vspacing: int = 0,
 		hspacing: int = 0,
 		borderWidth: int = 2,
-		onChangeFunc: "Callable | None" = None,
+		onChangeFunc: Callable | None = None,
 	) -> None:
 		if not ratioEnableVarName:
 			raise ValueError("ratioEnableVarName is not given")

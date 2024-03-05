@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -27,6 +26,7 @@ if typing.TYPE_CHECKING:
 import gettext
 import os
 import string
+from collections.abc import Callable
 from contextlib import suppress
 from os.path import (
 	isabs,
@@ -34,7 +34,6 @@ from os.path import (
 	join,
 	splitext,
 )
-from typing import Callable
 
 import natz
 from scal3.cal_types import calTypes

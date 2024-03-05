@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -31,7 +30,7 @@ from os.path import join
 if typing.TYPE_CHECKING:
 	from scal3.event_update_queue import EventUpdateRecord
 
-from typing import Callable
+from collections.abc import Callable
 
 from gi.overrides.GObject import Object
 

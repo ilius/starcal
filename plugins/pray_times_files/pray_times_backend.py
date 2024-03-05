@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # --------------------- Copyright Block ----------------------
 # Prayer Times Calculator
 # Copyright (C) 2007-2010 Hamid Zarrabi-Zadeh

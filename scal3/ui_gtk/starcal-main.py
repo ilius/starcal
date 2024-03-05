@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 
 import sys
+from collections.abc import Callable
 from os.path import abspath, dirname, isabs, join
-from typing import Callable
 
 import gi
 
@@ -62,7 +61,7 @@ def dialog_add_button(
 	imageName: str = "",
 	label: str = "",
 	res: "gtk.ResponseType | None" = None,
-	onClick: "Callable | None" = None,
+	onClick: Callable | None = None,
 	tooltip: str = "",
 ):
 	b = dialog.add_button(label, res)

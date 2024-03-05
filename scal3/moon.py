@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 def getMoonPhase(jd, southernHemisphere=False):
