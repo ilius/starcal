@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -23,8 +22,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
 	import io
+	from collections.abc import Callable, Iterator
 	from datetime import datetime
-	from typing import Any, Callable, Iterator
+	from typing import Any
 
 import json
 import os
