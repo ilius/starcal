@@ -79,7 +79,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"m",
 	)
 
-	def do_get_preferred_height(self):
+	def do_get_preferred_height(self):  # noqa: PLR6301
 		return 0, ui.winHeight / 3
 
 	def updateTypeParamsWidget(self):
@@ -137,12 +137,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		self.subPages = subPages
 
-	def drawCursorOutline(self, cr, cx0, cy0, cw, ch):
+	@staticmethod
+	def drawCursorOutline(cr, cx0, cy0, cw, ch):
 		cursorRadius = ui.mcalCursorRoundingFactor * min(cw, ch) * 0.5
 		cursorLineWidth = ui.mcalCursorLineWidthFactor * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
-	def drawCursorBg(self, cr, cx0, cy0, cw, ch):
+	@staticmethod
+	def drawCursorBg(cr, cx0, cy0, cw, ch):
 		cursorRadius = ui.mcalCursorRoundingFactor * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
@@ -534,7 +536,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				yPos = i
 				break
 		status = getCurrentMonthStatus()
-		if -1 in (yPos, xPos):
+		if -1 in {yPos, xPos}:
 			self.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
@@ -594,11 +596,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 				ui.cell.month,
 				cal_types.getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
 			)
-		elif kname in ("page_up", "k", "p"):
+		elif kname in {"page_up", "k", "p"}:
 			self.monthPlus(-1)
-		elif kname in ("page_down", "j", "n"):
+		elif kname in {"page_down", "j", "n"}:
 			self.monthPlus(1)
-		elif kname in ("f10", "m"):
+		elif kname in {"f10", "m"}:
 			if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
 				self.emit("popup-cell-menu", *self.getCellPos())
