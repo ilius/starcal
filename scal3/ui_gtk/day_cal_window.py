@@ -60,7 +60,6 @@ def saveLiveConf():  # FIXME: rename to saveConfLive
 
 
 def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
-	global lastLiveConfChangeTime
 	tm = now()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		saveLiveConf()
@@ -159,7 +158,8 @@ class DayCalWindowWidget(DayCal):
 	}
 	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
 
-	def getCell(self):
+	@classmethod
+	def getCell(cls) -> ui.Cell:
 		return ui.todayCell
 
 	def __init__(self, win):
@@ -211,7 +211,8 @@ class DayCalWindowWidget(DayCal):
 			self.startMove(gevent, button=b)
 		return True
 
-	def getMenuPosFunc(self, menu, gevent, above: bool):
+	@staticmethod
+	def getMenuPosFunc(menu, gevent, above: bool):
 		# looks like gevent.x_root and gevent.y_root are wrong on Wayland
 		# (tested on Fedora + Gnome3)
 		# we should probably just pass func=None in Wayland for now
@@ -339,7 +340,8 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 	def prefUpdateBgColor(self, cal):
 		pass
 
-	def dayInfoShow(self, widget=None):
+	@staticmethod
+	def dayInfoShow(widget=None):
 		ui.mainWin.dayInfoShow(widget)
 
 	def onDeleteEvent(self, _arg=None, _event=None):

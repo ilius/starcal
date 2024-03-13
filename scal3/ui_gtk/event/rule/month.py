@@ -1,4 +1,3 @@
-
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
@@ -25,11 +24,7 @@ class WidgetClass(gtk.Box):
 			self.buttons[i].set_active((i + 1) in monthList)
 
 	def updateVars(self):
-		monthList = [
-			i + 1
-			for i in range(12)
-			if self.buttons[i].get_active()
-		]
+		monthList = [i + 1 for i in range(12) if self.buttons[i].get_active()]
 		self.rule.setValuesPlain(monthList)
 
 	def changeCalType(self, calType):

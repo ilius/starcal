@@ -148,10 +148,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		tl.changeHolidayBg
 		and tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
 	):
-		holidays = [
-			getJPos(jd)
-			for jd in getHolidaysJdList(jd0, jd1 + 1)
-		]
+		holidays = [getJPos(jd) for jd in getHolidaysJdList(jd0, jd1 + 1)]
 	# ###################### Ticks
 	ticks = []
 	tickEpochSet = set()
@@ -268,7 +265,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	if minDayUnit <= 1 and jd1 - jd0 < 70:
 		for jd in range(jd0, jd1 + 1):
 			year, month, day = jd_to_primary(jd)
-			if day in (1, 16):
+			if day in {1, 16}:
 				continue
 			addDayOfMonthTick(jd, month, day, 1)
 
@@ -331,7 +328,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				if unitSize < tl.majorStepMin:
 					label = ""
 				else:
-					jd, hms = getJhmsFromEpoch(tmEpoch)
+					_jd, hms = getJhmsFromEpoch(tmEpoch)
 					m2 = _(hms.m, fillZero=2)
 					if hms.s == 0:
 						label = f"{_(hms.h)}:{m2}"

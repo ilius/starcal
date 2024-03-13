@@ -134,7 +134,7 @@ class IndicatorStatusIconWrapper:
 			except Exception:
 				log.exception("")
 
-	def is_embedded(self):
+	def is_embedded(self):  # noqa: PLR6301
 		return True  # FIXME
 
 	def set_visible(self, visible):  # FIXME

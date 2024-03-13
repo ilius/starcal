@@ -21,12 +21,12 @@ def dataToPrettyJson(data, ensure_ascii=False):
 
 
 for fpath_py in sys.argv[1:]:
-	with open(fpath_py) as _file:
+	with open(fpath_py, encoding="utf-8") as _file:
 		text_py = _file.read()
 	data = OrderedDict()
 	exec(text_py, {}, data)
 	text_json = dataToPrettyJson(data)
 	fpath_nox = splitext(fpath_py)[0]
 	fpath_json = fpath_nox + ".json"
-	with open(fpath_json, "w") as _file:
+	with open(fpath_json, "w", encoding="utf-8") as _file:
 		_file.write(text_json)

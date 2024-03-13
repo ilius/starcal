@@ -74,13 +74,13 @@ class DummyCalObj(ud.CalObjType):
 	def updateVars(self) -> None:
 		pass
 
-	def getOptionsWidget(self) -> "gtk.Widget | None":
+	def getOptionsWidget(self) -> "gtk.Widget | None":  # noqa: PLR6301
 		return None
 
-	def getSubPages(self) -> "list[StackPage]":
+	def getSubPages(self) -> "list[StackPage]":  # noqa: PLR6301
 		return []
 
-	def showHide(self) -> None:
+	def showHide(self) -> None:  # noqa: PLR6301
 		pass
 
 
@@ -122,10 +122,10 @@ class CustomizableCalObj(ud.BaseCalObj):
 			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
 				break
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget:  # noqa: PLR6301
 		return None
 
-	def getSubPages(self) -> "list[StackPage]":
+	def getSubPages(self) -> "list[StackPage]":  # noqa: PLR6301
 		return []
 
 

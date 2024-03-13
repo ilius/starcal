@@ -32,8 +32,8 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def copyAll(self, _item):
 		return setClipboard(toStr(self.get_text()))
 
-	def cursorIsOnURL(self):
-		return False
+	# def cursorIsOnURL(self):
+	# 	return False
 
 	def get_text(self):
 		return buffer_get_text(self.get_buffer())
@@ -55,7 +55,8 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		start_iter, end_iter = buf.get_selection_bounds()
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
-	def copyText(self, _item, text):
+	@classmethod
+	def copyText(cls, _item, text):
 		setClipboard(text)
 
 	def onDateChange(self, *a, **kw):
@@ -119,7 +120,8 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def addExtraMenuItems(self, menu):
 		pass
 
-	def onPlugConfClick(self, _item, plug):
+	@staticmethod
+	def onPlugConfClick(_item, plug):
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
@@ -146,7 +148,8 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		openWindow(about)  # FIXME
 		return None
 
-	def copyTextFromMenu(self, _item, text):
+	@staticmethod
+	def copyTextFromMenu(_item, text):
 		setClipboard(text)
 
 	def addText(self, text):
@@ -310,7 +313,8 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		value = getattr(ui, self.justificationParam)
 		self.textview.set_justification(ud.justificationByName[value])
 
-	def onButtonPress(self, _widget, _gevent):
+	@staticmethod
+	def onButtonPress(_widget, _gevent):
 		# log.debug("PluginsText: onButtonPress")
 		# without this, it will switch to begin_move_drag on button-press
 		return True
@@ -370,15 +374,15 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 				self.expander.add(self.textview)
 				pack(self, self.expander)
 				self.expander.show_all()
-		else:
-			if prevEnable:
-				self.expander.remove(self.textview)
-				self.remove(self.expander)
-				pack(self, self.textview)
-				self.textview.show()
+		elif prevEnable:
+			self.expander.remove(self.textview)
+			self.remove(self.expander)
+			pack(self, self.textview)
+			self.textview.show()
 		self.onDateChange()
 
-	def expanderExpanded(self, exp):
+	@staticmethod
+	def expanderExpanded(exp):
 		ui.pluginsTextIsExpanded = not exp.get_expanded()
 		ui.saveLiveConf()
 
