@@ -34,7 +34,7 @@ jsonPath = join(
 	"events.json",
 )
 
-with open(jsonPath) as jsonFile:
+with open(jsonPath, encoding="utf-8") as jsonFile:
 	data = json.load(jsonFile)
 
 # print(list(data.keys()))
@@ -50,7 +50,11 @@ holidays = {}
 
 for calType, calTypeKey in calTypes.items():
 	calTypeHolidays = []
-	with open(join(plugDir, f"afghanistan-{calType}-data.txt"), mode="w") as outFile:
+	with open(
+		join(plugDir, f"afghanistan-{calType}-data.txt"),
+		mode="w",
+		encoding="utf-8",
+	) as outFile:
 		for event in data[calTypeKey]:
 			if event["type"] != "Afghanistan":
 				continue
@@ -62,7 +66,11 @@ for calType, calTypeKey in calTypes.items():
 		holidays[calType] = calTypeHolidays
 
 
-with open(join(plugDir, "holidays-afghanistan.json"), mode="w") as outFile:
+with open(
+	join(plugDir, "holidays-afghanistan.json"),
+	mode="w",
+	encoding="utf-8",
+) as outFile:
 	json.dump(
 		OrderedDict(
 			[

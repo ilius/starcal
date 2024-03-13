@@ -7,7 +7,7 @@ from lxml import etree as ET
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
 
-with open(join(rootDir, "resources.xml")) as _file:
+with open(join(rootDir, "resources.xml"), encoding="utf-8") as _file:
 	root = ET.fromstring(_file.read())
 
 

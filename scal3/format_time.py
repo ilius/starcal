@@ -136,7 +136,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		if c1 in ("b", "h"):  # FIXME
+		if c1 in {"b", "h"}:  # FIXME
 
 			def f(cell, calType, _tm):
 				module, ok = calTypes[calType]

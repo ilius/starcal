@@ -7,7 +7,7 @@ from scal3 import event_lib, logger, ui
 
 log = logger.get()
 
-with open("/usr/share/apps/libkdeedu/data/elements.xml") as _file:
+with open("/usr/share/apps/libkdeedu/data/elements.xml", encoding="utf-8") as _file:
 	tree = XML(_file.read())
 
 
@@ -17,13 +17,13 @@ def decodeAtomElement(atom):
 		ref = el.attrib["dictRef"]
 		if ref.startswith("bo:"):
 			ref = ref[3:]
-		if ref in (
+		if ref in {
 			"name",
 			"atomicNumber",
 			"discoveryDate",
 			"discoveryCountry",
 			"discoverers",
-		):  # "symbol",
+		}:  # "symbol",
 			try:
 				data[ref] = el.attrib["value"]
 			except KeyError:

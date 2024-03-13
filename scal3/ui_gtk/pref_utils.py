@@ -155,7 +155,7 @@ class ModuleOptionButton:
 		pack(hbox, button)
 		self._widget = hbox
 
-	def get(self) -> Any:
+	def get(self) -> Any:  # noqa: PLR6301
 		return None
 
 	def updateVar(self) -> None:

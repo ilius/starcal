@@ -45,7 +45,7 @@ osName = getOsName()
 
 scalDir = dirname(__file__)
 cwd = os.getcwd()  # noqa: FURB104
-if scalDir in (".", ""):
+if scalDir in {".", ""}:
 	scalDir = cwd
 elif os.sep == "/":
 	if scalDir.startswith("./"):
@@ -63,7 +63,7 @@ pixDir = join(sourceDir, "pixmaps")
 svgDir = join(sourceDir, "svg")
 plugDir = join(sourceDir, plugDirName)
 
-if osName in ("linux", "unix"):
+if osName in {"linux", "unix"}:
 	homeDir = os.getenv("HOME")
 	confDir = homeDir + "/." + APP_NAME
 	sysConfDir = "/etc/" + APP_NAME

@@ -121,7 +121,7 @@ def getMonthDesc(status=None):
 				first = c
 	text = ""
 	for calType in calTypes.active:
-		if text != "":
+		if text:
 			text += "\n"
 		if calType == calTypes.primary:
 			y, m = first.dates[calType][:2]  # = (status.year, status.month)
@@ -175,39 +175,38 @@ def getMonthDesc(status=None):
 						+ " "
 						+ _(y1)
 					)
-				else:
-					if m1 == 11:
-						text += (
-							getMonthName(calType, m1)
-							+ " "
-							+ _("and")
-							+ " "
-							+ getMonthName(calType, m1 + 1)
-							+ " "
-							+ _(y1)
-							+ " "
-							+ _("and")
-							+ " "
-							+ getMonthName(calType, 1)
-							+ " "
-							+ _(y2)
-						)
-					elif m1 == 12:
-						text += (
-							getMonthName(calType, m1)
-							+ " "
-							+ _(y1)
-							+ " "
-							+ _("and")
-							+ " "
-							+ getMonthName(calType, 1)
-							+ " "
-							+ _("and")
-							+ " "
-							+ getMonthName(calType, 2)
-							+ " "
-							+ _(y2)
-						)
+				elif m1 == 11:
+					text += (
+						getMonthName(calType, m1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, m1 + 1)
+						+ " "
+						+ _(y1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, 1)
+						+ " "
+						+ _(y2)
+					)
+				elif m1 == 12:
+					text += (
+						getMonthName(calType, m1)
+						+ " "
+						+ _(y1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, 1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, 2)
+						+ " "
+						+ _(y2)
+					)
 	return text
 
 

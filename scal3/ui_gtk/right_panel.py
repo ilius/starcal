@@ -198,7 +198,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def onMinimumHeightChange(self):
 		self.queue_resize()
 
-	def do_get_preferred_width(self):
+	def do_get_preferred_width(self):  # noqa: PLR6301
 		# must return minimum_size, natural_size
 		if ui.mainWinRightPanelWidthRatioEnable:
 			if ui.mainWin and ui.mainWin.is_maximized():

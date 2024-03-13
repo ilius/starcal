@@ -147,7 +147,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
 
 		for name, enable in ui.mainWinItems:
-			if name in ("winContronller", "statusBar"):
+			if name in {"winContronller", "statusBar"}:
 				log.warning(f"Skipping main win item {name!r}")
 				continue
 			# log.debug(name, enable)
@@ -537,9 +537,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			self.onEscape()
 		elif kname == "f1":
 			self.aboutShow()
-		elif kname in ("insert", "plus", "kp_add"):
+		elif kname in {"insert", "plus", "kp_add"}:
 			self.eventManShow()
-		elif kname in ("q", "arabic_dad"):  # FIXME
+		elif kname in {"q", "arabic_dad"}:  # FIXME
 			self.quit()
 		elif kname == "r":
 			if gevent.state & gdk.ModifierType.CONTROL_MASK:
@@ -797,7 +797,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
-	def trimMenuItemLabel(self, s: str, maxLen: int):
+	@staticmethod
+	def trimMenuItemLabel(s: str, maxLen: int):
 		if len(s) > maxLen - 3:
 			s = s[: maxLen - 3].rstrip(" ") + "..."
 		return s
@@ -883,7 +884,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				func=self.selectDateShow,
 			),
 		)
-		if calObjName in ("weekCal", "monthCal"):
+		if calObjName in {"weekCal", "monthCal"}:
 			isWeek = calObjName == "weekCal"
 			calDesc = "Month Calendar" if isWeek else "Week Calendar"
 			menu.add(
@@ -1012,8 +1013,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return
 		menu = gtk.Menu(reserve_toggle_size=0)
 		####
-		for props in ui.menuMainItemDefs.values():
-			props = dict(props)  # make a copy before modify
+		for propsTmp in ui.menuMainItemDefs.values():
+			props = dict(propsTmp)  # make a copy before modify
 			cls = getattr(menuitems, props.pop("cls"))
 			props["func"] = getattr(self, props["func"])
 			if "active" in props:
@@ -1076,7 +1077,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("+", event, self)
 		self.onConfigChange()
 
-	def prefUpdateBgColor(self, _cal):
+	@staticmethod
+	def prefUpdateBgColor(_cal):
 		if ui.prefWindow:
 			ui.prefWindow.colorbBg.set_rgba(ui.bgColor)
 		# else:  # FIXME
@@ -1097,10 +1099,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			ui.winSticky = False
 		ui.saveLiveConf()
 
-	def copyDate(self, calType: int):
+	@staticmethod
+	def copyDate(calType: int):
 		setClipboard(ui.cell.format(ud.dateFormatBin, calType=calType))
 
-	def copyDateGetCallback(self, calType: int):
+	@staticmethod
+	def copyDateGetCallback(calType: int):
 		return lambda _obj=None, _event=None: setClipboard(
 			ui.cell.format(
 				ud.dateFormatBin,
@@ -1108,10 +1112,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			),
 		)
 
-	def copyCurrentDate(self, _obj=None, _event=None):
+	@staticmethod
+	def copyCurrentDate(_obj=None, _event=None):
 		setClipboard(ui.todayCell.format(ud.dateFormatBin))
 
-	def copyCurrentDateTime(self, _obj=None, _event=None):
+	@staticmethod
+	def copyCurrentDateTime(_obj=None, _event=None):
 		dateStr = ui.todayCell.format(ud.dateFormatBin)
 		timeStr = ui.todayCell.format(
 			ud.clockFormatBin,
@@ -1159,7 +1165,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	# def weekCalShow(self, obj=None, data=None):
 	# 	openWindow(ui.weekCalWin)
 
-	def useAppIndicator(self) -> bool:
+	@staticmethod
+	def useAppIndicator() -> bool:
 		if not ui.useAppIndicator:
 			return False
 		try:
@@ -1301,7 +1308,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def onCurrentDateChange(self, gdate):
 		self.statusIconUpdate(gdate=gdate)
 
-	def getStatusIconTooltip(self):
+	@staticmethod
+	def getStatusIconTooltip():
 		# tt = core.weekDayName[core.getWeekDay(*ddate)]
 		tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
 		# if ui.pluginsTextStatusIcon:##?????????
@@ -1313,7 +1321,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			tt += sep + _(d) + " " + locale_man.getMonthName(calType, m, y) + " " + _(y)
 		if ui.pluginsTextStatusIcon:
 			text = ui.todayCell.getPluginsText()
-			if text != "":
+			if text:
 				tt += "\n\n" + text  # .replace("\t", "\n") ## FIXME
 		for item in ui.todayCell.getEventsData():
 			if not item.showInStatusIcon:
@@ -1350,9 +1358,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					family = ui.getFont().family
 				style.append(("font-family", family))
 			if (
-				ui.statusIconHolidayFontColorEnable and
-				ui.statusIconHolidayFontColor and
-				ui.todayCell.holiday
+				ui.statusIconHolidayFontColorEnable
+				and ui.statusIconHolidayFontColor
+				and ui.todayCell.holiday
 			):
 				style.append(
 					("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)),
@@ -1557,7 +1565,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.eventManCreate()
 		openWindow(ui.eventManDialog)
 
-	def eventSearchCreate(self):
+	@staticmethod
+	def eventSearchCreate():
 		if ui.eventSearchWin is None:
 			from scal3.ui_gtk.event.search_events import EventSearchWindow
 
@@ -1571,21 +1580,24 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
 
-	def dayCalWinShow(self, _obj=None, _data=None):
+	@staticmethod
+	def dayCalWinShow(_obj=None, _data=None):
 		if not ui.dayCalWin:
 			from scal3.ui_gtk.day_cal_window import DayCalWindow
 
 			ui.dayCalWin = DayCalWindow()
 		ui.dayCalWin.present()
 
-	def timeLineShow(self, _obj=None, _data=None):
+	@staticmethod
+	def timeLineShow(_obj=None, _data=None):
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
 
 			ui.timeLineWin = TimeLineWindow()
 		openWindow(ui.timeLineWin)
 
-	def timeLineShowSelectedDay(self, _obj=None, _data=None):
+	@staticmethod
+	def timeLineShowSelectedDay(_obj=None, _data=None):
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
 
@@ -1593,7 +1605,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.timeLineWin.showDayInWeek(ui.cell.jd)
 		openWindow(ui.timeLineWin)
 
-	def yearWheelShow(self, _obj=None, _data=None):
+	@staticmethod
+	def yearWheelShow(_obj=None, _data=None):
 		if not ui.yearWheelWin:
 			from scal3.ui_gtk.year_wheel import YearWheelWindow
 
@@ -1716,7 +1729,7 @@ def main():
 	if ui.showMain:
 		action = "show"
 	if len(sys.argv) > 1:
-		if sys.argv[1] in ("--no-tray-icon", "--no-status-icon"):
+		if sys.argv[1] in {"--no-tray-icon", "--no-status-icon"}:
 			statusIconMode = 0
 			action = "show"
 		elif sys.argv[1] == "--hide":

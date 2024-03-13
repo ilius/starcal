@@ -339,7 +339,6 @@ windowList = IntegatedWindowList()
 
 def cssFunc(func: Callable) -> Callable:
 	"""Decorator for global functions or static methods."""
-	global windowList
 	windowList.addCSSFunc(func)
 	return func
 
@@ -457,7 +456,7 @@ def findAskpass():
 
 
 def setDefault_adjustTimeCmd():
-	global adjustTimeCmd, adjustTimeEnv
+	global adjustTimeCmd
 	from os.path import isfile
 
 	sudo = "/usr/bin/sudo"

@@ -1,4 +1,3 @@
-
 import gi
 
 from scal3.ui_gtk import gdk, gtk

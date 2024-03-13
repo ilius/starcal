@@ -67,6 +67,7 @@ def versionLessThan(v0: str, v1: str) -> bool:
 
 	return version.parse(v0) < version.parse(v1)
 
+
 # Note: to check if saved preferences are older than a version:
 # versionLessThan(core.prefVersion, v)
 
@@ -75,16 +76,16 @@ class FallbackLogger:
 	def __init__(self):
 		pass
 
-	def error(self, text):
+	def error(self, text):  # noqa: PLR6301
 		sys.stderr.write("ERROR: " + text + "\n")
 
-	def warning(self, text):
+	def warning(self, text):  # noqa: PLR6301
 		log.info("WARNING: " + text)
 
-	def debug(self, text):
+	def debug(self, text):  # noqa: PLR6301
 		log.info(text)
 
-	def exception(self, prefix):
+	def exception(self, prefix):  # noqa: PLR6301
 		typ, value, tback = sys.exc_info()
 		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
 		log.error(prefix + "\n" + text)
@@ -124,10 +125,16 @@ class StrOrderedDict(dict):
 		return self.keyList
 
 	def values(self) -> list[Any]:
-		return [dict.__getitem__(self, key) for key in self.keyList]
+		return [
+			dict.__getitem__(self, key)  # noqa: PLC2801
+			for key in self.keyList
+		]
 
 	def items(self) -> list[tuple[str, Any]]:
-		return [(key, dict.__getitem__(self, key)) for key in self.keyList]
+		return [
+			(key, dict.__getitem__(self, key))  # noqa: PLC2801
+			for key in self.keyList
+		]
 
 	def __getitem__(self, arg: "int | str | slice") -> Any:
 		if isinstance(arg, int):
@@ -196,20 +203,20 @@ class StrOrderedDict(dict):
 		assert isinstance(key, str)
 		assert key not in self.keyList
 		self.keyList.append(key)
-		dict.__setitem__(self, key, value)
+		dict.__setitem__(self, key, value)  # noqa: PLC2801
 
 	def insert(self, index: int, key: str, value: Any):
 		assert isinstance(key, str)
 		assert key not in self.keyList
 		self.keyList.insert(index, key)
-		dict.__setitem__(self, key, value)
+		dict.__setitem__(self, key, value)  # noqa: PLC2801
 
 	def sort(self, attr: "str | None" = None) -> typing.Iterator:
 		if attr is None:
 			self.keyList.sort()
 		else:
 			self.keyList.sort(
-				key=lambda k: getattr(dict.__getitem__(self, k), attr),
+				key=lambda k: getattr(dict.__getitem__(self, k), attr),  # noqa: PLC2801
 			)
 
 	def __iter__(self):
@@ -218,7 +225,7 @@ class StrOrderedDict(dict):
 	# lambda self: self.items().__iter__()
 	def iteritems(self):
 		for key in self.keyList:
-			yield (key, dict.__getitem__(self, key))
+			yield (key, dict.__getitem__(self, key))  # noqa: PLC2801
 
 	def __str__(self):
 		return f"StrOrderedDict({self.items()!r})"

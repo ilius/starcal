@@ -391,7 +391,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		k = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug("%.3f"%now())
-		if k in ("space", "home"):
+		if k in {"space", "home"}:
 			self.onHomeClick()
 		# elif k=="right":
 		# 	pass
@@ -399,7 +399,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		# 	pass
 		# elif k=="down":
 		# 	self.stopMovingAnim()
-		elif k in ("q", "escape"):
+		elif k in {"q", "escape"}:
 			self.closeFunc()
 		# elif k in ("plus", "equal", "kp_add"):
 		# 	self.keyboardZoom(True)

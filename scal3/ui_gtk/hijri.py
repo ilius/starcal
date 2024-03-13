@@ -254,7 +254,7 @@ class EditDbDialog(gtk.Dialog):
 	def monthLenCellEdited(self, _combo, path_string, new_text):
 		editIndex = int(path_string)
 		mLen = int(new_text)
-		if mLen not in (29, 30):
+		if mLen not in {29, 30}:
 			return
 		mLenPrev = self.treeModel[editIndex][3]
 		delta = mLen - mLenPrev
@@ -355,7 +355,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 
 	def onResponse(self, _dialog, _response_id):
 		if self.noShowCheckb.get_active():
-			with open(hijri.monthDbExpiredIgnoreFile, "w") as _file:
+			with open(hijri.monthDbExpiredIgnoreFile, "w", encoding="utf-8") as _file:
 				_file.write("")
 		self.destroy()
 		return True
@@ -373,7 +373,7 @@ def checkHijriMonthsExpiration():
 
 
 class HijriMonthsExpirationListener:
-	def onCurrentDateChange(self, _gdate):
+	def onCurrentDateChange(self, _gdate):  # noqa: PLR6301
 		checkHijriMonthsExpiration()
 
 

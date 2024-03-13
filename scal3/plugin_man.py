@@ -157,7 +157,7 @@ class BasePlugin(SObj):
 	def load(self):
 		pass
 
-	def getText(self, year, month, day):  # noqa: ARG002
+	def getText(self, _year, _month, _day):  # noqa: PLR6301
 		return ""
 
 	def updateCell(self, c):
@@ -341,7 +341,7 @@ class HolidayPlugin(BaseJsonPlugin):
 					if not isinstance(row, list | tuple):
 						log.error(f"Bad type for holiday item '{row}'")
 						continue
-					if len(row) not in (2, 3):
+					if len(row) not in {2, 3}:
 						log.error(f"Bad length for holiday item '{row}'")
 						continue
 					calTypeHolidays.append(tuple(row))
@@ -470,10 +470,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		module, ok = calTypes[self.calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
-		yearlyData = [
-			[""] * module.maxMonthLen
-			for _j in range(12)
-		]
+		yearlyData = [[""] * module.maxMonthLen for _j in range(12)]
 		# last item is a dict of dates (y, m, d) and the description of day:
 		yearlyData.append({})
 		ext = splitext(self.dataFile)[1].lower()
@@ -482,7 +479,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			with open(self.dataFile, encoding="utf-8") as fp:
 				lines = fp.read().split("\n")
 			for line in lines[1:]:
-				line = line.strip()
+				line = line.strip()  # noqa: PLW2901
 				if not line:
 					continue
 				if line[0] == "#":
@@ -567,7 +564,8 @@ class IcsTextPlugin(BasePlugin):
 		self.ymd = None
 		self.md = None
 
-	def _findVeventBegin(self, lines) -> int:
+	@staticmethod
+	def _findVeventBegin(lines) -> int:
 		for i, line in enumerate(lines):
 			if line == "BEGIN:VEVENT":
 				return i

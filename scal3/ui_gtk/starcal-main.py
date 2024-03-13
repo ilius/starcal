@@ -1,4 +1,3 @@
-
 import sys
 from collections.abc import Callable
 from os.path import abspath, dirname, isabs, join

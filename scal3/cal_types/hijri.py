@@ -57,7 +57,7 @@ monthNameAb = (
 
 
 def getMonthName(m, y=None):  # noqa: ARG001
-	return monthName.__getitem__(m - 1)
+	return monthName[m - 1]
 
 
 def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
@@ -134,9 +134,7 @@ def save():
 	saveJsonConf(
 		__name__,
 		confPath,
-		(
-			"hijriUseDB",
-		),
+		("hijriUseDB",),
 	)
 
 
@@ -176,12 +174,12 @@ class MonthDbHolder:
 		self.setMonthLenByYear(monthLenByYear)
 
 	def load(self):
-		with open(self.sysDbPath) as fp:
+		with open(self.sysDbPath, encoding="utf-8") as fp:
 			data = jsonToData(fp.read())
 		self.origVersion = data["version"]
 		##
 		if isfile(self.userDbPath):
-			with open(self.userDbPath) as fp:
+			with open(self.userDbPath, encoding="utf-8") as fp:
 				userData = jsonToData(fp.read())
 			if userData["origVersion"] >= self.origVersion:
 				data = userData
@@ -200,8 +198,7 @@ class MonthDbHolder:
 
 	def save(self):
 		mLenData = [
-			[year] + mLenList
-			for year, mLenList in self.getMonthLenByYear().items()
+			[year] + mLenList for year, mLenList in self.getMonthLenByYear().items()
 		]
 		text = dataToPrettyJson(
 			OrderedDict(
@@ -214,7 +211,7 @@ class MonthDbHolder:
 				],
 			),
 		)
-		with open(self.userDbPath, "w") as f:
+		with open(self.userDbPath, "w", encoding="utf-8") as f:
 			f.write(text)
 
 	def getMonthLenList(self):
@@ -258,7 +255,8 @@ class MonthDbHolder:
 		year, mm = divmod(ym, 12)
 		return (year, mm + 1, d)
 
-	def getJdFromDate(self, year, month, day):
+	@staticmethod
+	def getJdFromDate(year, month, day):
 		ym = year * 12 + month - 1
 		y0, m0, _d0 = monthDb.startDate
 		if ym - 1 not in monthDb.monthLenByYm:
