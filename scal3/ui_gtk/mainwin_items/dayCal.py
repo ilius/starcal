@@ -40,7 +40,7 @@ class CalObj(DayCal):
 	weekdayAbbreviateParam = "dcalWeekdayAbbreviate"
 	weekdayUppercaseParam = "dcalWeekdayUppercase"
 
-	def do_get_preferred_height(self):
+	def do_get_preferred_height(self):  # noqa: PLR6301
 		return 0, ui.winHeight / 3
 
 	def getWindow(self):
