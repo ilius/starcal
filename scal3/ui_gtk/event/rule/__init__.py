@@ -1,4 +1,3 @@
-
 # class MultiValueRule(gtk.Box):
 # 	def __init__(self, rule, ValueWidgetClass):
 # 		from scal3.ui_gtk.utils import labelImageButton

@@ -48,7 +48,7 @@ if __name__ == "__main__":
 	from gi.repository import GLib as glib
 
 	class TestRec:
-		def onCurrentDateChange(self, gdate):
+		def onCurrentDateChange(self, gdate):  # noqa: PLR6301
 			log.info(f"current date changed to {gdate!r}")
 
 	dateChange.add(TestRec())

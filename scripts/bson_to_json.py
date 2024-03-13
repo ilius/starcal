@@ -14,5 +14,5 @@ for fname_json in sys.argv[1:]:
 	with open(fname_json, "rb") as _file:
 		bson_s = _file.read()
 	data = bson.loads(bson_s)
-	with open(fname + ".json", "w") as _file:
+	with open(fname + ".json", "w", encoding="utf-8") as _file:
 		_file.write(json.dumps(data))

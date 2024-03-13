@@ -344,10 +344,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)
 		self.currentTime = int(tm)
 		if (
-			draw and
-			self.get_parent() and
-			self.get_parent().get_visible() and
-			self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
+			draw
+			and self.get_parent()
+			and self.get_parent().get_visible()
+			and self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
 		):
 			# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
 			self.queue_draw()
@@ -466,9 +466,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.drawBoxEditingHelperLines(cr)
 		# #### Show (possible) Daylight Saving change
 		if (
-			timeStart > 0 and
-			2 * 3600 < timeWidth < 30 * dayLen and
-			getUtcOffsetByEpoch(timeStart) != getUtcOffsetByEpoch(timeEnd)
+			timeStart > 0
+			and 2 * 3600 < timeWidth < 30 * dayLen
+			and getUtcOffsetByEpoch(timeStart) != getUtcOffsetByEpoch(timeEnd)
 		):
 			startJd = getJdFromEpoch(timeStart)
 			endJd = getJdFromEpoch(timeEnd)
@@ -836,8 +836,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 					its currently still (no speed and no force)
 			"""
 			if (
-				self.movingF * direction < 0
-				or self.movingF * self.movingV == 0
+				self.movingF * direction < 0 or self.movingF * self.movingV == 0
 				# or dtEvent > tl.movingKeyTimeout
 			):
 				if source == "scroll":
