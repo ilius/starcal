@@ -327,7 +327,8 @@ class PrayTimes:
 		return {"declination": decl, "equation": eqt}
 	"""
 
-	def sunDeclination(self, jd):
+	@staticmethod
+	def sunDeclination(jd):
 		D = jd - 2451545.0
 		g = fixAngle(357.529 + 0.98560028 * D)
 		q = fixAngle(280.459 + 0.98564736 * D)
@@ -335,7 +336,8 @@ class PrayTimes:
 		e = 23.439 - 0.00000036 * D
 		return arcsin(sin(e) * sin(L))
 
-	def sunEquation(self, jd):
+	@staticmethod
+	def sunEquation(jd):
 		D = jd - 2451545.0
 		g = fixAngle(357.529 + 0.98560028 * D)
 		q = fixAngle(280.459 + 0.98564736 * D)

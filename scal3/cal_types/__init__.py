@@ -12,9 +12,9 @@ GREGORIAN = 0  # Gregorian (common calendar)
 modules = [gregorian]
 
 
-with open(join(modDir, "modules.list")) as fp:
+with open(join(modDir, "modules.list"), encoding="utf-8") as fp:
 	for name in fp.read().split("\n"):
-		name = name.strip()
+		name = name.strip()  # noqa: PLW2901
 		if not name:
 			continue
 		if name.startswith("#"):
@@ -162,7 +162,8 @@ class CalTypesHolder:
 	def getDesc(self, key):
 		return self.get(key).desc
 
-	def nameByIndex(self, index):
+	@staticmethod
+	def nameByIndex(index):
 		if index >= len(modules):
 			return ""
 		return modules[index].name

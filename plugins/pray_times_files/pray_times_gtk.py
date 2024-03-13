@@ -254,18 +254,20 @@ class LocationDialog(gtk.Dialog):
 		t.clear()
 		d = self.cityData
 		n = len(d)
-		if s == "":
+		if not s:
 			for i in range(n):
 				t.append((i, d[i][0]))
-		else:  # here check also translations
-			mr = self.maxResults
-			r = 0
-			for i in range(n):
-				if s in (d[i][0] + "\n" + d[i][1]).lower():
-					t.append((i, d[i][1]))
-					r += 1
-					if r >= mr:
-						break
+			return
+
+		# here check also translations
+		mr = self.maxResults
+		r = 0
+		for i in range(n):
+			if s in (d[i][0] + "\n" + d[i][1]).lower():
+				t.append((i, d[i][1]))
+				r += 1
+				if r >= mr:
+					break
 		self.treev.scroll_to_cell((0, 0))
 		self.okB.set_sensitive(self.checkbEdit.get_active())
 

@@ -60,7 +60,8 @@ class GroupEditorDialog(gtk.Dialog):
 	def dateModeChanged(self, combo):
 		pass
 
-	def getNewGroupTitle(self, baseTitle):
+	@staticmethod
+	def getNewGroupTitle(baseTitle):
 		usedTitles = {group.title for group in ui.eventGroups}
 		if baseTitle not in usedTitles:
 			return baseTitle
