@@ -42,7 +42,7 @@ class EventUpdateQueue(Queue):
 		self._consumers.append(consumer)
 
 	def put(self, action, obj, sender):
-		if action not in (
+		if action not in {
 			"+",  # add/create event
 			"-",  # delete/remove event
 			"e",  # edit event
@@ -51,9 +51,9 @@ class EventUpdateQueue(Queue):
 			"eg",  # edit group, including enable/disable
 			"+g",  # new group with events inside it (imported)
 			"-g",  # delete/remove group with all its events
-		):
+		}:
 			raise ValueError(f"invalid {action=}")
-		if action not in ("r", "eg", "+g", "-g") and obj.parent is None:
+		if action not in {"r", "eg", "+g", "-g"} and obj.parent is None:
 			raise ValueError("obj.parent is None")
 		if action == "r":
 			if not isinstance(obj, event_lib.EventGroup | event_lib.EventTrash):
@@ -122,7 +122,7 @@ def testEventUpdateQueue():
 			return (0, self.id)
 
 	class MockConsumer:
-		def onEventUpdate(self, record: "EventUpdateRecord") -> None:
+		def onEventUpdate(self, record: "EventUpdateRecord") -> None:  # noqa: PLR6301
 			log.info(f"{record.action} {record.obj.id}")
 
 	queue = EventUpdateQueue()

@@ -118,7 +118,8 @@ class EventsImportWindow(WizardWindow):
 			self.err_fp = GtkBufferFile(self.buffer, tag_err)
 			sys.stderr = self.err_fp
 
-		def restoreStdOutErr(self):
+		@staticmethod
+		def restoreStdOutErr():
 			sys.stdout = sys.__stdout__
 			sys.stderr = sys.__stderr__
 
@@ -135,7 +136,8 @@ class EventsImportWindow(WizardWindow):
 			finally:
 				self.restoreStdOutErr()
 
-		def _runJson(self, fpath):
+		@staticmethod
+		def _runJson(fpath):
 			try:
 				with open(fpath, encoding="utf-8") as fp:  # noqa: FURB101
 					text = fp.read()

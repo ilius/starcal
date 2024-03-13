@@ -208,7 +208,4 @@ class WidgetClass(gtk.Box):
 		self.updateCountLabel()
 
 	def updateVars(self):
-		self.rule.setDates([
-			decode(row[0])
-			for row in self.treeModel
-		])
+		self.rule.setDates([decode(row[0]) for row in self.treeModel])
