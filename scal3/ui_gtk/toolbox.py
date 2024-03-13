@@ -257,14 +257,17 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	# the following methods (do_get_*) are overridden to avoid changing size
 	# of all icons (or even this icon) when text width changes slightly
 	# we assume text height does not change, and the text fits in the square
-	def do_get_request_mode(self) -> gtk.SizeRequestMode:
+	def do_get_request_mode(self) -> gtk.SizeRequestMode:  # noqa: PLR6301
 		return gtk.SizeRequestMode.WIDTH_FOR_HEIGHT
 
 	def do_get_preferred_height_for_width(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		return self.do_get_preferred_width_for_height(size)
 
-	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
+	def do_get_preferred_width_for_height(  # noqa: PLR6301
+		self,
+		size: int,
+	) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		return size, size
 

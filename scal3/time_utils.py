@@ -72,7 +72,7 @@ class HMS:
 		return (self.h, self.m, self.s)
 
 	def __format__(self, fmt=""):
-		if fmt in ("", "HM$"):
+		if fmt in {"", "HM$"}:
 			# optimization for default format
 			return (
 				"{h:02d}:{m:02d}" if self.s == 0 else "{h:02d}:{m:02d}:{s:02d}"
@@ -310,7 +310,7 @@ def durationDecode(durStr: str) -> tuple[int, int]:
 		if not unit:
 			return (value, 1)
 		for unitValue, unitName in durationUnitsAbs:
-			if unit in (unitName, unitName + "s"):  # ,unitName[0]
+			if unit in {unitName, unitName + "s"}:  # ,unitName[0]
 				return (value, unitValue)
 	raise ValueError(f"invalid duration '{durStr}'")
 

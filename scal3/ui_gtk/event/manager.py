@@ -165,11 +165,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	desc = _("Event Manager")
 
 	def onShow(self, _widget: gtk.Widget) -> None:
-		global eventManPos
 		self.move(*eventManPos)
 		self.onConfigChange()
 
-	def onDeleteEvent(self, _dialog: gtk.Dialog, _gevent: gdk.Event) -> bool:
+	@staticmethod
+	def onDeleteEvent(_dialog: gtk.Dialog, _gevent: gdk.Event) -> bool:
 		# onResponse is called before onDeleteEvent
 		# just return True, no need to do anything else
 		# without this signal handler, the window will be distroyed
@@ -655,7 +655,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		cell.set_property("inconsistent", True)
 		cell.set_active(value)
 
-	def smallerButton(self, label="", imageName="", func=None, tooltip=""):
+	@staticmethod
+	def smallerButton(label="", imageName="", func=None, tooltip=""):
 		button = labelImageButton(
 			label=label,
 			imageName=imageName,
@@ -769,12 +770,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		model.set_value(itr, 0, active)
 		if active:
 			self.multiSelectCBActivate(groupIndex, eventIndex)
-		else:
-			if groupIndex in self.multiSelectPathDict:
-				if eventIndex in self.multiSelectPathDict[groupIndex]:
-					del self.multiSelectPathDict[groupIndex][eventIndex]
-				if not self.multiSelectPathDict[groupIndex]:
-					del self.multiSelectPathDict[groupIndex]
+		elif groupIndex in self.multiSelectPathDict:
+			if eventIndex in self.multiSelectPathDict[groupIndex]:
+				del self.multiSelectPathDict[groupIndex][eventIndex]
+			if not self.multiSelectPathDict[groupIndex]:
+				del self.multiSelectPathDict[groupIndex]
 
 		parentIter = model.get_iter((groupIndex,))
 		try:
@@ -801,7 +801,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def multiSelectTreeviewTogglePath(self, path: "list[int]"):
 		model = self.treeModel
-		if len(path) not in (1, 2):
+		if len(path) not in {1, 2}:
 			raise RuntimeError(f"invalid path depth={len(path)}, {path=}")
 		itr = model.get_iter(path)
 		pathTuple = tuple(path)
@@ -1062,11 +1062,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			showError(msg, transient_for=self)
 			raise RuntimeError("Invalid event type for this group")
 
-	def getGroupRow(self, group: lib.EventGroup) -> None:
+	@staticmethod
+	def getGroupRow(group: lib.EventGroup) -> None:
 		return (False,) + common.getGroupRow(group) + ("",)
 
+	@staticmethod
 	def getEventRow(
-		self,
 		event: lib.Event,
 	) -> tuple[bool, int, GdkPixbuf.Pixbuf, str, str]:
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
@@ -1662,7 +1663,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				self.multiSelectTreeviewToggleSelected()
 				return True
 
-		elif kname in ("up", "down"):
+		elif kname in {"up", "down"}:
 			if self.multiSelect and gevent.state & gdk.ModifierType.SHIFT_MASK > 0:
 				isDown = kname == "down"
 				self.multiSelectShiftUpDownPress(isDown)
@@ -1683,7 +1684,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self).present()
 
-	def onMenuBarSearchClick(self, _menuItem: gtk.MenuItem) -> None:
+	@staticmethod
+	def onMenuBarSearchClick(_menuItem: gtk.MenuItem) -> None:
 		ui.mainWin.eventSearchShow()
 
 	def _do_checkForOrphans(self) -> None:
@@ -1899,9 +1901,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if len(objs) == 1:  # group, not event
 			group = objs[0]
 			if (
-				group.name != "trash" and
-				col == self.pixbufCol and
-				self.toggleEnableGroup(group, path)
+				group.name != "trash"
+				and col == self.pixbufCol
+				and self.toggleEnableGroup(group, path)
 			):
 				treev.set_cursor(path)
 				return True

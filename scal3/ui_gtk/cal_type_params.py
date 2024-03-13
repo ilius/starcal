@@ -136,9 +136,8 @@ class TextParamWidget(gtk.Box):
 				frame.set_label_widget(self.enableCheck)
 			else:
 				frame.set_label(enableTitleLabel)
-		else:
-			if hasEnable:
-				pack(vbox, self.enableCheck)
+		elif hasEnable:
+			pack(vbox, self.enableCheck)
 		####
 		self.set_border_width(5)
 		###
