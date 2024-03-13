@@ -102,7 +102,7 @@ class WinConButtonMin(WinConButton):
 	imageNameFocus = "minimize-focus"
 	imageNameInactive = "minimize-inactive"
 
-	def onClick(self, gWin, gevent):
+	def onClick(self, gWin, gevent):  # noqa: PLR6301
 		gWin.toggleMinimized(gevent)
 
 
@@ -113,10 +113,10 @@ class WinConButtonMax(WinConButton):
 	imageNameFocus = "maximize-focus"
 	imageNameInactive = "maximize-inactive"
 
-	def onClick(self, gWin, gevent):
+	def onClick(self, gWin, gevent):  # noqa: PLR6301
 		gWin.toggleMaximized(gevent)
 
-	def onRightClick(self, gWin, gevent):
+	def onRightClick(self, gWin, gevent):  # noqa: PLR6301
 		gWin.toggleWidthMaximized(gevent)
 
 
@@ -127,7 +127,7 @@ class WinConButtonClose(WinConButton):
 	imageNameFocus = "close-focus"
 	imageNameInactive = "close-inactive"
 
-	def onClick(self, gWin, _gevent):
+	def onClick(self, gWin, _gevent):  # noqa: PLR6301
 		gWin.emit("delete-event", gdk.Event())
 
 
@@ -142,7 +142,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNameInactive = f"{direc}-inactive"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin, _gevent):
+	def onClick(self, gWin, _gevent):  # noqa: PLR6301
 		gWin.emit("toggle-right-panel")
 
 

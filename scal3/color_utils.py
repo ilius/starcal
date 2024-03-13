@@ -31,7 +31,7 @@ def rgbToHsl(r, g, b):
 	# ln means lightness
 	ln = (mx + mn) / 2.0
 	###
-	if 0 in (ln, dm):
+	if 0 in {ln, dm}:
 		s = 0
 	elif 0 < ln < 0.5:
 		s = dm / (mx + mn)

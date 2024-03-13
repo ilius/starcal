@@ -139,7 +139,8 @@ class CustomizeWindow(gtk.Dialog):
 			# self.resize does not work
 			self.vbox.set_size_request(300, 450)
 
-	def itemPixbuf(self, item):
+	@staticmethod
+	def itemPixbuf(item):
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
@@ -390,17 +391,17 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		self.stack.addPage(page)  # FIXME: crashes here
 
-		for page in item.getSubPages():
-			if not (page.pagePath and page.pageParent):
-				if not page.pageName:
-					raise ValueError(f"pageName empty, {page=}")
-				page.pagePath = pagePath + "." + page.pageName
-				page.pageParent = ".".join(
-					[pagePath] + page.pageName.split(".")[:-1],
+		for page2 in item.getSubPages():
+			if not (page2.pagePath and page2.pageParent):
+				if not page2.pageName:
+					raise ValueError(f"pageName empty, {page2=}")
+				page2.pagePath = pagePath + "." + page2.pageName
+				page2.pageParent = ".".join(
+					[pagePath] + page2.pageName.split(".")[:-1],
 				)
 
-			page.pageTitle = page.pageTitle + " - " + title
-			self.stack.addPage(page)
+			page2.pageTitle = page2.pageTitle + " - " + title
+			self.stack.addPage(page2)
 		item.connect("goto-page", self.gotoPageCallback)
 
 	def _addPage(
@@ -473,7 +474,8 @@ class CustomizeWindow(gtk.Dialog):
 		page = self._addPage(pagePath, parentPagePath, parentItem, itemIndex)
 		self.stack.gotoPage(page.pagePath)
 
-	def loadItem(self, parentItem, itemIndex):
+	@staticmethod
+	def loadItem(parentItem, itemIndex):
 		item = parentItem.items[itemIndex]
 		if not item.loaded:
 			item = item.getLoadedObj()

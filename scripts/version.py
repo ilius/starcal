@@ -15,12 +15,12 @@ rootDir = os.path.dirname(scriptsDir)
 scalDir = join(rootDir, "scal3")
 
 if isfile(join(rootDir, "VERSION")):
-	with open(join(rootDir, "VERSION")) as _file:
+	with open(join(rootDir, "VERSION"), encoding="utf-8") as _file:
 		print(_file.read().strip())
 		sys.exit(0)
 
 VERSION = ""
-with open("%s/core.py" % scalDir) as _file:
+with open("%s/core.py" % scalDir, encoding="utf-8") as _file:
 	while True:
 		line = _file.readline()
 		if line.startswith("VERSION"):

@@ -154,5 +154,5 @@ def convertBuiltinTextPlugToIcs(
 	icsText += "END:VCALENDAR\n"
 	fname = split(plug.fpath)[-1]
 	fname = splitext(fname)[0] + f"{namePostfix}.ics"
-	with open(fname, "w") as _file:
+	with open(fname, "w", encoding="utf-8") as _file:
 		_file.write(icsText)
