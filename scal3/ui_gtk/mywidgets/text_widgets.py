@@ -16,8 +16,8 @@ class ReadOnlyTextWidget:
 	def has_selection():
 		raise NotImplementedError
 
-	def cursorIsOnURL(self):
-		return False
+	# def cursorIsOnURL(self):
+	# 	return False
 
 
 class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
@@ -100,7 +100,8 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	# 	word = findWordByPos(text, pos)[0]
 	# 	setClipboard(word)
 
-	def copyText(self, _item, text):
+	@classmethod
+	def copyText(cls, _item, text):
 		setClipboard(text)
 
 	def onButtonPress(self, _widget, gevent):
