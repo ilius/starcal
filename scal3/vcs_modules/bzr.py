@@ -112,13 +112,13 @@ def getShortStatByTrees(repo, old_tree, tree):  # noqa: ARG001
 			# for kind in (old_kind, new_kind):
 			# 	if not kind in (None, "file", "symlink", "directory"):
 			# 		log.info(f"kind: {old_kind}, {new_kind}")
-			if new_kind in ("file", "symlink"):
+			if new_kind in {"file", "symlink"}:
 				files_changed += 1
 				text = tree.get_file_text(file_id)
 				if "\x00" not in text[:1024]:  # FIXME
 					if old_kind is None:
 						insertions += len(split_lines(text))
-					elif old_kind in ("file", "symlink"):
+					elif old_kind in {"file", "symlink"}:
 						old_text = old_tree.get_file_text(file_id)
 						seq = SequenceMatcher(
 							None,
@@ -133,7 +133,7 @@ def getShortStatByTrees(repo, old_tree, tree):  # noqa: ARG001
 							insertions += j2 - j1
 							deletions += i2 - i1
 			elif new_kind is None:
-				if old_kind in ("file", "symlink"):
+				if old_kind in {"file", "symlink"}:
 					files_changed += 1
 					old_text = old_tree.get_file_text(file_id)
 					if "\x00" not in old_text[:1024]:  # FIXME

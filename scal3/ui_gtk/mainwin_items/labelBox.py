@@ -79,14 +79,14 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			)
 		return ""
 
-	def getItemStr(self, i):
+	@staticmethod
+	def getItemStr(i):
 		return _(i + 1, fillZero=2)
 
-	def getActiveStr(self, s):
+	@classmethod
+	def getActiveStr(cls, s):
 		return colorizeSpan(s, ui.labelBoxMenuActiveColor)
-
-	# def getActiveStr(self, s):
-	# 	return f"<b>{s}</b>"
+		# return f"<b>{s}</b>"
 
 	def __init__(self, calType, active=0):
 		BaseLabel.__init__(self)
@@ -205,7 +205,8 @@ class IntLabel(BaseLabel):
 		("changed", [int]),
 	]
 
-	def getActiveStr(self, s):
+	@classmethod
+	def getActiveStr(cls, s):
 		return colorizeSpan(s, ui.labelBoxMenuActiveColor)
 
 	def __init__(self, height=9, active=0):
@@ -538,7 +539,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.monthLabels = []
 		self.onBorderWidthChange()
 
-	def newSeparator(self):
+	@staticmethod
+	def newSeparator():
 		# return gtk.VSeparator()
 		return gtk.Label()
 
@@ -566,17 +568,17 @@ class CalObj(gtk.Box, CustomizableCalObj):
 					wm = w
 			label.set_property("width-request", wm)
 
-	def getFontPreviewText(self, calType):
+	@staticmethod
+	def getFontPreviewText(calType):
 		date = ui.cell.dates[calType]
 		year = _(date[0])
 		month = getMonthName(calType, date[1])
 		return f"{year} {month}"
 
 	def getFontPreviewTextFull(self):
-		return " ".join([
-			self.getFontPreviewText(calType)
-			for calType in calTypes.active
-		])
+		return " ".join(
+			[self.getFontPreviewText(calType) for calType in calTypes.active],
+		)
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)

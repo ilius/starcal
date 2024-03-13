@@ -76,8 +76,9 @@ class ColumnBase(CustomizableCalObj):
 	def __init__(self):
 		pass
 
-	def getWidthAttr(self):
-		return f"wcal_{self.objName}_width"
+	@classmethod
+	def getWidthAttr(cls):
+		return f"wcal_{cls.objName}_width"
 
 	def getWidthValue(self):
 		return getattr(ui, self.getWidthAttr(), None)
@@ -175,7 +176,7 @@ class ColumnBase(CustomizableCalObj):
 		self.updatePacking()
 		self.queue_draw()
 
-	def getFontPreviewText(self):
+	def getFontPreviewText(self):  # noqa: PLR6301
 		return ""
 
 
@@ -296,8 +297,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 				)
 				cr.fill()
 
+	@staticmethod
 	def drawCursorOutline(
-		self,
 		cr: "cairo.Context",
 		cx0: float,
 		cy0: float,
@@ -308,8 +309,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 		cursorLineWidth = ui.wcalCursorLineWidthFactor * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
+	@staticmethod
 	def drawCursorBg(
-		self,
 		cr: "cairo.Context",
 		cx0: float,
 		cy0: float,
@@ -375,14 +376,14 @@ class Column(gtk.DrawingArea, ColumnBase):
 					layoutY = i * rowH + (lineI + 0.5) * lineH - layoutH / 2
 					cr.move_to(layoutX, layoutY)
 					if self.colorizeHolidayText and self.wcal.status[i].holiday:
-						color = ui.holidayColor
+						color = ui.holidayColor  # noqa: PLW2901
 					if not color:
-						color = ui.textColor
+						color = ui.textColor  # noqa: PLW2901
 					setColor(cr, color)
 					show_layout(cr, layout)
 					lineI += 1
 
-	def onButtonPress(self, _widget, _gevent):
+	def onButtonPress(self, _widget, _gevent):  # noqa: PLR6301
 		return False
 
 	def onDateChange(self, *a, **kw):
@@ -567,7 +568,7 @@ class WeekDaysColumn(Column):
 		)
 		self.drawCursorFg(cr)
 
-	def getFontPreviewText(self):
+	def getFontPreviewText(self):  # noqa: PLR6301
 		return _(", ").join([_(core.getWeekDayN(i)) for i in range(7)])
 
 
@@ -614,7 +615,7 @@ class PluginsTextColumn(Column):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 
-	def getFontPreviewText(self):
+	def getFontPreviewText(self):  # noqa: PLR6301
 		return ""  # TODO
 
 
@@ -750,7 +751,7 @@ class EventsTextColumn(Column):
 			[self.getDayTextData(i) for i in range(7)],
 		)
 
-	def getFontPreviewText(self):
+	def getFontPreviewText(self):  # noqa: PLR6301
 		return ""  # TODO
 
 	def addExtraOptionsWidget(self, optionsWidget):
@@ -985,7 +986,8 @@ class DaysOfMonthColumn(Column):
 		###
 		self.connect("draw", self.onExposeEvent)
 
-	def getWidthAttr(self):
+	@classmethod
+	def getWidthAttr(cls):
 		return "wcal_daysOfMonth_width"
 
 	def drawColumn(self, cr):
@@ -1311,10 +1313,11 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	)
 	signals = CalBase.signals
 
-	def do_get_preferred_height(self):
+	def do_get_preferred_height(self):  # noqa: PLR6301
 		return 0, ui.winHeight / 3
 
-	def getCellPagePlus(self, cell, plus):
+	@staticmethod
+	def getCellPagePlus(cell, plus):
 		return ui.cellCache.getCell(cell.jd + 7 * plus)
 
 	def __init__(self, win):
@@ -1509,9 +1512,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 				for child in item.get_children():
 					if self.itemContainsGdkWindow(child, col_win):
 						return child
-			else:
-				if self.itemContainsGdkWindow(item, col_win):
-					return item
+			elif self.itemContainsGdkWindow(item, col_win):
+				return item
 		return None
 
 	def onButtonPress(self, _widget, gevent):
@@ -1551,11 +1553,11 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			self.jdPlus(rtlSgn() * -7)
 		elif kname == "end":
 			self.gotoJd(self.status[-1].jd)
-		elif kname in ("page_up", "k", "p"):
+		elif kname in {"page_up", "k", "p"}:
 			self.jdPlus(-7)
-		elif kname in ("page_down", "j", "n"):
+		elif kname in {"page_down", "j", "n"}:
 			self.jdPlus(7)
-		elif kname in ("f10", "m"):
+		elif kname in {"f10", "m"}:
 			if gevent.state & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
 				self.emit("popup-cell-menu", *self.getCellPos())
