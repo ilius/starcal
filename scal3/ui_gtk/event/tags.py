@@ -114,19 +114,16 @@ class EventTagsAndIconSelect(gtk.Box):
 
 	def getData(self):
 		active = self.typeCombo.get_active()
-		if active in (-1, None):
+		if active in {-1, None}:
 			icon = ""
 			tags = []
+		elif active == self.customItemIndex:
+			icon = self.iconSelect.get_filename()
+			tags = [button.tagName for button in self.tagButtons if button.get_active()]
 		else:
-			if active == self.customItemIndex:
-				icon = self.iconSelect.get_filename()
-				tags = [
-					button.tagName for button in self.tagButtons if button.get_active()
-				]
-			else:
-				item = ui.eventTags[active]
-				icon = item.icon
-				tags = [item.name]
+			item = ui.eventTags[active]
+			icon = item.icon
+			tags = [item.name]
 		return {
 			"icon": icon,
 			"tags": tags,
@@ -240,11 +237,7 @@ class TagsListBox(gtk.Box):
 		cell.set_active(active)
 
 	def getData(self):
-		return [
-			row[0]
-			for row in self.treeModel
-			if row[1]
-		]
+		return [row[0] for row in self.treeModel if row[1]]
 
 	def setData(self, tags):
 		self.optionsChanged(tags=tags)

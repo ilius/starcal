@@ -53,7 +53,7 @@ class Field:
 	def setValue(self, v):
 		pass
 
-	def getValue(self):
+	def getValue(self):  # noqa: PLR6301
 		return None
 
 	def plus(self, p):
@@ -101,7 +101,7 @@ class IntField(NumField):
 		self.setDefault()
 
 	def setText(self, text):
-		if text == "":
+		if not text:
 			self.setDefault()
 			return
 		try:
@@ -216,7 +216,7 @@ class SingleCharField(Field):
 	def getText(self):
 		return self.value
 
-	def getMaxWidth(self):
+	def getMaxWidth(self):  # noqa: PLR6301
 		return 1
 
 

@@ -70,11 +70,10 @@ class NumRangesEntry(gtk.Entry):
 		commaI = text.rfind(",", 0, pos)
 		if commaI == -1:
 			startI = 0
+		elif text[commaI + 1] == " ":
+			startI = commaI + 2
 		else:
-			if text[commaI + 1] == " ":
-				startI = commaI + 2
-			else:
-				startI = commaI + 1
+			startI = commaI + 1
 		nextCommaI = text.find(",", pos)
 		if nextCommaI == -1:
 			endI = n
@@ -94,11 +93,10 @@ class NumRangesEntry(gtk.Entry):
 			newNum = thisNum + plus
 			if not self._min <= newNum <= self._max:
 				return
+		elif plus > 0:
+			newNum = self._max
 		else:
-			if plus > 0:
-				newNum = self._max
-			else:
-				newNum = self._min
+			newNum = self._min
 		newNumStr = _(newNum)
 		newText = text[:startI] + newNumStr + text[endI:]
 		self.set_text(newText)
@@ -113,7 +111,7 @@ class NumRangesEntry(gtk.Entry):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(kval, kname)
-		if kname in (
+		if kname in {
 			"tab",
 			"escape",
 			"backspace",
@@ -124,7 +122,7 @@ class NumRangesEntry(gtk.Entry):
 			"control_l",
 			"control_r",
 			"iso_next_group",
-		):
+		}:
 			return False
 		if kname == "return":
 			self.validate()
@@ -145,7 +143,7 @@ class NumRangesEntry(gtk.Entry):
 		# 	self.insertText(u"[")
 		# elif kname in ("braceright", "bracketright"):
 		# 	self.insertText(u"]")
-		elif kname in ("comma", "arabic_comma"):
+		elif kname in {"comma", "arabic_comma"}:
 			self.insertText(", ", False)
 		elif kname == "minus":
 			pos = self.get_position()

@@ -94,7 +94,7 @@ def getMonthLen(y, m):
 		if isLeap(y):
 			return 29
 		return 28
-	if m in (4, 6, 9, 11):
+	if m in {4, 6, 9, 11}:
 		return 30
 	return 31
 

@@ -44,7 +44,7 @@ def readEtcLocaltime():
 	# https://github.com/regebro/tzlocal/blob/master/tzlocal/unix.py
 	if not islink("/etc/localtime"):
 		if isfile("/var/db/zoneinfo"):
-			with open("/var/db/zoneinfo") as _file:
+			with open("/var/db/zoneinfo", encoding="utf-8") as _file:
 				tzname = _file.read().strip()
 				return dateutil.tz.gettz(tzname)
 		# 'zdump /etc/localtime' does not show timezone's name

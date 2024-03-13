@@ -82,9 +82,8 @@ class WidgetClass(common.WidgetClass):
 		if self.startYearCheck.get_active():
 			startRule = self.event.getAddRule("start")
 			startRule.date = (self.startYearSpin.get_value(), 1, 1)
-		else:
-			if "start" in self.event:
-				del self.event["start"]
+		elif "start" in self.event:
+			del self.event["start"]
 
 	def calTypeComboChanged(self, _obj=None):
 		# overwrite method from common.WidgetClass

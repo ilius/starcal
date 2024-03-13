@@ -115,7 +115,7 @@ confEncoders = {
 
 
 def loadConf() -> None:
-	global version, prefVersion, activeCalTypes, inactiveCalTypes
+	global version, prefVersion, activeCalTypes, inactiveCalTypes  # noqa: PLW0602
 	###########
 	loadModuleJsonConf(__name__)
 	###########
@@ -160,7 +160,7 @@ def getVersion() -> str:
 		from pkg_resources import parse_version
 
 	if isfile(join(sourceDir, "VERSION")):
-		with open(join(sourceDir, "VERSION")) as _file:
+		with open(join(sourceDir, "VERSION"), encoding="utf-8") as _file:
 			return _file.read().strip()
 
 	gitDir = os.path.join(sourceDir, ".git")
@@ -269,8 +269,8 @@ def getWeekDayAuto(
 # week number in year
 def getWeekNumberByJdAndYear(jd: int, year: int) -> int:
 	if (
-		primary_to_jd(year + 1, 1, 1) - jd < 7 and
-		getWeekNumber(*jd_to_primary(jd + 14)) == 3
+		primary_to_jd(year + 1, 1, 1) - jd < 7
+		and getWeekNumber(*jd_to_primary(jd + 14)) == 3
 	):
 		return 1
 	###
@@ -340,7 +340,6 @@ def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
 
 
 def validatePlugList() -> None:
-	global allPlugList, plugIndex
 	n = len(allPlugList)
 	i = 0
 	while i < n:
@@ -365,7 +364,6 @@ def validatePlugList() -> None:
 
 def initPlugins(fs: "s_object.FileSystem") -> None:
 	# log.debug("----------------------- initPlugins")
-	global allPlugList, plugIndex
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
 	########################
@@ -383,7 +381,7 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 			if fname.startswith("."):
 				continue
 			_name, ext = os.path.splitext(fname)
-			if ext in (".txt", ".pyc"):
+			if ext in {".txt", ".pyc"}:
 				continue
 			path = f"{direc}/{fname}"
 			# if path in path:
@@ -528,7 +526,7 @@ def init() -> None:
 
 
 if len(sys.argv) > 1:
-	if sys.argv[1] in ("--help", "-h"):
+	if sys.argv[1] in {"--help", "-h"}:
 		log.info("No help implemented yet!")
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
@@ -586,12 +584,12 @@ eventTextSep = ": "  # use to separate summary from description for display
 
 
 licenseText = _("__license__")
-if licenseText in ("__license__", ""):
+if licenseText in {"__license__", ""}:
 	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:  # noqa: FURB101
 		licenseText = fp.read()
 
 aboutText = _("aboutText")
-if aboutText in ("aboutText", ""):
+if aboutText in {"aboutText", ""}:
 	with open(f"{sourceDir}/about", encoding="utf-8") as fp:  # noqa: FURB101
 		aboutText = fp.read()
 

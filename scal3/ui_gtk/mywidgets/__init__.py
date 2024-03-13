@@ -63,8 +63,8 @@ class MyFontButton(gtk.FontButton):
 		self.drag_dest_add_text_targets()
 		self.connect("drag-data-received", self.dragDataRec)
 
+	@staticmethod
 	def dragDataGet(
-		self,
 		fontb: gtk.FontButton,
 		_context: gdk.DragContext,
 		selection: gtk.SelectionData,

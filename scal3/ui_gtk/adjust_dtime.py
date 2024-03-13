@@ -238,7 +238,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
 			self.buttonSet.set_sensitive(
-				self.ntpServerEntry.get_text() != "",
+				bool(self.ntpServerEntry.get_text()),
 			)
 
 	def onSetSysTimeClick(self, _widget=None):
