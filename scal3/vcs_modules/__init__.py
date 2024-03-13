@@ -1,4 +1,3 @@
-
 from scal3.time_utils import getEpochFromJd
 
 
@@ -23,7 +22,7 @@ def getCommitListFromEst(obj, startJd, endJd, format_rev_id=None):
 	data = []
 	for t0, _t1, rev_id, _dt in obj.est.search(startEpoch, endEpoch):
 		if format_rev_id:
-			rev_id = format_rev_id(obj.repo, rev_id)
+			rev_id = format_rev_id(obj.repo, rev_id)  # noqa: PLW2901
 		data.append((t0, rev_id))
 	data.sort(reverse=True)
 	return data

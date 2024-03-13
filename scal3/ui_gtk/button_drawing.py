@@ -48,9 +48,9 @@ class BaseButton:
 			raise ValueError(f"invalid {x=}, {xalign=}")
 		if y < 0 and yalign != "center":
 			raise ValueError(f"invalid {y=}, {yalign=}")
-		if xalign not in ("left", "right", "center"):
+		if xalign not in {"left", "right", "center"}:
 			raise ValueError(f"invalid {xalign=}")
-		if yalign not in ("top", "buttom", "center"):
+		if yalign not in {"top", "buttom", "center"}:
 			raise ValueError(f"invalid {yalign=}")
 
 		self.onPress = onPress

@@ -391,7 +391,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)
 		self.currentCalType = calTypes.primary
 
-	def sort_func_group(self, model, iter1, iter2, _user_data=None):
+	@staticmethod
+	def sort_func_group(model, iter1, iter2, _user_data=None):
 		return cmp(
 			ui.eventGroups.index(model.get(iter1, 0)[0]),
 			ui.eventGroups.index(model.get(iter2, 0)[0]),
@@ -468,8 +469,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel))),
 		)
 
+	@staticmethod
 	def searchAndExportToJSON(
-		self,
 		groupIds: "list[int]",
 		conds: "dict[str, Any]",
 		fpath: str,

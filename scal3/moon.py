@@ -1,5 +1,3 @@
-
-
 def getMoonPhase(jd, southernHemisphere=False):
 	"""
 	returns a float number that: 0 <= phase < 2

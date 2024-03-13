@@ -1,4 +1,3 @@
-
 from scal3.core import jd_to
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gtk, pack

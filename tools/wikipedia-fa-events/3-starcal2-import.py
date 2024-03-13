@@ -1,4 +1,3 @@
-
 import json
 import sys
 
@@ -25,7 +24,6 @@ newGroupsDict = {}
 
 
 def getGroupByTitle(title):
-	global newGroupsDict
 	try:
 		return newGroupsDict[title]
 	except KeyError:
@@ -42,8 +40,8 @@ def getGroupByTitle(title):
 		return group
 
 
-for line in open("wikipedia-fa.tab"):  # noqa: SIM115
-	line = line.strip()
+for line in open("wikipedia-fa.tab", encoding="utf-8"):  # noqa: SIM115
+	line = line.strip()  # noqa: PLW2901
 	if not line:
 		continue
 	parts = line.split("\t")
@@ -53,7 +51,7 @@ for line in open("wikipedia-fa.tab"):  # noqa: SIM115
 		date_str, category, summary = parts
 		description = ""
 	else:
-		log.info("BAD LINE", line)
+		log.info(f"BAD LINE: {line}")
 		continue
 	year, month, day = dateDecode(date_str)
 	group = getGroupByTitle(groupTitlePrefix + category)

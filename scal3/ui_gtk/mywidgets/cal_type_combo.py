@@ -27,5 +27,6 @@ class CalTypeCombo(IdComboBox):
 		for i, mod in calTypes.iterIndexModuleInactive():
 			ls.append([i, _(mod.desc, ctx="calendar")])
 
-	def _is_separator(self, model, rowIter, _data):
+	@staticmethod
+	def _is_separator(model, rowIter, _data):
 		return model.get_value(rowIter, 1) is None

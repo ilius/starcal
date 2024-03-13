@@ -251,7 +251,7 @@ def main():
 	# print(f"runDirStr: {runDirStr}")
 
 	executablePath = join(targetPrefix, "bin", pkgName)
-	with open(executablePath, mode="w") as _file:
+	with open(executablePath, mode="w", encoding="utf-8") as _file:
 		_file.write(
 			"#!/usr/bin/env sh\n"
 			f'{pyCmd} {runDirStr}/scal3/ui_gtk/starcal-main.py "$@"\n',
@@ -259,7 +259,7 @@ def main():
 	os.chmod(executablePath, 0o755)
 	print(f"Executable: {executablePath}")
 
-	with open(join(targetCodeDir, "VERSION"), mode="w") as _file:
+	with open(join(targetCodeDir, "VERSION"), mode="w", encoding="utf-8") as _file:
 		_file.write(f"{version}\n")
 
 	if installType == "system":
@@ -270,7 +270,15 @@ def main():
 	else:
 		os.remove(join(targetCodeDir, "distro/base/uninstall"))
 
-	with open(join(shareDir, "applications", f"{pkgName}.desktop"), mode="w") as _file:
+	with open(
+		join(
+			shareDir,
+			"applications",
+			f"{pkgName}.desktop",
+		),
+		mode="w",
+		encoding="utf-8",
+	) as _file:
 		_file.write(
 			"[Desktop Entry]\n"
 			"Encoding=UTF-8\n"
@@ -294,7 +302,7 @@ def main():
 	):
 		return 1
 
-	if "$installType" in ("for-pkg", "system"):
+	if "$installType" in {"for-pkg", "system"}:
 		cleanup(join(targetCodeDir, ".git"))
 		cleanup(join(targetCodeDir, ".github"))
 		cleanup(join(targetCodeDir, ".gitignore"))

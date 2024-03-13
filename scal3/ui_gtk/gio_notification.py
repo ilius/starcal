@@ -49,7 +49,7 @@ class GioNotificationWrapper(gio.Notification):
 
 	# def connect(
 
-	def is_embedded(self):
+	def is_embedded(self):  # noqa: PLR6301
 		# FIXME
 		return True
 

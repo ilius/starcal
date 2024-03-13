@@ -1237,10 +1237,12 @@ class PreferencesWindow(gtk.Window):
 		self.vbox.show_all()
 		self.vbox.connect("realize", self.onMainVBoxRealize)
 
-	def onMainVBoxRealize(self, *_args):
+	@staticmethod
+	def onMainVBoxRealize(*_args):
 		ud.windowList.updateCSS()
 
-	def onClearImageCacheClick(self, _button):
+	@staticmethod
+	def onClearImageCacheClick(_button):
 		pixcache.clearFiles()
 		pixcache.clear()
 
@@ -1307,7 +1309,8 @@ class PreferencesWindow(gtk.Window):
 			self.gtkPrefItems,
 		)
 
-	def loadPlugin(self, plug: "PluginType", plugI: int) -> "PluginType":
+	@staticmethod
+	def loadPlugin(plug: "PluginType", plugI: int) -> "PluginType":
 		plug = plugin_man.loadPlugin(plug.file, enable=True)
 		if plug:
 			assert plug.loaded
@@ -1538,7 +1541,8 @@ class PreferencesWindow(gtk.Window):
 			return
 		plug.open_configure()
 
-	def onPlugExportToIcsClick(self, _menu, plug):
+	@staticmethod
+	def onPlugExportToIcsClick(_menu, plug):
 		from scal3.ui_gtk.export import ExportToIcsDialog
 
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
@@ -1674,8 +1678,8 @@ class PreferencesWindow(gtk.Window):
 		t.swap(t.get_iter(i), t.get_iter(i + 1))
 		self.plugTreeview.set_cursor(i + 1)
 
+	@staticmethod
 	def plugTreevDragReceived(
-		self,
 		treev,
 		_context,
 		x,
@@ -1695,10 +1699,10 @@ class PreferencesWindow(gtk.Window):
 				t.get_iter(i),
 				t.get_iter(len(t) - 1),
 			)
-		elif dest[1] in (
+		elif dest[1] in {
 			gtk.TreeViewDropPosition.BEFORE,
 			gtk.TreeViewDropPosition.INTO_OR_BEFORE,
-		):
+		}:
 			t.move_before(
 				t.get_iter(i),
 				t.get_iter(dest[0][0]),
@@ -1865,7 +1869,8 @@ class PreferencesWindow(gtk.Window):
 		index = path[0]
 		self.editAccount(index)
 
-	def accountsTreevButtonPress(self, _widget, gevent):
+	@staticmethod
+	def accountsTreevButtonPress(_widget, gevent):
 		b = gevent.button
 		if b == 3:
 			# FIXME

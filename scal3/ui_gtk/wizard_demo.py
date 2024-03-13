@@ -102,7 +102,7 @@ class DemoWizardWindow(WizardWindow):
 			else:
 				raise ValueError(f"invalid format {format_!r}")
 
-		def _runJson(self, fpath):
+		def _runJson(self, fpath):  # noqa: PLR6301
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
 		def onBackClick(self, _obj):

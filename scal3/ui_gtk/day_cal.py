@@ -639,7 +639,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.getOptionsWidget()
 		return self.subPages
 
-	def getRenderPos(self, params, x0, y0, w, h, fontw, fonth):
+	@staticmethod
+	def getRenderPos(params, x0, y0, w, h, fontw, fonth):
 		xalign = params.get("xalign")
 		yalign = params.get("yalign")
 
@@ -665,7 +666,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 		return (x, y)
 
-	def getCell(self) -> ui.Cell:
+	@classmethod
+	def getCell(cls) -> ui.Cell:
 		return ui.cell
 
 	def drawAll(self, _widget=None, cr=None, cursor=True):
@@ -722,7 +724,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.rectangle(x2, y2, iconSize, iconSize)
 			cr.fill()
 
-	def getMonthName(self, c: "ui.Cell", calType: int, params: "dict[str, Any]"):
+	@staticmethod
+	def getMonthName(c: "ui.Cell", calType: int, params: "dict[str, Any]"):
 		month = c.dates[calType][1]  # type: int
 		abbreviate = params.get("abbreviate", False)
 		uppercase = params.get("uppercase", False)
@@ -880,9 +883,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 					abbreviate=self.getWeekdayAbbreviate(),
 					relative=False,
 				)
-				if langHasUppercase and self.weekdayUppercaseParam and getattr(
-					ui,
-					self.weekdayUppercaseParam,
+				if (
+					langHasUppercase
+					and self.weekdayUppercaseParam
+					and getattr(
+						ui,
+						self.weekdayUppercaseParam,
+					)
 				):
 					text = text.upper()
 				daynum = newTextLayout(
@@ -951,9 +958,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 				self.jdPlus(1)
 			else:
 				self.jdPlus(-1)
-		elif kname in ("page_up", "k", "p"):
+		elif kname in {"page_up", "k", "p"}:
 			self.jdPlus(-1)  # FIXME
-		elif kname in ("page_down", "j", "n"):
+		elif kname in {"page_down", "j", "n"}:
 			self.jdPlus(1)  # FIXME
 		# elif kname in ("f10", "m"):  # FIXME
 		# 	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:

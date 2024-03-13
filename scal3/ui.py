@@ -703,7 +703,7 @@ def getParamsFont(params: dict) -> "Font | None":
 
 
 def initFonts(fontDefaultNew: "Font") -> None:
-	global fontDefault, fontCustom, mcalTypeParams
+	global fontDefault, fontCustom
 	fontDefault = fontDefaultNew
 	if not fontCustom:
 		fontCustom = fontDefault
