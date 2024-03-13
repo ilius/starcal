@@ -239,17 +239,17 @@ class MultiSpinButton(gtk.Box):
 		kname = gdk.keyval_name(kval).lower()
 		step_inc = self.step_inc
 		page_inc = self.page_inc
-		if kname in (
+		if kname in {
 			"up",
 			"down",
 			"page_up",
 			"page_down",
 			"left",
 			"right",
-		):
+		}:
 			if not self.entry.get_editable():
 				return True
-			if kname in ("left", "right"):
+			if kname in {"left", "right"}:
 				return False
 				# if not self.arrow_select:
 				# 	return False
@@ -290,10 +290,10 @@ class MultiSpinButton(gtk.Box):
 			self.insertText(self.digs[int(kname[-1])])
 			return True
 
-		if kname in (
+		if kname in {
 			"period",
 			"kp_decimal",
-		):
+		}:
 			self.insertText(locale_man.getNumSep())
 			return True
 
@@ -308,7 +308,7 @@ class MultiSpinButton(gtk.Box):
 
 	def _scroll(self, _widget, gevent):
 		d = getScrollValue(gevent)
-		if d in ("up", "down"):
+		if d in {"up", "down"}:
 			if not self.entry.has_focus():
 				self.entry.grab_focus()
 			if self.entry.get_editable():

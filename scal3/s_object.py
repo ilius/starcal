@@ -99,9 +99,6 @@ class SObj:
 	params = ()  # used in getData, setData and copyFrom
 	canSetDataMultipleTimes = True
 
-	def __nonzero__(self):
-		return self.__bool__()
-
 	def __bool__(self):
 		raise NotImplementedError
 
@@ -214,9 +211,8 @@ class JsonSObj(SObj):
 			except Exception:
 				if not cls.skipLoadExceptions:
 					raise
-		else:
-			if not cls.skipLoadNoFile:
-				raise FileNotFoundError(f"{fpath} : file not found")
+		elif not cls.skipLoadNoFile:
+			raise FileNotFoundError(f"{fpath} : file not found")
 
 		# data is the result of json.loads,
 		# so probably can be only dict or list (or str)

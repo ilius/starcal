@@ -82,9 +82,8 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		if self.radioIcs.get_active():
 			if ext != ".ics":
 				ext = ".ics"
-		else:
-			if ext != ".json":
-				ext = ".json"
+		elif ext != ".json":
+			ext = ".json"
 		self.fcw.set_current_name(fname_nox + ext)
 
 	def save(self):
@@ -217,9 +216,8 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 				if self.radioIcs.get_active():
 					if ext != ".ics":
 						ext = ".ics"
-				else:
-					if ext != ".json":
-						ext = ".json"
+				elif ext != ".json":
+					ext = ".json"
 				self.fpathEntry.set_text(fpath_nox + ext)
 
 	def save(self):
@@ -337,7 +335,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		elif self.radioJsonPretty.get_active():
 			text = dataToPrettyJson(data)
 		else:
-			RuntimeError("no format is selected")
+			raise RuntimeError("no format is selected")
 
 		with open(fpath, "w", encoding="utf-8") as _file:
 			_file.write(text)

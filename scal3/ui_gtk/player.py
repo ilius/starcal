@@ -150,11 +150,10 @@ class MPlayer:
 			if self.pbox.volAdj.value > 100:
 				self.pbox.volAdj.value = 100
 
+		elif self.pbox.volAdj.value <= VOLUME_STEP:
+			self.pbox.volAdj.value = 0
 		else:
-			if self.pbox.volAdj.value <= VOLUME_STEP:
-				self.pbox.volAdj.value = 0
-			else:
-				self.pbox.volAdj.value -= VOLUME_STEP
+			self.pbox.volAdj.value -= VOLUME_STEP
 
 	# Close mplayer
 	def close(self):
@@ -366,7 +365,8 @@ class PlayerBox(gtk.Box):
 			self.mplayer.seek(int(self.seekAdj.value), 1)
 
 	# Return formatted volume string
-	def displayVolString(self, _scale, value):
+	@staticmethod
+	def displayVolString(_scale, value):
 		return "Volume: " + str(int(value)) + "%"
 
 	def setVolume(self, adj):  # Set volume when the volume range widget is changed
@@ -419,10 +419,11 @@ class PlayerBox(gtk.Box):
 	def incVol(self, _widget):
 		self.mplayer.stepVolume(True)
 
-	def toolbarKey(self, _widget, gevent):
+	@staticmethod
+	def toolbarKey(_widget, gevent):
 		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
-		if keycode in (98, 104):
+		if keycode in {98, 104}:
 			return True
 		return False
 

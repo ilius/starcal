@@ -573,13 +573,13 @@ class SingleGroupComboBox(gtk.ComboBox):
 		gtk.ComboBox.set_active(self, 0)
 		# except:
 		# 	pass
-		if activeGid not in (None, -1):
+		if activeGid not in {None, -1}:
 			with suppress(ValueError):
 				self.set_active(activeGid)
 
 	def get_active(self):
 		index = gtk.ComboBox.get_active(self)
-		if index in (None, -1):
+		if index in {None, -1}:
 			return
 		return self.get_model()[index][0]
 

@@ -112,7 +112,8 @@ class EventSearchTree:
 		self.root = None
 		self.byId = {}
 
-	def doCountBalancing(self, node):
+	@staticmethod
+	def doCountBalancing(node):
 		if (
 			node.left
 			and not node.left.right
@@ -275,7 +276,8 @@ class EventSearchTree:
 		###
 		return self.getLastBeforeStep(node.left, t1)
 
-	def getMinNode(self, node):
+	@staticmethod
+	def getMinNode(node):
 		if not node:
 			return
 		while node.left:

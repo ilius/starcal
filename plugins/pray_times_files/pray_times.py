@@ -119,25 +119,25 @@ def readLocationData():
 		if len(p) < 2:
 			# log.debug(p)
 			continue
-		if p[0] == "":
-			if p[1] == "":
-				city, lat, lng = p[2:5]
-				log.debug(f"{city=}")
-				if len(p) > 4:
-					cityData.append(
-						(
-							country + "/" + city,
-							translatePlaceName(country)
-							+ "/"
-							+ translatePlaceName(city),
-							float(lat),
-							float(lng),
-						),
-					)
-				else:
-					log.debug(f"{country=}, {p=}")
-			else:
-				country = p[1]
+		if p[0]:
+			continue
+		if p[1]:
+			country = p[1]
+			continue
+		city, lat, lng = p[2:5]
+		log.debug(f"{city=}")
+		if len(p) < 5:
+			log.debug(f"{country=}, {p=}")
+			continue
+		cityData.append(
+			(
+				country + "/" + city,
+				translatePlaceName(country) + "/" + translatePlaceName(city),
+				float(lat),
+				float(lng),
+			),
+		)
+
 	return cityData
 
 
@@ -321,7 +321,8 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		)
 		return [(name, times[name]) for name in self.shownTimeNames]
 
-	def getFormattedTime(self, tm):  # tm is float hour
+	@staticmethod
+	def getFormattedTime(tm):  # tm is float hour
 		try:
 			h, m, _s = floatHourToTime(float(tm))
 		except ValueError:

@@ -139,7 +139,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
-		if path in (None, ""):
+		if path in {None, ""}:
 			return
 		log.info(f'Exporting to html file "{path}"')
 		self.waitingDo(
@@ -242,7 +242,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
-		if path in (None, ""):
+		if path in {None, ""}:
 			return
 		log.info(f'Exporting to ics file "{path}"')
 		self.waitingDo(
