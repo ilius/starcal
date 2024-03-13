@@ -1,4 +1,3 @@
-
 from scal3.ui_gtk.event import common
 
 

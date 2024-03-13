@@ -1,4 +1,3 @@
-
 from gi.repository import Gdk as gdk
 
 __all__ = [

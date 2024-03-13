@@ -54,7 +54,7 @@ def makeDir(direc):
 
 def getUsersData():
 	data = []
-	with open("/etc/passwd") as fp:
+	with open("/etc/passwd", encoding="utf-8") as fp:
 		for line in fp.readlines():
 			parts = line.strip().split(":")
 			if len(parts) < 7:
@@ -152,7 +152,7 @@ def fixStrForFileNameForWindows(fname: str) -> str:
 
 	fname = re.sub(r'[\x00-\x1f\\/:"*?<>|]+', "_", fname)
 	fname = re.sub(r"[ _]+", "_", fname)
-	if fname.upper() in (
+	if fname.upper() in {
 		"COM1",
 		"COM2",
 		"COM3",
@@ -175,7 +175,7 @@ def fixStrForFileNameForWindows(fname: str) -> str:
 		"PRN",
 		"AUX",
 		"NUL",
-	):
+	}:
 		fname += "-1"
 	return fname
 
@@ -218,8 +218,8 @@ def openUrl(url: str) -> bool:
 	else:
 		gnomevfs.url_show(url)
 		return True
-	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
-		command = shutil.which(command)
+	for commandName in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
+		command = shutil.which(commandName)
 		if not command:
 			continue
 		try:

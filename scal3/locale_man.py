@@ -217,16 +217,16 @@ class LangData(JsonSObj):
 
 langDict = StrOrderedDict()
 try:
-	with open(join(langDir, "default")) as fp:
+	with open(join(langDir, "default"), encoding="utf-8") as fp:
 		langDefault = fp.read().strip()
 except Exception as e:
 	log.error(f"failed to read default lang file: {e}")
 
 
 langFileList = []
-with open(join(langDir, "list")) as fp:
+with open(join(langDir, "list"), encoding="utf-8") as fp:
 	for line in fp:
-		line = line.strip()
+		line = line.strip()  # noqa: PLW2901
 		if line.startswith("#"):
 			continue
 		langFileList.append(line)
@@ -268,7 +268,7 @@ def getLocaleFirstWeekDay() -> int:
 
 def prepareLanguage() -> str:
 	global lang, langActive, langSh, rtl, langHasUppercase
-	if lang == "":
+	if lang == "":  # noqa: PLC1901
 		# langActive = locale.setlocale(locale.LC_ALL, "")
 		langActive = sysLangDefault
 		if langActive not in langDict.keyList:
@@ -460,13 +460,13 @@ def textNumEncode(
 			if enableNumLocale:
 				if c == ".":
 					if changeDot:
-						c = tr(c, ctx="number formatting")
-				elif c in (",", "_"):
+						c = tr(c, ctx="number formatting")  # noqa: PLW2901
+				elif c in {",", "_"}:
 					if changeSpecialChars:
-						c = tr(c)
+						c = tr(c)  # noqa: PLW2901
 				elif c == "%":  # noqa: SIM102
 					if changeSpecialChars:
-						c = tr(c, ctx="number formatting")
+						c = tr(c, ctx="number formatting")  # noqa: PLW2901
 			res += c
 		else:
 			res += dig[i]
@@ -557,7 +557,6 @@ def addLRM(text: str) -> str:
 
 
 def popenDefaultLang(*args, **kwargs) -> "subprocess.Popen":
-	global sysLangDefault, lang
 	from subprocess import Popen
 
 	os.environ["LANG"] = sysLangDefault

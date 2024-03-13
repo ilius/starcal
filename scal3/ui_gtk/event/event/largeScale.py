@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()

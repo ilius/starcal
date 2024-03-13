@@ -37,7 +37,7 @@ if __name__ == "__main__":
 	if not os.path.isfile(localeGen):
 		errorExit(f'File "{localeGen}" does not exist!')
 	localeName = sys.argv[1].lower().replace(".", " ")
-	with open(localeGen) as fp:
+	with open(localeGen, encoding="utf-8") as fp:
 		lines = fp.read().split("\n")
 	for i, line in enumerate(lines):
 		if line.lower().startswith(localeName):
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 		if line.lower().startswith("#" + localeName):
 			lines[i] = line[1:]
 			os.rename(localeGen, f"{localeGen}.{now()}")
-			with open(localeGen, "w") as _file:
+			with open(localeGen, "w", encoding="utf-8") as _file:
 				_file.write("\n".join(lines))
 			exit_code = subprocess.call("/usr/sbin/locale-gen")
 			log.info(f'enabling locale "{localeName}" done')

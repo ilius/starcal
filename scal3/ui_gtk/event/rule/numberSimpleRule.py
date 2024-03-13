@@ -1,4 +1,3 @@
-
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 
