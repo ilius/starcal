@@ -71,7 +71,6 @@ def cacheSaveStop():
 
 
 def clear():
-	global pixbufCache
 	pixbufCache.clear()
 
 

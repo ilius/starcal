@@ -169,7 +169,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.textInput1.hide()
 			self.withHbox.hide()
 			self.textInput2.hide()
-		elif chType in (1, 2):
+		elif chType in {1, 2}:
 			self.withHbox.hide()
 			self.textInput2.hide()
 

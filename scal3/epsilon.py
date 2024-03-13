@@ -19,7 +19,8 @@ class NumPlusEpsilon:
 	def __hash__(self):
 		return hash(str(self._num) + "+eps")
 
-	def is_integer(self):
+	@classmethod
+	def is_integer(cls):
 		return False
 
 	def __add__(self, other):
@@ -105,7 +106,8 @@ class NumMinusEpsilon:
 	def __hash__(self):
 		return hash(str(self._num) + "-eps")
 
-	def is_integer(self):
+	@classmethod
+	def is_integer(cls):
 		return False
 
 	def __add__(self, other):

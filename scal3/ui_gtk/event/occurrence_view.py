@@ -358,7 +358,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		###
 		self.onConfigChange()
 
-	def copyEventText(self, _item, event):
+	@staticmethod
+	def copyEventText(_item, event):
 		setClipboard(event.getText())
 
 	def addWriteEventMenuItems(
@@ -529,7 +530,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 	def showHide(self):
 		self.set_visible(self.enable and bool(ui.cell.getEventsData()))
 
-	def do_get_preferred_height(self):
+	def do_get_preferred_height(self):  # noqa: PLR6301
 		height = ui.eventViewMaxHeight
 		return height, height
 
