@@ -21,8 +21,8 @@ class GtkBufferFile:
 	def writelines(self, lines):
 		return list(map(self.write, lines))
 
-	def flush(self):
+	def flush(self):  # noqa: PLR6301
 		return None
 
-	def isatty(self):
+	def isatty(self):  # noqa: PLR6301
 		return False

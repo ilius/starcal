@@ -290,7 +290,7 @@ class LangPrefItem(PrefItem):
 		return langDict.keyList[i - 1]
 
 	def set(self, value: str) -> None:
-		if value == "":
+		if not value:
 			self._widget.set_active(0)
 		else:
 			try:
@@ -403,10 +403,10 @@ class AICalsTreeview(gtk.TreeView):
 					model.get_iter(i),
 					model.get_iter(len(model) - 1),
 				)
-			elif dest[1] in (
+			elif dest[1] in {
 				gtk.TreeViewDropPosition.BEFORE,
 				gtk.TreeViewDropPosition.INTO_OR_BEFORE,
-			):
+			}:
 				model.move_before(
 					model.get_iter(i),
 					model.get_iter(dest[0][0]),
@@ -423,10 +423,10 @@ class AICalsTreeview(gtk.TreeView):
 			smodel.remove(sIter)
 			if dest is None:
 				model.append(row)
-			elif dest[1] in (
+			elif dest[1] in {
 				gtk.TreeViewDropPosition.BEFORE,
 				gtk.TreeViewDropPosition.INTO_OR_BEFORE,
-			):
+			}:
 				model.insert_before(
 					model.get_iter(dest[0]),
 					row,

@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -224,7 +223,8 @@ class EventHistoryDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
 
-	def setColumnWidth(self, col, _widthParam, cell):
+	@staticmethod
+	def setColumnWidth(col, _widthParam, cell):
 		width = col.get_width()
 		cell.set_property("wrap_width", width)
 
@@ -256,7 +256,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return
 		viewType = self.textViewTypes[viewTypeIndex]
 
-		if viewType in ("Change Table", "Full Table"):
+		if viewType in {"Change Table", "Full Table"}:
 			self.updateTableViewType(viewType, hashBefore, hashAfter)
 		else:
 			self.updateTextViewType(viewType, hashBefore, hashAfter)
@@ -266,7 +266,7 @@ class EventHistoryDialog(gtk.Dialog):
 		treeModel.clear()
 
 		if viewType == "Change Table":
-			if hashBefore != "":
+			if hashBefore:
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				for key in sorted(diff.keys()):
 					(valueBefore, valueAfter) = diff[key]
@@ -285,25 +285,25 @@ class EventHistoryDialog(gtk.Dialog):
 		event = self.event
 		text = ""
 		if viewType == "After change (Text)":
-			if hashAfter != "":
+			if hashAfter:
 				text = event.getRevision(hashAfter).getInfo()
 		elif viewType == "Before change (Text)":
-			if hashBefore != "":
+			if hashBefore:
 				text = event.getRevision(hashBefore).getInfo()
 		elif viewType == "After change (JSON)":
-			if hashAfter != "":
+			if hashAfter:
 				text = dataToPrettyJson(event.getRevision(hashAfter).getData())
 		elif viewType == "After change (Plain JSON)":
-			if hashAfter != "":
+			if hashAfter:
 				text = dataToPrettyJson(self.getObjectData(hashAfter))
 		elif viewType == "Before change (JSON)":
-			if hashBefore != "":
+			if hashBefore:
 				text = dataToPrettyJson(event.getRevision(hashBefore).getData())
 		elif viewType == "Before change (Plain JSON)":
-			if hashBefore != "":
+			if hashBefore:
 				text = dataToPrettyJson(self.getObjectData(hashBefore))
 		elif viewType == "Change (JSON Diff)":
-			if hashBefore != "" and hashAfter != "":
+			if hashBefore and hashAfter:
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				text = dataToPrettyJson(diff)
 		else:
@@ -363,12 +363,14 @@ class EventHistoryDialog(gtk.Dialog):
 	# 	hashAfter = row[1]
 	# 	# TODO
 
-	def formatEpoch(self, epoch):
+	@staticmethod
+	def formatEpoch(epoch):
 		jd, hms = getJhmsFromEpoch(epoch)
 		cell = ui.cellCache.getCell(jd)
 		return cell.format(historyTimeBinFmt, tm=hms.tuple())
 
-	def normalizeObjectData(self, data):
+	@staticmethod
+	def normalizeObjectData(data):
 		if "rules" in data:
 			rulesOd = OrderedDict()
 			for name, value in data["rules"]:
@@ -436,7 +438,8 @@ class EventHistoryDialog(gtk.Dialog):
 			)
 		return dataFull
 
-	def extractChangeSummary(self, diff):
+	@staticmethod
+	def extractChangeSummary(diff):
 		"""diff: dict: param -> (valueBefore, valueAfter)."""
 		if len(diff) < 3:
 			return ", ".join(diff.keys())

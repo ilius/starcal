@@ -118,7 +118,14 @@ class CalBase(CustomizableCalObj):
 		# self.connect("drag-failed", self.dragCalFailed)
 		# self.connect("drag-leave", self.dragLeave)
 
-	def dragDataGet(self, _obj, _context, selection, _target_id, _etime):
+	def dragDataGet(  # noqa: PLR6301
+		self,
+		_obj,
+		_context,
+		selection,
+		_target_id,
+		_etime,
+	):
 		# context is instance of gi.repository.Gdk.DragContext
 		y, m, d = ui.cell.dates[ui.dragGetCalType]
 		text = f"{y:04d}/{m:02d}/{d:02d}"
@@ -127,7 +134,7 @@ class CalBase(CustomizableCalObj):
 		# selection.set_pixbuf(pbuf)
 		return True
 
-	def dragLeave(self, _obj, context, etime):
+	def dragLeave(self, _obj, context, etime):  # noqa: PLR6301
 		context.drop_reply(False, etime)
 		return True
 
@@ -160,7 +167,7 @@ class CalBase(CustomizableCalObj):
 		return True
 
 
-	def dragBegin(self, _obj, context):
+	def dragBegin(self, _obj, context):  # noqa: PLR6301
 		# context is instance of gi.repository.Gdk.DragContext
 		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())
@@ -181,7 +188,7 @@ class CalBase(CustomizableCalObj):
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		CustomizableCalObj.onKeyPress(self, arg, gevent)
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		if kname in ("space", "home", "t"):
+		if kname in {"space", "home", "t"}:
 			self.goToday()
 		elif kname == "menu":
 			self.emit("popup-cell-menu", *self.getCellPos())
