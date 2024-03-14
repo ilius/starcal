@@ -126,7 +126,7 @@ class MaxHeap(list):
 					** int(
 						math_log2(len(self)),
 					)
-				):
+				) :
 			],
 		)
 		return -k, v
