@@ -399,7 +399,6 @@ def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
 
 
 class Cell(CellType):
-
 	"""status and information of a cell."""
 
 	# ocTimeMax = 0
