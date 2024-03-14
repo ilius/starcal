@@ -11,7 +11,6 @@ from scal3.utils import toStr
 
 
 class SLabel(gtk.Label):
-
 	"""
 	Selectable Label with custom, localized and minimal menu
 	for right-click, with only 2 menu items: Copy All, Copy.
