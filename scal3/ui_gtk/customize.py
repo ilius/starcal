@@ -130,6 +130,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 
 
 class CustomizableCalBox(CustomizableCalObj):
+
 	"""for GtkBox (HBox and VBox)."""
 
 	def appendItem(self, item):
