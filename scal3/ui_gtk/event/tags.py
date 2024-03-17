@@ -131,6 +131,7 @@ class EventTagsAndIconSelect(gtk.Box):
 
 
 class TagsListBox(gtk.Box):
+
 	"""
 	[x] Only related tags     tt: Show only tags related to this event type
 	Sort by:
