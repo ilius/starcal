@@ -1,9 +1,6 @@
 #!/bin/bash
 
 for F in "$@" ; do
-	cercis "$F"
-	# following line is because cercis adds spaces for indentation inside docstring
-	# (after tabs for the block) so tabs and spaces will be mixed!!
-	sed -i $'s/\t        /\t\t/g' "$F"
-	ruff --fix "$F"
+	ruff format "$F"
+	ruff check --fix --preview "$F"
 done
