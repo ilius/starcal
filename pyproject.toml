@@ -82,9 +82,6 @@ lint.ignore = [
 	"PLW0603", # Using the global statement to update `...` is discouraged
 	"PLC0415", # `import` should be at the top-level of a file
 
-	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-	"B028",    # No explicit `stacklevel` keyword argument found. Huh???
 	"BLE001",  # Do not catch blind exception: `Exception`
 	"C408",    # Unnecessary `dict` call (rewrite as a literal)
 	"D100",    # Missing docstring in public module
@@ -104,7 +101,6 @@ lint.ignore = [
 	"DTZ001",  # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
 	"DTZ005",  # The use of `datetime.datetime.now()` without `tz` argument is not allowed
 	"FURB101", # `open` and `read` should be replaced by `Path(rootConfJsonFile).read_text()`
-	"PERF203", # `try`-`except` within a loop incurs performance overhead
 	"PLR0911", # Too many return statements (x > 6)
 	"RUF001",  # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
 	"RUF003",  # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
