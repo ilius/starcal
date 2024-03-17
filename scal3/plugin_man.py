@@ -265,7 +265,7 @@ def loadExternalPlugin(_file, **data):
 	mainFile = data.get("mainFile")
 	if not mainFile:
 		log.error(f'invalid external plugin "{_file}"')
-		return
+		return None
 	###
 	mainFile = getPlugPath(mainFile)
 	###
@@ -285,14 +285,14 @@ def loadExternalPlugin(_file, **data):
 	cls = pyEnv.get("TextPlugin")
 	if cls is None:
 		log.error(f'invalid external plugin "{_file}", no TextPlugin class')
-		return
+		return None
 	###
 	try:
 		plugin = cls(_file)
 	except Exception:
 		log.error(f'error while loading external plugin "{_file}"')
 		log.exception("")
-		return
+		return None
 
 	# sys.path.insert(0, direc)
 	# try:
