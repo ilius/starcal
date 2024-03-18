@@ -1293,7 +1293,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	desc = _("Week Calendar")
 	expand = True
 	optionsPageSpacing = 10
-	itemsPageEnable = True
+	itemListSeparatePage = True
 	itemsPageTitle = _("Columns")
 	itemsPageButtonBorder = 15
 	myKeys = CalBase.myKeys + (
