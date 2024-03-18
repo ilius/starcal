@@ -159,7 +159,7 @@ class CustomizeWindow(gtk.Dialog):
 		# column 3: Pixbuf: settings icon
 		model = gtk.ListStore(bool, str, str, GdkPixbuf.Pixbuf)
 		treev = gtk.TreeView(model=model)
-		if parentItem.itemsPageEnable:
+		if parentItem.itemListSeparatePage:
 			treev.pagePath = parentPagePath + ".items"
 		else:
 			treev.pagePath = parentPagePath
@@ -333,7 +333,7 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		childrenBox.show_all()
 
-		if not item.itemsPageEnable:
+		if not item.itemListSeparatePage:
 			pack(page.pageWidget, childrenBox, 1, 1)
 			return
 
@@ -471,6 +471,8 @@ class CustomizeWindow(gtk.Dialog):
 		if parentItem.isWrapper:
 			parentItem = parentItem.getWidget()
 		# print(f"rowActivated: {pagePath=}, {parentPagePath=}")
+		# if none of the items in list have any settings, we can toggle-enable instead
+
 		page = self._addPage(pagePath, parentPagePath, parentItem, itemIndex)
 		self.stack.gotoPage(page.pagePath)
 
