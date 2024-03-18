@@ -169,6 +169,7 @@ class WinConButtonSep(WinConButton):
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalBox):
 	hasOptions = True
+	itemHaveOptions = False
 	objName = "winContronller"
 	desc = _("Window Controller")
 	buttonClassList = (
