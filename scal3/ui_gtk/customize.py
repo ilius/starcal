@@ -38,7 +38,7 @@ class DummyCalObj(ud.CalObjType):
 	hasOptions = False
 	isWrapper = False
 	enableParam = ""
-	itemsPageEnable = False
+	itemListSeparatePage = False
 	signals = ud.BaseCalObj.signals
 
 	def __init__(
@@ -91,7 +91,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 	isWrapper = False
 	enableParam = ""
 	optionsPageSpacing = 0
-	itemsPageEnable = False
+	itemListSeparatePage = False
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
 	expand = False
