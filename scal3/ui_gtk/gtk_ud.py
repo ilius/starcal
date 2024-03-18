@@ -87,6 +87,7 @@ class BaseCalObj(CalObjType):
 	desc = ""
 	loaded = True
 	customizable = False
+	itemHaveOptions = True
 	signals = [
 		("config-change", []),
 		("date-change", []),
