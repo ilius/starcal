@@ -172,7 +172,7 @@ class CustomizeWindow(gtk.Dialog):
 		cell = gtk.CellRendererToggle()
 		col = gtk.TreeViewColumn(title="", cell_renderer=cell, active=0)
 		col.set_property("expand", False)
-		cell.connect("toggled", self.enableCellToggled, treev)
+		cell.connect("toggled", self.onEnableCellToggle, treev)
 		treev.append_column(col)
 		#####
 		col = gtk.TreeViewColumn(
@@ -461,17 +461,23 @@ class CustomizeWindow(gtk.Dialog):
 		pagePath = model.get_value(itemIter, 1)
 		itemIndex = tree_path_split(path)[0]
 		item = parentItem.items[itemIndex]
+
+		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
+		if parentItem.isWrapper:
+			parentItem = parentItem.getWidget()
+		# print(f"rowActivated: {pagePath=}, {parentPagePath=}")
+
+		# if none of the items in list have any settings, we can toggle-enable instead
+		if not parentItem.itemHaveOptions:
+			self.enableCellToggle(treev, item.enable, itemIndex)
+			return
+
 		if not item.enable:
 			msg = _(
 				"{item} is disabled.\nCheck the checkbox if you want to enable it.",
 			).format(item=item.desc)
 			showInfo(msg, transient_for=self)
 			return
-		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
-		if parentItem.isWrapper:
-			parentItem = parentItem.getWidget()
-		# print(f"rowActivated: {pagePath=}, {parentPagePath=}")
-		# if none of the items in list have any settings, we can toggle-enable instead
 
 		page = self._addPage(pagePath, parentPagePath, parentItem, itemIndex)
 		self.stack.gotoPage(page.pagePath)
@@ -489,13 +495,17 @@ class CustomizeWindow(gtk.Dialog):
 		item.onDateChange()
 		return item
 
-	def enableCellToggled(self, cell, path, treev):
+	def onEnableCellToggle(self, cell, path, treev):
+		itemIndex = tree_path_split(path)[0]
+		self.enableCellToggle(treev, cell.get_active(), itemIndex)
+
+	def enableCellToggle(self, treev: gtk.TreeView, active: bool, itemIndex: int):
+		active = not active
+		path = (itemIndex,)
 		model = treev.get_model()
-		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 0, active)
 		parentItem = self.itemByPagePath[treev.pagePath]
-		itemIndex = tree_path_split(path)[0]
 		item = parentItem.items[itemIndex]
 		assert parentItem.items[itemIndex] == item
 		###
