@@ -126,9 +126,9 @@ class CheckMenuItem(gtk.MenuItem):
 		pack(self._box, self._check, padding=edgePadding)
 		self._box.show_all()
 		self.add(self._box)
-		###
+		# ---
 		self.set_active(active)
-		###
+		# ---
 		self._func = func
 		if args is None:
 			args = ()
@@ -175,9 +175,9 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		)
 		self._box.show_all()
 		self.add(self._box)
-		###
+		# ---
 		self.set_active(active)
-		###
+		# ---
 		self._func = func
 		if args is None:
 			args = ()
