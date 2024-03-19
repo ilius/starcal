@@ -1,13 +1,48 @@
+import os
 from os.path import join
 
 from scal3 import ui
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
+from scal3.path import svgDir
 from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
+
+themeFileSet = {
+	"close-focus-light.svg",
+	"close-focus.svg",
+	"close-inactive-light.svg",
+	"close-inactive.svg",
+	"close-light.svg",
+	"close.svg",
+	"left-focus-light.svg",
+	"left-focus.svg",
+	"left-inactive-light.svg",
+	"left-inactive.svg",
+	"left-light.svg",
+	"left.svg",
+	"maximize-focus-light.svg",
+	"maximize-focus.svg",
+	"maximize-inactive-light.svg",
+	"maximize-inactive.svg",
+	"maximize-light.svg",
+	"maximize.svg",
+	"minimize-focus-light.svg",
+	"minimize-focus.svg",
+	"minimize-inactive-light.svg",
+	"minimize-inactive.svg",
+	"minimize-light.svg",
+	"minimize.svg",
+	"right-focus-light.svg",
+	"right-focus.svg",
+	"right-inactive-light.svg",
+	"right-inactive.svg",
+	"right-light.svg",
+	"right.svg",
+}
 
 
 @registerSignals
@@ -283,8 +318,19 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
-	def updateTheme(self):
-		pass
+	def updateTheme(self):  # noqa: PLR6301
+		name = ui.winControllerTheme
+		dirPath = join(svgDir, "wm", name)
+		fileSet = set(os.listdir(dirPath))
+		if fileSet == themeFileSet:
+			return
+		print(fileSet)
+		missingFiles = themeFileSet - fileSet
+		extraFiles = fileSet - themeFileSet
+		if missingFiles:
+			print(f"Missing svg files: {missingFiles}")
+		if extraFiles:
+			print(f"Extra svg files: {extraFiles}")
 
 	def updateButtons(self):
 		for item in self.items:
