@@ -61,7 +61,7 @@ def checkAndSaveJsonLockFile(fpath):
 	elif exists(fpath):
 		# FIXME: what to do?
 		pass
-	######
+	# ------
 	if not locked:
 		my_proc = psutil.Process(my_pid)
 		my_cmd = get_cmdline(my_proc)
@@ -81,5 +81,5 @@ def checkAndSaveJsonLockFile(fpath):
 			log.error(f"failed to write lock file {fpath}: {e}")
 		else:
 			atexit.register(os.remove, fpath)
-	######
+	# ------
 	return locked

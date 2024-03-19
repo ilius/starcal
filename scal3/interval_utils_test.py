@@ -166,7 +166,7 @@ def testOverlapsSpeed():
 	def getRandomPair():
 		return sorted(normalvariate(b_mean, b_sigma) for i in (0, 1))
 
-	###
+	# ---
 	data = []
 	for _i in range(N):
 		a, b = getRandomPair()

@@ -68,13 +68,13 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 
 	def __init__(self):
 		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		###
+		# ---
 		self.initVars()
 		self.optionsWidget = None
 		self.setPosAtHeight = 0
-		###
+		# ---
 		self.connect("size-allocate", self.onSizeAllocate)
-		###
+		# ---
 		self.eventItem = RightPanelDayOccurrenceView(
 			rightPanel=self,
 			eventSepParam="mainWinRightPanelEventSep",
@@ -101,9 +101,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			),
 			styleClass="right-panel-plugins",
 		)
-		###
+		# ---
 		self.addItems()
-		###
+		# ---
 		self.show_all()
 		self.onBorderWidthChange()
 
@@ -225,7 +225,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=10)
 		subPages = []
-		###
+		# ---
 		sizesVBox = gtk.VBox(spacing=10)
 		page = StackPage()
 		page.pageWidget = sizesVBox
@@ -234,10 +234,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageLabel = _("Sizes")
 		page.pageIcon = ""
 		subPages.append(page)
-		###
+		# ---
 		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
-		#####
+		# -----
 		prefItem = FixedSizeOrRatioPrefItem(
 			ui,
 			ratioEnableVarName="mainWinRightPanelWidthRatioEnable",
@@ -253,7 +253,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		frame.add(prefItem.getWidget())
 		frame.set_border_width(0)
 		pack(sizesVBox, frame)
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			"mainWinRightPanelBorderWidth",
@@ -267,7 +267,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			onChangeFunc=self.onBorderWidthChange,
 		)
 		pack(sizesVBox, prefItem.getWidget())
-		######
+		# ------
 		eventsVBox = gtk.VBox(spacing=10)
 		page = StackPage()
 		page.pageWidget = eventsVBox
@@ -276,10 +276,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageLabel = _("Events Text")
 		page.pageIcon = ""
 		subPages.append(page)
-		###
+		# ---
 		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			"rightPanelEventIconSize",
@@ -292,9 +292,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			onChangeFunc=self.onEventIconSizeChange,
 		)
 		pack(eventsVBox, prefItem.getWidget())
-		###
+		# ---
 		pack(eventsVBox, self.eventItem.getOptionsWidget())
-		######
+		# ------
 		pluginsVBox = gtk.VBox(spacing=10)
 		page = StackPage()
 		page.pageWidget = pluginsVBox
@@ -303,12 +303,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageLabel = _("Plugins Text")
 		page.pageIcon = ""
 		subPages.append(page)
-		###
+		# ---
 		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
-		###
+		# ---
 		pack(pluginsVBox, self.plugItem.getOptionsWidget())
-		######
+		# ------
 		prefItem = CheckPrefItem(
 			ui,
 			"mainWinRightPanelResizeOnToggle",
@@ -318,7 +318,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			# onChangeFunc=None,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		######
+		# ------
 		self.optionsWidget = optionsWidget
 		self.subPages = subPages
 		return optionsWidget

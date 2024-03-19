@@ -87,7 +87,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def addPluginMenuItems(self, menu, occurData):
 		plug, text = occurData
 		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
@@ -96,7 +96,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 				args=(text,),
 			),
 		)
-		####
+		# ----
 		item = ImageMenuItem(
 			_("C_onfigure Plugin"),
 			imageName="preferences-system.svg",
@@ -105,7 +105,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		)
 		item.set_sensitive(plug.hasConfig)
 		menu.add(item)
-		####
+		# ----
 		item = ImageMenuItem(
 			_("_About Plugin"),
 			imageName="dialog-information.svg",
@@ -114,7 +114,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		)
 		item.set_sensitive(bool(plug.about))
 		menu.add(item)
-		####
+		# ----
 		menu.add(gtk.SeparatorMenuItem())
 
 	def addExtraMenuItems(self, menu):
@@ -170,7 +170,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def onButtonPress(self, _widget, gevent):
 		if gevent.button != 3:
 			return False
-		####
+		# ----
 		_iter = None
 		buf_x, buf_y = self.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
@@ -180,17 +180,17 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if buf_x is not None and buf_y is not None:
 			# overText, _iter, trailing = ...
 			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
-		####
+		# ----
 		text = self.get_text()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
-		####
+		# ----
 		menu = Menu()
-		####
+		# ----
 		occurData = self.findPluginByY(gevent.y)
 		if occurData is not None:
 			self.addPluginMenuItems(menu, occurData)
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy _All"),
@@ -198,7 +198,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 				func=self.copyAll,
 			),
 		)
-		####
+		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
@@ -207,7 +207,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
 		menu.add(itemCopy)
-		####
+		# ----
 		if "://" in word:
 			menu.add(
 				ImageMenuItem(
@@ -217,9 +217,9 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 					args=(word,),
 				),
 			)
-		####
+		# ----
 		self.addExtraMenuItems(menu)
-		###
+		# ---
 		menu.show_all()
 		self.tmpMenu = menu
 		menu.popup(
@@ -252,36 +252,36 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 	):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
-		####
+		# ----
 		self.styleClass = styleClass
 		if styleClass:
 			self.get_style_context().add_class(styleClass)
-		####
+		# ----
 		self.connect("button-press-event", self.onButtonPress)
-		####
+		# ----
 		self.hideIfEmpty = hideIfEmpty
 		self.tabToNewline = tabToNewline
-		####
+		# ----
 		self.textview = PluginsTextView()
 		self.textview.set_wrap_mode(gtk.WrapMode.WORD)
 		self.textbuff = self.textview.get_buffer()
-		###
+		# ---
 		self.insideExpanderParam = insideExpanderParam
 		self.justificationParam = justificationParam
 		self.fontParams = fontParams
-		###
+		# ---
 		if fontParams:
 			if not styleClass:
 				raise ValueError(f"{fontParams=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
-		###
+		# ---
 		if justificationParam:
 			self.updateJustification()
 		else:
 			self.textview.set_justification(gtk.Justification.CENTER)
-		###
+		# ---
 		self.appendItem(self.textview)
-		###
+		# ---
 		if insideExpanderParam:
 			self.expander = ExpanderFrame(label=self.desc)
 			self.expander.connect("activate", self.expanderExpanded)
@@ -330,7 +330,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=20)
-		####
+		# ----
 		if self.insideExpanderParam:
 			prefItem = CheckPrefItem(
 				ui,
@@ -340,7 +340,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 				onChangeFunc=self.onInsideExpanderCheckClick,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		if self.justificationParam:
 			prefItem = JustificationPrefItem(
 				ui,
@@ -349,7 +349,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 				onChangeFunc=self.updateJustification,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		if self.fontParams:
 			enableParam, fontParam = self.fontParams
 			prefItem = CheckFontPrefItem(
@@ -359,7 +359,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 				onChangeFunc=ud.windowList.updateCSS,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget

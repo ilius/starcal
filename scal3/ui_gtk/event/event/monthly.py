@@ -28,9 +28,9 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		event.setJd(ui.cell.jd)
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -38,10 +38,10 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
@@ -49,10 +49,10 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Day of Month"))
 		label.set_xalign(0)
@@ -60,39 +60,39 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.daySpin = DaySpinButton()
 		pack(hbox, self.daySpin)
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#########
+		# ---------
 		hbox = HBox()
 		label = gtk.Label(label=_("Time"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		##
+		# --
 		self.dayTimeStartInput = HourMinuteButton()
 		self.dayTimeEndInput = HourMinuteButton()
-		##
+		# --
 		pack(hbox, self.dayTimeStartInput)
 		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
-		#############
+		# -------------
 		# self.notificationBox = common.NotificationBox(event)
 		# pack(self, self.notificationBox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self):  # FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
-		###
+		# ---
 		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
 		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
-		###
+		# ---
 		self.daySpin.set_value(self.event.getDay())
-		###
+		# ---
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		if not ok:
 			raise RuntimeError("no dayTimeRange rule")
@@ -101,19 +101,19 @@ class WidgetClass(common.WidgetClass):
 
 	def updateVars(self):  # FIXME
 		common.WidgetClass.updateVars(self)
-		##
+		# --
 		start, ok = self.event["start"]
 		if not ok:
 			raise RuntimeError("no start rule")
 		start.setDate(self.startDateInput.get_value())
-		##
+		# --
 		end, ok = self.event["end"]
 		if not ok:
 			raise RuntimeError("no end rule")
 		end.setDate(self.endDateInput.get_value())
-		##
+		# --
 		self.event.setDay(self.daySpin.get_value())
-		###
+		# ---
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		if not ok:
 			raise RuntimeError("no dayTimeRange rule")
