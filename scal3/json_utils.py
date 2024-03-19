@@ -57,29 +57,29 @@ def jsonToOrderedData(text):
 	).decode(text)
 
 
-###############################
+# -------------------------------
 
 
 def loadJsonConf(module, confPath, decoders: "dict | None" = None):
 	from os.path import isfile
 
-	###
+	# ---
 	if not isfile(confPath):
 		return
-	###
+	# ---
 	try:
 		with open(confPath, encoding="utf-8") as fp:  # noqa: FURB101
 			text = fp.read()
 	except Exception as e:
 		log.error(f"failed to read file {confPath!r}: {e}")
 		return
-	###
+	# ---
 	try:
 		data = json.loads(text)
 	except Exception as e:
 		log.error(f"invalid json file {confPath!r}: {e}")
 		return
-	###
+	# ---
 	if isinstance(module, str):
 		module = sys.modules[module]
 	for param, value in data.items():
@@ -91,14 +91,14 @@ def loadJsonConf(module, confPath, decoders: "dict | None" = None):
 def saveJsonConf(module, confPath, params, encoders: "dict | None" = None):
 	if isinstance(module, str):
 		module = sys.modules[module]
-	###
+	# ---
 	data = {}
 	for param in params:
 		value = getattr(module, param)
 		if encoders and param in encoders:
 			value = encoders[param](value)
 		data[param] = value
-	###
+	# ---
 	text = dataToPrettyJson(data, sort_keys=True)
 	try:
 		with open(confPath, "w", encoding="utf-8") as fp:  # noqa: FURB103
@@ -111,9 +111,9 @@ def saveJsonConf(module, confPath, params, encoders: "dict | None" = None):
 def loadModuleJsonConf(module):
 	if isinstance(module, str):
 		module = sys.modules[module]
-	###
+	# ---
 	decoders = getattr(module, "confDecoders", {})
-	###
+	# ---
 	try:
 		sysConfPath = module.sysConfPath
 	except AttributeError:
@@ -124,7 +124,7 @@ def loadModuleJsonConf(module):
 			sysConfPath,
 			decoders,
 		)
-	####
+	# ----
 	loadJsonConf(
 		module,
 		module.confPath,
@@ -136,7 +136,7 @@ def loadModuleJsonConf(module):
 def saveModuleJsonConf(module):
 	if isinstance(module, str):
 		module = sys.modules[module]
-	###
+	# ---
 	saveJsonConf(
 		module,
 		module.confPath,

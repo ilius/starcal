@@ -76,15 +76,15 @@ class ToolBoxItem(BaseToolBoxItem):
 		gtk.Button.__init__(self)
 		if continuousClick:
 			ConButtonBase.__init__(self, button=1)  # only left-click
-		######
+		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.set_relief(gtk.ReliefStyle.NONE)
-		##
+		# --
 		self.set_focus_on_click(False)
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
-		######
+		# ------
 		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
@@ -94,35 +94,35 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.iconSize = 0
 		self.continuousClick = continuousClick
 		self.vertical = False
-		######
+		# ------
 		if not desc:
 			desc = name.capitalize()
 		if not shortDesc:
 			shortDesc = desc
-		##
+		# --
 		desc = _(desc)
 		shortDesc = _(shortDesc)
 		self.desc = desc
 		# self.shortDesc = shortDesc  # FIXME
-		######
+		# ------
 		self.imageName = ""
 		self.imageNameDynamic = imageNameDynamic
-		######
+		# ------
 		self.bigPixbuf = None
 		self.image = gtk.Image()
 		self.image.show()
 		self.add(self.image)
-		###
+		# ---
 		if imageName and not iconName:
 			iconName = iconNameByImageName.get(imageName, "")
 		self.imageName = imageName
 		self.iconName = iconName
 		self.preferIconName = False
-		######
+		# ------
 		self.initVars()
 		if enableTooltip:
 			set_tooltip(self, desc)
-		######
+		# ------
 		self.enable = enable
 
 	def build(self):
@@ -210,15 +210,15 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		gtk.Button.__init__(self)
 		if continuousClick:
 			ConButtonBase.__init__(self, button=1)
-		######
+		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.set_relief(gtk.ReliefStyle.NONE)
-		##
+		# --
 		self.set_focus_on_click(False)
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
-		######
+		# ------
 		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
@@ -227,20 +227,20 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		self.args = args
 		self.continuousClick = continuousClick
 		self.vertical = False
-		######
+		# ------
 		if not desc:
 			desc = name.capitalize()
 		if not shortDesc:
 			shortDesc = desc
-		##
+		# --
 		desc = _(desc)
 		shortDesc = _(shortDesc)
 		self.desc = desc
 		# self.shortDesc = shortDesc  # FIXME
-		######
+		# ------
 		self.label = gtk.Label()
 		self.add(self.label)
-		######
+		# ------
 		self.initVars()
 		if enableTooltip:
 			set_tooltip(self, desc)
@@ -405,9 +405,9 @@ class CustomizableToolBox(StaticToolBox):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		###
+		# ---
 		optionsWidget = VBox()
-		####
+		# ----
 		prefItem = CheckPrefItem(
 			self,
 			"preferIconName",
@@ -416,7 +416,7 @@ class CustomizableToolBox(StaticToolBox):
 			onChangeFunc=self.updateItems,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			self,
 			"iconSize",
@@ -429,7 +429,7 @@ class CustomizableToolBox(StaticToolBox):
 			onChangeFunc=self.onIconSizeChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			self,
 			"buttonBorder",
@@ -442,7 +442,7 @@ class CustomizableToolBox(StaticToolBox):
 			onChangeFunc=self.updateItems,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			self,
 			"buttonPadding",
@@ -455,7 +455,7 @@ class CustomizableToolBox(StaticToolBox):
 			onChangeFunc=self.updateItems,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		##
+		# --
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -546,20 +546,20 @@ class CustomizableToolBox(StaticToolBox):
 			item.setVertical(self.vertical)
 			self.setupItemSignals(item)
 			self.appendItem(item)
-		###
+		# ---
 		preferIconName = data.get("preferIconName")
 		if preferIconName is not None:
 			self.setPreferIconName(preferIconName)
-		###
+		# ---
 		iconSize = data.get("iconSizePixel")
 		if iconSize:
 			self.setIconSize(iconSize)
-		###
+		# ---
 		bb = data.get("buttonBorder", 0)
 		self.setButtonBorder(bb)
-		###
+		# ---
 		padding = data.get("buttonPadding", 0)
 		self.setButtonPadding(padding)
 		self.optionsWidget = None
-		###
+		# ---
 		self.updateItems()

@@ -142,7 +142,7 @@ methodsList = [
 methodsDict = {m.name: m for m in methodsList}
 
 
-# ######################### Functions ####################################
+# ------------------------- Functions ------------------------------------
 
 
 def isMin(tm):
@@ -218,7 +218,7 @@ def timesMiddle(time1, time2):
 	return time1 + fixHour(time2 - time1) / 2
 
 
-# ############################## Classes ################################
+# ------------------------------ Classes --------------------------------
 
 
 class PrayTimes:
@@ -463,7 +463,7 @@ class PrayTimes:
 
 	# return sun angle for sunset/sunrise
 	def riseSetAngle(self):
-		# earthRad = 6371009 ## in meters
+		# earthRad = 6371009 # in meters
 		# angle = arccos(earthRad/(earthRad+self.elv))
 		angle = 0.0347 * math.sqrt(self.elv)  # an approximation
 		return 0.833 + angle

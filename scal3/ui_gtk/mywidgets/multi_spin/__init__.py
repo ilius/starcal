@@ -37,10 +37,10 @@ class AutoSizeEntry(gtk.Entry):
 	def __init__(self, *args, maxChars=0, **kwargs):
 		gtk.Entry.__init__(self, *args, **kwargs)
 		self.set_width_chars(maxChars)
-		###
+		# ---
 		self.maxChars = maxChars
 		self.maxPixelWidth = 0
-		###
+		# ---
 		self.connect("changed", self.onChange)
 
 	def do_get_preferred_width(self):
@@ -105,14 +105,14 @@ class MultiSpinButton(gtk.Box):
 		if fields is None:
 			raise ValueError("MultiSpinButton: fields is None")
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		##
+		# --
 		sep = toStr(sep)
 		self.field = ContainerField(sep, *fields)
 		self.entry = AutoSizeEntry(maxChars=self.field.getMaxWidth())
-		##
+		# --
 		self.step_inc = step_inc
 		self.page_inc = page_inc
-		##
+		# --
 		# 0 = IconSize.INVALID
 		# 1 = IconSize.MENU
 		# 2 = IconSize.SMALL_TOOLBAR
@@ -120,14 +120,14 @@ class MultiSpinButton(gtk.Box):
 		# 4 = IconSize.BUTTON
 		# 5 = IconSize.DND
 		# 6 = IconSize.DIALOG
-		###
+		# ---
 		# in Gtk's sourc code, icon names are "value-decrease-symbolic" and
 		# "value-increase-symbolic" but I can not find these icons
 		# (and my Gtk does not either)
 		# instead "list-remove-symbolic" and "list-add-symbolic" used in this
 		# patch, work perfectly
 		# https://gitlab.gnome.org/GNOME/gtk/commit/5fd936beef7a999828e5e3625506ea6708188762
-		###
+		# ---
 		self.down_button = imageClassButton(
 			"list-remove-symbolic",
 			"down",
@@ -135,15 +135,15 @@ class MultiSpinButton(gtk.Box):
 		)
 		self.down_button.connect("button-press-event", self.onDownButtonPress)
 		self.down_button.connect("button-release-event", self.onButtonRelease)
-		###
+		# ---
 		self.up_button = imageClassButton("list-add-symbolic", "up", self.buttonSize)
 		self.up_button.connect("button-press-event", self.onUpButtonPress)
 		self.up_button.connect("button-release-event", self.onButtonRelease)
-		###
+		# ---
 		pack(self, self.entry, expand=True, fill=True)
 		pack(self, self.down_button)
 		pack(self, self.up_button)
-		####
+		# ----
 		# priv->down_button = gtk_button_new ();
 		# gtk_container_add (GTK_CONTAINER (priv->down_button),
 		# 		gtk_image_new_from_icon_name ("value-decrease-symbolic"));
@@ -165,13 +165,13 @@ class MultiSpinButton(gtk.Box):
 		# 		G_CALLBACK (button_released_cb), spin_button);
 		# gtk_widget_add_controller (GTK_WIDGET (priv->down_button),
 		# 		GTK_EVENT_CONTROLLER (gesture));
-		####
+		# ----
 		self.arrow_select = arrow_select
 		self.entry.set_editable(True)
-		###
+		# ---
 		self.digs = locale_man.getDigits()
-		###
-		####
+		# ---
+		# ----
 		self.entry.set_direction(gtk.TextDirection.LTR)
 		# log.debug(self.__class__.__name__, "value=", value)
 		self.entry.connect("changed", self._entry_changed)
@@ -182,7 +182,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.connect("scroll-event", self._scroll)
 		# self.connect("button-press-event", self.onButtonPress) # FIXME
 		# self.connect("button-release-event", self.onButtonRelease) # FIXME
-		####
+		# ----
 		# self.select_region(0, 0)
 
 	def _entry_changed(self, _widget):
@@ -277,9 +277,9 @@ class MultiSpinButton(gtk.Box):
 			# self.select_region(i1, i2)
 			return True
 
-		# if kname=="return":## Enter
+		# if kname=="return":-- Enter
 		# 	self.update()
-		# 	##self.emit("activate")
+		# 	# --self.emit("activate")
 		# 	return True
 
 		if ord("0") <= kval <= ord("9"):
@@ -344,7 +344,7 @@ class MultiSpinButton(gtk.Box):
 	def onButtonRelease(self, _widget, _gevent):
 		self._remain = False
 
-	"""## ????????????????????????????????
+	"""-- ????????????????????????????????
 	def _arrow_enter_notify(self, gtkWin):
 		if gtkWin!=None:
 			log.info("_arrow_enter_notify")
