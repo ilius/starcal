@@ -30,7 +30,7 @@ def processDroppedDate(text, dtype):
 			# log.debug(etime)
 			# context.drag_status(gdk.DragAction.DEFAULT, etime)
 			# context.drop_reply(False, etime)
-			# context.drag_abort(etime)##Segmentation fault
+			# context.drag_abort(etime)--Segmentation fault
 			# context.drop_finish(False, etime)
 			# context.finish(False, True, etime)
 			# return True

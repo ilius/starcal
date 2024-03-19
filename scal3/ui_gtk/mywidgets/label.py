@@ -20,7 +20,7 @@ class SLabel(gtk.Label):
 	def __init__(self, label=None):
 		gtk.Label.__init__(self, label=label)
 		self.set_selectable(True)
-		# self.set_cursor_visible(False)## FIXME
+		# self.set_cursor_visible(False)-- FIXME
 		self.set_can_focus(False)
 		self.set_use_markup(True)
 		self.connect("populate-popup", self.popupPopulate)
@@ -31,7 +31,7 @@ class SLabel(gtk.Label):
 			imageName="edit-copy.svg",
 			func=self.copyAll,
 		)
-		##
+		# --
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
@@ -40,14 +40,14 @@ class SLabel(gtk.Label):
 		itemCopy.set_sensitive(
 			self.get_property("cursor-position") > self.get_property("selection-bound"),
 		)  # FIXME
-		##
+		# --
 		for item in menu.get_children():
 			menu.remove(item)
-		##
+		# --
 		menu.add(itemCopyAll)
 		menu.add(itemCopy)
 		menu.show_all()
-		##
+		# --
 		ui.updateFocusTime()
 
 	def copy(self, _item):
