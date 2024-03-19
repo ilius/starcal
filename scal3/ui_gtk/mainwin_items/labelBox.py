@@ -91,15 +91,15 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 	def __init__(self, calType, active=0):
 		BaseLabel.__init__(self)
 		self.get_style_context().add_class(self.styleClass)
-		###
+		# ---
 		self.objName = f"monthLabel({calType})"
 		# self.set_border_width(1)#???????????
 		self.initVars()
 		self.calType = calType
-		###
+		# ---
 		if calType == calTypes.primary:
 			self.get_style_context().add_class(primaryCalStyleClass)
-		###
+		# ---
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
 		self.add(self.label)
@@ -239,7 +239,7 @@ class IntLabel(BaseLabel):
 		self.menu.set_direction(gtk.TextDirection.LTR)
 		self.menuLabels = []
 		self.menu.connect("scroll-event", self.menuScroll)
-		##########
+		# ----------
 		item = gtk.MenuItem()
 		item.add(
 			imageFromIconName(
@@ -248,7 +248,7 @@ class IntLabel(BaseLabel):
 			),
 		)
 		# item.set_border_width(0)
-		# log.debug(item.style_get_property("horizontal-padding") ## OK)
+		# log.debug(item.style_get_property("horizontal-padding") # OK)
 		# ???????????????????????????????????
 		# item.config("horizontal-padding"=0)
 		# style = item.get_style()
@@ -258,7 +258,7 @@ class IntLabel(BaseLabel):
 		item.connect("select", self.arrowSelect, -1)
 		item.connect("deselect", self.arrowDeselect)
 		item.connect("activate", lambda _w: False)
-		##########
+		# ----------
 		for i in range(self.height):
 			item = MenuItem()
 			label = item.get_child()
@@ -267,7 +267,7 @@ class IntLabel(BaseLabel):
 			item.connect("activate", self.itemActivate, i)
 			self.menu.append(item)
 			self.menuLabels.append(label)
-		##########
+		# ----------
 		item = gtk.MenuItem()
 		item.add(
 			imageFromIconName(
@@ -278,7 +278,7 @@ class IntLabel(BaseLabel):
 		self.menu.append(item)
 		item.connect("select", self.arrowSelect, 1)
 		item.connect("deselect", self.arrowDeselect)
-		##########
+		# ----------
 		self.menu.show_all()
 
 	def updateMenu(self, start=None):
@@ -385,11 +385,11 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 		self.objName = f"yearLabel({calType})"
 		self.initVars()
 		self.calType = calType
-		###
+		# ---
 		self.get_style_context().add_class(self.styleClass)
 		if calType == calTypes.primary:
 			self.get_style_context().add_class(primaryCalStyleClass)
-		###
+		# ---
 		self.connect("changed", self.onChanged)
 
 	def onChanged(self, _label, item):
@@ -438,7 +438,7 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 	def __init__(self, calType, **kwargs):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
-		###
+		# ---
 		self.removeButton = SmallNoFocusButton(
 			"list-remove.svg",
 			self.onPrevClick,
@@ -450,10 +450,10 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 			_("Next Year"),
 		)
 		pack(self, self.removeButton)
-		###
+		# ---
 		self.label = YearLabel(calType, **kwargs)
 		pack(self, self.label)
-		###
+		# ---
 		pack(self, self.addButton)
 
 	def onPrevClick(self, _button):
@@ -486,12 +486,12 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 			self.onNextClick,
 			_("Next Month"),
 		)
-		###
+		# ---
 		pack(self, self.removeButton)
-		###
+		# ---
 		self.label = MonthLabel(calType, **kwargs)
 		pack(self, self.label)
-		###
+		# ---
 		pack(self, self.addButton)
 
 	def onPrevClick(self, _button):
@@ -582,44 +582,44 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
-		#####
+		# -----
 		self.updateIconSize()
-		####
+		# ----
 		for child in self.get_children():
 			child.destroy()
-		###
+		# ---
 		monthLabels = []
 		calType = calTypes.primary
-		##
+		# --
 		box = YearLabelButtonBox(calType)
 		pack(self, box)
 		self.appendItem(box.label)
 		self.ybox = box
-		##
+		# --
 		pack(self, self.newSeparator(), 1, 1)
-		##
+		# --
 		box = MonthLabelButtonBox(calType)
 		pack(self, box)
 		self.appendItem(box.label)
 		monthLabels.append(box.label)
 		self.mbox = box
-		####
+		# ----
 		for _i, calType in list(enumerate(calTypes.active))[1:]:
 			pack(self, self.newSeparator(), 1, 1)
 			label = YearLabel(calType)
 			pack(self, label)
 			self.appendItem(label)
-			###############
+			# ---------------
 			label = MonthLabel(calType)
 			pack(self, label, padding=5)
 			monthLabels.append(label)
 			self.appendItem(label)
-		####
+		# ----
 		self.monthLabels = monthLabels
 		self.updateTextWidth()
-		#####
+		# -----
 		self.show_all()
-		#####
+		# -----
 		self.onDateChange()
 
 	@staticmethod
@@ -677,9 +677,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		####
+		# ----
 		optionsWidget = VBox(spacing=5)
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"labelBoxBorderWidth",
@@ -693,7 +693,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=self.onBorderWidthChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
 		prefItem = ColorPrefItem(
@@ -704,9 +704,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(optionsWidget, hbox)
-		###
+		# ---
 		checkSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		###
+		# ---
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "labelBoxYearColorEnable", _("Year Color")),
 			ColorPrefItem(ui, "labelBoxYearColor", True),
@@ -715,7 +715,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=ud.windowList.updateCSS,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "labelBoxMonthColorEnable", _("Month Color")),
 			ColorPrefItem(ui, "labelBoxMonthColor", True),
@@ -724,7 +724,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=ud.windowList.updateCSS,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		previewText = self.getFontPreviewTextFull()
 		prefItem = CheckFontPrefItem(
 			CheckPrefItem(ui, "labelBoxFontEnable", label=_("Font")),
@@ -733,7 +733,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=self.onFontConfigChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		previewText = self.getFontPreviewText(calTypes.primary)
 		prefItem = CheckFontPrefItem(
 			CheckPrefItem(
@@ -748,7 +748,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=ud.windowList.updateCSS,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		prefItem = CheckPrefItem(
 			ui,
 			"boldYmLabel",
@@ -757,7 +757,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=ud.windowList.updateCSS,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return self.optionsWidget

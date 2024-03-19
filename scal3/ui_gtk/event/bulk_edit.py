@@ -20,7 +20,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		self._container = container
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Bulk Edit Events"))
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -33,9 +33,9 @@ class EventsBulkEditDialog(gtk.Dialog):
 			label=_("_Perform"),
 			res=gtk.ResponseType.OK,
 		)
-		##
+		# --
 		self.connect("response", lambda _w, _e: self.hide())
-		####
+		# ----
 		try:
 			title = container.title
 		except AttributeError:
@@ -58,7 +58,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		label = gtk.Label(label=msg)
 		label.set_line_wrap(True)
 		pack(self.vbox, label)
-		####
+		# ----
 		hbox = HBox()
 		self.iconRadio = gtk.RadioButton(label=_("Icon"))
 		pack(hbox, self.iconRadio, 1, 1)
@@ -78,12 +78,12 @@ class EventsBulkEditDialog(gtk.Dialog):
 		)
 		pack(hbox, self.timeZoneRadio, 1, 1)
 		pack(self.vbox, hbox)
-		###
+		# ---
 		self.iconRadio.connect("clicked", self.firstRadioChanged)
 		self.summaryRadio.connect("clicked", self.firstRadioChanged)
 		self.descriptionRadio.connect("clicked", self.firstRadioChanged)
 		self.timeZoneRadio.connect("clicked", self.firstRadioChanged)
-		####
+		# ----
 		hbox = HBox()
 		self.iconChangeCombo = gtk.ComboBoxText()
 		self.iconChangeCombo.append_text("----")
@@ -98,9 +98,9 @@ class EventsBulkEditDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		self.iconHbox = hbox
-		####
+		# ----
 		self.textVbox = VBox()
-		###
+		# ---
 		hbox = HBox()
 		self.textChangeCombo = gtk.ComboBoxText()
 		self.textChangeCombo.append_text("----")
@@ -112,21 +112,21 @@ class EventsBulkEditDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		# CheckButton(_("Regexp"))
 		pack(self.textVbox, hbox)
-		###
+		# ---
 		self.textInput1 = TextFrame()
 		pack(self.textVbox, self.textInput1, 1, 1)
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("with")))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.textVbox, hbox, 1, 1)
 		self.withHbox = hbox
-		###
+		# ---
 		self.textInput2 = TextFrame()
 		pack(self.textVbox, self.textInput2, 1, 1)
-		####
+		# ----
 		pack(self.vbox, self.textVbox, 1, 1)
-		####
+		# ----
 		hbox = HBox()
 		self.timeZoneChangeCombo = gtk.ComboBoxText()
 		self.timeZoneChangeCombo.append_text("----")
@@ -139,13 +139,13 @@ class EventsBulkEditDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox, 1, 1)
 		self.timeZoneHbox = hbox
-		####
+		# ----
 		self.vbox.show_all()
 		self.iconRadio.set_active(True)
 		self.iconChangeCombo.set_active(0)
 		self.textChangeCombo.set_active(0)
 		self.firstRadioChanged()
-		####
+		# ----
 		window_set_size_aspect(self, 1.6)
 
 	def firstRadioChanged(self, _widget=None):

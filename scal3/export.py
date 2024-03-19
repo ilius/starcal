@@ -63,7 +63,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 	def sizeMap(size):
 		return size * 0.25 - 0.5  # FIXME
 
-	# ################### Options:
+	# ------------------- Options:
 	calTypesFormat = (
 		(2, "SUB"),
 		(0, None),
@@ -72,7 +72,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 	# sep = " "
 	pluginsTextSep = " <B>–</B> "
 	pluginsTextPerLine = True  # description of each day in one line
-	#####################
+	# ---------------------
 	bgColor = rgbToHtml(*ui.bgColor)
 	inactiveColor = rgbToHtml(*colorComposite(ui.inactiveColor, ui.bgColor))
 	borderColor = rgbToHtml(*colorComposite(ui.borderColor, ui.bgColor))
