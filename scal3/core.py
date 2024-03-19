@@ -116,15 +116,15 @@ confEncoders = {
 
 def loadConf() -> None:
 	global version, prefVersion, activeCalTypes, inactiveCalTypes  # noqa: PLW0602
-	###########
+	# -----------
 	loadModuleJsonConf(__name__)
-	###########
+	# -----------
 	if "version" in globals():
 		prefVersion = version
 		del version
 	else:
 		prefVersion = ""
-	###########
+	# -----------
 	with suppress(NameError):
 		# activeCalTypes and inactiveCalType might be
 		# loaded from json config file
@@ -232,7 +232,7 @@ def getMonthWeekNth(jd: int, calType: int) -> tuple[int, int, int]:
 		raise RuntimeError(f"cal type '{calType}' not found")
 	_year, month, day = jd_to(jd, calType)
 	_absWeekNumber, weekDay = getWeekDateFromJd(jd)
-	##
+	# --
 	dayDiv = (day - 1) // 7
 	return month, dayDiv, weekDay
 
@@ -273,19 +273,19 @@ def getWeekNumberByJdAndYear(jd: int, year: int) -> int:
 		and getWeekNumber(*jd_to_primary(jd + 14)) == 3
 	):
 		return 1
-	###
+	# ---
 	absWeekNum, _weekDay = getWeekDateFromJd(jd)
 	(
 		ystartAbsWeekNum,
 		ystartWeekDay,
 	) = getWeekDateFromJd(primary_to_jd(year, 1, 1))
 	weekNum = absWeekNum - ystartAbsWeekNum + 1
-	###
+	# ---
 	if weekNumberMode < 7 and ystartWeekDay > (weekNumberMode - firstWeekDay) % 7:
 		weekNum -= 1
 		if weekNum == 0:
 			weekNum = getWeekNumber(*jd_to_primary(jd - 7)) + 1
-	###
+	# ---
 	return weekNum
 
 
@@ -336,7 +336,7 @@ def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
 # 	#	fa_IR.UTF-8             0
 
 
-######################################################
+# ------------------------------------------------------
 
 
 def validatePlugList() -> None:
@@ -350,7 +350,7 @@ def validatePlugList() -> None:
 				plugIndex.remove(i)
 		else:
 			i += 1
-	#####
+	# -----
 	n = len(allPlugList)
 	m = len(plugIndex)
 	i = 0
@@ -366,7 +366,7 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 	# log.debug("----------------------- initPlugins")
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
-	########################
+	# ------------------------
 	names = [os.path.split(plug.file)[1] for plug in allPlugList]
 	# newPlugs = []#????????
 	for direc in (plugDir, plugDirName):

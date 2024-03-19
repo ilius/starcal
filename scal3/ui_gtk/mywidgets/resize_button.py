@@ -7,7 +7,7 @@ class ResizeButton(gtk.EventBox):
 		gtk.EventBox.__init__(self)
 		self.win = win
 		self.edge = edge
-		###
+		# ---
 		self.image = imageFromFile("resize-small.svg", size)
 		self.add(self.image)
 		self.connect("button-press-event", self.onButtonPress)

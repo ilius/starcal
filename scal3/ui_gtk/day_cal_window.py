@@ -82,10 +82,10 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 	def __init__(self, dayCal: DayCal, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self._widget = dayCal
-		##
+		# --
 		self.set_title(_("Customize") + ": " + dayCal.desc)
 		self.connect("delete-event", self.onSaveClick)
-		##
+		# --
 		dialog_add_button(
 			self,
 			imageName="document-save.svg",
@@ -93,7 +93,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 			onClick=self.onSaveClick,
 		)
-		##
+		# --
 		self.stack = MyStack(
 			headerSpacing=10,
 			iconSize=ui.stackIconSize,
@@ -112,7 +112,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 			page.pagePath = page.pageName
 			self.stack.addPage(page)
 		dayCal.connect("goto-page", self.gotoPageCallback)
-		##
+		# --
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
@@ -280,14 +280,14 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		gtk.Window.__init__(self)
 		self.initVars()
 		ud.windowList.appendItem(self)
-		###
+		# ---
 		self.resize(ui.dcalWinWidth, ui.dcalWinHeight)
 		self.move(ui.dcalWinX, ui.dcalWinY)
 		self.set_skip_taskbar_hint(True)
 		self.set_decorated(False)
 		self.set_keep_below(True)
 		self.stick()
-		###
+		# ---
 		self._widget = DayCalWindowWidget(self)
 		self._widget._window = self  # noqa: SLF001
 
@@ -313,7 +313,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		y = wy + dy
 		if rtl:
 			x -= get_menu_width(menu)
-		####
+		# ----
 		etime = gtk.get_current_event_time()
 		# log.debug("menuCellPopup", x, y, etime)
 		# without the above line, the menu is not showing up
