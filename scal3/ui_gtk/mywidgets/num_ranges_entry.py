@@ -44,7 +44,7 @@ class NumRangesEntry(gtk.Entry):
 		self._max = _max
 		self.digs = locale_man.digits[locale_man.langSh]
 		self.page_inc = page_inc
-		####
+		# ----
 		gtk.Entry.__init__(self)
 		self.connect("key-press-event", self.onKeyPress)
 		self.set_direction(gtk.TextDirection.LTR)
@@ -189,7 +189,7 @@ class NumRangesEntry(gtk.Entry):
 
 
 if __name__ == "__main__":
-	###
+	# ---
 	entry = NumRangesEntry(0, 9999)
 	win = gtk.Dialog()
 	win.vbox.add(entry)

@@ -110,9 +110,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		self.prefWindow = None
-		###
+		# ---
 		self.closeFunc = closeFunc
-		###
+		# ---
 		self.keysActionDict = {
 			"moveToNow": self.onKeyMoveToNow,
 			"moveRight": self.onKeyMoveRight,
@@ -122,7 +122,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			"zoomIn": self.onKeyZoomIn,
 			"zoomOut": self.onKeyZoomOut,
 		}
-		###
+		# ---
 		self.connect("draw", self.onExposeEvent)
 		self.connect("scroll-event", self.onScroll)
 		self.connect("button-press-event", self.onButtonPress)
@@ -137,11 +137,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.updateMovementButtons()
 		# zoom in and zoom out buttons FIXME
 		self.data = None
-		########
+		# --------
 		self.movingLastPress = 0
 		self.movingV = 0
 		self.movingF = 0
-		#######
+		# -------
 		self.boxEditing = None
 		# boxEditing: None or tuple of (editType, box, x0, t0)
 		# editType=0   moving
@@ -367,13 +367,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		tickH = tick.height
 		tickW = tick.width
 		tickH = min(tickH, maxTickHeight)
-		###
+		# ---
 		tickX = tick.pos - tickW / 2.0
 		tickY = 1
 		cr.rectangle(tickX, tickY, tickW, tickH)
 		fillColor(cr, tick.color)
 		# fillColor never seems to raise exception anymore (in Gtk3)
-		###
+		# ---
 		font = ui.Font(
 			fontFamily,
 			False,
@@ -410,7 +410,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		w = box.w
 		y = box.y
 		h = box.h
-		###
+		# ---
 		drawBoxBG(cr, box, x, y, w, h)
 		drawBoxBorder(cr, box, x, y, w, h)
 		drawBoxText(cr, box, x, y, w, h, self)
@@ -440,31 +440,31 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		timeStart = self.timeStart
 		timeWidth = self.timeWidth
 		timeEnd = timeStart + timeWidth
-		####
+		# ----
 		width = self.get_allocation().width
 		height = self.get_allocation().height
 		pixelPerSec = self.pixelPerSec
 		dayPixel = dayLen * pixelPerSec  # pixel
 		maxTickHeight = tl.maxTickHeightRatio * height
-		#####
+		# -----
 		cr.rectangle(0, 0, width, height)
 		fillColor(cr, tl.bgColor)
-		#####
+		# -----
 		setColor(cr, tl.holidayBgBolor)
 		for x in self.data["holidays"]:
 			cr.rectangle(x, 0, dayPixel, height)
 			cr.fill()
-		#####
+		# -----
 		for tick in self.data["ticks"]:
 			self.drawTick(cr, tick, maxTickHeight)
-		######
+		# ------
 		beforeBoxH = maxTickHeight  # FIXME
 		maxBoxH = height - beforeBoxH
 		for box in self.data["boxes"]:
 			box.setPixelValues(timeStart, pixelPerSec, beforeBoxH, maxBoxH)
 			self.drawBox(cr, box)
 		self.drawBoxEditingHelperLines(cr)
-		# #### Show (possible) Daylight Saving change
+		# Show (possible) Daylight Saving change
 		if (
 			timeStart > 0
 			and 2 * 3600 < timeWidth < 30 * dayLen
@@ -489,7 +489,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			else:
 				log.info("dstChangeEpoch not found")
 
-		# #### Draw Current Time Marker
+		# Draw Current Time Marker
 		dt = self.currentTime - timeStart
 		if 0 <= dt <= timeWidth:
 			setColor(cr, tl.currentTimeMarkerColor)
@@ -500,7 +500,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				tl.currentTimeMarkerHeightRatio * self.get_allocation().height,
 			)
 			cr.fill()
-		######
+		# ------
 		for button in self.getButtons():
 			button.draw(cr, width, height)
 
@@ -582,7 +582,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 					if button.onRelease is not None:
 						self.pressingButton = button
 					return True
-			####
+			# ----
 			for box in self.data["boxes"]:
 				if not box.hasBorder:
 					continue
@@ -593,7 +593,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				gid, eid = box.ids
 				group = ui.eventGroups[gid]
 				event = group[eid]
-				####
+				# ----
 				top = y - box.y
 				left = x - box.x
 				right = box.x + box.w - x
@@ -628,9 +628,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				gid, eid = box.ids
 				group = ui.eventGroups[gid]
 				event = group[eid]
-				####
+				# ----
 				menu = Menu()
-				##
+				# --
 				if not event.readOnly:
 					winTitle = _("Edit") + " " + event.desc
 					menu.add(
@@ -645,7 +645,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 							),
 						),
 					)
-				##
+				# --
 				winTitle = _("Edit") + " " + group.desc
 				menu.add(
 					ImageMenuItem(
@@ -658,9 +658,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 						),
 					),
 				)
-				##
+				# --
 				menu.add(gtk.SeparatorMenuItem())
-				##
+				# --
 				menu.add(
 					ImageMenuItem(
 						_("Move to {title}").format(title=ui.eventTrash.title),
@@ -672,7 +672,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 						),
 					),
 				)
-				##
+				# --
 				menu.show_all()
 				self.tmpMenu = menu
 				menu.popup(None, None, None, None, 3, gevent.time)
@@ -973,7 +973,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		gtk.Window.__init__(self)
 		self.initVars()
 		ud.windowList.appendItem(self)
-		###
+		# ---
 		self.resize(ud.workAreaW, 150)
 		self.move(0, 0)
 		self.set_title(_("Time Line"))

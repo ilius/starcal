@@ -167,7 +167,7 @@ class MonthDbHolder:
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
 		self.expJd = data.get("expJd", None)
-		###
+		# ---
 		monthLenByYear = {}
 		for row in data["monthLen"]:
 			monthLenByYear[row[0]] = row[1:]
@@ -177,7 +177,7 @@ class MonthDbHolder:
 		with open(self.sysDbPath, encoding="utf-8") as fp:
 			data = jsonToData(fp.read())
 		self.origVersion = data["version"]
-		##
+		# --
 		if isfile(self.userDbPath):
 			with open(self.userDbPath, encoding="utf-8") as fp:
 				userData = jsonToData(fp.read())
@@ -272,7 +272,7 @@ monthDb = MonthDbHolder()
 monthDb.load()
 # monthDb.save()
 
-#####################################################################
+# ---------------------------------------------------------------------
 
 
 def isLeap(year):

@@ -21,7 +21,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.isNew = isNew
 		# self.connect("delete-event", lambda obj, e: self.destroy())
 		# self.resize(800, 600)
-		###
+		# ---
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -34,22 +34,22 @@ class EventEditorDialog(gtk.Dialog):
 			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
-		###
+		# ---
 		self.connect("response", lambda _w, _e: self.hide())
-		###
+		# ---
 		self.activeWidget = None
 		self._group = event.parent
 		self.eventTypeOptions = list(self._group.acceptsEventTypes)
-		####
+		# ----
 		if event.name not in self.eventTypeOptions:
 			self.eventTypeOptions.append(event.name)
 		eventTypeIndex = self.eventTypeOptions.index(event.name)
-		####
+		# ----
 		self.event = event
-		#######
+		# -------
 		if isNew and not event.timeZone:
 			event.timeZone = str(locale_man.localTz)  # why? FIXME
-		#######
+		# -------
 		hbox = HBox()
 		pack(
 			hbox,
@@ -59,7 +59,7 @@ class EventEditorDialog(gtk.Dialog):
 		)
 		hbox.show_all()
 		pack(self.vbox, hbox)
-		#######
+		# -------
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Event Type")))
 		if typeChangable:
@@ -67,9 +67,9 @@ class EventEditorDialog(gtk.Dialog):
 			for tmpEventType in self.eventTypeOptions:
 				combo.append_text(event_lib.classes.event.byName[tmpEventType].desc)
 			pack(hbox, combo)
-			####
+			# ----
 			combo.set_active(eventTypeIndex)
-			####
+			# ----
 			# self.activeWidget = makeWidget(event)
 			combo.connect("changed", self.typeChanged)
 			self.comboEventType = combo
@@ -78,7 +78,7 @@ class EventEditorDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		hbox.show_all()
 		pack(self.vbox, hbox)
-		#####
+		# -----
 		if useSelectedDate:
 			self.event.setJd(ui.cell.jd)
 		self.activeWidget = makeWidget(event)
@@ -90,10 +90,10 @@ class EventEditorDialog(gtk.Dialog):
 	def replaceExistingEvent(self, eventType):
 		oldEvent = self.event
 		newEvent = self._group.create(eventType)
-		###
+		# ---
 		newEvent.changeCalType(oldEvent.calType)
 		newEvent.copyFrom(oldEvent)
-		###
+		# ---
 		newEvent.setId(oldEvent.id)
 		oldEvent.invalidate()
 		self.event = newEvent
@@ -124,7 +124,7 @@ class EventEditorDialog(gtk.Dialog):
 		if self.isNew:
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
-		# self.activeWidget.calTypeComboChanged()## apearantly not needed
+		# self.activeWidget.calTypeComboChanged()-- apearantly not needed
 
 	def run(self):
 		# if not self.activeWidget:
@@ -145,7 +145,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.event.save()
 		event_lib.lastIds.save()
 		self.destroy()
-		#####
+		# -----
 		if self.event.isSingleOccur:
 			occur = self.event.calcOccurrence(
 				self.event.parent.startJd,
@@ -158,10 +158,10 @@ class EventEditorDialog(gtk.Dialog):
 					'"{groupTitle}" and change "Start" or "End" values',
 				).format(groupTitle=self.event.parent.title)
 				showInfo(msg)
-		#####
+		# -----
 		if parentWin is not None:
 			parentWin.present()
-		#####
+		# -----
 		return self.event
 
 

@@ -54,22 +54,22 @@ class MyStack(gtk.Stack):
 	):
 		gtk.Stack.__init__(self)
 		self.set_transition_duration(300)  # milliseconds
-		###
+		# ---
 		self._header = header
 		self._rtl = self.get_direction() == gtk.TextDirection.RTL  # type: bool
 		self._iconSize = iconSize  # type: int
 		self._headerSpacing = headerSpacing  # type: int
 		self._verticalSlide = verticalSlide  # type: bool
-		###
+		# ---
 		self._parentPaths: "dict[str, str]" = {}
 		self._currentPagePath = ""
 		self._titles: "dict[str, str]" = {}
-		###
+		# ---
 		self.connect("key-press-event", self.onKeyPress)
-		###
+		# ---
 		self._titleFontSize = "x-small"
 		self._titleCentered = False
-		###
+		# ---
 		self._windowTitleEnable = False
 		self._window = None
 		self._windowTitleMain = ""
@@ -200,10 +200,10 @@ class MyStack(gtk.Stack):
 			vbox.show()
 			widget = vbox
 		self.add_named(widget, name=pagePath)
-		##
+		# --
 		self._parentPaths[pagePath] = parentName
 		self._titles[pagePath] = page.pageTitle
-		##
+		# --
 		if not self._currentPagePath:
 			self.gotoPage(pagePath)
 
