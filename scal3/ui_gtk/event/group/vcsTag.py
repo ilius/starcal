@@ -8,16 +8,16 @@ from scal3.ui_gtk.event.group.vcsEpochBase import (
 class WidgetClass(BaseWidgetClass):
 	def __init__(self, group):
 		BaseWidgetClass.__init__(self, group)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Tag Description"))
 		label.set_xalign(0)
 		self.sizeGroup.add_widget(label)
 		pack(hbox, label)
-		##
+		# --
 		self.statCheck = gtk.CheckButton(label=_("Stat"))
 		pack(hbox, self.statCheck)
-		##
+		# --
 		hbox.show_all()
 		pack(self, hbox)
 

@@ -180,7 +180,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		global eventManPos
 		eventManPos = self.get_position()
 		saveConf()
-		###
+		# ---
 		self.hide()
 
 	# def findEventByPath(self, eid: int, path: "list[int]""):
@@ -188,7 +188,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def onConfigChange(self, *a, **kw) -> None:
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
-		###
+		# ---
 		if not self.isLoaded:
 			if self.get_property("visible"):
 				self.waitingDo(self.reloadEvents)  # FIXME
@@ -264,24 +264,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
-		####
+		# ----
 		self.syncing = None  # or a tuple of (groupId, statusText)
 		self.groupIterById = {}
 		self.trashIter = None
 		self.isLoaded = False
 		self.loadedGroupIds = set()
 		self.eventsIter = {}
-		####
+		# ----
 		self.multiSelect = False
 		self.multiSelectPathDict = odict()
 		self.multiSelectToPaste: "tuple[bool, list[gtk.TreeIter]] | None" = None
-		####
+		# ----
 		self.set_title(_("Event Manager"))
 		self.resize(800, 600)
 		self.connect("delete-event", self.onDeleteEvent)
 		self.set_transient_for(None)
 		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
-		##
+		# --
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
@@ -291,39 +291,39 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# self.connect("response", lambda w, e: self.hide())
 		self.connect("response", self.onResponse)
 		self.connect("show", self.onShow)
-		#######
+		# -------
 		menubar = self.menubar = gtk.MenuBar()
-		####
+		# ----
 		fileItem = self.fileItem = MenuItem(_("_File"))
 		fileMenu = Menu()
 		fileItem.set_submenu(fileMenu)
 		menubar.append(fileItem)
-		##
+		# --
 		addGroupItem = MenuItem(_("Add New Group"))
 		addGroupItem.set_sensitive(not lib.allReadOnly)
 		addGroupItem.connect("activate", self.addGroupBeforeSelection)
 		# FIXME: or before selected group?
 		fileMenu.append(addGroupItem)
-		##
+		# --
 		# FIXME right place?
 		searchItem = MenuItem(_("_Search Events"))
 		searchItem.connect("activate", self.onMenuBarSearchClick)
 		fileMenu.append(searchItem)
-		##
+		# --
 		exportItem = MenuItem(_("_Export", ctx="menu"))
 		exportItem.connect("activate", self.onMenuBarExportClick)
 		fileMenu.append(exportItem)
-		##
+		# --
 		importItem = MenuItem(_("_Import", ctx="menu"))
 		importItem.set_sensitive(not lib.allReadOnly)
 		importItem.connect("activate", self.onMenuBarImportClick)
 		fileMenu.append(importItem)
-		##
+		# --
 		orphanItem = MenuItem(_("Check for Orphan Events"))
 		orphanItem.set_sensitive(not lib.allReadOnly)
 		orphanItem.connect("activate", self.onMenuBarOrphanClick)
 		fileMenu.append(orphanItem)
-		####
+		# ----
 		editItem = self.editItem = MenuItem(_("_Edit"))
 		if lib.allReadOnly:
 			editItem.set_sensitive(False)
@@ -331,130 +331,130 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			editMenu = Menu()
 			editItem.set_submenu(editMenu)
 			menubar.append(editItem)
-			##
+			# --
 			editEditItem = MenuItem(_("Edit"))
 			editEditItem.connect("activate", self.onMenuBarEditClick)
 			editMenu.append(editEditItem)
 			editMenu.connect("show", self.mbarEditMenuPopup)
 			self.mbarEditItem = editEditItem
-			##
+			# --
 			editMenu.append(gtk.SeparatorMenuItem())
-			##
+			# --
 			cutItem = MenuItem(_("Cu_t"))
 			cutItem.connect("activate", self.onMenuBarCutClick)
 			editMenu.append(cutItem)
 			self.mbarCutItem = cutItem
-			##
+			# --
 			copyItem = MenuItem(_("_Copy"))
 			copyItem.connect("activate", self.onMenuBarCopyClick)
 			editMenu.append(copyItem)
 			self.mbarCopyItem = copyItem
-			##
+			# --
 			pasteItem = MenuItem(_("_Paste"))
 			pasteItem.connect("activate", self.onMenuBarPasteClick)
 			editMenu.append(pasteItem)
 			self.mbarPasteItem = pasteItem
-			##
+			# --
 			editMenu.append(gtk.SeparatorMenuItem())
-			##
+			# --
 			dupItem = MenuItem(_("_Duplicate"))
 			dupItem.connect("activate", self.duplicateSelectedObj)
 			editMenu.append(dupItem)
 			self.mbarDupItem = dupItem
-			##
+			# --
 			editMenu.append(gtk.SeparatorMenuItem())
-			##
+			# --
 			enableAllItem = MenuItem(_("Enable All Groups"))
 			enableAllItem.connect("activate", self.onEnableAllClick)
 			editMenu.append(enableAllItem)
 			self.mbarEnableAllItem = enableAllItem
-			##
+			# --
 			disableAllItem = MenuItem(_("Disable All Groups"))
 			disableAllItem.connect("activate", self.onDisableAllClick)
 			editMenu.append(disableAllItem)
 			self.mbarDisableAllItem = disableAllItem
-		####
+		# ----
 		viewItem = MenuItem(_("_View"))
 		viewMenu = Menu()
 		viewItem.set_submenu(viewMenu)
 		menubar.append(viewItem)
-		##
+		# --
 		collapseItem = MenuItem(_("Collapse All"))
 		collapseItem.connect("activate", self.onCollapseAllClick)
 		viewMenu.append(collapseItem)
-		##
+		# --
 		expandItem = MenuItem(_("Expand All"))
 		expandItem.connect("activate", self.onExpandAllAllClick)
 		viewMenu.append(expandItem)  # noqa: FURB113
-		##
+		# --
 		viewMenu.append(gtk.SeparatorMenuItem())
-		##
+		# --
 		self.showDescItem = gtk.CheckMenuItem(label=_("Show _Description"))
 		self.showDescItem.set_use_underline(True)
 		self.showDescItem.set_active(eventManShowDescription)
 		self.showDescItem.connect("toggled", self.showDescItemToggled)
 		viewMenu.append(self.showDescItem)
-		####
+		# ----
 		# testItem = MenuItem(_("Test"))
 		# testMenu = Menu()
 		# testItem.set_submenu(testMenu)
 		# menubar.append(testItem)
-		###
+		# ---
 		# item = MenuItem("")
 		# item.connect("activate", )
 		# testMenu.append(item)
-		####
+		# ----
 		multiSelectMenu = Menu()
 		multiSelectItemMain = MenuItem(label=_("Multi-select"))
 		self.multiSelectItemMain = multiSelectItemMain
 		multiSelectItemMain.set_submenu(multiSelectMenu)
 		menubar.append(multiSelectItemMain)
-		##
+		# --
 		multiSelectItem = gtk.CheckMenuItem(label=_("Multi-select"))
 		multiSelectItem.connect("activate", self.multiSelectToggle)
 		multiSelectMenu.append(multiSelectItem)
 		self.multiSelectItem = multiSelectItem
 		self.multiSelectItemsOther = []
-		####
+		# ----
 		multiSelectMenu.append(gtk.SeparatorMenuItem())
-		####
+		# ----
 		cutItem = MenuItem(_("Cu_t"))
 		cutItem.connect("activate", self.multiSelectCut)
 		self.multiSelectItemsOther.append(cutItem)
-		##
+		# --
 		copyItem = MenuItem(_("_Copy"))
 		copyItem.connect("activate", self.multiSelectCopy)
 		self.multiSelectItemsOther.append(copyItem)
-		##
+		# --
 		pasteItem = MenuItem(_("_Paste"))
 		pasteItem.connect("activate", self.multiSelectPaste)
 		self.multiSelectItemsOther.append(pasteItem)
-		##
+		# --
 		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
-		##
+		# --
 		deleteItem = MenuItem(_("Delete", ctx="event manager"))
 		deleteItem.connect("activate", self.multiSelectDelete)
 		self.multiSelectItemsOther.append(deleteItem)
-		##
+		# --
 		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
-		##
+		# --
 		bulkEditItem = MenuItem(_("Bulk Edit Events"))
 		# imageName="document-edit.svg",
 		# native CheckMenuItem and ImageMenuItem are not aligned
 		bulkEditItem.connect("activate", self.multiSelectBulkEdit)
 		self.multiSelectItemsOther.append(bulkEditItem)
-		##
+		# --
 		exportItem = MenuItem(_("_Export", ctx="menu"))
 		exportItem.connect("activate", self.multiSelectExport)
 		self.multiSelectItemsOther.append(exportItem)
-		###
+		# ---
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(False)
 			multiSelectMenu.append(item)
-		####
+		# ----
 		menubar.show_all()
 		pack(self.vbox, menubar)
-		#######
+		# -------
 		# multi-select bar
 		self.multiSelectHBox = hbox = HBox(spacing=3)
 		self.multiSelectLabel = gtk.Label(label=_("No event selected"))
@@ -508,11 +508,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				tooltip=_("Cancel"),
 			),
 		)
-		###
+		# ---
 		pack(self.vbox, hbox)
-		#######
+		# -------
 		treeBox = HBox()
-		#####
+		# -----
 		self.treev = gtk.TreeView()
 		self.treev.set_search_column(3)
 
@@ -532,18 +532,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.treev.connect("row-activated", self.rowActivated)
 		self.connect("key-press-event", self.onKeyPress)
 		self.treev.connect("key-press-event", self.onTreeviewKeyPress)
-		#####
+		# -----
 		swin = gtk.ScrolledWindow()
 		swin.add(self.treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		pack(treeBox, swin, 1, 1)
-		###
+		# ---
 		self.toolbar = EventManagerToolbar(self)
-		###
+		# ---
 		pack(treeBox, self.toolbar)
-		#####
+		# -----
 		pack(self.vbox, treeBox, 1, 1)
-		#######
+		# -------
 		self.treeModel = gtk.TreeStore(
 			bool,  # multi-select mode checkbox
 			int,  # eventId or groupId, -1 for trash
@@ -554,7 +554,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.idColIndex = 1
 		self.summaryColIndex = 3
 		self.treev.set_model(self.treeModel)
-		###
+		# ---
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		# cell.set_radio(True)
@@ -571,7 +571,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		col.set_visible(False)
 		self.multiSelectColumn = col
 		self.treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererPixbuf()
 		col = gtk.TreeViewColumn(
 			title="",
@@ -582,7 +582,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		col.set_property("expand", False)
 		self.treev.append_column(col)
 		self.pixbufCol = col
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(
 			title=_("Summary"),
@@ -593,7 +593,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		col.set_resizable(True)
 		col.set_property("expand", True)
 		self.treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = self.colDesc = gtk.TreeViewColumn(
 			title=_("Description"),
@@ -604,11 +604,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		col.set_property("expand", True)
 		if eventManShowDescription:
 			self.treev.append_column(col)
-		###
-		# self.treev.set_search_column(2)## or 3
-		###
+		# ---
+		# self.treev.set_search_column(2)-- or 3
+		# ---
 		self.toPasteEvent = None  # (treeIter, bool move)
-		#####
+		# -----
 		hbox = HBox()
 		hbox.set_direction(gtk.TextDirection.LTR)
 		self.sbar = gtk.Statusbar()
@@ -616,7 +616,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pack(hbox, self.sbar, 1, 1)
 		pack(hbox, ResizeButton(self))
 		pack(self.vbox, hbox)
-		#####
+		# -----
 		self.vbox.show_all()
 		self.multiSelectHBox.hide()
 
@@ -1177,9 +1177,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def reloadGroupEvents(self, gid: int) -> None:
 		groupIter = self.groupIterById[gid]
 		assert self.getRowId(groupIter) == gid
-		##
+		# --
 		self.removeIterChildren(groupIter)
-		##
+		# --
 		group = ui.eventGroups[gid]
 		if gid not in self.loadedGroupIds:
 			return
@@ -1192,7 +1192,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		for group in ui.eventGroups:
 			self.appendGroupTree(group)
 		self.treeviewCursorChanged()
-		####
+		# ----
 		self.isLoaded = True
 
 	def getObjsByPath(self, path: list[int]) -> list[EventOrGroup]:
@@ -1301,7 +1301,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		menu.add(pasteItem)
 		pasteItem.set_sensitive(self.canPasteToGroup(group))
-		##
+		# --
 		if group.remoteIds:
 			aid, _remoteGid = group.remoteIds
 			try:
@@ -1324,7 +1324,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 						),
 					)
 				# else:  # FIXME
-		##
+		# --
 		menu.add(gtk.SeparatorMenuItem())
 		# menu.add(eventWriteMenuItem(
 		# 	_("Add New Group"),
@@ -1340,7 +1340,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(path,),
 			),
 		)
-		###
+		# ---
 		dupAllItem = eventWriteMenuItem(
 			_("Duplicate with All Events"),
 			imageName="edit-copy.svg",
@@ -1351,7 +1351,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		dupAllItem.set_sensitive(
 			not group.isReadOnly() and bool(group.idList),
 		)
-		###
+		# ---
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			eventWriteMenuItem(
@@ -1362,7 +1362,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			),
 		)
 		menu.add(gtk.SeparatorMenuItem())
-		##
+		# --
 		# menu.add(eventWriteMenuItem(
 		# 	_("Move Up"),
 		# 	imageName="go-up.svg",
@@ -1375,7 +1375,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# 	func=self.moveDownFromMenu,
 		# 	args=(path,)
 		# ))
-		##
+		# --
 		menu.add(
 			ImageMenuItem(
 				_("Export", ctx="menu"),
@@ -1384,7 +1384,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(group,),
 			),
 		)
-		###
+		# ---
 		menu.add(
 			eventWriteMenuItem(
 				_("Sort Events"),
@@ -1394,7 +1394,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				sensitive=not group.isReadOnly() and bool(group.idList),
 			),
 		)
-		###
+		# ---
 		convertItem = eventWriteMenuItem(
 			_("Convert Calendar Type"),
 			imageName="convert-calendar.svg",
@@ -1405,7 +1405,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		convertItem.set_sensitive(
 			not group.isReadOnly() and bool(group.idList),
 		)
-		###
+		# ---
 		for newGroupType in group.canConvertTo:
 			newGroupTypeDesc = lib.classes.group.byName[newGroupType].desc
 			menu.add(
@@ -1420,7 +1420,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 					),
 				),
 			)
-		###
+		# ---
 		bulkItem = eventWriteMenuItem(
 			_("Bulk Edit Events"),
 			imageName="document-edit.svg",
@@ -1431,7 +1431,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		bulkItem.set_sensitive(
 			not group.isReadOnly() and bool(group.idList),
 		)
-		###
+		# ---
 		for actionName, actionFuncName in group.actions:
 			menu.add(
 				eventWriteMenuItem(
@@ -1454,7 +1454,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(path,),
 			),
 		)
-		####
+		# ----
 		menu.add(
 			eventWriteImageMenuItem(
 				_("History"),
@@ -1463,7 +1463,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(path,),
 			),
 		)
-		####
+		# ----
 		moveToItem = eventWriteMenuItem(
 			_("Move to {title}").format(title="..."),
 		)
@@ -1487,9 +1487,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				)
 		moveToItem.set_submenu(moveToMenu)
 		menu.add(moveToItem)
-		####
+		# ----
 		menu.add(gtk.SeparatorMenuItem())
-		####
+		# ----
 		menu.add(
 			eventWriteMenuItem(
 				_("Cut"),
@@ -1506,7 +1506,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(path,),
 			),
 		)
-		##
+		# --
 		if group.name == "trash":
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(
@@ -1526,7 +1526,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			)
 			menu.add(pasteItem)
 			pasteItem.set_sensitive(self.canPasteToGroup(group))
-			##
+			# --
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(
 				eventWriteMenuItem(
@@ -1706,12 +1706,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path = self.getSelectedPath()
 		selected = bool(path)
 		eventSelected = selected and len(path) == 2
-		###
+		# ---
 		self.mbarEditItem.set_sensitive(selected)
 		self.mbarCutItem.set_sensitive(eventSelected)
 		self.mbarCopyItem.set_sensitive(eventSelected)
 		self.mbarDupItem.set_sensitive(selected)
-		###
+		# ---
 		self.mbarPasteItem.set_sensitive(
 			selected and self.canPasteToGroup(self.getObjsByPath(path)[0]),
 		)
@@ -2331,7 +2331,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				self.checkEventToAdd(newGroup, event)
 				self.treeModel.remove(srcIter)
 				self.appendEventRow(newParentIter, event)
-				###
+				# ---
 				parentObj.remove(event)
 				parentObj.save()
 				newGroup.append(event)
@@ -2387,7 +2387,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				self.checkEventToAdd(newGroup, event)
 				self.treeModel.remove(srcIter)
 				srcIter = self.insertEventRow(newParentIter, 0, event)
-				###
+				# ---
 				parentObj.remove(event)
 				parentObj.save()
 				newGroup.insert(0, event)
@@ -2550,7 +2550,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			tarGroupIter = self.treeModel.get_iter(targetPath[:1])
 			tarEventIter = self.treeModel.get_iter(targetPath)
 			tarEventIndex = targetPath[1]
-		####
+		# ----
 		if move:
 			srcGroup.remove(srcEvent)
 			srcGroup.save()
@@ -2568,7 +2568,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# although we insert the new event (not append) to group
 		# it should not make any difference, since only occurrences (and not
 		# events) are displayed outside Event Manager
-		####
+		# ----
 		if tarEventIter:
 			newEventIter = self.insertEventRowAfter(
 				tarGroupIter,

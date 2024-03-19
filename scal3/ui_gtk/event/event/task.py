@@ -24,9 +24,9 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -34,13 +34,13 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		##
+		# --
 		pack(hbox, gtk.Label(label=" " + _("Time")))
 		self.startTimeInput = TimeButton()
 		pack(hbox, self.startTimeInput)
-		##
+		# --
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
@@ -48,26 +48,26 @@ class WidgetClass(common.WidgetClass):
 		self.endTypeCombo.connect("changed", self.endTypeComboChanged)
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
-		####
+		# ----
 		self.durationBox = common.DurationInputBox()
 		pack(hbox, self.durationBox, 1, 1)
-		####
+		# ----
 		self.endDateHbox = HBox()
 		self.endDateInput = DateButton()
 		pack(self.endDateHbox, self.endDateInput)
-		##
+		# --
 		pack(self.endDateHbox, gtk.Label(label=" " + _("Time")))
 		self.endTimeInput = TimeButton()
 		pack(self.endDateHbox, self.endTimeInput)
-		##
+		# --
 		pack(hbox, self.endDateHbox, 1, 1)
-		####
+		# ----
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#############
+		# -------------
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
@@ -84,11 +84,11 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self):  # FIXME
 		common.WidgetClass.updateWidget(self)
-		###
+		# ---
 		startDate, startTime = self.event.getStart()
 		self.startDateInput.set_value(startDate)
 		self.startTimeInput.set_value(startTime)
-		###
+		# ---
 		endType, values = self.event.getEnd()
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
@@ -109,7 +109,7 @@ class WidgetClass(common.WidgetClass):
 			self.startDateInput.get_value(),
 			self.startTimeInput.get_value(),
 		)
-		###
+		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
 			self.event.setEnd("duration", *self.durationBox.getDuration())

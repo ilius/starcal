@@ -24,7 +24,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
-		####
+		# ----
 		self.labelBox = HBox()
 		pack(self, self.labelBox, 1, 1)
 		resizeB = ResizeButton(win)
@@ -35,10 +35,10 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
-		###
+		# ---
 		for label in self.labelBox.get_children():
 			label.destroy()
-		###
+		# ---
 		activeCalTypes = calTypes.active
 		if ui.statusBarDatesReverseOrder:
 			activeCalTypes = reversed(activeCalTypes)
@@ -48,7 +48,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			label.set_direction(gtk.TextDirection.LTR)
 			pack(self.labelBox, label, 1)
 		self.show_all()
-		###
+		# ---
 		self.onDateChange()
 
 	def onDateChange(self, *a, **kw):
@@ -71,9 +71,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		####
+		# ----
 		optionsWidget = VBox(spacing=10)
-		####
+		# ----
 		prefItem = CheckPrefItem(
 			ui,
 			"statusBarDatesReverseOrder",
@@ -82,7 +82,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=self.onConfigChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "statusBarDatesColorEnable", _("Dates Color")),
 			ColorPrefItem(ui, "statusBarDatesColor", True),
@@ -90,7 +90,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			onChangeFunc=self.onDateChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return self.optionsWidget

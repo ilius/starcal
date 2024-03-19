@@ -57,13 +57,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self.set_editable(False)
 		self.set_cursor_visible(False)
 		self.set_wrap_mode(wrapMode)
-		###
+		# ---
 		self.styleClass = styleClass
 		if styleClass:
 			self.get_style_context().add_class(styleClass)
-		###
+		# ---
 		self.connect("button-press-event", self.onButtonPress)
-		###
+		# ---
 		self.textbuff = self.get_buffer()
 		# Gtk.ScrolledWindow.add_with_viewport is Deprecated since version 3.8:
 		# Gtk.Container.add() will automatically add a Gtk.Viewport if the
@@ -71,21 +71,21 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self.initVars()
 		self.wrapMode = wrapMode
 		self.showDesc = True
-		###
+		# ---
 		self.eventSepParam = eventSepParam
 		self.justificationParam = justificationParam
 		self.fontParams = fontParams
 		self.timeFontParams = timeFontParams
-		###
+		# ---
 		if fontParams:
 			if not styleClass:
 				raise ValueError(f"{fontParams=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
-		###
+		# ---
 		self.occurOffsets = []
 		self.eventMenuItemLabelMaxLen = 25
 		self.updateJustification()
-		###
+		# ---
 		self.timeTag = gtk.TextTag.new("time")
 		self.textbuff.get_tag_table().add(self.timeTag)
 		self.updateTimeFont()
@@ -121,7 +121,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=10)
-		###
+		# ---
 		if self.justificationParam:
 			prefItem = JustificationPrefItem(
 				ui,
@@ -130,7 +130,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				onChangeFunc=self.updateJustification,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		if self.fontParams:
 			enableParam, fontParam = self.fontParams
 			prefItem = CheckFontPrefItem(
@@ -149,7 +149,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				onChangeFunc=self.updateTimeFont,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		if self.eventSepParam:
 			prefItem = TextPrefItem(
 				ui,
@@ -159,7 +159,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				onChangeFunc=self.onEventSepChange,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -221,11 +221,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if gevent.button != 3:
 			return False
 		menu = Menu()
-		####
+		# ----
 		occurData = self.findEventByY(gevent.y)
 		if occurData is not None:
 			self.addEventMenuItems(menu, occurData)
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy _All"),
@@ -233,7 +233,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				func=self.copyAll,
 			),
 		)
-		####
+		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
@@ -242,9 +242,9 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
 		menu.add(itemCopy)
-		####
+		# ----
 		self.addExtraMenuItems(menu)
-		####
+		# ----
 		menu.show_all()
 		self.tmpMenu = menu
 		menu.popup(
@@ -328,12 +328,12 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		prev_group.remove(event)
 		prev_group.save()
 		ui.eventUpdateQueue.put("r", prev_group, self)
-		###
+		# ---
 		newGroup.append(event)
 		newGroup.save()
-		###
+		# ---
 		ui.eventUpdateQueue.put("v", event, self)
-		###
+		# ---
 		self.onConfigChange()
 
 	def copyOccurToGroupFromMenu(
@@ -351,11 +351,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		newEvent.setEnd("epoch", endEpoch)
 		newEvent.afterModify()
 		newEvent.save()
-		###
+		# ---
 		newGroup.append(newEvent)
 		newGroup.save()
 		ui.eventUpdateQueue.put("+", newEvent, self)
-		###
+		# ---
 		self.onConfigChange()
 
 	@staticmethod
@@ -385,7 +385,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				),
 			),
 		)
-		###
+		# ---
 		moveToItem = ImageMenuItem(
 			_("Move to {title}").format(title="..."),
 		)
@@ -409,14 +409,14 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			else:
 				disabledGroupsMenu.add(newGroupItem)
 
-		###
+		# ---
 		disabledGroupsItem = ImageMenuItem(label=_("Disabled"))
 		disabledGroupsItem.set_submenu(disabledGroupsMenu)
 		moveToMenu.add(disabledGroupsItem)
-		###
+		# ---
 		moveToItem.set_submenu(moveToMenu)
 		menu.add(moveToItem)
-		###
+		# ---
 		if not event.isSingleOccur:
 			newEventType = "allDayTask" if occurData.is_allday else "task"
 			newEventTypeDesc = event_lib.classes.event.byName[newEventType].desc
@@ -442,9 +442,9 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 					copyOccurMenu.add(newGroupItem)
 			copyOccurItem.set_submenu(copyOccurMenu)
 			menu.add(copyOccurItem)
-			###
+			# ---
 			menu.add(gtk.SeparatorMenuItem())
-		###
+		# ---
 		menu.add(
 			ImageMenuItem(
 				_("Move to {title}").format(title=ui.eventTrash.title),
@@ -460,11 +460,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def addEventMenuItems(self, menu, occurData: dict[str, Any]):
 		if event_lib.allReadOnly:
 			return
-		####
+		# ----
 		groupId, eventId = occurData.ids
 		event = ui.getEvent(groupId, eventId)
 		group = ui.eventGroups[groupId]
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy Event Text"),
@@ -473,7 +473,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				args=(event,),
 			),
 		)
-		####
+		# ----
 		if not event.readOnly:
 			menu.add(gtk.SeparatorMenuItem())
 			self.addWriteEventMenuItems(menu, occurData, event, group)
@@ -514,9 +514,9 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 	def __init__(self, **kwargs):
 		gtk.ScrolledWindow.__init__(self)
 		self.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
-		###
+		# ---
 		self.initVars()
-		###
+		# ---
 		item = DayOccurrenceView(**kwargs)
 		item.show()
 		self._item = item
@@ -540,7 +540,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = self._item.getOptionsWidget()
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			"eventViewMaxHeight",
@@ -553,7 +553,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 			onChangeFunc=self.onMaximumHeightChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -581,12 +581,12 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 			str,  # text
 		)
 		self.set_model(self.ls)
-		###
+		# ---
 		cell = gtk.CellRendererPixbuf()
 		col = gtk.TreeViewColumn(title=_("Icon"), cell_renderer=cell)
 		col.add_attribute(cell, "pixbuf", 0)
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(
 			title=_("Week Day"),
@@ -595,7 +595,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		)
 		col.set_resizable(True)
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(
 			title=_("Time"),
@@ -604,7 +604,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		)
 		col.set_resizable(True)  # FIXME
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(
 			title=_("Description"),
@@ -651,29 +651,29 @@ class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 			str,  # text
 		)
 		self.set_model(self.ls)
-		###
+		# ---
 		cell = gtk.CellRendererPixbuf()
 		col = gtk.TreeViewColumn(title="", cell_renderer=cell)
 		col.add_attribute(cell, "pixbuf", 0)
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Day"), cell_renderer=cell, text=1)
 		col.set_resizable(True)
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=2)
-		col.set_resizable(True)## FIXME
+		col.set_resizable(True)-- FIXME
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Description"), cell_renderer=cell, text=3)
 		col.set_resizable(True)
 		self.append_column(col)
 	def updateWidget(self):
 		self.updateData()
-		self.ls.clear()## FIXME
+		self.ls.clear()-- FIXME
 		for item in self.data:
 			if not item.show[2]:
 				continue

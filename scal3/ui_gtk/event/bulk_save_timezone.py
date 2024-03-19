@@ -27,7 +27,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Time Zone"))
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -40,9 +40,9 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 			label=_("_Perform"),
 			res=gtk.ResponseType.OK,
 		)
-		###
+		# ---
 		self.connect("response", self.onResponse)
-		####
+		# ----
 		label = gtk.Label()
 		label.set_markup(
 			"".join(
@@ -64,7 +64,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		)
 		label.set_line_wrap(True)
 		pack(self.vbox, label, 1, 1)
-		####
+		# ----
 		hbox = HBox()
 		self.timeZoneInput = TimeZoneComboBoxEntry()
 		pack(hbox, gtk.Label(), 1, 1)
@@ -72,12 +72,12 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		hbox.set_border_width(20)
 		pack(self.vbox, hbox, 1, 1)
-		####
+		# ----
 		self.errorLabel = gtk.Label()
 		pack(self.vbox, self.errorLabel, 1, 1)
-		####
+		# ----
 		pack(self.vbox, gtk.Label(), 1, 1)
-		####
+		# ----
 		self.vbox.show_all()
 
 	def onResponse(self, _dialog, responseId):

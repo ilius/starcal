@@ -88,7 +88,7 @@ def loadConf(confPath) -> None:
 	except Exception as e:
 		print(f"failed to read file {confPath!r}: {e}")
 		return
-	#####
+	# -----
 	data = OrderedDict()
 	exec(text, {}, data)
 	return data
@@ -96,7 +96,7 @@ def loadConf(confPath) -> None:
 
 def loadCoreConf() -> None:
 	confPath = join(oldConfDir, "core.conf")
-	#####
+	# -----
 
 	if not isfile(confPath):
 		return {}
@@ -110,10 +110,10 @@ def loadCoreConf() -> None:
 			text = fp.read()
 	except Exception as e:
 		raise OSError(f"failed to read file {confPath!r}: {e}") from None
-	######
+	# ------
 	text = text.replace("calTypes.activeNames", "activeCalTypes")
 	text = text.replace("calTypes.inactiveNames", "inactiveCalTypes")
-	######
+	# ------
 	data = OrderedDict()
 	exec(
 		text,
@@ -127,20 +127,20 @@ def loadCoreConf() -> None:
 
 def loadUiCustomizeConf() -> None:
 	confPath = join(oldConfDir, "ui-customize.conf")
-	#####
+	# -----
 	if not isfile(confPath):
 		return
-	#####
+	# -----
 	try:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
 		print(f"failed to read file {confPath!r}: {e}")
 		return
-	#####
+	# -----
 	text = re.sub(r"^ui\.", "", text, flags=re.M)
 	text = re.sub(r"^ud\.", "ud__", text, flags=re.M)
-	######
+	# ------
 	data = OrderedDict()
 	exec(text, {}, data)
 	data["wcal_toolbar_mainMenu_icon"] = "starcal.png"
@@ -167,7 +167,7 @@ def importEventsIter() -> Generator[int, None, None]:
 	for dname in oldFiles:
 		yield index
 		index += 1
-		####
+		# ----
 		try:
 			_id = int(dname)
 		except ValueError:
@@ -191,10 +191,10 @@ def importEventsIter() -> Generator[int, None, None]:
 			tm = data.pop("modified")
 		except KeyError:
 			tm = now()
-		###
+		# ---
 		basicData = {}
 		# basicData["modified"] = tm
-		###
+		# ---
 		# remove extra params from data and add to basicData
 		for param in (
 			"remoteIds",
@@ -204,7 +204,7 @@ def importEventsIter() -> Generator[int, None, None]:
 				basicData[param] = data.pop(param)
 			except KeyError:
 				pass
-		###
+		# ---
 		_hash = saveBsonObject(data, fsNew)
 		basicData["history"] = [(tm, _hash)]
 		open(newDpath + ".json", "w").write(
@@ -214,13 +214,13 @@ def importEventsIter() -> Generator[int, None, None]:
 
 def importGroupsIter() -> Generator[int, None, None]:
 	groupsEnableDict = {}  # {groupId -> enable}
-	###
+	# ---
 	makeDir(newGroupsDir)
-	###
+	# ---
 	oldFiles = os.listdir(oldGroupsDir)
 	yield len(oldFiles) + 1
 	index = 0
-	###
+	# ---
 	for fname in oldFiles:
 		yield index
 		index += 1
@@ -242,9 +242,9 @@ def importGroupsIter() -> Generator[int, None, None]:
 		except Exception:
 			print(f"error while loading json file {jsonPath!r}")
 			continue
-		####
+		# ----
 		groupsEnableDict[_id] = data.pop("enable", True)
-		####
+		# ----
 		if "history" in data:
 			log.info(f"skipping {jsonPath!r}: history already exists")
 			continue
@@ -252,10 +252,10 @@ def importGroupsIter() -> Generator[int, None, None]:
 			tm = data.pop("modified")
 		except KeyError:
 			tm = now()
-		###
+		# ---
 		basicData = {}
 		# basicData["modified"] = tm
-		###
+		# ---
 		# remove extra params from data and add to basicData
 		for param in ("remoteIds",):
 			basicData[param] = data.pop(param, None)
@@ -269,11 +269,11 @@ def importGroupsIter() -> Generator[int, None, None]:
 				basicData[param] = data.pop(param)
 			except KeyError:
 				pass
-		###
+		# ---
 		_hash = saveBsonObject(data, fsNew)
 		basicData["history"] = [(tm, _hash)]
 		open(newJsonPath, "w").write(dataToPrettyJson(basicData, sort_keys=True))
-	####
+	# ----
 	yield index
 	index += 1
 	oldGroupListFile = join(oldEventDir, "group_list.json")
@@ -301,11 +301,11 @@ def importGroupsIter() -> Generator[int, None, None]:
 
 def importAccountsIter() -> Generator[int, None, None]:
 	makeDir(newAccountsDir)
-	###
+	# ---
 	oldFiles = os.listdir(oldAccountsDir)
 	yield len(oldFiles)
 	index = 0
-	###
+	# ---
 	for fname in oldFiles:
 		yield index
 		index += 1
@@ -334,17 +334,17 @@ def importAccountsIter() -> Generator[int, None, None]:
 			tm = data.pop("modified")
 		except KeyError:
 			tm = now()
-		###
+		# ---
 		basicData = {}
 		# basicData["modified"] = tm
-		###
+		# ---
 		# remove extra params from data and add to basicData
 		for param in ("enable",):
 			try:
 				basicData[param] = data.pop(param)
 			except KeyError:
 				pass
-		###
+		# ---
 		_hash = saveBsonObject(data, fsNew)
 		basicData["history"] = [(tm, _hash)]
 		open(newJsonPath, "w").write(
@@ -370,17 +370,17 @@ def importTrashIter() -> Generator[int, None, None]:
 		tm = data.pop("modified")
 	except KeyError:
 		tm = now()
-	###
+	# ---
 	basicData = {}
 	# basicData["modified"] = tm
-	###
+	# ---
 	# remove extra params from data and add to basicData
 	for param in ("idList",):
 		try:
 			basicData[param] = data.pop(param)
 		except KeyError:
 			pass
-	###
+	# ---
 	_hash = saveBsonObject(data, fsNew)
 	basicData["history"] = [(tm, _hash)]
 	open(newJsonPath, "w").write(dataToPrettyJson(basicData, sort_keys=True))
@@ -389,13 +389,13 @@ def importTrashIter() -> Generator[int, None, None]:
 def importBasicConfigIter() -> Generator[int, None, None]:
 	yield 8  # number of steps
 	index = 0
-	####
+	# ----
 	coreData = loadCoreConf()
 	coreData["version"] = "3.0.0"  # FIXME
 	writeJsonConf("core", coreData)
 	yield index
 	index += 1
-	####
+	# ----
 	writeJsonConf("ui-customize", loadUiCustomizeConf())
 	yield index
 	index += 1
@@ -417,7 +417,7 @@ def importBasicConfigIter() -> Generator[int, None, None]:
 def importEventBasicJsonIter() -> Generator[int, None, None]:
 	yield 4  # number of steps
 	index = 0
-	####
+	# ----
 	for name in (
 		"account_list",
 		"info",
@@ -441,10 +441,10 @@ def importPluginsIter() -> Generator[int, None, None]:
 		files = os.listdir(oldPlugConfDir)
 	else:
 		files = []
-	########
+	# --------
 	yield len(files)
 	index = 0
-	####
+	# ----
 	for plugName in files:
 		writeJsonConf(
 			plugName,  # move it out of plugins.conf FIXME
@@ -459,7 +459,7 @@ def importPluginsIter() -> Generator[int, None, None]:
 def importConfigIter() -> Generator[int, None, None]:
 	makeDir(newConfDir)
 	makeDir(newEventDir)
-	#########
+	# ---------
 	funcs = [
 		importBasicConfigIter,
 		importEventBasicJsonIter,
@@ -470,12 +470,12 @@ def importConfigIter() -> Generator[int, None, None]:
 		importTrashIter,
 		importEventsIter,
 	]
-	###
+	# ---
 	iters = [func() for func in funcs]
-	###
+	# ---
 	counts = [itr.send(None) for itr in iters]
 	totalCount = sum(counts)
-	###
+	# ---
 	totalRatio = 0.0
 	delta = 1.0 / totalCount
 	for iterIndex, itr in enumerate(iters):
@@ -484,7 +484,7 @@ def importConfigIter() -> Generator[int, None, None]:
 			yield totalRatio + stepIndex * delta
 		totalRatio += iterCount * delta
 		yield totalRatio
-	###
+	# ---
 	yield 1.0
 
 
@@ -499,7 +499,7 @@ def getOldVersion() -> str:
 	return data.get("version", "")
 
 
-##################################
+# ----------------------------------
 
 
 if __name__ == "__main__":

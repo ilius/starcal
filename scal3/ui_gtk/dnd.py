@@ -8,8 +8,6 @@ from scal3.utils import urlToPath
 __all__ = ["processDroppedDate"]
 
 
-from scal3 import core, logger, ui
-
 log = logger.get()
 
 
@@ -37,6 +35,7 @@ def processDroppedDate(text, dtype):
 			# log.debug(etime)
 			# context.drag_status(gdk.DragAction.DEFAULT, etime)
 			# context.drop_reply(False, etime)
+			# context.drag_abort(etime)--Segmentation fault
 			# context.drop_finish(False, etime)
 			# context.finish(False, True, etime)
 			# return True

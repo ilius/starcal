@@ -55,7 +55,7 @@ class CalBase(CustomizableCalObj):
 	def initCal(self):
 		self.initVars()
 		listener.dateChange.add(self)
-		####
+		# ----
 		if self.dragAndDropEnable:
 			self.defineDragAndDrop()
 		if self.doubleClickEnable:
@@ -65,7 +65,7 @@ class CalBase(CustomizableCalObj):
 			self.connect("popup-main-menu", self.win.menuMainPopup)
 			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
 			self.connect("day-info", self.win.dayInfoShow)
-		###
+		# ---
 		self.subPages = None
 
 	def gotoJd(self, jd):
@@ -96,11 +96,11 @@ class CalBase(CustomizableCalObj):
 			gdk.DragAction.COPY,  # FIXME
 		)
 		self.drag_source_add_text_targets()
-		###
+		# ---
 		self.connect("drag-data-get", self.dragDataGet)
 		self.connect("drag-begin", self.dragBegin)
 		self.connect("drag-data-received", self.dragDataRec)
-		###
+		# ---
 		self.drag_dest_set(
 			gtk.DestDefaults.ALL,
 			[],

@@ -35,7 +35,7 @@ class IconSelectButton(gtk.Button):
 		self.image = gtk.Image()
 		self.add(self.image)
 		self._dialog = None
-		###
+		# ---
 		menu = Menu()
 		self.menu = menu
 		menu.add(
@@ -58,10 +58,10 @@ class IconSelectButton(gtk.Button):
 				),
 			)
 		menu.show_all()
-		###
+		# ---
 		# self.connect("clicked", lambda button: button.dialog.run())
 		self.connect("button-press-event", self.onButtonPressEvent)
-		###
+		# ---
 		self.set_filename(filename)
 
 	def createDialog(self):

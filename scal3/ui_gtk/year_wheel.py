@@ -52,9 +52,9 @@ if TYPE_CHECKING:
 class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 	objName = "yearWheel"
 	desc = _("Year Wheel")
-	###
+	# ---
 	scrollRotateDegree = 1
-	###
+	# ---
 	bgColor = (0, 0, 0, 255)
 	wheelBgColor = (255, 255, 255, 30)
 	lineColor = (255, 255, 255, 50)
@@ -62,28 +62,28 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 	lineWidth = 2.0
 	textColor = (255, 255, 255, 255)
 	innerCircleRatio = 0.6
-	###
+	# ---
 	todayIndicatorEnable = True
 	todayIndicatorColor = (255, 0, 0, 255)
 	todayIndicatorWidth = 0.5
-	###
+	# ---
 	centerR = 3
 	centerColor = (255, 0, 0, 255)
-	###
+	# ---
 	springColor = (0, 255, 0, 15)
 	summerColor = (255, 0, 0, 15)
 	autumnColor = (255, 255, 0, 15)
 	winterColor = (0, 0, 255, 15)
-	###
+	# ---
 
 	def __init__(self, closeFunc):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
-		###
+		# ---
 		self.closeFunc = closeFunc
 		self.angleOffset = 0.0
-		###
+		# ---
 		# self.closeFunc = closeFunc
 		self.connect("draw", self.onDraw)
 		self.connect("scroll-event", self.onScroll)
@@ -164,17 +164,17 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		y0 = (height - dia) / 2
 		cx = x0 + maxR
 		cy = y0 + maxR
-		####
+		# ----
 		# self.angleOffset
 		# self.bgColor
 		# self.wheelBgColor
 		# self.lineColor
 		# self.lineWidth
 		# self.textColor
-		####
+		# ----
 		cr.rectangle(0, 0, width, height)
 		fillColor(cr, self.bgColor)
-		####
+		# ----
 		calsN = len(calTypes.active)
 		deltaR = (maxR - minR) / calsN
 		calType0 = calTypes.active[0]
@@ -182,7 +182,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		yearLen = calTypes.primaryModule().avgYearLen
 		angle0 = self.angleOffset * pi / 180 - pi / 2
 		avgDeltaAngle = 2 * pi / 12
-		####
+		# ----
 		if self.todayIndicatorEnable:
 			drawLineLengthAngle(
 				cr,
@@ -193,10 +193,10 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				self.todayIndicatorWidth,
 			)
 			fillColor(cr, self.todayIndicatorColor)
-		####
+		# ----
 		drawCircle(cr, cx, cy, self.centerR)
 		fillColor(cr, self.centerColor)
-		####
+		# ----
 		drawCircleOutline(
 			cr,
 			cx,
@@ -205,7 +205,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			maxR - minR,
 		)
 		fillColor(cr, self.wheelBgColor)
-		####
+		# ----
 		spinngJd = getSpringJdAfter(jd0)
 		springAngle = angle0 + 2 * pi * (spinngJd - jd0) / yearLen  # radians
 		for index, color in enumerate(
@@ -233,14 +233,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			centerAngle = angle + avgDeltaAngle / 2
 			return angle, centerAngle
 
-		####
+		# ----
 		for index, calType in enumerate(calTypes.active):
 			dr = index * deltaR
 			r = maxR - dr
-			###
+			# ---
 			drawCircleOutline(cr, cx, cy, r, self.lineWidth)
 			fillColor(cr, self.lineColor)
-			####
+			# ----
 			year0, month0, _day0 = jd_to(jd0, calType)
 			ym0 = year0 * 12 + (month0 - 1)
 			cr.set_line_width(self.lineWidth)
@@ -268,7 +268,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 					cr,
 					self.yearStartLineColor if month == 1 else self.lineColor,
 				)
-				###
+				# ---
 				layoutMaxW = (r - deltaR) * 2.0 * pi / 12.0
 				layoutMaxH = deltaR
 				layout = newTextLayout(
@@ -330,12 +330,12 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 						r,
 						deltaR,
 					)
-			#####
+			# -----
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
 			fillColor(cr, self.lineColor)
-			###
+			# ---
 
-		######
+		# ------
 		for button in self.buttons:
 			button.draw(cr, width, height)
 
@@ -442,7 +442,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		gtk.Window.__init__(self)
 		self.initVars()
 		ud.windowList.appendItem(self)
-		###
+		# ---
 		size = min(ud.workAreaW, ud.workAreaH) * 0.9
 		self.resize(size, size)
 		self.move(
@@ -453,7 +453,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self.set_decorated(False)
 		self.connect("delete-event", self.onCloseClick)
 		self.connect("button-press-event", self.onButtonPress)
-		###
+		# ---
 		self._widget = YearWheel(self.onCloseClick)
 		self.connect("key-press-event", self._widget.onKeyPress)
 		self.add(self._widget)

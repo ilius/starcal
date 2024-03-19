@@ -32,7 +32,7 @@ movableEventTypes = (
 	"lifetime",
 )
 
-#########################################
+# -----------------------------------------
 
 
 class Box:
@@ -51,25 +51,25 @@ class Box:
 		self.t0 = t0
 		self.t1 = t1
 		self.odt = odt  # original delta t
-		# self.mt = (t0+t1)/2.0  # - timeMiddle ## FIXME
+		# self.mt = (t0+t1)/2.0  # - timeMiddle # FIXME
 		# self.dt = (t1-t0)/2.0
 		# if t1-t0 != odt:
 		# 	log.info(f"Box, {t1-t0 = }, {odt = }")
 		self.u0 = u0
 		self.du = du
-		####
+		# ----
 		self.x = None
 		self.w = None
 		self.y = None
 		self.h = None
-		####
+		# ----
 		self.text = text
 		if color is None:
 			color = ui.textColor  # FIXME
 		self.color = color
 		self.ids = ids  # (groupId, eventId)
 		self.lineW = lineW
-		####
+		# ----
 		self.hasBorder = False
 		self.tConflictBefore = []
 
@@ -79,7 +79,7 @@ class Box:
 	def dt_key(self):
 		return -self.dt
 
-	#########
+	# ---------
 
 	def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
 		self.x = (self.t0 - timeStart) * pixelPerSec
@@ -100,7 +100,7 @@ def makeIntervalGraph(boxes):
 	n = len(boxes)
 	g.add_vertices(n)
 	g.vs["name"] = list(range(n))
-	####
+	# ----
 	# list[(time: int, isStart: bool, boxIndex: int)]
 	points: "list[tuple[int, bool, int]]" = []
 	for boxI, box in enumerate(boxes):
@@ -209,7 +209,7 @@ def calcEventBoxes(
 			else:
 				boxesDict[boxValue].append(box)
 
-	###
+	# ---
 	if debugMode:
 		t0 = now()
 	boxes = []
@@ -226,17 +226,17 @@ def calcEventBoxes(
 			# log.debug(f"{box.t1 - box.t0} secs")
 			boxes.append(box)
 	del boxesDict
-	#####
+	# -----
 	if not boxes:
 		return []
-	#####
+	# -----
 	if debugMode:
 		t1 = now()
-	###
+	# ---
 	graph = makeIntervalGraph(boxes)
 	if debugMode:
 		log.debug(f"makeIntervalGraph: {now() - t1:e}")
-	#####
+	# -----
 
 	def boxSortKeyFunc(i: int) -> "tuple[int, int]":
 		# the last item should be i

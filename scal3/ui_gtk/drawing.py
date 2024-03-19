@@ -110,7 +110,7 @@ def newTextLayout(
 		layout.set_markup(text=text, length=-1)
 		if maxSize:
 			layoutW, layoutH = layout.get_pixel_size()
-			##
+			# --
 			maxW, maxH = maxSize
 			maxW = float(maxW)
 			maxH = float(maxH)
@@ -186,7 +186,7 @@ def newLimitedWidthTextLayout(
 				if char_num<0:
 					layout = None
 					break
-		else:## use smaller font
+		else:-- use smaller font
 			font2 = list(font)
 			while layoutW > width:
 				font2[3] = 0.9*font2[3]*width/layoutW
@@ -335,7 +335,7 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 	# a = min(cw, ch); ri = ro*(a-2*d)/a
 	ri = max(0, ro - d)
 	# log.debug(ro, ri)
-	# ####### Outline:
+	# ------- Outline:
 	cr.move_to(
 		cx0 + ro,
 		cy0,
@@ -388,7 +388,7 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 		pi,
 		3 * pi / 2,
 	)
-	# ## Inline:
+	# # Inline:
 	if ri == 0:
 		cr.move_to(
 			cx0 + d,
@@ -507,12 +507,12 @@ def goAngle(x0, y0, angle, length):
 
 def drawLineLengthAngle(cr, xs, ys, length, angle, d):
 	xe, ye = goAngle(xs, ys, angle, length)
-	##
+	# --
 	x1, y1 = goAngle(xs, ys, angle - pi / 2.0, d / 2.0)
 	x2, y2 = goAngle(xs, ys, angle + pi / 2.0, d / 2.0)
 	x3, y3 = goAngle(xe, ye, angle + pi / 2.0, d / 2.0)
 	x4, y4 = goAngle(xe, ye, angle - pi / 2.0, d / 2.0)
-	##
+	# --
 	cr.move_to(x1, y1)
 	cr.line_to(x2, y2)
 	cr.line_to(x3, y3)
@@ -533,7 +533,7 @@ def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 	# x2, y2 = goAngle(xc, yc, a1, r - d)
 	x3, y3 = goAngle(xc, yc, a1, r)
 	# x4, y4 = goAngle(xc, yc, a0, r)
-	####
+	# ----
 	cr.move_to(x1, y1)
 	cr.arc(xc, yc, r - d, a0, a1)
 	# cr.move_to(x2, y2)
