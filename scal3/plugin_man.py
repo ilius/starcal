@@ -96,16 +96,16 @@ class BasePlugin(SObj):
 		_file,
 	):
 		self.file = _file
-		######
+		# ------
 		self.calType = GREGORIAN
 		self.title = ""
-		###
+		# ---
 		self.enable = False
 		self.show_date = False
-		##
+		# --
 		self.default_enable = False
 		self.default_show_date = False
-		###
+		# ---
 		self.about = ""
 		self.authors = []
 		self.hasConfig = False
@@ -120,22 +120,22 @@ class BasePlugin(SObj):
 	def setData(self, data):
 		if "enable" not in data:
 			data["enable"] = data.get("default_enable", self.default_enable)
-		###
+		# ---
 		if "show_date" not in data:
 			data["show_date"] = data.get("default_show_date", self.default_show_date)
-		###
+		# ---
 		title = data.get("title")
 		if title:
 			data["title"] = _(title)
-		###
+		# ---
 		about = data.get("about")
 		if about:
 			data["about"] = _(about)
-		###
+		# ---
 		authors = data.get("authors")
 		if authors:
 			data["authors"] = [_(author) for author in authors]
-		#####
+		# -----
 		if "calType" in data:
 			calType = data["calType"]
 			try:
@@ -148,7 +148,7 @@ class BasePlugin(SObj):
 				)
 				self.calType = None
 			del data["calType"]
-		#####
+		# -----
 		JsonSObj.setData(self, data)
 
 	def clear(self):
@@ -253,22 +253,22 @@ def loadExternalPlugin(_file, **data):
 		# )
 		# plug.external = True
 		# return plug
-	###
+	# ---
 	name = splitext(fname)[0]
-	###
+	# ---
 	if not data.get("enable"):
 		return DummyExternalPlugin(
 			_file,
 			pluginsTitleByName.get(name, name),
 		)
-	###
+	# ---
 	mainFile = data.get("mainFile")
 	if not mainFile:
 		log.error(f'invalid external plugin "{_file}"')
 		return None
-	###
+	# ---
 	mainFile = getPlugPath(mainFile)
-	###
+	# ---
 	pyEnv = {
 		"__file__": mainFile,
 		"BasePlugin": BasePlugin,
@@ -281,12 +281,12 @@ def loadExternalPlugin(_file, **data):
 		log.error(f'error while loading external plugin "{_file}"')
 		log.exception("")
 		return
-	###
+	# ---
 	cls = pyEnv.get("TextPlugin")
 	if cls is None:
 		log.error(f'invalid external plugin "{_file}", no TextPlugin class')
 		return None
-	###
+	# ---
 	try:
 		plugin = cls(_file)
 	except Exception:
@@ -349,7 +349,7 @@ class HolidayPlugin(BaseJsonPlugin):
 			del data["holidays"]
 		else:
 			log.error(f'no "holidays" key in holiday plugin "{self.file}"')
-		###
+		# ---
 		BaseJsonPlugin.setData(self, data)
 
 	def dateIsHoliday(self, calType, y, m, d, jd):
@@ -457,7 +457,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			log.error(
 				f'no "dataFile" key in yearly text plugin "{self.file}"',
 			)
-		####
+		# ----
 		BaseJsonPlugin.setData(self, data)
 
 	def clear(self):
@@ -746,11 +746,11 @@ def loadPlugin(_file=None, **kwargs):
 		log.error(f'error while loading plugin "{_file}": no such file!\n')
 		return
 	ext = splitext(_file)[1].lower()
-	####
+	# ----
 	# FIXME: should ics plugins require a json file too?
 	if ext == ".ics":
 		return IcsTextPlugin(_file, **kwargs)
-	####
+	# ----
 	if ext == ".md":
 		return
 	if ext != ".json":
@@ -773,31 +773,31 @@ def loadPlugin(_file=None, **kwargs):
 		log.error(f'invalid json file "{_file}"')
 		log.exception("")
 		return
-	####
+	# ----
 	data.update(kwargs)  # FIXME
-	####
+	# ----
 	name = data.get("type")
 	if not name:
 		log.error(f'invalid plugin "{_file}", no "type" key')
 		return
-	####
+	# ----
 	if name == "external":
 		return loadExternalPlugin(_file, **data)
-	####
+	# ----
 	try:
 		cls = pluginClassByName[name]
 	except KeyError:
 		log.error(f'invald plugin type "{name}" in file "{_file}"')
 		return
-	####
+	# ----
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
 				f'invalid plugin "{_file}": parameter "{param}" is missing',
 			)
 			return
-	####
+	# ----
 	plug = cls(_file)
 	plug.setData(data)
-	####
+	# ----
 	return plug

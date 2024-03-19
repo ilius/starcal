@@ -8,26 +8,26 @@ from scal3.ui_gtk.event.group.vcsEpochBase import (
 class WidgetClass(BaseWidgetClass):
 	def __init__(self, group):
 		BaseWidgetClass.__init__(self, group)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Commit Description"))
 		label.set_xalign(0)
 		self.sizeGroup.add_widget(label)
 		pack(hbox, label)
-		##
+		# --
 		self.statCheck = gtk.CheckButton(label=_("Stat"))
 		pack(hbox, self.statCheck)
-		##
+		# --
 		pack(hbox, gtk.Label(label="   "))
-		##
+		# --
 		self.authorCheck = gtk.CheckButton(label=_("Author"))
 		pack(hbox, self.authorCheck)
-		##
+		# --
 		pack(hbox, gtk.Label(label="   "))
-		##
+		# --
 		self.shortHashCheck = gtk.CheckButton(label=_("Short Hash"))
 		pack(hbox, self.shortHashCheck)
-		##
+		# --
 		hbox.show_all()
 		pack(self, hbox)
 

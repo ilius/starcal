@@ -52,25 +52,25 @@ class CourseListEditor(gtk.Box):
 		self.term = term  # UniversityTerm obj
 		self.defaultCourseName = _(defaultCourseName)
 		self.defaultCourseUnits = defaultCourseUnits
-		#####
+		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(True)
 		self.treeModel = gtk.ListStore(int, str, int)
 		self.treev.set_model(self.treeModel)
-		##########
+		# ----------
 		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.courseNameEdited)
 		# cell.connect("editing-started", ....)
 		# cell.connect("editing-canceled", ...)
 		col = gtk.TreeViewColumn(title=_("Course Name"), cell_renderer=cell, text=1)
 		self.treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.courseUnitsEdited)
 		col = gtk.TreeViewColumn(title=_("Units"), cell_renderer=cell, text=2)
 		self.treev.append_column(col)
-		####
+		# ----
 		if enableScrollbars:  # FIXME
 			swin = gtk.ScrolledWindow()
 			swin.add(self.treev)
@@ -78,9 +78,9 @@ class CourseListEditor(gtk.Box):
 			pack(self, swin, 1, 1)
 		else:
 			pack(self, self.treev, 1, 1)
-		##########
+		# ----------
 		toolbar = StaticToolBox(self, vertical=True)
-		####
+		# ----
 		toolbar.extend(
 			[
 				ToolBoxItem(
@@ -113,7 +113,7 @@ class CourseListEditor(gtk.Box):
 				),
 			],
 		)
-		#######
+		# -------
 		pack(self, toolbar)
 
 	def getSelectedIndex(self):
@@ -141,7 +141,7 @@ class CourseListEditor(gtk.Box):
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
 		# col = self.treev.get_column(0)
 		# cell = col.get_cell_renderers()[0]
-		# cell.start_editing(...) ## FIXME
+		# cell.start_editing(...) # FIXME
 
 	def onDeleteClick(self, _button):
 		index = self.getSelectedIndex()
@@ -199,22 +199,22 @@ class CourseListEditor(gtk.Box):
 class ClassTimeBoundsEditor(gtk.Box):
 	def __init__(self, term):
 		self.term = term
-		#####
+		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(False)
 		self.treeModel = gtk.ListStore(str)
 		self.treev.set_model(self.treeModel)
-		##########
+		# ----------
 		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.timeEdited)
 		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=0)
 		self.treev.append_column(col)
-		####
+		# ----
 		pack(self, self.treev, 1, 1)
-		##########
+		# ----------
 		toolbar = StaticToolBox(self, vertical=True)
-		####
+		# ----
 		toolbar.extend(
 			[
 				ToolBoxItem(
@@ -233,7 +233,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 				),
 			],
 		)
-		#######
+		# -------
 		pack(self, toolbar)
 
 	def getSelectedIndex(self):
@@ -294,7 +294,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		m = numDecode(parts[1])
 		hm = hmEncode((h, m))
 		self.treeModel[index][0] = hm
-		# self.treeModel.sort()## FIXME
+		# self.treeModel.sort()-- FIXME
 
 	def setData(self, hmList):
 		self.treeModel.clear()
@@ -308,20 +308,20 @@ class ClassTimeBoundsEditor(gtk.Box):
 class WidgetClass(NormalWidgetClass):
 	def __init__(self, group):
 		NormalWidgetClass.__init__(self, group)
-		#####
+		# -----
 		totalFrame = gtk.Frame()
 		totalFrame.set_label(group.desc)
 		totalVbox = VBox()
-		###
+		# ---
 		expandHbox = HBox()  # for courseList and classTimeBounds
-		##
+		# --
 		frame = gtk.Frame()
 		frame.set_label(_("Course List"))
 		self.courseListEditor = CourseListEditor(self.group)
 		self.courseListEditor.set_size_request(100, 150)
 		frame.add(self.courseListEditor)
 		pack(expandHbox, frame, 1, 1)
-		##
+		# --
 		frame = gtk.Frame()  # FIXME
 		frame.set_label(_("Class Time Bounds"))
 		self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
@@ -329,9 +329,9 @@ class WidgetClass(NormalWidgetClass):
 		frame.add(self.classTimeBoundsEditor)
 		pack(expandHbox, frame)
 		expandHbox.show_all()
-		##
+		# --
 		pack(totalVbox, expandHbox, 1, 1)
-		#####
+		# -----
 		totalFrame.add(totalVbox)
 		pack(self, totalFrame, 1, 1)  # expand? FIXME
 
@@ -342,7 +342,7 @@ class WidgetClass(NormalWidgetClass):
 
 	def updateVars(self):
 		NormalWidgetClass.updateVars(self)
-		##
+		# --
 		self.group.setCourses(self.courseListEditor.getData())
 		self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
 
@@ -352,7 +352,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 	def __init__(self, term):
 		self.term = term
 		self.data = []
-		####
+		# ----
 		gtk.DrawingArea.__init__(self)
 		# self.connect("button-press-event", self.onButtonPress)
 		self.connect("draw", self.onExposeEvent)
@@ -382,10 +382,10 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		fillColor(cr, ui.bgColor)
 		textColor = ui.textColor
 		gridColor = ui.mcalGridColor  # FIXME
-		###
+		# ---
 		# classBounds = self.term.classTimeBounds
 		titles, tmfactors = self.term.getClassBoundsFormatted()
-		###
+		# ---
 		weekDayLayouts = []
 		weekDayLayoutsWidth = []
 		for j in range(7):
@@ -394,7 +394,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			weekDayLayouts.append(layout)
 			weekDayLayoutsWidth.append(layoutW)
 		leftMargin = max(weekDayLayoutsWidth) + 6
-		###
+		# ---
 		topMargin = 20  # FIXME
 		# calculate coordinates: ycenters(list), dy(float)
 		ycenters = [
@@ -404,7 +404,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		# drawing the grid
 		# tmfactors includes 0 at the first, and 1 at the end
 		setColor(cr, gridColor)
-		##
+		# --
 		for i in range(7):
 			cr.rectangle(
 				0,
@@ -413,34 +413,34 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 				1,
 			)
 			cr.fill()
-		##
+		# --
 		for factor in tmfactors[:-1]:
 			x = leftMargin + factor * (w - leftMargin)
 			if rtl:
 				x = w - x
 			cr.rectangle(x, 0, 1, h)
 			cr.fill()
-		###
+		# ---
 		setColor(cr, textColor)
 		for i, title in enumerate(titles):
 			layout = newTextLayout(self, title)
 			layoutW, layoutH = layout.get_pixel_size()
-			##
+			# --
 			dx = (w - leftMargin) * (tmfactors[i + 1] - tmfactors[i])
 			if dx < layoutW:
 				continue
-			##
+			# --
 			factor = (tmfactors[i] + tmfactors[i + 1]) / 2
 			x = factor * (w - leftMargin) + leftMargin
 			if rtl:
 				x = w - x
 			x -= layoutW / 2
-			##
+			# --
 			y = (topMargin - layoutH) / 2 - 1
-			##
+			# --
 			cr.move_to(x, y)
 			# (cr, layout)
-		###
+		# ---
 		for j in range(7):
 			layout = weekDayLayouts[j]
 			layoutW, layoutH = layout.get_pixel_size()
@@ -448,9 +448,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			if rtl:
 				x = w - x
 			x -= layoutW / 2
-			##
+			# --
 			y = topMargin + (h - topMargin) * (j + 0.5) / 7 - layoutH / 2
-			##
+			# --
 			cr.move_to(x, y)
 			# (cr, layout)
 
@@ -474,15 +474,15 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 					maxSize=(dx, dy),
 				)
 				layoutW, layoutH = layout.get_pixel_size()
-				##
+				# --
 				factor = (tmfactors[i] + tmfactors[i + 1]) / 2
 				x = factor * (w - leftMargin) + leftMargin
 				if rtl:
 					x = w - x
 				x -= layoutW / 2
-				##
+				# --
 				y = topMargin + (h - topMargin) * (j + 0.5) / 7 - layoutH / 2
-				##
+				# --
 				cr.move_to(x, y)
 				# (cr, layout)
 
@@ -494,23 +494,23 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		self.resize(800, 500)
 		self.set_title(_("View Weekly Schedule"))
 		self.connect("delete-event", self.onDeleteEvent)
-		#####
+		# -----
 		hbox = HBox()
 		self.currentWOnlyCheck = gtk.CheckButton(label=_("Current Week Only"))
 		self.currentWOnlyCheck.connect("clicked", lambda _w: self.updateWidget())
 		pack(hbox, self.currentWOnlyCheck)
-		##
+		# --
 		pack(hbox, gtk.Label(), 1, 1)
-		##
+		# --
 		button = gtk.Button(label=_("Export to ") + "SVG")
 		button.connect("clicked", self.onExportToSvgClick)
 		pack(hbox, button)
-		##
+		# --
 		pack(self.vbox, hbox)
-		#####
+		# -----
 		self._widget = WeeklyScheduleWidget(term)
 		pack(self.vbox, self._widget, 1, 1)
-		#####
+		# -----
 		self.vbox.show_all()
 		self.updateWidget()
 
