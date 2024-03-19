@@ -27,12 +27,12 @@ class TimeZoneComboBoxEntry(gtk.Box):
 		self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
 		child.set_text(str(locale_man.localTz))
-		# self.set_text(str(locale_man.localTz)) ## FIXME
-		###
+		# self.set_text(str(locale_man.localTz)) # FIXME
+		# ---
 		self.get_text = child.get_text
-		# self.get_text = self.c.get_active_text ## FIXME
+		# self.get_text = self.c.get_active_text # FIXME
 		self.set_text = child.set_text
-		#####
+		# -----
 		recentIter = model.append(
 			None,
 			[
@@ -42,7 +42,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 		)
 		for tz_name in ui.localTzHist:
 			model.append(recentIter, [tz_name, True])
-		###
+		# ---
 		self.appendOrderedDict(
 			None,
 			getZoneInfoTree(),

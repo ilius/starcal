@@ -34,15 +34,15 @@ class WidgetClass(common.WidgetClass):
 
 	def __init__(self, event, autoCheck=True):
 		common.WidgetClass.__init__(self, event)
-		################
+		# ----------------
 		self.autoCheck = autoCheck
-		######
+		# ------
 		self.ruleAddBox = HBox()
 		self.warnLabel = gtk.Label()
 		self.warnLabel.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
 		self.warnLabel.set_xalign(0)
-		# self.warnLabel.set_visible(False)## FIXME
-		###########
+		# self.warnLabel.set_visible(False)-- FIXME
+		# -----------
 		self.rulesFrame = gtk.Frame()
 		self.rulesFrame.set_label(_("Rules"))
 		self.rulesFrame.set_border_width(1)
@@ -52,21 +52,21 @@ class WidgetClass(common.WidgetClass):
 		self.rulesSwin.add(self.rulesBox)
 		self.rulesFrame.add(self.rulesSwin)
 		pack(self, self.rulesFrame, expand=True, fill=True)
-		###
+		# ---
 		pack(self, self.ruleAddBox)
 		pack(self, self.warnLabel)
-		###
+		# ---
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
-		###########
+		# -----------
 		self.addRuleModel = gtk.ListStore(str, str)
 		self.ruleAddCombo = gtk.ComboBox()
 		self.ruleAddCombo.set_model(self.addRuleModel)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self.ruleAddCombo, cell, True)
 		self.ruleAddCombo.add_attribute(cell, "text", 1)
-		###
+		# ---
 		pack(self.ruleAddBox, gtk.Label(label=_("Add Rule") + ":"))
 		pack(self.ruleAddBox, self.ruleAddCombo)
 		pack(self.ruleAddBox, gtk.Label(), 1, 1)
@@ -75,10 +75,10 @@ class WidgetClass(common.WidgetClass):
 			"list-add.svg",
 		)
 		pack(self.ruleAddBox, self.ruleAddButton)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
-		#############
+		# -------------
 		self.ruleAddCombo.connect("changed", self.onRuleAddComboChanged)
 		self.ruleAddButton.connect("clicked", self.onRuleAddButtonClick)
 
@@ -98,7 +98,7 @@ class WidgetClass(common.WidgetClass):
 		else:
 			pack(hbox, inputWidget)
 			pack(hbox, gtk.Label(), 1, 1)
-		####
+		# ----
 		removeButton = labelImageButton(
 			label=_("_Remove"),
 			imageName="list-remove.svg",
@@ -106,7 +106,7 @@ class WidgetClass(common.WidgetClass):
 		removeButton.connect("clicked", self.onRemoveButtonClick, hbox)
 		# ^ FIXME
 		pack(hbox, removeButton)
-		####
+		# ----
 		hbox.inputWidget = inputWidget
 		hbox.removeButton = removeButton
 		return hbox
@@ -165,9 +165,9 @@ class WidgetClass(common.WidgetClass):
 		if not ok:
 			return
 		self.event.checkAndRemoveRule(rule)
-		####
+		# ----
 		self.addRuleModel.append((rule.name, rule.desc))
-		####
+		# ----
 		hbox.destroy()
 		# self.rulesBox.remove(hbox)
 		self.onRuleAddComboChanged()

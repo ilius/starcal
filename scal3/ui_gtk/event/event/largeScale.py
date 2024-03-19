@@ -14,9 +14,9 @@ maxDur = 99999
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Scale"))
 		label.set_xalign(0)
@@ -25,7 +25,7 @@ class WidgetClass(common.WidgetClass):
 		self.scaleCombo = common.Scale10PowerComboBox()
 		pack(hbox, self.scaleCombo)
 		pack(self, hbox)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -35,7 +35,7 @@ class WidgetClass(common.WidgetClass):
 		self.startSpin.connect("changed", self.startSpinChanged)
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
-		####
+		# ----
 		hbox = HBox()
 		self.endRelCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
@@ -46,7 +46,7 @@ class WidgetClass(common.WidgetClass):
 		self.endSpin = IntSpinButton(-maxDur, maxDur)
 		pack(hbox, self.endSpin)
 		pack(self, hbox)
-		####
+		# ----
 		self.endRelComboChanged()
 
 	def endRelComboChanged(self, _combo=None):

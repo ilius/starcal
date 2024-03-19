@@ -27,7 +27,7 @@ class TimerButton(TimeButton):
 		# self.delay = 1.0 # timer delay
 		# self.tPlus = -1 # timer plus (step)
 		# self.elapse = 0
-		#########
+		# ---------
 		self.tOff = now() * self.tPlus - self.get_seconds()
 		self.set_editable(False)
 		self.timer_update()
