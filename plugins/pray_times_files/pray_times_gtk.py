@@ -87,7 +87,7 @@ class LocationDialog(gtk.Dialog):
 		self.maxResults = maxResults
 		self.resize(width, height)
 		# width is used for CellRendererText as well
-		###############
+		# ---------------
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -101,14 +101,14 @@ class LocationDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		self.okB = okB
-		###############
+		# ---------------
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(label=_("Search Cities:")))
 		entry = gtk.Entry()
 		pack(hbox, entry, 1, 1)
 		entry.connect("changed", self.entry_changed)
 		pack(self.vbox, hbox)
-		######################
+		# ----------------------
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(False)
 		treev.set_headers_visible(False)
@@ -121,20 +121,20 @@ class LocationDialog(gtk.Dialog):
 		self.treev = treev
 		self.trees = trees
 		treev.connect("cursor-changed", self.treev_cursor_changed)
-		#########
+		# ---------
 		# cell = gtk.CellRendererText()
 		# col = gtk.TreeViewColumn("Index", cell, text=0)
-		# col.set_resizable(True)## No need!
+		# col.set_resizable(True)-- No need!
 		# treev.append_column(col)
-		########
+		# --------
 		cell = gtk.CellRendererText()
 		cell.set_fixed_size(width - 30, -1)
 		col = gtk.TreeViewColumn("City", cell, text=1)
-		# col.set_resizable(True)## No need!
+		# col.set_resizable(True)-- No need!
 		treev.append_column(col)
-		#########
+		# ---------
 		treev.set_search_column(1)
-		###########
+		# -----------
 		frame = gtk.Frame()
 		checkb = gtk.CheckButton()
 		checkb.set_label(_("Edit Manually"))
@@ -143,14 +143,14 @@ class LocationDialog(gtk.Dialog):
 		self.checkbEdit = checkb
 		vbox = gtk.VBox()
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		#####
+		# -----
 		hbox = gtk.HBox()
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Name:")))
 		entry = gtk.Entry()
 		pack(hbox, entry, 1, 1)
 		pack(vbox, hbox)
 		self.entry_edit_name = entry
-		####
+		# ----
 		hbox = gtk.HBox()
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Latitude:")))
 		spin = gtk.SpinButton()
@@ -161,7 +161,7 @@ class LocationDialog(gtk.Dialog):
 		pack(hbox, spin)
 		pack(vbox, hbox)
 		self.spin_lat = spin
-		####
+		# ----
 		hbox = gtk.HBox()
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Longitude:")))
 		spin = gtk.SpinButton()
@@ -172,7 +172,7 @@ class LocationDialog(gtk.Dialog):
 		pack(hbox, spin)
 		pack(vbox, hbox)
 		self.spin_lng = spin
-		####
+		# ----
 		hbox = gtk.HBox()
 		self.lowerLabel = newAlignLabel(sgroup=None, label="")
 		pack(hbox, self.lowerLabel, 1, 1)
@@ -180,14 +180,14 @@ class LocationDialog(gtk.Dialog):
 		button.connect("clicked", self.calc_clicked)
 		pack(hbox, button)
 		pack(vbox, hbox)
-		####
+		# ----
 		vbox.set_sensitive(False)
 		frame.add(vbox)
 		self.vbox_edit = vbox
 		pack(self.vbox, frame)
-		###
+		# ---
 		self.vbox.show_all()
-		#########
+		# ---------
 		self.cityData = cityData
 		self.update_list()
 
@@ -296,7 +296,7 @@ class LocationButton(gtk.Button):
 		self.plugin = plugin
 		self.parentWindow = window
 		self.dialog = None
-		####
+		# ----
 		self.connect("clicked", self.onClick)
 
 	def setLocation(self, locName, lat, lng):
@@ -323,7 +323,7 @@ class TextPluginUI:
 		self.confDialog.set_title(_("Pray Times") + " - " + _("Configuration"))
 		self.confDialog.connect("delete-event", self.confDialogCancel)
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		###
+		# ---
 		hbox = gtk.HBox()
 		label = newAlignLabel(sgroup=group, label=_("Location"))
 		pack(hbox, label)
@@ -336,7 +336,7 @@ class TextPluginUI:
 		)
 		pack(hbox, self.locButton)
 		pack(self.confDialog.vbox, hbox)
-		###
+		# ---
 		hbox = gtk.HBox()
 		label = newAlignLabel(sgroup=group, label=_("Calculation Method"))
 		pack(hbox, label)
@@ -345,7 +345,7 @@ class TextPluginUI:
 			self.methodCombo.append_text(_(methodObj.desc))
 		pack(hbox, self.methodCombo)
 		pack(self.confDialog.vbox, hbox)
-		#######
+		# -------
 		self.timeNamesButtons = []
 		for name, desc in timeNames:
 			cb = gtk.CheckButton(label=_(desc))
@@ -370,7 +370,7 @@ class TextPluginUI:
 		vbox.set_border_width(5)
 		frame.set_border_width(5)
 		pack(self.confDialog.vbox, frame)
-		######
+		# ------
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(label=_("Imsak")))
 		spin = gtk.SpinButton()
@@ -382,7 +382,7 @@ class TextPluginUI:
 		pack(hbox, spin)
 		pack(hbox, gtk.Label(label=_("minutes before fajr")))
 		pack(self.confDialog.vbox, hbox)
-		######
+		# ------
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(label=_("Separator")))
 		textview = gtk.TextView()
@@ -396,14 +396,14 @@ class TextPluginUI:
 		frame.add(textview)
 		pack(hbox, frame, 1, 1)
 		pack(self.confDialog.vbox, hbox)
-		######
+		# ------
 		frame = gtk.Frame()
 		frame.set_label(_("Azan"))
 		vboxFrame = gtk.VBox()
 		vboxFrame.set_border_width(5)
 		frame.set_border_width(5)
-		#####
-		####
+		# -----
+		# ----
 		hbox1 = gtk.HBox()
 		self.preAzanEnableCheck = gtk.CheckButton(label=_("Play Pre-Azan Sound"))
 		hbox2 = gtk.HBox()
@@ -416,7 +416,7 @@ class TextPluginUI:
 		self.preAzanFileButton = gtk.FileChooserButton(title=_("Pre-Azan Sound"))
 		self.preAzanEnableCheck.sensitiveWidgets = [self.preAzanFileButton, hbox2]
 		pack(hbox1, self.preAzanFileButton, 1, 1)
-		##
+		# --
 		spin = gtk.SpinButton()
 		spin.set_increments(1, 5)
 		spin.set_range(0, 60)
@@ -424,11 +424,11 @@ class TextPluginUI:
 		spin.set_direction(gtk.TextDirection.LTR)
 		self.preAzanMinutesSpin = spin
 		pack(hbox2, spin)
-		##
+		# --
 		pack(hbox2, gtk.Label(label=_("minutes before azan")))
 		pack(vboxFrame, hbox1)
 		pack(vboxFrame, hbox2, 1, 1)
-		#####
+		# -----
 		hbox1 = gtk.HBox()
 		self.azanEnableCheck = gtk.CheckButton(label=_("Play Azan Sound"))
 		hbox2 = gtk.HBox()
@@ -440,14 +440,14 @@ class TextPluginUI:
 		self.azanFileButton = gtk.FileChooserButton(title=_("Azan Sound"))
 		self.azanEnableCheck.sensitiveWidgets = [self.azanFileButton]
 		pack(hbox1, self.azanFileButton, 1, 1)
-		##
+		# --
 		pack(vboxFrame, hbox1, padding=10)
-		#####
+		# -----
 		frame.add(vboxFrame)
 		pack(self.confDialog.vbox, frame)
-		######
+		# ------
 		self.updateConfWidget()
-		###
+		# ---
 		cancelB = dialog_add_button(
 			self.confDialog,
 			imageName="dialog-cancel.svg",
@@ -462,9 +462,9 @@ class TextPluginUI:
 		)
 		cancelB.connect("clicked", self.confDialogCancel)
 		okB.connect("clicked", self.confDialogOk)
-		###
+		# ---
 		self.confDialog.vbox.show_all()
-		##############
+		# --------------
 		"""
 		submenu = gtk.Menu()
 		submenu.add(gtk.MenuItem("Item 1"))
@@ -489,23 +489,23 @@ class TextPluginUI:
 			self.backend.lng,
 		)
 		self.methodCombo.set_active(methodsList.index(self.backend.method))
-		###
+		# ---
 		for cb in self.timeNamesButtons:
 			cb.set_active(cb.name in self.shownTimeNames)
-		###
+		# ---
 		self.imsakSpin.set_value(self.imsak)
 		self.sepBuff.set_text(self.sep)
 		buffer_select_all(self.sepBuff)
-		###
+		# ---
 		self.preAzanEnableCheck.set_active(self.preAzanEnable)
 		if self.preAzanFile:
 			self.preAzanFileButton.set_filename(self.preAzanFile)
 		self.preAzanMinutesSpin.set_value(self.preAzanMinutes)
-		##
+		# --
 		self.azanEnableCheck.set_active(self.azanEnable)
 		if self.azanFile:
 			self.azanFileButton.set_filename(self.azanFile)
-		##
+		# --
 		self.updateAzanSensitiveWidgets()
 
 	def updateConfVars(self):
@@ -519,11 +519,11 @@ class TextPluginUI:
 		self.imsak = int(self.imsakSpin.get_value())
 		self.sep = buffer_get_text(self.sepBuff)
 		self.backend.imsak = str(self.imsak) + " min"
-		###
+		# ---
 		self.preAzanEnable = self.preAzanEnableCheck.get_active()
 		self.preAzanFile = self.preAzanFileButton.get_filename()
 		self.preAzanMinutes = self.preAzanMinutesSpin.get_value()
-		##
+		# --
 		self.azanEnable = self.azanEnableCheck.get_active()
 		self.azanFile = self.azanFileButton.get_filename()
 

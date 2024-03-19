@@ -164,7 +164,7 @@ def testGetMin(N):
 def testDeleteStep(N, maxKey):
 	from random import randint
 
-	###
+	# ---
 	h = MaxHeap()
 	for _ in range(N):
 		h.push(randint(0, maxKey), 0)

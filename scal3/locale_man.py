@@ -51,14 +51,14 @@ from scal3.path import (
 from scal3.s_object import JsonSObj
 from scal3.utils import StrOrderedDict, toStr
 
-##########################################################
+# ----------------------------------------------------------
 
 natz.defaultTZ = natz.UTC
 
 localTz = natz.gettz()
 localTzStr = str(localTz)
 
-##########################################################
+# ----------------------------------------------------------
 
 confPath = join(confDir, "locale.json")
 
@@ -76,7 +76,7 @@ def saveConf() -> None:
 	saveModuleJsonConf(__name__)
 
 
-##########################################################
+# ----------------------------------------------------------
 
 langDir = join(sourceDir, "conf", "lang")
 # localeDir = "/usr/share/locale"
@@ -108,7 +108,7 @@ def getLangDigits(
 # fa: Persian  fa_IR	Eastern (Extended) Arabic-indic    Iran & Afghanintan
 # ur: Urdu     ur_PK	(Eastern) Arabic-indic		Pakistan (& Afghanintan??)
 # hi: Hindi    hi_IN	Devenagari					India
-# th: Thai     th_TH	----------					Thailand
+# th: Thai     th_TH	# ----------					Thailand
 
 # Urdu digits is a combination of Arabic and Persian digits,
 # except for Zero that is named ARABIC-INDIC DIGIT ZERO in unicode database
@@ -133,11 +133,11 @@ langHasUppercase = True
 
 enableNumLocale = True
 
-##########################################################
+# ----------------------------------------------------------
 
 loadConf()
 
-##########################################################
+# ----------------------------------------------------------
 
 
 def tr(s: "str | int", *a, **ka) -> str:
@@ -159,7 +159,7 @@ class LangData(JsonSObj):
 
 	def __init__(self, _file: str) -> None:
 		self.file = _file  # json file path
-		####
+		# ----
 		self.code = ""
 		self.name = ""
 		self.nativeName = ""
@@ -168,12 +168,12 @@ class LangData(JsonSObj):
 		self.rtl = False
 		self.hasUppercase = True
 		self.transPath = ""
-		##
+		# --
 		self.timeZoneList: "list[str]" = []
 
 	def setData(self, data: dict):
 		JsonSObj.setData(self, data)
-		#####
+		# -----
 		for param in (
 			"code",
 			"name",
@@ -184,10 +184,10 @@ class LangData(JsonSObj):
 					f'missing or empty parameter "{param}"'
 					f' in language file "{self.file}"',
 				)
-		#####
+		# -----
 		if not isabs(self.flag):
 			self.flag = join(pixDir, "flags", self.flag)
-		#####
+		# -----
 		transPath = ""
 		if self.fileName:
 			path = join(sourceDir, "locale.d", self.fileName + ".mo")
@@ -212,7 +212,7 @@ class LangData(JsonSObj):
 		self.transPath = transPath
 
 
-##########################################################
+# ----------------------------------------------------------
 
 
 langDict = StrOrderedDict()
@@ -247,7 +247,7 @@ for fname in langFileList:
 	langObj = LangData(fpath)
 	langObj.setData(data)
 	langDict[langObj.code] = langObj
-	###
+	# ---
 	if localTzStr in langObj.timeZoneList:
 		langDefault = langObj.code
 
@@ -282,11 +282,11 @@ def prepareLanguage() -> str:
 		# lines = popen_output("locale -a").split("\n")  # FIXME
 		# for line in lines:
 		# 	if line.lower().starts(lang)
-		# locale.setlocale(locale.LC_ALL, lang) ## lang = locale.setlocale(...
+		# locale.setlocale(locale.LC_ALL, lang) # lang = locale.setlocale(...
 		langActive = lang
 		os.environ["LANG"] = lang
 	else:  # not lang in langDict.keyList
-		# locale.setlocale(locale.LC_ALL, langDefault) ## lang = locale.setlocale(...
+		# locale.setlocale(locale.LC_ALL, langDefault) # lang = locale.setlocale(...
 		lang = langDefault
 		langActive = langDefault
 		os.environ["LANG"] = langDefault
@@ -565,7 +565,7 @@ def popenDefaultLang(*args, **kwargs) -> "subprocess.Popen":
 	return p
 
 
-##############################################
+# ----------------------------------------------
 
 prepareLanguage()
 loadTranslator()
