@@ -52,7 +52,7 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
-############################################################
+# ------------------------------------------------------------
 
 sysConfPath = join(sysConfDir, "ui-gtk.json")
 
@@ -74,7 +74,7 @@ def saveConf():
 	saveModuleJsonConf(__name__)
 
 
-############################################################
+# ------------------------------------------------------------
 
 
 class CalObjType(Object):
@@ -184,16 +184,16 @@ class IntegatedWindowList(BaseCalObj):
 		Object.__init__(self)
 		self.initVars()
 		ui.eventUpdateQueue.registerConsumer(self)
-		###
+		# ---
 		self.styleProvider = gtk.CssProvider()
 		gtk.StyleContext.add_provider_for_screen(
 			gdk.Screen.get_default(),
 			self.styleProvider,
 			gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
 		)
-		###
+		# ---
 		self.cssFuncList: "list[Callable[[], str]]" = []
-		###
+		# ---
 		self.lastAlphabetHeight = 0
 
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
@@ -241,11 +241,11 @@ class IntegatedWindowList(BaseCalObj):
 			"gtk-font-name",
 			pfontEncode(ui.getFont()).to_string(),
 		)
-		####
+		# ----
 		self.updateIconSizes()
-		####
+		# ----
 		self.updateCSS()
-		####
+		# ----
 		BaseCalObj.onConfigChange(self, *a, **ka)
 		self.onDateChange()
 
@@ -333,7 +333,7 @@ def hasLightTheme(widget):
 	return _getLightness(fg) < _getLightness(bg)
 
 
-####################################################
+# ----------------------------------------------------
 
 windowList = IntegatedWindowList()
 
@@ -344,7 +344,7 @@ def cssFunc(func: Callable) -> Callable:
 	return func
 
 
-###########
+# -----------
 
 if sys.getdefaultencoding() != "utf-8":
 	log.warning(f"System encoding is not utf-8, it's {sys.getdefaultencoding()!r}")
@@ -373,7 +373,7 @@ if settings is None:
 ui.initFonts(getGtkDefaultFont())
 ui.fontDefaultInit = ui.fontDefault
 
-###########
+# -----------
 textDirDict = {
 	"ltr": gtk.TextDirection.LTR,
 	"rtl": gtk.TextDirection.RTL,
@@ -392,7 +392,7 @@ iconSizeList = [
 iconSizeDict = dict(iconSizeList)
 iconSizeNames = [x[0] for x in iconSizeList]
 
-###############
+# ---------------
 
 justificationList = [
 	(
@@ -410,9 +410,9 @@ justificationList = [
 ]
 justificationByName = {name: value for name, desc, value in justificationList}
 
-##############################
+# ------------------------------
 
-# if ui.fontCustomEnable:## FIXME
+# if ui.fontCustomEnable:-- FIXME
 # 	settings.set_property("gtk-font-name", fontCustom)
 
 dateFormat = "%Y/%m/%d"
@@ -429,7 +429,7 @@ def updateFormatsBin():
 	clockFormatBin = compileTmFormat(clockFormat)
 
 
-##############################
+# ------------------------------
 
 
 def findAskpass():
@@ -488,7 +488,7 @@ adjustTimeCmd = ""
 adjustTimeEnv = os.environ
 setDefault_adjustTimeCmd()
 
-##############################
+# ------------------------------
 
 mainToolbarData = {
 	"items": [],
@@ -513,7 +513,7 @@ wcalToolbarData = {
 	"buttonsBorder": 0,
 }
 
-###########################################################
+# -----------------------------------------------------------
 
 # loaded from jsom
 tmpValue = getattr(ui, "ud__wcalToolbarData", None)
@@ -533,7 +533,7 @@ loadConf()
 
 setDefault_adjustTimeCmd()  # FIXME
 
-############################################################
+# ------------------------------------------------------------
 
 
 def getMonitor():
@@ -574,7 +574,7 @@ def getWorkAreaSize() -> "tuple[int, int] | None":
 	return rect.width, rect.height
 
 
-##############################
+# ------------------------------
 
 rootWindow = gdk.get_default_root_window()
 
@@ -594,7 +594,7 @@ else:
 # for normal windows, we should use workAreaW and workAreaH
 # for menus, we should use screenW and screenH, because they can go over panels
 
-##############################
+# ------------------------------
 
 # FIXME
 # import atexit

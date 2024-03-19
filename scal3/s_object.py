@@ -133,7 +133,7 @@ class SObj:
 					f"for {self.__class__.__name__} instance",
 				)
 			self.dataIsSet = True
-		###########
+		# -----------
 		# if isinstance(data, dict):  # FIXME
 		for key, value in data.items():
 			if key in self.params:
@@ -152,7 +152,7 @@ class SObj:
 			raise NotImplementedError(
 				f"{self.__class__.__name__}.getIdPath: no id attribute",
 			) from None
-		######
+		# ------
 		path = []
 		if _id is not None:
 			path.append(_id)
@@ -226,7 +226,7 @@ class JsonSObj(SObj):
 		obj.setData(data)
 		return obj
 
-	#####
+	# -----
 
 	def getDataOrdered(self):
 		return makeOrderedData(self.getData(), self.paramsOrder)
@@ -389,7 +389,7 @@ class BsonHistObj(SObj):
 		obj.modified = lastEpoch
 		return obj
 
-	#######
+	# -------
 
 	def getDataOrdered(self):
 		return makeOrderedData(self.getData(), self.paramsOrder)
@@ -432,9 +432,9 @@ class BsonHistObj(SObj):
 		if "modified" in data:
 			del data["modified"]
 		_hash = saveBsonObject(data, self.fs)
-		###
+		# ---
 		history = self.loadHistory()
-		###
+		# ---
 		try:
 			lastHash = history[0][1]
 		except IndexError:

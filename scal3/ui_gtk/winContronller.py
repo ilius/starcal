@@ -23,14 +23,14 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		gtk.EventBox.__init__(self)
 		self.set_border_width(ui.winControllerBorder)
 		self.initVars()
-		###
+		# ---
 		self.controller = controller
 		CustomizableCalObj.initVars(self)
 		self.build()
-		###
+		# ---
 		if controller.win:
 			self.connect("button-press-event", controller.win.childButtonPress)
-		###
+		# ---
 		self.show_all()
 
 	def setImage(self, imName):
@@ -191,16 +191,16 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.set_spacing(ui.winControllerSpacing)
 		self.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
-		###########
+		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
 		self.light = ud.hasLightTheme(win)
-		###########
+		# -----------
 		for bname, enable in ui.winControllerButtons:
 			button = self.buttonClassDict[bname](self)
 			button.enable = enable
 			self.appendItem(button)
 		self.set_property("can-focus", True)
-		##################
+		# ------------------
 		if win:
 			win.winCon = self  # dirty FIXME
 		# gWin.connect("focus-in-event", self.windowFocusIn)
@@ -229,7 +229,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
-		####
+		# ----
 		prefItem = ComboTextPrefItem(
 			ui,
 			"winControllerTheme",
@@ -239,7 +239,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			onChangeFunc=self.updateTheme,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerIconSize",
@@ -252,7 +252,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			onChangeFunc=self.updateButtons,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerBorder",
@@ -265,7 +265,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			onChangeFunc=self.onButtonBorderChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerSpacing",
@@ -278,7 +278,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			onChangeFunc=self.onButtonPaddingChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget

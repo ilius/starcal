@@ -53,7 +53,7 @@ if typing.TYPE_CHECKING:
 	from scal3.s_object import SObj
 
 
-#######################################################
+# -------------------------------------------------------
 
 sysConfPath = join(sysConfDir, "ui.json")  # also includes LIVE config
 
@@ -306,7 +306,7 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 	return True  # Continue loop
 
 
-#######################################################
+# -------------------------------------------------------
 
 
 def parseDroppedDate(text) -> "tuple[int, int, int] | None":
@@ -393,7 +393,7 @@ def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
 
 # How do this with KOrginizer? FIXME
 
-#######################################################################
+# -----------------------------------------------------------------------
 
 
 class Cell(CellType):
@@ -407,7 +407,7 @@ class Cell(CellType):
 		self._eventsData: "list[dict] | None" = None
 		self._pluginsText: "list[list[str]]" = []
 		self._pluginsData: "list[tuple[Any, str]]" = []
-		###
+		# ---
 		self.jd = jd
 		date = core.jd_to_primary(jd)
 		self.year, self.month, self.day = date
@@ -418,7 +418,7 @@ class Cell(CellType):
 			calTypes.primaryModule().avgYearLen / 7,
 		)
 		self.holiday = self.weekDay in core.holidayWeekDays
-		###################
+		# -------------------
 		self.dates = [
 			date if calType == calTypes.primary else jd_to(jd, calType)
 			for calType in range(len(calTypes))
@@ -431,7 +431,7 @@ class Cell(CellType):
 			for calType in calTypes.active
 		])
 		"""
-		###################
+		# -------------------
 		for k in core.plugIndex:
 			plug = core.allPlugList[k]
 			if plug:
@@ -439,7 +439,7 @@ class Cell(CellType):
 					plug.updateCell(self)
 				except Exception:
 					log.exception("")
-		###################
+		# -------------------
 		self.getEventsData()
 
 	@property
@@ -707,43 +707,43 @@ def initFonts(fontDefaultNew: "Font") -> None:
 	fontDefault = fontDefaultNew
 	if not fontCustom:
 		fontCustom = fontDefault
-	########
-	###
+	# --------
+	# ---
 	if mcalTypeParams[0]["font"] is None:
 		mcalTypeParams[0]["font"] = getFont(1.0, family=False)  # noqa: FURB120
-	###
+	# ---
 	for item in mcalTypeParams[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(0.6, family=False)
-	######
+	# ------
 	if dcalDayParams[0]["font"] is None:
 		dcalDayParams[0]["font"] = getFont(10.0, family=False)
-	###
+	# ---
 	for item in dcalDayParams[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(3.0, family=False)
-	######
+	# ------
 	if dcalMonthParams[0]["font"] is None:
 		dcalMonthParams[0]["font"] = getFont(5.0, family=False)
-	###
+	# ---
 	for item in dcalMonthParams[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(2.0, family=False)
-	######
+	# ------
 	if dcalWinDayParams[0]["font"] is None:
 		dcalWinDayParams[0]["font"] = getFont(5.0, family=False)
-	###
+	# ---
 	for item in dcalWinDayParams[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(2.0, family=False)
-	######
+	# ------
 	if dcalWinMonthParams[0]["font"] is None:
 		dcalWinMonthParams[0]["font"] = getFont(2.5, family=False)
-	###
+	# ---
 	for item in dcalWinMonthParams[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(1.5, family=False)
-	######
+	# ------
 	if dcalWeekdayParams["font"] is None:
 		dcalWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
 	if dcalWinWeekdayParams["font"] is None:
@@ -759,7 +759,7 @@ def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
 	return jdList
 
 
-######################################################################
+# ----------------------------------------------------------------------
 
 
 def checkMainWinItems() -> None:
@@ -787,17 +787,17 @@ def checkEnabledNamesItems(
 	# cleaning and updating items
 	names = {name for (name, i) in items}
 	defaultNames = {name for (name, i) in itemsDefault}
-	#####
+	# -----
 	# removing items that are no longer supported
 	items, itemsTmp = [], items
 	for name, enable in itemsTmp:
 		if name in defaultNames:
 			items.append((name, enable))
-	#####
+	# -----
 	# adding items newly added in this version, this is for user"s convenience
 	newNames = defaultNames.difference(names)
 	log.debug(f"items: {newNames = }")
-	##
+	# --
 	for name in newNames:
 		items.append((name, False))  # FIXME
 	return items
@@ -853,7 +853,7 @@ def init() -> None:
 	eventAccounts = event_lib.EventAccountsHolder.load(fs)
 	eventGroups = event_lib.EventGroupsHolder.load(fs)
 	eventTrash = event_lib.EventTrash.load(fs)
-	####
+	# ----
 	todayCell = cell = cellCache.getTodayCell()  # FIXME
 
 
@@ -862,7 +862,7 @@ def withFS(obj: "SObj") -> "SObj":
 	return obj
 
 
-######################################################################
+# ----------------------------------------------------------------------
 
 localTzHist = []
 
@@ -1045,7 +1045,7 @@ dcalWinSeasonPieAutumnColor = (255, 127, 0, 180)
 dcalWinSeasonPieWinterColor = (1, 191, 255, 180)
 dcalWinSeasonPieTextColor = (255, 255, 255, 180)
 
-##############################
+# ------------------------------
 
 menuMainItemDefs = OrderedDict(
 	[
@@ -1209,7 +1209,7 @@ menuMainItemDefs = OrderedDict(
 	],
 )
 
-##############################
+# ------------------------------
 
 
 def getActiveMonthCalParams():
@@ -1222,7 +1222,7 @@ def getActiveMonthCalParams():
 	)
 
 
-################################
+# --------------------------------
 
 eventIconDir = join(svgDir, "event")
 
@@ -1288,7 +1288,7 @@ def getEventTagsDict():
 
 eventTagsDesc = {t.name: t.desc for t in eventTags}
 
-###################
+# -------------------
 fs: "event_lib.FileSystem | None" = None
 eventAccounts: "list[event_lib.EventAccount]" = []
 eventGroups: "list[event_lib.EventGroup]" = []
@@ -1317,18 +1317,18 @@ eventUpdateQueue = EventUpdateQueue()
 # 				tagsDict[tag].usage += 1
 
 
-###################
+# -------------------
 # BUILD CACHE AFTER SETTING calTypes.primary
 maxDayCacheSize = 100  # maximum size of cellCache (days number)
 maxWeekCacheSize = 12
 
 cellCache = CellCache()
 todayCell = cell = None
-###########################
+# ---------------------------
 # appLogo = join(pixDir, "starcal.png")
 appLogo = join(svgDir, "starcal.svg")
 appIcon = join(pixDir, "starcal-48.png")
-###########################
+# ---------------------------
 # themeDir = join(sourceDir, "themes")
 # theme = None
 
@@ -1345,7 +1345,7 @@ winTaskbar = False
 useAppIndicator = True
 showDigClockTb = True  # On Toolbar FIXME
 showDigClockTr = True  # On Status Icon
-####
+# ----
 bgColor = (26, 0, 1, 255)  # or None
 borderColor = (123, 40, 0, 255)
 borderTextColor = (255, 255, 255, 255)  # text of weekDays and weekNumbers
@@ -1355,10 +1355,10 @@ menuTextColor = None  # borderTextColor # FIXME
 holidayColor = (255, 160, 0, 255)
 inactiveColor = (255, 255, 255, 115)
 todayCellColor = (0, 255, 0, 50)
-##########
+# ----------
 cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
-##########
+# ----------
 # menuIconSize: the size of icons in menu items, used only for svg icons
 # should be compatible with gtk.IconSize.MENU used in newMenuItem
 menuIconSize = 18
@@ -1390,24 +1390,24 @@ mcalEventIconSizeMax = 26
 
 useSystemIcons = False
 
-##########
+# ----------
 # cellMenuXOffset: when we were using ImageMenuItem and CheckMenuItem,
 # something between 48 and 56 for cellMenuXOffset was good
 # but after migrating away from those 2, it's not needed anymore (so zero)
 cellMenuXOffset = 0
-##########
+# ----------
 wcalCursorLineWidthFactor = 0.12
 wcalCursorRoundingFactor = 0.50
-###
+# ---
 mcalCursorLineWidthFactor = 0.12
 mcalCursorRoundingFactor = 0.50
-###
+# ---
 mcalGrid = False
 mcalGridColor = (255, 252, 0, 82)
-##########
+# ----------
 mcalLeftMargin = 30
 mcalTopMargin = 30
-####################
+# --------------------
 wcalTextSizeScale = 0.6  # between 0 and 1
 # wcalTextColor = (255, 255, 255)  # FIXME
 wcalPadding = 10
@@ -1444,7 +1444,7 @@ wcalFont_pluginsText = None
 wcalFont_eventsBox = None
 wcal_moonStatus_width = 48
 
-####################
+# --------------------
 dcalWidgetButtonsEnable = False
 dcalWidgetButtons = [
 	{
@@ -1499,7 +1499,7 @@ dcalWinWidgetButtons = [
 	},
 ]
 
-####################
+# --------------------
 
 dcalWeekdayLocalize = True
 dcalWeekdayAbbreviate = False
@@ -1509,7 +1509,7 @@ dcalWinWeekdayLocalize = True
 dcalWinWeekdayAbbreviate = False
 dcalWinWeekdayUppercase = False
 
-####################
+# --------------------
 
 dcalEventIconSize = 20
 dcalEventTotalSizeRatio = 0.3
@@ -1519,7 +1519,7 @@ dcalWinEventIconSize = 20
 dcalWinEventTotalSizeRatio = 0.3
 # 0.3 means %30 of window size (minimum of window height and width)
 
-####################
+# --------------------
 
 statusBarDatesReverseOrder = False
 statusBarDatesColorEnable = False
@@ -1537,7 +1537,7 @@ labelBoxPrimaryFontEnable = False
 labelBoxPrimaryFont = None
 
 
-####################
+# --------------------
 
 boldYmLabel = True
 showYmArrows = True  # apply in Pref FIXME
@@ -1545,12 +1545,12 @@ showYmArrows = True  # apply in Pref FIXME
 # delay for shift up/down items of menu for right click on YearLabel
 labelMenuDelay = 0.1
 
-####################
+# --------------------
 
 preferencesPagePath = ""
 customizePagePath = ""
 
-####################
+# --------------------
 
 statusIconImage = join(sourceDir, "status-icons", "dark-green.svg")
 statusIconImageHoli = join(sourceDir, "status-icons", "dark-red.svg")
@@ -1568,16 +1568,16 @@ statusIconHolidayFontColor = None
 statusIconLocalizeNumber = True
 statusIconFixedSizeEnable = False
 statusIconFixedSizeWH = (24, 24)
-####################
+# --------------------
 pluginsTextStatusIcon = False
 pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True  # effects only if pluginsTextInsideExpander
 eventViewMaxHeight = 200
-####################
+# --------------------
 dragGetCalType = core.GREGORIAN  # apply in Pref FIXME
 # dragGetDateFormat = "%Y/%m/%d"
 dragRecMode = core.GREGORIAN  # apply in Pref FIXME
-####################
+# --------------------
 monthRMenuNum = True
 # monthRMenu
 
@@ -1601,21 +1601,21 @@ winControllerButtonsDefault = winControllerButtons[:]
 winControllerIconSize = 24
 winControllerBorder = 0
 winControllerSpacing = 0
-####################
+# --------------------
 winKeepAbove = True
 winSticky = True
 winMaximized = False
 winX = 0
 winY = 0
-###
+# ---
 fontDefault = Font(family="Sans", size=12)
 fontDefaultInit = fontDefault
 fontCustom = None
 fontCustomEnable = False
-#####################
+# ---------------------
 showMain = True  # Open main window on start (or only goto statusIcon)
 showDesktopWidget = False  # Open desktop widget on start
-#####################
+# ---------------------
 mainWinItems = (
 	("toolbar", True),
 	("labelBox", True),
@@ -1653,7 +1653,7 @@ wcalItems = (
 
 wcalItemsDefault = wcalItems[:]
 
-####################
+# --------------------
 
 mainWinRightPanelSwap = False
 
@@ -1687,16 +1687,16 @@ eventDayViewTimeFormat = "HM$"
 eventWeekViewTimeFormat = "HM$"
 
 
-####################
+# --------------------
 
 monthPBarCalType = -1
 
-####################
+# --------------------
 
 seasonPBar_southernHemisphere = False
 wcal_moonStatus_southernHemisphere = False
 
-####################
+# --------------------
 
 ntpServers = (
 	"pool.ntp.org",
@@ -1710,7 +1710,7 @@ ntpServers = (
 )
 
 
-#####################
+# ---------------------
 
 disableRedraw = False
 # when set disableRedraw=True, widgets will not re-draw their contents
@@ -1729,11 +1729,11 @@ def updateFocusTime(*_args):
 	focusTime = now()
 
 
-########################################################
+# --------------------------------------------------------
 
 loadConf()
 
-########################################################
+# --------------------------------------------------------
 
 if not isfile(statusIconImage):
 	statusIconImage = statusIconImageDefault
@@ -1788,7 +1788,7 @@ for key in (
 if menuTextColor is None:
 	menuTextColor = borderTextColor
 
-##################################
+# ----------------------------------
 
 # move to gtk_ud ? FIXME
 mainWin = None

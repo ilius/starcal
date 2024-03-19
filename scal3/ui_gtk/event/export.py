@@ -18,7 +18,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -32,12 +32,12 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
-		####
+		# ----
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
 		radioBox = VBox()
-		##
+		# --
 		self.radioIcs = gtk.RadioButton(label="iCalendar")
 		self.radioJsonCompact = gtk.RadioButton(
 			label=_("Compact JSON (StarCalendar)"),
@@ -47,25 +47,25 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 			label=_("Pretty JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
-		##
+		# --
 		pack(radioBox, self.radioJsonCompact)
 		pack(radioBox, self.radioJsonPretty)
 		pack(radioBox, self.radioIcs)
-		##
+		# --
 		self.radioJsonCompact.set_active(True)
 		self.radioIcs.connect("clicked", self.formatRadioChanged)
 		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
 		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
-		##
+		# --
 		frame.add(radioBox)
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		########
+		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		self.fcw.set_current_folder(deskDir)
 		pack(self.vbox, self.fcw, 1, 1)
-		####
+		# ----
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
@@ -117,7 +117,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export", ctx="window title"))
 		self.vbox.set_spacing(10)
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -130,12 +130,12 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
-		####
+		# ----
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
 		radioBox = VBox()
-		##
+		# --
 		self.radioIcs = gtk.RadioButton(
 			label="iCalendar",
 		)
@@ -147,36 +147,36 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			label=_("Pretty JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
-		##
+		# --
 		pack(radioBox, self.radioJsonCompact)
 		pack(radioBox, self.radioJsonPretty)
 		pack(radioBox, self.radioIcs)
-		##
+		# --
 		self.radioJsonCompact.set_active(True)
 		self.radioIcs.connect("clicked", self.formatRadioChanged)
 		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
 		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
-		####
+		# ----
 		frame.add(radioBox)
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
-		####
+		# ----
 		hButtonBox = VBox()
 		pack(hButtonBox, gtk.Label(), 1, 1)
-		##
+		# --
 		button = gtk.Button(label=_("Disable All"))
 		button.connect("clicked", self.disableAllClicked)
 		pack(hButtonBox, button)
-		##
+		# --
 		button = gtk.Button(label=_("Enable All"))
 		button.connect("clicked", self.enableAllClicked)
 		pack(hButtonBox, button)
-		##
+		# --
 		hButtonBox.show_all()
 		pack(hbox, hButtonBox)
-		##
+		# --
 		pack(self.vbox, hbox)
-		########
+		# --------
 		hbox = HBox(spacing=2)
 		pack(hbox, gtk.Label(label=_("File") + ":"))
 		self.fpathEntry = gtk.Entry()
@@ -189,13 +189,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		)
 		pack(hbox, self.fpathEntry, 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		self.groupSelect = GroupsTreeCheckList()
 		swin = gtk.ScrolledWindow()
 		swin.add(self.groupSelect)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		pack(self.vbox, swin, 1, 1)
-		####
+		# ----
 		self.vbox.show_all()
 		self.formatRadioChanged()
 		self.resize(600, 600)
@@ -208,7 +208,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 
 	def formatRadioChanged(self, _widget=None):
 		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
-		###
+		# ---
 		fpath = self.fpathEntry.get_text()
 		if fpath:
 			fpath_nox, ext = splitext(fpath)
@@ -250,7 +250,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self._groupTitle = groupTitle
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))  # , ctx="window title"
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -264,12 +264,12 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
-		####
+		# ----
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
 		radioBox = VBox()
-		##
+		# --
 		self.radioJsonCompact = gtk.RadioButton(
 			label=_("Compact JSON (StarCalendar)"),
 		)
@@ -278,25 +278,25 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			group=self.radioJsonCompact,
 		)
 		# self.radioIcs = gtk.RadioButton(label="iCalendar")
-		##
+		# --
 		pack(radioBox, self.radioJsonCompact)
 		pack(radioBox, self.radioJsonPretty)
 		# pack(radioBox, self.radioIcs)
-		##
+		# --
 		self.radioJsonCompact.set_active(True)
 		# self.radioIcs.connect("clicked", self.formatRadioChanged)
 		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
 		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
-		##
+		# --
 		frame.add(radioBox)
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		########
+		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		self.fcw.set_current_folder(deskDir)
 		pack(self.vbox, self.fcw, 1, 1)
-		####
+		# ----
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
