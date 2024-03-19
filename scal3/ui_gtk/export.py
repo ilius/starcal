@@ -38,7 +38,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.set_title(_("Export to {format}").format(format="HTML"))
 		# parent=None FIXME
 		# self.set_has_separator(False)
-		########
+		# --------
 		hbox = HBox(spacing=2)
 		pack(hbox, gtk.Label(label=_("Month Range")))
 		combo = gtk.ComboBoxText()
@@ -47,7 +47,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.combo = combo
-		###
+		# ---
 		hbox2 = HBox(spacing=2)
 		pack(hbox2, gtk.Label(label=_("from month")))
 		self.ymBox0 = YearMonthButton()
@@ -60,13 +60,13 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.hbox2 = hbox2
 		combo.set_active(0)
 		pack(self.vbox, hbox)
-		########
+		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
 		self.vbox.set_focus_child(self.fcw)  # FIXME
 		self.vbox.show_all()
 		combo.connect("changed", self.comboChanged)
-		##
+		# --
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -81,7 +81,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
-		##
+		# --
 		self.connect("delete-event", self.onDelete)
 		self.fcw.set_current_folder(deskDir)
 
@@ -155,8 +155,8 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		openWindow(self)
 
 	"""
-	def exportSvg(self, path, monthList):## FIXME
-		## monthList is a list of tuples (year, month)
+	def exportSvg(self, path, monthList):-- FIXME
+		# monthList is a list of tuples (year, month)
 		#import cairo
 		hspace = 20
 		mcal = ui.mainWin.mcal
@@ -169,7 +169,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		year = ui.cell.year
 		month = ui.cell.month
 		day = self.mcal.day
-		ui.mainWin.show() ## ??????????????
+		ui.mainWin.show() # ??????????????
 		for i in range(n):
 			surface.set_device_offset(0, i*(h0+hspace))
 			mcal.dateChange((monthList[i][0], monthList[i][1], 1))
@@ -188,7 +188,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		self.set_title(_("Export to {format}").format(format="iCalendar"))
 		# parent=None FIXME
 		# self.set_has_separator(False)
-		########
+		# --------
 		hbox = HBox(spacing=2)
 		pack(hbox, gtk.Label(label=_("From", ctx="time range") + " "))
 		self.startDateInput = DateButton()
@@ -197,16 +197,16 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		year, _month, _day = ui.todayCell.dates[calTypes.primary]
 		self.startDateInput.set_value((year, 1, 1))
 		self.endDateInput.set_value((year + 1, 1, 1))
-		########
+		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
 		self.vbox.set_focus_child(self.fcw)  # FIXME
 		self.vbox.show_all()
-		##
+		# --
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -221,10 +221,10 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
-		##
+		# --
 		self.connect("delete-event", self.onDelete)
 		self.fcw.connect("file-activated", self.save)  # not working FIXME
-		##
+		# --
 		self.fcw.set_current_folder(deskDir)
 		if not defaultFileName.endswith(".ics"):
 			defaultFileName += ".ics"

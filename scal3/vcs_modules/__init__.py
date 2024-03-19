@@ -18,7 +18,7 @@ def getCommitListFromEst(obj, startJd, endJd, format_rev_id=None):
 	"""Returns a list of (epoch, rev_id) tuples."""
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
-	###
+	# ---
 	data = []
 	for t0, _t1, rev_id, _dt in obj.est.search(startEpoch, endEpoch):
 		if format_rev_id:

@@ -91,7 +91,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return
 		for child in vbox.get_children():
 			child.destroy()
-		###
+		# ---
 		subPages = [self.cursorPage]
 		n = len(calTypes.active)
 		while len(ui.mcalTypeParams) < n:
@@ -107,11 +107,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			###
+			# ---
 			# try:
 			params = ui.mcalTypeParams[index]
 			# except IndexError:
-			##
+			# --
 			pageWidget = CalTypeParamWidget(
 				"mcalTypeParams",
 				self,
@@ -133,7 +133,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			subPages.append(page)
 			button = newSubPageButton(self, page, borderWidth=7)
 			pack(vbox, button, padding=3)
-		###
+		# ---
 		vbox.show_all()
 		self.subPages = subPages
 
@@ -160,14 +160,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 				self.objName,
 			],
 		)
-		######################
+		# ----------------------
 		# self.kTime = 0
-		######################
+		# ----------------------
 		self.connect("draw", self.drawAll)
 		self.connect("button-press-event", self.onButtonPress)
 		# self.connect("screen-changed", self.screenChanged)
 		self.connect("scroll-event", self.scroll)
-		######################
+		# ----------------------
 		# self.updateTextWidth()
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -181,9 +181,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
-		#######
+		# -------
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalLeftMargin",
@@ -197,7 +197,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalTopMargin",
@@ -211,7 +211,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		########
+		# --------
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "mcalGrid", _("Grid")),
 			ColorPrefItem(ui, "mcalGridColor", True),
@@ -220,11 +220,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		hbox = prefItem.getWidget()
 		pack(optionsWidget, hbox)
-		############
+		# ------------
 		pageVBox = VBox(spacing=20)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalCursorLineWidthFactor",
@@ -238,7 +238,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalCursorRoundingFactor",
@@ -252,9 +252,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
-		###
+		# ---
 		pageVBox.show_all()
-		###
+		# ---
 		page = StackPage()
 		page.pageWidget = pageVBox
 		page.pageName = "cursor"
@@ -262,12 +262,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 		page.pageLabel = _("Cursor")
 		page.pageIcon = ""
 		self.cursorPage = page
-		###
+		# ---
 		button = newSubPageButton(self, page, borderWidth=7)
 		pack(optionsWidget, button, padding=5)
-		########
+		# --------
 		self.optionsWidget = optionsWidget
-		####
+		# ----
 		self.typeParamsVbox = VBox()
 		pack(optionsWidget, self.typeParamsVbox, padding=5)
 		optionsWidget.show_all()
@@ -303,13 +303,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, ui.bgColor)
 		status = getCurrentMonthStatus()
-		# ################################## Drawing Border
+		# ---------------------------------- Drawing Border
 		if ui.mcalTopMargin > 0:
-			# ### Drawing border top background
+			# # Drawing border top background
 			# mcalMenuCellBgColor == borderColor
 			cr.rectangle(0, 0, w, ui.mcalTopMargin)
 			fillColor(cr, ui.borderColor)
-			# ###### Drawing weekDays names
+			# ------ Drawing weekDays names
 			setColor(cr, ui.borderTextColor)
 			wdayAb = self.wdaysWidth > w
 			for i in range(7):
@@ -324,7 +324,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					(ui.mcalTopMargin - fonth) / 2 - 1,
 				)
 				show_layout(cr, wday)
-			# ###### Drawing "Menu" label
+			# ------ Drawing "Menu" label
 			setColor(cr, ui.menuTextColor)
 			text = newTextLayout(self, _("Menu"))
 			fontw, fonth = text.get_pixel_size()
@@ -340,7 +340,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				)
 			show_layout(cr, text)
 		if ui.mcalLeftMargin > 0:
-			# ### Drawing border left background
+			# # Drawing border left background
 			if rtl:
 				cr.rectangle(
 					w - ui.mcalLeftMargin,
@@ -356,7 +356,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					h - ui.mcalTopMargin,
 				)
 			fillColor(cr, ui.borderColor)
-			# ### Drawing week numbers
+			# # Drawing week numbers
 			setColor(cr, ui.borderTextColor)
 			for i in range(6):
 				lay = newTextLayout(self, _(status.weekNum[i]))
@@ -388,15 +388,15 @@ class CalObj(gtk.DrawingArea, CalBase):
 				cellInactive = c.month != ui.cell.month
 				cellHasCursor = cursor and (xPos, yPos) == selectedCellPos
 				if cellHasCursor:
-					# ### Drawing Cursor
+					# # Drawing Cursor
 					cx0 = x0 - self.dx / 2 + 1
 					cy0 = y0 - self.dy / 2 + 1
 					cw = self.dx - 1
 					ch = self.dy - 1
-					# ####### Circular Rounded
+					# ------- Circular Rounded
 					self.drawCursorBg(cr, cx0, cy0, cw, ch)
 					fillColor(cr, ui.cursorBgColor)
-				# ###### end of Drawing Cursor
+				# ------ end of Drawing Cursor
 				if not cellInactive:
 					iconList = c.getMonthEventIcons()
 					if iconList:
@@ -423,7 +423,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 							cr.fill()
 							cr.scale(1 / scaleFact, 1 / scaleFact)
 							fromRight += pix_w
-				# ## Drawing numbers inside every cell
+				# # Drawing numbers inside every cell
 				# cr.rectangle(
 				# 	x0 - self.dx / 2 + 1,
 				# 	y0 - self.dy / 2 + 1,
@@ -466,17 +466,17 @@ class CalObj(gtk.DrawingArea, CalBase):
 						)
 						show_layout(cr, daynum)
 					if cellHasCursor:
-						# ### Drawing Cursor Outline
+						# # Drawing Cursor Outline
 						cx0 = x0 - self.dx / 2 + 1
 						cy0 = y0 - self.dy / 2 + 1
 						cw = self.dx - 1
 						ch = self.dy - 1
-						# ####### Circular Rounded
+						# ------- Circular Rounded
 						self.drawCursorOutline(cr, cx0, cy0, cw, ch)
 						fillColor(cr, ui.cursorOutColor)
-						# ### end of Drawing Cursor Outline
-		# ############## end of drawing cells
-		# ### drawGrid
+						# # end of Drawing Cursor Outline
+		# -------------- end of drawing cells
+		# # drawGrid
 		if ui.mcalGrid:
 			setColor(cr, ui.mcalGridColor)
 			for i in range(7):
