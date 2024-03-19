@@ -31,19 +31,19 @@ class ExpanderFrameTitle(gtk.Button):
 		self.set_relief(gtk.ReliefStyle.NONE)
 		self.set_can_focus(False)
 		self.get_style_context().add_class("image-button")
-		##
+		# --
 		labelW = gtk.Label(label=label)
 		labelW.set_use_markup(use_markup)
-		##
+		# --
 		self._icon_size = icon_size
 		self._image = gtk.Image()
-		##
+		# --
 		hbox = HBox()
 		pack(hbox, self._image)
 		pack(hbox, labelW)
 		self.add(hbox)
 		hbox.show_all()
-		##
+		# --
 		self.set_expanded(expanded)
 
 	def _updateImage(self):
@@ -85,13 +85,13 @@ class ExpanderFrame(gtk.Frame):
 		)
 		self.set_label_widget(self._title)
 		self._title.show()
-		##
+		# --
 		self._box = VBox()
 		gtk.Frame.add(self, self._box)
-		##
+		# --
 		self.set_border_width(border_width)
 		self._box.set_border_width(inner_border_width)
-		##
+		# --
 		self._title.connect("clicked", self._onTitleClick)
 
 	def add(self, child: gtk.Widget) -> None:
