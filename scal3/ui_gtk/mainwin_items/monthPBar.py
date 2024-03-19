@@ -66,7 +66,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		####
+		# ----
 		self.optionsWidget = HBox()
 		prefItem = CalTypePrefItem(
 			ui,
@@ -75,6 +75,6 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 			onChangeFunc=self.onDateChange,
 		)
 		pack(self.optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		self.optionsWidget.show_all()
 		return self.optionsWidget

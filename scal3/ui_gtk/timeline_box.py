@@ -47,7 +47,7 @@ def drawBoxBG(cr, box, x, y, w, h):
 			int(alpha * tl.boxInnerAlpha),
 		),
 	)
-	###
+	# ---
 	cr.set_line_width(0)
 	cr.move_to(x, y)
 	cr.line_to(x + w, y)
@@ -79,7 +79,7 @@ def drawBoxBorder(cr, box, x, y, w, h):
 			cr.line_to(x + b, y + h)
 			cr.close_path()
 			fillColor(cr, box.color)
-			###
+			# ---
 			bds = 0.7 * bd
 			cr.move_to(x, y)
 			cr.line_to(x + bds, y)
@@ -88,7 +88,7 @@ def drawBoxBorder(cr, box, x, y, w, h):
 			cr.line_to(x, y + bds)
 			cr.close_path()
 			fillColor(cr, box.color)
-			##
+			# --
 			cr.move_to(x + w, y)
 			cr.line_to(x + w - bds, y)
 			cr.line_to(x + w - b - bds, y + b)
