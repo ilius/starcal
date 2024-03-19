@@ -104,7 +104,7 @@ from scal3.utils import (
 	toStr,
 )
 
-##########################
+# --------------------------
 
 (
 	IMPORT_MODE_APPEND,
@@ -112,7 +112,7 @@ from scal3.utils import (
 	IMPORT_MODE_OVERRIDE_MODIFIED,
 ) = range(3)
 
-##########################
+# --------------------------
 
 
 dayLen = 24 * 3600
@@ -128,13 +128,13 @@ hms_zero = HMS()
 hms_24 = HMS(24)
 
 
-##########################
+# --------------------------
 
 lockPath = join(confDir, "event", "lock.json")
 allReadOnly = False
 
 
-###################################################
+# ---------------------------------------------------
 
 
 def init(fs: FileSystem) -> None:
@@ -227,7 +227,7 @@ class InfoWrapper(JsonEventObj):
 
 info = None  # type: InfoWrapper
 
-###################################################
+# ---------------------------------------------------
 
 
 class LastIdsWrapper(JsonEventObj):
@@ -284,7 +284,7 @@ class LastIdsWrapper(JsonEventObj):
 
 lastIds = None  # type: LastIdsWrapper
 
-###########################################################################
+# ---------------------------------------------------------------------------
 
 
 def removeUnusedObjects(fs: FileSystem):
@@ -324,7 +324,7 @@ def removeUnusedObjects(fs: FileSystem):
 		allReadOnly = False
 
 
-###########################################################################
+# ---------------------------------------------------------------------------
 
 
 class ClassGroup(list):
@@ -373,7 +373,7 @@ __plugin_api_get__ = [
 ]
 
 
-###########################################################################
+# ---------------------------------------------------------------------------
 
 
 # FIXME move this o Event class
@@ -600,7 +600,7 @@ class TimeListOccurSet(OccurSet):
 			from numpy.core.multiarray import arange
 		except ImportError:
 			from scal3.utils import arange
-		######
+		# ------
 		self.startEpoch = startEpoch
 		self.endEpoch = endEpoch
 		self.stepSeconds = stepSeconds
@@ -1630,16 +1630,16 @@ class CycleLenEventRule(EventRule):
 	) -> OccurSet:
 		startEpoch = self.getEpochFromJd(startJd)
 		eventStartEpoch = event.getStartEpoch()
-		##
+		# --
 		cycleSec = self.days * dayLen + getSecondsFromHms(*self.extraTime)
-		##
+		# --
 		if startEpoch <= eventStartEpoch:
 			startEpoch = eventStartEpoch
 		else:
 			startEpoch = eventStartEpoch + cycleSec * (
 				(startEpoch - eventStartEpoch - 1) // cycleSec + 1
 			)
-		##
+		# --
 		return TimeListOccurSet(
 			startEpoch,
 			self.getEpochFromJd(endJd),
@@ -1763,8 +1763,8 @@ class ExDatesEventRule(EventRule):
 # # ... minutes before Sun Set       eval("sunSet-x")
 # # ... minutes after Sun Set        eval("sunSet+x")
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 # Should not be registered, or instantiate directly
@@ -1812,7 +1812,7 @@ class FloatingMsgNotifier(EventNotifier):
 
 	def __init__(self, event: "Event") -> None:
 		EventNotifier.__init__(self, event)
-		###
+		# ---
 		self.fillWidth = False
 		self.speed = 100
 		self.bgColor = (255, 255, 0)
@@ -1846,8 +1846,8 @@ class CommandNotifier(EventNotifier):
 		self.pyEval = False
 
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class RuleContainer:
@@ -1872,7 +1872,7 @@ class RuleContainer:
 	def __init__(self) -> None:
 		self.timeZoneEnable = False
 		self.timeZone = ""
-		###
+		# ---
 		self.clearRules()
 		self.rulesHash = None
 
@@ -2080,8 +2080,8 @@ def iconRelativeToAbsInObj(self):
 	self.icon = icon
 
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class WithIcon:
@@ -2197,7 +2197,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		self.summary = self.desc  # + " (" + _(self.id) + ")"  # FIXME
 		self.description = ""
 		self.files = []
-		######
+		# ------
 		RuleContainer.__init__(self)
 		self.timeZoneEnable = not self.isAllDay
 		self.notifiers = []
@@ -2205,7 +2205,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		# self.snoozeTime = (5, 60)  # (value, unit) like DurationEventRule, FIXME
 		self.addRequirements()
 		self.setDefaults(group=parent)
-		######
+		# ------
 		self.modified = now()  # FIXME
 		self.remoteIds = None
 		# remoteIds is (accountId, groupId, eventId)
@@ -2237,7 +2237,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			self.setId()
 		self.modified = now()  # FIXME
 		# self.parent.eventsModified = self.modified
-		###
+		# ---
 		if self.parent and self.id in self.parent.idList:
 			rulesHash = self.getRulesHash()
 			# what if self.notifyBefore is changed? BUG FIXME
@@ -2319,13 +2319,13 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 
 	def getTextParts(self, showDesc=True):
 		summary = self.getSummary()
-		##
+		# --
 		if self.timeZoneEnable and self.timeZone and natz.gettz(self.timeZone) is None:
 			invalidTZ = _("Invalid Time Zone: {timeZoneName}").format(
 				timeZoneName=self.timeZone,
 			)
 			summary = "(" + invalidTZ + ")" + summary
-		####
+		# ----
 		description = self.getDescription()
 		if showDesc and description:
 			if self.parent is not None:
@@ -2369,7 +2369,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		self.notifiers = other.notifiers[:]  # FIXME
 		self.copyRulesFrom(other)
 		self.addRequirements()
-		####
+		# ----
 		# copy dates between different rule types in different event types
 		if self.name != other.name:
 			jd = other.getJd()
@@ -2799,7 +2799,7 @@ class TaskEvent(SingleStartEndEvent):
 		myStart, ok = self["start"]
 		if not ok:
 			raise KeyError
-		##
+		# --
 		if other.name == self.name:
 			endType, values = other.getEnd()
 			self.setEnd(endType, *values)
@@ -3730,8 +3730,8 @@ class CustomEvent(Event):
 		return data
 
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class EventContainer(BsonHistEventObj):
@@ -3804,7 +3804,7 @@ class EventContainer(BsonHistEventObj):
 		self.icon = ""
 		self.showFullEventDesc = False
 		self.addEventsToBeginning = False
-		######
+		# ------
 		self.uuid = None
 		self.modified = now()
 		# self.eventsModified = self.modified
@@ -3921,7 +3921,7 @@ class EventContainer(BsonHistEventObj):
 				self.calType = calTypes.names.index(calType)
 			except ValueError:
 				raise ValueError(f"Invalid calType: '{calType}'") from None
-		###
+		# ---
 		iconRelativeToAbsInObj(self)
 
 	def getEventNoCache(self, eid: int) -> "Event":
@@ -4183,11 +4183,11 @@ class EventGroup(EventContainer):
 		else:
 			self.defaultEventType = "custom"
 		self.eventTextSep = core.eventTextSep
-		###
+		# ---
 		self.eventCacheSize = 100
 		self.resetCache()
 		# eventCache: key is eid, value is Event object
-		###
+		# ---
 		year, _month, _day = getSysDate(self.calType)
 		self.startJd = to_jd(
 			year - 10,
@@ -4201,11 +4201,11 @@ class EventGroup(EventContainer):
 			1,
 			self.calType,
 		)
-		##
+		# --
 		self.initOccurrence()
-		###
+		# ---
 		self.setDefaults()
-		###########
+		# -----------
 		self.clearRemoteAttrs()
 
 	def resetCache(self):
@@ -4341,7 +4341,7 @@ class EventGroup(EventContainer):
 				self.eventCacheSize = self.eventCacheSizeMin
 			self.resetCache()
 
-		####
+		# ----
 		# if "defaultEventType" in data:
 		# 	self.defaultEventType = data["defaultEventType"]
 		# 	if not self.defaultEventType in classes.event.names:
@@ -4385,7 +4385,7 @@ class EventGroup(EventContainer):
 		event.fs = self.fs
 		return event
 
-	###############################################
+	# -----------------------------------------------
 
 	# call when moving to trash
 	def remove(self, event: "Event") -> int:
@@ -4405,7 +4405,7 @@ class EventGroup(EventContainer):
 		if self.eventCache:
 			for event in self.eventCache.values():
 				event.parent = None  # needed? FIXME
-		###
+		# ---
 		self.idList = []
 		self.clearCache()
 		self.occur.clear()
@@ -4478,7 +4478,7 @@ class EventGroup(EventContainer):
 	def afterModify(self) -> None:  # FIXME
 		EventContainer.afterModify(self)
 		self.initOccurrence()
-		####
+		# ----
 		if self.enable:
 			self.updateOccurrence()
 		else:
@@ -4958,7 +4958,7 @@ class UniversityTerm(EventGroup):
 		boundsCount = len(self.classTimeBounds)
 		boundsHour = [h + m / 60.0 for h, m in self.classTimeBounds]
 		data = [[[] for i in range(boundsCount - 1)] for weekDay in range(7)]
-		###
+		# ---
 		if currentWeekOnly:
 			currentJd = core.getCurrentJd()
 			if (
@@ -4970,7 +4970,7 @@ class UniversityTerm(EventGroup):
 			# log.debug(f"{currentWeekNumMode = }")
 		else:
 			currentWeekNumMode = ""
-		###
+		# ---
 		for event in self:
 			if event.name != "universityClass":
 				continue
@@ -4984,7 +4984,7 @@ class UniversityTerm(EventGroup):
 				weekNumMode = ""
 			elif weekNumMode == "any":
 				weekNumMode = ""
-			###
+			# ---
 			weekDayRule, ok = event["weekDay"]
 			if not ok:
 				raise RuntimeError("no weekDay rule")
@@ -4995,7 +4995,7 @@ class UniversityTerm(EventGroup):
 			h0, h1 = dayTimeRangeRule.getHourRange()
 			startIndex = findNearestIndex(boundsHour, h0)
 			endIndex = findNearestIndex(boundsHour, h1)
-			###
+			# ---
 			classData = WeeklyScheduleItem(
 				name=self.getCourseNameById(event.courseId),
 				weekNumMode=weekNumMode,
@@ -5203,8 +5203,8 @@ class LargeScaleGroup(EventGroup):
 		)
 
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class VcsEpochBaseEvent(Event):
@@ -5252,7 +5252,7 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 	def __init__(self, parent: "EventContainer", _id: str) -> None:
 		Event.__init__(self, parent=parent)
 		self.id = _id  # commit full hash
-		###
+		# ---
 		self.epoch = None
 		self.author = ""
 		self.shortHash = ""
@@ -5441,7 +5441,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			if not self.showSeconds:
 				epoch -= epoch % 60  # noqa: PLW2901
 			self.addOccur(epoch, epoch, commit_id)
-		###
+		# ---
 		self.updateOccurrenceLog(stm0)
 
 	def updateEventDesc(self, event: "Event") -> None:
@@ -5515,7 +5515,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			if not self.showSeconds:
 				epoch -= epoch % 60  # noqa: PLW2901
 			self.addOccur(epoch, epoch, tag)
-		###
+		# ---
 		self.updateOccurrenceLog(stm0)
 
 	def updateEventDesc(self, event: "Event") -> None:
@@ -5609,7 +5609,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
-		####
+		# ----
 		try:
 			utc = natz.gettz("UTC")
 			self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
@@ -5617,10 +5617,10 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		except Exception:
 			log.exception("")
 			return
-		###
+		# ---
 		startJd = max(self.startJd, self.vcsMinJd)
 		endJd = min(self.endJd, self.vcsMaxJd)
-		###
+		# ---
 		commitsByJd: "dict[int, list[str]]" = {}
 		for epoch, commitId in mod.getCommitList(
 			self,
@@ -5650,7 +5650,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 				getEpochFromJd(jd + 1),
 				jd,
 			)
-		###
+		# ---
 		self.updateOccurrenceLog(stm0)
 
 	def getEvent(self, jd: int) -> "Event":
@@ -5666,9 +5666,9 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
 		event = VcsDailyStatEvent(self, jd)
-		###
+		# ---
 		event.icon = self.icon
-		##
+		# --
 		statLine = encodeShortStat(*stat)
 		event.summary = (
 			self.title
@@ -5677,12 +5677,12 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		)
 		event.summary += ", " + statLine
 		# event.description = statLine
-		###
+		# ---
 		return event
 
 
-###########################################################################
-###########################################################################
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class JsonObjectsHolder(JsonEventObj):
@@ -5980,7 +5980,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 					fs.removeFile(join(groupsDir, gid_fname))
 				except Exception:
 					log.exception("")
-		#########
+		# ---------
 		myEventIds = []
 		for group in self:
 			myEventIds += group.idList
@@ -6263,7 +6263,7 @@ class Account(BsonHistEventObj):
 		return data
 
 
-########################################################################
+# ------------------------------------------------------------------------
 
 
 class DayOccurData(NamedTuple):
@@ -6308,9 +6308,9 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 			getEpochFromJd(curJd + 1),
 		):
 			event = group[eid]
-			###
+			# ---
 			text = event.getTextParts()
-			###
+			# ---
 			timeStr = ""
 			if epoch1 - epoch0 < dayLen:
 				jd0, hms0 = getJhmsFromEpoch(epoch0)
@@ -6323,7 +6323,7 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 					if jd1 > curJd:
 						hms1 = hms_24
 					timeStr = f"{hms0:{tfmt}} - {hms1:{tfmt}}"
-			###
+			# ---
 			try:
 				eventIndex = group.index(eid)
 			except ValueError:

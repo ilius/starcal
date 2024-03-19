@@ -253,7 +253,7 @@ class PlayerBox(gtk.Box):
 	# cycle = False
 	# ontop = 28
 	# isvidontop = False
-	###############
+	# ---------------
 	forbid = [102, 100]
 
 	def __init__(self, hasVol=False):
@@ -269,7 +269,7 @@ class PlayerBox(gtk.Box):
 			lambda *_args: mplayer.close(),
 		)  # FIXME
 		# self.toolbar.connect("key-press-event", self.toolbarKey)#??????????
-		##############
+		# --------------
 		self.playPauseBut = gtk.Button()
 		self.playPauseBut.add(
 			imageFromFile(
@@ -279,7 +279,7 @@ class PlayerBox(gtk.Box):
 		)
 		self.playPauseBut.connect("clicked", self.playPause)
 		pack(self, self.playPauseBut)
-		#######
+		# -------
 		stopBut = gtk.Button()
 		stopBut.add(
 			imageFromFile(
@@ -289,7 +289,7 @@ class PlayerBox(gtk.Box):
 		)
 		stopBut.connect("clicked", self.stop)
 		pack(self, stopBut)
-		##############
+		# --------------
 		self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
 		# FIXME: use keyword args for gtk.Adjustment()
 		# self.seekAdj.connect("value_changed", self.seekAdjChanged)  # FIXME
@@ -302,7 +302,7 @@ class PlayerBox(gtk.Box):
 		# self.seekBar.connect("format-value", self.displaySongString)
 		self.seekBar.connect("button-release-event", self.seek)
 		pack(self, self.seekBar, 1, 1, 5)
-		################
+		# ----------------
 		self.hasVol = hasVol
 		if hasVol:
 			if self.adjustvol:

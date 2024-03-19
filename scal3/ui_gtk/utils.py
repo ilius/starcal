@@ -126,7 +126,7 @@ def setClipboard(text, clipboard=None):
 		toStr(text),
 		len(toBytes(text)),
 	)
-	# clipboard.store() ## ?????? No need!
+	# clipboard.store() # ?????? No need!
 
 
 def imageFromIconName(

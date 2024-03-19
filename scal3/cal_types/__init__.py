@@ -81,7 +81,7 @@ class CalTypesHolder:
 			else:
 				self.active.append(i)
 				remainingNames.remove(name)
-		####
+		# ----
 		inactiveToRemove = []
 		for name in self.inactiveNames:
 			try:
@@ -96,7 +96,7 @@ class CalTypesHolder:
 					remainingNames.remove(name)
 		for name in inactiveToRemove:
 			self.inactiveNames.remove(name)
-		####
+		# ----
 		for name in remainingNames:
 			try:
 				i = self.names.index(name)
@@ -105,7 +105,7 @@ class CalTypesHolder:
 			else:
 				self.inactive.append(i)
 				self.inactiveNames.append(name)
-		####
+		# ----
 		self.primary = self.active[0]
 
 	def __iter__(self):

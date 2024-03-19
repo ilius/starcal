@@ -74,18 +74,18 @@ class WidgetClass(gtk.Box):
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
-		###########
+		# -----------
 		hbox = HBox()
-		###
+		# ---
 		pack(hbox, gtk.Label(label=_("Calendar Type")))
 		combo = CalTypeCombo()
 		combo.set_active(calTypes.primary)  # overwritten in updateWidget()
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
-		###
+		# ---
 		pack(self, hbox)
-		###########
+		# -----------
 		if event.isAllDay:
 			self.tzCheck = None
 		else:
@@ -104,30 +104,30 @@ class WidgetClass(gtk.Box):
 					check.get_active(),
 				),
 			)
-		###########
+		# -----------
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Summary")))
 		self.summaryEntry = gtk.Entry()
 		pack(hbox, self.summaryEntry, 1, 1)
 		pack(self, hbox)
-		###########
+		# -----------
 		self.descriptionInput = SourceEditorWithFrame()
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		swin.add(self.descriptionInput)
-		###
+		# ---
 		frame = gtk.Frame()
 		frame.set_label(_("Description"))
 		frame.add(swin)
 		pack(self, frame, self.expandDescription, self.expandDescription)
-		###########
+		# -----------
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Icon") + ":"))
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		##########
+		# ----------
 		self.calTypeCombo.connect(
 			"changed",
 			self.calTypeComboChanged,
@@ -148,16 +148,16 @@ class WidgetClass(gtk.Box):
 			else:
 				self.tzCheck.set_active(False)
 				self.tzCombo.set_sensitive(False)
-		###
+		# ---
 		self.summaryEntry.set_text(self.event.summary)
 		self.descriptionInput.set_text(self.event.description)
 		self.iconSelect.set_filename(self.event.icon)
-		#####
+		# -----
 		for attr in ("notificationBox", "filesBox"):
 			box = getattr(self, attr, None)
 			if box is not None:
 				box.updateWidget()
-		#####
+		# -----
 		self.calTypeComboChanged()
 
 	def updateVars(self):
@@ -170,12 +170,12 @@ class WidgetClass(gtk.Box):
 		self.event.summary = self.summaryEntry.get_text()
 		self.event.description = self.descriptionInput.get_text()
 		self.event.icon = self.iconSelect.get_filename()
-		#####
+		# -----
 		for attr in ("notificationBox", "filesBox"):
 			box = getattr(self, attr, None)
 			if box is not None:
 				box.updateVars()
-		#####
+		# -----
 
 	def calTypeComboChanged(self, obj=None):  # FIXME
 		pass
@@ -276,7 +276,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 		self.event = event
 		self.hboxDict = {}
 		totalVbox = VBox()
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Notify") + " "))
 		self.notifyBeforeInput = DurationInputBox()
@@ -284,7 +284,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 		pack(hbox, gtk.Label(label=" " + _("before event")))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(totalVbox, hbox)
-		###
+		# ---
 		for cls in event_lib.classes.notifier:
 			notifier = cls(self.event)
 			inputWidget = makeWidget(notifier)
@@ -325,7 +325,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 
 	def updateVars(self):
 		self.event.notifyBefore = self.notifyBeforeInput.getDuration()
-		###
+		# ---
 		notifiers = []
 		for hbox in self.hboxDict.values():
 			if hbox.cb.get_active():
@@ -337,10 +337,10 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 class DurationInputBox(gtk.Box):
 	def __init__(self):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		##
+		# --
 		self.valueSpin = FloatSpinButton(0, 999, 1)
 		pack(self, self.valueSpin)
-		##
+		# --
 		combo = gtk.ComboBoxText()
 		for _unitValue, unitName in durationUnitsAbs:
 			combo.append_text(
@@ -366,20 +366,20 @@ class DurationInputBox(gtk.Box):
 class StrListEditor(gtk.Box):
 	def __init__(self, defaultValue=""):
 		self.defaultValue = defaultValue
-		#####
+		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(False)
 		self.treeModel = gtk.ListStore(str)
 		self.treev.set_model(self.treeModel)
-		##########
+		# ----------
 		cell = gtk.CellRendererText()
 		cell.set_property("editable", True)
 		col = gtk.TreeViewColumn(title="", cell_renderer=cell, text=0)
 		self.treev.append_column(col)
-		####
+		# ----
 		pack(self, self.treev, 1, 1)
-		##########
+		# ----------
 		toolbar = StaticToolBox(self, vertical=True)
 		toolbar.extend(
 			[
@@ -406,7 +406,7 @@ class StrListEditor(gtk.Box):
 				),
 			],
 		)
-		#######
+		# -------
 		pack(self, toolbar)
 
 	def onAddClick(self, _button):
@@ -460,17 +460,17 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
-		###
+		# ---
 		ls.append((1, _("Years")))  # noqa: FURB113
 		ls.append((100, _("Centuries")))
 		ls.append((1000, _("Thousand Years")))
 		ls.append((1000**2, _("Million Years")))
 		ls.append((1000**3, _("Billion (10^9) Years")))
-		###
+		# ---
 		self.set_active(0)
 
 	def get_value(self):
@@ -501,7 +501,7 @@ class GroupsTreeCheckList(gtk.TreeView):
 		)  # groupId(hidden), enable, summary
 		self.set_model(self.treeModel)
 		self.set_headers_visible(False)
-		###
+		# ---
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.enableCellToggled)
@@ -510,12 +510,12 @@ class GroupsTreeCheckList(gtk.TreeView):
 		# cell.set_active(True)
 		col.set_resizable(True)
 		self.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=2)
 		col.set_resizable(True)
 		self.append_column(col)
-		###
+		# ---
 		for group in ui.eventGroups:
 			self.treeModel.append([group.id, True, group.title])
 
@@ -548,27 +548,27 @@ class SingleGroupComboBox(gtk.ComboBox):
 		ls = gtk.ListStore(int, GdkPixbuf.Pixbuf, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		#####
+		# -----
 		cell = gtk.CellRendererPixbuf()
 		pack(self, cell)
 		self.add_attribute(cell, "pixbuf", 1)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 2)
-		#####
+		# -----
 		self.updateItems()
 
 	def updateItems(self):
 		ls = self.get_model()
 		activeGid = self.get_active()
 		ls.clear()
-		###
+		# ---
 		for group in ui.eventGroups:
 			if not group.enable:  # FIXME
 				continue
 			ls.append(getGroupRow(group))
-		###
+		# ---
 		# try:
 		gtk.ComboBox.set_active(self, 0)
 		# except:

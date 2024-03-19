@@ -61,7 +61,7 @@ class AdjusterDialog(gtk.Dialog):
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
 		self.set_icon_from_file(join(pixDir, "preferences-system-time.png"))
-		#########
+		# ---------
 		self.buttonCancel = dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -76,12 +76,12 @@ class AdjusterDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
-		#########
+		# ---------
 		hbox = HBox()
 		self.label_cur = gtk.Label(label=_("Current:"))
 		pack(hbox, self.label_cur)
 		pack(self.vbox, hbox)
-		#########
+		# ---------
 		hbox = HBox()
 		self.radioMan = gtk.RadioButton.new_with_mnemonic(
 			group=None,
@@ -90,12 +90,12 @@ class AdjusterDialog(gtk.Dialog):
 		self.radioMan.connect("clicked", self.onRadioManClick)
 		pack(hbox, self.radioMan)
 		pack(self.vbox, hbox)
-		######
+		# ------
 		vb = VBox()
 		sg = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		###
+		# ---
 		hbox = HBox()
-		##
+		# --
 		self.ckeckbEditTime = gtk.CheckButton.new_with_mnemonic(_("Edit _Time"))
 		self.editTime = False
 		self.ckeckbEditTime.connect("clicked", self.onCkeckbEditTimeClick)
@@ -104,9 +104,9 @@ class AdjusterDialog(gtk.Dialog):
 		self.timeInput = TimeButton()
 		pack(hbox, self.timeInput)
 		pack(vb, hbox)
-		###
+		# ---
 		hbox = HBox()
-		##
+		# --
 		self.ckeckbEditDate = gtk.CheckButton.new_with_mnemonic(_("Edit _Date"))
 		self.editDate = False
 		self.ckeckbEditDate.connect("clicked", self.onCkeckbEditDateClick)
@@ -115,10 +115,10 @@ class AdjusterDialog(gtk.Dialog):
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(vb, hbox)
-		###
+		# ---
 		pack(self.vbox, vb, 0, 0, padding=10)
 		self.vboxMan = vb
-		######
+		# ------
 		hbox = HBox()
 		self.radioNtp = gtk.RadioButton.new_with_mnemonic_from_widget(
 			radio_group_member=self.radioMan,
@@ -127,9 +127,9 @@ class AdjusterDialog(gtk.Dialog):
 		self.radioNtp.connect("clicked", self.onRadioNtpClick)
 		pack(hbox, self.radioNtp)
 		pack(self.vbox, hbox)
-		###
+		# ---
 		hbox = HBox()
-		##
+		# --
 		pack(hbox, gtk.Label(label=_("Server:") + " "), padding=self.xpad)
 		combo = gtk.ComboBoxText.new_with_entry()
 		combo.get_child().connect("changed", self.updateSetButtonSensitive)
@@ -140,12 +140,12 @@ class AdjusterDialog(gtk.Dialog):
 		combo.set_active(0)
 		self.hboxNtp = hbox
 		pack(self.vbox, hbox)
-		######
+		# ------
 		self.onRadioManClick()
 		# self.onRadioNtpClick()
 		self.onCkeckbEditTimeClick()
 		self.onCkeckbEditDateClick()
-		######
+		# ------
 		self.updateTimes()
 		self.vbox.show_all()
 

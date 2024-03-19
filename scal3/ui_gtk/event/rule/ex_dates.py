@@ -49,13 +49,13 @@ class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		###
+		# ---
 		self.countLabel = gtk.Label()
 		pack(self, self.countLabel)
-		###
+		# ---
 		self.treeModel = gtk.ListStore(str)
 		self.dialog = None
-		###
+		# ---
 		self.editButton = labelImageButton(
 			label=_("Edit"),
 			imageName="document-edit.svg",
@@ -76,20 +76,20 @@ class WidgetClass(gtk.Box):
 			title=self.rule.desc,
 			transient_for=self.get_toplevel(),
 		)
-		###
+		# ---
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(True)
 		self.treev.set_model(self.treeModel)
-		##
+		# --
 		cell = gtk.CellRendererText()
 		cell.set_property("editable", True)
 		cell.connect("edited", self.dateCellEdited)
 		col = gtk.TreeViewColumn(title=_("Date"), cell_renderer=cell, text=0)
 		# col.set_title
 		self.treev.append_column(col)
-		##
+		# --
 		toolbar = StaticToolBox(self, vertical=True)
-		##
+		# --
 		toolbar.extend(
 			[
 				ToolBoxItem(
@@ -122,7 +122,7 @@ class WidgetClass(gtk.Box):
 				),
 			],
 		)
-		##
+		# --
 		dialogHbox = HBox()
 		pack(dialogHbox, self.treev, 1, 1)
 		pack(dialogHbox, toolbar)
@@ -130,7 +130,7 @@ class WidgetClass(gtk.Box):
 		self.dialog.vbox.show_all()
 		self.dialog.resize(200, 300)
 		self.dialog.connect("response", lambda _w, _e: self.dialog.hide())
-		##
+		# --
 		_okButton = dialog_add_button(
 			self.dialog,
 			imageName="dialog-ok.svg",
@@ -166,7 +166,7 @@ class WidgetClass(gtk.Box):
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
 		# col = self.treev.get_column(0)
 		# cell = col.get_cell_renderers()[0]
-		# cell.start_editing(...) ## FIXME
+		# cell.start_editing(...) # FIXME
 
 	def onDeleteClick(self, _button):
 		index = self.getSelectedIndex()

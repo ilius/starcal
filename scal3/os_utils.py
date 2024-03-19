@@ -25,7 +25,7 @@ log = logging.getLogger("starcal3")
 
 def getOsName():
 	"""returns: "linux", "win", "mac", "unix"."""
-	# psys = platform.system().lower()## "linux", "windows", "darwin", ...
+	# psys = platform.system().lower()-- "linux", "windows", "darwin", ...
 	plat = sys.platform  # "linux2", "win32", "darwin"
 	if plat.startswith("linux"):
 		return "linux"

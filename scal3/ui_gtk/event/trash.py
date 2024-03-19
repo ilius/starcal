@@ -16,7 +16,7 @@ class TrashEditorDialog(gtk.Dialog):
 		self.set_title(_("Edit Trash"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
 		# self.resize(800, 600)
-		###
+		# ---
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -29,13 +29,13 @@ class TrashEditorDialog(gtk.Dialog):
 			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
-		##
+		# --
 		self.connect("response", lambda _w, _e: self.hide())
-		#######
+		# -------
 		self.trash = ui.eventTrash
-		##
+		# --
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		#######
+		# -------
 		hbox = HBox()
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
@@ -44,7 +44,7 @@ class TrashEditorDialog(gtk.Dialog):
 		self.titleEntry = gtk.Entry()
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Icon"))
 		label.set_xalign(0)
@@ -54,7 +54,7 @@ class TrashEditorDialog(gtk.Dialog):
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		hbox = HBox()
 		self.addEventsToBeginningCheck = gtk.CheckButton(
 			label=_("Add New Events to Beginning"),
@@ -65,7 +65,7 @@ class TrashEditorDialog(gtk.Dialog):
 		)
 		pack(hbox, self.addEventsToBeginningCheck)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		self.vbox.show_all()
 		self.updateWidget()
 

@@ -35,14 +35,14 @@ confParams = (
 	"changeHolidayBgMinDays",
 	"changeHolidayBgMaxDays",
 	"holidayBgBolor",
-	#####################
+	# ---------------------
 	"basicButtonsSize",
 	"basicButtonsSpacing",
 	"basicButtonsOpacity",
 	"movementButtonsEnable",
 	"movementButtonsSize",
 	"movementButtonsOpacity",
-	#####################
+	# ---------------------
 	"majorStepMin",
 	"minorStepMin",
 	"maxLabelWidth",
@@ -60,7 +60,7 @@ confParams = (
 	"showWeekStartMinDays",
 	"showWeekStartMaxDays",
 	"weekStartTickColor",
-	#####################
+	# ---------------------
 	"boxLineWidth",
 	"boxInnerAlpha",
 	"boxEditBorderWidth",
@@ -69,7 +69,7 @@ confParams = (
 	"boxReverseGravity",
 	"boxSkipPixelLimit",
 	"rotateBoxLabel",
-	#####################
+	# ---------------------
 	"enableAnimation",
 	"movingStaticStepKeyboard",
 	"movingStaticStepMouse",
@@ -83,14 +83,14 @@ confParams = (
 	"movingMaxVelocity",
 	"movingKeyTimeoutFirst",
 	"movingKeyTimeout",
-	#####################
+	# ---------------------
 	"scrollZoomStep",
 	"keyboardZoomStep",
-	#####################
+	# ---------------------
 	"keys",
 )
 
-#############################################
+# ---------------------------------------------
 
 
 def loadConf() -> None:
@@ -101,7 +101,7 @@ def saveConf() -> None:
 	saveModuleJsonConf(__name__)
 
 
-#############################################
+# ---------------------------------------------
 
 
 bgColor = ui.bgColor
@@ -114,7 +114,7 @@ changeHolidayBgMinDays = 1  # day
 changeHolidayBgMaxDays = 60  # day
 holidayBgBolor = (60, 35, 35)
 
-#############################################
+# ---------------------------------------------
 
 basicButtonsSize = 22
 basicButtonsSpacing = 3
@@ -124,7 +124,7 @@ movementButtonsEnable = True
 movementButtonsSize = 22
 movementButtonsOpacity = 1.0  # 0.0 <= value <= 1.0
 
-#############################################
+# ---------------------------------------------
 
 majorStepMin = 50  # with label
 minorStepMin = 5  # with or without label
@@ -150,7 +150,7 @@ showWeekStartMinDays = 1  # day
 showWeekStartMaxDays = 60  # day
 weekStartTickColor = (0, 200, 0)
 
-#############################################
+# ---------------------------------------------
 
 boxLineWidth = 2  # pixel
 boxInnerAlpha = 0.1  # 0 <= boxInnerAlpha <= 1
@@ -171,7 +171,7 @@ rotateBoxLabel = -1
 # 1: 90 deg CCW (if needed)
 # -1: 90 deg CW (if needed)
 
-#############################################
+# ---------------------------------------------
 
 enableAnimation = False
 
@@ -205,12 +205,12 @@ movingKeyTimeoutFirst = 0.5  # second
 movingKeyTimeout = 0.1  # seconds
 # ^ continuous onKeyPress delay is about 0.05 sec
 
-#############################################
+# ---------------------------------------------
 
 scrollZoomStep = 1.2  # > 1.0
 keyboardZoomStep = 1.2  # > 1.0
 
-#############################################
+# ---------------------------------------------
 
 keys = {
 	"space": "moveToNow",
@@ -230,6 +230,6 @@ keys = {
 keyActions = sorted(keys.values())
 
 
-#############################################
+# ---------------------------------------------
 
 loadConf()

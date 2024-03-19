@@ -71,10 +71,10 @@ __all__ = [
 ]
 
 
-# (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
-# (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  ## ComboBox
-# (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             ## SpinButton
-# (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     ## SpinButton
+# (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 # CheckButton
+# (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
+# (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
+# (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
 class ModuleOptionItem:
 	@classmethod
 	def valueString(cls, value: Any) -> str:
@@ -116,7 +116,7 @@ class ModuleOptionItem:
 			raise RuntimeError(f"bad option type {t!r}")
 		pack(hbox, w)
 		self._widget = hbox
-		####
+		# ----
 
 	def updateVar(self) -> None:
 		setattr(
@@ -264,14 +264,14 @@ class FontFamilyPrefItem(PrefItem):
 		self.attrName = attrName
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
-		###
+		# ---
 		self.fontButton = gtk.FontButton()
 		self.fontButton.set_show_size(False)
 		if gtk.MINOR_VERSION >= 24:
 			self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
 		# set_level: FAMILY, STYLE, SIZE
 		self.fontButton.connect("font-set", self.onChange)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		if label:
 			pack(hbox, gtk.Label(label=label))
@@ -384,19 +384,19 @@ class ComboImageTextPrefItem(PrefItem):
 		"""Items is a list of (imagePath, text) tuples."""
 		self.obj = obj
 		self.attrName = attrName
-		###
+		# ---
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
 		combo.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererPixbuf()
 		pack(combo, cell)
 		combo.add_attribute(cell, "pixbuf", 0)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(combo, cell, expand=True)
 		combo.add_attribute(cell, "text", 1)
-		###
+		# ---
 		self._widget = combo
 		self.ls = ls
 		if items:
@@ -531,7 +531,7 @@ class ColorPrefItem(PrefItem):
 		# with something else!!
 		self.useAlpha = useAlpha
 		self._widget = colorb
-		###
+		# ---
 		if live:
 			self._onChangeFunc = onChangeFunc
 			# updateWidget needs to be called before following connect() calls
@@ -679,7 +679,7 @@ class SpinPrefItem(PrefItem):
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
-		##
+		# --
 		if digits == 0:
 			spinb = IntSpinButton(_min, _max, step=step)
 		else:
@@ -733,21 +733,21 @@ class TextPrefItem(PrefItem):
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
-		###
+		# ---
 		kwargs = {}
 		if live:
 			kwargs["onTextChange"] = self.onTextChange
 		elif onChangeFunc is not None:
 			raise ValueError("onChangeFunc is given without live=True")
 		self.textInput = TextFrame(**kwargs)
-		###
+		# ---
 		hbox = HBox()
 		if label:
 			pack(hbox, gtk.Label(label=label))
 		pack(hbox, self.textInput, 1, 1)
 		hbox.show_all()
 		self._widget = hbox
-		###
+		# ---
 		if live:
 			self.updateWidget()
 
@@ -773,10 +773,10 @@ class WidthHeightPrefItem(PrefItem):
 		_min = 0
 		self.obj = obj
 		self.attrName = attrName
-		###
+		# ---
 		self.widthItem = IntSpinButton(_min, _max)
 		self.heightItem = IntSpinButton(_min, _max)
-		###
+		# ---
 		hbox = self._widget = HBox()
 		pack(hbox, gtk.Label(label=_("Width") + ":"))
 		pack(hbox, self.widthItem)
@@ -807,7 +807,7 @@ class FileChooserPrefItem(PrefItem):
 	):
 		self.obj = obj
 		self.attrName = attrName
-		###
+		# ---
 		dialog = gtk.FileChooserDialog(
 			title=title,
 			action=gtk.FileChooserAction.OPEN,
@@ -828,7 +828,7 @@ class FileChooserPrefItem(PrefItem):
 		w.set_local_only(True)
 		if currentFolder:
 			w.set_current_folder(currentFolder)
-		###
+		# ---
 		self.defaultVarName = defaultVarName
 		if defaultVarName:
 			dialog_add_button(
@@ -838,7 +838,7 @@ class FileChooserPrefItem(PrefItem):
 				res=gtk.ResponseType.NONE,
 				onClick=self.onRevertClick,
 			)
-		###
+		# ---
 		self._widget = w
 
 	def get(self) -> str:
@@ -891,7 +891,7 @@ class IconChooserPrefItem(PrefItem):
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
 		self._widget = hbox
-		###
+		# ---
 		if live:
 			self.updateWidget()
 			self.iconSelect.connect("changed", self.onIconChanged)
@@ -1023,11 +1023,11 @@ class DirectionPrefItem(PrefItem):
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
 
-		###
+		# ---
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Direction")))
 		combo = DirectionComboBox()
@@ -1035,7 +1035,7 @@ class DirectionPrefItem(PrefItem):
 		pack(hbox, combo)
 		combo.connect("changed", self.onComboChange)
 		self._widget = hbox
-		###
+		# ---
 		self.updateWidget()
 
 	def get(self) -> str:
@@ -1062,11 +1062,11 @@ class JustificationPrefItem(PrefItem):
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
 
-		###
+		# ---
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
-		###
+		# ---
 		hbox = HBox(spacing=10)
 		if label:
 			pack(hbox, gtk.Label(label=label))
@@ -1075,7 +1075,7 @@ class JustificationPrefItem(PrefItem):
 		pack(hbox, combo)
 		combo.connect("changed", self.onComboChange)
 		self._widget = hbox
-		###
+		# ---
 		self.updateWidget()
 
 	def get(self) -> str:

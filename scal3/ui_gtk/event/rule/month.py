@@ -7,9 +7,9 @@ from scal3.ui_gtk.utils import set_tooltip
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		###
+		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		###
+		# ---
 		self.buttons = []
 		calType = self.rule.getCalType()
 		for i in range(12):

@@ -14,11 +14,11 @@ class DirectionComboBox(gtk.ComboBox):
 		ls = gtk.ListStore(str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 0)
-		###
+		# ---
 		for d in self.descs:
 			ls.append([d])
 		self.set_active(0)
