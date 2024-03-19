@@ -18,7 +18,7 @@ class WidgetClass(BaseWidgetClass):
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		pack(self, hbox)
-		###
+		# ---
 		hbox = HBox()
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
@@ -30,7 +30,7 @@ class WidgetClass(BaseWidgetClass):
 
 	def __init__(self, group):
 		BaseWidgetClass.__init__(self, group)
-		######
+		# ------
 		exp = ExpanderFrame(
 			label=_("Online Service"),
 		)
@@ -38,7 +38,7 @@ class WidgetClass(BaseWidgetClass):
 		exp.add(vbox)
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		self.onlineServiceExpander = exp
-		##
+		# --
 		hbox = HBox()
 		label = gtk.Label(label=_("Account"))
 		label.set_xalign(0)
@@ -47,7 +47,7 @@ class WidgetClass(BaseWidgetClass):
 		self.accountCombo = AccountCombo()
 		pack(hbox, self.accountCombo)
 		pack(vbox, hbox)
-		##
+		# --
 		hbox = HBox()
 		label = gtk.Label(label=_("Remote Group"))
 		label.set_xalign(0)
@@ -57,7 +57,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, accountGroupBox, 1, 1)
 		pack(vbox, hbox)
 		self.accountGroupCombo = accountGroupBox.combo
-		##
+		# --
 		hbox = HBox()
 		self.syncCheck = gtk.CheckButton(label=_("Synchronization Interval"))
 		pack(hbox, self.syncCheck)
@@ -70,7 +70,7 @@ class WidgetClass(BaseWidgetClass):
 			"clicked",
 			lambda check: self.syncIntervalInput.set_sensitive(check.get_active()),
 		)
-		##
+		# --
 		pack(self, exp)
 
 	def updateWidget(self):
@@ -87,7 +87,7 @@ class WidgetClass(BaseWidgetClass):
 				self.group.calType,
 			),
 		)
-		###
+		# ---
 		if self.group.remoteIds:
 			aid, gid = self.group.remoteIds
 		else:
@@ -106,7 +106,7 @@ class WidgetClass(BaseWidgetClass):
 		BaseWidgetClass.updateVars(self)
 		self.group.startJd = self.startDateInput.get_jd(self.group.calType)
 		self.group.endJd = self.endDateInput.get_jd(self.group.calType)
-		###
+		# ---
 		aid = self.accountCombo.get_active()
 		if aid:
 			gid = self.accountGroupCombo.get_active()

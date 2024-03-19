@@ -27,7 +27,7 @@ from scal3.ui_gtk import HBox, gtk, pack
 class XAlignComboBox(gtk.ComboBoxText):
 	def __init__(self):
 		gtk.ComboBoxText.__init__(self)
-		###
+		# ---
 		self.append_text(_("Left"))
 		self.append_text(_("Center"))
 		self.append_text(_("Right"))
@@ -58,7 +58,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 class YAlignComboBox(gtk.ComboBoxText):
 	def __init__(self):
 		gtk.ComboBoxText.__init__(self)
-		###
+		# ---
 		self.append_text(_("Top"))
 		self.append_text(_("Center"))
 		self.append_text(_("Buttom"))
@@ -106,9 +106,9 @@ class TextParamWidget(gtk.Box):
 
 		if desc is None:
 			raise ValueError("desc is None")
-		###
+		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
-		###
+		# ---
 		self.set_border_width(5)
 		self.paramName = paramName
 		self.cal = cal
@@ -116,15 +116,15 @@ class TextParamWidget(gtk.Box):
 		self.hasAlign = hasAlign
 		self.hasAbbreviate = hasAbbreviate
 		self.hasUppercase = hasUppercase
-		####
+		# ----
 		if sgroupLabel is None:
 			sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		####
+		# ----
 		if not enableTitleLabel and hasEnable:
 			enableTitleLabel = _("Enable")
 		if hasEnable:
 			self.enableCheck = gtk.CheckButton(label=enableTitleLabel)
-		###
+		# ---
 		vbox = self
 		if useFrame:
 			frame = gtk.Frame()
@@ -138,9 +138,9 @@ class TextParamWidget(gtk.Box):
 				frame.set_label(enableTitleLabel)
 		elif hasEnable:
 			pack(vbox, self.enableCheck)
-		####
+		# ----
 		self.set_border_width(5)
-		###
+		# ---
 		hbox = HBox()
 		label = gtk.Label(label=_("Position") + ": ")
 		pack(hbox, label)
@@ -154,47 +154,47 @@ class TextParamWidget(gtk.Box):
 		pack(hbox, spin)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
-		####
+		# ----
 		if hasAlign:
 			hbox = HBox()
 			label = gtk.Label(label=_("Alignment") + ": ")
 			pack(hbox, label)
 			sgroupLabel.add_widget(label)
-			##
+			# --
 			self.xalignCombo = XAlignComboBox()
 			pack(hbox, self.xalignCombo)
-			##
+			# --
 			self.yalignCombo = YAlignComboBox()
 			pack(hbox, self.yalignCombo)
-			##
+			# --
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(vbox, hbox)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Font") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
-		##
+		# --
 		fontb = MyFontButton()
 		self.fontb = fontb
-		##
+		# --
 		colorb = MyColorButton()
 		self.colorb = colorb
-		##
+		# --
 		pack(hbox, colorb)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, fontb)
 		pack(vbox, hbox)
-		####
+		# ----
 		if hasAbbreviate:
 			self.abbreviateCheck = gtk.CheckButton(label=_("Abbreviate"))
 			pack(vbox, self.abbreviateCheck)
 		if hasUppercase:
 			self.uppercaseCheck = gtk.CheckButton(label=_("Uppercase"))
 			pack(vbox, self.uppercaseCheck)
-		####
+		# ----
 		self.set(params)
-		####
+		# ----
 		self.spinX.connect("changed", self.onChange)
 		self.spinY.connect("changed", self.onChange)
 		fontb.connect("font-set", self.onChange)
@@ -259,7 +259,7 @@ class CalTypeParamWidget(TextParamWidget):
 			raise ValueError("index is None")
 		del kwargs["index"]
 		self.index = index
-		####
+		# ----
 		calType = kwargs.get("calType")
 		if calType is None:
 			raise ValueError("calType is None")
@@ -268,7 +268,7 @@ class CalTypeParamWidget(TextParamWidget):
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		kwargs["desc"] = _(module.desc, ctx="calendar")
-		####
+		# ----
 		TextParamWidget.__init__(self, *args, **kwargs)
 
 	def onChange(self, _obj=None, _event=None):

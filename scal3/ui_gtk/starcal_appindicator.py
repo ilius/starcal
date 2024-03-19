@@ -55,22 +55,22 @@ class IndicatorStatusIconWrapper:
 		)
 		self.c.set_status(appindicator.IndicatorStatus.ACTIVE)
 		# self.c.set_attention_icon("new-messages-red")
-		######
+		# ------
 		atexit.register(self.cleanup)
-		######
+		# ------
 		self.create_menu()
 		self.imPath = ""
 
 	"""
 	def create_menu_simple(self):
 		menu = Menu()
-		###
+		# ---
 		for item in [
 			self.mainWin.getMainWinMenuItem(),
 		] + self.mainWin.getStatusIconPopupItems():
 			item.show()
 			menu.add(item)
-		###
+		# ---
 		#if locale_man.rtl:
 			#menu.set_direction(gtk.TextDirection.RTL)
 		self.c.set_menu(menu)
@@ -80,23 +80,23 @@ class IndicatorStatusIconWrapper:
 		menu = Menu()
 		self.menuItems = []
 		# ^ just to prevent GC from removing custom objects for items
-		####
+		# ----
 		for line in self.mainWin.getStatusIconTooltip().split("\n"):
 			item = CopyLabelMenuItem(line)
 			self.menuItems.append(item)
 			item.show()
 			menu.append(item)
-		####
+		# ----
 		item = self.mainWin.getMainWinMenuItem()
 		self.menuItems.append(item)
 		item.show()
 		menu.append(item)
-		####
+		# ----
 		item = gtk.MenuItem(_("Desktop Widget"))
 		item.connect("activate", self.mainWin.dayCalWinShow)
 		item.show()
 		menu.append(item)
-		####
+		# ----
 		submenu = Menu()
 		for item in self.mainWin.getStatusIconPopupItems():
 			self.menuItems.append(item)

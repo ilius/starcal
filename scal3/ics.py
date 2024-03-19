@@ -87,7 +87,7 @@ def getEpochByIcsTime(tmStr: str) -> int:
 # 	utcOffset = 0
 # 	if "T" in tmStr:
 # 		if "+" in tmStr or "-" in tmStr:
-# 			format = "%Y%m%dT%H%M%S%z" ## not working FIXME
+# 			format = "%Y%m%dT%H%M%S%z" # not working FIXME
 # 		else:
 # 			format = "%Y%m%dT%H%M%S"
 # 	else:

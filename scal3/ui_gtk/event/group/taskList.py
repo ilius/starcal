@@ -7,7 +7,7 @@ from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 class WidgetClass(NormalWidgetClass):
 	def __init__(self, group):
 		NormalWidgetClass.__init__(self, group)
-		###
+		# ---
 		hbox = HBox()
 		label = gtk.Label(label=_("Default Task Duration"))
 		label.set_xalign(0)

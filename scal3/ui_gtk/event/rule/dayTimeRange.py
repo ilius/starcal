@@ -6,9 +6,9 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		###
+		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		###
+		# ---
 		self.startTbox = TimeButton()
 		self.endTbox = TimeButton()
 		pack(self, self.startTbox)

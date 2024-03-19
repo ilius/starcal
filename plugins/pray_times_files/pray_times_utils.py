@@ -26,13 +26,13 @@ def earthDistance(lat1, lng1, lat2, lng2):
 		dx += 360
 	if dx > 180:
 		dx = 360 - dx
-	####
+	# ----
 	dy = lat2 - lat1
 	if dy < 0:
 		dy += 360
 	if dy > 180:
 		dy = 360 - dy
-	####
+	# ----
 	deg = math.acos(cosd(dx) * cosd(dy))
 	if deg > pi:
 		deg = 2 * pi - deg

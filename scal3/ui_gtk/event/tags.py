@@ -37,22 +37,22 @@ from scal3.ui_gtk.utils import (
 class EventTagsAndIconSelect(gtk.Box):
 	def __init__(self):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		#########
+		# ---------
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Category") + ":"))
-		#####
+		# -----
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
 		combo.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererPixbuf()
 		pack(combo, cell)
 		combo.add_attribute(cell, "pixbuf", 0)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(combo, cell, True)
 		combo.add_attribute(cell, "text", 1)
-		###
+		# ---
 		ls.append([None, _("Custom")])  # first or last FIXME
 		for item in ui.eventTags:
 			ls.append(
@@ -61,17 +61,17 @@ class EventTagsAndIconSelect(gtk.Box):
 					item.desc,
 				],
 			)
-		###
+		# ---
 		self.customItemIndex = 0  # len(ls) - 1
 		pack(hbox, combo)
 		self.typeCombo = combo
 		self.typeStore = ls
 
-		###
+		# ---
 		vbox = VBox()
 		pack(vbox, hbox)
 		pack(self, vbox)
-		#########
+		# ---------
 		iconLabel = gtk.Label(label=_("Icon"))
 		pack(hbox, iconLabel)
 		self.iconSelect = IconSelectButton()
@@ -93,10 +93,10 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.swin.add(hbox3)
 		pack(self, self.swin, 1, 1)
 		self.customTypeWidgets = (iconLabel, self.iconSelect, tagsLabel, self.swin)
-		#########
+		# ---------
 		self.typeCombo.connect("changed", self.typeComboChanged)
 		self.connect("scroll-event", self.scrollEvent)
-		#########
+		# ---------
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
@@ -146,9 +146,9 @@ class TagsListBox(gtk.Box):
 
 	def __init__(self, eventType=""):  # "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		####
+		# ----
 		self.eventType = eventType
-		########
+		# --------
 		if eventType:
 			hbox = HBox()
 			self.relatedCheck = gtk.CheckButton(label=_("Only related tags"))
@@ -161,7 +161,7 @@ class TagsListBox(gtk.Box):
 			pack(hbox, self.relatedCheck)
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(self, hbox)
-		########
+		# --------
 		treev = gtk.TreeView()
 		treeModel = gtk.ListStore(
 			str,  # name(hidden)
@@ -171,7 +171,7 @@ class TagsListBox(gtk.Box):
 			str,  # usage(locale)
 		)
 		treev.set_model(treeModel)
-		###
+		# ---
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.enableCellToggled)
@@ -182,7 +182,7 @@ class TagsListBox(gtk.Box):
 		col.set_sort_column_id(1)
 		col.set_sort_indicator(True)
 		treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Name"), cell_renderer=cell, text=2)
 		# really desc, not name
@@ -190,23 +190,23 @@ class TagsListBox(gtk.Box):
 		col.set_sort_column_id(2)
 		col.set_sort_indicator(True)
 		treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Usage"), cell_renderer=cell, text=4)
 		# col.set_resizable(True)
 		col.set_sort_column_id(3)  # previous column (hidden and int)
 		col.set_sort_indicator(True)
 		treev.append_column(col)
-		###
+		# ---
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		pack(self, swin, 1, 1)
-		####
+		# ----
 		self.treeview = treev
 		self.treeModel = treeModel
-		####
-		# ui.updateEventTagsUsage()## FIXME
+		# ----
+		# ui.updateEventTagsUsage()-- FIXME
 		# for (i, tagObj) in enumerate(ui.eventTags):  # for testing
 		# 	tagObj.usage = i*10
 		self.optionsChanged()
@@ -251,7 +251,7 @@ class TagEditorDialog(gtk.Dialog):
 		self.tags = []
 		self.tagsBox = TagsListBox(eventType)
 		pack(self.vbox, self.tagsBox, 1, 1)
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -264,7 +264,7 @@ class TagEditorDialog(gtk.Dialog):
 			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
-		####
+		# ----
 		self.vbox.show_all()
 		self.getData = self.tagsBox.getData
 		self.setData = self.tagsBox.setData

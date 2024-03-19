@@ -37,14 +37,14 @@ class LogLevelComboBox(gtk.ComboBox):
 
 	def __init__(self):
 		gtk.ComboBox.__init__(self)
-		###
+		# ---
 		model = gtk.ListStore(int, str)
 		self.set_model(model)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
-		###
+		# ---
 		for num, name in self.levels:
 			model.append([num, name])
 
@@ -65,9 +65,9 @@ class LogLevelPrefItem(PrefItem):
 	def __init__(self):
 		self.obj = logger
 		self.attrName = "logLevel"
-		###
+		# ---
 		self.combo = LogLevelComboBox()
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Log Level")))
 		pack(hbox, self.combo)

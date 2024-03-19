@@ -35,7 +35,7 @@ class WidgetClass(gtk.Box):
 		self.event = event
 		assert event.parent.name == "universityTerm"  # FIXME
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		#####
+		# -----
 		if not event.parent.courses:
 			showError(event.parent.noCourseError, transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses added")
@@ -48,16 +48,16 @@ class WidgetClass(gtk.Box):
 			combo.append_text(course[1])
 		# combo.connect("changed", self.updateSummary)
 		self.courseCombo = combo
-		##
+		# --
 		hbox = HBox()
 		label = gtk.Label(label=_("Course"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		pack(hbox, combo)
-		##
+		# --
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Date"))
 		label.set_xalign(0)
@@ -66,24 +66,24 @@ class WidgetClass(gtk.Box):
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Time"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		##
+		# --
 		self.dayTimeStartCombo = HourMinuteButton()
 		self.dayTimeEndCombo = HourMinuteButton()
-		##
+		# --
 		# self.dayTimeStartCombo.get_child().set_direction(gtk.TextDirection.LTR)
 		# self.dayTimeEndCombo.get_child().set_direction(gtk.TextDirection.LTR)
-		##
+		# --
 		pack(hbox, self.dayTimeStartCombo)
 		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(hbox, self.dayTimeEndCombo)
 		pack(self, hbox)
-		###########
+		# -----------
 		# hbox = HBox()
 		# label = gtk.Label(label=_("Summary"))
 		# label.set_xalign(0)
@@ -92,7 +92,7 @@ class WidgetClass(gtk.Box):
 		# self.summaryEntry = gtk.Entry()
 		# pack(hbox, self.summaryEntry, 1, 1)
 		# pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Description"))
 		label.set_xalign(0)
@@ -101,7 +101,7 @@ class WidgetClass(gtk.Box):
 		self.descriptionInput = TextFrame()
 		pack(hbox, self.descriptionInput, 1, 1)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Icon"))
 		label.set_xalign(0)
@@ -112,13 +112,13 @@ class WidgetClass(gtk.Box):
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		######
+		# ------
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
-		######
+		# ------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
-		######
+		# ------
 		self.courseCombo.set_active(0)
 		# self.updateSummary()
 
@@ -138,21 +138,21 @@ class WidgetClass(gtk.Box):
 			pass
 		else:
 			self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
-		##
+		# --
 		self.dateInput.set_value(self.event.getDate())
-		##
+		# --
 		timeRangeRule, ok = self.event["dayTimeRange"]
 		if not ok:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
-		####
+		# ----
 		# self.summaryEntry.set_text(self.event.summary)
 		self.descriptionInput.set_text(self.event.description)
 		self.iconSelect.set_filename(self.event.icon)
-		####
+		# ----
 		self.notificationBox.updateWidget()
-		####
+		# ----
 		# self.filesBox.updateWidget()
 
 	def updateVars(self):  # FIXME
@@ -161,9 +161,9 @@ class WidgetClass(gtk.Box):
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses is selected")
 		self.event.courseId = self.courseIds[courseIndex]
-		##
+		# --
 		self.event.setDate(*tuple(self.dateInput.get_value()))
-		##
+		# --
 		timeRangeRule, ok = self.event["dayTimeRange"]
 		if not ok:
 			raise RuntimeError("no dayTimeRange rule")
@@ -171,11 +171,11 @@ class WidgetClass(gtk.Box):
 			self.dayTimeStartCombo.get_value(),
 			self.dayTimeEndCombo.get_value(),
 		)
-		####
+		# ----
 		# self.event.summary = self.summaryEntry.get_text()
 		self.event.description = self.descriptionInput.get_text()
 		self.event.icon = self.iconSelect.get_filename()
-		####
+		# ----
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
 
