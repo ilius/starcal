@@ -66,7 +66,7 @@ class FloatingMsg(gtk.DrawingArea):
 		self.isFinished = False
 		if finishOnClick:
 			self.connect("button-press-event", self.finish)
-		########
+		# --------
 		if isinstance(bytes, str):
 			text = text.decode("utf8")
 		lines = []
@@ -81,10 +81,10 @@ class FloatingMsg(gtk.DrawingArea):
 		]
 		self.index = 0
 		self.height = 30
-		########
+		# --------
 		self.connect("draw", self.onExposeEvent)
 		self.connect("realize", self.on_realize)
-		########
+		# --------
 		if createWindow:
 			self.win = gtk.Window(gtk.WindowType.POPUP)
 			# ^ gtk.WindowType.POPUP ?
@@ -141,7 +141,7 @@ class FloatingMsg(gtk.DrawingArea):
 		cr.rectangle(0, 0, screenWidth, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
-		#######
+		# -------
 		cr.move_to(self.xpos, 0)
 		setColor(cr, self.textColor)
 		show_layout(cr, self.layout)
@@ -207,7 +207,7 @@ class MyLabel(gtk.DrawingArea):
 		cr.rectangle(0, 0, self.width, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
-		#######
+		# -------
 		cr.move_to(0, 0)
 		setColor(cr, self.textColor)
 		show_layout(cr, self.layout)
@@ -248,7 +248,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.isFinished = False
 		if finishOnClick:
 			self.connect("button-press-event", self.finish)
-		########
+		# --------
 		if isinstance(text, bytes):
 			text = text.decode("utf8")
 		text = text.replace("\\n", "\n").replace("\\t", "\t")
@@ -260,7 +260,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.linesNum = len(lines)
 		self.lines = lines
 		self.index = 0
-		########
+		# --------
 		self.connect("realize", lambda _w: self.animateStart())
 
 	def updateLine(self):

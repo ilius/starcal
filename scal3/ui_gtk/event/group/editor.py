@@ -18,7 +18,7 @@ class GroupEditorDialog(gtk.Dialog):
 		self.set_title(_("Add New Group") if self.isNew else _("Edit Group"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
 		# self.resize(800, 600)
-		###
+		# ---
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -32,9 +32,9 @@ class GroupEditorDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
-		#######
+		# -------
 		self.activeWidget = None
-		#######
+		# -------
 		hbox = HBox()
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.group:
@@ -43,7 +43,7 @@ class GroupEditorDialog(gtk.Dialog):
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		if self.isNew:
 			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
 			self._group = ui.eventGroups.create(name)

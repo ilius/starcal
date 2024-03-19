@@ -5,9 +5,9 @@ from scal3.ui_gtk import gtk
 class WidgetClass(gtk.ComboBoxText):
 	def __init__(self, rule):
 		self.rule = rule
-		###
+		# ---
 		gtk.ComboBoxText.__init__(self)
-		###
+		# ---
 		self.append_text(_("Every Week"))
 		self.append_text(_("Odd Weeks"))
 		self.append_text(_("Even Weeks"))

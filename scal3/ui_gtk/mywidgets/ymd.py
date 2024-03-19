@@ -10,11 +10,11 @@ class YearMonthDayBox(gtk.Box):
 	def __init__(self):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL, spacing=4)
 		self.calType = calTypes.primary
-		####
+		# ----
 		pack(self, gtk.Label(label=_("Year")))
 		self.spinY = YearSpinButton()
 		pack(self, self.spinY)
-		####
+		# ----
 		pack(self, gtk.Label(label=_("Month")))
 		comboMonth = gtk.ComboBoxText()
 		module, ok = calTypes[self.calType]
@@ -32,7 +32,7 @@ class YearMonthDayBox(gtk.Box):
 		comboMonth.set_active(0)
 		pack(self, comboMonth)
 		self.comboMonth = comboMonth
-		####
+		# ----
 		pack(self, gtk.Label(label=_("Day")))
 		self.spinD = DaySpinButton()
 		pack(self, self.spinD)

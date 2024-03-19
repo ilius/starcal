@@ -42,10 +42,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.connect("key-press-event", self.onKeyPress)
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
-		###
+		# ---
 		self.vbox = VBox()
 		self.add(self.vbox)
-		###
+		# ---
 		self.buttonbox = MyHButtonBox()
 		# self.buttonbox.add_button(
 		# 	imageName="dialog-cancel.svg",
@@ -63,9 +63,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 			onClick=self.onSaveClick,
 			tooltip=_("Save Preferences"),
 		)
-		#######
+		# -------
 		self.prefPages = []
-		####################################################
+		# ----------------------------------------------------
 		stack = MyStack(
 			iconSize=ui.stackIconSize,
 		)
@@ -73,7 +73,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		stack.setTitleCentered(True)
 		stack.setupWindowTitle(self, _("Time Line Preferences"), False)
 		self.stack = stack
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -83,7 +83,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("_General")
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Background Color")))
 		prefItem = ColorPrefItem(
@@ -94,7 +94,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Foreground Color")))
 		prefItem = ColorPrefItem(
@@ -105,7 +105,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -122,7 +122,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# FIXME: should we update TimeLine on type?! Can make it very slow
 		# can even cause freezing TimeLine
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(
@@ -140,10 +140,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		# TODO: changeHolidayBgMinDays
 		# TODO: changeHolidayBgMaxDays
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -153,7 +153,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("Buttons")
 		page.pageIcon = "configure-toolbars.png"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 
 		def updateBasicButtons():
 			timeLine.updateBasicButtons()
@@ -191,7 +191,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 
-		####
+		# ----
 
 		def updateMovementButtons():
 			timeLine.updateMovementButtons()
@@ -207,7 +207,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -224,7 +224,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 
-		########
+		# --------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -239,7 +239,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -254,7 +254,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		####################################################
+		# ----------------------------------------------------
 		vboxIndicators = vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -264,7 +264,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("_Indicators")
 		page.pageIcon = "screenruler.png"  # svg image does not look good!
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -281,7 +281,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# FIXME: ValueError: could not convert string to float:
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -297,7 +297,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		###############
+		# ---------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -309,7 +309,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageIcon = "screenruler.png"
 		self.prefPages.append(page)
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -325,7 +325,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -341,7 +341,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -357,7 +357,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -373,7 +373,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -390,13 +390,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		hbox = HBox(spacing=5)
-		#####
+		# -----
 		# TODO: labelYRatio
-		#####
+		# -----
 		# TODO: yearPrettyPower
-		#####
+		# -----
 		# TODO: truncateTickLabel
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -408,7 +408,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageIcon = "screenruler-redline.png"
 		self.prefPages.append(page)
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -424,7 +424,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -440,7 +440,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		prefItem = ColorPrefItem(
@@ -452,7 +452,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		###############
+		# ---------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -464,7 +464,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageIcon = ""
 		self.prefPages.append(page)
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
 			tl,
@@ -475,7 +475,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		prefItem = ColorPrefItem(
@@ -487,7 +487,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -503,7 +503,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -519,7 +519,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
 		pack(vbox, hbox)
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -529,7 +529,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("Events")
 		page.pageIcon = "view-calendar-timeline.svg"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -545,7 +545,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -560,7 +560,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -576,7 +576,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -592,7 +592,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -608,7 +608,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
 			tl,
@@ -619,10 +619,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		# TODO: boxSkipPixelLimit = 0.1  # pixel
 		# TODO: rotateBoxLabel = -1
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -632,7 +632,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("Movement")
 		page.pageIcon = "movement.svg"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=5)
 		noAnimVBox = gtk.VBox()
 		animVBox = gtk.VBox()
@@ -654,13 +654,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		frame = gtk.Frame(label=_("Without Animation"))
 
 		noAnimVBox.set_border_width(3)
 		frame.add(noAnimVBox)
 		pack(vbox, frame)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -676,7 +676,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(noAnimVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -692,9 +692,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(noAnimVBox, hbox)
-		###
+		# ---
 		pack(vbox, animVBox)
-		###############
+		# ---------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -706,7 +706,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageIcon = "movement.svg"
 		self.prefPages.append(page)
 		pack(animVBox, self.newWideButton(page), 1, 1)
-		###########
+		# -----------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -722,7 +722,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -738,7 +738,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -760,7 +760,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			),
 		)
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -782,7 +782,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			),
 		)
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -804,7 +804,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			),
 		)
 		pack(vbox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -826,7 +826,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			),
 		)
 		pack(vbox, hbox)
-		#####
+		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -848,10 +848,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 			),
 		)
 		pack(vbox, hbox)
-		#####
+		# -----
 		# TODO: movingKeyTimeoutFirst
 		# TODO: movingKeyTimeout
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -861,7 +861,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("Zooming")
 		page.pageIcon = "zoom-in.svg"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -876,7 +876,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
@@ -891,7 +891,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
-		####################################################
+		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -901,7 +901,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("Keys")
 		page.pageIcon = "configure-shortcuts.png"
 		self.prefPages.append(page)
-		#####
+		# -----
 		prefItem = KeyBindingPrefItem(
 			tl,
 			"keys",
@@ -909,9 +909,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		prefItem.updateWidget()
 		pack(vbox, prefItem.getWidget(), 1, 1)
-		####################################################################
+		# --------------------------------------------------------------------
 		rootPagePath = "root"
-		###
+		# ---
 		mainPages = []
 		for page in self.prefPages:
 			if page.pageParent:
@@ -920,16 +920,16 @@ class TimeLinePreferencesWindow(gtk.Window):
 			page.pageParent = rootPagePath
 			page.pagePath = page.pageName
 			mainPages.append(page)
-		####
+		# ----
 		colN = 2
-		####
+		# ----
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
 		grid.set_row_spacing(15)
 		grid.set_column_spacing(15)
 		grid.set_border_width(20)
-		####
+		# ----
 		self.defaultWidget = None
 		firstPageDoubleSize = len(mainPages) % 2 == 1
 		if firstPageDoubleSize:
@@ -937,7 +937,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			button = self.newWideButton(page)
 			grid.attach(button, 0, 0, colN, 1)
 			self.defaultWidget = button
-		###
+		# ---
 		N = len(mainPages)
 		colBN = (N - 1) // colN + 1
 		for col_i in range(colN):
@@ -951,7 +951,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 				if page_i == 0 and not firstPageDoubleSize:
 					self.defaultWidget = button
 		grid.show_all()
-		###############
+		# ---------------
 		page = StackPage()
 		page.pagePath = rootPagePath
 		page.pageWidget = grid
@@ -960,10 +960,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		stack.addPage(page)
 		for page in self.prefPages:
 			stack.addPage(page)
-		#######################
+		# -----------------------
 		pack(self.vbox, stack, 1, 1)
 		pack(self.vbox, self.buttonbox)
-		####
+		# ----
 		self.vbox.show_all()
 
 	def gotoPageClicked(self, _button, page):

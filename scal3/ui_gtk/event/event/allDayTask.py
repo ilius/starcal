@@ -25,9 +25,9 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -35,9 +35,9 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		##
+		# --
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
@@ -45,22 +45,22 @@ class WidgetClass(common.WidgetClass):
 		self.endTypeCombo.connect("changed", self.endTypeComboChanged)
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
-		####
+		# ----
 		self.durationBox = HBox()
 		self.durationSpin = IntSpinButton(1, 999)
 		pack(self.durationBox, self.durationSpin)
 		pack(self.durationBox, gtk.Label(label=_(" days")))
 		pack(hbox, self.durationBox)
-		####
+		# ----
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
-		####
+		# ----
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#############
+		# -------------
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
@@ -78,10 +78,10 @@ class WidgetClass(common.WidgetClass):
 	def updateWidget(self):  # FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
-		###
+		# ---
 		startJd = self.event.getJd()
 		self.startDateInput.set_value(jd_to(startJd, calType))
-		###
+		# ---
 		endType, endValue = self.event.getEnd()
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
@@ -98,7 +98,7 @@ class WidgetClass(common.WidgetClass):
 	def updateVars(self):  # FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.setStartDate(self.startDateInput.get_value())
-		###
+		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
 			self.event.setEnd("duration", self.durationSpin.get_value())

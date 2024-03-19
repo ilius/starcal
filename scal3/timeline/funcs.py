@@ -51,7 +51,7 @@ from scal3.timeline.utils import (
 from scal3.ui import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
-####################################################
+# ----------------------------------------------------
 
 
 # class Range:
@@ -93,7 +93,7 @@ def formatYear(y, prettyPower=False):
 	if abs(y) < 10**4:  # FIXME
 		y_st = _(y)
 	else:
-		# y_st = textNumEncode("%.0E"%y, changeDot=True)## FIXME
+		# y_st = textNumEncode("%.0E"%y, changeDot=True)-- FIXME
 		fac, pw = getNum10FactPow(y)
 		if not prettyPower or abs(fac) >= 100:  # FIXME
 			y_e = f"{y:E}"
@@ -142,22 +142,22 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	def getJPos(jd):
 		return (getEpochFromJd(jd) - timeStart) * pixelPerSec
 
-	# ###################### Holidays
+	# ---------------------- Holidays
 	holidays = []
 	if (
 		tl.changeHolidayBg
 		and tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
 	):
 		holidays = [getJPos(jd) for jd in getHolidaysJdList(jd0, jd1 + 1)]
-	# ###################### Ticks
+	# ---------------------- Ticks
 	ticks = []
 	tickEpochSet = set()
 	minStep = tl.minorStepMin / pixelPerSec  # second
-	#################
+	# -----------------
 	year0, month0, day0 = jd_to_primary(jd0)
 	year1, month1, day1 = jd_to_primary(jd1)
-	# ########## Year
-	minStepYear = minStep // minYearLenSec  # years ## int or iceil?
+	# ---------- Year
+	minStepYear = minStep // minYearLenSec  # years # int or iceil?
 	yearPixel = minYearLenSec * pixelPerSec  # pixels
 	for year, size in getYearRangeTickValues(
 		year0,
@@ -181,7 +181,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			),
 		)
 		tickEpochSet.add(tmEpoch)
-	# ########## Month
+	# ---------- Month
 	monthPixel = avgMonthLen * pixelPerSec  # px
 	minMonthUnit = minStep / avgMonthLen  # month
 	if minMonthUnit <= 3:
@@ -215,7 +215,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				),
 			)
 			tickEpochSet.add(tmEpoch)
-	# ############## Week days
+	# -------------- Week days
 	if (
 		tl.showWeekStart
 		and tl.showWeekStartMinDays < widthDays < tl.showWeekStartMaxDays
@@ -239,7 +239,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				),
 			)
 			# tickEpochSet.add(tmEpoch)
-	# ########## Day of Month
+	# ---------- Day of Month
 	hasMonthName = timeWidth < 5 * dayLen
 	minDayUnit = minStep / dayLen  # days
 
@@ -303,7 +303,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			jd = primary_to_jd(year, month, 16)
 			addDayOfMonthTick(jd, month, 16, 15)
 
-	# ########## Hour, Minute, Second
+	# ---------- Hour, Minute, Second
 	for stepUnit, stepValue in unitSteps:
 		stepSec = stepUnit * stepValue
 		if stepSec < minStep:
@@ -345,18 +345,18 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 					),
 				)
 				tickEpochSet.add(tmEpoch)
-	# ###################### Event Boxes
+	# ---------------------- Event Boxes
 	data = {
 		"holidays": holidays,
 		"ticks": ticks,
 		"boxes": [],
 	}
-	###
+	# ---
 	data["boxes"] = calcEventBoxes(
 		timeStart,
 		timeEnd,
 		pixelPerSec,
 		borderTm,
 	)
-	###
+	# ---
 	return data

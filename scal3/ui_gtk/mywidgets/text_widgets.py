@@ -42,7 +42,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 		# current items from current menu
 		for item in menu.get_children():
 			menu.remove(item)
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy _All"),
@@ -50,7 +50,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 				func=self.copyAll,
 			),
 		)
-		####
+		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
@@ -59,7 +59,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
 		menu.add(itemCopy)
-		####
+		# ----
 		menu.show_all()
 		self.tmpMenu = menu
 		ui.updateFocusTime()
@@ -104,7 +104,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	def onButtonPress(self, _widget, gevent):
 		if gevent.button != 3:
 			return False
-		####
+		# ----
 		_iter = None
 		buf_x, buf_y = self.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
@@ -114,13 +114,13 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		if buf_x is not None and buf_y is not None:
 			# overText, _iter, trailing = ...
 			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
-		####
+		# ----
 		text = self.get_text()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
-		####
+		# ----
 		menu = Menu()
-		####
+		# ----
 		menu.add(
 			ImageMenuItem(
 				_("Copy _All"),
@@ -128,7 +128,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 				func=self.copyAll,
 			),
 		)
-		####
+		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
@@ -137,7 +137,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
 		menu.add(itemCopy)
-		####
+		# ----
 		if "://" in word:
 			menu.add(
 				ImageMenuItem(
@@ -147,7 +147,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 					args=(word,),
 				),
 			)
-		####
+		# ----
 		menu.show_all()
 		self.tmpMenu = menu
 		menu.popup(

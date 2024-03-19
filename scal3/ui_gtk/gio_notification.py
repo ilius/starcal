@@ -23,7 +23,7 @@ class GioNotificationWrapper(gio.Notification):
 	def __init__(self, mainWin):
 		self.mainWin = mainWin
 		self.app = mainWin.app
-		##
+		# --
 		gio.Notification.__init__(self)
 		self.set_title(core.APP_DESC)
 		# self.show()
