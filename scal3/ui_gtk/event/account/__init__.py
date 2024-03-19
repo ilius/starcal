@@ -19,9 +19,9 @@ class BaseWidgetClass(gtk.Box):
 	def __init__(self, account):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.account = account
-		########
+		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
@@ -43,16 +43,16 @@ class AccountCombo(IdComboBox):
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 1)
-		###
+		# ---
 		ls.append([-1, _("None")])
 		for account in ui.eventAccounts:
 			if account.enable:
 				ls.append([account.id, account.title])
-		###
+		# ---
 		gtk.ComboBox.set_active(self, 0)
 
 	def get_active(self):
@@ -70,11 +70,11 @@ class AccountCombo(IdComboBox):
 class AccountGroupCombo(IdComboBox):
 	def __init__(self):
 		self.account = None
-		###
+		# ---
 		ls = gtk.ListStore(str, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 1)
@@ -101,7 +101,7 @@ class AccountGroupBox(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.combo = AccountGroupCombo()
 		pack(self, self.combo)
-		##
+		# --
 		button = labelImageButton(
 			label=_("Fetch"),
 			# TODO: imageName="fetch-account.svg",
@@ -109,12 +109,12 @@ class AccountGroupBox(gtk.Box):
 		button.connect("clicked", self.onFetchClick)
 		pack(self, button)
 		self.fetchButton = button
-		##
+		# --
 		label = gtk.Label()
 		label.set_xalign(0.1)
 		pack(self, label, 1, 1)
 		self.msgLabel = label
-		###
+		# ---
 		if accountCombo:
 			accountCombo.connect("changed", self.accountComboChanged)
 

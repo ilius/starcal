@@ -161,10 +161,10 @@ class PreferencesWindow(gtk.Window):
 		self.connect("key-press-event", self.onKeyPress)
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
-		###
+		# ---
 		self.vbox = VBox()
 		self.add(self.vbox)
-		###
+		# ---
 		self.buttonbox = MyHButtonBox()
 		self.buttonbox.add_button(
 			imageName="dialog-cancel.svg",
@@ -184,15 +184,15 @@ class PreferencesWindow(gtk.Window):
 		)
 		# okB.grab_default()  # FIXME
 		# okB.grab_focus()  # FIXME
-		##############################################
+		# ----------------------------------------------
 		self.loggerPrefItem = None
 		self.localePrefItems = []
 		self.corePrefItems = []
 		self.uiPrefItems = []
 		self.gtkPrefItems = []  # FIXME
-		#####
+		# -----
 		self.prefPages = []
-		##############################################
+		# ----------------------------------------------
 		stack = MyStack(
 			iconSize=ui.stackIconSize,
 		)
@@ -200,7 +200,7 @@ class PreferencesWindow(gtk.Window):
 		stack.setTitleCentered(True)
 		stack.setupWindowTitle(self, _("Preferences"), False)
 		self.stack = stack
-		# ############### Page 0 (Language and Calendar Types) ################
+		# --------------- Page 0 (Language and Calendar Types) ----------------
 		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -210,17 +210,17 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_Language and Calendar Types")
 		page.pageIcon = "preferences-desktop-locale.png"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=3)
 		pack(hbox, gtk.Label(label=_("Language")))
 		itemLang = LangPrefItem()
 		self.localePrefItems.append(itemLang)
-		###
+		# ---
 		pack(hbox, itemLang.getWidget())
 		if langSh != "en":
 			pack(hbox, gtk.Label(label="Language"))
 		pack(vbox, hbox)
-		##########################
+		# --------------------------
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Calendar Types"))
@@ -233,7 +233,7 @@ class PreferencesWindow(gtk.Window):
 		hbox.set_border_width(5)
 		frame.set_border_width(0)
 		pack(vbox, hbox, 1, 1)
-		# ############################## Page 1 (General) #####################
+		# ------------------------------ Page 1 (General) ---------------------
 		vbox = VBox()
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -243,13 +243,13 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_General")
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
-		##########################
+		# --------------------------
 		hbox = HBox(spacing=3)
 		item = CheckStartupPrefItem()
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
-		########################
+		# ------------------------
 		item = CheckPrefItem(
 			ui,
 			"showMain",
@@ -257,7 +257,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(item)
 		pack(vbox, item.getWidget())
-		########################
+		# ------------------------
 		item = CheckPrefItem(
 			ui,
 			"showDesktopWidget",
@@ -265,7 +265,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(item)
 		pack(vbox, item.getWidget())
-		##########################
+		# --------------------------
 		item = CheckPrefItem(
 			ui,
 			"winTaskbar",
@@ -275,9 +275,9 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=3)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
-		###########
+		# -----------
 		pack(vbox, hbox)
-		##########################
+		# --------------------------
 		try:
 			import scal3.ui_gtk.starcal_appindicator  # noqa: F401
 		except (ImportError, ValueError):
@@ -293,7 +293,7 @@ class PreferencesWindow(gtk.Window):
 			pack(hbox, item.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(vbox, hbox)
-		##########################
+		# --------------------------
 		# hbox = HBox(spacing=3)
 		# pack(hbox, gtk.Label(label=_("Show Digital Clock:")))
 		# pack(hbox, gtk.Label(), 1, 1)
@@ -315,7 +315,7 @@ class PreferencesWindow(gtk.Window):
 		# pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
 		# pack(vbox, hbox)
-		# ############################## Page 2 (Appearance) ##################
+		# ------------------------------ Page 2 (Appearance) ------------------
 		vbox = VBox(spacing=0)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -327,12 +327,12 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("Appeara_nce")
 		page.pageIcon = "preferences-desktop-theme.png"
 		self.prefPages.append(page)
-		########
+		# --------
 		buttonPadding = 7
 		padding = 5
-		###
+		# ---
 		hbox = HBox(spacing=2)
-		###
+		# ---
 		customCheckItem = CheckPrefItem(
 			ui,
 			"fontCustomEnable",
@@ -340,14 +340,14 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(customCheckItem)  # noqa: FURB113
 		pack(hbox, customCheckItem.getWidget())
-		###
+		# ---
 		customItem = FontPrefItem(ui, "fontCustom")
 		self.uiPrefItems.append(customItem)
 		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		customCheckItem.syncSensitive(customItem.getWidget())
 		pack(vbox, hbox, padding=padding)
-		###########################
+		# ---------------------------
 		item = CheckPrefItem(
 			ui,
 			"buttonIconEnable",
@@ -355,7 +355,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(item)
 		pack(vbox, item.getWidget())
-		###########################
+		# ---------------------------
 		item = CheckPrefItem(
 			ui,
 			"useSystemIcons",
@@ -363,14 +363,14 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(item)
 		pack(vbox, item.getWidget())
-		# ######################### Theme #####################
+		# ------------------------- Theme ---------------------
 		pageHBox = HBox()
 		pageHBox.set_border_width(10)
 		spacing = 3
-		###
+		# ---
 		pageVBox = VBox()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Background")))
 		item = ColorPrefItem(ui, "bgColor", True)
@@ -379,7 +379,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border")))
 		item = ColorPrefItem(ui, "borderColor", True)
@@ -387,7 +387,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor")))
 		item = ColorPrefItem(ui, "cursorOutColor", False)
@@ -395,7 +395,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor BG")))
 		item = ColorPrefItem(ui, "cursorBgColor", True)
@@ -403,7 +403,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Today")))
 		item = ColorPrefItem(ui, "todayCellColor", True)
@@ -411,12 +411,12 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		######
+		# ------
 		pack(pageHBox, pageVBox, 1, 1)
 		pack(pageHBox, newHSep(), 0, 0)
 		pageVBox = VBox()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Normal Text")))
 		item = ColorPrefItem(ui, "textColor", False)
@@ -424,7 +424,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Holidays Font")))
 		item = ColorPrefItem(ui, "holidayColor", False)
@@ -432,7 +432,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Inactive Day Font")))
 		item = ColorPrefItem(ui, "inactiveColor", True)
@@ -440,7 +440,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border Font")))
 		item = ColorPrefItem(ui, "borderTextColor", False)
@@ -448,9 +448,9 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		pack(pageHBox, pageVBox, 1, 1, padding=5)
-		####
+		# ----
 		page = StackPage()
 		page.pageParent = "appearance"
 		page.pageWidget = pageHBox
@@ -460,13 +460,13 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-desktop-color.svg"
 		page.pageExpand = False
 		self.prefPages.append(page)
-		#####
+		# -----
 		appearanceSubPages = [page]
-		###################
+		# -------------------
 		pageVBox = VBox(spacing=10)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		####
+		# ----
 		hbox = HBox(spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
 		pack(hbox, label)
@@ -480,7 +480,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		hbox = HBox(spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
 		pack(hbox, label)
@@ -494,7 +494,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		hbox = HBox(spacing=1)
 		checkItem = CheckPrefItem(
 			ui,
@@ -512,7 +512,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		###
+		# ---
 		hbox = HBox(spacing=1)
 		item = CheckPrefItem(
 			ui,
@@ -522,7 +522,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		hbox = HBox(spacing=1)
 		item = CheckColorPrefItem(
 			CheckPrefItem(
@@ -538,7 +538,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		####
+		# ----
 		hbox = HBox(spacing=1)
 		checkItem = CheckPrefItem(
 			ui,
@@ -558,9 +558,9 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		########
+		# --------
 		checkItem.syncSensitive(item.getWidget(), reverse=False)
-		####
+		# ----
 		page = StackPage()
 		page.pageParent = "appearance"
 		page.pageWidget = pageVBox
@@ -569,9 +569,9 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("Status Icon")
 		page.pageIcon = ""
 		self.prefPages.append(page)
-		#####
+		# -----
 		appearanceSubPages.append(page)
-		###############
+		# ---------------
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
@@ -580,7 +580,7 @@ class PreferencesWindow(gtk.Window):
 			grid.attach(self.newWideButton(page), 0, index, 1, 1)
 		grid.show_all()
 		pack(vbox, grid, padding=padding)
-		# ############################## Page 3 (Regional) ###################
+		# ------------------------------ Page 3 (Regional) -------------------
 		vbox = VBox()
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -590,9 +590,9 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_Regional")
 		page.pageIcon = "preferences-desktop-locale.png"
 		self.prefPages.append(page)
-		######
+		# ------
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox(spacing=10)
 		label = gtk.Label(label=_("Date Format"))
 		pack(hbox, label)
@@ -615,7 +615,7 @@ class PreferencesWindow(gtk.Window):
 		self.gtkPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
-		################################
+		# --------------------------------
 		hbox = HBox(spacing=3)
 		item = CheckPrefItem(
 			locale_man,
@@ -626,9 +626,9 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox, padding=10)
-		################################
+		# --------------------------------
 		pageVBox = VBox(spacing=5)
-		####
+		# ----
 		hbox = HBox(spacing=3)
 		pack(hbox, gtk.Label(label=_("First day of week")))
 		# item = ComboTextPrefItem(  # FIXME
@@ -639,7 +639,7 @@ class PreferencesWindow(gtk.Window):
 		self.comboFirstWD.connect("changed", self.comboFirstWDChanged)
 		pack(hbox, self.comboFirstWD)
 		pack(pageVBox, hbox)
-		#########
+		# ---------
 		hbox = HBox(spacing=3)
 		pack(hbox, gtk.Label(label=_("First week of year containts")))
 		combo = gtk.ComboBoxText()
@@ -652,12 +652,12 @@ class PreferencesWindow(gtk.Window):
 		texts[4] += " (ISO 8601)"  # FIXME
 		for text in texts:
 			combo.append_text(text)
-		# combo.append_text(_("Automatic"))## (as Locale)  # FIXME
+		# combo.append_text(_("Automatic"))-- (as Locale)  # FIXME
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox, padding=5)
 		self.comboWeekYear = combo
-		#########
+		# ---------
 		frame = gtk.Frame()
 		frame.set_border_width(10)
 		frame.set_label(_("Holidays"))
@@ -673,7 +673,7 @@ class PreferencesWindow(gtk.Window):
 		itemWidget.set_border_width(10)
 		frame.add(itemWidget)
 		pack(pageVBox, frame)
-		############
+		# ------------
 		page = StackPage()
 		page.pageParent = "regional"
 		page.pageWidget = pageVBox
@@ -683,9 +683,9 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = ""
 		page.pageExpand = False
 		self.prefPages.append(page)
-		#####
+		# -----
 		regionalSubPages = [page]
-		##################################################
+		# --------------------------------------------------
 		options = []
 		for mod in calTypes:
 			if not mod.options:
@@ -705,7 +705,7 @@ class PreferencesWindow(gtk.Window):
 			)
 			page.pageExpand = False
 			self.prefPages.append(page)
-			#####
+			# -----
 			regionalSubPages.append(page)
 			for opt in mod.options:
 				if opt[0] == "button":
@@ -718,8 +718,8 @@ class PreferencesWindow(gtk.Window):
 					optl = ModuleOptionItem(mod, opt)
 				options.append(optl)
 				pack(pageVBox, optl.getWidget())
-			#####
-		#####
+			# -----
+		# -----
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
@@ -728,9 +728,9 @@ class PreferencesWindow(gtk.Window):
 			grid.attach(self.newWideButton(page), 0, index, 1, 1)
 		grid.show_all()
 		pack(vbox, grid)
-		###
+		# ---
 		self.moduleOptions = options
-		# ############################## Page 4 (Advanced) ###################
+		# ------------------------------ Page 4 (Advanced) -------------------
 		vbox = VBox(spacing=10)
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -740,13 +740,13 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("A_dvanced")
 		page.pageIcon = "applications-system.svg"
 		self.prefPages.append(page)
-		######
+		# ------
 		item = LogLevelPrefItem()
 		self.loggerPrefItem = item
 		pack(vbox, item.getWidget())
-		###
+		# ---
 		self.initialLogLevel = logger.logLevel
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Event Time Format"))
@@ -781,7 +781,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Digital Clock Format"))
@@ -810,7 +810,7 @@ class PreferencesWindow(gtk.Window):
 		self.gtkPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
@@ -819,7 +819,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
@@ -827,7 +827,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
-		######
+		# ------
 		hbox = HBox(spacing=5)
 		button = labelImageButton(
 			label=_("Clear Image Cache"),
@@ -837,7 +837,7 @@ class PreferencesWindow(gtk.Window):
 		button.connect("clicked", self.onClearImageCacheClick)
 		pack(hbox, button)
 		pack(vbox, hbox)
-		# ############################## Page 5 (Plugins) ####################
+		# ------------------------------ Page 5 (Plugins) --------------------
 		vbox = VBox()
 		page = StackPage()
 		vbox.set_border_width(5)
@@ -847,7 +847,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_Plugins")
 		page.pageIcon = "preferences-plugin.svg"
 		self.prefPages.append(page)
-		#####
+		# -----
 		# pluginsTextStatusIcon:
 		hbox = HBox()
 		item = CheckPrefItem(
@@ -859,7 +859,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
-		#####
+		# -----
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		treeModel = gtk.ListStore(
@@ -886,18 +886,18 @@ class PreferencesWindow(gtk.Window):
 		treev.get_selection().connect("changed", self.plugTreevCursorChanged)
 		treev.connect("row-activated", self.plugTreevRActivate)
 		treev.connect("button-press-event", self.plugTreevButtonPress)
-		###
+		# ---
 		# treev.drag_source_add_text_targets()
 		# treev.drag_source_add_uri_targets()
 		# treev.drag_source_unset()
-		###
+		# ---
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(
 			gtk.PolicyType.AUTOMATIC,
 			gtk.PolicyType.AUTOMATIC,
 		)
-		######
+		# ------
 		# each named font size if 1.2 times larger than last
 		# size='medium' is the same as not having this tag (equal to widget's font)
 		# so size='large' is 1.2 times larger and size='small' is 1.2 times
@@ -911,9 +911,9 @@ class PreferencesWindow(gtk.Window):
 		#   large		= default * 1.2
 		#   x-large		= default * 1.44
 		#   xx-large	= default * 1.7279
-		######
+		# ------
 		size = ui.getFont().size
-		######
+		# ------
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled)
@@ -929,7 +929,7 @@ class PreferencesWindow(gtk.Window):
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		######
+		# ------
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled2)
@@ -945,13 +945,13 @@ class PreferencesWindow(gtk.Window):
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		######
+		# ------
 		# cell = gtk.CellRendererText()
 		# col = gtk.TreeViewColumn(title=_("File Name"), cell_renderer=cell, text=2)
 		# col.set_resizable(True)
 		# treev.append_column(col)
 		# treev.set_search_column(1)
-		######
+		# ------
 		cell = gtk.CellRendererText()
 		# cell.set_property("wrap-mode", gtk.WrapMode.WORD)
 		# cell.set_property("editable", True)
@@ -960,23 +960,23 @@ class PreferencesWindow(gtk.Window):
 		# treev.connect("draw", self.plugTreevExpose)
 		# self.plugTitleCell = cell
 		# self.plugTitleCol = col
-		# col.set_resizable(True)## No need!
+		# col.set_resizable(True)-- No need!
 		col.set_property("expand", True)
 		treev.append_column(col)
-		######
+		# ------
 		# for i in xrange(len(core.plugIndex)):
 		# 	x = core.plugIndex[i]
 		# 	treeModel.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
-		######
+		# ------
 		self.plugTreeview = treev
-		#######################
+		# -----------------------
 		hbox = HBox()
 		vboxPlug = VBox()
 		pack(vboxPlug, swin, 1, 1)
 		pack(hbox, vboxPlug, 1, 1)
-		###
+		# ---
 		hboxBut = HBox()
-		###
+		# ---
 		button = labelImageButton(
 			label=_("_About Plugin"),
 			imageName="dialog-information.svg",
@@ -986,7 +986,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugButtonAbout = button
 		pack(hboxBut, button)
 		pack(hboxBut, gtk.Label(), 1, 1)
-		###
+		# ---
 		button = labelImageButton(
 			label=_("C_onfigure Plugin"),
 			imageName="preferences-system.svg",
@@ -996,13 +996,13 @@ class PreferencesWindow(gtk.Window):
 		self.plugButtonConf = button
 		pack(hboxBut, button)
 		pack(hboxBut, gtk.Label(), 1, 1)
-		###
+		# ---
 		pack(vboxPlug, hboxBut)
-		###
+		# ---
 		toolbar = PreferencesPluginsToolbar(self)
 		pack(hbox, toolbar)
 		self.pluginsToolbar = toolbar
-		#####
+		# -----
 		"""
 		vpan = gtk.VPaned()
 		vpan.add1(hbox)
@@ -1013,7 +1013,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, vpan)
 		"""
 		pack(vbox, hbox, 1, 1)
-		##########################
+		# --------------------------
 		d = gtk.Dialog(transient_for=self)
 		d.set_transient_for(self)
 		# dialog.set_transient_for(parent) makes the window on top of parent
@@ -1024,7 +1024,7 @@ class PreferencesWindow(gtk.Window):
 		# d.set_has_separator(False)
 		d.connect("delete-event", self.plugAddDialogClose)
 		d.set_title(_("Add Plugin"))
-		###
+		# ---
 		dialog_add_button(
 			d,
 			imageName="dialog-cancel.svg",
@@ -1039,7 +1039,7 @@ class PreferencesWindow(gtk.Window):
 			res=gtk.ResponseType.OK,
 			onClick=self.plugAddDialogOK,
 		)
-		###
+		# ---
 		treev = gtk.TreeView()
 		treeModel = gtk.ListStore(str)
 		treev.set_model(treeModel)
@@ -1054,12 +1054,12 @@ class PreferencesWindow(gtk.Window):
 		# )  # FIXME
 		treev.connect("drag_data_received", self.plugTreevDragReceived)
 		treev.connect("row-activated", self.plugAddTreevRActivate)
-		####
+		# ----
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=0)
 		# col.set_resizable(True)# no need when have only one column!
 		treev.append_column(col)
-		####
+		# ----
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
@@ -1068,10 +1068,10 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddDialog = d
 		self.plugAddTreeview = treev
 		self.plugAddTreeModel = treeModel
-		#############
+		# -------------
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
-		# ##################################### Page 6 (Accounts)
+		# ------------------------------------- Page 6 (Accounts)
 		vbox = VBox()
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -1081,7 +1081,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("Accounts")
 		page.pageIcon = "applications-development-web.png"
 		self.prefPages.append(page)
-		#####
+		# -----
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		treeModel = gtk.ListStore(int, bool, str)  # id (hidden), enable, title
@@ -1101,11 +1101,11 @@ class PreferencesWindow(gtk.Window):
 		)
 		treev.connect("row-activated", self.accountsTreevRActivate)
 		treev.connect("button-press-event", self.accountsTreevButtonPress)
-		###
+		# ---
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
-		######
+		# ------
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.accountsTreeviewCellToggled)
@@ -1115,22 +1115,22 @@ class PreferencesWindow(gtk.Window):
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		######
+		# ------
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=2)
 		col.set_property("expand", True)
 		treev.append_column(col)
-		######
+		# ------
 		self.accountsTreeview = treev
 		self.accountsTreeModel = treeModel
-		#######################
+		# -----------------------
 		hbox = HBox()
 		vboxPlug = VBox()
 		pack(vboxPlug, swin, 1, 1)
 		pack(hbox, vboxPlug, 1, 1)
-		#####
+		# -----
 		toolbar = StaticToolBox(self, vertical=True)
-		#####
+		# -----
 		toolbar.extend(
 			[
 				ToolBoxItem(
@@ -1177,12 +1177,12 @@ class PreferencesWindow(gtk.Window):
 				),
 			],
 		)
-		###########
+		# -----------
 		pack(hbox, toolbar)
 		pack(vbox, hbox, 1, 1)
-		####################################################################
+		# --------------------------------------------------------------------
 		rootPageName = "preferences"
-		###
+		# ---
 		mainPages = []
 		for page in self.prefPages:
 			if page.pageParent:
@@ -1190,23 +1190,23 @@ class PreferencesWindow(gtk.Window):
 			page.pageParent = rootPageName
 			page.iconSize = 32
 			mainPages.append(page)
-		####
+		# ----
 		colN = 2
-		####
+		# ----
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
 		grid.set_row_spacing(15)
 		grid.set_column_spacing(15)
 		grid.set_border_width(20)
-		####
+		# ----
 		grid.get_style_context().add_class(self.mainGridStyleClass)
-		####
+		# ----
 		page = mainPages.pop(0)
 		button = self.newWideButton(page)
 		grid.attach(button, 0, 0, colN, 1)
 		self.defaultWidget = button
-		###
+		# ---
 		N = len(mainPages)
 		rowN = (N - 1) // colN + 1
 		for col_i in range(colN):
@@ -1218,7 +1218,7 @@ class PreferencesWindow(gtk.Window):
 				button = self.newWideButton(page)
 				grid.attach(button, col_i, row_i + 1, 1, 1)
 		grid.show_all()
-		###############
+		# ---------------
 		page = StackPage()
 		page.pagePath = page.pageName = rootPageName
 		page.pageWidget = grid
@@ -1230,10 +1230,10 @@ class PreferencesWindow(gtk.Window):
 			stack.addPage(page)
 		# if ui.preferencesPagePath:
 		# 	self.stack.gotoPage(ui.preferencesPagePath)
-		#######################
+		# -----------------------
 		pack(self.vbox, stack, 1, 1)
 		pack(self.vbox, self.buttonbox)
-		####
+		# ----
 		self.vbox.show_all()
 		self.vbox.connect("realize", self.onMainVBoxRealize)
 
@@ -1325,13 +1325,13 @@ class PreferencesWindow(gtk.Window):
 			ud.settings.get_property("gtk-font-name"),
 		)
 		# log.debug(f"{ui.fontDefault=}")
-		#####
+		# -----
 		ui.preferencesPagePath = self.stack.currentPagePath()
-		#####
-		# #################### Updating pref variables #####################
+		# -----
+		# -------------------- Updating pref variables ---------------------
 		for prefItem in self.iterAllPrefItems():
 			prefItem.updateVar()
-		# ##### Plugin Manager
+		# Plugin Manager
 		index = []
 		for row in self.plugTreeview.get_model():
 			plugI = row[0]
@@ -1350,7 +1350,7 @@ class PreferencesWindow(gtk.Window):
 				plug = self.loadPlugin(plug, plugI)
 		core.plugIndex = index
 		core.updatePlugins()
-		######
+		# ------
 		first = self.comboFirstWD.get_active()
 		if first == 7:
 			core.firstWeekDayAuto = True
@@ -1359,7 +1359,7 @@ class PreferencesWindow(gtk.Window):
 		else:
 			core.firstWeekDayAuto = False
 			core.firstWeekDay = first
-		######
+		# ------
 		weekNumberMode = self.comboWeekYear.get_active()
 		if weekNumberMode == 8:
 			core.weekNumberModeAuto = True
@@ -1367,28 +1367,28 @@ class PreferencesWindow(gtk.Window):
 		else:
 			core.weekNumberModeAuto = False
 			core.weekNumberMode = weekNumberMode
-		######
+		# ------
 		ui.cellCache.clear()  # Very important
 		# ^ specially when calTypes.primary will be changed
-		######
+		# ------
 		ud.updateFormatsBin()
-		# ###################### Saving Preferences #######################
-		# ################### Saving logger config
+		# ---------------------- Saving Preferences -----------------------
+		# ------------------- Saving logger config
 		self.loggerPrefItem.save()
-		# ################### Saving calendar types config
+		# ------------------- Saving calendar types config
 		for mod in calTypes:
 			mod.save()
-		# ################### Saving locale config
+		# ------------------- Saving locale config
 		locale_man.saveConf()
-		# ################### Saving core config
+		# ------------------- Saving core config
 		core.version = core.VERSION
 		core.saveConf()
 		del core.version
-		# ################### Saving ui config
+		# ------------------- Saving ui config
 		ui.saveConf()
-		# ################### Saving gtk_ud config
+		# ------------------- Saving gtk_ud config
 		ud.saveConf()
-		# ####################### Updating GUI ###########################
+		# ----------------------- Updating GUI ---------------------------
 		ud.windowList.onConfigChange()
 		if self.checkNeedRestart():
 			d = gtk.Dialog(
@@ -1454,7 +1454,7 @@ class PreferencesWindow(gtk.Window):
 	def updatePrefGui(self):  # Updating Pref Gui (NOT MAIN GUI)
 		for opt in self.iterAllPrefItems():
 			opt.updateWidget()
-		###############################
+		# -------------------------------
 		if core.firstWeekDayAuto:
 			self.comboFirstWD.set_active(7)
 		else:
@@ -1463,7 +1463,7 @@ class PreferencesWindow(gtk.Window):
 			self.comboWeekYear.set_active(8)
 		else:
 			self.comboWeekYear.set_active(core.weekNumberMode)
-		# #### Plugin Manager
+		# Plugin Manager
 		model = self.plugTreeview.get_model()
 		model.clear()
 		for p in core.getPluginsTable():
@@ -1481,7 +1481,7 @@ class PreferencesWindow(gtk.Window):
 			self.plugAddItems.append(i)
 			self.plugAddTreeModel.append([title])
 			self.pluginsToolbar.setCanAdd(True)
-		# #### Accounts
+		# Accounts
 		self.refreshAccounts()
 
 	# def plugTreevExpose(self, widget, gevent):
@@ -1560,7 +1560,7 @@ class PreferencesWindow(gtk.Window):
 				j = self.plugTreeview.get_model()[i][0]
 				plug = core.allPlugList[j]
 				menu = Menu()
-				##
+				# --
 				item = ImageMenuItem(
 					_("_About"),
 					imageName="dialog-information.svg",
@@ -1568,7 +1568,7 @@ class PreferencesWindow(gtk.Window):
 				)
 				item.set_sensitive(bool(plug.about))
 				menu.add(item)
-				##
+				# --
 				item = ImageMenuItem(
 					_("_Configure"),
 					imageName="preferences-system.svg",
@@ -1576,7 +1576,7 @@ class PreferencesWindow(gtk.Window):
 				)
 				item.set_sensitive(plug.hasConfig)
 				menu.add(item)
-				##
+				# --
 				menu.add(
 					ImageMenuItem(
 						_("Export to {format}").format(format="iCalendar"),
@@ -1585,7 +1585,7 @@ class PreferencesWindow(gtk.Window):
 						args=(plug,),
 					),
 				)
-				##
+				# --
 				menu.show_all()
 				self.tmpMenu = menu
 				menu.popup(None, None, None, None, 3, gevent.time)
@@ -1602,7 +1602,7 @@ class PreferencesWindow(gtk.Window):
 			w + 30,
 			75 + 30 * len(self.plugAddTreeModel),
 		)
-		###############
+		# ---------------
 		self.plugAddDialog.run()
 		self.pluginsToolbar.setCanAdd(len(self.plugAddItems) > 0)
 
@@ -1758,7 +1758,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddTreeModel.remove(self.plugAddTreeModel.get_iter(i))
 		self.plugAddItems.pop(i)
 		self.plugAddDialog.hide()
-		self.plugTreeview.set_cursor(pos)  # pos == -1 ## FIXME
+		self.plugTreeview.set_cursor(pos)  # pos == -1 # FIXME
 
 	def plugAddTreevRActivate(self, _treev, _path, _col):
 		self.plugAddDialogOK(None)  # FIXME
@@ -1807,7 +1807,7 @@ class PreferencesWindow(gtk.Window):
 				account.title,
 			],
 		)
-		###
+		# ---
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		error = account.fetchGroups()
@@ -1890,7 +1890,7 @@ class PreferencesWindow(gtk.Window):
 	def accountsTreeviewCellToggled(self, cell, path):
 		index = int(path)
 		active = not cell.get_active()
-		###
+		# ---
 		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		# not account.loaded -> it's a dummy account
@@ -1900,7 +1900,7 @@ class PreferencesWindow(gtk.Window):
 				return
 		account.enable = active
 		account.save()
-		###
+		# ---
 		self.accountsTreeModel[index][1] = active
 
 

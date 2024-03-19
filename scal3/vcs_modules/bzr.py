@@ -38,7 +38,7 @@ def prepareObj(obj):
 	) = BzrDir.open_containing_tree_branch_or_repository(obj.vcsDir)
 	obj.branch = branch
 	obj.repo = repo
-	###
+	# ---
 	obj.est = EventSearchTree()
 	obj.firstRev = None
 	obj.lastRev = None
@@ -96,7 +96,7 @@ def getShortStatByTrees(repo, old_tree, tree):  # noqa: ARG001
 	files_changed = 0
 	insertions = 0
 	deletions = 0
-	####
+	# ----
 	tree.lock_read()
 	for (
 		file_id,
@@ -168,7 +168,7 @@ def getTagList(obj, startJd, endJd):
 		return []
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
-	###
+	# ---
 	data = []
 	for tag, rev_id in obj.branch.tags.get_tag_dict().items():
 		rev = obj.repo.get_revision(rev_id)

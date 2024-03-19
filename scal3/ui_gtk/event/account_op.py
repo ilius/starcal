@@ -9,7 +9,7 @@ class AccountEditorDialog(gtk.Dialog):
 	def __init__(self, account=None, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Account") if account else _("Add New Account"))
-		###
+		# ---
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -22,12 +22,12 @@ class AccountEditorDialog(gtk.Dialog):
 			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
-		##
+		# --
 		self.connect("response", lambda _w, _e: self.hide())
-		#######
+		# -------
 		self.account = account
 		self.activeWidget = None
-		#######
+		# -------
 		hbox = HBox()
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.account:
@@ -36,7 +36,7 @@ class AccountEditorDialog(gtk.Dialog):
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		if self.account:
 			self.isNew = False
 			combo.set_active(

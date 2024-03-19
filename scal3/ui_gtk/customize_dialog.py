@@ -89,15 +89,15 @@ class CustomizeWindow(gtk.Dialog):
 	def __init__(self, item: "CustomizableCalObj", scrolled=True, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
-		##
+		# --
 		self.stack = MyStack(
 			headerSpacing=10,
 			iconSize=ui.stackIconSize,
 		)
 		pack(self.vbox, self.stack, 1, 1)
-		##
+		# --
 		self.set_title(_("Customize"))
-		# self.set_has_separator(False)## not in gtk3
+		# self.set_has_separator(False)-- not in gtk3
 		self.connect("delete-event", self.onSaveClick)
 		dialog_add_button(
 			self,
@@ -107,10 +107,10 @@ class CustomizeWindow(gtk.Dialog):
 			onClick=self.onSaveClick,
 		)
 		# should we save on Escape? or when clicking the X (close) button?
-		###
+		# ---
 		self.itemByPagePath = {}
 		self.rootItem = item
-		###
+		# ---
 		rootPagePath = "mainWin"
 		rootPage = StackPage()
 		rootPage.pagePath = rootPagePath
@@ -128,13 +128,13 @@ class CustomizeWindow(gtk.Dialog):
 			page.pageParent = rootPagePath
 			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
-		###
+		# ---
 		if ui.customizePagePath:
 			self.stack.tryToGotoPage(ui.customizePagePath)
-		###
+		# ---
 		self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
-		###
+		# ---
 		if scrolled:
 			# self.resize does not work
 			self.vbox.set_size_request(300, 450)
@@ -164,17 +164,17 @@ class CustomizeWindow(gtk.Dialog):
 		else:
 			treev.pagePath = parentPagePath
 		self.itemByPagePath[treev.pagePath] = parentItem
-		##
+		# --
 		treev.set_headers_visible(False)
 		treev.connect("button-press-event", self.onTreeviewButtonPress)
 		treev.connect("row-activated", self.rowActivated)
-		######
+		# ------
 		cell = gtk.CellRendererToggle()
 		col = gtk.TreeViewColumn(title="", cell_renderer=cell, active=0)
 		col.set_property("expand", False)
 		cell.connect("toggled", self.onEnableCellToggle, treev)
 		treev.append_column(col)
-		#####
+		# -----
 		col = gtk.TreeViewColumn(
 			title="Widget",
 			cell_renderer=gtk.CellRendererText(),
@@ -182,7 +182,7 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		col.set_property("expand", True)
 		treev.append_column(col)
-		#####
+		# -----
 		col = gtk.TreeViewColumn(
 			title="S",
 			cell_renderer=gtk.CellRendererPixbuf(),
@@ -190,7 +190,7 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		#####
+		# -----
 		anyItemHasOptions = False
 		for item in parentItem.items:
 			if not item.customizable:
@@ -207,7 +207,7 @@ class CustomizeWindow(gtk.Dialog):
 					self.itemPixbuf(item),
 				],
 			)
-		###
+		# ---
 		hbox = HBox()
 		vbox_l = VBox()
 		if scrolled:
@@ -218,14 +218,14 @@ class CustomizeWindow(gtk.Dialog):
 		else:
 			pack(vbox_l, treev, 1, 1)
 		pack(hbox, vbox_l, 1, 1)
-		###
+		# ---
 		toolbar = CustomizeWindowItemsToolbar(
 			self,
 			(treev,),
 		)
-		###
+		# ---
 		pack(hbox, toolbar)
-		###
+		# ---
 		vbox = VBox(spacing=10)
 		if anyItemHasOptions:
 			label = gtk.Label(
@@ -238,7 +238,7 @@ class CustomizeWindow(gtk.Dialog):
 			label.set_use_markup(True)
 			pack(vbox, label)
 		pack(vbox, hbox, 1, 1)
-		###
+		# ---
 		return treev, vbox
 
 	def vboxSizeRequest(self, _widget=None, _req=None):
@@ -258,7 +258,7 @@ class CustomizeWindow(gtk.Dialog):
 		if i <= 0 or i >= len(model):
 			gdk.beep()
 			return
-		###
+		# ---
 		item.moveItem(i, 0)
 		model.prepend(list(model[i]))
 		model.remove(model.get_iter(i + 1))
@@ -278,7 +278,7 @@ class CustomizeWindow(gtk.Dialog):
 		if i <= 0 or i >= len(model):
 			gdk.beep()
 			return
-		###
+		# ---
 		item.moveItem(i, i - 1)
 		model.swap(model.get_iter(i - 1), model.get_iter(i))
 		treev.set_cursor(i - 1)
@@ -297,7 +297,7 @@ class CustomizeWindow(gtk.Dialog):
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
 			return
-		###
+		# ---
 		item.moveItem(i + 1, i)
 		model.swap(model.get_iter(i), model.get_iter(i + 1))
 		treev.set_cursor(i + 1)
@@ -316,7 +316,7 @@ class CustomizeWindow(gtk.Dialog):
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
 			return
-		###
+		# ---
 		item.moveItem(i, len(model) - 1)
 		model.append(list(model[i]))
 		model.remove(model.get_iter(i))
@@ -508,7 +508,7 @@ class CustomizeWindow(gtk.Dialog):
 		parentItem = self.itemByPagePath[treev.pagePath]
 		item = parentItem.items[itemIndex]
 		assert parentItem.items[itemIndex] == item
-		###
+		# ---
 		if active:
 			item = self.loadItem(parentItem, itemIndex)
 			if item is None:
@@ -537,7 +537,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.ud__mainToolbarData = ud.mainToolbarData
 		ui.customizePagePath = self.stack.currentPagePath()
 		ui.saveConfCustomize()
-		# data = item.getData()## remove? FIXME
+		# data = item.getData()-- remove? FIXME
 
 	def onSaveClick(self, _button=None, _event=None):
 		self.save()

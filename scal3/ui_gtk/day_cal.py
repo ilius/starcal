@@ -289,18 +289,18 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return
 		for child in vbox.get_children():
 			child.destroy()
-		###
+		# ---
 		subPages = []
-		###
+		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			calTypeDesc = _(module.desc, ctx="calendar")
-			##
+			# --
 			pageWidget = VBox(spacing=5)
-			###
+			# ---
 			dayWidget = CalTypeParamWidget(
 				self.dayParamsParam,
 				self,
@@ -314,7 +314,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				useFrame=True,
 			)
 			pack(pageWidget, dayWidget)
-			###
+			# ---
 			monthWidget = CalTypeParamWidget(
 				self.monthParamsParam,
 				self,
@@ -339,7 +339,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageExpand = False
 			subPages.append(page)
 			pack(pageWidget, newSubPageButton(self, page), padding=4)
-			###
+			# ---
 			pageWidget.show_all()
 			page = StackPage()
 			page.pageWidget = pageWidget
@@ -349,7 +349,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageExpand = False
 			subPages.append(page)
 			self.buttons1.append(newSubPageButton(self, page))
-			###
+			# ---
 			c = self.getCell()
 			dayWidget.setFontPreviewText(
 				_(c.dates[calType][2], calTypes.primary),
@@ -357,7 +357,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			monthWidget.setFontPreviewText(
 				self.getMonthName(c, calType, monthParams[index]),
 			)
-		###
+		# ---
 		vbox.show_all()
 		return subPages
 
@@ -369,9 +369,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.initCal()
 		self.subPages = None
 		self._allButtons = []
-		######################
+		# ----------------------
 		# self.kTime = 0
-		######################
+		# ----------------------
 		self.connect("draw", self.drawAll)
 		self.connect("button-press-event", self.onButtonPress)
 		# self.connect("screen-changed", self.screenChanged)
@@ -392,10 +392,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return self.optionsWidget
 		optionsWidget = VBox()
 		subPages = []
-		###
+		# ---
 		buttons1 = self.buttons1 = []
 		buttons2 = []
-		####
+		# ----
 		if self.backgroundColorParam:
 			prefItem = ColorPrefItem(
 				ui,
@@ -408,11 +408,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(hbox, prefItem.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(optionsWidget, hbox)
-		########
+		# --------
 		self.dayMonthParamsVbox = VBox()
 		pack(optionsWidget, self.dayMonthParamsVbox)
 		subPages += self.updateTypeParamsWidget()
-		####
+		# ----
 		pageWidget = VBox(spacing=5)
 		page = StackPage()
 		page.pageWidget = pageWidget
@@ -422,7 +422,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		page.pageExpand = False
 		subPages.append(page)
 		buttons2.append(newSubPageButton(self, page))
-		###
+		# ---
 		if self.widgetButtonsEnableParam:
 			prefItem = CheckPrefItem(
 				ui,
@@ -442,11 +442,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, prefItem.getWidget())
 		pageWidget.show_all()
-		#####
+		# -----
 		if self.weekdayParamsParam:
 			params = self.getWeekDayParams()
 			pageWidget = VBox(spacing=5)
-			###
+			# ---
 			weekdayWidget = TextParamWidget(
 				self.weekdayParamsParam,
 				self,
@@ -457,7 +457,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				hasAlign=True,
 			)
 			pack(pageWidget, weekdayWidget)
-			###
+			# ---
 			if self.weekdayLocalizeParam and langSh != "en":
 				prefItem = CheckPrefItem(
 					ui,
@@ -485,7 +485,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					onChangeFunc=self.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
-			###
+			# ---
 			pageWidget.show_all()
 			page = StackPage()
 			page.pageWidget = pageWidget
@@ -495,7 +495,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageExpand = False
 			subPages.append(page)
 			buttons2.append(newSubPageButton(self, page))
-			###
+			# ---
 			c = self.getCell()
 			text = core.getWeekDayAuto(
 				c.weekDay,
@@ -504,7 +504,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				relative=False,
 			)
 			weekdayWidget.setFontPreviewText(text)
-		########
+		# --------
 		vbox = VBox(spacing=10)
 		page = StackPage()
 		page.pageWidget = vbox
@@ -514,7 +514,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		page.pageExpand = False
 		subPages.append(page)
 		buttons2.append(newSubPageButton(self, page))
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			self.eventIconSizeParam,
@@ -527,7 +527,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(vbox, prefItem.getWidget())
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			self.eventTotalSizeRatioParam,
@@ -540,7 +540,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(vbox, prefItem.getWidget())
-		####
+		# ----
 		if self.seasonPieEnableParam:
 			pageWidget = VBox(spacing=5)
 			page = StackPage()
@@ -551,7 +551,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageExpand = False
 			subPages.append(page)
 			buttons2.append(newSubPageButton(self, page))
-			###
+			# ---
 			prefItem = CheckPrefItem(
 				ui,
 				self.seasonPieEnableParam,
@@ -560,7 +560,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				onChangeFunc=self.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
-			###
+			# ---
 			frame = gtk.Frame()
 			frame.set_border_width(5)
 			frame.set_label(_("Colors"))
@@ -608,7 +608,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					1,
 				)
 			pageWidget.show_all()
-		####
+		# ----
 		for buttons in (buttons1, buttons2):
 			grid = gtk.Grid()
 			grid.set_row_homogeneous(True)
@@ -625,12 +625,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 				)
 			grid.show_all()
 			pack(optionsWidget, grid, padding=5)
-		###
+		# ---
 		vbox.show_all()
-		########
+		# --------
 		self.subPages = subPages
 		self.optionsWidget = optionsWidget
-		###
+		# ---
 		self.optionsWidget.show_all()
 		return self.optionsWidget
 
@@ -827,20 +827,20 @@ class DayCal(gtk.DrawingArea, CalBase):
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, self.getBackgroundColor())
-		#####
+		# -----
 		c = self.getCell()
 		x0 = 0
 		y0 = 0
-		########
+		# --------
 		self.drawEventIcons(cr, c, w, h, x0, y0)
-		# ### Drawing numbers inside every cell
+		# # Drawing numbers inside every cell
 		# cr.rectangle(
 		# 	x0-w/2.0+1,
 		# 	y0-h/2.0+1,
 		# 	w-1,
 		# 	h-1,
 		# )
-		####
+		# ----
 		for calType, params in zip(
 			calTypes.active,
 			self.getDayParams(),

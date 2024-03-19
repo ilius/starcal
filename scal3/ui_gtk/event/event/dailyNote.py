@@ -7,13 +7,13 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):
 		common.WidgetClass.__init__(self, event)
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Date")))
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 

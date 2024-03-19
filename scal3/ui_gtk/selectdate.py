@@ -44,7 +44,7 @@ class SelectDateDialog(gtk.Dialog):
 		# self.set_skip_taskbar_hint(True)
 		self.connect("delete-event", self.onCancel)
 		self.calType = calTypes.primary
-		# #### Receiving dropped day!
+		# Receiving dropped day!
 		self.drag_dest_set(
 			gtk.DestDefaults.ALL,
 			(),
@@ -53,14 +53,14 @@ class SelectDateDialog(gtk.Dialog):
 		self.drag_dest_add_text_targets()
 		self.connect("drag-data-received", self.dragRec)
 		self.vbox.set_spacing(5)
-		######
+		# ------
 		hb0 = HBox(spacing=4)
 		pack(hb0, gtk.Label(label=_("Date Mode")))
 		combo = CalTypeCombo()
 		combo.set_active(self.calType)
 		pack(hb0, combo)
 		pack(self.vbox, hb0)
-		#######################
+		# -----------------------
 		hbox = HBox(spacing=5)
 		rb1 = gtk.RadioButton(label="")
 		rb1.num = 1
@@ -68,7 +68,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.ymdBox = YearMonthDayBox()
 		pack(hbox, self.ymdBox)
 		pack(self.vbox, hbox)
-		########
+		# --------
 		hb2 = HBox(spacing=4)
 		pack(hb2, gtk.Label(label="yyyy/mm/dd"))
 		dateInput = DateButtonOption(hist_size=16)
@@ -79,7 +79,7 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb2i, rb2)
 		pack(hb2i, hb2)
 		pack(self.vbox, hb2i)
-		########
+		# --------
 		hb3 = HBox(spacing=10)
 		pack(hb3, gtk.Label(label=_("Julian Day Number")))
 		jdInput = IntSpinButton(0, 9999999)
@@ -90,7 +90,7 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb3i, rb3)
 		pack(hb3i, hb3)
 		pack(self.vbox, hb3i)
-		#######
+		# -------
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -105,7 +105,7 @@ class SelectDateDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 			onClick=self.ok,
 		)
-		#######
+		# -------
 		self.calTypeCombo = combo
 		self.dateInput = dateInput
 		self.jdInput = jdInput
@@ -114,14 +114,14 @@ class SelectDateDialog(gtk.Dialog):
 		self.radio3 = rb3
 		self.hbox2 = hb2
 		self.hbox3 = hb3
-		#######
+		# -------
 		combo.connect("changed", self.calTypeComboChanged)
 		rb1.connect_after("clicked", self.radioChanged)
 		rb2.connect_after("clicked", self.radioChanged)
 		dateInput.connect("activate", self.ok)
 		jdInput.connect("activate", self.ok)
 		self.radioChanged()
-		#######
+		# -------
 		self.vbox.show_all()
 		self.resize(1, 1)
 

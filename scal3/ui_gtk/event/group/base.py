@@ -31,9 +31,9 @@ class BaseWidgetClass(gtk.Box):
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.group = group
-		########
+		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
@@ -42,7 +42,7 @@ class BaseWidgetClass(gtk.Box):
 		self.titleEntry = gtk.Entry()
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Color"))
 		label.set_xalign(0)
@@ -52,7 +52,7 @@ class BaseWidgetClass(gtk.Box):
 		self.colorButton.set_use_alpha(True)  # FIXME
 		pack(hbox, self.colorButton)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Default Icon"))  # FIXME
 		label.set_xalign(0)
@@ -61,7 +61,7 @@ class BaseWidgetClass(gtk.Box):
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Default Calendar Type"))
 		label.set_xalign(0)
@@ -72,9 +72,9 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
 		pack(self, hbox)
-		#####
+		# -----
 		self.addStartEndWidgets()
-		#####
+		# -----
 		hbox = HBox()
 		self.tzCheck = gtk.CheckButton(label=_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
@@ -88,7 +88,7 @@ class BaseWidgetClass(gtk.Box):
 			"clicked",
 			lambda check: self.tzCombo.set_sensitive(check.get_active()),
 		)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Show in Calendar"))
 		label.set_xalign(0)
@@ -104,7 +104,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.showInMCalCheck)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Show in"))
 		label.set_xalign(0)
@@ -117,7 +117,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.showInStatusIconCheck)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Event Cache Size"))
 		label.set_xalign(0)
@@ -126,7 +126,7 @@ class BaseWidgetClass(gtk.Box):
 		self.cacheSizeSpin = IntSpinButton(0, 9999)
 		pack(hbox, self.cacheSizeSpin)
 		pack(self, hbox)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Event Text Separator"))
 		label.set_xalign(0)
@@ -141,7 +141,7 @@ class BaseWidgetClass(gtk.Box):
 				"Using to separate Summary and Description when displaying event",
 			),
 		)
-		#####
+		# -----
 		# hbox = HBox()
 		# label = gtk.Label(label=_("Show Full Event Description"))
 		# label.set_xalign(0)
@@ -150,12 +150,12 @@ class BaseWidgetClass(gtk.Box):
 		# self.showFullEventDescCheck = gtk.CheckButton(label="")
 		# pack(hbox, self.showFullEventDescCheck, 1, 1)
 		# pack(self, hbox)
-		###
+		# ---
 		self.calTypeCombo.connect(
 			"changed",
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
-		#####
+		# -----
 		if self.userCanAddEvents:
 			hbox = HBox()
 			self.addEventsToBeginningCheck = gtk.CheckButton(
@@ -176,12 +176,12 @@ class BaseWidgetClass(gtk.Box):
 		self.colorButton.set_rgba(self.group.color)
 		self.iconSelect.set_filename(self.group.icon)
 		self.calTypeCombo.set_active(self.group.calType)
-		##
+		# --
 		self.tzCheck.set_active(self.group.timeZoneEnable)
 		self.tzCombo.set_sensitive(self.group.timeZoneEnable)
 		if self.group.timeZone:
 			self.tzCombo.set_text(self.group.timeZone)
-		##
+		# --
 		self.showInDCalCheck.set_active(self.group.showInDCal)
 		self.showInWCalCheck.set_active(self.group.showInWCal)
 		self.showInMCalCheck.set_active(self.group.showInMCal)
@@ -198,10 +198,10 @@ class BaseWidgetClass(gtk.Box):
 		self.group.color = self.colorButton.get_rgba()
 		self.group.icon = self.iconSelect.get_filename()
 		self.group.calType = self.calTypeCombo.get_active()
-		##
+		# --
 		self.group.timeZoneEnable = self.tzCheck.get_active()
 		self.group.timeZone = self.tzCombo.get_text()
-		##
+		# --
 		self.group.showInDCal = self.showInDCalCheck.get_active()
 		self.group.showInWCal = self.showInWCalCheck.get_active()
 		self.group.showInMCal = self.showInMCalCheck.get_active()

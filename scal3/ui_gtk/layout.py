@@ -50,10 +50,10 @@ class WinLayoutBase(CustomizableCalObj):
 		self.enableParam = enableParam
 		self.vertical = vertical
 		self.expand = expand
-		####
+		# ----
 		self.optionsButtonBox = None  # type: gtk.Widget
 		self.subPages = None
-		####
+		# ----
 		CustomizableCalObj.__init__(self)
 		self.initVars()
 
@@ -75,7 +75,7 @@ class WinLayoutObj(WinLayoutBase):
 	):
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")
-		###
+		# ---
 		WinLayoutBase.__init__(
 			self,
 			name=name,
@@ -84,7 +84,7 @@ class WinLayoutObj(WinLayoutBase):
 			vertical=vertical,
 			expand=expand,
 		)
-		###
+		# ---
 		self.movable = movable
 		self.buttonBorder = buttonBorder
 		self.labelAngle = labelAngle
@@ -182,7 +182,7 @@ class WinLayoutBox(WinLayoutBase):
 			raise ValueError("horizontal movable buttons are not supported")
 		if itemsMovable and not itemsParam:
 			raise ValueError("itemsMovable=True but no itemsParam is given")
-		###
+		# ---
 		WinLayoutBase.__init__(
 			self,
 			name=name,
@@ -193,12 +193,12 @@ class WinLayoutBox(WinLayoutBase):
 		)
 		for item in items:
 			self.appendItem(item)
-		###
+		# ---
 		self.itemsMovable = itemsMovable
 		self.itemsParam = itemsParam
 		self.buttonSpacing = buttonSpacing
 		self.arrowSize = arrowSize
-		###
+		# ---
 		self._box = None  # type: gtk.Box
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
@@ -268,7 +268,7 @@ class WinLayoutBox(WinLayoutBase):
 				pack(hbox, childBox, 1, 1)
 				pack(hbox, upButton, 0, 0)
 				optionsButtonBox.insert(hbox, -1)
-				###
+				# ---
 				upButton.connect("clicked", self.onItemMoveClick, item)
 				item.upButton = upButton
 		else:
@@ -297,7 +297,7 @@ class WinLayoutBox(WinLayoutBase):
 		else:
 			newIndex = index - 1
 		self.moveItem(index, newIndex)
-		###
+		# ---
 		listBox = self.optionsButtonBox
 		hbox = listBox.get_row_at_index(index)
 		listBox.remove(hbox)

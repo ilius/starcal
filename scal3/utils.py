@@ -160,7 +160,7 @@ class StrOrderedDict(dict):
 				if self.reorderOnModify:
 					self.keyList.remove(arg)
 					self.keyList.append(arg)
-			# elif isinstance(arg, slice):## ???????????? is not tested
+			# elif isinstance(arg, slice):-- ???????????? is not tested
 			# 	#assert isinstance(value, StrOrderedDict)
 			# 	if isinstance(value, StrOrderedDict):
 			# 		for key in self.keyList.__getitem__(arg):

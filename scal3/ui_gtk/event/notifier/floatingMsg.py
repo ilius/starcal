@@ -24,24 +24,24 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 class WidgetClass(gtk.Box):
 	def __init__(self, notifier):
 		self.notifier = notifier
-		##
+		# --
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# [_] Fill Screen Width   Speed [__]   BG Color [__]  Text Color [__]
-		##
+		# --
 		self.fillWidthCb = gtk.CheckButton(label=_("Fill Width"))
 		pack(self, self.fillWidthCb)
 		pack(self, gtk.Label(), 1, 1)
-		##
+		# --
 		self.speedSpin = IntSpinButton(1, 999)
 		pack(self, gtk.Label(label=_("Speed")))
 		pack(self, self.speedSpin)
 		pack(self, gtk.Label(), 1, 1)
-		##
+		# --
 		self.bgColorButton = MyColorButton()
 		pack(self, gtk.Label(label=_("BG Color")))
 		pack(self, self.bgColorButton)
 		pack(self, gtk.Label(), 1, 1)
-		##
+		# --
 		self.textColorButton = MyColorButton()
 		pack(self, gtk.Label(label=_("Text Color")))
 		pack(self, self.textColorButton)

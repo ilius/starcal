@@ -66,13 +66,13 @@ log = logger.get()
 # else:
 # 	from pray_times_qt import *
 
-####################################################
+# ----------------------------------------------------
 
 localTz = natz.gettz()
 
 timeDescByName = dict(timeNames)
 
-# ##################### Functions and Classes ##################
+# --------------------- Functions and Classes ------------------
 
 
 def getCurrentJd() -> int:
@@ -154,7 +154,7 @@ EventRule = api.get("event_lib", "EventRule")
 
 @event_classes.rule.register
 class PrayTimeEventRule(EventRule):
-	plug = None ## FIXME
+	plug = None # FIXME
 	name = "prayTime"
 	desc = _("Pray Time")
 	provide = ("time",)
@@ -206,12 +206,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		)
 		self.lastDayMerge = False
 		self._cityData = None
-		##############
+		# --------------
 		confNeedsSave = False
-		######
+		# ------
 		self.locName, self.lat, self.lng = "", 0, 0
 		# method = ""
-		#######
+		# ------
 		self.imsak = 10  # minutes before Fajr (Morning Azan)
 		# self.asrMode = ASR_STANDARD
 		# self.highLats = "NightMiddle"
@@ -226,47 +226,47 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# FIXME rename shownTimeNames to activeTimeNames
 		# 		or add another list azanSoundTimeNames
 		self.sep = "     "
-		##
+		# --
 		self.azanEnable = False
 		self.azanFile = None
-		##
+		# --
 		self.preAzanEnable = False
 		self.preAzanFile = None
 		self.preAzanMinutes = 2.0
-		##
+		# --
 		self.disclaimerLastEpoch = 0
-		####
+		# ----
 		loadModuleJsonConf(self)
-		####
+		# ----
 		if not isfile(self.confPath):
 			confNeedsSave = True
-		####
+		# ----
 		if not self.locName:
 			confNeedsSave = True
 			self.locName, self.lat, self.lng = self.guessLocation()
 			self.method = "Tehran"
 			# TODO: guess method from location
-		#######
+		# -------
 		self.backend = PrayTimes(
 			self.lat,
 			self.lng,
 			methodName=self.method,
 			imsak=f"{self.imsak:d} min",
 		)
-		####
-		#######
+		# ----
+		# -------
 		# PrayTimeEventRule.plug = self
-		#######
+		# -------
 		if confNeedsSave:
 			self.saveConfig()
-		#######
+		# -------
 		self.makeWidget()  # FIXME
 		# self.onCurrentDateChange(localtime()[:3])
-		###
+		# ---
 		# self.doPlayPreAzan()
 		# time.sleep(2)
 		# self.doPlayAzan()  # for testing
-		###
+		# ---
 		self.checkShowDisclaimer()
 
 	def getCityData(self):
@@ -413,7 +413,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			if timeName not in self.shownTimeNames:
 				continue
 			azanSec = azanHour * 3600.0
-			#####
+			# -----
 			toAzanSecs = int(azanSec - secondsFromMidnight)
 			if toAzanSecs >= 0:
 				preAzanSec = azanSec - self.preAzanMinutes * 60
@@ -424,7 +424,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 					self.doPlayPreAzan,
 					# midnightUtc + preAzanSec,
 				).start()
-				###
+				# ---
 				log.debug(f"{toAzanSecs=:.1f}")
 				Timer(
 					toAzanSecs,

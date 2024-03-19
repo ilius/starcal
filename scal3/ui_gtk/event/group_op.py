@@ -15,7 +15,7 @@ class GroupSortDialog(gtk.Dialog):
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Sort Events"))
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -28,9 +28,9 @@ class GroupSortDialog(gtk.Dialog):
 			label=_("_Perform"),
 			res=gtk.ResponseType.OK,
 		)
-		##
+		# --
 		self.connect("response", lambda _w, _e: self.hide())
-		####
+		# ----
 		hbox = HBox()
 		pack(
 			hbox,
@@ -42,7 +42,7 @@ class GroupSortDialog(gtk.Dialog):
 		)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Based on") + " "))
 		self.sortByNames = []
@@ -59,7 +59,7 @@ class GroupSortDialog(gtk.Dialog):
 		pack(hbox, self.reverseCheck)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
-		####
+		# ----
 		self.vbox.show_all()
 
 	def run(self):
@@ -81,7 +81,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Convert Calendar Type"))
-		####
+		# ----
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
@@ -94,9 +94,9 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 			label=_("_Perform"),
 			res=gtk.ResponseType.OK,
 		)
-		##
+		# --
 		self.connect("response", lambda _w, _e: self.hide())
-		####
+		# ----
 		label = gtk.Label(
 			label=_(
 				"This is going to convert calendar types of all events inside "
@@ -108,7 +108,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		label.set_line_wrap(True)
 		label.set_yalign(0.5)
 		pack(self.vbox, label, 1, 1)
-		###
+		# ---
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Calendar Type") + ":"))
 		combo = CalTypeCombo()
@@ -117,9 +117,9 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
 		pack(self.vbox, hbox)
-		###
+		# ---
 		pack(self.vbox, gtk.Label())
-		####
+		# ----
 		self.vbox.set_border_width(10)
 		self.vbox.show_all()
 		window_set_size_aspect(self, min_aspect=1.5, max_aspect=2.0)

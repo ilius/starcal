@@ -191,12 +191,12 @@ class EventSearchTree:
 				f"EventSearchTree.add: {eid}\t{strftime(f, localtime(t0))}"
 				f"\t{strftime(f, localtime(t1))}",
 			)
-		###
+		# ---
 		if t0 == t1:
 			t1 += epsTm  # needed? FIXME
 		mt = (t0 + t1) / 2.0
 		dt = (t1 - t0) / 2.0
-		###
+		# ---
 		try:
 			self.root = self.addStep(
 				self.root,
@@ -220,10 +220,10 @@ class EventSearchTree:
 		t1 = min(t1, node.max_t)
 		if t0 >= t1:
 			return
-		###
+		# ---
 		for item in self.searchStep(node.left, t0, t1):
 			yield item
-		###
+		# ---
 		min_dt = abs((t0 + t1) / 2.0 - node.mt) - (t1 - t0) / 2.0
 		if min_dt <= 0:
 			for dt, eid in node.events.getAll():
@@ -231,7 +231,7 @@ class EventSearchTree:
 		else:
 			for dt, eid in node.events.moreThan(min_dt):
 				yield node.mt, dt, eid
-		###
+		# ---
 		for item in self.searchStep(node.right, t0, t1):
 			yield item
 
@@ -261,11 +261,11 @@ class EventSearchTree:
 		t1 = min(t1, node.max_t)
 		if t1 <= node.min_t:
 			return
-		###
+		# ---
 		right_res = self.getLastBeforeStep(node.right, t1)
 		if right_res:
 			return right_res
-		###
+		# ---
 		if node.mt < t1:
 			dt, eid = node.events.getMax()
 			return (
@@ -273,7 +273,7 @@ class EventSearchTree:
 				dt,
 				eid,
 			)
-		###
+		# ---
 		return self.getLastBeforeStep(node.left, t1)
 
 	@staticmethod

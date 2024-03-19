@@ -37,10 +37,10 @@ class MonthStatus(list):  # FIXME
 		self.offset = getWeekDay(year, month, 1)  # month start offset
 		initJd = core.primary_to_jd(year, month, 1)
 		self.weekNum = [getWeekNumberByJd(initJd + i * 7) for i in range(6)]
-		#########
+		# ---------
 		startJd, _endJd = getJdRangeForMonth(year, month, calTypes.primary)
 		tableStartJd = startJd - self.offset
-		#####
+		# -----
 		list.__init__(
 			self,
 			[
@@ -70,13 +70,13 @@ def setParamsFunc(cell):
 	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
 	yPos, xPos = divmod(offset + cell.day - 1, 7)
 	cell.monthPos = (xPos, yPos)
-	###
+	# ---
 	"""
 	if yPos==0:
 		cell.monthPosPrev = (xPos, 5)
 	else:
 		cell.monthPosPrev = None
-	###
+	# ---
 	if yPos==5:
 		cell.monthPosNext = (xPos, 0)
 	else:
@@ -100,7 +100,7 @@ def getCurrentMonthStatus():
 	)
 
 
-########################
+# ------------------------
 
 
 # TODO: write test for it
@@ -210,7 +210,7 @@ def getMonthDesc(status=None):
 	return text
 
 
-########################
+# ------------------------
 
 ui.cellCache.registerPlugin(
 	pluginName,

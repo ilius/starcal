@@ -8,11 +8,11 @@ class WeekDayComboBox(gtk.ComboBox):
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
 		self.firstWeekDay = core.firstWeekDay
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 0)
-		###
+		# ---
 		for i in range(7):
 			ls.append([core.weekDayName[(i + self.firstWeekDay) % 7]])
 		self.set_active(0)

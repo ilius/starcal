@@ -6,7 +6,7 @@ from scal3.ui_gtk.event.account import BaseWidgetClass
 class WidgetClass(BaseWidgetClass):
 	def __init__(self, account):
 		BaseWidgetClass.__init__(self, account)
-		#####
+		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Email"))
 		label.set_xalign(0)
@@ -15,7 +15,7 @@ class WidgetClass(BaseWidgetClass):
 		self.emailEntry = gtk.Entry()
 		pack(hbox, self.emailEntry, 1, 1)
 		pack(self, hbox)
-		####
+		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Password"))
 		label.set_xalign(0)

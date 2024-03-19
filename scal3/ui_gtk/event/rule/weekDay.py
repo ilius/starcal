@@ -5,7 +5,7 @@ from scal3.ui_gtk import gtk, pack
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		###
+		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.set_homogeneous(True)
 		ls = [gtk.ToggleButton(label=item) for item in core.weekDayNameAb]

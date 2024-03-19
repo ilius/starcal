@@ -88,7 +88,7 @@ class MyFontButton(gtk.FontButton):
 		_etime,
 	):
 		# dtype = selection.get_data_type()
-		# log.debug(dtype ## UTF8_STRING)
+		# log.debug(dtype # UTF8_STRING)
 		text = selection.get_text()
 		log.debug(f"fontButtonDragDataRec    {text=}")
 		if text:
@@ -99,7 +99,7 @@ class MyFontButton(gtk.FontButton):
 		return True
 
 	def dragBegin(self, _fontb, context):
-		# log.debug("fontBottonDragBegin"## caled before dragCalDataGet)
+		# log.debug("fontBottonDragBegin"-- caled before dragCalDataGet)
 		fontName = gtk.FontButton.get_font(self)
 		pbuf = newDndFontNamePixbuf(fontName)
 		w = pbuf.get_width()
@@ -138,7 +138,7 @@ class MyColorButton(gtk.ColorButton):
 		# self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
 		# log.debug(self.get_tooltip_window())
 		self.set_tooltip_text(text)  # ???????????????? Right to left
-		# self.tt_label.set_label(text)##???????????? Dosent work
+		# self.tt_label.set_label(text)--???????????? Dosent work
 		# self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)
@@ -160,11 +160,11 @@ class TextFrame(gtk.Frame):
 	def __init__(self, onTextChange=None):
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
-		####
+		# ----
 		self.textview = gtk.TextView()
 		self.textview.set_wrap_mode(gtk.WrapMode.WORD)
 		self.add(self.textview)
-		####
+		# ----
 		self.buff = self.textview.get_buffer()
 		if onTextChange is not None:
 			self.buff.connect("changed", onTextChange)

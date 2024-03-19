@@ -50,10 +50,10 @@ class EditDbDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tune Hijri Monthes"))
 		self.connect("delete-event", self.onDeleteEvent)
-		############
+		# ------------
 		self.altMode = 0
 		self.altModeDesc = "Gregorian"
-		############
+		# ------------
 		hbox = HBox()
 		self.topLabel = gtk.Label()
 		pack(hbox, self.topLabel)
@@ -62,7 +62,7 @@ class EditDbDialog(gtk.Dialog):
 		self.startDateInput.connect("changed", lambda _widget: self.updateEndDates())
 		pack(hbox, self.startDateInput)
 		pack(self.vbox, hbox)
-		############################
+		# ----------------------------
 		treev = gtk.TreeView()
 		treeModel = gtk.ListStore(
 			int,  # ym (hidden)
@@ -75,19 +75,19 @@ class EditDbDialog(gtk.Dialog):
 		# treev.get_selection().connect("changed", self.plugTreevCursorChanged)
 		# treev.connect("row-activated", self.plugTreevRActivate)
 		# treev.connect("button-press-event", self.plugTreevButtonPress)
-		###
+		# ---
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
-		######
+		# ------
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Year"), cell_renderer=cell, text=1)
 		treev.append_column(col)
-		######
+		# ------
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Month"), cell_renderer=cell, text=2)
 		treev.append_column(col)
-		######
+		# ------
 		cell = gtk.CellRendererCombo(editable=True)
 		mLenModel = gtk.ListStore(int)
 		mLenModel.append([29])  # noqa: FURB113
@@ -98,13 +98,13 @@ class EditDbDialog(gtk.Dialog):
 		cell.connect("edited", self.monthLenCellEdited)
 		col = gtk.TreeViewColumn(title=_("Month Length"), cell_renderer=cell, text=3)
 		treev.append_column(col)
-		######
+		# ------
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("End Date"), cell_renderer=cell, text=4)
 		treev.append_column(col)
-		######
+		# ------
 		toolbar = StaticToolBox(self, vertical=True)
-		###
+		# ---
 		toolbar.extend(
 			[
 				ToolBoxItem(
@@ -123,15 +123,15 @@ class EditDbDialog(gtk.Dialog):
 				),
 			],
 		)
-		######
+		# ------
 		self.treev = treev
 		self.treeModel = treeModel
-		#####
+		# -----
 		mainHbox = HBox()
 		pack(mainHbox, swin, 1, 1)
 		pack(mainHbox, toolbar)
 		pack(self.vbox, mainHbox, 1, 1)
-		######
+		# ------
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
@@ -144,7 +144,7 @@ class EditDbDialog(gtk.Dialog):
 			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
-		##
+		# --
 		resetB = dialog_add_button(
 			self,
 			imageName="edit-undo.svg",
@@ -152,11 +152,11 @@ class EditDbDialog(gtk.Dialog):
 			res=gtk.ResponseType.NONE,
 		)
 		resetB.connect("clicked", self.resetToDefaults)
-		##
+		# --
 		self.connect("response", self.onResponse)
 		# log.debug(dir(self.get_action_area()))
 		# self.get_action_area().set_homogeneous(False)
-		######
+		# ------
 		self.vbox.show_all()
 
 	def resetToDefaults(self, _widget):
@@ -220,7 +220,7 @@ class EditDbDialog(gtk.Dialog):
 			+ _(self.altModeDesc),
 		)
 		self.startDateInput.set_value(jd_to(hijri.monthDb.startJd, self.altMode))
-		###########
+		# -----------
 		selectYm = getCurrentYm() - 1  # previous month
 		selectIndex = None
 		self.treeModel.clear()
@@ -238,7 +238,7 @@ class EditDbDialog(gtk.Dialog):
 				],
 			)
 		self.updateEndDates()
-		########
+		# --------
 		if selectIndex is not None:
 			self.treev.scroll_to_cell(str(selectIndex))
 			self.treev.set_cursor(str(selectIndex))
@@ -335,22 +335,22 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Hijri months expired"))
 		self.connect("response", self.onResponse)
-		###
+		# ---
 		pack(self.vbox, gtk.Label(label=self.message + "\n\n"), 1, 1)
-		###
+		# ---
 		hbox = HBox()
 		checkb = gtk.CheckButton(label=_("Don't show this again"))
 		pack(hbox, checkb)
 		pack(self.vbox, hbox)
 		self.noShowCheckb = checkb
-		###
+		# ---
 		dialog_add_button(
 			self,
 			imageName="window-close.svg",
 			label=_("Understood"),
 			res=gtk.ResponseType.OK,
 		)
-		###
+		# ---
 		self.vbox.show_all()
 
 	def onResponse(self, _dialog, _response_id):

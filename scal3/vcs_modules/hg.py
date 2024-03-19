@@ -26,7 +26,7 @@ from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
 
 def prepareObj(obj):
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
-	###
+	# ---
 	obj.est = EventSearchTree()
 	for rev_id in obj.repo.changelog:
 		epoch = obj.repo[rev_id].date()[0]
@@ -63,7 +63,7 @@ def getCommitInfo(obj, commid_id):
 # FIXME: SLOW
 def getShortStat(obj, node1, node2):
 	repo = obj.repo
-	# if not node1 ## FIXME
+	# if not node1 # FIXME
 	stats = diffstatdata(
 		iterlines(
 			diff(
@@ -104,7 +104,7 @@ def getTagList(obj, startJd, endJd):
 		return []
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
-	###
+	# ---
 	data = []
 	for tag, _unknown in obj.repo.tagslist():
 		if tag == "tip":

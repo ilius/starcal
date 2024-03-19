@@ -94,27 +94,27 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self.fixedRadio = gtk.RadioButton(label=fixedLabel)
 		self.ratioRadio = gtk.RadioButton(label=ratioLabel, group=self.fixedRadio)
 		self._onChangeFunc = onChangeFunc
-		#####
+		# -----
 		vbox = VBox(spacing=vspacing)
 		vbox.set_border_width(borderWidth)
-		##
+		# --
 		hbox = HBox(spacing=hspacing)
 		pack(hbox, self.fixedRadio)
 		pack(hbox, fixedItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
-		##
+		# --
 		hbox = HBox(spacing=hspacing)
 		pack(hbox, self.ratioRadio)
 		pack(hbox, ratioItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
-		####
+		# ----
 		vbox.show_all()
 		self._widget = vbox
 		self.updateWidget()
-		#####
+		# -----
 		fixedItem.getWidget().connect("changed", self.onChange)
 		ratioItem.getWidget().connect("changed", self.onChange)
 		self.fixedRadio.connect("clicked", self.onChange)
@@ -206,7 +206,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 	def __init__(self, obj, attrName):
 		self.obj = obj
 		self.attrName = attrName
-		####
+		# ----
 		self._widget = gtk.ComboBoxText()
 		for item in ud.iconSizeList:
 			self._widget.append_text(item[0])
@@ -221,7 +221,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 				return
 """
 
-############################################################
+# ------------------------------------------------------------
 
 
 class CalTypePrefItem(PrefItem):
@@ -237,13 +237,13 @@ class CalTypePrefItem(PrefItem):
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
-		###
+		# ---
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(label=_("Calendar Type") + " "))
 		self._combo = CalTypeCombo(hasDefault=True)
 		pack(hbox, self._combo)
 		self._widget = hbox
-		###
+		# ---
 		if live:
 			# updateWidget needs to be called before following connect() calls
 			self.updateWidget()
@@ -267,15 +267,15 @@ class LangPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self.obj = locale_man
 		self.attrName = "lang"
-		###
+		# ---
 		ls = gtk.ListStore(str)
 		combo = gtk.ComboBox()
 		combo.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(combo, cell, True)
 		combo.add_attribute(cell, "text", 0)
-		###
+		# ---
 		self._widget = combo
 		self.ls = ls
 		self.ls.append([_("System Setting")])
@@ -340,7 +340,7 @@ class AICalsTreeview(gtk.TreeView):
 		gtk.TreeView.__init__(self)
 		self.set_headers_clickable(False)
 		self.set_model(gtk.ListStore(str, str))
-		###
+		# ---
 		self.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
@@ -356,7 +356,7 @@ class AICalsTreeview(gtk.TreeView):
 		)
 		self.connect("drag-data-get", self.dragDataGet)
 		self.connect("drag_data_received", self.dragDataReceived)
-		####
+		# ----
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(self.title, cell_renderer=cell, text=1)
 		col.set_resizable(True)
@@ -529,7 +529,7 @@ def treeviewSelect(treev, index):
 class AICalsPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self._widget = HBox()
-		########
+		# --------
 		treev = ActiveCalsTreeView()
 		treev.connect("row-activated", self.activeTreevRActivate)
 		treev.connect("focus-in-event", self.activeTreevFocus)
@@ -538,17 +538,17 @@ class AICalsPrefItem(PrefItem):
 			"changed",
 			self.activeTreevSelectionChanged,
 		)
-		###
+		# ---
 		pack(self._widget, treev.makeSwin(), 1, 1)
-		####
+		# ----
 		self.activeTreev = treev
 		self.activeTrees = treev.get_model()
-		########
+		# --------
 		toolbar = AICalsPrefItemToolbar(self)
 		toolbar.show_all()
 		self.toolbar = toolbar
 		pack(self._widget, toolbar)
-		########
+		# --------
 		treev = InactiveCalsTreeView()
 		treev.connect("row-activated", self.inactiveTreevRActivate)
 		treev.connect("focus-in-event", self.inactiveTreevFocus)
@@ -557,12 +557,12 @@ class AICalsPrefItem(PrefItem):
 			"changed",
 			self.inactiveTreevSelectionChanged,
 		)
-		###
+		# ---
 		pack(self._widget, treev.makeSwin(), 1, 1)
-		####
+		# ----
 		self.inactiveTreev = treev
 		self.inactiveTrees = treev.get_model()
-		########
+		# --------
 
 	def activeTreevFocus(
 		self,
@@ -706,13 +706,13 @@ class AICalsPrefItem(PrefItem):
 	def updateWidget(self) -> None:
 		self.activeTrees.clear()
 		self.inactiveTrees.clear()
-		##
+		# --
 		for calType in calTypes.active:
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.activeTrees.append([module.name, _(module.desc, ctx="calendar")])
-		##
+		# --
 		for calType in calTypes.inactive:
 			module, ok = calTypes[calType]
 			if not ok:
@@ -732,7 +732,7 @@ class KeyBindingPrefItem(PrefItem):
 		self.obj = obj
 		self.attrName = attrName
 		self.actions = actions
-		######
+		# ------
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		trees = gtk.ListStore(
@@ -740,12 +740,12 @@ class KeyBindingPrefItem(PrefItem):
 			str,  # action
 		)
 		treev.set_model(trees)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Key"), cell_renderer=cell, text=0)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		###
+		# ---
 		cell = gtk.CellRendererCombo(editable=True)
 		actionModel = gtk.ListStore(str)
 		for action in actions:
@@ -754,14 +754,14 @@ class KeyBindingPrefItem(PrefItem):
 		col = gtk.TreeViewColumn(title=_("Action"), cell_renderer=cell, text=1)
 		col.set_property("expand", False)
 		treev.append_column(col)
-		###
+		# ---
 		self.treeview = treev
-		###
+		# ---
 		treev.connect("button-press-event", self.onTreeviewButtonPress)
-		###
+		# ---
 		treev.show_all()
 		self.treev = treev
-		###
+		# ---
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)

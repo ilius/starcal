@@ -7,21 +7,21 @@ from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		#####
+		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		###
+		# ---
 		combo = gtk.ComboBoxText()
 		for item in rule.wmIndexNames:
 			combo.append_text(item)
 		pack(self, combo)
 		self.nthCombo = combo
-		###
+		# ---
 		combo = WeekDayComboBox()
 		pack(self, combo)
 		self.weekDayCombo = combo
-		###
+		# ---
 		pack(self, gtk.Label(label=_(" of ")))
-		###
+		# ---
 		combo = MonthComboBox(True)
 		combo.build(rule.getCalType())
 		pack(self, combo)

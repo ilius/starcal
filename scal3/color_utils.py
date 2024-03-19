@@ -12,11 +12,11 @@ def rgbToHsl(r, g, b):
 	r /= 255.0
 	g /= 255.0
 	b /= 255.0
-	###
+	# ---
 	mx = max(r, g, b)
 	mn = min(r, g, b)
 	dm = float(mx - mn)
-	###
+	# ---
 	if dm == 0:
 		h = None
 	elif mx == r:
@@ -27,10 +27,10 @@ def rgbToHsl(r, g, b):
 		h = 60.0 * (b - r) / dm + 120
 	else:  # mx == b:
 		h = 60.0 * (r - g) / dm + 240
-	###
+	# ---
 	# ln means lightness
 	ln = (mx + mn) / 2.0
-	###
+	# ---
 	if 0 in {ln, dm}:
 		s = 0
 	elif 0 < ln < 0.5:

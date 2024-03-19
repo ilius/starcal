@@ -26,9 +26,9 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -36,10 +36,10 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Repeat Every "))
 		label.set_xalign(0)
@@ -48,10 +48,10 @@ class WidgetClass(common.WidgetClass):
 		self.weeksSpin = IntSpinButton(1, 99999)
 		pack(hbox, self.weeksSpin)
 		pack(hbox, gtk.Label(label="  " + _(" Weeks")))
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
@@ -59,65 +59,65 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
-		###
+		# ---
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		#########
+		# ---------
 		hbox = HBox()
 		label = gtk.Label(label=_("Time"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		##
+		# --
 		self.dayTimeStartInput = HourMinuteButton()
 		self.dayTimeEndInput = HourMinuteButton()
-		##
+		# --
 		pack(hbox, self.dayTimeStartInput)
 		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
-		#############
+		# -------------
 		# self.notificationBox = common.NotificationBox(event)
 		# pack(self, self.notificationBox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self):  # FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
-		###
+		# ---
 		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
-		###
+		# ---
 		cycleWeeks, ok = self.event["cycleWeeks"]
 		if not ok:
 			raise RuntimeError("no cycleWeeks rule")
 		self.weeksSpin.set_value(cycleWeeks.weeks)
-		###
+		# ---
 		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
-		###
+		# ---
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
 
 	def updateVars(self):  # FIXME
 		common.WidgetClass.updateVars(self)
-		###
+		# ---
 		start, ok = self.event["start"]
 		if not ok:
 			raise RuntimeError("no start rule")
 		start.setDate(self.startDateInput.get_value())
-		###
+		# ---
 		end, ok = self.event["end"]
 		if not ok:
 			raise RuntimeError("no end rule")
 		end.setDate(self.endDateInput.get_value())
-		###
+		# ---
 		cycleWeeks, ok = self.event["cycleWeeks"]
 		if not ok:
 			raise RuntimeError("no cycleWeeks rule")
 		cycleWeeks.setData(self.weeksSpin.get_value())
-		###
+		# ---
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		if not ok:
 			raise RuntimeError("no dayTimeRange rule")

@@ -316,7 +316,7 @@ class StarCalendarAccount(Account):
 		try:
 			group.setReadOnly(True)
 
-			# ## Pull
+			# # Pull
 			for remoteEvent in remoteModifiedEvents:
 				# remoteEvent is a dict
 				log.info(remoteEvent)
@@ -335,7 +335,7 @@ class StarCalendarAccount(Account):
 				# ]
 				# group.replaceEvent(event)
 
-			# ## Push
+			# # Push
 			if lastSyncEndEpoch:
 				pass
 

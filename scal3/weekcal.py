@@ -34,7 +34,7 @@ class WeekStatus(list):
 		# self.startJd = startJd
 		# self.startDate = core.jd_to_primary(self.startJd)
 		# self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
-		#########
+		# ---------
 		# list.__init__(self, [
 		# 	cellCache.getCell(jd) for jd in range(startJd, endJd)
 		# ])
@@ -65,7 +65,7 @@ def getCurrentWeekStatus():
 	)
 
 
-########################
+# ------------------------
 
 ui.cellCache.registerPlugin(
 	pluginName,

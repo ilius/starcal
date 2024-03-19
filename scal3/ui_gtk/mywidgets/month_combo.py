@@ -6,11 +6,11 @@ from scal3.ui_gtk import gtk, pack
 class MonthComboBox(gtk.ComboBox):
 	def __init__(self, includeEvery=False):
 		self.includeEvery = includeEvery
-		###
+		# ---
 		ls = gtk.ListStore(str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
-		###
+		# ---
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 0)

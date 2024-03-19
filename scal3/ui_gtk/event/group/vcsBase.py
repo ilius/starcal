@@ -9,7 +9,7 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 
 	def __init__(self, group):
 		NormalWidgetClass.__init__(self, group)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("VCS Type"))
 		label.set_xalign(0)
@@ -21,7 +21,7 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		pack(hbox, self.vcsTypeCombo)
 		hbox.show_all()
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Directory"))
 		label.set_xalign(0)
@@ -30,11 +30,11 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		self.dirEntry = gtk.Entry()
 		hbox.show_all()
 		pack(hbox, self.dirEntry)
-		##
+		# --
 		# self.dirBrowse = gtk.Button(label=_("Browse"))
 		hbox.show_all()
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Branch"))
 		label.set_xalign(0)

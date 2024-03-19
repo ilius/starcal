@@ -24,9 +24,9 @@ from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		######
+		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		######
+		# ------
 		try:
 			separateYmd = event.parent.showSeparateYmdInputs
 		except AttributeError:
@@ -37,7 +37,7 @@ class WidgetClass(common.WidgetClass):
 		else:
 			self.startDateInput = DateButton()
 			self.endDateInput = DateButton()
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("Start") + ": ")
 		label.set_xalign(0)
@@ -45,7 +45,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		pack(hbox, self.startDateInput)
 		pack(self, hbox)
-		######
+		# ------
 		hbox = HBox()
 		label = gtk.Label(label=_("End") + ": ")
 		label.set_xalign(0)
@@ -53,7 +53,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
-		#############
+		# -------------
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 

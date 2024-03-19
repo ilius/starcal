@@ -7,12 +7,12 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		###
+		# ---
 		gtk.ComboBox.__init__(self)
-		###
+		# ---
 		self.dateInput = DateButton()
 		pack(self, self.dateInput)
-		###
+		# ---
 		pack(self, gtk.Label(label="   " + _("Time")))
 		self.timeInput = TimeButton()
 		pack(self, self.timeInput)

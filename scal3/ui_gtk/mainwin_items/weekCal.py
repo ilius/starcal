@@ -71,7 +71,7 @@ class ColumnBase(CustomizableCalObj):
 	customizeExpand = False
 	customizeFont = False
 	autoButtonPressHandler = True
-	##
+	# --
 
 	def __init__(self):
 		pass
@@ -114,7 +114,7 @@ class ColumnBase(CustomizableCalObj):
 			return self.optionsWidget
 
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
-		####
+		# ----
 		if self.customizeWidth:
 			prefItem = SpinPrefItem(
 				ui,
@@ -128,7 +128,7 @@ class ColumnBase(CustomizableCalObj):
 				onChangeFunc=self.onWidthChange,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		if self.customizeExpand:
 			prefItem = CheckPrefItem(
 				ui,
@@ -138,7 +138,7 @@ class ColumnBase(CustomizableCalObj):
 				onChangeFunc=self.onExpandCheckClick,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		if self.customizeFont:
 			prefItem = FontFamilyPrefItem(
 				ui,
@@ -152,9 +152,9 @@ class ColumnBase(CustomizableCalObj):
 			previewText = self.getFontPreviewText()
 			if previewText:
 				prefItem.setPreviewText(previewText)
-		####
+		# ----
 		self.addExtraOptionsWidget(optionsWidget)
-		####
+		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -279,7 +279,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 
 		if ui.wcalGrid:
 			setColor(cr, ui.wcalGridColor)
-			###
+			# ---
 			cr.rectangle(
 				w - 1,
 				0,
@@ -287,7 +287,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 				h,
 			)
 			cr.fill()
-			###
+			# ---
 			for i in range(1, 7):
 				cr.rectangle(
 					0,
@@ -345,7 +345,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		alloc = self.get_allocation()
 		w = alloc.width
 		h = alloc.height
-		###
+		# ---
 		rowH = h / 7
 		itemW = w - ui.wcalPadding
 		if font is None:
@@ -419,7 +419,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
-		###
+		# ---
 		prefItem = IconChooserPrefItem(
 			ui,
 			"wcal_toolbar_mainMenu_icon",
@@ -428,7 +428,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			onChangeFunc=self.updateImage,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -605,7 +605,7 @@ class PluginsTextColumn(Column):
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
 
-		#####
+		# -----
 		prefItem = CheckPrefItem(
 			ui,
 			"wcal_pluginsText_firstLineOnly",
@@ -632,10 +632,10 @@ class EventsIconColumn(Column):
 
 	def drawColumn(self, cr):
 		self.drawBg(cr)
-		###
+		# ---
 		w = self.get_allocation().width
 		h = self.get_allocation().height
-		###
+		# ---
 		# rowH = h / 7
 		# itemW = w - ui.wcalPadding
 		iconSizeMax = ui.wcalEventIconSizeMax
@@ -681,7 +681,7 @@ class EventsCountColumn(Column):
 
 	def __init__(self, wcal):
 		Column.__init__(self, wcal)
-		##
+		# --
 		self.connect("draw", self.onExposeEvent)
 
 	def getDayTextData(self, i):
@@ -697,10 +697,10 @@ class EventsCountColumn(Column):
 
 	def drawColumn(self, cr):
 		self.drawBg(cr)
-		###
+		# ---
 		# w = self.get_allocation().width
 		# h = self.get_allocation().height
-		###
+		# ---
 		self.drawTextList(
 			cr,
 			[self.getDayTextData(i) for i in range(7)],
@@ -837,9 +837,9 @@ class EventsBoxColumn(Column):
 		self.padding = 2
 		self.timeWidth = 7 * 24 * 3600
 		self.boxEditing = None
-		#####
+		# -----
 		Column.__init__(self, wcal)
-		#####
+		# -----
 		self.connect("realize", lambda _w: self.updateData())
 		self.connect("draw", self.onExposeEvent)
 
@@ -851,7 +851,7 @@ class EventsBoxColumn(Column):
 		self.pixelPerSec = self.get_allocation().height / self.timeWidth
 		# ^^^ unit: pixel / second
 		self.borderTm = 0
-		# tbox.boxEditBorderWidth / self.pixelPerSec ## second
+		# tbox.boxEditBorderWidth / self.pixelPerSec # second
 		self.boxes = calcEventBoxes(
 			self.timeStart,
 			self.timeStart + self.timeWidth,
@@ -872,12 +872,12 @@ class EventsBoxColumn(Column):
 	def drawBox(self, cr, box):
 		from scal3.ui_gtk import timeline_box as tbox
 
-		###
+		# ---
 		x = box.y
 		y = box.x
 		w = box.h
 		h = box.w
-		###
+		# ---
 		tbox.drawBoxBG(cr, box, x, y, w, h)
 		tbox.drawBoxText(cr, box, x, y, w, h, self)
 
@@ -885,11 +885,11 @@ class EventsBoxColumn(Column):
 		self.drawBg(cr)
 		if not self.boxes:
 			return
-		###
+		# ---
 		alloc = self.get_allocation()
 		w = alloc.width
 		# h = alloc.height
-		###
+		# ---
 		for box in self.boxes:
 			box.setPixelValues(
 				self.timeStart,
@@ -931,7 +931,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		self.colParent = wcal
 		self.index = index
 		self.calType = calType
-		######
+		# ------
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
@@ -939,20 +939,20 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		label.set_xalign(0)
 		pack(self, label)
 		sgroupLabel.add_widget(label)
-		###
+		# ---
 		label = gtk.Label(label=f'<span font-size="small">{_("Font")}</span>')
 		label.set_use_markup(True)
 		self.fontCheck = gtk.CheckButton()
 		self.fontCheck.add(label)
 		pack(self, gtk.Label(), 1, 1)
 		pack(self, self.fontCheck)
-		###
+		# ---
 		self.fontb = DaysOfMonthFontButton()
 		pack(self, self.fontb)
 		sgroupFont.add_widget(self.fontb)
-		####
+		# ----
 		self.set(params)
-		####
+		# ----
 		self.fontCheck.connect("clicked", self.onChange)
 		self.fontb.connect("font-set", self.onChange)
 
@@ -983,7 +983,7 @@ class DaysOfMonthColumn(Column):
 		self.cgroup = cgroup
 		self.calType = calType
 		self.index = index
-		###
+		# ---
 		self.connect("draw", self.onExposeEvent)
 
 	@classmethod
@@ -1045,14 +1045,14 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import DirectionPrefItem
 
-		###
+		# ---
 		prefItem = DirectionPrefItem(
 			ui,
 			"wcal_daysOfMonth_dir",
 			onChangeFunc=self.updateDirection,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
+		# ----
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
 		self.typeParamsVbox = VBox(spacing=self.optionsPageSpacing // 2)
@@ -1082,7 +1082,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		# ^^^ Couses tray icon crash in gnome3
 		# self.foreach(lambda child: self.remove(child))
 		# ^^^ Couses tray icon crash in gnome3
-		########
+		# --------
 		columns = self.get_children()
 		n = len(columns)
 		n2 = len(calTypes.active)
@@ -1117,7 +1117,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 			return
 		for child in vbox.get_children():
 			child.destroy()
-		###
+		# ---
 		n = len(calTypes.active)
 		while len(ui.wcalTypeParams) < n:
 			ui.wcalTypeParams.append(
@@ -1131,7 +1131,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 			# try:
 			params = ui.wcalTypeParams[i]
 			# except IndexError:
-			##
+			# --
 			hbox = DaysOfMonthCalTypeParamBox(
 				self.wcal,
 				i,
@@ -1141,7 +1141,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 				sgroupFont,
 			)
 			pack(vbox, hbox)
-		###
+		# ---
 		vbox.show_all()
 
 	def onConfigChange(self, *a, **ka):
@@ -1180,16 +1180,16 @@ class MoonStatusColumn(Column):
 		imgMoonSize = imgSize * 0.9296875
 		# imgBorder = (imgSize-imgMoonSize) / 2
 		imgRadius = imgMoonSize / 2
-		###
+		# ---
 		# it's ok because pixbufFromFile uses cache
 		moonPixbuf = pixbufFromFile("full_moon_128px.png", size=imgSize)
-		###
+		# ---
 		imgItemW = itemW / scaleFact
 		imgRowH = rowH / scaleFact
 		imgCenterX = w / 2 / scaleFact
-		###
+		# ---
 		self.drawBg(cr)
-		###
+		# ---
 		cr.set_line_width(0)
 		cr.scale(scaleFact, scaleFact)
 
@@ -1276,7 +1276,7 @@ class MoonStatusColumn(Column):
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
 
-		####
+		# ----
 		prefItem = CheckPrefItem(
 			ui,
 			"wcal_moonStatus_southernHemisphere",
@@ -1326,15 +1326,15 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.windowToItemDict = {}
-		######################
+		# ----------------------
 		self.connect("scroll-event", self.scroll)
-		###
+		# ---
 		self.connect("button-press-event", self.onButtonPress)
-		#####
+		# -----
 		# set in self.updateStatus
 		self.status = None
 		self.cellIndex = 0
-		#####
+		# -----
 		defaultItems = [
 			ToolbarColumn(self),
 			WeekDaysColumn(self),
@@ -1373,7 +1373,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			return self.optionsWidget
 
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
-		#####
+		# -----
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalTextSizeScale",
@@ -1386,7 +1386,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "wcalGrid", _("Grid")),
 			ColorPrefItem(ui, "wcalGridColor", useAlpha=True),
@@ -1394,7 +1394,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		###
+		# ---
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(ui, "wcalUpperGradientEnable", _("Row's Upper Gradient")),
 			ColorPrefItem(ui, "wcalUpperGradientColor", useAlpha=True),
@@ -1402,11 +1402,11 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		############
+		# ------------
 		pageVBox = VBox(spacing=20)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		####
+		# ----
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalCursorLineWidthFactor",
@@ -1420,7 +1420,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
-		###
+		# ---
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalCursorRoundingFactor",
@@ -1434,9 +1434,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
-		###
+		# ---
 		pageVBox.show_all()
-		###
+		# ---
 		page = StackPage()
 		page.pageWidget = pageVBox
 		page.pageName = "cursor"
@@ -1444,10 +1444,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		page.pageLabel = _("Cursor")
 		page.pageIcon = ""
 		self.subPages = [page]
-		###
+		# ---
 		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button, padding=10)
-		#########
+		# ---------
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
@@ -1523,12 +1523,12 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			return False
 		if not col.autoButtonPressHandler:
 			return False
-		###
+		# ---
 		x_col, y_col = gevent.get_coords()
 		# x_col is relative to the column, not to the weekCal
 		# y_col is relative to the column, but also to the weekCal,
 		# 		because we have nothing above columns
-		###
+		# ---
 		i = int(y_col * 7.0 / self.get_allocation().height)
 		cell = self.status[i]
 		self.gotoJd(cell.jd)

@@ -26,15 +26,15 @@ def hideWindow(_widget, dialog):
 def notify(notifier, finishFunc):  # FIXME
 	event = notifier.event
 	dialog = gtk.Dialog()
-	####
+	# ----
 	lines = []
 	lines.append(event.getText())
 	if notifier.extraMessage:
 		lines.append(notifier.extraMessage)
 	text = "\n".join(lines)
-	####
+	# ----
 	dialog.set_title(event.getText())
-	####
+	# ----
 	hbox = HBox(spacing=15)
 	hbox.set_border_width(10)
 	if event.icon:
@@ -44,7 +44,7 @@ def notify(notifier, finishFunc):  # FIXME
 	label.set_selectable(True)
 	pack(hbox, label, 1, 1)
 	pack(dialog.vbox, hbox)
-	####
+	# ----
 	okB = dialog_add_button(
 		dialog,
 		imageName="dialog-ok.svg",
@@ -52,7 +52,7 @@ def notify(notifier, finishFunc):  # FIXME
 		res=gtk.ResponseType.OK,
 	)
 	okB.connect("clicked", hideWindow, dialog)
-	####
+	# ----
 	dialog.vbox.show_all()
 	dialog.connect("response", lambda _w, _e: finishFunc())
 	dialog.present()

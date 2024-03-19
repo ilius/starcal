@@ -36,29 +36,29 @@ class EventsImportWindow(WizardWindow):
 				(_("Cancel"), self.onCancelClick),
 				(_("Next"), self.onNextClick),
 			)
-			####
+			# ----
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
 			# frame.set_border_width(10)
 			radioBox = VBox(spacing=10)
 			radioBox.set_border_width(10)
-			##
+			# --
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
 			# self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
-			##
+			# --
 			pack(radioBox, self.radioJson)
 			# pack(radioBox, self.radioIcs)
-			##
+			# --
 			self.radioJson.set_active(True)
 			# self.radioJson.connect("clicked", self.formatRadioChanged)
 			# self.radioIcs.connect("clicked", self.formatRadioChanged)
-			##
+			# --
 			frame.add(radioBox)
 			pack(hbox, frame, 0, 0, 10)
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(self, hbox)
-			####
+			# ----
 			hbox = HBox()
 			pack(hbox, gtk.Label(label=_("File") + ":"))
 			self.fcb = gtk.FileChooserButton(title=_("Import: Select File"))
@@ -66,7 +66,7 @@ class EventsImportWindow(WizardWindow):
 			self.fcb.set_current_folder(deskDir)
 			pack(hbox, self.fcb, 1, 1)
 			pack(self, hbox)
-			####
+			# ----
 			self.show_all()
 
 		def run(self):
@@ -98,10 +98,10 @@ class EventsImportWindow(WizardWindow):
 				(_("Back"), self.onBackClick),
 				(_("Close"), self.onCloseClick),
 			)
-			####
+			# ----
 			self.textview = gtk.TextView()
 			pack(self, self.textview, 1, 1)
-			####
+			# ----
 			self.show_all()
 
 		def redirectStdOutErr(self):

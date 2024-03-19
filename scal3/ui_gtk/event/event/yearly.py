@@ -26,7 +26,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
-		################
+		# ----------------
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Month")))
 		self.monthCombo = MonthComboBox()
@@ -34,14 +34,14 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.monthCombo)
 		pack(hbox, gtk.Label(), 1, 1)
 		# pack(self, hbox)
-		###
+		# ---
 		# hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Day")))
 		self.daySpin = DaySpinButton()
 		pack(hbox, self.daySpin)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
-		###
+		# ---
 		hbox = HBox()
 		self.startYearCheck = gtk.CheckButton(label=_("Start Year"))
 		pack(hbox, self.startYearCheck)
@@ -50,10 +50,10 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		self.startYearCheck.connect("clicked", self.onStartYearCheckClick)
-		####
+		# ----
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
-		####
+		# ----
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 

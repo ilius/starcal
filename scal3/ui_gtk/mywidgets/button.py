@@ -14,7 +14,7 @@ class ConButtonBase:
 		self.pressTm = 0
 		self.counter = 0
 		self._button = button
-		###
+		# ---
 		self.connect("button-press-event", self.onPress)
 		self.connect("button-release-event", self.onRelease)
 

@@ -44,13 +44,13 @@ class Node:
 		# 	log.debug(f"minLevel = {level}")
 		self.offset = offset  # in days
 		self.rightOri = rightOri  # FIXME
-		###
+		# ---
 		width = base**level
 		if rightOri:
 			self.s0, self.s1 = offset, offset + width
 		else:
 			self.s0, self.s1 = offset - width, offset
-		###
+		# ---
 		self.clear()
 
 	def clear(self):
@@ -156,7 +156,7 @@ class TimeLineTree:
 			node = self.left
 		else:
 			raise RuntimeError
-		########
+		# --------
 		while not (node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1):
 			node = node.newParent()
 		# now `node` is the new side (left/right) node
