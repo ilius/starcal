@@ -144,6 +144,7 @@ confParamsCustomize = (
 	"winControllerIconSize",
 	"winControllerBorder",
 	"winControllerSpacing",
+	"winControllerPressState",
 	"mcalLeftMargin",
 	"mcalTopMargin",
 	"mcalTypeParams",
@@ -1603,6 +1604,7 @@ winControllerButtonsDefault = winControllerButtons[:]
 winControllerIconSize = 24
 winControllerBorder = 0
 winControllerSpacing = 0
+winControllerPressState = False
 # --------------------
 winKeepAbove = True
 winSticky = True

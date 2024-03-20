@@ -17,30 +17,40 @@ themeFileSet = {
 	"close-inactive-light.svg",
 	"close-inactive.svg",
 	"close-light.svg",
+	"close-press-light.svg",
+	"close-press.svg",
 	"close.svg",
 	"left-focus-light.svg",
 	"left-focus.svg",
 	"left-inactive-light.svg",
 	"left-inactive.svg",
 	"left-light.svg",
+	"left-press-light.svg",
+	"left-press.svg",
 	"left.svg",
 	"maximize-focus-light.svg",
 	"maximize-focus.svg",
 	"maximize-inactive-light.svg",
 	"maximize-inactive.svg",
 	"maximize-light.svg",
+	"maximize-press-light.svg",
+	"maximize-press.svg",
 	"maximize.svg",
 	"minimize-focus-light.svg",
 	"minimize-focus.svg",
 	"minimize-inactive-light.svg",
 	"minimize-inactive.svg",
 	"minimize-light.svg",
+	"minimize-press-light.svg",
+	"minimize-press.svg",
 	"minimize.svg",
 	"right-focus-light.svg",
 	"right-focus.svg",
 	"right-inactive-light.svg",
 	"right-inactive.svg",
 	"right-light.svg",
+	"right-press-light.svg",
+	"right-press.svg",
 	"right.svg",
 }
 
@@ -53,6 +63,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	imageName = ""
 	imageNameFocus = ""
 	imageNameInactive = ""
+	imageNamePress = ""
 
 	def __init__(self, controller):
 		gtk.EventBox.__init__(self)
@@ -90,6 +101,11 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			return
 		self.setImage(self.imageNameInactive)
 
+	def setPressed(self):
+		self.setImage(
+			self.imageNamePress if ui.winControllerPressState else self.imageNameFocus,
+		)
+
 	def build(self):
 		self.im = gtk.Image()
 		self.setFocus(False)
@@ -111,7 +127,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		return False
 
 	def onButtonPress(self, _widget, _gevent):
-		self.setFocus(False)
+		self.setPressed()
 		return True
 
 	def onClick(self, gWin, gevent):
@@ -136,6 +152,7 @@ class WinConButtonMin(WinConButton):
 	imageName = "minimize"
 	imageNameFocus = "minimize-focus"
 	imageNameInactive = "minimize-inactive"
+	imageNamePress = "minimize-press"
 
 	def onClick(self, gWin, gevent):  # noqa: PLR6301
 		gWin.toggleMinimized(gevent)
@@ -147,6 +164,7 @@ class WinConButtonMax(WinConButton):
 	imageName = "maximize"
 	imageNameFocus = "maximize-focus"
 	imageNameInactive = "maximize-inactive"
+	imageNamePress = "maximize-press"
 
 	def onClick(self, gWin, gevent):  # noqa: PLR6301
 		gWin.toggleMaximized(gevent)
@@ -161,6 +179,7 @@ class WinConButtonClose(WinConButton):
 	imageName = "close"
 	imageNameFocus = "close-focus"
 	imageNameInactive = "close-inactive"
+	imageNamePress = "close-press"
 
 	def onClick(self, gWin, _gevent):  # noqa: PLR6301
 		gWin.emit("delete-event", gdk.Event())
@@ -175,6 +194,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageName = f"{direc}"
 		self.imageNameFocus = f"{direc}-focus"
 		self.imageNameInactive = f"{direc}-inactive"
+		self.imageNamePress = f"{direc}-press"
 		WinConButton.__init__(self, controller)
 
 	def onClick(self, gWin, _gevent):  # noqa: PLR6301
@@ -259,7 +279,11 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		ui.winControllerButtons = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import ComboTextPrefItem, SpinPrefItem
+		from scal3.ui_gtk.pref_utils import (
+			CheckPrefItem,
+			ComboTextPrefItem,
+			SpinPrefItem,
+		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -311,6 +335,14 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.onButtonPaddingChange,
+		)
+		pack(optionsWidget, prefItem.getWidget())
+		# ----
+		prefItem = CheckPrefItem(
+			ui,
+			"winControllerPressState",
+			label=_("Change icon on button press"),
+			live=True,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
