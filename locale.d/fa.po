@@ -3590,6 +3590,9 @@ msgid "Space between buttons"
 msgstr ""
 "فاصلهٔ بین دکمه‌ها"
 
+msgid "Change icon on button press"
+msgstr ""
+"تغییر آیکون هنگام فشردن دکمه"
 
 msgid "Widget buttons"
 msgstr "دکمه‌های ویجت"
