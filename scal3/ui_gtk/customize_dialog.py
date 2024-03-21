@@ -375,6 +375,7 @@ class CustomizeWindow(gtk.Dialog):
 			)
 			pack(hbox, prefItem.getWidget())
 			pack(page.pageWidget, hbox, 0, 0)
+			item.enablePrefItem = prefItem
 
 		if item.itemListCustomizable and item.items:
 			self._addPageItemsTree(page)
