@@ -102,10 +102,17 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			styleClass="right-panel-plugins",
 		)
 		# ---
+		self.enablePrefItem = None  # will be set in customize_dialog.py
+		# ---
 		self.addItems()
 		# ---
 		self.show_all()
 		self.onBorderWidthChange()
+
+	def onToggleFromMainWin(self):
+		if self.enablePrefItem is None:
+			return
+		self.enablePrefItem.set(not self.enablePrefItem.get())
 
 	def appendItem(self, item):
 		CustomizableCalObj.appendItem(self, item)
