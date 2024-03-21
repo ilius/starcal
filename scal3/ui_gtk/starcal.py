@@ -495,6 +495,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.rightPanel.enable = enable
 		self.rightPanel.showHide()
 		self.rightPanel.onDateChange()
+
+		# update Enable checkbutton in Customize dialog
+		self.rightPanel.onToggleFromMainWin()
+
 		if ui.mainWinRightPanelResizeOnToggle:
 			ww, wh = self.get_size()
 			mw = ui.mainWinRightPanelWidth
