@@ -134,6 +134,7 @@ confParamsCustomize = (
 	"mainWinRightPanelPluginsFont",
 	"mainWinRightPanelEventJustification",
 	"mainWinRightPanelPluginsJustification",
+	"mainWinRightPanelResizeOnToggle",
 	"mainWinRightPanelEventSep",
 	"eventDayViewEventSep",
 	"mainWinRightPanelBorderWidth",
