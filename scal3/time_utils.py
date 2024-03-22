@@ -22,7 +22,7 @@ import typing
 from datetime import datetime
 from time import time as now
 
-import natz
+import mytz
 from scal3.cal_types.gregorian import J1970, J0001_epoch
 from scal3.cal_types.gregorian import jd_to as jd_to_g
 from scal3.utils import ifloor
@@ -30,7 +30,7 @@ from scal3.utils import ifloor
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
 
-TZ: "typing.TypeAlias" = "natz.TimeZone | None"
+TZ: "typing.TypeAlias" = "mytz.TimeZone | None"
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -98,7 +98,7 @@ def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
 	if epoch >= G10000_epoch:
 		return 0
 	if not tz:
-		tz = natz.gettz()
+		tz = mytz.gettz()
 	try:
 		dt = datetime.fromtimestamp(epoch)  # noqa: DTZ006
 	except ValueError as e:
@@ -113,7 +113,7 @@ def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
 	if year >= 10000:
 		return 0
 	if not tz:
-		tz = natz.gettz()
+		tz = mytz.gettz()
 	try:
 		dt = datetime(year, month, day)
 	except ValueError as e:
@@ -124,7 +124,7 @@ def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
 
 def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
 	if not tz:
-		tz = natz.gettz()
+		tz = mytz.gettz()
 	tzStr = str(tz)
 	# utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
 	if jd >= J1970:
@@ -334,7 +334,7 @@ def clockWaitMilliseconds() -> int:
 
 
 def jsonTimeFromEpoch(epoch: int) -> str:
-	tm = datetime.fromtimestamp(epoch, tz=natz.UTC)
+	tm = datetime.fromtimestamp(epoch, tz=mytz.UTC)
 	# Python's `datetime` does not support "%:z" format ("+03:30")
 	# so we have to set `tz` to None
 	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
