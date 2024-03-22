@@ -35,7 +35,7 @@ from os.path import (
 	splitext,
 )
 
-import natz
+import mytz
 from scal3.cal_types import calTypes
 from scal3.json_utils import (
 	jsonToData,
@@ -53,9 +53,9 @@ from scal3.utils import StrOrderedDict, toStr
 
 # ----------------------------------------------------------
 
-natz.defaultTZ = natz.UTC
+mytz.defaultTZ = mytz.UTC
 
-localTz = natz.gettz()
+localTz = mytz.gettz()
 localTzStr = str(localTz)
 
 # ----------------------------------------------------------
