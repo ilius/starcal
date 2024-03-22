@@ -5,7 +5,7 @@ from scal3.ui_gtk import gtk, pack
 
 class TimeZoneComboBoxEntry(gtk.Box):
 	def __init__(self):
-		from natz.tree import getZoneInfoTree
+		from mytz.tree import getZoneInfoTree
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		model = gtk.TreeStore(str, bool)

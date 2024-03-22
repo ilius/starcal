@@ -2,7 +2,7 @@ from scal3 import logger
 
 log = logger.get()
 
-import natz
+import mytz
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets import TextFrame
@@ -188,8 +188,8 @@ class EventsBulkEditDialog(gtk.Dialog):
 			chType = self.timeZoneChangeCombo.get_active()
 			timeZone = self.timeZoneInput.get_text()
 			if chType != 0:
-				# natz.gettz does not raise exception, returns None if invalid
-				if natz.gettz(timeZone):
+				# mytz.gettz does not raise exception, returns None if invalid
+				if mytz.gettz(timeZone):
 					for event in container:
 						if not (chType == 2 and event.timeZone):
 							event.timeZone = timeZone

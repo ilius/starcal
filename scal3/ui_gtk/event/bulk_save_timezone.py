@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-import natz
+import mytz
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
@@ -84,7 +84,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		if responseId == gtk.ResponseType.OK:
 			timeZone = self.timeZoneInput.get_text()
 			try:
-				natz.gettz(timeZone)
+				mytz.gettz(timeZone)
 			except Exception as e:
 				self.errorLabel.set_text(
 					_("Time zone is invalid") + "\n" + str(e),
