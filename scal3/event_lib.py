@@ -38,7 +38,7 @@ from typing import NamedTuple
 
 from cachetools import LRUCache
 
-import natz
+import mytz
 from scal3 import core, ics, locale_man
 from scal3.cal_types import (
 	GREGORIAN,
@@ -2030,8 +2030,8 @@ class RuleContainer:
 
 	def getTimeZoneObj(self):
 		if self.timeZoneEnable and self.timeZone:
-			# natz.gettz does not raise exception, returns None if invalid
-			tz = natz.gettz(self.timeZone)
+			# mytz.gettz does not raise exception, returns None if invalid
+			tz = mytz.gettz(self.timeZone)
 			if tz:
 				return tz
 		return locale_man.localTz
@@ -2318,7 +2318,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def getTextParts(self, showDesc=True):
 		summary = self.getSummary()
 		# --
-		if self.timeZoneEnable and self.timeZone and natz.gettz(self.timeZone) is None:
+		if self.timeZoneEnable and self.timeZone and mytz.gettz(self.timeZone) is None:
 			invalidTZ = _("Invalid Time Zone: {timeZoneName}").format(
 				timeZoneName=self.timeZone,
 			)
@@ -4102,7 +4102,7 @@ class EventGroup(EventContainer):
 
 	def getTimeZoneObj(self) -> "datetime.tzinfo":
 		if self.timeZoneEnable and self.timeZone:
-			tz = natz.gettz(self.timeZone)
+			tz = mytz.gettz(self.timeZone)
 			if tz:
 				return tz
 		return locale_man.localTz
@@ -5609,7 +5609,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 			return
 		# ----
 		try:
-			utc = natz.gettz("UTC")
+			utc = mytz.gettz("UTC")
 			self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
 			self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self), tz=utc) + 1
 		except Exception:

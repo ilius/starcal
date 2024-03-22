@@ -42,7 +42,7 @@ from pray_times_backend import PrayTimes, timeNames
 # if "gtk" in sys.modules:
 from pray_times_gtk import TextPluginUI, showDisclaimer
 
-import natz
+import mytz
 from scal3 import logger
 from scal3.cal_types import hijri
 from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
@@ -68,7 +68,7 @@ log = logger.get()
 
 # ----------------------------------------------------
 
-localTz = natz.gettz()
+localTz = mytz.gettz()
 
 timeDescByName = dict(timeNames)
 
