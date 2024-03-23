@@ -166,14 +166,10 @@ class JsonEventObj(JsonSObj):
 
 class Smallest:
 	def __eq__(self, other: "Any") -> bool:
-		if isinstance(other, Smallest):
-			return True
-		return False
+		return isinstance(other, Smallest)
 
 	def __lt__(self, other: "Any") -> bool:
-		if isinstance(other, Smallest):
-			return False
-		return True
+		return not isinstance(other, Smallest)
 
 	def __gt__(self, other: "Any") -> bool:
 		return False
