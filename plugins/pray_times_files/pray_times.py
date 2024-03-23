@@ -295,10 +295,8 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return True
 
 		_hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
-		if hmonth == 9 and dt > hday * 24 * 3600:  # Ramadan
-			return True
-
-		return False
+		# is it Ramadan?
+		return hmonth == 9 and dt > hday * 24 * 3600
 
 	def saveConfig(self):
 		self.lat = self.backend.lat

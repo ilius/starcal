@@ -20,4 +20,3 @@
 
 # 	def addWidget(self, obj=None):
 # 		widget = self.ValueWidgetClass()
-
