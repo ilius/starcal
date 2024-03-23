@@ -52,13 +52,13 @@ def dateDecode(st: str) -> list[int]:
 	return date
 
 
-# FIXME: move to cal_types/
-def validDate(calType: int, y: int, m: int, d: int) -> bool:
-	if y < 0:
+# TODO: move to cal_types/
+def validDate(calType: int, year: int, month: int, day: int) -> bool:
+	if year < 0:
 		return False
-	if m < 1 or m > 12:
+	if month < 1 or month > 12:
 		return False
-	return d <= cal_types.getMonthLen(y, m, calType)
+	return 1 <= day <= cal_types.getMonthLen(year, month, calType)
 
 
 def datesDiff(y1: int, m1: int, d1: int, y2: int, m2: int, d2: int) -> int:
