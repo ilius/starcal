@@ -1436,9 +1436,7 @@ class PreferencesWindow(gtk.Window):
 			return False
 		if ui.checkNeedRestart():
 			return True
-		if logger.logLevel != self.initialLogLevel:
-			return True
-		return False
+		return logger.logLevel != self.initialLogLevel
 
 	def refreshAccounts(self):
 		self.accountsTreeModel.clear()
@@ -1872,7 +1870,7 @@ class PreferencesWindow(gtk.Window):
 	@staticmethod
 	def accountsTreevButtonPress(_widget, gevent):
 		b = gevent.button
-		if b == 3:
+		if b == 3:  # noqa: SIM103
 			# FIXME
 			# cur = self.accountsTreeview.get_cursor()[0]
 			# if cur:

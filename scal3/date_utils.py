@@ -58,9 +58,7 @@ def validDate(calType: int, y: int, m: int, d: int) -> bool:
 		return False
 	if m < 1 or m > 12:
 		return False
-	if d > cal_types.getMonthLen(y, m, calType):
-		return False
-	return True
+	return d <= cal_types.getMonthLen(y, m, calType)
 
 
 def datesDiff(y1: int, m1: int, d1: int, y2: int, m2: int, d2: int) -> int:

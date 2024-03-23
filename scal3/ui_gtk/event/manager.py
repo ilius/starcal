@@ -1042,7 +1042,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def canPasteToGroup(self, group: lib.EventGroup) -> bool:
 		if self.toPasteEvent is None:
 			return False
-		if not group.acceptsEventTypes:
+		if not group.acceptsEventTypes:  # noqa: SIM103
 			return False
 		# FIXME: check event type here?
 		return True
