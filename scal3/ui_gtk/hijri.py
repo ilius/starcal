@@ -319,9 +319,7 @@ def dbIsExpired() -> bool:
 	if expJd is None:
 		log.info("checkDbExpired: hijri.monthDb.expJd = None")
 		return False
-	if ui.todayCell.jd >= expJd:
-		return True
-	return False
+	return ui.todayCell.jd >= expJd
 
 
 class HijriMonthsExpirationDialog(gtk.Dialog):

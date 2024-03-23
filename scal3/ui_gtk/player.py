@@ -423,9 +423,7 @@ class PlayerBox(gtk.Box):
 	def toolbarKey(_widget, gevent):
 		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
-		if keycode in {98, 104}:
-			return True
-		return False
+		return keycode in {98, 104}
 
 	def quit(self, _event=None):
 		self.mplayer.close()

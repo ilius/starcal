@@ -64,11 +64,9 @@ def removeStartup():
 		os.remove(comDesk)
 
 
-def checkStartup():
+def checkStartup() -> bool:
 	if osName == "win":
 		from scal3.windows import winStartupFile
 
 		return isfile(winStartupFile)
-	if isfile(comDesk):
-		return True
-	return False
+	return isfile(comDesk)
