@@ -1311,8 +1311,7 @@ class DayTimeRangeEventRule(EventRule):
 	) -> OccurSet:
 		daySecStart = getSecondsFromHms(*self.dayTimeStart)
 		daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
-		if daySecEnd <= daySecStart:
-			daySecEnd = daySecStart
+		daySecEnd = max(daySecStart, daySecEnd)
 		tmList = []
 		for jd in range(startJd, endJd):
 			epoch = self.getEpochFromJd(jd)
@@ -4331,8 +4330,7 @@ class EventGroup(EventContainer):
 		self.endJd = int(self.endJd)
 
 		if self.eventCacheSize != eventCacheSize:
-			if self.eventCacheSize < self.eventCacheSizeMin:
-				self.eventCacheSize = self.eventCacheSizeMin
+			self.eventCacheSize = max(self.eventCacheSize, self.eventCacheSizeMin)
 			self.resetCache()
 
 		# ----

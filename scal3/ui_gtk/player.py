@@ -147,8 +147,7 @@ class MPlayer:
 	def stepVolume(self, increase):
 		if increase:
 			self.pbox.volAdj.value += VOLUME_STEP
-			if self.pbox.volAdj.value > 100:
-				self.pbox.volAdj.value = 100
+			self.pbox.volAdj.value = min(self.pbox.volAdj.value, 100)
 
 		elif self.pbox.volAdj.value <= VOLUME_STEP:
 			self.pbox.volAdj.value = 0
