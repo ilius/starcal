@@ -69,6 +69,9 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"PLR6104", # Use `+=` to perform an augmented assignment directly
+	# until this bug is fixed: https://github.com/astral-sh/ruff/issues/10911
+
 	"PYI034",  # py3.11: `__iadd__` methods in classes like `...` usually return `self` at runtime
 
 	"PLR1702", # Too many nested blocks
