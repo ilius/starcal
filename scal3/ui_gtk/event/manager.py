@@ -738,10 +738,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			_("{count} events selected").format(
 				count=_(
 					sum(
-						[
-							len(eventIndexes)
-							for eventIndexes in self.multiSelectPathDict.values()
-						],
+						len(eventIndexes)
+						for eventIndexes in self.multiSelectPathDict.values()
 					),
 				),
 			),
