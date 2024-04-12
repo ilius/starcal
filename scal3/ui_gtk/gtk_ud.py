@@ -303,8 +303,7 @@ class IntegatedWindowList(BaseCalObj):
 def getGtkDefaultFont():
 	fontName = settings.get_property("gtk-font-name")
 	font = gfontDecode(fontName)
-	if font.size < 5:
-		font.size = 5
+	font.size = max(font.size, 5)
 	return font
 
 

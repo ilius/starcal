@@ -145,8 +145,7 @@ def newTextLayout(
 			else:
 				if maximizeScale > 0:
 					minRat = minRat / maximizeScale
-				if minRat < layoutW / maxW:
-					minRat = layoutW / maxW
+				minRat = max(minRat, layoutW / maxW)
 				if minRat > 1:
 					font.size /= minRat
 				layout.set_font_description(pfontEncode(font))
