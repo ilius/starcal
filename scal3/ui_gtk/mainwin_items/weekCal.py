@@ -351,7 +351,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		if font is None:
 			fontName = self.getFontValue()
 			fontSize = ui.getFont().size  # FIXME
-			font = ui.Font(fontName, False, False, fontSize) if fontName else None
+			font = ui.Font(family=fontName, size=fontSize) if fontName else None
 		for i in range(7):
 			data = textData[i]
 			if data:
