@@ -508,8 +508,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			w = lay.get_pixel_size()[0]  # FIXME
 			# w = lay.get_pixel_extents()[0]  # FIXME
 			# log.debug(w,)
-			if w > wm:
-				wm = w
+			wm = max(w, wm)
 		self.wdaysWidth = wm * 7 + ui.mcalLeftMargin
 		# self.wdaysWidth = wm * 7 * 0.7 + ui.mcalLeftMargin
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
