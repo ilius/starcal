@@ -59,9 +59,9 @@ def colorComposite3(front, middle, back):  # FIXME
 	return c1
 
 
-def exportToHtml(fpath, monthsStatus, title=""):
+def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 	def sizeMap(size):
-		return size * 0.25 - 0.5  # FIXME
+		return fontSizeScale * (size * 0.25 - 0.5)
 
 	# ------------------- Options:
 	calTypesFormat = (
@@ -84,6 +84,8 @@ def exportToHtml(fpath, monthsStatus, title=""):
 		DIR = "RTL"
 	else:
 		DIR = "LRT"
+	borderFontSize = sizeMap(ui.getFont().size)
+
 	text = f"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
@@ -102,7 +104,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 		text += "\t</P>\n"
 		text += "\n".join(
 			[
-				f'\t<TABLE WIDTH=100%% BGCOLOR="{bgColor}" '
+				f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
 				f'BORDER={int(ui.mcalGrid)} BORDERCOLOR="#000000"',
 				"\t\tCELLPADDING=4 CELLSPACING=0>",
 				"\t\t<TR VALIGN=TOP>\n",
@@ -114,7 +116,9 @@ def exportToHtml(fpath, monthsStatus, title=""):
 		for j in range(7):
 			text += f"""\t\t\t<TD WIDTH=13%% BGCOLOR="{borderColor}">
 			<P ALIGN=CENTER>
-				<FONT COLOR="{borderTextColor}"><B>{core.getWeekDayN(j)}</B></FONT>
+				<FONT COLOR="{borderTextColor}" SIZE="{borderFontSize}px">
+					<B>{core.getWeekDayN(j)}</B>
+				</FONT>
 			</P>
 		</TD>\n"""
 		pluginsText = f'\t<P><FONT COLOR="{colors[0]}">\n'
@@ -123,7 +127,9 @@ def exportToHtml(fpath, monthsStatus, title=""):
 			text += f"""\t\t<TR VALIGN=TOP>
 		<TD WIDTH=9%% BGCOLOR="{borderColor}">
 			<P ALIGN=CENTER>
-				<FONT COLOR="{borderTextColor}"><B>{_(status.weekNum[i])}</B></FONT>
+				<FONT COLOR="{borderTextColor}" SIZE="{borderFontSize}px">
+					<B>{_(status.weekNum[i])}</B>
+				</FONT>
 			</P>
 		</TD>\n"""
 			for j in range(7):
