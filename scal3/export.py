@@ -140,7 +140,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 					except IndexError:
 						continue
 					day = _(cell.dates[calType][2], calType)
-					font = ui.Font(*params["font"])
+					font = ui.Font(*tuple(params["font"]))
 					face = font.family
 					if font.bold:
 						face += " Bold"
