@@ -28,6 +28,7 @@ from scal3.path import deskDir
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
@@ -59,6 +60,13 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		pack(hbox, hbox2, 1, 1)
 		self.hbox2 = hbox2
 		combo.set_active(0)
+		pack(self.vbox, hbox)
+		# --------
+		hbox = HBox(spacing=2)
+		pack(hbox, gtk.Label(label=_("Font size scale")))
+		self.fontScaleSpin = FloatSpinButton(0.01, 100, 2)
+		self.fontScaleSpin.set_value(1)
+		pack(hbox, self.fontScaleSpin)
 		pack(self.vbox, hbox)
 		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
@@ -108,6 +116,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 	def _save(self, path):
 		comboItem = self.combo.get_active()
 		months = []
+		fontSizeScale = self.fontScaleSpin.get_value()
 		if comboItem == 0:
 			s = getCurrentMonthStatus()
 			months = [s]
@@ -132,7 +141,12 @@ class ExportDialog(gtk.Dialog, MyDialog):
 				m += 1
 				months.append(getMonthStatus(y, m))
 			title = _("Calendar")
-		exportToHtml(path, months, title)
+		exportToHtml(
+			path,
+			months,
+			title=title,
+			fontSizeScale=fontSizeScale,
+		)
 		self.hide()
 
 	def save(self, _widget=None):
