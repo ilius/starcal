@@ -50,10 +50,8 @@ class Node:
 
 	def add(self, t0, t1, dt, eid):
 		self.events.push(dt, eid)
-		if t0 < self.min_t:
-			self.min_t = t0
-		if t1 > self.max_t:
-			self.max_t = t1
+		self.min_t = min(t0, self.min_t)
+		self.max_t = max(t1, self.max_t)
 
 	def updateMinMax(self):
 		self.updateMinMaxChild(self.left)
@@ -61,10 +59,8 @@ class Node:
 
 	def updateMinMaxChild(self, child):
 		if child:
-			if child.min_t < self.min_t:
-				self.min_t = child.min_t
-			if child.max_t > self.max_t:
-				self.max_t = child.max_t
+			self.min_t = min(child.min_t, self.min_t)
+			self.max_t = max(child.max_t, self.max_t)
 
 	# def updateCount(self):
 	# 	self.count = len(self.events) + getCount(self.left) + getCount(self.right)
