@@ -564,8 +564,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 				)
 				# OR lay.set_markup
 				w = lay.get_pixel_size()[0]
-				if w > wm:
-					wm = w
+				wm = max(w, wm)
 			label.set_property("width-request", wm)
 
 	@staticmethod

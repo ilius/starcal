@@ -265,8 +265,7 @@ class LastIdsWrapper(JsonEventObj):
 			except ValueError:
 				log.error(f"invalid file name: {dpath}")
 				continue
-			if _id > lastId:
-				lastId = _id
+			lastId = max(_id, lastId)
 		return lastId
 
 	def scan(self) -> None:
