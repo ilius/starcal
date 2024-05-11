@@ -20,7 +20,7 @@ if isfile(join(rootDir, "VERSION")):
 		sys.exit(0)
 
 VERSION = ""
-with open("%s/core.py" % scalDir, encoding="utf-8") as _file:
+with open(f"{scalDir}/core.py", encoding="utf-8") as _file:
 	while True:
 		line = _file.readline()
 		if line.startswith("VERSION"):
