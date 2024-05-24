@@ -169,7 +169,7 @@ class LangData(JsonSObj):
 		self.hasUppercase = True
 		self.transPath = ""
 		# --
-		self.timeZoneList: "list[str]" = []
+		self.timeZoneList: list[str] = []
 
 	def setData(self, data: dict):
 		JsonSObj.setData(self, data)
