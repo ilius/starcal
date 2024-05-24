@@ -102,7 +102,7 @@ def makeIntervalGraph(boxes):
 	g.vs["name"] = list(range(n))
 	# ----
 	# list[(time: int, isStart: bool, boxIndex: int)]
-	points: "list[tuple[int, bool, int]]" = []
+	points: list[tuple[int, bool, int]] = []
 	for boxI, box in enumerate(boxes):
 		points += [
 			(box.t0, True, boxI),

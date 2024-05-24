@@ -1354,7 +1354,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				)
 			else:
 				dayNum = str(ddate[2])
-			style: "list[tuple[str, Any]]" = []
+			style: list[tuple[str, Any]] = []
 			if ui.statusIconFontFamilyEnable:
 				if ui.statusIconFontFamily:
 					family = ui.statusIconFontFamily
