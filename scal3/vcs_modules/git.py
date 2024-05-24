@@ -59,7 +59,7 @@ def getCommitList(
 	if endJd is not None:
 		endEpoch = getEpochFromJd(endJd)
 	repo = Repository(obj.vcsDir)
-	data: "list[tuple[int, str]]" = []
+	data: list[tuple[int, str]] = []
 	# items of data are (epochTime, commitHash)
 	target = repo.branches[branch].target
 	for commit in repo.walk(target, GIT_SORT_TIME):
