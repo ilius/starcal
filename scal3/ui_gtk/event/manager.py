@@ -274,7 +274,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# ----
 		self.multiSelect = False
 		self.multiSelectPathDict = odict()
-		self.multiSelectToPaste: "tuple[bool, list[gtk.TreeIter]] | None" = None
+		self.multiSelectToPaste: tuple[bool, list[gtk.TreeIter]] | None = None
 		# ----
 		self.set_title(_("Event Manager"))
 		self.resize(800, 600)
