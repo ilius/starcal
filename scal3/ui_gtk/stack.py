@@ -61,9 +61,9 @@ class MyStack(gtk.Stack):
 		self._headerSpacing = headerSpacing  # type: int
 		self._verticalSlide = verticalSlide  # type: bool
 		# ---
-		self._parentPaths: "dict[str, str]" = {}
+		self._parentPaths: dict[str, str] = {}
 		self._currentPagePath = ""
-		self._titles: "dict[str, str]" = {}
+		self._titles: dict[str, str] = {}
 		# ---
 		self.connect("key-press-event", self.onKeyPress)
 		# ---
