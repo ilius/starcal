@@ -407,9 +407,9 @@ class Cell(CellType):
 	# ocTimeCount = 0
 	# ocTimeSum = 0
 	def __init__(self, jd: int):
-		self._eventsData: "list[dict] | None" = None
-		self._pluginsText: "list[list[str]]" = []
-		self._pluginsData: "list[tuple[Any, str]]" = []
+		self._eventsData: list[dict] | None = None
+		self._pluginsText: list[list[str]] = []
+		self._pluginsData: list[tuple[Any, str]] = []
 		# ---
 		self.jd = jd
 		date = core.jd_to_primary(jd)

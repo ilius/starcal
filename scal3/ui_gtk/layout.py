@@ -89,7 +89,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.buttonBorder = buttonBorder
 		self.labelAngle = labelAngle
 		self.initializer = initializer
-		self._item: "CustomizableCalObj | None" = None
+		self._item: CustomizableCalObj | None = None
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		if self._item is None:
