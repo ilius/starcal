@@ -5612,7 +5612,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		startJd = max(self.startJd, self.vcsMinJd)
 		endJd = min(self.endJd, self.vcsMaxJd)
 		# ---
-		commitsByJd: "dict[int, list[str]]" = {}
+		commitsByJd: dict[int, list[str]] = {}
 		for epoch, commitId in mod.getCommitList(
 			self,
 			startJd=startJd,
