@@ -3,10 +3,10 @@ set -e
 set -x
 
 function focus-to-press() {
-	if [ -f $2 ] ; then
+	if [ -f "$2" ] ; then
 		return
 	fi
-	cp $1 $2
+	cp "$1" "$2"
 }
 
 function do-add-press-to-theme() {
