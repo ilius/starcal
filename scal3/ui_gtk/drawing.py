@@ -144,7 +144,7 @@ def newTextLayout(
 							break
 			else:
 				if maximizeScale > 0:
-					minRat = minRat / maximizeScale
+					minRat /= maximizeScale
 				minRat = max(minRat, layoutW / maxW)
 				if minRat > 1:
 					font.size /= minRat
