@@ -1,7 +1,6 @@
 __all__ = [
-	"notifiers",
-	"occurrenceViews",
-	"rules",
+	"notifiers",  # noqa: F822
+	"rules",  # noqa: F822
 ]
 
 # --------------------------------------------
