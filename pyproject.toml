@@ -69,8 +69,7 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
-	# "PLR6104", # Use `+=` to perform an augmented assignment directly
-	# until this bug is fixed: https://github.com/astral-sh/ruff/issues/10911
+	"PLC0206", # Extracting value from dictionary without calling `.items()`
 
 	"PYI034",  # py3.11: `__iadd__` methods in classes like `...` usually return `self` at runtime
 
@@ -193,6 +192,12 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"T203", # `pprint` found
 	"S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
 	"PLR6301", # Method `...` could be a function, class method, or static method
+]
+"scal3/__init__.py" = [
+	"F822", # Undefined name `...` in `__all__`
+]
+"scal3/ui_gtk/event/event/__init__.py" = [
+	"F822", # Undefined name `...` in `__all__`
 ]
 
 [tool.ruff.format]

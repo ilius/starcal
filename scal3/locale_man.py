@@ -324,9 +324,9 @@ def loadTranslator() -> Callable:
 				if default is not None and s == orig:
 					s = default
 				if a:
-					s = s % a
+					s %= a
 				if ka:
-					s = s % ka
+					s %= ka
 				if nums:
 					s = textNumEncode(s)
 			return s
@@ -426,7 +426,7 @@ def numEncode(
 		res = res.rjust(fillZero, dig[0])
 	if neg:
 		if negEnd:
-			res = res + "-"
+			res += "-"
 		else:
 			res = "-" + res
 	return res
