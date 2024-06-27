@@ -26,7 +26,6 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3 import core, ui
 from scal3.cal_types import calTypes
-from scal3.core import log
 from scal3.drawing import getAbsPos
 from scal3.locale_man import (
 	getMonthName,
