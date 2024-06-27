@@ -22,7 +22,6 @@ from scal3 import logger
 log = logger.get()
 
 import sys
-from math import log
 
 from scal3.time_utils import *
 from scal3.bin_heap import MaxHeap
