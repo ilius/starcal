@@ -207,7 +207,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 						if chType == 1:
 							event.summary = text1 + event.summary
 						elif chType == 2:
-							event.summary = event.summary + text1
+							event.summary += text1
 						elif chType == 3:
 							event.summary = event.summary.replace(text1, text2)
 						event.afterModify()
@@ -217,7 +217,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 						if chType == 1:
 							event.description = text1 + event.description
 						elif chType == 2:
-							event.description = event.description + text1
+							event.description += text1
 						elif chType == 3:
 							event.description = event.description.replace(text1, text2)
 						event.afterModify()
