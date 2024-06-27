@@ -26,7 +26,6 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
-from scal3.core import log
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus

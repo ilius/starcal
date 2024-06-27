@@ -51,7 +51,6 @@ from scal3.cal_types import (
 from scal3.core import (
 	getAbsWeekNumberFromJd,
 	jd_to_primary,
-	log,
 )
 from scal3.date_utils import checkDate, dateDecode, dateEncode, jwday
 from scal3.interval_utils import (
@@ -4677,7 +4676,7 @@ class EventGroup(EventContainer):
 
 			eid = idByUuid.get(uuid)
 			if eid is None:
-				log.debug("appending event uuid =", uuid)
+				log.debug(f"appending event uuid = {uuid}")
 				event = self.appendByData(eventData)
 				res.newEventIds.add((gid, event.id))
 				continue
