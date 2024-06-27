@@ -36,5 +36,5 @@ $PIP install pygit2
 if [ -f /bin/freebsd-version ] ; then
 	./distro/base/install.py --system
 else
-	./install --system
+	./install-auto.sh
 fi
