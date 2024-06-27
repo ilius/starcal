@@ -198,7 +198,7 @@ def arctan2(y, x):
 
 
 def fix(a, b):
-	a = a - b * floor(a / b)
+	a -= b * floor(a / b)
 	return a + b if a < 0 else a
 
 
@@ -450,7 +450,7 @@ class PrayTimes:
 		)
 
 		for key in times:
-			times[key] = times[key] % 24
+			times[key] %= 24
 
 		# times = self.tuneTimes(times)  # FIXME
 		# for key in times:
