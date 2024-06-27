@@ -20,8 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-from math import log
-
 from scal3.bin_heap import MaxHeap
 
 # epsTm: seconds
