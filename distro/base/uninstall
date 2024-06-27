@@ -56,7 +56,7 @@ if [ -z $pkgName ] ; then ## do not f*** the system if pkgName was empty amiss!
 	exit 1
 fi
 
-##================== Starting to remove files =====================
+#################### Starting to remove files #####################
 
 if [ -n "$verbose" ] ; then ## no output (note that quotation around $verbose is needed)
 	RM="rm -Rfv"
