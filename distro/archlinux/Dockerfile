@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM archlinux:multilib-devel
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
 LABEL Description="Dockefile to build StarCalendar package for ArchLinux"
 
