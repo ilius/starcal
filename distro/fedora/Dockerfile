@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora:40
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
 LABEL Description="Dockefile to build StarCalendar package for Fedora"
 
