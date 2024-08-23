@@ -259,7 +259,7 @@ def simpleTimeEncode(
 def timeDecode(st: str) -> tuple[int, int, int]:
 	parts = st.split(":")
 	try:
-		tm = tuple([int(p) for p in parts])
+		tm = tuple(int(p) for p in parts)
 	except ValueError:
 		raise ValueError(f"bad time '{st}'") from None
 	if len(tm) == 1:

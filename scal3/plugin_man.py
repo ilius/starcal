@@ -494,7 +494,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 					y = int(date[0])
 					m = int(date[1])
 					d = int(date[2])
-					yearlyData[12][(y, m, d)] = text
+					yearlyData[12][y, m, d] = text
 				elif len(date) == 2:
 					m = int(date[0])
 					d = int(date[1])
@@ -600,7 +600,7 @@ class IcsTextPlugin(BasePlugin):
 							text += "\n" + DESCRIPTION
 						for jd in getJdListFromEpochRange(DTSTART, DTEND):
 							y, m, d = gregorian.jd_to(jd)
-							md[(m, d)] = text
+							md[m, d] = text
 					else:
 						log.error(
 							f"unsupported ics event, {SUMMARY=}, "
@@ -659,7 +659,7 @@ class IcsTextPlugin(BasePlugin):
 							text += "\n" + DESCRIPTION
 						for jd in getJdListFromEpochRange(DTSTART, DTEND):
 							y, m, d = gregorian.jd_to(jd)
-							ymd[(y, m, d)] = text
+							ymd[y, m, d] = text
 					SUMMARY = ""
 					DESCRIPTION = ""
 					DTSTART = None
@@ -709,9 +709,9 @@ class IcsTextPlugin(BasePlugin):
 					+ " "
 					+ _(y)
 					+ ": "
-					+ self.ymd[(y, m, d)]
+					+ self.ymd[y, m, d]
 				)
-			return self.ymd[(y, m, d)]
+			return self.ymd[y, m, d]
 		if self.md and (m, d) in self.md:
 			if self.show_date:
 				return (
@@ -721,9 +721,9 @@ class IcsTextPlugin(BasePlugin):
 					+ " "
 					+ _(y)
 					+ ": "
-					+ self.ymd[(y, m, d)]
+					+ self.ymd[y, m, d]
 				)
-			return self.md[(m, d)]
+			return self.md[m, d]
 		return ""
 
 	def open_configure(self):
