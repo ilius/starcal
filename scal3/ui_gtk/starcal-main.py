@@ -171,7 +171,7 @@ def error_exit(resCode, text, **kwargs):
 	sys.exit(resCode)
 
 
-if sys.version_info[0] < 3:
+if sys.version_info[0] < 3:  # noqa: UP036
 	error_exit(1, "Run this script with Python 3.x")
 
 try:
