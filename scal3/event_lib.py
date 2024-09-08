@@ -164,7 +164,7 @@ class JsonEventObj(JsonSObj):
 
 
 class Smallest:
-	def __eq__(self, other: "Any") -> bool:
+	def __eq__(self, other: object) -> bool:
 		return isinstance(other, Smallest)
 
 	def __lt__(self, other: "Any") -> bool:
