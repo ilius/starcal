@@ -17,7 +17,7 @@
 
 import sys
 
-if sys.version_info[0] < 3:
+if sys.version_info[0] < 3:  # noqa: UP036
 	sys.stderr.write("Run this script with Python 3.x\n")
 	sys.exit(1)
 
