@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 debugMode = log.level <= logging.DEBUG
 
-from time import time as now
+from time import perf_counter
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -211,7 +211,7 @@ def calcEventBoxes(
 
 	# ---
 	if debugMode:
-		t0 = now()
+		t0 = perf_counter()
 	boxes = []
 	for _boxValue, boxGroup in sorted(boxesDict.items()):
 		if len(boxGroup) < 4:
@@ -231,11 +231,11 @@ def calcEventBoxes(
 		return []
 	# -----
 	if debugMode:
-		t1 = now()
+		t1 = perf_counter()
 	# ---
 	graph = makeIntervalGraph(boxes)
 	if debugMode:
-		log.debug(f"makeIntervalGraph: {now() - t1:e}")
+		log.debug(f"makeIntervalGraph: {perf_counter() - t1:e}")
 	# -----
 
 	def boxSortKeyFunc(i: int) -> "tuple[int, int]":
@@ -256,6 +256,6 @@ def calcEventBoxes(
 	addBoxHeightToColoredGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
 	if debugMode:
-		log.debug(f"box placing time:  {now() - t0:e}")
+		log.debug(f"box placing time:  {perf_counter() - t0:e}")
 		log.debug("")
 	return boxes
