@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from time import time as now
+from time import perf_counter
 from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
@@ -148,7 +148,7 @@ class FloatingMsg(gtk.DrawingArea):
 
 	def animateStart(self):
 		self.updateLine()
-		self.startTime = now()
+		self.startTime = perf_counter()
 		self.animateUpdate()
 
 	def animateUpdate(self):
@@ -156,7 +156,7 @@ class FloatingMsg(gtk.DrawingArea):
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
 		self.xpos = self.startXpos + (
-			(now() - self.startTime) * self.speed * self.rtlSign
+			(perf_counter() - self.startTime) * self.speed * self.rtlSign
 		)
 		if self.xpos > screenWidth or self.xpos < -self.textWidth:
 			if self.index >= self.linesNum - 1:
@@ -266,7 +266,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 	def updateLine(self):
 		self.label.set_label(self.lines[self.index])
 		self.startXpos = -self.label.width if self.label.rtl else screenWidth
-		self.startTime = now()
+		self.startTime = perf_counter()
 
 	def finish(self, _w=None, _e=None):
 		self.isFinished = True
@@ -283,8 +283,8 @@ class NoFillFloatingMsgWindow(gtk.Window):
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
 		xpos = int(
-			self.startXpos
-			+ ((now() - self.startTime) * self.speed * self.label.rtlSign),
+			self.startXpos  # TODO: time.perf_counter()
+			+ ((perf_counter() - self.startTime) * self.speed * self.label.rtlSign),
 		)
 		self.move(xpos, 0)
 		self.resize(1, 1)

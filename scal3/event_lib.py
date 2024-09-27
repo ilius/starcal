@@ -32,7 +32,7 @@ import os.path
 from collections import OrderedDict
 from contextlib import suppress
 from os.path import isabs, join, split, splitext
-from time import localtime
+from time import localtime, perf_counter
 from time import time as now
 from typing import NamedTuple
 
@@ -268,12 +268,12 @@ class LastIdsWrapper(JsonEventObj):
 		return lastId
 
 	def scan(self) -> None:
-		t0 = now()
+		t0 = perf_counter()
 		self.event = self.scanDir("event/events")
 		self.group = self.scanDir("event/groups")
 		self.account = self.scanDir("event/accounts")
 		self.save()
-		log.info(f"Scanning last_ids took {now() - t0:.3f} seconds, {self}")
+		log.info(f"Scanning last_ids took {perf_counter() - t0:.3f} seconds, {self}")
 
 
 lastIds = None  # type: LastIdsWrapper
@@ -311,9 +311,9 @@ def removeUnusedObjects(fs: FileSystem):
 
 	allReadOnly = True
 	try:
-		tm0 = now()
+		tm0 = perf_counter()
 		do_removeUnusedObjects()
-		log.info(f"removeUnusedObjects: took {now() - tm0}")
+		log.info(f"removeUnusedObjects: took {perf_counter() - tm0}")
 	finally:
 		allReadOnly = False
 
@@ -4501,25 +4501,28 @@ class EventGroup(EventContainer):
 		self.occur.add(t0, t1, eid)
 		self.occurCount += 1
 
-	def updateOccurrenceLog(self, stm0: int) -> None:
+	def updateOccurrenceLog(self, dt: float) -> None:
 		log.debug(
 			f"updateOccurrence, id={self.id}, title='{self.title}', "
-			f"count={self.occurCount}, time={now() - stm0}",
+			f"count={self.occurCount}, time={dt:.1f}",
 		)
 
 	def updateOccurrence(self) -> None:
-		stm0 = now()
+		stm0 = perf_counter()
 		self.clear()
 		for event, occur in self.calcOccurrenceAll():
 			for t0, t1 in occur.getTimeRangeList():
 				self.addOccur(t0, t1, event.id)
 		# self.occurLoaded = True
-		log.debug(f"time = {(now() - stm0) * 1000} ms")
+		log.debug(f"time = {(perf_counter() - stm0) * 1000} ms")
 		# log.debug(
 		# 	f"updateOccurrence, id={self.id}, title={self.title}, " +
-		# 	f"count={self.occurCount}, time={now()-stm0}"
+		# 	f"count={self.occurCount}, time={perf_counter()-stm0}"
 		# )
-		# log.debug(f"{self.id} {1000*(now()-stm0)} {self.occur.calcAvgDepth():.1f}")
+		# log.debug(
+		# 	f"{self.id} {1000*(perf_counter()-stm0)} "
+		# 	f"{self.occur.calcAvgDepth():.1f}"
+		# )
 
 	@staticmethod
 	def _exportToIcsFpEvent(
@@ -5405,7 +5408,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
-		stm0 = now()
+		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
 			return
@@ -5432,7 +5435,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 				epoch -= epoch % 60  # noqa: PLW2901
 			self.addOccur(epoch, epoch, commit_id)
 		# ---
-		self.updateOccurrenceLog(stm0)
+		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def updateEventDesc(self, event: "Event") -> None:
 		mod = self.getVcsModule()
@@ -5482,7 +5485,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
-		stm0 = now()
+		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
 			return
@@ -5500,13 +5503,13 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			)
 			log.exception("")
 			return
-		# self.updateOccurrenceLog(stm0)
+		# self.updateOccurrenceLog(perf_counter() - stm0)
 		for epoch, tag in tagsData:
 			if not self.showSeconds:
 				epoch -= epoch % 60  # noqa: PLW2901
 			self.addOccur(epoch, epoch, tag)
 		# ---
-		self.updateOccurrenceLog(stm0)
+		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def updateEventDesc(self, event: "Event") -> None:
 		mod = self.getVcsModule()
@@ -5591,7 +5594,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		self.statByJd = {}  # a dict of (commintsCount, lastCommitId)s
 
 	def updateOccurrence(self) -> None:
-		stm0 = now()
+		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
 			return
@@ -5641,7 +5644,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 				jd,
 			)
 		# ---
-		self.updateOccurrenceLog(stm0)
+		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def getEvent(self, jd: int) -> "Event":
 		# cache commit data FIXME
