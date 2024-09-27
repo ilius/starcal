@@ -151,11 +151,11 @@ def testGetMin(N):
 	for _ in range(N):
 		x = randint(1, 10 * N)
 		h.push(x, 0)
-	# t0 = now()
+	# t0 = perf_counter()
 	k1 = -max(h)[0]
-	# t1 = now()
+	# t1 = perf_counter()
 	k2 = h.getMin()[0]
-	# t2 = now()
+	# t2 = perf_counter()
 	assert k1 == k2
 	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
 	# log.debug(f"min key = {k1}")

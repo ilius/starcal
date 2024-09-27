@@ -19,6 +19,7 @@ from scal3 import logger
 log = logger.get()
 
 from datetime import datetime, timedelta
+from time import perf_counter
 from time import time as now
 from typing import TYPE_CHECKING
 
@@ -514,13 +515,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: "cairo.Context"):
-		# t0 = now()
+		# t0 = perf_counter()
 		if not self.boxEditing:
 			self.updateData()
 			self.currentTimeUpdate(restart=True, draw=False)
-		# t1 = now()
+		# t1 = perf_counter()
 		self.drawAll(cr)
-		# t2 = now()
+		# t2 = perf_counter()
 		# log.debug(f"drawing time / data calc time: {(t2-t1)/(t1-t0):.2f}")
 
 	def getLastScrollDir(self) -> "str | None":
@@ -821,7 +822,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):
 		"""Source in ("keyboard", "scroll", "button")."""
 		if tl.enableAnimation:
-			tm = now()
+			tm = perf_counter()
 			# dtEvent = tm - self.movingLastPress
 			self.movingLastPress = tm
 			"""
@@ -884,7 +885,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.movingF = direction * force
 		if self.movingV == 0:
 			self.movingV = tl.movingInitialVelocity * direction
-		tm = now()
+		tm = perf_counter()
 		self.updateMovingAnim(
 			self.movingF,  # f1
 			tm,  # t0
@@ -894,9 +895,17 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			holdForce=True,
 		)
 
-	def updateMovingAnim(self, f1, t0, t1, v0, a1, holdForce=False):
+	def updateMovingAnim(
+		self,
+		f1: float,  # force
+		t0: float,  # perf_counter time
+		t1: float,  # perf_counter time
+		v0: float,  # speed
+		a1: float,  # acceleration
+		holdForce: bool = False,
+	):
 		# log.debug(f"updateMovingAnim: {f1=:.1f}, {v0=:.1f}, {a1=:.1f}")
-		t2 = now()
+		t2 = perf_counter()
 		f = self.movingF
 		if not holdForce and f != f1:
 			# log.debug("Stopping movement: f != f1")
