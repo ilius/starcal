@@ -26,7 +26,7 @@ from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from os.path import isabs, isdir, isfile, join
-from time import time as now
+from time import perf_counter
 from typing import (
 	Any,
 )
@@ -302,7 +302,7 @@ def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 
 
 def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
-	tm = now()
+	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > saveLiveConfDelay:
 		saveLiveConf()
 		return False  # Finish loop
@@ -471,7 +471,7 @@ class Cell(CellType):
 	def getEventsData(self):
 		if self._eventsData is not None:
 			return self._eventsData
-		# t0 = now()
+		# t0 = perf_counter()
 		self._eventsData = event_lib.getDayOccurrenceData(
 			self.jd,
 			eventGroups,
@@ -492,7 +492,7 @@ class Cell(CellType):
 			showInStatusIcon: bool
 		"""
 		return None
-		# dt = now() - t0
+		# dt = perf_counter() - t0
 		# Cell.ocTimeSum += dt
 		# Cell.ocTimeCount += 1
 		# Cell.ocTimeMax = max(Cell.ocTimeMax, dt)
@@ -1730,7 +1730,7 @@ timeout_repeat = 50
 
 def updateFocusTime(*_args):
 	global focusTime
-	focusTime = now()
+	focusTime = perf_counter()
 
 
 # --------------------------------------------------------
