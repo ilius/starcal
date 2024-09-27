@@ -26,8 +26,7 @@ import os.path
 import signal
 import typing
 from os.path import dirname, isdir, isfile, join
-from time import localtime
-from time import time as now
+from time import localtime, perf_counter
 
 if typing.TYPE_CHECKING:
 	from typing import Any
@@ -102,7 +101,7 @@ ui.uiName = "gtk"
 
 
 def liveConfChanged():
-	tm = now()
+	tm = perf_counter()
 	if tm - ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		timeout_add(
 			int(ui.saveLiveConfDelay * 1000),
@@ -562,7 +561,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def focusOut(self, _widegt, _event, _data=None):
 		# called 0.0004 sec (max) after focusIn
 		# (if switched between two windows)
-		dt = now() - ui.focusTime
+		dt = perf_counter() - ui.focusTime
 		log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
 		if dt > 0.05:  # FIXME
 			self.focus = False
@@ -1486,13 +1485,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			# ^ needed for windows. before or after main_quit ?
 		self.destroy()
 		# ------
-		t0 = now()
+		t0 = perf_counter()
 		core.stopRunningThreads()
-		t1 = now()
+		t1 = perf_counter()
 		pixcache.cacheSaveStop()
-		t2 = now()
+		t2 = perf_counter()
 		ui.eventUpdateQueue.stopLoop()
-		t3 = now()
+		t3 = perf_counter()
 		log.info(f"stopRunningThreads took {t1 - t0:.6f} seconds")
 		log.info(f"cacheSaveStop took {t2 - t1:.6f} seconds")
 		log.info(f"eventUpdateQueue.stopLoop took {t3 - t2:.6f} seconds")

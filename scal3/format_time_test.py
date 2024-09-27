@@ -3,7 +3,7 @@ from scal3 import logger
 log = logger.get()
 
 import time
-from time import time as now
+from time import perf_counter
 
 from scal3 import core, ui
 from scal3.cal_types import to_jd
@@ -35,17 +35,17 @@ def testSpeed():
 	tm = list(time.localtime())
 	jd = to_jd(tm[0], tm[1], tm[2], calType)
 	# --------
-	t0 = now()
+	t0 = perf_counter()
 	for _i in range(n):
 		strftime(fmt1)
-	t1 = now()
+	t1 = perf_counter()
 	log.info(f"Python strftime: {int(n / (t1 - t0)):7d} op/sec")
 	# --------
 	jd = to_jd(tm[0], tm[1], tm[2], calType)
-	t0 = now()
+	t0 = perf_counter()
 	for _i in range(n):
 		formatTime(compiledFmt, calType, jd, tm)
-	t1 = now()
+	t1 = perf_counter()
 	log.info(f"My strftime:     {int(n / (t1 - t0)):7d} op/sec")
 
 

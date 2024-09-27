@@ -156,7 +156,7 @@ def testSimplifyNumList():
 
 def testOverlapsSpeed():
 	from random import normalvariate
-	from time import time
+	from time import perf_counter
 
 	N = 2000000
 	a0, b0 = -1, 1
@@ -171,10 +171,10 @@ def testOverlapsSpeed():
 	for _i in range(N):
 		a, b = getRandomPair()
 		data.append((a, b))
-	t0 = time()
+	t0 = perf_counter()
 	for a, b in data:
 		ab_overlaps(a0, b0, a, b)
-	log.info(f"{time() - t0:.2f}")
+	log.info(f"{perf_counter() - t0:.2f}")
 
 
 if __name__ == "__main__":

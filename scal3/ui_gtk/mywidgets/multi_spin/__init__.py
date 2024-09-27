@@ -20,7 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from time import time as now
+from time import perf_counter
 
 from scal3 import locale_man, ui
 from scal3.mywidgets.multi_spin import ContainerField
@@ -323,7 +323,7 @@ class MultiSpinButton(gtk.Box):
 	# 	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
 
 	def _arrow_press(self, plus):
-		self.pressTm = now()
+		self.pressTm = perf_counter()
 		self._remain = True
 		timeout_add(ui.timeout_initial, self._arrow_remain, plus)
 		self.entry_plus(plus)
@@ -332,7 +332,7 @@ class MultiSpinButton(gtk.Box):
 		if (
 			self.entry.get_editable()
 			and self._remain
-			and now() - self.pressTm >= ui.timeout_repeat / 1000
+			and perf_counter() - self.pressTm >= ui.timeout_repeat / 1000
 		):
 			self.entry_plus(plus)
 			timeout_add(
