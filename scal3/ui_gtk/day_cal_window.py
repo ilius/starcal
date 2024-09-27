@@ -20,7 +20,7 @@ log = logger.get()
 
 import os
 from os.path import join
-from time import time as now
+from time import perf_counter
 
 from scal3 import ui
 from scal3.json_utils import loadJsonConf, saveJsonConf
@@ -60,7 +60,7 @@ def saveLiveConf():  # FIXME: rename to saveConfLive
 
 
 def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
-	tm = now()
+	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		saveLiveConf()
 		return False  # Finish loop
@@ -69,7 +69,7 @@ def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
 
 def liveConfChanged():
 	global lastLiveConfChangeTime
-	tm = now()
+	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		timeout_add(
 			int(ui.saveLiveConfDelay * 1000),
