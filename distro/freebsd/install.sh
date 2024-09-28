@@ -44,7 +44,7 @@ pkg install "$PYV-dateutil" || \
 	python3 -m pip install dateutil || \
 	python3 -m pip install git+https://github.com/dateutil/dateutil
 
-pkg install "$PYV-python-igraph" || \
+pkg install "$PYV-igraph" || \
 	python3 -m pip install igraph || \
 	echo "Failed to install igraph"
 
