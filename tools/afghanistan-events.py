@@ -37,7 +37,7 @@ jsonPath = join(
 with open(jsonPath, encoding="utf-8") as jsonFile:
 	data = json.load(jsonFile)
 
-# print(list(data.keys()))
+# print(list(data))
 # print(data['Irregular Recurring'])
 
 calTypes = {

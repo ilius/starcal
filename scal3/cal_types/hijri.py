@@ -224,7 +224,7 @@ class MonthDbHolder:
 			)
 			for index, ym in enumerate(
 				sorted(
-					self.monthLenByYm.keys(),
+					self.monthLenByYm,
 				),
 			)
 		]
