@@ -1347,7 +1347,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			MoonStatusColumn(self),
 		]
 		defaultItemsDict = {item.objName: item for item in defaultItems}
-		itemNames = list(defaultItemsDict.keys())
+		itemNames = list(defaultItemsDict)
 		for name, enable in ui.wcalItems:
 			item = defaultItemsDict.get(name)
 			if item is None:
