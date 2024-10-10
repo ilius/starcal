@@ -268,7 +268,7 @@ class EventHistoryDialog(gtk.Dialog):
 		if viewType == "Change Table":
 			if hashBefore:
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
-				for key in sorted(diff.keys()):
+				for key in sorted(diff):
 					(valueBefore, valueAfter) = diff[key]
 					treeModel.append(
 						[modifySymbol, key, str(valueBefore), str(valueAfter)],
@@ -415,7 +415,7 @@ class EventHistoryDialog(gtk.Dialog):
 		dataBefore = self.getObjectData(hashBefore)
 		dataAfter = self.getObjectData(hashAfter)
 		dataFull = []  # (symbol, key, valueBefore, valueAfter)
-		keys = sorted(set(dataBefore.keys()).union(dataAfter.keys()))
+		keys = sorted(set(dataBefore).union(dataAfter))
 		for key in keys:
 			valueBefore = dataBefore.get(key, "")
 			valueAfter = dataAfter.get(key, "")
@@ -442,7 +442,7 @@ class EventHistoryDialog(gtk.Dialog):
 	def extractChangeSummary(diff):
 		"""diff: dict: param -> (valueBefore, valueAfter)."""
 		if len(diff) < 3:
-			return ", ".join(diff.keys())
+			return ", ".join(diff)
 
 		return _("{count} parameters").format(count=_(len(diff)))
 
