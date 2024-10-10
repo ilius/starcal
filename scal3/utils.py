@@ -114,7 +114,7 @@ class StrOrderedDict(dict):
 		if isinstance(arg, list | tuple):
 			self.keyList = [item[0] for item in arg]
 		elif isinstance(arg, dict):
-			self.keyList = sorted(arg.keys())
+			self.keyList = sorted(arg)
 		else:
 			raise TypeError(
 				f"StrOrderedDict: bad type for first argument: {type(arg)}",
