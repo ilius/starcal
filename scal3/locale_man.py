@@ -490,7 +490,7 @@ def numDecode(numSt: str) -> int:
 	with suppress(ValueError):
 		return int(numSt)
 	numSt = toStr(numSt)
-	tryLangs = list(digits.keys())
+	tryLangs = list(digits)
 	if langSh in digits:
 		tryLangs.remove(langSh)
 		tryLangs.insert(0, langSh)
