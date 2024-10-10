@@ -41,7 +41,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# ---
 		activeCalTypes = calTypes.active
 		if ui.statusBarDatesReverseOrder:
-			activeCalTypes = reversed(activeCalTypes)
+			activeCalTypes = reversed(activeCalTypes)  # to not modify calTypes.active
 		for calType in activeCalTypes:
 			label = SLabel()
 			label.calType = calType
