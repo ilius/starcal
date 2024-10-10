@@ -1899,7 +1899,7 @@ class RuleContainer:
 		)
 
 	def getRuleNames(self) -> list[str]:
-		return list(self.rulesOd.keys())
+		return list(self.rulesOd)
 
 	def addRule(self, rule: "EventRule") -> None:
 		self.rulesOd[rule.name] = rule
