@@ -448,7 +448,7 @@ def findAskpass():
 		# Debian (not in PATH), ArchLinux
 		"/usr/lib/ssh/x11-ssh-askpass",
 		# FreeBSD (package openssh-askpass)
-		"/bin/x11-ssh-askpass",
+		"/usr/local/bin/ssh-askpass",  # link to x11-ssh-askpass
 	):
 		if isfile(askpass):
 			return askpass
@@ -459,18 +459,19 @@ def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
 	from os.path import isfile
 
-	sudo = "/usr/bin/sudo"
-	if isfile(sudo):
-		askpass = findAskpass()
-		if askpass:
-			adjustTimeCmd = [
-				sudo,
-				"-A",  # --askpass
-				join(sourceDir, "scripts", "run"),
-				"scal3/ui_gtk/adjust_dtime.py",
-			]
-			adjustTimeEnv["SUDO_ASKPASS"] = askpass
-			return
+	for sudo in ("/usr/bin/sudo", "/usr/local/bin/sudo"):
+		if isfile(sudo):
+			print(f"Found sudo: {sudo}")
+			askpass = findAskpass()
+			if askpass:
+				adjustTimeCmd = [
+					sudo,
+					"-A",  # --askpass
+					join(sourceDir, "scripts", "run"),
+					"scal3/ui_gtk/adjust_dtime.py",
+				]
+				adjustTimeEnv["SUDO_ASKPASS"] = askpass
+				return
 
 	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
 		if isfile(f"/usr/bin/{cmd}"):
