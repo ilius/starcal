@@ -28,6 +28,7 @@ PYV=$(python3 -c 'import sys;v=sys.version_info;print(f"py{v.major}{v.minor}")')
 pkg install \
 	gettext \
 	gtksourceview4 \
+	OpenSSH-askpass \
 	"$PYV-packaging" \
 	"$PYV-gobject3" \
 	"$PYV-cairo" \
