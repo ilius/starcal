@@ -55,6 +55,7 @@ depends+=('python3-psutil')
 depends+=('python3-cachetools')
 depends+=('python3-requests')
 depends+=('python3-pkg-resources')
+depends+=('python3-six')
 #depends+=('python3-gflags') # for google api client
 
 recommends=()

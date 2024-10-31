@@ -55,6 +55,7 @@ requires+=('python3-psutil')
 requires+=('python3-cachetools')
 requires+=('python3-requests')
 requires+=('python3-setuptools')
+requires+=('python3-six')
 #requires+=('python3-gflags') # for google api client
 
 
