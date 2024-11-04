@@ -31,6 +31,7 @@ import os
 import os.path
 from collections import OrderedDict
 from contextlib import suppress
+from datetime import timedelta
 from os.path import isabs, join, split, splitext
 from time import localtime, perf_counter
 from time import time as now
@@ -2455,7 +2456,25 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	# FIXME: too tricky!
 	# def calcFirstOccurrenceAfterJd(self, startJd):
 
+	def checkNotify(self, finishFunc: "Callable") -> None:
+		"""To be called from notification scheduler."""
+		if not self.parent:
+			return
+		firstOccur: tuple[int, int] | None = self.parent.occur.getFirstOfEvent(self.id)
+		if firstOccur is None:
+			return
+		start, end = firstOccur
+		tm = now()
+		if end < tm:  # TODO: add a self.parent.notificationMaxDelay
+			log.debug(f"checkNotify: event has past, event={self}")
+			return
+		if start > tm + timedelta(seconds=self.getNotifyBeforeSec()):
+			log.debug(f"checkNotify: event notif time has not reached, event={self}")
+			return
+		self.notify(finishFunc)
+
 	def notify(self, finishFunc: "Callable") -> None:
+		# FIXME: get rid of self.n ??
 		self.n = len(self.notifiers)
 
 		def notifierFinishFunc():
