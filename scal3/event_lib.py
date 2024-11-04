@@ -2417,7 +2417,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def getNotifiersDict(self):
 		return dict(self.getNotifiersData())
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		"""StartJd and endJd are float jd."""
 		# cache Occurrences  # FIXME
 		rules = list(self.rulesOd.values())
@@ -2449,8 +2449,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		occur.event = self
 		return occur  # FIXME
 
-	def calcOccurrenceAll(self):
-		return self.calcOccurrence(self.parent.startJd, self.parent.endJd)
+	def calcEventOccurrence(self):
+		return self.calcEventOccurrenceIn(self.parent.startJd, self.parent.endJd)
 
 	# FIXME: too tricky!
 	# def calcFirstOccurrenceAfterJd(self, startJd):
@@ -3396,7 +3396,7 @@ class UniversityClassEvent(Event):
 			raise RuntimeError("no end rule")
 		startJd = start.getJd()
 		endJd = end.getJd()
-		occur = self.calcOccurrence(startJd, endJd)
+		occur = self.calcEventOccurrenceIn(startJd, endJd)
 		tRangeList = occur.getTimeRangeList()
 		if not tRangeList:
 			return
@@ -4459,7 +4459,7 @@ class EventGroup(EventContainer):
 		# events with the same id"s, can not be contained by two groups
 		return newGroup
 
-	def calcOccurrenceAll(self) -> "Iterator[tuple[Event, OccurSet]]":
+	def calcGroupOccurrences(self) -> "Iterator[tuple[Event, OccurSet]]":
 		startJd = self.startJd
 		endJd = self.endJd
 		for event in self:
@@ -4483,7 +4483,7 @@ class EventGroup(EventContainer):
 		)
 		eid = event.id
 		self.occurCount -= self.occur.delete(eid)
-		for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
+		for t0, t1 in event.calcEventOccurrence().getTimeRangeList():
 			self.addOccur(t0, t1, eid)
 
 	def initOccurrence(self) -> None:
@@ -4512,7 +4512,7 @@ class EventGroup(EventContainer):
 	def updateOccurrence(self) -> None:
 		stm0 = perf_counter()
 		self.clear()
-		for event, occur in self.calcOccurrenceAll():
+		for event, occur in self.calcGroupOccurrences():
 			for t0, t1 in occur.getTimeRangeList():
 				self.addOccur(t0, t1, event.id)
 		# self.occurLoaded = True
@@ -4563,7 +4563,7 @@ class EventGroup(EventContainer):
 			fp.write(vevent)
 			return
 
-		occur = event.calcOccurrenceAll()
+		occur = event.calcEventOccurrence()
 		if not occur:
 			return
 		if isinstance(occur, JdOccurSet):
