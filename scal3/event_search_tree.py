@@ -130,7 +130,7 @@ class EventSearchTree:
 			mup.left, node = node, mup
 		return node
 
-	def addStep(
+	def _addStep(
 		self,
 		node,
 		t0,
@@ -146,7 +146,7 @@ class EventSearchTree:
 			node.add(t0, t1, dt, eid)
 			return node
 		if mt < node.mt:
-			node.left = self.addStep(
+			node.left = self._addStep(
 				node.left,
 				t0,
 				t1,
@@ -155,7 +155,7 @@ class EventSearchTree:
 				eid,
 			)
 		elif mt > node.mt:
-			node.right = self.addStep(
+			node.right = self._addStep(
 				node.right,
 				t0,
 				t1,
@@ -192,7 +192,7 @@ class EventSearchTree:
 		dt = (t1 - t0) / 2.0
 		# ---
 		try:
-			self.root = self.addStep(
+			self.root = self._addStep(
 				self.root,
 				t0,
 				t1,
@@ -207,7 +207,7 @@ class EventSearchTree:
 			hp = self.byId[eid] = MaxHeap()
 		hp.push(mt, dt)
 
-	def searchStep(self, node, t0, t1):
+	def _searchStep(self, node, t0, t1):
 		if not node:
 			return
 		t0 = max(t0, node.min_t)
@@ -215,7 +215,7 @@ class EventSearchTree:
 		if t0 >= t1:
 			return
 		# ---
-		for item in self.searchStep(node.left, t0, t1):
+		for item in self._searchStep(node.left, t0, t1):
 			yield item
 		# ---
 		min_dt = abs((t0 + t1) / 2.0 - node.mt) - (t1 - t0) / 2.0
@@ -226,11 +226,11 @@ class EventSearchTree:
 			for dt, eid in node.events.moreThan(min_dt):
 				yield node.mt, dt, eid
 		# ---
-		for item in self.searchStep(node.right, t0, t1):
+		for item in self._searchStep(node.right, t0, t1):
 			yield item
 
 	def search(self, t0, t1):
-		for mt, dt, eid in self.searchStep(self.root, t0, t1):
+		for mt, dt, eid in self._searchStep(self.root, t0, t1):
 			yield (
 				max(t0, mt - dt),
 				min(t1, mt + dt),
@@ -239,7 +239,7 @@ class EventSearchTree:
 			)
 
 	def getLastBefore(self, t1):
-		res = self.getLastBeforeStep(self.root, t1)
+		res = self._getLastBeforeStep(self.root, t1)
 		if res:
 			mt, dt, eid = res
 			return (
@@ -249,14 +249,14 @@ class EventSearchTree:
 			)
 		return None
 
-	def getLastBeforeStep(self, node, t1):
+	def _getLastBeforeStep(self, node, t1):
 		if not node:
 			return
 		t1 = min(t1, node.max_t)
 		if t1 <= node.min_t:
 			return
 		# ---
-		right_res = self.getLastBeforeStep(node.right, t1)
+		right_res = self._getLastBeforeStep(node.right, t1)
 		if right_res:
 			return right_res
 		# ---
@@ -268,7 +268,7 @@ class EventSearchTree:
 				eid,
 			)
 		# ---
-		return self.getLastBeforeStep(node.left, t1)
+		return self._getLastBeforeStep(node.left, t1)
 
 	@staticmethod
 	def getMinNode(node):
@@ -284,13 +284,13 @@ class EventSearchTree:
 		node.left = self.deleteMinNode(node.left)
 		return node
 
-	def deleteStep(self, node, mt, dt, eid):
+	def _deleteStep(self, node, mt, dt, eid):
 		if not node:
 			return
 		if mt < node.mt:
-			node.left = self.deleteStep(node.left, mt, dt, eid)
+			node.left = self._deleteStep(node.left, mt, dt, eid)
 		elif mt > node.mt:
-			node.right = self.deleteStep(node.right, mt, dt, eid)
+			node.right = self._deleteStep(node.right, mt, dt, eid)
 		else:  # mt == node.mt
 			node.events.delete(dt, eid)
 			if not node.events:  # Cleaning tree, not essential
@@ -313,7 +313,7 @@ class EventSearchTree:
 		n = 0
 		for mt, dt in hp.getAll():
 			try:
-				self.root = self.deleteStep(self.root, mt, dt, eid)
+				self.root = self._deleteStep(self.root, mt, dt, eid)
 			except Exception:  # noqa: PERF203
 				log.exception("")
 			else:
@@ -376,14 +376,14 @@ class EventSearchTree:
 	def getDepth(self):
 		return self.getDepthNode(self.root)
 
-	def calcAvgDepthStep(self, node, depth):
+	def _calcAvgDepthStep(self, node, depth):
 		if not node:
 			return 0, 0
-		left_s, left_n = self.calcAvgDepthStep(
+		left_s, left_n = self._calcAvgDepthStep(
 			node.left,
 			depth + 1,
 		)
-		right_s, right_n = self.calcAvgDepthStep(
+		right_s, right_n = self._calcAvgDepthStep(
 			node.right,
 			depth + 1,
 		)
@@ -393,7 +393,7 @@ class EventSearchTree:
 		)
 
 	def calcAvgDepth(self):
-		s, n = self.calcAvgDepthStep(self.root, 0)
+		s, n = self._calcAvgDepthStep(self.root, 0)
 		if n > 0:
 			return s / n
 		return None
