@@ -15,8 +15,11 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import sched
+from heapq import heappop
 from threading import Thread
 from time import perf_counter, sleep
+from time import time as now
 
 
 class EventNotificationManager:
@@ -46,10 +49,21 @@ class EventGroupNotificationThread(Thread):
 
 	def __init__(self, group):
 		self.group = group
-		self.timers = {}
-		# type: Dict[Tuple[int, int], Tuple[int, Timer]]
-		# epoch, timer = self.timers[(gid, eid)]
-		# or maybe the values shoulf be MinHeap instances
+		# self.sch: sched.scheduler | None = None
+		self.queues = {}
+		# type: dict[int, list[int]]
+		# the values should be a (min) heap
+		# use heappush and heappop
+		# 	epoch = self.queues[eid][0]			# to get the smallest without pop
+		# 	epoch = heappop(self.queues[eid])	# to get and remove the smallest
+		# heappush(self.queues[eid], epoch)
+
+		# threading.Timer is a subclass of threading.Thread
+		# so probably too expensive to create a timer for each occurance or even event!
+		# try using sched.scheduler
+		# https://docs.python.org/3/library/sched.html#sched.scheduler
+		# Changed in Python 3.3: scheduler class can be safely used in multi-threaded
+		# environments.
 
 		Thread.__init__(
 			self,
@@ -65,8 +79,35 @@ class EventGroupNotificationThread(Thread):
 			dt = perf_counter() - t0
 			sleep(interval - dt)
 
+	def finishFunc(self):
+		pass  # FIXME: what to do here?
+
+	def notify(self, eid: int):
+		self.group[eid].checkNotify(self.finishFunc)
+
 	def run(self):
 		if not self.group.enable:
 			return
 		if not self.group.notificationEnabled:
 			return
+
+		interval = self.interval
+		queues = self.queues
+
+		# if self.sch is not None and not self.sch.empty():
+		# 	print(f"EventGroupNotificationThread: run: last scheduler is not done yet")
+
+		sch = sched.scheduler(now, sleep)
+		tm = now()
+
+		for eid in queues:
+			if queues[eid][0] > tm + interval:
+				continue
+			sch.enterabs(
+				heappop(queues[eid]),
+				self.notify,
+				argument=(eid,),
+			)
+
+		# self.sch = sch
+		sch.run(blocking=True)
