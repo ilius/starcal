@@ -69,6 +69,7 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple`
 	"PLC0206", # Extracting value from dictionary without calling `.items()`
 
 	"PYI034",  # py3.11: `__iadd__` methods in classes like `...` usually return `self` at runtime
@@ -198,6 +199,10 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ]
 "scal3/ui_gtk/event/event/__init__.py" = [
 	"F822", # Undefined name `...` in `__all__`
+]
+
+"scal3/event_search_tree.py" = [
+	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple`
 ]
 
 [tool.ruff.format]
