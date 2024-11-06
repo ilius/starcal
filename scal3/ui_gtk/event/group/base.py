@@ -143,6 +143,15 @@ class BaseWidgetClass(gtk.Box):
 		)
 		# -----
 		# hbox = HBox()
+		# label = gtk.Label(label=_("Enable Notifications"))
+		# label.set_xalign(0)
+		# pack(hbox, label)
+		# self.sizeGroup.add_widget(label)
+		# self.notificationEnabledCheck = gtk.CheckButton(label="")
+		# pack(hbox, self.notificationEnabledCheck)
+		# pack(self, hbox)
+		# -----
+		# hbox = HBox()
 		# label = gtk.Label(label=_("Show Full Event Description"))
 		# label.set_xalign(0)
 		# pack(hbox, label)
@@ -189,6 +198,7 @@ class BaseWidgetClass(gtk.Box):
 		self.showInStatusIconCheck.set_active(self.group.showInStatusIcon)
 		self.cacheSizeSpin.set_value(self.group.eventCacheSize)
 		self.sepInput.set_text(self.group.eventTextSep)
+		# self.notificationEnabledCheck.set_active(self.group.notificationEnabled)
 		# self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
 		if self.userCanAddEvents:
 			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
@@ -209,6 +219,8 @@ class BaseWidgetClass(gtk.Box):
 		self.group.showInStatusIcon = self.showInStatusIconCheck.get_active()
 		self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 		self.group.eventTextSep = self.sepInput.get_text()
+		# self.group.notificationEnabled = self.notificationEnabledCheck.get_active()
+		# FIXME: why does above line cause a seg fault?!
 		# self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
 		if self.userCanAddEvents:
 			self.group.addEventsToBeginning = (
