@@ -108,5 +108,6 @@ class GroupEditorDialog(gtk.Dialog):
 			event_lib.lastIds.save()
 		else:
 			ui.eventGroups[self._group.id] = self._group  # FIXME
+		ui.eventNotif.checkGroup(self._group)
 		self.destroy()
 		return self._group
