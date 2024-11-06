@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from gi.repository import GLib as glib
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton
@@ -60,7 +62,11 @@ class WidgetClass(gtk.Box):
 		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
-def notify(notifier, finishFunc):  # FIXME
+def notify(notifier, finishFunc):
+	glib.idle_add(_notify, notifier, finishFunc)
+
+
+def _notify(notifier, finishFunc):  # FIXME
 	cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
 	text = notifier.event.getText()
 	msg = cls(
