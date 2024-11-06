@@ -33,6 +33,7 @@ from time import time as _time
 __all__ = ["scheduler"]
 
 Event = namedtuple("Event", "time, priority, sequence, action, argument, kwargs")
+
 Event.time.__doc__ = """Numeric type compatible with the return value of the
 timefunc function passed to the constructor."""
 Event.priority.__doc__ = """Events scheduled for the same time will be executed
@@ -49,8 +50,17 @@ arguments for the action."""
 _sentinel = object()
 
 
+def stopped() -> bool:
+	return False
+
+
 class scheduler:
-	def __init__(self, timefunc=_time, delayfunc=time.sleep):
+	def __init__(
+		self,
+		timefunc=_time,
+		delayfunc=time.sleep,
+		stopped=stopped,
+	):
 		"""
 		Initialize a new instance, passing the time and delay
 		functions.
@@ -58,6 +68,7 @@ class scheduler:
 		self._queue = []
 		self.timefunc = timefunc
 		self.delayfunc = delayfunc
+		self.stopped = stopped
 		self._sequence_generator = count()
 
 	def enterabs(self, time, priority, action, argument=(), kwargs=_sentinel):
@@ -72,7 +83,12 @@ class scheduler:
 			kwargs = {}
 
 		event = Event(
-			time, priority, next(self._sequence_generator), action, argument, kwargs,
+			time=time,
+			priority=priority,
+			sequence=next(self._sequence_generator),
+			action=action,
+			argument=argument,
+			kwargs=kwargs,
 		)
 		heapq.heappush(self._queue, event)
 		return event  # The ID
@@ -80,9 +96,6 @@ class scheduler:
 	def run(self):
 		"""
 		Execute events until the queue is empty.
-		If blocking is False executes the scheduled events due to
-		expire soonest (if any) and then return the deadline of the
-		next scheduled call in the scheduler.
 
 		When there is a positive delay until the first event, the
 		delay function is called and the event is left in the queue;
@@ -108,20 +121,17 @@ class scheduler:
 		delayfunc = self.delayfunc
 		timefunc = self.timefunc
 		pop = heapq.heappop
-		while True:
+		while not self.stopped():
 			if not q:
 				break
+
 			(time, _priority, _sequence, action, argument, kwargs) = q[0]
+
 			now = timefunc()
 			if time > now:
-				delay = True
-			else:
-				delay = False
-				pop(q)
-			if delay:
-				print(f"{time=}, {now=}, delayfunc({time - now})")
 				delayfunc(time - now)
-			else:
-				print("action")
-				action(*argument, **kwargs)
-				delayfunc(0)  # Let other threads run
+				continue
+
+			pop(q)
+			action(*argument, **kwargs)
+			delayfunc(0)  # Let other threads run
