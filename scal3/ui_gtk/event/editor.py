@@ -144,6 +144,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.event.afterModify()
 		self.event.save()
 		event_lib.lastIds.save()
+		ui.eventNotif.checkGroup(self.event.parent)
 		self.destroy()
 		# -----
 		if self.event.isSingleOccur:
