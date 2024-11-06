@@ -496,7 +496,7 @@ def stopRunningThreads() -> None:
 		try:
 			cancel = thread.cancel
 		except AttributeError:  # noqa: PERF203
-			pass
+			log.debug(f"Thread {thread} has no cancel function")
 		else:
 			log.info(f"stopping thread {thread.name}")
 			cancel()

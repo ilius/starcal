@@ -1,3 +1,5 @@
+from gi.repository import GLib as glib
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import (
@@ -23,7 +25,16 @@ def hideWindow(_widget, dialog):
 	return True
 
 
-def notify(notifier, finishFunc):  # FIXME
+def response(dialog, _e):
+	dialog.destroy()
+
+
+def notify(notifier, _finishFunc):
+	print("------------ windowsMsg.notify")
+	glib.idle_add(_notify, notifier)
+
+
+def _notify(notifier):
 	event = notifier.event
 	dialog = gtk.Dialog()
 	# ----
@@ -51,8 +62,7 @@ def notify(notifier, finishFunc):  # FIXME
 		label=_("_Close"),
 		res=gtk.ResponseType.OK,
 	)
-	okB.connect("clicked", hideWindow, dialog)
-	# ----
+	okB.connect("clicked", lambda _w, _e: dialog.response(gtk.ResponseType.OK))
 	dialog.vbox.show_all()
-	dialog.connect("response", lambda _w, _e: finishFunc())
+	dialog.connect("response", response)
 	dialog.present()

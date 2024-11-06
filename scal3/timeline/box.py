@@ -173,10 +173,14 @@ def calcEventBoxes(
 			continue
 		if not group.showInTimeLine:
 			continue
-		for t0, t1, eid, odt in group.occur.search(
+		for item in group.occur.search(
 			timeStart - borderTm,
 			timeEnd + borderTm,
 		):
+			t0 = item.start
+			t1 = item.end
+			eid = item.eid
+			odt = item.dt
 			pixBoxW = (t1 - t0) * pixelPerSec
 			if pixBoxW < tl.boxSkipPixelLimit:
 				continue
