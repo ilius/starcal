@@ -31,7 +31,6 @@ import os
 import os.path
 from collections import OrderedDict
 from contextlib import suppress
-from datetime import timedelta
 from os.path import isabs, join, split, splitext
 from time import localtime, perf_counter
 from time import time as now
@@ -1790,6 +1789,10 @@ class AlarmNotifier(EventNotifier):
 		self.alarmSound = ""  # FIXME
 		self.playerCmd = "mplayer"
 
+	def notify(self, finishFunc: "Callable") -> None:
+		from scal3.ui_gtk.event.notifier.alarm import notify
+		notify(self, finishFunc)
+
 
 @classes.notifier.register
 class FloatingMsgNotifier(EventNotifier):
@@ -1810,6 +1813,10 @@ class FloatingMsgNotifier(EventNotifier):
 		self.bgColor = (255, 255, 0)
 		self.textColor = (0, 0, 0)
 
+	def notify(self, finishFunc: "Callable") -> None:
+		from scal3.ui_gtk.event.notifier.floatingMsg import notify
+		notify(self, finishFunc)
+
 
 @classes.notifier.register
 class WindowMsgNotifier(EventNotifier):
@@ -1821,6 +1828,10 @@ class WindowMsgNotifier(EventNotifier):
 		EventNotifier.__init__(self, event)
 		self.extraMessage = ""
 		# window icon, FIXME
+
+	def notify(self, finishFunc: "Callable") -> None:
+		from scal3.ui_gtk.event.notifier.windowMsg import notify
+		notify(self, finishFunc)
 
 
 # @classes.notifier.register  # FIXME
@@ -1837,6 +1848,9 @@ class CommandNotifier(EventNotifier):
 		self.command = ""
 		self.pyEval = False
 
+	def notify(self, finishFunc: "Callable") -> None:
+		from scal3.ui_gtk.event.command.alarm import notify
+		notify(self, finishFunc)
 
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
@@ -2466,7 +2480,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		if end < tm:  # TODO: add a self.parent.notificationMaxDelay
 			log.debug(f"checkNotify: event has past, event={self}")
 			return
-		if start > tm + timedelta(seconds=self.getNotifyBeforeSec()):
+		if start > tm + self.getNotifyBeforeSec():
 			log.debug(f"checkNotify: event notif time has not reached, event={self}")
 			return
 		self.notify(finishFunc)
@@ -2484,6 +2498,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 					log.exception("")
 
 		for notifier in self.notifiers:
+			print(f"notifier.notify: {notifier=}")
 			notifier.notify(notifierFinishFunc)
 
 	def getIcsData(self, prettyDateTime=False):  # noqa: ARG002, PLR6301
@@ -4521,6 +4536,7 @@ class EventGroup(EventContainer):
 		self.occur = EventSearchTree()
 		# self.occurLoaded = False
 		self.occurCount = 0
+		self.notifyOccur = EventSearchTree()
 
 	def clear(self) -> None:
 		self.occur.clear()
@@ -4547,6 +4563,8 @@ class EventGroup(EventContainer):
 				self.addOccur(t0, t1, event.id)
 			if event.notifiers:
 				notificationEnabled = True
+				for t0, t1 in occur.getTimeRangeList():
+					self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, event.id)
 		self.notificationEnabled = notificationEnabled
 
 		# self.occurLoaded = True
@@ -4733,8 +4751,7 @@ class EventGroup(EventContainer):
 
 	def _searchTimeFilter(self, conds):
 		if not ("time_from" in conds or "time_to" in conds):
-			for eid in self.idList:
-				yield eid
+			yield from self.idList
 			return
 
 		try:
@@ -4750,8 +4767,8 @@ class EventGroup(EventContainer):
 		else:
 			del conds["time_to"]
 
-		for _epoch0, _epoch1, eid, _odt in self.occur.search(time_from, time_to):
-			yield eid
+		for item in self.occur.search(time_from, time_to):
+			yield item.eid
 
 	def search(self, conds):
 		conds = dict(conds)  # take a copy, we may modify it
@@ -6332,10 +6349,13 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 		# log.debug("\nupdateData: checking event", event.summary)
 		gid = group.id
 		color = group.color
-		for epoch0, epoch1, eid, _odt in group.occur.search(
+		for item in group.occur.search(
 			getEpochFromJd(curJd),
 			getEpochFromJd(curJd + 1),
 		):
+			eid = item.eid
+			epoch0 = item.start
+			epoch1 = item.end
 			event = group[eid]
 			# ---
 			text = event.getTextParts()
