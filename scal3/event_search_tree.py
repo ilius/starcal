@@ -16,6 +16,8 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from collections import namedtuple
+
 from scal3 import logger
 
 log = logger.get()
@@ -25,6 +27,15 @@ from scal3.bin_heap import MaxHeap
 # epsTm: seconds
 # TODO: configure somewhere?
 epsTm = 0.01
+
+
+OccurItem = namedtuple("OccurItem", [
+	"start",
+	"end",
+	"eid",
+	"dt",
+	"oid",
+])
 
 
 def getCount(x):
@@ -231,11 +242,12 @@ class EventSearchTree:
 
 	def search(self, t0, t1):
 		for mt, dt, eid in self._searchStep(self.root, t0, t1):
-			yield (
-				max(t0, mt - dt),
-				min(t1, mt + dt),
-				eid,
-				2 * dt,
+			yield OccurItem(
+				start=max(t0, mt - dt),
+				end=min(t1, mt + dt),
+				eid=eid,
+				dt=2 * dt,
+				oid=hash((eid, mt - dt, mt + dt)),
 			)
 
 	def getLastBefore(self, t1):

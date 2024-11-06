@@ -15,20 +15,37 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sched
-from heapq import heappop
+from scal3 import logger
+
+log = logger.get()
+
+import os
+import threading
+
+# from sched import scheduler
 from threading import Thread
 from time import perf_counter, sleep
 from time import time as now
 
+from .simple_sched import scheduler
+
+DISABLE = False
+
 
 class EventNotificationManager:
 	def __init__(self, eventGroups):
-		self.byGroup = {}
+		self.byGroup: dict[int, EventGroupNotificationThread] = {}
+		if DISABLE:
+			return
 		for group in eventGroups:
-			self.runGroup(group)
+			self.checkGroup(group)
+
+	def stop(self):
+		for thread in self.byGroup.values():
+			thread.cancel()
 
 	def checkGroup(self, group):
+		# log.debug(f"EventNotificationManager.checkGroup: {group=}")
 		if not group.enable:
 			return
 		if not group.notificationEnabled:
@@ -38,26 +55,24 @@ class EventNotificationManager:
 		if thread is not None and thread.is_alive():
 			return
 
+		log.info(f"EventNotificationManager.checkGroup: {group=}: creating thread")
 		thread = EventGroupNotificationThread(group)
 		self.byGroup[group.id] = thread
 		thread.start()
 
 
 class EventGroupNotificationThread(Thread):
-	interval = 30 * 60  # seconds
-	maxTimerCount = 100
+	sleepSeconds = 1  # seconds
+	interval = int(os.getenv("STARCAL_NOTIFICATION_CHECK_INTERVAL") or "1800")
+	# ^ seconds
+	# TODO: get from group.notificationCheckInterval
 
 	def __init__(self, group):
 		self.group = group
-		# self.sch: sched.scheduler | None = None
-		self.queues = {}
-		# type: dict[int, list[int]]
-		# the values should be a (min) heap
-		# use heappush and heappop
-		# 	epoch = self.queues[eid][0]			# to get the smallest without pop
-		# 	epoch = heappop(self.queues[eid])	# to get and remove the smallest
-		# heappush(self.queues[eid], epoch)
 
+		self.sent = set()
+
+		# self.sch: sched.scheduler | None = None
 		# threading.Timer is a subclass of threading.Thread
 		# so probably too expensive to create a timer for each occurance or even event!
 		# try using sched.scheduler
@@ -70,44 +85,75 @@ class EventGroupNotificationThread(Thread):
 			target=self.mainLoop,
 		)
 
+		self._stop_event = threading.Event()
+
+	def cancel(self):
+		log.debug("EventGroupNotificationThread.cancel")
+		self._stop_event.set()
+
+	def stopped(self):
+		return self._stop_event.is_set()
+
+	def sleep(self, seconds: float):
+		step = self.sleepSeconds
+		sleepUntil = perf_counter() + seconds
+		while not self.stopped() and perf_counter() < sleepUntil:
+			sleep(step)
+
 	def mainLoop(self):
 		# time.perf_counter() is resistant to change of system time
 		interval = self.interval
-		while True:
-			t0 = perf_counter()
-			self.run()
-			dt = perf_counter() - t0
-			sleep(interval - dt)
+		sleepSeconds = self.sleepSeconds
+		while not self.stopped():
+			sleepUntil = perf_counter() + interval
+			log.debug(f"EventGroupNotificationThread: run: {self.group=}")
+			self._runStep()
+			log.debug(f"EventGroupNotificationThread: finished run: {self.group=}")
+			while not self.stopped() and perf_counter() < sleepUntil:
+				sleep(sleepSeconds)
 
 	def finishFunc(self):
 		pass  # FIXME: what to do here?
 
 	def notify(self, eid: int):
+		log.info(f"EventGroupNotificationThread: notify: {eid=}")
 		self.group[eid].checkNotify(self.finishFunc)
 
-	def run(self):
+	def _runStep(self):
 		if not self.group.enable:
 			return
 		if not self.group.notificationEnabled:
 			return
 
 		interval = self.interval
-		queues = self.queues
+		group = self.group
 
-		# if self.sch is not None and not self.sch.empty():
-		# 	print(f"EventGroupNotificationThread: run: last scheduler is not done yet")
-
-		sch = sched.scheduler(now, sleep)
 		tm = now()
+		items = list(group.notifyOccur.search(tm, tm + interval))
 
-		for eid in queues:
-			if queues[eid][0] > tm + interval:
+		if not items:
+			return
+
+		sch = scheduler(
+			timefunc=now,
+			delayfunc=self.sleep,
+			stopped=self.stopped,
+		)
+
+		for item in items:
+			if item.oid in self.sent:
+				log.info(f"EventGroupNotificationThread: skipping {item}")
 				continue
+			log.info(f"EventGroupNotificationThread: adding {item}")
+			self.sent.add(item.oid)
 			sch.enterabs(
-				heappop(queues[eid]),
+				item.start,  # max(now(), item.start),
+				1,  # priority
 				self.notify,
-				argument=(eid,),
+				argument=(item.eid,),
 			)
 
 		# self.sch = sch
-		sch.run(blocking=True)
+		log.info(f"EventGroupNotificationThread: run: starting sch.run, {len(items)=}")
+		sch.run()
+		log.info("EventGroupNotificationThread: run: finished sch.run")

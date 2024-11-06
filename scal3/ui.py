@@ -36,6 +36,7 @@ from cachetools import LRUCache
 from scal3 import cal_types, core, event_lib, locale_man
 from scal3.cal_types import calTypes, jd_to
 from scal3.date_utils import monthPlus as lowMonthPlus
+from scal3.event_notification_thread import EventNotificationManager
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.json_utils import (
 	loadJsonConf,
@@ -847,7 +848,7 @@ def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 
 
 def init() -> None:
-	global todayCell, cell, fs, eventAccounts, eventGroups, eventTrash
+	global todayCell, cell, fs, eventAccounts, eventGroups, eventTrash, eventNotif
 	core.init()
 
 	fs = core.fs
@@ -856,6 +857,7 @@ def init() -> None:
 	eventAccounts = event_lib.EventAccountsHolder.load(fs)
 	eventGroups = event_lib.EventGroupsHolder.load(fs)
 	eventTrash = event_lib.EventTrash.load(fs)
+	eventNotif = EventNotificationManager(eventGroups)
 	# ----
 	todayCell = cell = cellCache.getTodayCell()  # FIXME
 
@@ -1296,6 +1298,7 @@ fs: "event_lib.FileSystem | None" = None
 eventAccounts: "list[event_lib.EventAccount]" = []
 eventGroups: "list[event_lib.EventGroup]" = []
 eventTrash: "event_lib.EventTrash | None" = None
+eventNotif: EventNotificationManager | None = None
 
 
 def iterAllEvents():  # dosen"t include orphan events
