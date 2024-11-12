@@ -1791,6 +1791,7 @@ class AlarmNotifier(EventNotifier):
 
 	def notify(self, finishFunc: "Callable") -> None:
 		from scal3.ui_gtk.event.notifier.alarm import notify
+
 		notify(self, finishFunc)
 
 
@@ -1815,6 +1816,7 @@ class FloatingMsgNotifier(EventNotifier):
 
 	def notify(self, finishFunc: "Callable") -> None:
 		from scal3.ui_gtk.event.notifier.floatingMsg import notify
+
 		notify(self, finishFunc)
 
 
@@ -1831,6 +1833,7 @@ class WindowMsgNotifier(EventNotifier):
 
 	def notify(self, finishFunc: "Callable") -> None:
 		from scal3.ui_gtk.event.notifier.windowMsg import notify
+
 		notify(self, finishFunc)
 
 
@@ -1850,7 +1853,9 @@ class CommandNotifier(EventNotifier):
 
 	def notify(self, finishFunc: "Callable") -> None:
 		from scal3.ui_gtk.event.command.alarm import notify
+
 		notify(self, finishFunc)
+
 
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
