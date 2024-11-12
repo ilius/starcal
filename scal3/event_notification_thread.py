@@ -53,6 +53,7 @@ class EventNotificationManager:
 
 		thread = self.byGroup.get(group.id)
 		if thread is not None and thread.is_alive():
+			thread.reCalc()
 			return
 
 		log.info(f"EventNotificationManager.checkGroup: {group=}: creating thread")
@@ -86,6 +87,7 @@ class EventGroupNotificationThread(Thread):
 		)
 
 		self._stop_event = threading.Event()
+		self._recalc_event = threading.Event()
 
 	def cancel(self):
 		log.debug("EventGroupNotificationThread.cancel")
@@ -94,6 +96,11 @@ class EventGroupNotificationThread(Thread):
 	def stopped(self):
 		return self._stop_event.is_set()
 
+	def reCalc(self):
+		log.info("EventGroupNotificationThread.reCalc ----------------")
+		self.sent = set()
+		self._recalc_event.set()
+
 	def sleep(self, seconds: float):
 		step = self.sleepSeconds
 		sleepUntil = perf_counter() + seconds
@@ -101,15 +108,19 @@ class EventGroupNotificationThread(Thread):
 			sleep(step)
 
 	def mainLoop(self):
+		log.info("EventGroupNotificationThread.mainLoop ---------------")
 		# time.perf_counter() is resistant to change of system time
 		interval = self.interval
 		sleepSeconds = self.sleepSeconds
-		while not self.stopped():
+		while not self._stop_event.is_set():
+			self._recalc_event.clear()
 			sleepUntil = perf_counter() + interval
 			log.debug(f"EventGroupNotificationThread: run: {self.group=}")
 			self._runStep()
 			log.debug(f"EventGroupNotificationThread: finished run: {self.group=}")
-			while not self.stopped() and perf_counter() < sleepUntil:
+			while not (
+				self._stop_event.is_set() or self._recalc_event.is_set()
+			) and perf_counter() < sleepUntil:
 				sleep(sleepSeconds)
 
 	def finishFunc(self):
@@ -117,9 +128,18 @@ class EventGroupNotificationThread(Thread):
 
 	def notify(self, eid: int):
 		log.info(f"EventGroupNotificationThread: notify: {eid=}")
-		self.group[eid].checkNotify(self.finishFunc)
+		for _ in range(10):
+			try:
+				event = self.group[eid]
+			except ValueError as e:
+				log.error(str(e))
+				sleep(2)
+				continue
+			event.checkNotify(self.finishFunc)
+			break
 
 	def _runStep(self):
+		log.info("EventGroupNotificationThread: _runStep")
 		if not self.group.enable:
 			return
 		if not self.group.notificationEnabled:
@@ -130,6 +150,7 @@ class EventGroupNotificationThread(Thread):
 
 		tm = now()
 		items = list(group.notifyOccur.search(tm, tm + interval))
+		print(items)
 
 		if not items:
 			return
