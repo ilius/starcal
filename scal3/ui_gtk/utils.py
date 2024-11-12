@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
-from collections.abc import Callable
 from os.path import isabs, join
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.color_utils import ColorType, rgbToCSS
@@ -44,6 +46,9 @@ from scal3.ui_gtk.icon_mapping import (
 )
 from scal3.ui_gtk.svg_utils import pixbufFromSvgFile
 from scal3.utils import toBytes, toStr
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = [
 	"buffer_get_text",
@@ -194,7 +199,7 @@ def resolveImagePath(path: str):
 
 def pixbufFromFile(
 	path: str,
-	size: "int | float" = 0,
+	size: float = 0,
 ) -> GdkPixbuf.Pixbuf:
 	# the file may not exist
 	if not path:
@@ -324,7 +329,7 @@ def imageClassButton(iconName: str, styleClass: str, size: int):
 
 
 def setImageClassButton(
-	button: "gtk.Button",
+	button: gtk.Button,
 	iconName: str,
 	styleClass: str,
 	size: int,
@@ -384,8 +389,8 @@ def dialog_add_button(
 	dialog,
 	iconName: str = "",
 	label: str = "",
-	res: "gtk.ResponseType | None" = None,
-	onClick: "Callable | None" = None,
+	res: gtk.ResponseType | None = None,
+	onClick: Callable | None = None,
 	tooltip: str = "",
 	imageName: str = "",
 ):
@@ -643,10 +648,10 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: "ui.Font | None" = None,
-	fgColor: "ColorType | None" = None,
-	bgColor: "ColorType | None" = None,
-	extra: "dict[str, str] | None" = None,
+	font: ui.Font | None = None,
+	fgColor: ColorType | None = None,
+	bgColor: ColorType | None = None,
+	extra: dict[str, str] | None = None,
 ) -> str:
 	lines = []
 	if font:
@@ -680,7 +685,7 @@ def getBackgroundColorCSS(widget: gtk.Widget):
 	return rgbToCSS(getBackgroundColor(widget))
 
 
-def getGtkWindow(widget: "gtk.Widget") -> "gtk.Window | None":
+def getGtkWindow(widget: gtk.Widget) -> gtk.Window | None:
 	top = widget.get_toplevel()
 	if isinstance(top, gtk.Window):
 		return top

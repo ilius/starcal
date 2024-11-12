@@ -15,6 +15,7 @@
 # limitations under the License.
 
 # FIXME
+from __future__ import annotations
 developerKey = (
 	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2"
 	"mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU"

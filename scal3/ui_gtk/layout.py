@@ -14,17 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
-from collections.abc import Callable
+
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 
 class WinLayoutBase(CustomizableCalObj):
@@ -36,8 +42,8 @@ class WinLayoutBase(CustomizableCalObj):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: "bool | None" = None,
-		expand: "bool | None" = None,
+		vertical: bool | None = None,
+		expand: bool | None = None,
 	):
 		if not name:
 			raise ValueError("name= argument is missing")
@@ -66,8 +72,8 @@ class WinLayoutObj(WinLayoutBase):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: "bool | None" = None,
-		expand: "bool | None" = None,
+		vertical: bool | None = None,
+		expand: bool | None = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
@@ -168,13 +174,13 @@ class WinLayoutBox(WinLayoutBase):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: "bool | None" = None,
-		expand: "bool | None" = None,
+		vertical: bool | None = None,
+		expand: bool | None = None,
 		itemsMovable: bool = False,
 		itemsParam: str = "",
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
-		items: "list[WinLayoutBox | WinLayoutObj] | None" = None,
+		items: list[WinLayoutBox | WinLayoutObj] | None = None,
 	):
 		if items is None:
 			raise ValueError("items= argument is missing")
@@ -289,7 +295,7 @@ class WinLayoutBox(WinLayoutBase):
 	def onItemMoveClick(
 		self,
 		_button: gtk.Button,
-		item: "WinLayoutBox | WinLayoutObj",
+		item: WinLayoutBox | WinLayoutObj,
 	):
 		index = self.items.index(item)
 		if index == 0:

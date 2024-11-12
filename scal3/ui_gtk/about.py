@@ -1,4 +1,6 @@
 # from scal3.locale_man import tr as _
+from __future__ import annotations
+
 from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.utils import pixbufFromFile
 
@@ -9,11 +11,11 @@ class AboutDialog(gtk.AboutDialog):
 		name: str = "",
 		version: str = "",
 		title: str = "",
-		authors: "list[str] | None" = None,
+		authors: list[str] | None = None,
 		comments: str = "",
 		license: str = "",  # noqa: A002
 		website: str = "",
-		logo: "GdkPixbuf.Pixbuf" = None,
+		logo: GdkPixbuf.Pixbuf = None,
 		**kwargs,
 	):
 		gtk.AboutDialog.__init__(self, **kwargs)

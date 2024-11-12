@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 import os
 from os.path import isfile, join
 from queue import Queue
@@ -97,7 +99,7 @@ def getFilePath(key: str) -> str:
 	return join(cacheDir, key + ".png")
 
 
-def getPixbuf(name: str, size: float) -> "GdkPixbuf.Pixbuf | None":
+def getPixbuf(name: str, size: float) -> GdkPixbuf.Pixbuf | None:
 	key = getKey(name, size)
 	pixbuf = pixbufCache.get(key)
 	if pixbuf is not None:
@@ -110,7 +112,7 @@ def getPixbuf(name: str, size: float) -> "GdkPixbuf.Pixbuf | None":
 	return None
 
 
-def setPixbuf(name: str, size: float, pixbuf: "GdkPixbuf.Pixbuf") -> None:
+def setPixbuf(name: str, size: float, pixbuf: GdkPixbuf.Pixbuf) -> None:
 	key = getKey(name, size)
 	pixbufCache[key] = pixbuf
 	fpath = getFilePath(key)

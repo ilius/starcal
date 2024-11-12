@@ -1,7 +1,11 @@
-from collections.abc import Callable
-from typing import Any
+from __future__ import annotations
 
-from igraph import Graph
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from igraph import Graph
 
 
 def colorGraph(g: Graph, vertexSortKey: Callable[[int], [Any]]):

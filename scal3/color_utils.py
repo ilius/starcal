@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import typing
 
-ColorType: "typing.TypeAlias" = "tuple[int,int,int] | tuple[int,int,int,int]"
+ColorType: typing.TypeAlias = "tuple[int,int,int] | tuple[int,int,int,int]"
 
 
 def rgbToInt(r, g, b):

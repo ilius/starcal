@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -60,7 +62,7 @@ def jsonToOrderedData(text):
 # -------------------------------
 
 
-def loadJsonConf(module, confPath, decoders: "dict | None" = None):
+def loadJsonConf(module, confPath, decoders: dict | None = None):
 	from os.path import isfile
 
 	# ---
@@ -88,7 +90,7 @@ def loadJsonConf(module, confPath, decoders: "dict | None" = None):
 		setattr(module, param, value)
 
 
-def saveJsonConf(module, confPath, params, encoders: "dict | None" = None):
+def saveJsonConf(module, confPath, params, encoders: dict | None = None):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---

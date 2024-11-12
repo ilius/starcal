@@ -2,6 +2,7 @@
 
 
 class GtkBufferFile:
+
 	"""Implements a file-like object for redirect the stream to the buffer."""
 
 	def __init__(self, buff, tag):

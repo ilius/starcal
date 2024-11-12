@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -86,7 +88,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	seasonPieEnableParam = ""
 	seasonPieGeoParam = ""
-	seasonPieColorsParam: "dict | None" = None
+	seasonPieColorsParam: dict | None = None
 	seasonPieTextColorParam = ""
 
 	myKeys = CalBase.myKeys + (
@@ -686,7 +688,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	def drawEventIcons(
 		self,
-		cr: "cairo.Context",
+		cr: cairo.Context,
 		c: ui.Cell,
 		w: int,
 		h: int,
@@ -725,7 +727,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.fill()
 
 	@staticmethod
-	def getMonthName(c: "ui.Cell", calType: int, params: "dict[str, Any]"):
+	def getMonthName(c: ui.Cell, calType: int, params: dict[str, Any]):
 		month = c.dates[calType][1]  # type: int
 		abbreviate = params.get("abbreviate", False)
 		uppercase = params.get("uppercase", False)
@@ -820,7 +822,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		cr.move_to(xc - font_w / 2, yc - font_h / 2)
 		show_layout(cr, layout)
 
-	def drawWithContext(self, cr: "cairo.Context", _cursor: bool):
+	def drawWithContext(self, cr: cairo.Context, _cursor: bool):
 		# gevent = gtk.get_current_event()
 		w = self.get_allocation().width
 		h = self.get_allocation().height

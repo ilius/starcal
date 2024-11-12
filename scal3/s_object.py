@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -125,7 +127,7 @@ class SObj:
 	def getData(self):
 		return {param: getattr(self, param) for param in self.params}
 
-	def setData(self, data: "dict | list", force=False):
+	def setData(self, data: dict | list, force=False):
 		if not force and not self.__class__.canSetDataMultipleTimes:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
@@ -168,7 +170,7 @@ class SObj:
 		return parent.getPath() + [index]
 
 
-def makeOrderedData(data: "dict | list", params):
+def makeOrderedData(data: dict | list, params):
 	if isinstance(data, dict) and params:
 		data = list(data.items())
 
@@ -293,7 +295,7 @@ def iterObjectFiles(fs: FileSystem):
 			yield _hash, fpath
 
 
-def saveBsonObject(data: "dict | list", fs: FileSystem):
+def saveBsonObject(data: dict | list, fs: FileSystem):
 	data = getSortedDict(data)
 	bsonBytes = bytes(bson.dumps(data))
 	_hash = sha1(bsonBytes).hexdigest()
@@ -317,7 +319,7 @@ def loadBsonObject(_hash, fs: FileSystem):
 
 
 def updateBasicDataFromBson(
-	data: "dict | list",
+	data: dict | list,
 	filePath: str,
 	fileType: str,
 	fs: FileSystem,

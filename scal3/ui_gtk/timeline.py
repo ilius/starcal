@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -514,7 +516,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context"):
+	def drawWithContext(self, cr: cairo.Context):
 		# t0 = perf_counter()
 		if not self.boxEditing:
 			self.updateData()
@@ -524,7 +526,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# t2 = perf_counter()
 		# log.debug(f"drawing time / data calc time: {(t2-t1)/(t1-t0):.2f}")
 
-	def getLastScrollDir(self) -> "str | None":
+	def getLastScrollDir(self) -> str | None:
 		"""Returns "up", "down" or ""."""
 		if not self._lastScrollDir:
 			return ""

@@ -1,14 +1,16 @@
+from __future__ import annotations
+
 import typing
 
 from scal3.s_object import SObj
 
 
 class BasePlugin(SObj):
-	name: "str | None"
+	name: str | None
 	external: bool
 	loaded: bool
-	params: "typing.Sequence[str]"
-	essentialParams: "typing.Sequence[str]"
+	params: typing.Sequence[str]
+	essentialParams: typing.Sequence[str]
 
 	def getArgs(self): ...
 

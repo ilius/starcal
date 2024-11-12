@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -64,13 +66,13 @@ class ToolBoxItem(BaseToolBoxItem):
 		iconName: str = "",
 		imageName: str = "",
 		imageNameDynamic: bool = False,
-		onClick: "str | Callable | None" = None,
+		onClick: str | Callable | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: "str | Callable | None" = None,
-		args: "tuple[Any] | None" = None,  # for onClick and onPress
+		onPress: str | Callable | None = None,
+		args: tuple[Any] | None = None,  # for onClick and onPress
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
@@ -199,13 +201,13 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
 		name: str = "",
-		onClick: "str | Callable | None" = None,
+		onClick: str | Callable | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: "str | Callable | None" = None,
-		args: "tuple[Any] | None" = None,  # for onClick and onPress
+		onPress: str | Callable | None = None,
+		args: tuple[Any] | None = None,  # for onClick and onPress
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
@@ -361,7 +363,7 @@ class StaticToolBox(BaseToolBox):
 		item.show()
 		return item
 
-	def extend(self, items: "Iterable") -> None:
+	def extend(self, items: Iterable) -> None:
 		for item in items:
 			self.append(item)
 

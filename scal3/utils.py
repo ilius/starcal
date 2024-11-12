@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -24,7 +26,7 @@ import typing
 from math import ceil, floor
 from typing import Any
 
-Number: "typing.TypeAlias" = "int | float"
+Number: typing.TypeAlias = "int | float"
 
 
 def ifloor(x: float) -> int:
@@ -50,11 +52,11 @@ def arange(
 	return ls
 
 
-def toBytes(s: "bytes | str") -> bytes:
+def toBytes(s: bytes | str) -> bytes:
 	return s.encode("utf8") if isinstance(s, str) else bytes(s)
 
 
-def toStr(s: "bytes | str") -> str:
+def toStr(s: bytes | str) -> str:
 	return str(s, "utf8") if isinstance(s, bytes) else str(s)
 
 
@@ -105,7 +107,7 @@ class StrOrderedDict(dict):
 	# and some looks like a list
 	def __init__(
 		self,
-		arg: "list | tuple | dict | None" = None,
+		arg: list | tuple | dict | None = None,
 		reorderOnModify: bool = True,
 	) -> None:
 		if arg is None:
@@ -136,7 +138,7 @@ class StrOrderedDict(dict):
 			for key in self.keyList
 		]
 
-	def __getitem__(self, arg: "int | str | slice") -> Any:
+	def __getitem__(self, arg: int | str | slice) -> Any:
 		if isinstance(arg, int):
 			return dict.__getitem__(self, self.keyList[arg])
 		if isinstance(arg, str):
@@ -152,7 +154,7 @@ class StrOrderedDict(dict):
 			f"Bad type argument given to StrOrderedDict.__getitem__: {type(arg)}",
 		)
 
-	def __setitem__(self, arg: "int | str", value) -> None:
+	def __setitem__(self, arg: int | str, value) -> None:
 		if isinstance(arg, int):
 			dict.__setitem__(self, self.keyList[arg], value)
 		elif isinstance(arg, str):
@@ -173,7 +175,7 @@ class StrOrderedDict(dict):
 				f": {type(arg)}",
 			)
 
-	def __delitem__(self, arg: "int | str | slice") -> None:
+	def __delitem__(self, arg: int | str | slice) -> None:
 		if isinstance(arg, int):
 			self.keyList.__delitem__(arg)
 			dict.__delitem__(self, self.keyList[arg])
@@ -211,7 +213,7 @@ class StrOrderedDict(dict):
 		self.keyList.insert(index, key)
 		dict.__setitem__(self, key, value)  # noqa: PLC2801
 
-	def sort(self, attr: "str | None" = None) -> typing.Iterator:
+	def sort(self, attr: str | None = None) -> typing.Iterator:
 		if attr is None:
 			self.keyList.sort()
 		else:
@@ -243,10 +245,10 @@ class NullObj:
 	def __setattr__(self, attr: str, value: Any) -> None:
 		pass
 
-	def __getattr__(self, attr: str) -> "NullObj":
+	def __getattr__(self, attr: str) -> NullObj:
 		return self
 
-	def __call__(self, *_a, **_kw) -> "NullObj":
+	def __call__(self, *_a, **_kw) -> NullObj:
 		return self
 
 	def __str__(self) -> str:
@@ -335,7 +337,7 @@ def findWordByPos(text: str, pos: int) -> tuple[str, int]:
 
 
 def numRangesEncode(
-	values: "list[int | tuple[int, int] | list[int]]",
+	values: list[int | tuple[int, int] | list[int]],
 	sep: str,
 ):
 	parts = []
@@ -347,7 +349,7 @@ def numRangesEncode(
 	return sep.join(parts)
 
 
-def numRangesDecode(text: str) -> "list[int | tuple[int, int]]":
+def numRangesDecode(text: str) -> list[int | tuple[int, int]]:
 	values = []
 	for part in text.split(","):
 		pparts = part.strip().split("-")
