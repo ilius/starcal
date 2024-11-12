@@ -15,11 +15,13 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
+from __future__ import annotations
+
 from scal3 import ui
 
 
 class DummyEventContainer:
-	def __init__(self, idsDict: "dict[int, list[int]]"):
+	def __init__(self, idsDict: dict[int, list[int]]):
 		self.idsDict = idsDict
 
 	def __len__(self):

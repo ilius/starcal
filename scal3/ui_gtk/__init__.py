@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
 	"TWO_BUTTON_PRESS",
 	"Box",
@@ -78,7 +80,7 @@ def pack(box, child, expand=False, fill=False, padding=0):
 		raise TypeError(f"pack: unkown type {type(box)}")
 
 
-def Box(vertical: "bool | None" = None, **kwargs):
+def Box(vertical: bool | None = None, **kwargs):
 	if vertical is None:
 		raise ValueError("vertical argument is missing")
 	if vertical:

@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -30,7 +32,7 @@ from scal3.utils import ifloor
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
 
-TZ: "typing.TypeAlias" = "mytz.TimeZone | None"
+TZ: typing.TypeAlias = "mytz.TimeZone | None"
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -68,7 +70,7 @@ class HMS:
 		self.m = m
 		self.s = s
 
-	def tuple(self) -> "tuple[int, int, int]":
+	def tuple(self) -> tuple[int, int, int]:
 		return (self.h, self.m, self.s)
 
 	def __format__(self, fmt=""):
@@ -215,7 +217,7 @@ def getJdAndSecondsFromEpoch(epoch: int) -> tuple[int, int]:
 	return (days + J1970, second)
 
 
-durationUnitsRel: "list[tuple[int, str]]" = (
+durationUnitsRel: list[tuple[int, str]] = (
 	(1, "second"),
 	(60, "minute"),
 	(60, "hour"),
@@ -223,25 +225,25 @@ durationUnitsRel: "list[tuple[int, str]]" = (
 	(7, "week"),
 )
 
-durationUnitsAbs: "list[tuple[int, str]]" = []
+durationUnitsAbs: list[tuple[int, str]] = []
 num = 1
 for item in durationUnitsRel:
 	num *= item[0]
 	durationUnitsAbs.append((num, item[1]))
 
-durationUnitValueToName: "dict[int, str]" = dict(durationUnitsAbs)
-durationUnitValues: "list[int]" = [item[0] for item in durationUnitsAbs]
+durationUnitValueToName: dict[int, str] = dict(durationUnitsAbs)
+durationUnitValues: list[int] = [item[0] for item in durationUnitsAbs]
 # durationUnitNames: "list[str]" = [item[1] for item in durationUnitsAbs]
 
 
 def timeEncode(
-	tm: "tuple[int, int, int] | tuple[int, int]",
+	tm: tuple[int, int, int] | tuple[int, int],
 ) -> str:
 	return f"{HMS(*tm)}"
 
 
 def simpleTimeEncode(
-	tm: "tuple[int, int, int] | tuple[int, int] | tuple[int]",
+	tm: tuple[int, int, int] | tuple[int, int] | tuple[int],
 ) -> str:
 	# FIXME: how to extend HMS formatting to include this conditioning?
 	# need a new symbol for "minute, omit if zero", like "$" for second
@@ -294,7 +296,7 @@ def encodeJd(jd: int) -> str:
 	return epochGregDateTimeEncode(getEpochFromJd(jd))
 
 
-def durationEncode(value: "int | float", unit: int) -> str:
+def durationEncode(value: float, unit: int) -> str:
 	iValue = int(value)
 	if iValue == value:
 		value = iValue
