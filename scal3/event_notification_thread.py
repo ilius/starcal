@@ -15,12 +15,15 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal3 import logger
+from __future__ import annotations
+
+from scal3 import event_lib, logger
 
 log = logger.get()
 
 import os
 import threading
+from queue import Empty, Queue
 
 # from sched import scheduler
 from threading import Thread
@@ -44,22 +47,38 @@ class EventNotificationManager:
 		for thread in self.byGroup.values():
 			thread.cancel()
 
-	def checkGroup(self, group):
-		# log.debug(f"EventNotificationManager.checkGroup: {group=}")
-		if not group.enable:
-			return
-		if not group.notificationEnabled:
-			return
-
-		thread = self.byGroup.get(group.id)
-		if thread is not None and thread.is_alive():
-			thread.reCalc()
-			return
-
-		log.info(f"EventNotificationManager.checkGroup: {group=}: creating thread")
+	def _startGroup(self, group: event_lib.EventGroup):
+		log.info(f"EventNotificationManager: {group=}: creating thread")
 		thread = EventGroupNotificationThread(group)
 		self.byGroup[group.id] = thread
 		thread.start()
+
+	def checkGroup(self, group: event_lib.EventGroup):
+		# log.debug(f"EventNotificationManager.checkGroup: {group=}")
+		if not (group.enable and group.notificationEnabled):
+			return
+
+		log.info(f"EventNotificationManager.checkGroup: {group=}")
+
+		thread = self.byGroup.get(group.id)
+		if thread is not None and thread.is_alive():
+			return
+
+		self._startGroup(group)
+
+	def checkEvent(self, group: event_lib.EventGroup, event: event_lib.Event):
+		if not (group.enable and group.notificationEnabled):
+			log.info("EventNotificationManager.checkEvent: not enabled")
+			return
+
+		log.info(f"EventNotificationManager.checkEvent: {group=}, {event=}")
+
+		thread = self.byGroup.get(group.id)
+		if thread is not None and thread.is_alive():
+			thread.checkEvent(event)
+			return
+
+		self._startGroup(group)
 
 
 class EventGroupNotificationThread(Thread):
@@ -72,6 +91,8 @@ class EventGroupNotificationThread(Thread):
 		self.group = group
 
 		self.sent = set()
+		self._stop_event = threading.Event()
+		self._new_events = Queue()
 
 		# self.sch: sched.scheduler | None = None
 		# threading.Timer is a subclass of threading.Thread
@@ -86,9 +107,6 @@ class EventGroupNotificationThread(Thread):
 			target=self.mainLoop,
 		)
 
-		self._stop_event = threading.Event()
-		self._recalc_event = threading.Event()
-
 	def cancel(self):
 		log.debug("EventGroupNotificationThread.cancel")
 		self._stop_event.set()
@@ -96,10 +114,8 @@ class EventGroupNotificationThread(Thread):
 	def stopped(self):
 		return self._stop_event.is_set()
 
-	def reCalc(self):
-		log.info("EventGroupNotificationThread.reCalc ----------------")
-		self.sent = set()
-		self._recalc_event.set()
+	def checkEvent(self, event: event_lib.Event):
+		self._new_events.put_nowait(event)
 
 	def sleep(self, seconds: float):
 		step = self.sleepSeconds
@@ -113,15 +129,17 @@ class EventGroupNotificationThread(Thread):
 		interval = self.interval
 		sleepSeconds = self.sleepSeconds
 		while not self._stop_event.is_set():
-			self._recalc_event.clear()
 			sleepUntil = perf_counter() + interval
 			log.debug(f"EventGroupNotificationThread: run: {self.group=}")
 			self._runStep()
 			log.debug(f"EventGroupNotificationThread: finished run: {self.group=}")
-			while not (
-				self._stop_event.is_set() or self._recalc_event.is_set()
-			) and perf_counter() < sleepUntil:
-				sleep(sleepSeconds)
+			while not self._stop_event.is_set() and perf_counter() < sleepUntil:
+				try:
+					event = self._new_events.get(block=True, timeout=sleepSeconds)
+				except Empty:  # noqa: PERF203
+					continue
+				else:
+					event.checkNotify(self.finishFunc)
 
 	def finishFunc(self):
 		pass  # FIXME: what to do here?
@@ -150,7 +168,7 @@ class EventGroupNotificationThread(Thread):
 
 		tm = now()
 		items = list(group.notifyOccur.search(tm, tm + interval))
-		print(items)
+		log.info(f"{tm=}, {tm + interval=}, {items=}")
 
 		if not items:
 			return
