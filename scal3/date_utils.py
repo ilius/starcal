@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import math
-from collections.abc import Generator
+from typing import TYPE_CHECKING
 
 from scal3 import cal_types
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.time_utils import getEpochFromJd
+
+if TYPE_CHECKING:
+	from collections.abc import Generator
 
 
 def monthPlus(y: int, m: int, p: int) -> tuple[int, int]:
@@ -129,7 +134,7 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 def ymdRange(
 	date1: tuple[int, int, int],
 	date2: tuple[int, int, int],
-	calType: "int | None" = None,
+	calType: int | None = None,
 ) -> Generator[tuple[int, int, int], None, None]:
 	y1, m1, d1 = date1
 	y2, m2, d2 = date2

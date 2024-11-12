@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import sys
-from collections.abc import Callable
 from os.path import abspath, dirname, isabs, join
 
 import gi
@@ -19,7 +20,12 @@ from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
 from scal3.ui_gtk.utils import set_tooltip
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 _ = str
 
@@ -59,7 +65,7 @@ def dialog_add_button(
 	dialog,
 	imageName: str = "",
 	label: str = "",
-	res: "gtk.ResponseType | None" = None,
+	res: gtk.ResponseType | None = None,
 	onClick: Callable | None = None,
 	tooltip: str = "",
 ):
