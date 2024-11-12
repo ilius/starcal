@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -200,7 +202,7 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: "ui.Font | None" = None,
+	font: ui.Font | None = None,
 ) -> tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
@@ -212,7 +214,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "ui.Font | None" = None,
+	font: ui.Font | None = None,
 ) -> float:
 	width, _height = calcTextPixelSize(widget, text, font=font)
 	return width

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 
 
@@ -7,16 +9,16 @@ class CellType:
 
 	def format(
 		self,
-		compiledFmt: "CompiledTimeFormat",
-		calType: "int | None" = None,
-		tm: "tuple[int, int, int] | None" = None,
+		compiledFmt: CompiledTimeFormat,
+		calType: int | None = None,
+		tm: tuple[int, int, int] | None = None,
 	):
 		raise NotImplementedError
 
 	def getDate(self, calType: int) -> tuple[int, int, int]:
 		raise NotImplementedError
 
-	def inSameMonth(self, other: "CellType") -> bool:
+	def inSameMonth(self, other: CellType) -> bool:
 		raise NotImplementedError
 
 	def getEventIcons(self, showIndex: int) -> list[str]:

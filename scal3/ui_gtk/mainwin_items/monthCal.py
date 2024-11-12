@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -293,7 +295,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
+	def drawWithContext(self, cr: cairo.Context, cursor: bool):
 		# gevent = gtk.get_current_event()
 		# FIXME: must enhance (only draw few cells, not all cells)
 		self.calcCoord()

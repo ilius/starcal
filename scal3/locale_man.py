@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -22,11 +24,11 @@ import typing
 
 if typing.TYPE_CHECKING:
 	import subprocess
+	from collections.abc import Callable
 
 import gettext
 import os
 import string
-from collections.abc import Callable
 from contextlib import suppress
 from os.path import (
 	isabs,
@@ -140,7 +142,7 @@ loadConf()
 # ----------------------------------------------------------
 
 
-def tr(s: "str | int", *a, **ka) -> str:
+def tr(s: str | int, *a, **ka) -> str:
 	"""String translator function."""
 	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
@@ -256,7 +258,7 @@ for fname in langFileList:
 langDict.sort("name")
 
 
-def popen_output(cmd: "list[str] | str") -> str:
+def popen_output(cmd: list[str] | str) -> str:
 	import subprocess
 
 	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]  # noqa: S603
@@ -346,7 +348,7 @@ def rtlSgn() -> int:
 def getMonthName(
 	calType: int,
 	month: int,
-	year: "int | None" = None,
+	year: int | None = None,
 	abbreviate: bool = False,
 ) -> str:
 	module, ok = calTypes[calType]
@@ -393,7 +395,7 @@ def getAvailableDigitKeys() -> set[str]:
 
 def numEncode(
 	num: int,
-	localeMode: "str | int | None" = None,
+	localeMode: str | int | None = None,
 	fillZero: int = 0,
 	negEnd: bool = False,
 ) -> str:
@@ -434,7 +436,7 @@ def numEncode(
 
 def textNumEncode(
 	st: str,
-	localeMode: "str | int | None" = None,
+	localeMode: str | int | None = None,
 	changeSpecialChars: bool = True,
 	changeDot: bool = False,
 ) -> str:
@@ -475,7 +477,7 @@ def textNumEncode(
 
 def floatEncode(
 	st: str,
-	localeMode: "str | int | None" = None,
+	localeMode: str | int | None = None,
 ):
 	return textNumEncode(
 		st,
@@ -556,7 +558,7 @@ def addLRM(text: str) -> str:
 	return LRM + toStr(text)
 
 
-def popenDefaultLang(*args, **kwargs) -> "subprocess.Popen":
+def popenDefaultLang(*args, **kwargs) -> subprocess.Popen:
 	from subprocess import Popen
 
 	os.environ["LANG"] = sysLangDefault

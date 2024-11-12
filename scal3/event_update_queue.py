@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from queue import Queue
 from threading import Thread
 from time import sleep
@@ -18,7 +20,7 @@ class EventUpdateRecord:
 	def __init__(
 		self,
 		action: str,
-		obj: "event_lib.Event | event_lib.EventGroup",
+		obj: event_lib.Event | event_lib.EventGroup,
 		sender,  # CalObjType based on gtk_ud.BaseCalObj
 	):
 		self.action = action
@@ -122,7 +124,7 @@ def testEventUpdateQueue():
 			return (0, self.id)
 
 	class MockConsumer:
-		def onEventUpdate(self, record: "EventUpdateRecord") -> None:  # noqa: PLR6301
+		def onEventUpdate(self, record: EventUpdateRecord) -> None:  # noqa: PLR6301
 			log.info(f"{record.action} {record.obj.id}")
 
 	queue = EventUpdateQueue()
