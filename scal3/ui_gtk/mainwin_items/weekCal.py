@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -224,7 +226,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawBg(self, cr: "cairo.Context"):
+	def drawBg(self, cr: cairo.Context):
 		alloc = self.get_allocation()
 		w = alloc.width
 		h = alloc.height
@@ -299,7 +301,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 
 	@staticmethod
 	def drawCursorOutline(
-		cr: "cairo.Context",
+		cr: cairo.Context,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -311,7 +313,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 
 	@staticmethod
 	def drawCursorBg(
-		cr: "cairo.Context",
+		cr: cairo.Context,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -320,7 +322,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		cursorRadius = ui.wcalCursorRoundingFactor * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def drawCursorFg(self, cr: "cairo.Context"):
+	def drawCursorFg(self, cr: cairo.Context):
 		if not self.showCursor:
 			return
 		alloc = self.get_allocation()
@@ -338,9 +340,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 
 	def drawTextList(
 		self,
-		cr: "cairo.Context",
+		cr: cairo.Context,
 		textData: list[list[str]],
-		font: "ui.Font | None" = None,
+		font: ui.Font | None = None,
 	):
 		alloc = self.get_allocation()
 		w = alloc.width
@@ -390,7 +392,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
-	def drawColumn(self, cr: "cairo.Context"):
+	def drawColumn(self, cr: cairo.Context):
 		pass
 
 
