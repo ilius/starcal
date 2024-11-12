@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -86,7 +88,7 @@ class CustomizeWindowItemsToolbar(StaticToolBox):
 
 
 class CustomizeWindow(gtk.Dialog):
-	def __init__(self, item: "CustomizableCalObj", scrolled=True, **kwargs):
+	def __init__(self, item: CustomizableCalObj, scrolled=True, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
 		# --
@@ -150,7 +152,7 @@ class CustomizeWindow(gtk.Dialog):
 	def newItemList(
 		self,
 		parentPagePath: str,
-		parentItem: "CustomizableCalObj",
+		parentItem: CustomizableCalObj,
 		scrolled=False,
 	) -> tuple[gtk.TreeView, gtk.Box]:
 		# column 0: bool: enable
@@ -409,7 +411,7 @@ class CustomizeWindow(gtk.Dialog):
 		self,
 		pagePath: str,
 		parentPagePath: str,
-		parentItem: "CustomizableCalObj",
+		parentItem: CustomizableCalObj,
 		itemIndex: int,
 	):
 		item = parentItem.items[itemIndex]

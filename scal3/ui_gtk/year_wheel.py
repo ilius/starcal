@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -154,7 +156,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context"):
+	def drawWithContext(self, cr: cairo.Context):
 		width = float(self.get_allocation().width)
 		height = float(self.get_allocation().height)
 		dia = min(width, height)
@@ -227,7 +229,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			)
 			fillColor(cr, color)
 
-		def calcAngles(jd: int) -> "tuple[float, float]":
+		def calcAngles(jd: int) -> tuple[float, float]:
 			angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
 			# angleD = angle * 180 / pi
 			centerAngle = angle + avgDeltaAngle / 2
