@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from time import localtime
 
 from scal3 import logger
@@ -471,8 +473,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	@staticmethod
 	def searchAndExportToJSON(
-		groupIds: "list[int]",
-		conds: "dict[str, Any]",
+		groupIds: list[int],
+		conds: dict[str, Any],
 		fpath: str,
 		# TODO: compact: bool,
 	):

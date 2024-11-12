@@ -18,6 +18,8 @@
 # ud = ui dependent
 # upper the "ui" module
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -28,9 +30,10 @@ import typing
 from os.path import join
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.event_update_queue import EventUpdateRecord
 
-from collections.abc import Callable
 
 from gi.overrides.GObject import Object
 
@@ -230,7 +233,7 @@ class IntegatedWindowList(BaseCalObj):
 		pixcache.clear()
 		self.lastAlphabetHeight = height
 
-	def onEventUpdate(self, _record: "EventUpdateRecord") -> None:
+	def onEventUpdate(self, _record: EventUpdateRecord) -> None:
 		# ui.cellCache.clear()  # causes crash, no idea why!
 		ui.cellCache.clearEventsData()
 		self.onDateChange()
@@ -307,7 +310,7 @@ def getGtkDefaultFont():
 	return font
 
 
-def _getLightness(c: "gdk.Color"):
+def _getLightness(c: gdk.Color):
 	maxValue = max(c.red, c.green, c.blue)
 	if maxValue > 255:
 		log.warning(f"_getLightness: bad color {c}")
@@ -566,7 +569,7 @@ def getScreenSize():
 	return rect.width, rect.height
 
 
-def getWorkAreaSize() -> "tuple[int, int] | None":
+def getWorkAreaSize() -> tuple[int, int] | None:
 	monitor = getMonitor()
 	if monitor is None:
 		return None
