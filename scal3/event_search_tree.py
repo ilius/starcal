@@ -29,13 +29,16 @@ from scal3.bin_heap import MaxHeap
 epsTm = 0.01
 
 
-OccurItem = namedtuple("OccurItem", [
-	"start",
-	"end",
-	"eid",
-	"dt",
-	"oid",
-])
+OccurItem = namedtuple(
+	"OccurItem",
+	[
+		"start",
+		"end",
+		"eid",
+		"dt",
+		"oid",
+	],
+)
 
 
 def getCount(x):
