@@ -1,3 +1,5 @@
+from gi.repository import GLib as glib
+
 from scal3 import event_lib, locale_man, ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
@@ -144,7 +146,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.event.afterModify()
 		self.event.save()
 		event_lib.lastIds.save()
-		ui.eventNotif.checkGroup(self.event.parent)
+		glib.timeout_add_seconds(1, ui.eventNotif.checkGroup, self.event.parent)
 		self.destroy()
 		# -----
 		if self.event.isSingleOccur:
