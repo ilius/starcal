@@ -17,6 +17,8 @@
 
 # use subprocess instead of os.popen* FIXME
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
