@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -22,7 +24,6 @@ import os
 import os.path
 import typing
 from collections import OrderedDict
-from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from os.path import isabs, isdir, isfile, join
@@ -50,6 +51,8 @@ from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.types_starcal import CellType, CompiledTimeFormat
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.plugin_type import PluginType
 	from scal3.s_object import SObj
 
@@ -240,12 +243,12 @@ confParamsCustomize = (
 
 @dataclass(slots=True)
 class Font:
-	family: "str | None"
+	family: str | None
 	bold: bool = False
 	italic: bool = False
 	size: float = 0
 
-	def fromList(lst: "list | None"):
+	def fromList(lst: list | None):
 		if lst is None:
 			return
 		return Font(*lst)
@@ -313,7 +316,7 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 # -------------------------------------------------------
 
 
-def parseDroppedDate(text) -> "tuple[int, int, int] | None":
+def parseDroppedDate(text) -> tuple[int, int, int] | None:
 	part = text.split("/")
 	if len(part) != 3:
 		return None
@@ -347,7 +350,7 @@ def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 	)
 	# "format" must be list because we use method "index"
 
-	def formatIsValid(fmt: "list[int]"):
+	def formatIsValid(fmt: list[int]):
 		for i in range(3):
 			f = fmt[i]
 			if not (minMax[f][0] <= part[i] <= minMax[f][1]):
@@ -401,6 +404,7 @@ def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
 
 
 class Cell(CellType):
+
 	"""status and information of a cell."""
 
 	# ocTimeMax = 0
@@ -446,7 +450,7 @@ class Cell(CellType):
 		self.getEventsData()
 
 	@property
-	def date(self) -> "tuple[int, int, int]":
+	def date(self) -> tuple[int, int, int]:
 		return (self.year, self.month, self.day)
 
 	def addPluginText(self, plug, text):
@@ -456,7 +460,7 @@ class Cell(CellType):
 	def getPluginsData(
 		self,
 		firstLineOnly=False,
-	) -> "list[tuple[PluginType, str]]":
+	) -> list[tuple[PluginType, str]]:
 		return [
 			(plug, text.split("\n")[0]) if firstLineOnly else (plug, text)
 			for (plug, text) in self._pluginsData
@@ -500,8 +504,8 @@ class Cell(CellType):
 	def format(
 		self,
 		compiledFmt: CompiledTimeFormat,
-		calType: "int | None" = None,
-		tm: "tuple[int, int, int] | None" = None,
+		calType: int | None = None,
+		tm: tuple[int, int, int] | None = None,
 	):
 		if calType is None:
 			calType = calTypes.primary
@@ -575,7 +579,7 @@ class CellCache:
 		self,
 		name: str,
 		setParamsCallable: Callable[[CellType], None],
-		getCellGroupCallable: "Callable[[CellCache, ...], list[CellType]]",
+		getCellGroupCallable: Callable[[CellCache, ...], list[CellType]],
 		# ^ FIXME: ...
 		# `...` is `absWeekNumber` for weekCal, and `year, month` for monthCal
 	):
@@ -643,7 +647,7 @@ def changeDate(
 	year: int,
 	month: int,
 	day: int,
-	calType: "int | None" = None,
+	calType: int | None = None,
 ) -> None:
 	global cell
 	if calType is None:
@@ -684,7 +688,7 @@ def getFont(
 	scale=1.0,
 	family=True,
 	bold=False,
-) -> "tuple[str | None, bool, bool, float]":
+) -> tuple[str | None, bool, bool, float]:
 	f = fontCustom if fontCustomEnable else fontDefaultInit
 	return Font(
 		family=f.family if family else None,
@@ -694,7 +698,7 @@ def getFont(
 	)
 
 
-def getParamsFont(params: dict) -> "Font | None":
+def getParamsFont(params: dict) -> Font | None:
 	font = params.get("font")
 	if not font:
 		return None
@@ -705,7 +709,7 @@ def getParamsFont(params: dict) -> "Font | None":
 	return font
 
 
-def initFonts(fontDefaultNew: "Font") -> None:
+def initFonts(fontDefaultNew: Font) -> None:
 	global fontDefault, fontCustom
 	fontDefault = fontDefaultNew
 	if not fontCustom:
@@ -861,7 +865,7 @@ def init() -> None:
 	todayCell = cell = cellCache.getTodayCell()  # FIXME
 
 
-def withFS(obj: "SObj") -> "SObj":
+def withFS(obj: SObj) -> SObj:
 	obj.fs = fs
 	return obj
 
@@ -1293,10 +1297,10 @@ def getEventTagsDict():
 eventTagsDesc = {t.name: t.desc for t in eventTags}
 
 # -------------------
-fs: "event_lib.FileSystem | None" = None
-eventAccounts: "list[event_lib.EventAccount]" = []
-eventGroups: "list[event_lib.EventGroup]" = []
-eventTrash: "event_lib.EventTrash | None" = None
+fs: event_lib.FileSystem | None = None
+eventAccounts: list[event_lib.EventAccount] = []
+eventGroups: list[event_lib.EventGroup] = []
+eventTrash: event_lib.EventTrash | None = None
 eventNotif: EventNotificationManager | None = None
 
 
@@ -1761,7 +1765,7 @@ else:
 	saveConf()
 
 
-def evalParam(param: str) -> "Any":
+def evalParam(param: str) -> Any:
 	parts = param.split(".")
 	if not parts:
 		raise ValueError(f"invalid {param = }")
