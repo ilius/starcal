@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from scal3 import ui
@@ -31,6 +32,8 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from gi.repository import GdkPixbuf
 
 """
@@ -51,10 +54,10 @@ class ImageMenuItem(gtk.MenuItem):
 		self,
 		label: str = "",
 		imageName: str = "",
-		pixbuf: "GdkPixbuf.Pixbuf | None" = None,
+		pixbuf: GdkPixbuf.Pixbuf | None = None,
 		func: Callable | None = None,
 		signalName="activate",
-		args: "tuple | None" = None,
+		args: tuple | None = None,
 	):
 		gtk.MenuItem.__init__(self)
 		if args is not None and not isinstance(args, tuple):

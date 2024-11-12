@@ -16,6 +16,8 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from __future__ import annotations
+
 import time
 from time import localtime, strftime
 from typing import TYPE_CHECKING
@@ -146,7 +148,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context"):
+	def drawWithContext(self, cr: cairo.Context):
 		text = self.text
 		fillColor(cr, ui.bgColor)
 		setColor(cr, ui.textColor)
