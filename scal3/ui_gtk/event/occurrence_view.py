@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -48,8 +50,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self,
 		eventSepParam: str = "",
 		justificationParam: str = "",
-		fontParams: "tuple[str, str] | None" = None,
-		timeFontParams: "tuple[str, str] | None" = None,
+		fontParams: tuple[str, str] | None = None,
+		timeFontParams: tuple[str, str] | None = None,
 		styleClass: str = "",
 		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
 	):
@@ -366,8 +368,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self,
 		menu,
 		occurData: dict[str, Any],
-		event: "event_lib.Event",
-		group: "event_lib.EventGroup",
+		event: event_lib.Event,
+		group: event_lib.EventGroup,
 	):
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
 

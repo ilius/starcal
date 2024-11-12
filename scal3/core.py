@@ -13,6 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+from __future__ import annotations
+
 import os
 import os.path
 import re
@@ -362,7 +364,7 @@ def validatePlugList() -> None:
 			m -= 1
 
 
-def initPlugins(fs: "s_object.FileSystem") -> None:
+def initPlugins(fs: s_object.FileSystem) -> None:
 	# log.debug("----------------------- initPlugins")
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
