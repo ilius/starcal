@@ -250,7 +250,7 @@ class EventSearchTree:
 				end=min(t1, mt + dt),
 				eid=eid,
 				dt=2 * dt,
-				oid=hash((eid, mt - dt, mt + dt)),
+				oid=(eid, mt - dt, mt + dt),
 			)
 
 	def getLastBefore(self, t1):

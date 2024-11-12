@@ -2214,7 +2214,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		RuleContainer.__init__(self)
 		self.timeZoneEnable = not self.isAllDay
 		self.notifiers = []
-		self.notifyBefore = (0, 1)  # (value, unit) like DurationEventRule
+		self.notifyBefore = (30, 60)  # (value, unit) like DurationEventRule
 		# self.snoozeTime = (5, 60)  # (value, unit) like DurationEventRule, FIXME
 		self.addRequirements()
 		self.setDefaults(group=parent)
