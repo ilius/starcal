@@ -1,4 +1,3 @@
-from gi.repository import GLib as glib
 
 from scal3 import event_lib, locale_man, ui
 from scal3.locale_man import tr as _
@@ -143,10 +142,18 @@ class EventEditorDialog(gtk.Dialog):
 				parentWin.present()
 			return None
 		self.activeWidget.updateVars()
-		self.event.afterModify()
-		self.event.save()
+
+		event = self.event
+		group = event.parent
+		event.afterModify()
+		event.save()
+		if self.isNew:
+			group.add(event)
+			group.save()
+		event.afterAddedToGroup()
 		event_lib.lastIds.save()
-		glib.timeout_add_seconds(1, ui.eventNotif.checkGroup, self.event.parent)
+		ui.eventNotif.checkEvent(group, event)
+
 		self.destroy()
 		# -----
 		if self.event.isSingleOccur:
@@ -172,14 +179,9 @@ def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 	event = group.create(eventType)
 	if eventType == "custom":  # FIXME
 		typeChangable = True
-	event = EventEditorDialog(
+	return EventEditorDialog(
 		event,
 		typeChangable=typeChangable,
 		isNew=True,
 		**kwargs,
 	).run()
-	if event is None:
-		return
-	group.add(event)
-	group.save()
-	return event
