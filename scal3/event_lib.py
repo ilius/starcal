@@ -2252,15 +2252,16 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			self.setId()
 		self.modified = now()  # FIXME
 		# self.parent.eventsModified = self.modified
-		# ---
-		if self.parent and self.id in self.parent.idList:
-			rulesHash = self.getRulesHash()
-			# what if self.notifyBefore is changed? BUG FIXME
-			if rulesHash != self.rulesHash:
-				self.parent.updateOccurrenceEvent(self)
-				self.rulesHash = rulesHash
-		else:  # None or enbale=False
+
+	def afterAddedToGroup(self):
+		if not (self.parent and self.id in self.parent.idList):
 			self.rulesHash = ""
+			return
+
+		rulesHash = self.getRulesHash()
+		if self.notifiers or rulesHash != self.rulesHash:
+			self.parent.updateOccurrenceEvent(self)
+			self.rulesHash = rulesHash
 
 	def getNotifyBeforeSec(self):
 		return self.notifyBefore[0] * self.notifyBefore[1]
@@ -4536,6 +4537,8 @@ class EventGroup(EventContainer):
 
 		if event.notifiers:
 			self.notificationEnabled = True
+			for t0, t1 in occur.getTimeRangeList():
+				self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, event.id)
 
 	def initOccurrence(self) -> None:
 		from scal3.event_search_tree import EventSearchTree
@@ -4550,7 +4553,7 @@ class EventGroup(EventContainer):
 	def clear(self) -> None:
 		self.occur.clear()
 		self.occurCount = 0
-		self.notificationEnabled = True
+		self.notificationEnabled = False
 
 	def addOccur(self, t0: float, t1: float, eid: int) -> None:
 		self.occur.add(t0, t1, eid)
