@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -74,10 +76,10 @@ class DummyCalObj(ud.CalObjType):
 	def updateVars(self) -> None:
 		pass
 
-	def getOptionsWidget(self) -> "gtk.Widget | None":  # noqa: PLR6301
+	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
 		return None
 
-	def getSubPages(self) -> "list[StackPage]":  # noqa: PLR6301
+	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
 		return []
 
 	def showHide(self) -> None:  # noqa: PLR6301
@@ -125,11 +127,12 @@ class CustomizableCalObj(ud.BaseCalObj):
 	def getOptionsWidget(self) -> gtk.Widget:  # noqa: PLR6301
 		return None
 
-	def getSubPages(self) -> "list[StackPage]":  # noqa: PLR6301
+	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
 		return []
 
 
 class CustomizableCalBox(CustomizableCalObj):
+
 	"""for GtkBox (HBox and VBox)."""
 
 	def appendItem(self, item):
@@ -160,7 +163,7 @@ class CustomizableCalBox(CustomizableCalObj):
 
 def newSubPageButton(
 	item: CustomizableCalObj,
-	page: "StackPage",
+	page: StackPage,
 	vertical: bool = False,
 	borderWidth: int = 10,
 	spacing: int = 10,

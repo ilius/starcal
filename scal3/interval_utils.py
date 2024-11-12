@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -33,7 +35,7 @@ def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
 def simplifyNumList(
 	nums: list[int],
 	minCount: int = 3,
-) -> "list[int | tuple[int, int]]":
+) -> list[int | tuple[int, int]]:
 	"""
 	nums must be sorted
 	minCount >= 2.
@@ -57,7 +59,7 @@ def simplifyNumList(
 
 
 def getIntervalPoints(
-	lst: "list[tuple[int, int] | tuple[int, int, bool]]",
+	lst: list[tuple[int, int] | tuple[int, int, bool]],
 	lst_index: int = 0,
 ) -> list[tuple[int, int, int]]:
 	"""

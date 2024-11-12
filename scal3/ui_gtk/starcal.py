@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 import sys
 
 if sys.version_info[0] < 3:  # noqa: UP036
@@ -602,7 +604,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.winWidth = ww
 		self.resize(ww, ui.winHeight)
 
-	def screenSizeChanged(self, rect: "gdk.Rectangle"):
+	def screenSizeChanged(self, rect: gdk.Rectangle):
 		if ui.winMaximized:
 			return
 		winWidth = min(ui.winWidth, rect.width)
@@ -726,7 +728,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
 		# )
 
-	def getEventAddToMenuItem(self) -> "gtk.MenuItem | None":
+	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 		if event_lib.allReadOnly:
