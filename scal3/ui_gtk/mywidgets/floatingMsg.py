@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from time import perf_counter
 from typing import TYPE_CHECKING
 
@@ -137,7 +139,7 @@ class FloatingMsg(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context"):
+	def drawWithContext(self, cr: cairo.Context):
 		cr.rectangle(0, 0, screenWidth, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -203,7 +205,7 @@ class MyLabel(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: "cairo.Context"):
+	def drawWithContext(self, cr: cairo.Context):
 		cr.rectangle(0, 0, self.width, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
