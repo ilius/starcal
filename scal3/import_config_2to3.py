@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -19,15 +18,17 @@
 # no logging in this file
 
 from __future__ import annotations
+
 import json
 import logging
 import os
 import re
 import shutil
 from collections import OrderedDict
+from collections.abc import Generator
 from os.path import isdir, isfile, join, splitext
 from time import time as now
-from typing import Any, Generator
+from typing import Any
 
 from scal3.json_utils import dataToPrettyJson
 from scal3.os_utils import makeDir
@@ -139,8 +140,8 @@ def loadUiCustomizeConf() -> None:
 		print(f"failed to read file {confPath!r}: {e}")
 		return
 	# -----
-	text = re.sub(r"^ui\.", "", text, flags=re.M)
-	text = re.sub(r"^ud\.", "ud__", text, flags=re.M)
+	text = re.sub(r"^ui\.", "", text, flags=re.MULTILINE)
+	text = re.sub(r"^ud\.", "ud__", text, flags=re.MULTILINE)
 	# ------
 	data = OrderedDict()
 	exec(text, {}, data)
