@@ -15,8 +15,7 @@ def decodeAtomElement(atom):
 	data = {"id": atom.attrib["id"]}
 	for el in atom:
 		ref = el.attrib["dictRef"]
-		if ref.startswith("bo:"):
-			ref = ref[3:]
+		ref = ref.removeprefix("bo:")
 		if ref in {
 			"name",
 			"atomicNumber",

@@ -310,7 +310,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			break
 		unitSize = stepSec * pixelPerSec
 		for jd in range(jd0, jd1 + 1):
-			utcOffset = int(getUtcOffsetByJd(jd))
+			utcOffset = getUtcOffsetByJd(jd)
 			firstEpoch = (
 				iceil(
 					(timeStart + utcOffset) / stepSec,
@@ -320,7 +320,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			)
 			for tmEpoch in range(
 				firstEpoch,
-				min(int(getEpochFromJd(jd + 1)), iceil(timeEnd)),
+				min(getEpochFromJd(jd + 1), iceil(timeEnd)),
 				stepSec,
 			):
 				if tmEpoch in tickEpochSet:

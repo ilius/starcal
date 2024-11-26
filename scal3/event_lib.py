@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 	from typing import Any
 
 import json
+import operator
 import os
 import os.path
 from collections import OrderedDict
@@ -128,6 +129,7 @@ accountsDir = join("event", "accounts")
 hms_zero = HMS()
 hms_24 = HMS(24)
 
+keyFuncIndex0 = operator.itemgetter(0)
 
 # --------------------------
 
@@ -1428,7 +1430,7 @@ class DurationEventRule(EventRule):
 		assert isinstance(s, int)
 		for unit in reversed(self.units):
 			if s % unit == 0:
-				self.value, self.unit = int(s // unit), unit
+				self.value, self.unit = s // unit, unit
 				return
 		self.unit, self.value = s, 1
 
@@ -1504,7 +1506,7 @@ class CycleDaysEventRule(EventRule):
 		return str(self.days)
 
 	def __str__(self) -> str:
-		return f"{self.days}"
+		return str(self.days)
 
 	def __init__(self, parent: Event) -> None:
 		EventRule.__init__(self, parent)
@@ -1545,7 +1547,7 @@ class CycleWeeksEventRule(EventRule):
 		return str(self.weeks)
 
 	def __str__(self) -> str:
-		return f"{self.weeks}"
+		return str(self.weeks)
 
 	def __init__(self, parent: RuleContainer) -> None:
 		EventRule.__init__(self, parent)
@@ -2936,16 +2938,20 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	def getEndJd(self) -> int:
 		end, ok = self["end"]
 		if ok:
+			# assert isinstance(end.getJd(), int)
 			return end.getJd()
 		duration, ok = self["duration"]
 		if ok:
 			start, ok = self["start"]
 			if not ok:
 				raise RuntimeError("no start rule")
+			# assert isinstance(start.getJd(), int)
 			return start.getJd() + duration.getSeconds() // dayLen
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndEpoch(self):
+		# if not isinstance(self.getEndJd(), int):
+		# 	raise TypeError(f"{self}.getEndJd() returned non-int: {self.getEndJd()}")
 		return self.getEpochFromJd(self.getEndJd())
 
 	# def setEndJd(self, jd):
@@ -6407,7 +6413,7 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 					),
 				),
 			)
-	data.sort(key=lambda x: x[0])
+	data.sort(key=keyFuncIndex0)
 	return [item[1] for item in data]
 
 
