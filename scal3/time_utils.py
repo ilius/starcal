@@ -141,6 +141,7 @@ def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
 		y, m, d = jd_to_g(jd)
 		offset = getUtcOffsetByGDate(y, m, d, tz)
 
+	assert isinstance(offset, int)
 	return offset
 
 
@@ -160,7 +161,8 @@ def getJdFromEpoch(epoch, tz: TZ = None) -> int:
 	return ifloor(getFloatJdFromEpoch(epoch, tz))
 
 
-def getEpochFromJd(jd, tz: TZ = None) -> int:
+def getEpochFromJd(jd: int, tz: TZ = None) -> int:
+	assert isinstance(jd, int)
 	localEpoch = (jd - J1970) * 24 * 3600
 	year, month, day = jd_to_g(jd)  # jd or jd-1? FIXME
 	return localEpoch - getUtcOffsetByGDate(year, month, day, tz)
@@ -239,7 +241,7 @@ durationUnitValues: list[int] = [item[0] for item in durationUnitsAbs]
 def timeEncode(
 	tm: tuple[int, int, int] | tuple[int, int],
 ) -> str:
-	return f"{HMS(*tm)}"
+	return str(HMS(*tm))
 
 
 def simpleTimeEncode(
@@ -252,9 +254,9 @@ def simpleTimeEncode(
 	if len(tm) == 2:
 		if tm[1] == 0:
 			return str(int(tm[0]))
-		return f"{HMS(*tm)}"
+		return str(HMS(*tm))
 	if len(tm) == 3:
-		return f"{HMS(*tm)}"
+		return str(HMS(*tm))
 	return None
 
 

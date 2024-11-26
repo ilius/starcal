@@ -191,7 +191,7 @@ class WinConButtonRightPanel(WinConButton):
 
 	def __init__(self, controller):
 		direc = "left" if rtl else "right"
-		self.imageName = f"{direc}"
+		self.imageName = direc
 		self.imageNameFocus = f"{direc}-focus"
 		self.imageNameInactive = f"{direc}-inactive"
 		self.imageNamePress = f"{direc}-press"

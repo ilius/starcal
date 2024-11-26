@@ -61,7 +61,7 @@ if not ui.fontCustom:
 with open(join(sourceDir, "svg", "special", "color-check.svg"), encoding="utf-8") as fp:  # noqa: FURB101
 	colorCheckSvgTextChecked = fp.read()
 colorCheckSvgTextUnchecked = re.sub(
-	'<path[^<>]*?id="check"[^<>]*?/>',
+	r'<path[^<>]*?id="check"[^<>]*?/>',
 	"",
 	colorCheckSvgTextChecked,
 	flags=re.MULTILINE | re.DOTALL,

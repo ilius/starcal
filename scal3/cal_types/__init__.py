@@ -74,7 +74,7 @@ class CalTypesHolder:
 	def update(self):
 		self.active = []
 		self.inactive = []  # range(len(modules))
-		remainingNames = self.names[:]
+		remainingNames = self.names.copy()
 		for name in self.activeNames:
 			try:
 				i = self.names.index(name)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -16,6 +15,7 @@
 
 # FIXME
 from __future__ import annotations
+
 developerKey = (
 	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2"
 	"mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU"
@@ -40,7 +40,7 @@ import httplib2
 # from httplib2 import
 from scal3.path import sourceDir
 
-sys.path.append(join(sourceDir, "google-api-python-client"))  # FIXME
+sys.path.append(join(sourceDir, "google-api-python-client"))  # noqa: FURB113 # FIXME
 sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
 
 from scal3 import core, event_lib
@@ -50,10 +50,8 @@ from scal3.ics import getIcsTimeByEpoch
 
 # from scal3.ics import
 from scal3.locale_man import tr as _
-from scal3.os_utils import openUrl
+from scal3.os_utils import getUserDisplayName, openUrl
 from scal3.utils import toBytes, toStr
-from scal3.os_utils import getUserDisplayName
-
 
 userDisplayName = getUserDisplayName()
 

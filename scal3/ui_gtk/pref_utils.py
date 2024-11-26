@@ -903,11 +903,7 @@ class IconChooserPrefItem(PrefItem):
 			raise ValueError("onChangeFunc is given without live=True")
 
 	def get(self) -> str:
-		iconPath = self.iconSelect.get_filename()
-		direc = join(pixDir, "")
-		if iconPath.startswith(direc):
-			iconPath = iconPath[len(direc) :]
-		return iconPath
+		return self.iconSelect.get_filename().removeprefix(join(pixDir, ""))
 
 	def set(self, iconPath: str) -> None:
 		if not isabs(iconPath):
