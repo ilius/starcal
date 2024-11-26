@@ -1422,8 +1422,8 @@ class DurationEventRule(EventRule):
 		self.value = 0
 		self.unit = 1  # seconds
 
-	def getSeconds(self) -> str:
-		return self.value * self.unit
+	def getSeconds(self) -> int:
+		return int(self.value * self.unit)
 
 	def setSeconds(self, s: int) -> None:
 		assert isinstance(s, int)
