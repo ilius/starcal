@@ -227,7 +227,7 @@ def openUrl(url: str) -> bool:
 		try:
 			Popen([command, url])  # noqa: S603
 		except Exception as e:
-			log.error(f"{e}")
+			log.error(f"{e}")  # noqa: FURB183
 		else:
 			return True
 	return False
