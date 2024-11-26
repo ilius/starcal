@@ -197,7 +197,7 @@ def getVersion() -> str:
 	# 	sys.stderr.write(error)
 
 	gitVersion = re.sub(
-		"-([0-9]+)-g([0-9a-f]{6,8})",
+		r"-([0-9]+)-g([0-9a-f]{6,8})",
 		r"post\1+\2",
 		gitVersionRaw,
 	)

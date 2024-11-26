@@ -52,7 +52,7 @@ if os.path.isdir(gitDir):
 		# so the only way to make it work is to use "post"
 		if gitVersionRaw:
 			gitVersion = re.sub(
-				"-([0-9]+)-g([0-9a-f]{6,8})",
+				r"-([0-9]+)-g([0-9a-f]{6,8})",
 				r"post\1+\2",
 				gitVersionRaw,
 			)
