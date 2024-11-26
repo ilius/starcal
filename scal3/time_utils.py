@@ -106,7 +106,7 @@ def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
 	except ValueError as e:
 		log.error(f"{epoch=}, error: {e}")
 		return 0
-	return tz.utcoffset(dt).total_seconds()
+	return int(tz.utcoffset(dt).total_seconds())
 
 
 def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
@@ -121,7 +121,7 @@ def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
 	except ValueError as e:
 		log.error(f"getUtcOffsetByGDate: {year=}, error: {e}")
 		return 0
-	return tz.utcoffset(dt).total_seconds()
+	return int(tz.utcoffset(dt).total_seconds())
 
 
 def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
