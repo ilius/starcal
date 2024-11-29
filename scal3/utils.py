@@ -26,7 +26,7 @@ import typing
 from math import ceil, floor
 from typing import Any
 
-Number: typing.TypeAlias = "int | float"
+Number: typing.TypeAlias = int | float
 
 
 def ifloor(x: float) -> int:

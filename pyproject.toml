@@ -267,3 +267,10 @@ ignore_names = [
 	"_*",
 	"test*",
 ]
+
+[tool.fixit]
+disable = ["fixit.rules.no_namedtuple"]
+
+[[tool.fixit.overrides]]
+path = "libs/bson/"
+disable = ["fixit.rules"]
