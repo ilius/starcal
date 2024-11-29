@@ -35,7 +35,7 @@ def printUsage():
 	E = "\x1b[0;0;0m"  # End Format # len=8
 	print(
 		f"Usage: python3 {sys.argv[0]} [{U}TERGET_DIR{E}] "
-		f"[--for-pkg|--portable] "
+		"[--for-pkg|--portable] "
 		f"[--prefix={U}/usr/local{E}] "
 		f"[--python={U}python3.x{E}]",
 	)
