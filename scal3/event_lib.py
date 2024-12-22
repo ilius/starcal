@@ -264,11 +264,11 @@ class LastIdsWrapper(JsonEventObj):
 			if ext != ".json":
 				continue
 			try:
-				_id = int(idStr)
+				id_ = int(idStr)
 			except ValueError:
 				log.error(f"invalid file name: {dpath}")
 				continue
-			lastId = max(_id, lastId)
+			lastId = max(id_, lastId)
 		return lastId
 
 	def scan(self) -> None:
@@ -2271,7 +2271,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 
 	def setDefaults(self, group=None):
 		"""
-		sets default values that depends on event type and group type
+		Sets default values that depends on event type and group type
 		as well as common parameters, like those are set in __init__
 		should call this method from parent event class.
 		"""
@@ -2355,13 +2355,13 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def getText(self, showDesc=True):
 		return "".join(self.getTextParts(showDesc))
 
-	def setId(self, _id=None):
-		if _id is None or _id < 0:
-			_id = lastIds.event + 1  # FIXME
-			lastIds.event = _id
-		elif _id > lastIds.event:
-			lastIds.event = _id
-		self.id = _id
+	def setId(self, id_=None):
+		if id_ is None or id_ < 0:
+			id_ = lastIds.event + 1  # FIXME
+			lastIds.event = id_
+		elif id_ > lastIds.event:
+			lastIds.event = id_
+		self.id = id_
 		self.file = self.getFile(self.id)
 		# self.filesDir = join(self.dir, "files")
 		self.loadFiles()
@@ -3935,7 +3935,7 @@ class EventContainer(BsonHistEventObj):
 
 	def remove(self, event: Event):  # call when moving to trash
 		"""
-		excludes event from this container (group or trash),
+		Excludes event from this container (group or trash),
 		not delete event data completely
 		and returns the index of (previously contained) event.
 		"""
@@ -3967,7 +3967,7 @@ class EventContainer(BsonHistEventObj):
 
 	def getEventNoCache(self, eid: int) -> Event:
 		"""
-		no caching. and no checking if group contains eid
+		No caching. and no checking if group contains eid
 		used only for sorting events.
 		"""
 		event = EventContainer._getEvent(self, eid)
@@ -4313,20 +4313,20 @@ class EventGroup(EventContainer):
 
 	def setDefaults(self) -> None:
 		"""
-		sets default values that depends on group type
+		Sets default values that depends on group type
 		not common parameters, like those are set in __init__.
 		"""
 
 	def __bool__(self) -> bool:
 		return self.enable  # FIXME
 
-	def setId(self, _id: int | None = None) -> None:
-		if _id is None or _id < 0:
-			_id = lastIds.group + 1  # FIXME
-			lastIds.group = _id
-		elif _id > lastIds.group:
-			lastIds.group = _id
-		self.id = _id
+	def setId(self, id_: int | None = None) -> None:
+		if id_ is None or id_ < 0:
+			id_ = lastIds.group + 1  # FIXME
+			lastIds.group = id_
+		elif id_ > lastIds.group:
+			lastIds.group = id_
+		self.id = id_
 		self.file = self.getFile(self.id)
 
 	def setTitle(self, title: str) -> None:
@@ -5010,7 +5010,7 @@ class UniversityTerm(EventGroup):
 		currentWeekOnly: bool = False,
 	) -> list[list[list[dict[str, Any]]]]:
 		"""
-		returns `data` as a nested list that:
+		Returns `data` as a nested list that:
 			data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
 		where
 			weekDay: int, in range(7)
@@ -5828,18 +5828,18 @@ class JsonObjectsHolder(JsonEventObj):
 		for sid in data:
 			if not isinstance(sid, int) or sid == 0:
 				raise RuntimeError(f"unexpected {sid=}, {self=}")
-			_id = sid
-			_id = abs(sid)
+			id_ = sid
+			id_ = abs(sid)
 			try:
 				cls = getattr(classes, self.childName).main
-				obj = cls.load(self.fs, _id)
+				obj = cls.load(self.fs, id_)
 			except Exception:
 				log.error(f"error loading {self.childName}")
 				log.exception("")
 				continue
 			obj.parent = self
 			obj.enable = sid > 0
-			self.idList.append(_id)
+			self.idList.append(id_)
 			self.byId[obj.id] = obj
 
 	def getData(self) -> list[int]:
@@ -6139,22 +6139,22 @@ class EventAccountsHolder(JsonObjectsHolder):
 
 	# FIXME: types
 	def getLoadedObj(self, obj: DummyAccount) -> Account:
-		_id = obj.id
-		data = self.loadData(_id)
+		id_ = obj.id
+		data = self.loadData(id_)
 		name = data["type"]
 		cls = self.loadClass(name)
 		if cls is None:
 			return
-		obj = cls(_id)
+		obj = cls(id_)
 		obj.fs = self.fs
-		data = self.loadData(_id)
+		data = self.loadData(id_)
 		obj.setData(data)
 		return obj
 
 	def replaceDummyObj(self, obj: DummyAccount) -> Account:
-		_id = obj.id
+		id_ = obj.id
 		obj = self.getLoadedObj(obj)
-		self.byId[_id] = obj
+		self.byId[id_] = obj
 		return obj
 
 
@@ -6298,13 +6298,13 @@ class Account(BsonHistEventObj):
 			self.setId()
 		BsonHistEventObj.save(self)
 
-	def setId(self, _id=None):
-		if _id is None or _id < 0:
-			_id = lastIds.account + 1  # FIXME
-			lastIds.account = _id
-		elif _id > lastIds.account:
-			lastIds.account = _id
-		self.id = _id
+	def setId(self, id_=None):
+		if id_ is None or id_ < 0:
+			id_ = lastIds.account + 1  # FIXME
+			lastIds.account = id_
+		elif id_ > lastIds.account:
+			lastIds.account = id_
+		self.id = id_
 		self.file = self.getFile(self.id)
 
 	def stop(self):
