@@ -587,14 +587,14 @@ class AICalsPrefItem(PrefItem):
 	def onLeftRightClick(self, _obj: gtk.Button | None = None) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
-			model, _iter = self.inactiveTreev.get_selection()
-			if _iter:
-				self.activateIndex(model.get_path(_iter).get_indices()[0])
+			model, iter_ = self.inactiveTreev.get_selection()
+			if iter_:
+				self.activateIndex(model.get_path(iter_).get_indices()[0])
 		elif action == "inactivate":
 			if len(self.activeTrees) > 1:
-				model, _iter = self.activeTrees.get_selection()
-				if _iter:
-					self.inactivateIndex(model.get_path(_iter).get_indices()[0])
+				model, iter_ = self.activeTrees.get_selection()
+				if iter_:
+					self.inactivateIndex(model.get_path(iter_).get_indices()[0])
 
 	def getCurrentTreeview(self) -> gtk.TreeView | None:
 		action = self.toolbar.getLeftRightAction()
@@ -609,10 +609,10 @@ class AICalsPrefItem(PrefItem):
 		if not treev:
 			return
 		selection = treev.get_selection()
-		model, _iter = selection.get_selected()
-		if not _iter:
+		model, iter_ = selection.get_selected()
+		if not iter_:
 			return
-		i = model.get_path(_iter).get_indices()[0]
+		i = model.get_path(iter_).get_indices()[0]
 		if i <= 0:
 			return
 		model.swap(
@@ -626,10 +626,10 @@ class AICalsPrefItem(PrefItem):
 		if not treev:
 			return
 		selection = treev.get_selection()
-		model, _iter = selection.get_selected()
-		if not _iter:
+		model, iter_ = selection.get_selected()
+		if not iter_:
 			return
-		i = model.get_path(_iter).get_indices()[0]
+		i = model.get_path(iter_).get_indices()[0]
 		if i >= len(model) - 1:
 			return
 		model.swap(
