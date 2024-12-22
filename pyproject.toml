@@ -155,8 +155,6 @@ lint.unfixable = []
 # Exclude a variety of commonly ignored directories.
 exclude = [
 	"scal3/account/google.py",
-	"scal3/import_config_2to3.py",
-	"scal3/ui_gtk/import_config_2to3.py",
 	"libs",
 	# "setup.py",
 ]
