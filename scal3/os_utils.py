@@ -90,7 +90,7 @@ def getUserDisplayName():
 
 def kill(pid, signal=0):
 	"""
-	sends a signal to a process
+	Sends a signal to a process
 	returns True if the pid is dead
 	with no signal argument, sends no signal.
 	"""
