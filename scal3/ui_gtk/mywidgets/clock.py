@@ -70,7 +70,7 @@ class ClockLabel(gtk.Label):
 class FClockLabel(gtk.Label):
 	def __init__(self, clockFormat="%T", local=True, selectable=False):
 		"""
-		clockFormat is a string that used in strftime(), it can contains markup
+		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.
@@ -104,7 +104,7 @@ class FClockLabel(gtk.Label):
 class FClockWidget(gtk.DrawingArea):  # Time is in Local
 	def __init__(self, clockFormat="%T", _selectable=False):
 		"""
-		clockFormat is a string that used in strftime(), it can contains markup
+		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.

@@ -236,7 +236,7 @@ class PrayTimes:
 		timeFormat="24h",
 	):
 		"""
-		timeFormat possible values:
+		TimeFormat possible values:
 			"24h"
 			"12h"
 			"12hNS": 12-hour format with no suffix

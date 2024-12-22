@@ -122,11 +122,11 @@ loadJsonConf(__name__, confPath)
 
 
 def ifloor(x: float) -> int:
-	return int(floor(x))
+	return floor(x)
 
 
 def iceil(x: float) -> int:
-	return int(ceil(x))
+	return ceil(x)
 
 
 def save():
