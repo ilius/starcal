@@ -27,7 +27,7 @@ import os
 import os.path
 import signal
 import typing
-from os.path import dirname, isdir, isfile, join
+from os.path import dirname, join
 from time import localtime, perf_counter
 
 if typing.TYPE_CHECKING:
@@ -38,26 +38,11 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal3 import logger
 from scal3.cal_types import convert
 from scal3.path import (
-	confDir,
 	pixDir,
 	sourceDir,
 )
 
 log = logger.get()
-
-if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
-	from scal3.utils import restartLow
-
-	try:
-		__import__("scal3.ui_gtk.import_config_2to3")
-	except Exception as e:
-		log.exception("")
-		log.error(str(e))  # TODO: log the full traceback
-		if not isdir(confDir):
-			os.mkdir(confDir, 0o755)
-	else:
-		if isfile(join(confDir, "core.json")):
-			restartLow()
 
 from gi.repository import Gio as gio
 
