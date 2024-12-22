@@ -854,13 +854,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			# so that events are inserted in the same order as they are selected
 
 		for srcIter in iterList:
-			_iter = self._pasteEventToPath(srcIter, move, targetPath)
+			iter_ = self._pasteEventToPath(srcIter, move, targetPath)
 			if newEventIter is None:
-				newEventIter = _iter
+				newEventIter = iter_
 
 		if not move:
-			for _iter in iterList:
-				model.set_value(_iter, 0, False)
+			for iter_ in iterList:
+				model.set_value(iter_, 0, False)
 
 		if move:
 			msg = _("{count} events successfully moved")
@@ -1697,10 +1697,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.waitingDo(self._do_checkForOrphans)
 
 	def getSelectedPath(self) -> list[int] | None:
-		_iter = self.treev.get_selection().get_selected()[1]
-		if _iter is None:
+		iter_ = self.treev.get_selection().get_selected()[1]
+		if iter_ is None:
 			return
-		return self.treeModel.get_path(_iter).get_indices()
+		return self.treeModel.get_path(iter_).get_indices()
 
 	def mbarEditMenuPopup(self, _menuItem: gtk.MenuItem) -> None:
 		path = self.getSelectedPath()
