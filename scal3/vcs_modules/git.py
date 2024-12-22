@@ -45,7 +45,7 @@ def getCommitList(
 	branch="",
 ) -> "list[tuple[int, str]]":
 	"""
-	returns a list of (epoch, commit_id) tuples.
+	Returns a list of (epoch, commit_id) tuples.
 
 	this function is optimized for recent commits
 	i.e. endJd is either None or recent

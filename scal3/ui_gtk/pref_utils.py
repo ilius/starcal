@@ -774,12 +774,12 @@ class WidthHeightPrefItem(PrefItem):
 		attrName: str,
 		_max: float,
 	):
-		_min = 0
+		min_ = 0
 		self.obj = obj
 		self.attrName = attrName
 		# ---
-		self.widthItem = IntSpinButton(_min, _max)
-		self.heightItem = IntSpinButton(_min, _max)
+		self.widthItem = IntSpinButton(min_, _max)
+		self.heightItem = IntSpinButton(min_, _max)
 		# ---
 		hbox = self._widget = HBox()
 		pack(hbox, gtk.Label(label=_("Width") + ":"))

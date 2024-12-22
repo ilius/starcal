@@ -1,4 +1,3 @@
-
 from scal3 import event_lib, locale_man, ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack

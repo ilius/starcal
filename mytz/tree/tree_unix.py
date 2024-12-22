@@ -8,23 +8,23 @@ from collections import OrderedDict
 
 
 def findZoneInfoDir():
-	for _dir in (
+	for dir_ in (
 		"/usr/share/zoneinfo",
 		"/usr/lib/zoneinfo",
 		"/usr/share/lib/zoneinfo",
 		"/etc/zoneinfo",
 	):
-		if os.path.isdir(_dir):
-			return _dir
+		if os.path.isdir(dir_):
+			return dir_
 
 	try:
 		import pytz
 	except ImportError:
 		pass
 	else:
-		_dir = os.path.join(os.path.dirname(pytz.__file__), "zoneinfo")
-		if os.path.isdir(_dir):
-			return _dir
+		dir_ = os.path.join(os.path.dirname(pytz.__file__), "zoneinfo")
+		if os.path.isdir(dir_):
+			return dir_
 
 	raise OSError("zoneinfo directory not found")
 

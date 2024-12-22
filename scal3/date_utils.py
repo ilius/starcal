@@ -113,7 +113,7 @@ def getFloatYearFromJd(jd: int, calType: int) -> float:
 def getJdFromFloatYear(fyear: float, calType: int) -> int:
 	if calType not in calTypes:
 		raise RuntimeError(f"cal type '{calType}' not found")
-	year = int(math.floor(fyear))
+	year = math.floor(fyear)
 	yearStartJd = to_jd(year, 1, 1, calType)
 	nextYearStartJd = to_jd(year + 1, 1, 1, calType)
 	dayOfYear = int((fyear - year) * (nextYearStartJd - yearStartJd))
