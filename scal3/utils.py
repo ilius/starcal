@@ -30,11 +30,11 @@ Number: typing.TypeAlias = int | float
 
 
 def ifloor(x: float) -> int:
-	return int(floor(x))
+	return floor(x)
 
 
 def iceil(x: float) -> int:
-	return int(ceil(x))
+	return ceil(x)
 
 
 # replacement for numpy.core.multiarray.arange, in the lack of numpy
