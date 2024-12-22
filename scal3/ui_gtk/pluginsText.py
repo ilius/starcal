@@ -171,7 +171,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if gevent.button != 3:
 			return False
 		# ----
-		_iter = None
+		iter_ = None
 		buf_x, buf_y = self.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
 			gevent.x,
@@ -179,10 +179,10 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		)
 		if buf_x is not None and buf_y is not None:
 			# overText, _iter, trailing = ...
-			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
+			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
 		# ----
 		text = self.get_text()
-		pos = _iter.get_offset()
+		pos = iter_.get_offset()
 		word = findWordByPos(text, pos)[0]
 		# ----
 		menu = Menu()
