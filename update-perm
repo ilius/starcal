@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -x
 
-cd "`dirname \"$0\"`"
+cd "$(dirname \"$0\")"
 
 #chmod -R 755 .
 
@@ -37,8 +37,6 @@ chmod 755 'locale.d/make-template'
 
 chmod 755 'scripts/version'
 chmod 755 'scripts/version.py'
-chmod 755 'scal3/import_config_2to3.py'
 
 chmod 755 'scal3/ui_gtk/adjust_dtime.py'
 chmod 755 'scal3/ui_gtk/arch-enable-locale.py'
-chmod 755 'scal3/ui_gtk/import_config_2to3.py'
