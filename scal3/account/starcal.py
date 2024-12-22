@@ -22,6 +22,7 @@ log = logger.get()
 
 from contextlib import suppress
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from scal3 import event_lib
 from scal3.cal_types import (
@@ -32,6 +33,10 @@ from scal3.locale_man import tr as _
 from scal3.time_utils import (
 	jsonTimeFromEpoch,
 )
+
+if TYPE_CHECKING:
+	from scal3.event_lib import Event, EventGroup
+
 
 # def encodeDateTimeRuleValue(
 # 	return {
@@ -95,13 +100,15 @@ remoteEventTypeDecoders = {
 }
 
 
-def decodeRemoteEvent(remoteEventFull, accountId, _group):
+def decodeRemoteEvent(
+	remoteEventFull: dict,
+	accountId: int,
+	_group: EventGroup,
+) -> tuple[Event | None, str | None]:
 	"""
-	remoteEventFull is dict.
-
-	return (event, error)
+	Return (event, error)
 	where event is instance of event_lib.Event, or None
-	and error is string or None
+	and error is string or None.
 	"""
 	try:
 		eventType = remoteEventFull["eventType"]
@@ -172,7 +179,7 @@ class StarCalendarAccount(Account):
 
 	def call(self, method, path, **kwargs):
 		"""
-		return (data, None) if successful
+		Return (data, None) if successful
 		return (data, error) if failed
 		where error is string and data is a dict.
 		"""
