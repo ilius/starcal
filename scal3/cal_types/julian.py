@@ -26,7 +26,7 @@ from math import floor
 
 
 def ifloor(x):
-	return int(floor(x))
+	return floor(x)
 
 
 monthName = (
