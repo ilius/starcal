@@ -149,15 +149,15 @@ class SObj:
 				f"{self.__class__.__name__}.getIdPath: no parent attribute",
 			) from None
 		try:
-			_id = self.id
+			id_ = self.id
 		except AttributeError:
 			raise NotImplementedError(
 				f"{self.__class__.__name__}.getIdPath: no id attribute",
 			) from None
 		# ------
 		path = []
-		if _id is not None:
-			path.append(_id)
+		if id_ is not None:
+			path.append(id_)
 		if parent is None:
 			return path
 		return parent.getIdPath() + path
@@ -218,11 +218,11 @@ class JsonSObj(SObj):
 
 		# data is the result of json.loads,
 		# so probably can be only dict or list (or str)
-		_type = data.get("type") if isinstance(data, dict) else None
-		if _type is None:
+		type_ = data.get("type") if isinstance(data, dict) else None
+		if type_ is None:
 			subCls = cls
 		else:
-			subCls = cls.getSubclass(_type)
+			subCls = cls.getSubclass(type_)
 		obj = subCls(*args)
 		obj.fs = fs
 		obj.setData(data)
@@ -283,28 +283,28 @@ def iterObjectFiles(fs: FileSystem):
 			if not fs.isfile(fpath):
 				log.error(f"Object file does not exist or not a file: {fpath}")
 				continue
-			_hash = dname + fname
-			if len(_hash) != 40:
+			hash_ = dname + fname
+			if len(hash_) != 40:
 				log.debug(f"Skipping non-object file {fpath}")
 				continue
 			try:
-				int(_hash, 16)
+				int(hash_, 16)
 			except ValueError:
 				log.debug(f"Skipping non-object file {fpath}  (not hexadecimal)")
 				continue
-			yield _hash, fpath
+			yield hash_, fpath
 
 
 def saveBsonObject(data: dict | list, fs: FileSystem):
 	data = getSortedDict(data)
 	bsonBytes = bytes(bson.dumps(data))
-	_hash = sha1(bsonBytes).hexdigest()
-	dpath, fpath = getObjectPath(_hash)
+	hash_ = sha1(bsonBytes).hexdigest()
+	dpath, fpath = getObjectPath(hash_)
 	if not fs.isfile(fpath):
 		fs.makeDir(dpath)
 		with fs.open(fpath, "wb") as fp:
 			fp.write(bsonBytes)
-	return _hash
+	return hash_
 
 
 def loadBsonObject(_hash, fs: FileSystem):
@@ -357,33 +357,33 @@ class BsonHistObj(SObj):
 
 	@classmethod
 	def load(cls, fs: FileSystem, *args):
-		_file = cls.getFile(*args)
+		file = cls.getFile(*args)
 		data = {}
 		lastEpoch, lastHash = None, None
 		try:
-			with fs.open(_file) as fp:
+			with fs.open(file) as fp:
 				jsonStr = fp.read()
 			data = jsonToData(jsonStr)
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
-				raise FileNotFoundError(f"{_file} : file not found") from None
+				raise FileNotFoundError(f"{file} : file not found") from None
 		except Exception:
 			if not cls.skipLoadExceptions:
-				log.error(f'error while opening json file "{_file}"')
+				log.error(f'error while opening json file "{file}"')
 				raise
 		else:
-			lastEpoch, lastHash = updateBasicDataFromBson(data, _file, cls.name, fs)
+			lastEpoch, lastHash = updateBasicDataFromBson(data, file, cls.name, fs)
 
 		if lastEpoch is None:
 			lastEpoch = now()  # FIXME
 
 		# data is the result of json.loads,
 		# so probably can be only dict or list (or str)
-		_type = data.get("type") if isinstance(data, dict) else None
-		if _type is None:
+		type_ = data.get("type") if isinstance(data, dict) else None
+		if type_ is None:
 			subCls = cls
 		else:
-			subCls = cls.getSubclass(_type)
+			subCls = cls.getSubclass(type_)
 		obj = subCls(*args)
 		obj.fs = fs
 		obj.setData(data)
@@ -433,7 +433,7 @@ class BsonHistObj(SObj):
 			basicData[param] = data.pop(param)
 		if "modified" in data:
 			del data["modified"]
-		_hash = saveBsonObject(data, self.fs)
+		hash_ = saveBsonObject(data, self.fs)
 		# ---
 		history = self.loadHistory()
 		# ---
@@ -441,9 +441,9 @@ class BsonHistObj(SObj):
 			lastHash = history[0][1]
 		except IndexError:
 			lastHash = None
-		if _hash != lastHash:  # or lastHistArgs != histArgs:  # FIXME
+		if hash_ != lastHash:  # or lastHistArgs != histArgs:  # FIXME
 			tm = now()
-			history.insert(0, [tm, _hash] + list(histArgs))
+			history.insert(0, [tm, hash_] + list(histArgs))
 			self.modified = tm
 		basicData["history"] = history
 		self.saveBasicData(basicData)
@@ -454,11 +454,11 @@ class BsonHistObj(SObj):
 		data = self.loadBasicData()
 		data.update(loadBsonObject(revHash, self.fs))
 		try:
-			_type = data["type"]
+			type_ = data["type"]
 		except (KeyError, TypeError):
 			subCls = cls
 		else:
-			subCls = cls.getSubclass(_type)
+			subCls = cls.getSubclass(type_)
 		obj = subCls(*args)
 		obj.setData(data)
 		obj.fs = self.fs

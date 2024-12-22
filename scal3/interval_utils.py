@@ -37,7 +37,7 @@ def simplifyNumList(
 	minCount: int = 3,
 ) -> list[int | tuple[int, int]]:
 	"""
-	nums must be sorted
+	Nums must be sorted
 	minCount >= 2.
 	"""
 	ranges = []
@@ -63,7 +63,7 @@ def getIntervalPoints(
 	lst_index: int = 0,
 ) -> list[tuple[int, int, int]]:
 	"""
-	lst is a list of (start, end, closedEnd) or (start, end) tuples
+	Lst is a list of (start, end, closedEnd) or (start, end) tuples
 		start (int)
 		end (int)
 		closedEnd (bool).
@@ -136,7 +136,7 @@ def normalizeIntervalList(lst):
 
 def humanizeIntervalList(lst):
 	"""
-	replace Closed End intervals with 2 new intervals
+	Replace Closed End intervals with 2 new intervals
 	in math terms: [a, b] ==> [a, b) + [b, b].
 
 	lst is a list of (start, end, closedEnd) tuples

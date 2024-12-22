@@ -236,11 +236,11 @@ class DummyExternalPlugin(BasePlugin):
 
 
 # TODO: switch to fs
-def loadExternalPlugin(_file, **data):
-	_file = getPlugPath(_file)
-	fname = split(_file)[-1]
-	if not isfile(_file):
-		log.error(f'plugin file "{_file}" not found! maybe removed?')
+def loadExternalPlugin(file, **data):
+	file = getPlugPath(file)
+	fname = split(file)[-1]
+	if not isfile(file):
+		log.error(f'plugin file "{file}" not found! maybe removed?')
 		# try:
 		# 	plugIndex.remove(
 		return None  # FIXME
@@ -258,13 +258,13 @@ def loadExternalPlugin(_file, **data):
 	# ---
 	if not data.get("enable"):
 		return DummyExternalPlugin(
-			_file,
+			file,
 			pluginsTitleByName.get(name, name),
 		)
 	# ---
 	mainFile = data.get("mainFile")
 	if not mainFile:
-		log.error(f'invalid external plugin "{_file}"')
+		log.error(f'invalid external plugin "{file}"')
 		return None
 	# ---
 	mainFile = getPlugPath(mainFile)
@@ -278,19 +278,19 @@ def loadExternalPlugin(_file, **data):
 		with open(mainFile, encoding="utf-8") as fp:
 			exec(fp.read(), pyEnv)
 	except Exception:
-		log.error(f'error while loading external plugin "{_file}"')
+		log.error(f'error while loading external plugin "{file}"')
 		log.exception("")
 		return
 	# ---
 	cls = pyEnv.get("TextPlugin")
 	if cls is None:
-		log.error(f'invalid external plugin "{_file}", no TextPlugin class')
+		log.error(f'invalid external plugin "{file}", no TextPlugin class')
 		return None
 	# ---
 	try:
-		plugin = cls(_file)
+		plugin = cls(file)
 	except Exception:
-		log.error(f'error while loading external plugin "{_file}"')
+		log.error(f'error while loading external plugin "{file}"')
 		log.exception("")
 		return None
 
@@ -737,19 +737,20 @@ class IcsTextPlugin(BasePlugin):
 # class RandomTextPlugin(BaseJsonPlugin):
 
 
+# must not rename _file argument
 def loadPlugin(_file=None, **kwargs):
 	if not _file:
-		log.error("plugin file is empty!")
+		log.error(f"plugin file is empty! {kwargs=}")
 		return
-	_file = getPlugPath(_file)
-	if not isfile(_file):
-		log.error(f'error while loading plugin "{_file}": no such file!\n')
+	file = getPlugPath(_file)
+	if not isfile(file):
+		log.error(f'error while loading plugin "{file}": no such file!\n')
 		return
-	ext = splitext(_file)[1].lower()
+	ext = splitext(file)[1].lower()
 	# ----
 	# FIXME: should ics plugins require a json file too?
 	if ext == ".ics":
-		return IcsTextPlugin(_file, **kwargs)
+		return IcsTextPlugin(file, **kwargs)
 	# ----
 	if ext == ".md":
 		return
@@ -760,17 +761,17 @@ def loadPlugin(_file=None, **kwargs):
 		)
 		return
 	try:
-		with open(_file, encoding="utf-8") as fp:  # noqa: FURB101
+		with open(file, encoding="utf-8") as fp:  # noqa: FURB101
 			text = fp.read()
 	except Exception as e:
 		log.error(
-			f'error while reading plugin file "{_file}": {e}',
+			f'error while reading plugin file "{file}": {e}',
 		)
 		return
 	try:
 		data = jsonToData(text)
 	except Exception:
-		log.error(f'invalid json file "{_file}"')
+		log.error(f'invalid json file "{file}"')
 		log.exception("")
 		return
 	# ----
@@ -778,26 +779,26 @@ def loadPlugin(_file=None, **kwargs):
 	# ----
 	name = data.get("type")
 	if not name:
-		log.error(f'invalid plugin "{_file}", no "type" key')
+		log.error(f'invalid plugin "{file}", no "type" key')
 		return
 	# ----
 	if name == "external":
-		return loadExternalPlugin(_file, **data)
+		return loadExternalPlugin(file, **data)
 	# ----
 	try:
 		cls = pluginClassByName[name]
 	except KeyError:
-		log.error(f'invald plugin type "{name}" in file "{_file}"')
+		log.error(f'invald plugin type "{name}" in file "{file}"')
 		return
 	# ----
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
-				f'invalid plugin "{_file}": parameter "{param}" is missing',
+				f'invalid plugin "{file}": parameter "{param}" is missing',
 			)
 			return
 	# ----
-	plug = cls(_file)
+	plug = cls(file)
 	plug.setData(data)
 	# ----
 	return plug
