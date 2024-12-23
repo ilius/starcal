@@ -1,11 +1,16 @@
 import signal
 import sys
 
-from gi.repository.GLib import timeout_add
+import gi
+
+gi.require_version("Gtk", "3.0")
+
+from gi.repository import Gtk as gtk
+from gi.repository.GLib import idle_add
 
 from scal3 import event_lib, ui
-from scal3.ui_gtk import gtk, pixcache, starcal
 from scal3.ui_gtk import hijri as hijri_gtk
+from scal3.ui_gtk import pixcache, starcal
 
 ui.init()
 
@@ -70,10 +75,16 @@ def openAllWindows():
 		tick()
 
 
-signal.signal(signal.SIGINT, sys.exit)
+def onSigInt(*args):
+	# args: (status: int, frame)
+	print(f"SIGINT recieved: {args}")
+	sys.exit(1)
+
+
+signal.signal(signal.SIGINT, onSigInt)
 
 mainWin.dayCalWinShow()
 
-timeout_add(500, openAllWindows)
+idle_add(openAllWindows)
 
 sys.exit(gtk.main())
