@@ -301,8 +301,7 @@ def removeUnusedObjects(fs: FileSystem):
 				if not history:
 					log.error(f"No history in file: {fpath}")
 					continue
-				for _revTime, revHash in history:
-					hashSet.add(revHash)
+				hashSet.update({revHash for _revTime, revHash in history})
 
 		log.info(f"Found {len(hashSet)} used objects")
 		removedCount = 0

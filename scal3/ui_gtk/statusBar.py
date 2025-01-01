@@ -54,7 +54,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
-		for _i, label in enumerate(labels):
+		for label in labels:
 			text = ui.cell.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"
