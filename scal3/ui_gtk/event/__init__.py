@@ -19,13 +19,7 @@ def getWidgetClass(obj):
 	if hasattr(cls, "WidgetClass"):
 		return cls.WidgetClass
 
-	modulePath = ".".join(
-		[
-			modPrefix,
-			cls.tname,
-			cls.name,
-		],
-	)
+	modulePath = f"{modPrefix}.{cls.tname}.{cls.name}"
 	try:
 		module = __import__(modulePath, fromlist=["WidgetClass"])
 	except Exception:
@@ -55,13 +49,7 @@ def setActionFuncs(obj):
 	cls = obj.__class__
 	try:
 		module = __import__(
-			".".join(
-				[
-					modPrefix,
-					cls.tname,
-					cls.name,
-				],
-			),
+			f"{modPrefix}.{cls.tname}.{cls.name}",
 			fromlist=["WidgetClass"],
 		)
 	except Exception:
