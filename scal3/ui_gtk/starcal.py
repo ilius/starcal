@@ -140,12 +140,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 			if enable:
 				try:
 					module = __import__(
-						".".join(
-							[
-								itemsPkg,
-								name,
-							],
-						),
+						f"{itemsPkg}.{name}",
 						fromlist=["CalObj"],
 					)
 					CalObj = module.CalObj

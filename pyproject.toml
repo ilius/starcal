@@ -9,7 +9,6 @@ lint.select = [
 	"W", # pycodestyle Warning
 	# "C90", # mccabe: C901: {name} is too complex ({complexity})
 	"I", # isort: unsorted-imports, missing-required-import
-	# "N", # pep8-naming
 	"D",   # pydocstyle
 	"B",   # flake8-bugbear
 	"UP",  # pyupgrade
@@ -20,8 +19,8 @@ lint.select = [
 	# "S", # flake8-bandit
 	"BLE", # flake8-blind-except
 	# "FBT", # flake8-boolean-trap
-	# "B", flake8-bugbear
-	# "A", # flake8-builtins
+	"B", # flake8-bugbear
+	"A", # flake8-builtins
 	"COM", # flake8-commas
 	# "CPY", # flake8-copyright   --preview
 	"C4",  # flake8-comprehensions
@@ -32,7 +31,6 @@ lint.select = [
 	"EXE", # flake8-executable
 	"FA",  # flake8-future-annotations
 	"ISC", # flake8-implicit-str-concat
-	# "G",     # flake8-logging-format, non-sense!
 	"INP", # flake8-no-pep420
 	"PIE", # flake8-pie
 	# "T20",  # flake8-print
@@ -49,18 +47,16 @@ lint.select = [
 	"INT",  # flake8-gettext
 	"ARG",  # flake8-unused-arguments
 	# "PTH",   # flake8-use-pathlib
-	# "TD",    # flake8-todos
-	# "FIX",   # flake8-fixme: just shows me FIXMEs and TODOs
 	# "ERA",   # eradicate
 	# "PD",  # pandas-vet: full of false positives
 	"PGH", # pygrep-hooks
 	"PL",  # Pylint
 	"TRY", # tryceratops, some are BS
-	# "FLY",   # flynt
+	"FLY",   # flynt
 	"NPY",  # NumPy-specific rules
 	"AIR",  # Airflow
 	"PERF", # Perflint
-	# "FURB",  # refurb, ruff --preview
+	"FURB",  # refurb
 	"LOG", # flake8-logging
 	"RUF", # Ruff-specific rules
 ]
@@ -69,6 +65,8 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"FURB189", # Subclassing `list` can be error prone, use `collections.UserList` instead
+	"FURB103", # `open` and `write` should be replaced by `Path(...)....`
 	"PYI024",  # Use `typing.NamedTuple` instead of `collections.namedtuple`
 	"PLC0206", # Extracting value from dictionary without calling `.items()`
 
@@ -202,6 +200,8 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "scal3/event_search_tree.py" = [
 	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple`
 ]
+
+"tools/afghanistan-events.py" = ["FLY"]
 
 [tool.ruff.format]
 quote-style = "double"

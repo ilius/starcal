@@ -154,13 +154,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.pagePath = ".".join(
-			[
-				win.objName,
-				win.mainVBox.objName,
-				self.objName,
-			],
-		)
+		self.pagePath = f"{win.objName}.{win.mainVBox.objName}.{self.objName}"
 		# ----------------------
 		# self.kTime = 0
 		# ----------------------
@@ -404,7 +398,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 						iconsN = len(iconList)
 						scaleFact = 1 / sqrt(iconsN)
 						fromRight = 0
-						for _index, icon in enumerate(iconList):
+						for icon in iconList:
 							# if len(iconList) > 1  # FIXME
 							try:
 								pix = pixbufFromFile(icon, size=iconSizeMax)
