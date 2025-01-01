@@ -54,7 +54,7 @@ class DummyCalObj(ud.CalObjType):
 		self.enable = False
 		self.objName = name
 		self.desc = desc
-		self.moduleName = ".".join([pkg, name])
+		self.moduleName = f"{pkg}.{name}"
 		self.customizable = customizable
 		self.optionsWidget = None
 		self.items = []
