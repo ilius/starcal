@@ -37,9 +37,7 @@ def addBoxHeightToColoredGraph(g):
 	colorCount = max(colors) + 1
 	heightList = [1 for i in range(n)]
 	for i, c in enumerate(colors):
-		adjColors = set()
-		for j in adjlist[i]:
-			adjColors.add(colors[j])
+		adjColors = {colors[j] for j in adjlist[i]}
 		for c_end in range(c + 1, colorCount + 1):
 			if c_end in adjColors:
 				heightList[i] = c_end - c

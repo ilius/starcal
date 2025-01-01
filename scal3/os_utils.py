@@ -57,7 +57,7 @@ def makeDir(direc):
 def getUsersData():
 	data = []
 	with open("/etc/passwd", encoding="utf-8") as fp:
-		for line in fp.readlines():
+		for line in fp:
 			parts = line.strip().split(":")
 			if len(parts) < 7:
 				continue
