@@ -26,6 +26,9 @@ import typing
 from math import ceil, floor
 from typing import Any
 
+if typing.TYPE_CHECKING:
+	from collections.abc import Iterator
+
 Number: typing.TypeAlias = int | float
 
 
@@ -213,7 +216,7 @@ class StrOrderedDict(dict):
 		self.keyList.insert(index, key)
 		dict.__setitem__(self, key, value)  # noqa: PLC2801
 
-	def sort(self, attr: str | None = None) -> typing.Iterator:
+	def sort(self, attr: str | None = None) -> Iterator:
 		if attr is None:
 			self.keyList.sort()
 		else:
