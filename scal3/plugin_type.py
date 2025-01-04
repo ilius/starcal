@@ -1,16 +1,19 @@
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 from scal3.s_object import SObj
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 
 class BasePlugin(SObj):
 	name: str | None
 	external: bool
 	loaded: bool
-	params: typing.Sequence[str]
-	essentialParams: typing.Sequence[str]
+	params: Sequence[str]
+	essentialParams: Sequence[str]
 
 	def getArgs(self): ...
 
