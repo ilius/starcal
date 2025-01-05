@@ -271,7 +271,7 @@ def main():
 			f"Name=StarCalendar {version}\n"
 			"GenericName=StarCalendar\n"
 			"Comment=Full-featured Calendar Program\n"
-			"Comment[fa]=یک برنامهٔ کامل تقویم\n"
+			"Comment[fa]=یک برنامهٔ پرقابلیت تقویم\n"
 			f"Exec={pkgName}\n"
 			f"Icon={iconName}\n"
 			"Type=Application\n"
