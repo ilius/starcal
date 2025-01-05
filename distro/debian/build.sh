@@ -49,11 +49,13 @@ depends+=('python3-gi(>=3.24)') ## The new gobject introspection
 depends+=('python3-gi-cairo')
 ## it's "python-gobject-cairo" in ubuntu FIXME
 depends+=('python3-cairo')
+
 depends+=('python3-httplib2')
 depends+=('python3-dateutil')
 depends+=('python3-psutil')
 depends+=('python3-cachetools')
 depends+=('python3-requests')
+depends+=('python3-setuptools')
 depends+=('python3-pkg-resources')
 depends+=('python3-six')
 #depends+=('python3-gflags') # for google api client
