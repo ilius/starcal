@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -o errexit
+set -o nounset
+# In POSIX sh, set option pipefail is undefined
 set -x
 
 if [ "$(id -u)" != "0" ] ; then
@@ -20,21 +23,36 @@ fi
 PYV=$(python3 -c 'import sys;v=sys.version_info;print(f"py{v.major}{v.minor}")')
 
 # you can run "pkg install -f ..." to re-install a package
-# if it's installed with pip3, pkg will still install it without "-f"
+# if it's installed with pip3, pkg will still install it, even without "-f"
 
 pkg install \
 	gettext \
 	gtksourceview4 \
+	OpenSSH-askpass \
+	"$PYV-packaging" \
 	"$PYV-gobject3" \
 	"$PYV-cairo" \
 	"$PYV-httplib2" \
-	"$PYV-dateutil" \
 	"$PYV-psutil" \
 	"$PYV-cachetools" \
 	"$PYV-requests" \
 	"$PYV-ujson" \
-	"$PYV-python-igraph" \
-	"$PYV-pygit2"
+	"$PYV-pygit2" \
+	"$PYV-pip"
+
+
+pkg install "$PYV-dateutil" || \
+	python3 -m pip install dateutil || \
+	python3 -m pip install git+https://github.com/dateutil/dateutil
+
+pkg install "$PYV-igraph" || \
+	python3 -m pip install igraph || \
+	echo "Failed to install igraph"
+
+#pkg: No packages available to install matching 'packaging' have been found in the repositories
+#pkg: No packages available to install matching 'py311-dateutil' have been found in the repositories
+#pkg: No packages available to install matching 'py311-python-igraph' have been found in the repositories
+
 
 # /usr/sbin/ntpdate exists by default, but couldn't figure out which package
 # does it belong to
