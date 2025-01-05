@@ -26,6 +26,7 @@ PYV=$(python3 -c 'import sys;v=sys.version_info;print(f"py{v.major}{v.minor}")')
 # if it's installed with pip3, pkg will still install it, even without "-f"
 
 pkg install \
+	packaging \
 	gettext \
 	gtksourceview4 \
 	OpenSSH-askpass \
