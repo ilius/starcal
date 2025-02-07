@@ -22,24 +22,21 @@ from scal3.ui_gtk.utils import (
 )
 
 
-class MyHButtonBox(gtk.ButtonBox):
+class MyHButtonBox(gtk.Box):
 	def __init__(self):
-		gtk.ButtonBox.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.set_layout(gtk.ButtonBoxStyle.END)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.set_spacing(15)
 		self.set_border_width(15)
 		self._homogeneous = True
+		self._sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
 	def set_homogeneous(self, homogeneous: bool):
-		# gtk.ButtonBox.set_homogeneous does not work anymore!
-		# not sure since when
 		self._homogeneous = homogeneous
 
 	def add(self, child):
-		gtk.ButtonBox.add(self, child)
-		if not self._homogeneous:
-			self.set_child_non_homogeneous(child, True)
-			# New in gi version 3.2.
+		self.pack_start(child, expand=False, fill=False, padding=0)
+		if self._homogeneous:
+			self._sizeGroup.add_widget(child)
 
 	def add_button(
 		self,
@@ -53,12 +50,9 @@ class MyHButtonBox(gtk.ButtonBox):
 				label=label,
 				imageName=imageName,
 			)
-		# else:
-		# 	b = labelIconButton(
-		# 		label,
-		# 		iconName,
-		# 		gtk.IconSize.BUTTON,
-		# 	)
+		else:
+			b = gtk.Button()
+			b.set_label(label)
 		if onClick:
 			b.connect("clicked", onClick)
 		if tooltip:
