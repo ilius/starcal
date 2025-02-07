@@ -220,7 +220,6 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# ------
 		bbox = MyHButtonBox()
 		bbox.set_homogeneous(False)
-		bbox.set_layout(gtk.ButtonBoxStyle.START)
 		bbox.set_border_width(5)
 		# ---
 		searchButton = labelImageButton(
@@ -371,7 +370,6 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(self.vbox, vbox, 1, 1)
 		# ---
 		bbox2 = MyHButtonBox()
-		bbox2.set_layout(gtk.ButtonBoxStyle.END)
 		bbox2.set_border_width(10)
 		closeButton = labelImageButton(
 			label=_("_Close"),
