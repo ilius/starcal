@@ -5,6 +5,7 @@ set -e
 initPwd=$PWD
 
 sudo pacman -Sy
+sudo pacman -S archlinux-keyring
 
 if ! git --version ; then
 	if ! sudo pacman -S git ; then
