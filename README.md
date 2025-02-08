@@ -1,7 +1,7 @@
 # StarCalendar (Desktop)
 
 StarCalendar is a Free and Open Source full-featured international calendar
-written in Python, supporting Jalali/Persian, Garigorian and Islamic calendar.
+written in Python, supporting Jalali/Persian, Gregorian and Islamic calendars.
 
 ## Download
 
