@@ -34,5 +34,6 @@ elif [ -f /bin/midnightbsd-version ] ; then
 	./distro/midnightbsd/install.sh
 
 else
-	./install-pip
+	./install-pip-deps
+	./distro/base/install.py --system
 fi

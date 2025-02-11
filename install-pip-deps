@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+# Usage:
+# sudo ./install-pip-deps
+# sudo ./install-pip-deps 3.8
+
+set -x
+
+PIP=pip3
+if [ -n "$1" ] ; then
+	PIP="python$1 -m pip"
+	shift
+elif ! which $PIP ; then
+	python3 -m ensurepip
+fi
+
+
+$PIP install pygobject
+$PIP install pycairo
+$PIP install httplib2
+$PIP install python-dateutil
+$PIP install psutil
+$PIP install cachetools
+$PIP install requests
+$PIP install setuptools
+
+$PIP install ujson
+$PIP install igraph
+$PIP install pygit2

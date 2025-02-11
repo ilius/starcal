@@ -11,30 +11,5 @@ if [ "$(id -u)" != "0" ] ; then
 	exit 1
 fi
 
-PIP=pip3
-if [ -n "$1" ] ; then
-	PIP="python$1 -m pip"
-	shift
-elif ! which $PIP ; then
-	python3 -m ensurepip
-fi
-
-
-$PIP install pygobject
-$PIP install pycairo
-$PIP install httplib2
-$PIP install python-dateutil
-$PIP install psutil
-$PIP install cachetools
-$PIP install requests
-$PIP install setuptools
-
-$PIP install ujson
-$PIP install igraph
-$PIP install pygit2
-
-if [ -f /bin/freebsd-version ] ; then
-	./distro/base/install.py --system
-else
-	./install-auto.sh
-fi
+./install-pip-deps "$@"
+./distro/base/install.py --system
