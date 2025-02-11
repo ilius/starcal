@@ -30,7 +30,6 @@ chmod 755 distro/*/docker-build-internal.sh
 chmod 755 distro/*/package-build.sh
 
 chmod 755 'update-perm'
-chmod 755 'check-style'
 
 chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
