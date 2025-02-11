@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-#if [ -z $2 ] ; then
-pycodestyle "$@" | grep --color=always -P ':\d*:' 2>&1 | less -RUN
-#else
-#	pycodestyle --select "$@" | grep --color=always -P ':\d*:' 2>&1
-#fi
