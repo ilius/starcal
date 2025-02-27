@@ -603,8 +603,7 @@ class IcsTextPlugin(BasePlugin):
 							md[m, d] = text
 					else:
 						log.error(
-							f"unsupported ics event, {SUMMARY=}, "
-							f"{DTSTART=}, {DTEND}=",
+							f"unsupported ics event, {SUMMARY=}, {DTSTART=}, {DTEND}=",
 						)
 					SUMMARY = ""
 					DESCRIPTION = ""
@@ -756,8 +755,7 @@ def loadPlugin(_file=None, **kwargs):
 		return
 	if ext != ".json":
 		log.error(
-			f"unsupported plugin extention {ext}"
-			", new style plugins have a json file",
+			f"unsupported plugin extention {ext}, new style plugins have a json file",
 		)
 		return
 	try:
