@@ -25,7 +25,7 @@ class TestJalali(unittest.TestCase):
 			# print(
 			# 	f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   "
 			# 	f"{'L' if isLeap2 else ' '}")
-			print(f"{year}: \"{'L' if isLeap1 else ' '}{'L' if isLeap2 else ' '}\",")
+			print(f'{year}: "{"L" if isLeap1 else " "}{"L" if isLeap2 else " "}",')
 
 	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
