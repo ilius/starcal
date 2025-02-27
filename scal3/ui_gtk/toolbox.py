@@ -185,8 +185,7 @@ class ToolBoxItem(BaseToolBoxItem):
 			if self.imageNameDynamic:
 				return
 			raise RuntimeError(
-				f"bigPixbuf=None, self.imageName={self.imageName}"
-				f", name={self.objName}",
+				f"bigPixbuf=None, self.imageName={self.imageName}, name={self.objName}",
 			)
 		pixbuf = self.bigPixbuf.scale_simple(
 			iconSize,
