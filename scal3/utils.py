@@ -174,8 +174,7 @@ class StrOrderedDict(dict):
 			dict.__setitem__(self, arg, value)
 		else:
 			raise TypeError(
-				"Bad type argument given to StrOrderedDict.__setitem__"
-				f": {type(arg)}",
+				f"Bad type argument given to StrOrderedDict.__setitem__: {type(arg)}",
 			)
 
 	def __delitem__(self, arg: int | str | slice) -> None:
@@ -191,8 +190,7 @@ class StrOrderedDict(dict):
 			self.keyList.__delitem__(arg)
 		else:
 			raise TypeError(
-				"Bad type argument given to StrOrderedDict.__delitem__"
-				f": {type(arg)}",
+				f"Bad type argument given to StrOrderedDict.__delitem__: {type(arg)}",
 			)
 
 	# def pop(self, key: str) -> Any:  # FIXME

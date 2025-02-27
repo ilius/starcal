@@ -52,8 +52,7 @@ def setAttr(moduleName, attr, value, absolute=False):
 	allowed = getattr(module, "__plugin_api_set__", [])
 	if attr not in allowed:
 		raise PluginError(
-			f"plugin is not allowed to set attribute {attr!r}"
-			f" to module {moduleName!r}",
+			f"plugin is not allowed to set attribute {attr!r} to module {moduleName!r}",
 		)
 	setattr(module, attr, value)
 
