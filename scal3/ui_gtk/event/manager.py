@@ -224,8 +224,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			if eventIter is None:
 				if record.obj.parent.id in self.loadedGroupIds:
 					log.error(
-						"trying to delete non-existing event row, "
-						f"eid={record.obj.id}",
+						f"trying to delete non-existing event row, eid={record.obj.id}",
 					)
 				self.addEventRowToTrash(record.obj)
 				return
@@ -253,8 +252,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			if eventIter is None:
 				if record.obj.parent.id in self.loadedGroupIds:
 					log.error(
-						"trying to edit non-existing event row, "
-						f"eid={record.obj.id}",
+						f"trying to edit non-existing event row, eid={record.obj.id}",
 					)
 			else:
 				self.updateEventRowByIter(record.obj, eventIter)
