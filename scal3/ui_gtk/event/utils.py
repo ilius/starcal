@@ -25,8 +25,7 @@ __all__ = [
 def confirmEventTrash(event, **kwargs):
 	return confirm(
 		_(
-			'Press Confirm if you want to move event "{eventSummary}"'
-			" to {trashTitle}",
+			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
 		).format(
 			eventSummary=event.summary,
 			trashTitle=ui.eventTrash.title,

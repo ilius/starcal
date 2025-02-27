@@ -250,11 +250,7 @@ class LastIdsWrapper(JsonEventObj):
 
 	def __str__(self) -> str:
 		return (
-			"LastIds("
-			f"event={self.event}, "
-			f"group={self.group}, "
-			f"account={self.account}"
-			")"
+			f"LastIds(event={self.event}, group={self.group}, account={self.account})"
 		)
 
 	def scanDir(self, dpath: str) -> int:
@@ -3901,8 +3897,7 @@ class EventContainer(BsonHistEventObj):
 			raise ValueError(f"{self} already contains {event}")
 		if event.parent not in {None, self}:
 			raise ValueError(
-				f"{event} already has a parent={event.parent}"
-				f", trying to add to {self}",
+				f"{event} already has a parent={event.parent}, trying to add to {self}",
 			)
 
 	def postAdd(self, event: Event):
@@ -4526,8 +4521,7 @@ class EventGroup(EventContainer):
 
 	def updateOccurrenceEvent(self, event: Event) -> None:
 		log.debug(
-			f"updateOccurrenceEvent: id={self.id}"
-			f" title={self.title} eid={event.id}",
+			f"updateOccurrenceEvent: id={self.id} title={self.title} eid={event.id}",
 		)
 		eid = event.id
 		self.occurCount -= self.occur.delete(eid)
