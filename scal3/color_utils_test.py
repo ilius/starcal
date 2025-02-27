@@ -101,8 +101,7 @@ def genRandomTests_hslToRgb():
 		ln = random()
 		r, g, b = hslToRgb(h, s, ln)
 		log.info(
-			f"self.assertEqual(hslToRgb({h:.1f}, {s:.3f}, {ln:.3f}), "
-			f"({r}, {g}, {b}))",
+			f"self.assertEqual(hslToRgb({h:.1f}, {s:.3f}, {ln:.3f}), ({r}, {g}, {b}))",
 		)
 
 
