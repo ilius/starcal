@@ -3442,6 +3442,14 @@ msgid "Toolbar"
 msgstr ""
 "نوار ابزار"
 
+msgid "Toolbar (Horizontal)"
+msgstr ""
+"نوار ابزار (افقی)"
+
+msgid "Toolbar (Vertical)"
+msgstr ""
+"نوار ابزار (عمودی)"
+
 msgid "Year & Month Labels"
 msgstr ""
 "برچسب‌های سال و ماه"

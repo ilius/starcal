@@ -49,6 +49,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 @registerSignals
 class CalObj(CustomizableToolBox):
+	desc = _("Toolbar (Horizontal)")
 	signals = CustomizableToolBox.signals + [
 		("popup-main-menu", [int, int]),
 	]
