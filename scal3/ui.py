@@ -716,7 +716,7 @@ def initFonts(fontDefaultNew: Font) -> None:
 	# --------
 	# ---
 	if mcalTypeParams[0]["font"] is None:
-		mcalTypeParams[0]["font"] = getFont(1.0, family=False)  # noqa: FURB120
+		mcalTypeParams[0]["font"] = getFont(1.0, family=False)
 	# ---
 	for item in mcalTypeParams[1:]:
 		if item["font"] is None:
@@ -751,9 +751,9 @@ def initFonts(fontDefaultNew: Font) -> None:
 			item["font"] = getFont(1.5, family=False)
 	# ------
 	if dcalWeekdayParams["font"] is None:
-		dcalWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
+		dcalWeekdayParams["font"] = getFont(1.0, family=False)
 	if dcalWinWeekdayParams["font"] is None:
-		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
+		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
 
 
 def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
