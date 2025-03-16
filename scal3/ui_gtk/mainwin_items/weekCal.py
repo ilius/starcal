@@ -489,6 +489,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 
 @registerSignals
 class ToolbarColumn(CustomizableToolBox, ColumnBase):
+	desc = _("Toolbar (Vertical)")
 	autoButtonPressHandler = False
 	optionsPageSpacing = 5
 
