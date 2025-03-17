@@ -3592,6 +3592,10 @@ msgid "Use System Icons"
 msgstr ""
 "استفاده از نمادهای سیستم"
 
+msgid "Old-style Progress Bar"
+msgstr ""
+"نوار پیشروی سبک قدیم"
+
 
 msgid "Buttons Border"
 msgstr ""
