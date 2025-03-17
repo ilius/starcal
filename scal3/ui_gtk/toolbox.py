@@ -354,7 +354,7 @@ class StaticToolBox(BaseToolBox):
 		item.setVertical(self.vertical)
 		item.setIconSize(self.iconSize)
 		item.setPreferIconName(self.preferIconName)
-		item.set_border_width(self.buttonBorder)
+		# item.set_border_width(self.buttonBorder)
 		item.build()
 		item.onConfigChange(toParent=False)
 		self.setupItemSignals(item)
@@ -513,7 +513,7 @@ class CustomizableToolBox(StaticToolBox):
 		for item in self.items:
 			item.setPreferIconName(preferIconName)
 			item.setIconSize(iconSize)
-			item.set_border_width(buttonBorder)
+			# item.set_border_width(buttonBorder)
 			self.box.set_child_packing(
 				child=item,
 				expand=False,

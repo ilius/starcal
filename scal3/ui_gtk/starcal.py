@@ -708,7 +708,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
 		# )
 
-	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
+	def getEventAddToMenuItem(self) -> gio.MenuItem | None:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 		if event_lib.allReadOnly:
@@ -996,7 +996,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def menuMainCreate(self):
 		if self.menuMain:
 			return
-		menu = gtk.Menu(reserve_toggle_size=0)
+		menu = gtk.PopoverMenu(reserve_toggle_size=0)
 		# ----
 		for propsTmp in ui.menuMainItemDefs.values():
 			props = dict(propsTmp)  # make a copy before modify
@@ -1184,7 +1184,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.sicon.connect("popup-menu", self.statusIconPopup)
 
 	def getMainWinMenuItem(self):
-		item = gtk.MenuItem(label=_("Main Window"))
+		item = gio.MenuItem(label=_("Main Window"))
 		item.connect("activate", self.onStatusIconClick)
 		return item
 

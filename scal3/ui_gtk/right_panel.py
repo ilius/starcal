@@ -160,7 +160,8 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.eventItem.onDateChange(toParent=False)
 
 	def onBorderWidthChange(self):
-		self.set_border_width(ui.mainWinRightPanelBorderWidth)
+		pass
+		# self.set_border_width(ui.mainWinRightPanelBorderWidth)
 
 	def updatePosition(self, height: int):
 		log.debug(
@@ -258,7 +259,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		)
 		frame = gtk.Frame(label=_("Width"))
 		frame.add(prefItem.getWidget())
-		frame.set_border_width(0)
+		# frame.set_border_width(0)
 		pack(sizesVBox, frame)
 		# ---
 		prefItem = SpinPrefItem(

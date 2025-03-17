@@ -32,7 +32,6 @@ from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	VBox,
 	gdk,
 	getScrollValue,
@@ -217,7 +216,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(optionsWidget, hbox)
 		# ------------
 		pageVBox = VBox(spacing=20)
-		pageVBox.set_border_width(10)
+		# pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		prefItem = SpinPrefItem(
@@ -535,8 +534,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
-			if gevent.type == TWO_BUTTON_PRESS:
-				self.emit("double-button-press")
+			# if gevent.type == TWO_BUTTON_PRESS: FIXME
+			# 	self.emit("double-button-press")
 			if b == 3 and cell.month == ui.cell.month:  # right click on a normal cell
 				# self.emit("popup-cell-menu", *self.getCellPos())
 				self.emit("popup-cell-menu", gevent.x, gevent.y)

@@ -58,7 +58,6 @@ __all__ = [
 	"getBackgroundColor",
 	"getBackgroundColorCSS",
 	"getGtkWindow",
-	"getStyleColor",
 	"get_menu_height",
 	"get_menu_width",
 	"get_pixbuf_hash",
@@ -264,7 +263,7 @@ def newButtonImageBox(label: str, image: gtk.Image, spacing=0) -> gtk.Box:
 def labelIconButton(
 	label: str = "",
 	iconName: str = "",
-	size: gtk.IconSize = gtk.IconSize.BUTTON,
+	size: gtk.IconSize = gtk.IconSize.LARGE,
 ):
 	button = gtk.Button()
 	if ui.buttonIconEnable:
@@ -346,10 +345,6 @@ def setImageClassButton(
 	if styleClass:
 		button.get_style_context().add_class(styleClass)
 	return button
-
-
-def getStyleColor(widget, state=gtk.StateType.NORMAL):
-	return widget.get_style_context().get_color(state)
 
 
 def modify_bg_all(widget, state, gcolor):
@@ -441,7 +436,7 @@ def confirm(
 		label=_("Cancel"),
 		res=gtk.ResponseType.CANCEL,
 	)
-	button.set_border_width(border_width)
+	# button.set_border_width(border_width)
 	button.get_style_context().add_class("bigger")
 	button = dialog_add_button(
 		win,
@@ -449,7 +444,7 @@ def confirm(
 		label=_("_Confirm"),
 		res=gtk.ResponseType.OK,
 	)
-	button.set_border_width(border_width)
+	# button.set_border_width(border_width)
 	button.get_style_context().add_class("bigger")
 	ok = win.run() == gtk.ResponseType.OK
 	win.destroy()
@@ -473,7 +468,7 @@ def showMsg(
 	if title:
 		win.set_title(title)
 	hbox = HBox(spacing=10)
-	hbox.set_border_width(borderWidth)
+	# hbox.set_border_width(borderWidth)
 	# win.set_icon(...)
 	if imageName:
 		pack(

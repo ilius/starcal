@@ -159,7 +159,7 @@ class MyColorButton(gtk.ColorButton):
 class TextFrame(gtk.Frame):
 	def __init__(self, onTextChange=None):
 		gtk.Frame.__init__(self)
-		self.set_border_width(4)
+		# self.set_border_width(4)
 		# ----
 		self.textview = gtk.TextView()
 		self.textview.set_wrap_mode(gtk.WrapMode.WORD)

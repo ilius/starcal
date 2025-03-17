@@ -120,7 +120,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		# ---
 		pack(self.vbox, gtk.Label())
 		# ----
-		self.vbox.set_border_width(10)
+		# self.vbox.set_border_width(10)
 		self.vbox.show_all()
 		window_set_size_aspect(self, min_aspect=1.5, max_aspect=2.0)
 		self.resize(100, 50)

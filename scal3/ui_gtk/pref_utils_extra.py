@@ -100,7 +100,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self._onChangeFunc = onChangeFunc
 		# -----
 		vbox = VBox(spacing=vspacing)
-		vbox.set_border_width(borderWidth)
+		# vbox.set_border_width(borderWidth)
 		# --
 		hbox = HBox(spacing=hspacing)
 		pack(hbox, self.fixedRadio)
@@ -797,7 +797,7 @@ class KeyBindingPrefItem(PrefItem):
 		if b == 1:
 			pass
 		elif b == 3:
-			menu = gtk.Menu()
+			menu = gtk.PopoverMenu()
 			menu.add(
 				ImageMenuItem(
 					label=_("Modify Key"),

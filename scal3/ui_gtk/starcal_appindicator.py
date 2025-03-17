@@ -33,7 +33,7 @@ from scal3.path import (
 	APP_NAME,
 	tmpDir,
 )
-from scal3.ui_gtk import Menu, MenuItem, gtk
+from scal3.ui_gtk import Menu, MenuItem, gio, gtk
 from scal3.ui_gtk.utils import (
 	CopyLabelMenuItem,
 	get_pixbuf_hash,
@@ -92,7 +92,7 @@ class IndicatorStatusIconWrapper:
 		item.show()
 		menu.append(item)
 		# ----
-		item = gtk.MenuItem(_("Desktop Widget"))
+		item = gio.MenuItem(_("Desktop Widget"))
 		item.connect("activate", self.mainWin.dayCalWinShow)
 		item.show()
 		menu.append(item)

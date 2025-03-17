@@ -367,8 +367,8 @@ class TextPluginUI:
 		frame = gtk.Frame()
 		frame.set_label(_("Shown Times"))
 		frame.add(vbox)
-		vbox.set_border_width(5)
-		frame.set_border_width(5)
+		# vbox.set_border_width(5)
+		# frame.set_border_width(5)
 		pack(self.confDialog.vbox, frame)
 		# ------
 		hbox = gtk.HBox()
@@ -392,7 +392,7 @@ class TextPluginUI:
 		self.sepView = textview
 		self.sepBuff = textview.get_buffer()
 		frame = gtk.Frame()
-		frame.set_border_width(4)
+		# frame.set_border_width(4)
 		frame.add(textview)
 		pack(hbox, frame, 1, 1)
 		pack(self.confDialog.vbox, hbox)
@@ -400,8 +400,8 @@ class TextPluginUI:
 		frame = gtk.Frame()
 		frame.set_label(_("Azan"))
 		vboxFrame = gtk.VBox()
-		vboxFrame.set_border_width(5)
-		frame.set_border_width(5)
+		# vboxFrame.set_border_width(5)
+		# frame.set_border_width(5)
 		# -----
 		# ----
 		hbox1 = gtk.HBox()
@@ -466,11 +466,11 @@ class TextPluginUI:
 		self.confDialog.vbox.show_all()
 		# --------------
 		"""
-		submenu = gtk.Menu()
-		submenu.add(gtk.MenuItem("Item 1"))
-		submenu.add(gtk.MenuItem("Item 2"))
+		submenu = gtk.PopoverMenu()
+		submenu.add(gio.MenuItem("Item 1"))
+		submenu.add(gio.MenuItem("Item 2"))
 		#self.submenu = submenu
-		self.menuitem = gtk.MenuItem("Owghat")
+		self.menuitem = gio.MenuItem("Owghat")
 		self.menuitem.set_submenu(submenu)
 		self.menuitem.show_all()
 		"""

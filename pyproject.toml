@@ -45,7 +45,7 @@ lint.select = [
 	"TID",  # flake8-tidy-imports
 	"TCH",  # flake8-type-checking
 	"INT",  # flake8-gettext
-	"ARG",  # flake8-unused-arguments
+	# "ARG",  # flake8-unused-arguments
 	# "PTH",   # flake8-use-pathlib
 	# "ERA",   # eradicate
 	# "PD",  # pandas-vet: full of false positives
@@ -65,6 +65,8 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"F841", # Local variable `...` is assigned to but never used
+
 	"FURB189", # Subclassing `list` can be error prone, use `collections.UserList` instead
 	"FURB103", # `open` and `write` should be replaced by `Path(...)....`
 	"PYI024",  # Use `typing.NamedTuple` instead of `collections.namedtuple`

@@ -23,7 +23,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import HBox, gio, gtk, pack
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.utils import (
 	imageFromFile,
@@ -49,7 +49,7 @@ Documentation says:
 """
 
 
-class ImageMenuItem(gtk.MenuItem):
+class ImageMenuItem(gio.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
@@ -59,7 +59,7 @@ class ImageMenuItem(gtk.MenuItem):
 		signalName="activate",
 		args: tuple | None = None,
 	):
-		gtk.MenuItem.__init__(self)
+		gio.MenuItem.__init__(self)
 		if args is not None and not isinstance(args, tuple):
 			raise TypeError("args must be None or tuple")
 		image = None
@@ -108,7 +108,7 @@ class ImageMenuItem(gtk.MenuItem):
 		return self._image
 
 
-class CheckMenuItem(gtk.MenuItem):
+class CheckMenuItem(gio.MenuItem):
 	def __init__(
 		self,
 		label="",
@@ -116,10 +116,10 @@ class CheckMenuItem(gtk.MenuItem):
 		func=None,
 		args=None,
 	):
-		gtk.MenuItem.__init__(self)
+		gio.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
 		self._check.set_use_underline(True)
-		# self._check.set_border_width((ui.menuCheckSize - ui.menuIconSize) // 2)
+		# # self._check.set_border_width((ui.menuCheckSize - ui.menuIconSize) // 2)
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = 0
 		# edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize
@@ -150,7 +150,7 @@ class CheckMenuItem(gtk.MenuItem):
 		return self._active
 
 
-class CustomCheckMenuItem(gtk.MenuItem):
+class CustomCheckMenuItem(gio.MenuItem):
 	def __init__(
 		self,
 		label="",
@@ -158,7 +158,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		func=None,
 		args=None,
 	):
-		gtk.MenuItem.__init__(self)
+		gio.MenuItem.__init__(self)
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize

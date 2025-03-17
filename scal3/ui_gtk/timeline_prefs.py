@@ -75,7 +75,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.stack = stack
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "general"
@@ -145,7 +145,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# TODO: changeHolidayBgMaxDays
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "buttons"
@@ -256,7 +256,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ----------------------------------------------------
 		vboxIndicators = vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "indicators"
@@ -299,7 +299,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageParent = "indicators"
 		page.pageWidget = vbox
@@ -398,7 +398,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# TODO: truncateTickLabel
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageParent = "indicators"
 		page.pageWidget = vbox
@@ -454,7 +454,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageParent = "indicators"
 		page.pageWidget = vbox
@@ -521,7 +521,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "events"
@@ -624,7 +624,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# TODO: rotateBoxLabel = -1
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "movement"
@@ -657,7 +657,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		frame = gtk.Frame(label=_("Without Animation"))
 
-		noAnimVBox.set_border_width(3)
+		# noAnimVBox.set_border_width(3)
 		frame.add(noAnimVBox)
 		pack(vbox, frame)
 		# ---
@@ -696,7 +696,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, animVBox)
 		# ---------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageParent = "movement"
 		page.pageWidget = vbox
@@ -853,7 +853,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# TODO: movingKeyTimeout
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "zooming"
@@ -893,7 +893,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ----------------------------------------------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "keys"
@@ -928,7 +928,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		grid.set_column_homogeneous(True)
 		grid.set_row_spacing(15)
 		grid.set_column_spacing(15)
-		grid.set_border_width(20)
+		# grid.set_border_width(20)
 		# ----
 		self.defaultWidget = None
 		firstPageDoubleSize = len(mainPages) % 2 == 1
@@ -971,7 +971,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 	def newWideButton(self, page: StackPage):
 		hbox = HBox(spacing=10)
-		hbox.set_border_width(10)
+		# hbox.set_border_width(10)
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)

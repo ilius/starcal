@@ -189,8 +189,8 @@ class IntegatedWindowList(BaseCalObj):
 		ui.eventUpdateQueue.registerConsumer(self)
 		# ---
 		self.styleProvider = gtk.CssProvider()
-		gtk.StyleContext.add_provider_for_screen(
-			gdk.Screen.get_default(),
+		gtk.StyleContext.add_provider_for_display(
+			gdk.Display.get_default(),
 			self.styleProvider,
 			gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
 		)
@@ -354,7 +354,7 @@ if sys.getdefaultencoding() != "utf-8":
 if rtl:
 	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
 
-gtk.Window.set_default_icon_from_file(ui.appIcon)
+# gtk.Window.set_default_icon_from_file(ui.appIcon)  # not in Gtk4
 
 display = gdk.Display.get_default()
 
@@ -382,14 +382,15 @@ textDirDict = {
 	"auto": gtk.TextDirection.NONE,
 }
 
+# FIXME: Gtk4
 iconSizeList = [
 	# in size order
-	("Menu", gtk.IconSize.MENU),  # 16x16
-	("Small Toolbar", gtk.IconSize.SMALL_TOOLBAR),  # 16x16
-	("Button", gtk.IconSize.BUTTON),  # 16x16
-	("Large Toolbar", gtk.IconSize.LARGE_TOOLBAR),  # 24x24
-	("DND", gtk.IconSize.DND),  # 32x32
-	("Dialog", gtk.IconSize.DIALOG),  # 48x48
+	("Menu", gtk.IconSize.NORMAL),  # 16x16
+	("Small Toolbar", gtk.IconSize.NORMAL),  # 16x16
+	("Button", gtk.IconSize.NORMAL),  # 16x16
+	("Large Toolbar", gtk.IconSize.LARGE),  # 24x24
+	("DND", gtk.IconSize.LARGE),  # 32x32
+	("Dialog", gtk.IconSize.LARGE),  # 48x48
 ]
 iconSizeDict = dict(iconSizeList)
 iconSizeNames = [x[0] for x in iconSizeList]

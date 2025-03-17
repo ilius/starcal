@@ -109,7 +109,7 @@ class TextParamWidget(gtk.Box):
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
 		# ---
-		self.set_border_width(5)
+		# self.set_border_width(5)
 		self.paramName = paramName
 		self.cal = cal
 		self.hasEnable = hasEnable
@@ -129,7 +129,7 @@ class TextParamWidget(gtk.Box):
 		if useFrame:
 			frame = gtk.Frame()
 			vbox = gtk.VBox()
-			vbox.set_border_width(5)
+			# vbox.set_border_width(5)
 			frame.add(vbox)
 			pack(self, frame)
 			if hasEnable:
@@ -139,7 +139,7 @@ class TextParamWidget(gtk.Box):
 		elif hasEnable:
 			pack(vbox, self.enableCheck)
 		# ----
-		self.set_border_width(5)
+		# self.set_border_width(5)
 		# ---
 		hbox = HBox()
 		label = gtk.Label(label=_("Position") + ": ")

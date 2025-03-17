@@ -31,7 +31,6 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	VBox,
 	gdk,
 	getScrollValue,
@@ -1059,7 +1058,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
 		self.typeParamsVbox = VBox(spacing=self.optionsPageSpacing // 2)
-		self.typeParamsVbox.set_border_width(5)
+		# self.typeParamsVbox.set_border_width(5)
 		frame.add(self.typeParamsVbox)
 		frame.show_all()
 		pack(optionsWidget, frame)
@@ -1407,7 +1406,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		pack(optionsWidget, prefItem.getWidget())
 		# ------------
 		pageVBox = VBox(spacing=20)
-		pageVBox.set_border_width(10)
+		# pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		prefItem = SpinPrefItem(
@@ -1535,8 +1534,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		i = int(y_col * 7.0 / self.get_allocation().height)
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
-		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("double-button-press")
+		# if gevent.type == TWO_BUTTON_PRESS: FIXME
+		# 	self.emit("double-button-press")
 		if gevent.button == 3:
 			x, y = col.translate_coordinates(self, x_col, y_col)
 			self.emit("popup-cell-menu", x, y)

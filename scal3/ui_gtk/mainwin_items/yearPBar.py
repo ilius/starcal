@@ -18,7 +18,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		self.win = win
 		gtk.Frame.__init__(self)
 		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
-		self.set_border_width(0)
+		# self.set_border_width(0)
 		self.pbar = MyProgressBar()
 		self.add(self.pbar)
 		self.pbar.show()

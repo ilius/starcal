@@ -31,7 +31,7 @@ class SourceEditor(GtkSource.View):
 class SourceEditorWithFrame(gtk.Frame):
 	def __init__(self, onTextChange=None):
 		gtk.Frame.__init__(self)
-		self.set_border_width(4)
+		# self.set_border_width(4)
 		# ----
 		self.editor = SourceEditor(
 			onTextChange=onTextChange,

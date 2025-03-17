@@ -39,7 +39,6 @@ from scal3.locale_man import (
 from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	GLibError,
 	HBox,
 	VBox,
@@ -562,13 +561,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(pageWidget, prefItem.getWidget())
 			# ---
 			frame = gtk.Frame()
-			frame.set_border_width(5)
+			# frame.set_border_width(5)
 			frame.set_label(_("Colors"))
 			grid = gtk.Grid()
 			grid.set_row_spacing(5)
 			grid.set_column_spacing(5)
 			grid.set_row_spacing(3)
-			grid.set_border_width(5)
+			# grid.set_border_width(5)
 			frame.add(grid)
 			pack(pageWidget, frame)
 			for index, season in enumerate(("Spring", "Summer", "Autumn", "Winter")):
@@ -914,7 +913,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
-		double = gevent.type == TWO_BUTTON_PRESS
+		# FIXME: n_press == 2
+		double = False
+		print(dir(gevent))
+		# double = gevent.type == TWO_BUTTON_PRESS
 
 		if b == 1:
 			buttons = self._allButtons

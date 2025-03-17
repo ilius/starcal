@@ -32,6 +32,7 @@ from scal3.ui_gtk import (
 	VBox,
 	gdk,
 	getScrollValue,
+	gio,
 	gtk,
 	pack,
 	timeout_add,
@@ -93,7 +94,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		self.get_style_context().add_class(self.styleClass)
 		# ---
 		self.objName = f"monthLabel({calType})"
-		# self.set_border_width(1)#???????????
+		# # self.set_border_width(1)#???????????
 		self.initVars()
 		self.calType = calType
 		# ---
@@ -104,7 +105,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		self.label.set_use_markup(True)
 		self.add(self.label)
 		self.menu = Menu()
-		self.menu.set_border_width(0)
+		# self.menu.set_border_width(0)
 		self.menuLabels = []
 		self.connect("button-press-event", self.onButtonPress)
 		self.active = active
@@ -211,7 +212,7 @@ class IntLabel(BaseLabel):
 
 	def __init__(self, height=9, active=0):
 		BaseLabel.__init__(self)
-		# self.set_border_width(1)#???????????
+		# # self.set_border_width(1)#???????????
 		self.height = height
 		# self.delay = delay
 		self.label = gtk.Label()
@@ -240,14 +241,14 @@ class IntLabel(BaseLabel):
 		self.menuLabels = []
 		self.menu.connect("scroll-event", self.menuScroll)
 		# ----------
-		item = gtk.MenuItem()
+		item = gio.MenuItem()
 		item.add(
 			imageFromIconName(
 				"pan-up-symbolic",
 				gtk.IconSize.MENU,
 			),
 		)
-		# item.set_border_width(0)
+		# # item.set_border_width(0)
 		# log.debug(item.style_get_property("horizontal-padding") # OK)
 		# ???????????????????????????????????
 		# item.config("horizontal-padding"=0)
@@ -268,7 +269,7 @@ class IntLabel(BaseLabel):
 			self.menu.append(item)
 			self.menuLabels.append(label)
 		# ----------
-		item = gtk.MenuItem()
+		item = gio.MenuItem()
 		item.add(
 			imageFromIconName(
 				"pan-down-symbolic",
@@ -533,7 +534,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.get_style_context().add_class(self.styleClass)
-		# self.set_border_width(2)
+		# # self.set_border_width(2)
 		self.ybox = None
 		self.mbox = None
 		self.monthLabels = []
@@ -662,7 +663,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.updateTextWidth()
 
 	def onBorderWidthChange(self):
-		self.set_border_width(ui.labelBoxBorderWidth)
+		pass
+		# self.set_border_width(ui.labelBoxBorderWidth)
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (

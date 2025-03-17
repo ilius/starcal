@@ -26,7 +26,7 @@ class MyHButtonBox(gtk.Box):
 	def __init__(self):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.set_spacing(15)
-		self.set_border_width(15)
+		# self.set_border_width(15)
 		self._homogeneous = True
 		self._sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 

@@ -173,7 +173,7 @@ def newSubPageButton(
 		orientation=getOrientation(vertical),
 		spacing=spacing,
 	)
-	hbox.set_border_width(borderWidth)
+	# hbox.set_border_width(borderWidth)
 	label = gtk.Label(label=page.pageLabel)
 	label.set_use_markup(True)
 	label.set_use_underline(True)

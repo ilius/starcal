@@ -89,8 +89,8 @@ class ExpanderFrame(gtk.Frame):
 		self._box = VBox()
 		gtk.Frame.add(self, self._box)
 		# --
-		self.set_border_width(border_width)
-		self._box.set_border_width(inner_border_width)
+		# self.set_border_width(border_width)
+		# self._box.set_border_width(inner_border_width)
 		# --
 		self._title.connect("clicked", self._onTitleClick)
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 __all__ = [
-	"TWO_BUTTON_PRESS",
 	"Box",
 	"GLibError",
 	"GdkPixbuf",
@@ -12,6 +11,7 @@ __all__ = [
 	"gdk",
 	"getOrientation",
 	"getScrollValue",
+	"gio",
 	"gtk",
 	"main_context_default",
 	"pack",
@@ -33,9 +33,10 @@ import gi
 # in other to prevent ruff from re-ordering the following imports
 # we call require_version right before importing each one
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", "4.0")
+gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk as gdk
+from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 
 gi.require_version("GdkPixbuf", "2.0")
@@ -68,8 +69,6 @@ except ImportError:
 	from gi.repository.GObject import Error as GLibError
 
 
-TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
-
 
 def pack(box, child, expand=False, fill=False, padding=0):
 	if isinstance(box, gtk.Box):
@@ -98,14 +97,14 @@ def HBox(**kwargs):
 	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
 
 
-class Menu(gtk.Menu):
+class Menu(gtk.PopoverMenu):
 	def __init__(self, **kwargs):
-		gtk.Menu.__init__(self, **kwargs)
+		gtk.PopoverMenu.__init__(self, **kwargs)
 		self.set_reserve_toggle_size(0)
 		# self.imageSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
 	# def add(self, item):
-	# 	gtk.Menu.add(self, item)
+	# 	gtk.PopoverMenu.add(self, item)
 	# 	self.imageSizeGroup.add_widget(item.get_image())
 
 
@@ -139,7 +138,7 @@ def getOrientation(vertical: bool):
 	return gtk.Orientation.HORIZONTAL
 
 
-class MenuItem(gtk.MenuItem):
+class MenuItem(gio.MenuItem):
 	def __init__(self, label=""):
-		gtk.MenuItem.__init__(self, label=label)
+		gio.MenuItem.__init__(self, label=label)
 		self.set_use_underline(True)

@@ -89,7 +89,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# ------
 		frame = TextFrame()
 		frame.set_label(_("Text"))
-		frame.set_border_width(5)
+		# frame.set_border_width(5)
 		pack(vboxFilters, frame)
 		self.textInput = frame
 		# ------
@@ -112,7 +112,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Time"))
-		frame.set_border_width(5)
+		# frame.set_border_width(5)
 		vboxIn = VBox()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
@@ -154,7 +154,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.updateTimeFromSensitive()
 		self.updateTimeToSensitive()
 		# ----
-		vboxIn.set_border_width(5)
+		# vboxIn.set_border_width(5)
 		frame.add(vboxIn)
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
@@ -164,7 +164,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(hboxDouble, vboxHalf, 1, 1)
 		# ---
 		hbox = HBox()
-		hbox.set_border_width(5)
+		# hbox.set_border_width(5)
 		self.modifiedFromCheck = gtk.CheckButton(label=_("Modified From"))
 		pack(hbox, self.modifiedFromCheck)
 		pack(hbox, gtk.Label(label="  "))
@@ -178,7 +178,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(vboxHalf, hbox)
 		# ------
 		hbox = HBox()
-		hbox.set_border_width(5)
+		# hbox.set_border_width(5)
 		self.typeCheck = gtk.CheckButton(label=_("Event Type"))
 		pack(hbox, self.typeCheck)
 		pack(hbox, gtk.Label(label="  "))
@@ -195,7 +195,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(vboxHalf, hbox)
 		# ------
 		hbox = HBox()
-		hbox.set_border_width(5)
+		# hbox.set_border_width(5)
 		self.groupCheck = gtk.CheckButton(label=_("Group"))
 		pack(hbox, self.groupCheck)
 		pack(hbox, gtk.Label(label="  "))
@@ -207,7 +207,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(vboxHalf, hbox)
 		# ------
 		hbox = HBox()
-		hbox.set_border_width(5)
+		# hbox.set_border_width(5)
 		self.timezoneCheck = gtk.CheckButton(label=_("Time Zone"))
 		pack(hbox, self.timezoneCheck)
 		pack(hbox, gtk.Label(label="  "))
@@ -220,7 +220,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# ------
 		bbox = MyHButtonBox()
 		bbox.set_homogeneous(False)
-		bbox.set_border_width(5)
+		# bbox.set_border_width(5)
 		# ---
 		searchButton = labelImageButton(
 			label=_("_Search"),
@@ -320,7 +320,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		swin.add(treev)
 		# ----
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		# ---
 		topHbox = HBox()
 		self.resultLabel = gtk.Label()
@@ -370,7 +370,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(self.vbox, vbox, 1, 1)
 		# ---
 		bbox2 = MyHButtonBox()
-		bbox2.set_border_width(10)
+		# bbox2.set_border_width(10)
 		closeButton = labelImageButton(
 			label=_("_Close"),
 			imageName="window-close.svg",

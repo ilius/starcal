@@ -67,7 +67,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 	def __init__(self, controller):
 		gtk.EventBox.__init__(self)
-		self.set_border_width(ui.winControllerBorder)
+		# self.set_border_width(ui.winControllerBorder)
 		self.initVars()
 		# ---
 		self.controller = controller
@@ -369,8 +369,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			item.setFocus(False)
 
 	def onButtonBorderChange(self) -> None:
-		for item in self.items:
-			item.set_border_width(ui.winControllerBorder)
+		# for item in self.items:
+		# 	item.set_border_width(ui.winControllerBorder)
 		self.updateButtons()
 
 	def onButtonPaddingChange(self) -> None:

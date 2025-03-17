@@ -204,7 +204,7 @@ class PreferencesWindow(gtk.Window):
 		self.stack = stack
 		# --------------- Page 0 (Language and Calendar Types) ----------------
 		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "lang_calTypes"
@@ -229,15 +229,15 @@ class PreferencesWindow(gtk.Window):
 		itemCals = AICalsPrefItem()
 		self.corePrefItems.append(itemCals)
 		itemCalsWidget = itemCals.getWidget()
-		itemCalsWidget.set_border_width(10)
+		# itemCalsWidget.set_border_width(10)
 		frame.add(itemCalsWidget)
 		pack(hbox, frame, 1, 1)
-		hbox.set_border_width(5)
-		frame.set_border_width(0)
+		# hbox.set_border_width(5)
+		# frame.set_border_width(0)
 		pack(vbox, hbox, 1, 1)
 		# ------------------------------ Page 1 (General) ---------------------
 		vbox = VBox()
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "general"
@@ -319,7 +319,7 @@ class PreferencesWindow(gtk.Window):
 		# pack(vbox, hbox)
 		# ------------------------------ Page 2 (Appearance) ------------------
 		vbox = VBox(spacing=0)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "appearance"
@@ -367,7 +367,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# ------------------------- Theme ---------------------
 		pageHBox = HBox()
-		pageHBox.set_border_width(10)
+		# pageHBox.set_border_width(10)
 		spacing = 3
 		# ---
 		pageVBox = VBox()
@@ -466,7 +466,7 @@ class PreferencesWindow(gtk.Window):
 		appearanceSubPages = [page]
 		# -------------------
 		pageVBox = VBox(spacing=10)
-		pageVBox.set_border_width(10)
+		# pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		hbox = HBox(spacing=1)
@@ -584,7 +584,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, grid, padding=padding)
 		# ------------------------------ Page 3 (Regional) -------------------
 		vbox = VBox()
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "regional"
@@ -661,7 +661,7 @@ class PreferencesWindow(gtk.Window):
 		self.comboWeekYear = combo
 		# ---------
 		frame = gtk.Frame()
-		frame.set_border_width(10)
+		# frame.set_border_width(10)
 		frame.set_label(_("Holidays"))
 		item = WeekDayCheckListPrefItem(
 			core,
@@ -672,7 +672,7 @@ class PreferencesWindow(gtk.Window):
 		self.corePrefItems.append(item)
 		self.holiWDItem = item  # Holiday Week Days Item
 		itemWidget = item.getWidget()
-		itemWidget.set_border_width(10)
+		# itemWidget.set_border_width(10)
 		frame.add(itemWidget)
 		pack(pageVBox, frame)
 		# ------------
@@ -734,7 +734,7 @@ class PreferencesWindow(gtk.Window):
 		self.moduleOptions = options
 		# ------------------------------ Page 4 (Advanced) -------------------
 		vbox = VBox(spacing=10)
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "advanced"
@@ -842,7 +842,7 @@ class PreferencesWindow(gtk.Window):
 		# ------------------------------ Page 5 (Plugins) --------------------
 		vbox = VBox()
 		page = StackPage()
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page.pageWidget = vbox
 		page.pageName = "plugins"
 		page.pageTitle = _("Plugins")
@@ -1075,7 +1075,7 @@ class PreferencesWindow(gtk.Window):
 		# self.plugAddItems = []
 		# ------------------------------------- Page 6 (Accounts)
 		vbox = VBox()
-		vbox.set_border_width(5)
+		# vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "accounts"
@@ -1200,7 +1200,7 @@ class PreferencesWindow(gtk.Window):
 		grid.set_column_homogeneous(True)
 		grid.set_row_spacing(15)
 		grid.set_column_spacing(15)
-		grid.set_border_width(20)
+		# grid.set_border_width(20)
 		# ----
 		grid.get_style_context().add_class(self.mainGridStyleClass)
 		# ----
@@ -1253,7 +1253,7 @@ class PreferencesWindow(gtk.Window):
 
 	def newWideButton(self, page: StackPage):
 		hbox = HBox(spacing=10)
-		hbox.set_border_width(10)
+		# hbox.set_border_width(10)
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
@@ -1415,7 +1415,7 @@ class PreferencesWindow(gtk.Window):
 			)
 			label.set_line_wrap(True)
 			vbox = VBox()
-			vbox.set_border_width(15)
+			# vbox.set_border_width(15)
 			pack(vbox, label)
 			pack(d.vbox, vbox)
 			resBut = dialog_add_button(
@@ -1425,7 +1425,7 @@ class PreferencesWindow(gtk.Window):
 				res=gtk.ResponseType.OK,
 			)
 			resBut.grab_default()
-			d.vbox.set_border_width(5)
+			# d.vbox.set_border_width(5)
 			d.resize(400, 150)
 			d.vbox.show_all()
 			if d.run() == gtk.ResponseType.OK:

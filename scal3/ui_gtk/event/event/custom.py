@@ -45,10 +45,10 @@ class WidgetClass(common.WidgetClass):
 		# -----------
 		self.rulesFrame = gtk.Frame()
 		self.rulesFrame.set_label(_("Rules"))
-		self.rulesFrame.set_border_width(1)
+		# self.rulesFrame.set_border_width(1)
 		self.rulesSwin = gtk.ScrolledWindow()
 		self.rulesBox = VBox()
-		self.rulesBox.set_border_width(5)
+		# self.rulesBox.set_border_width(5)
 		self.rulesSwin.add(self.rulesBox)
 		self.rulesFrame.add(self.rulesSwin)
 		pack(self, self.rulesFrame, expand=True, fill=True)

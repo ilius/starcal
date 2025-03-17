@@ -42,7 +42,7 @@ class WizardWindow(gtk.Window, MyDialog):
 		# ----
 		self.buttonBox = MyHButtonBox()
 		self.buttonBox.set_spacing(15)
-		self.buttonBox.set_border_width(15)
+		# self.buttonBox.set_border_width(15)
 		pack(self.vbox, self.buttonBox)
 		# ----
 		self.showStep(0)

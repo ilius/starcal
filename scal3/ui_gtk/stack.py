@@ -136,7 +136,7 @@ class MyStack(gtk.Stack):
 		# hbox.set_direction(gtk.TextDirection.LTR)
 		backButton = gtk.Button()
 		backHbox = HBox(spacing=3)
-		backHbox.set_border_width(5)
+		# backHbox.set_border_width(5)
 		backLabel = _("Back")
 		if ui.buttonIconEnable:
 			pack(

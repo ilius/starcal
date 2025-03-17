@@ -47,7 +47,7 @@ def _notify(notifier):
 	dialog.set_title(event.getText())
 	# ----
 	hbox = HBox(spacing=15)
-	hbox.set_border_width(10)
+	# hbox.set_border_width(10)
 	if event.icon:
 		pack(hbox, imageFromFile(event.icon))
 		dialog.set_icon_from_file(event.icon)

@@ -40,9 +40,9 @@ class EventsImportWindow(WizardWindow):
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
-			# frame.set_border_width(10)
+			# # frame.set_border_width(10)
 			radioBox = VBox(spacing=10)
-			radioBox.set_border_width(10)
+			# radioBox.set_border_width(10)
 			# --
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
 			# self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
