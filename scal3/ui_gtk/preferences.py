@@ -365,6 +365,14 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.uiPrefItems.append(item)
 		pack(vbox, item.getWidget())
+		# ---------------------------
+		item = CheckPrefItem(
+			ui,
+			"oldStyleProgressBar",
+			_("Old-style Progress Bar"),
+		)
+		self.uiPrefItems.append(item)
+		pack(vbox, item.getWidget())
 		# ------------------------- Theme ---------------------
 		pageHBox = HBox()
 		pageHBox.set_border_width(10)
