@@ -77,6 +77,7 @@ confParams = (
 	"fontCustom",
 	"buttonIconEnable",
 	"useSystemIcons",
+	"oldStyleProgressBar",
 	"bgColor",
 	"borderColor",
 	"cursorOutColor",
@@ -1399,6 +1400,8 @@ mcalEventIconSizeMax = 26
 
 useSystemIcons = False
 
+oldStyleProgressBar = False
+
 # ----------
 # cellMenuXOffset: when we were using ImageMenuItem and CheckMenuItem,
 # something between 48 and 56 for cellMenuXOffset was good
@@ -1792,6 +1795,7 @@ for key in (
 	"useAppIndicator",
 	"buttonIconEnable",
 	"useSystemIcons",
+	"oldStyleProgressBar",
 ):
 	needRestartPref[key] = evalParam(key)
 
