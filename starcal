@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
+if [ -n "$STARCAL_GTK4" ] ; then
+	python3 `dirname "$0"`/scal3/ui_gtk4/starcal.py "$@"
+	exit
+fi
+
 if [ -n "$STARCAL_DEV" ] ; then
 	python3 `dirname "$0"`/scal3/ui_gtk/starcal.py "$@"
 	exit

@@ -1365,7 +1365,7 @@ cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
 # ----------
 # menuIconSize: the size of icons in menu items, used only for svg icons
-# should be compatible with gtk.IconSize.MENU used in newMenuItem
+# should be compatible with gtk.IconSize.NORMAL used in newMenuItem
 menuIconSize = 18
 
 menuIconEdgePadding = 3
