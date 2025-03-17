@@ -73,6 +73,9 @@ class HMS:
 	def tuple(self) -> tuple[int, int, int]:
 		return (self.h, self.m, self.s)
 
+	def __str__(self) -> str:
+		return f"{self.h:02d}:{self.m:02d}:{self.s:02d}"
+
 	def __format__(self, fmt=""):
 		if fmt in {"", "HM$"}:
 			# optimization for default format
