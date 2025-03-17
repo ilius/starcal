@@ -270,17 +270,19 @@ class IntegatedWindowList(BaseCalObj):
 			ui.mainWin.get_style_context().get_color(gtk.StateFlags.NORMAL),
 		)
 		log.debug(f"{fgColor=}")
-		css = (
-			"progressbar text "
-			+ cssTextStyle(
+
+		css = ""
+
+		if ui.oldStyleProgressBar:
+			css += "progressbar progress, trough {min-height: 1.3em;}\n"
+		else:
+			textStyle = cssTextStyle(
 				font=font,
 				fgColor=fgColor,
 				# extra={"text-align": "justify"},  # not supported
 			)
-			+ "\n"
-		)
-
-		css += "progress, trough {min-height: 0.5em;}\n"
+			css += "progressbar progress, trough {min-height: 0.5em;}\n"
+			css += f"progressbar text {textStyle}\n"
 
 		smallerFont = ui.getFont(0.8)
 		css += f".smaller {cssTextStyle(font=smallerFont)}\n"
