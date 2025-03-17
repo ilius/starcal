@@ -1096,7 +1096,10 @@ class DateEventRule(EventRule):
 		return str(self)
 
 	def setData(self, data: str) -> None:
-		self.date = dateDecode(data)
+		try:
+			self.date = dateDecode(data)
+		except ValueError:
+			log.exception("")
 
 	def getJd(self) -> int:
 		year, month, day = self.date
@@ -1180,11 +1183,20 @@ class DateAndTimeEventRule(DateEventRule):
 
 	def setData(self, arg: dict[str, str] | str) -> None:
 		if isinstance(arg, dict):
-			self.date = dateDecode(arg["date"])
+			try:
+				self.date = dateDecode(arg["date"])
+			except ValueError:
+				log.exception("")
 			if "time" in arg:
-				self.time = timeDecode(arg["time"])
+				try:
+					self.time = timeDecode(arg["time"])
+				except ValueError:
+					log.exception("")
 		elif isinstance(arg, str):
-			self.date = dateDecode(arg)
+			try:
+				self.date = dateDecode(arg)
+			except ValueError:
+				log.exception("")
 		else:
 			raise BadEventFile(f"bad rule {self.name}={arg!r}")
 
@@ -1228,7 +1240,10 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		return timeEncode(self.dayTime)
 
 	def setData(self, data: str) -> None:
-		self.dayTime = timeDecode(data)
+		try:
+			self.dayTime = timeDecode(data)
+		except ValueError:
+			log.exception("")
 
 	def calcOccurrence(
 		self,
@@ -1299,7 +1314,10 @@ class DayTimeRangeEventRule(EventRule):
 		return (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
 
 	def setData(self, data: tuple[str, str]) -> None:
-		return self.setRange(timeDecode(data[0]), timeDecode(data[1]))
+		try:
+			self.setRange(timeDecode(data[0]), timeDecode(data[1]))
+		except ValueError:
+			log.exception("")
 
 	def calcOccurrence(
 		self,
@@ -1612,7 +1630,10 @@ class CycleLenEventRule(EventRule):
 
 	def setData(self, arg: dict[str, Any]) -> None:
 		self.days = arg["days"]
-		self.extraTime = timeDecode(arg["extraTime"])
+		try:
+			self.extraTime = timeDecode(arg["extraTime"])
+		except ValueError:
+			log.exception("")
 
 	def calcOccurrence(
 		self,
@@ -1717,16 +1738,19 @@ class ExDatesEventRule(EventRule):
 		datesConf: str | list[str | tuple | list],
 	) -> None:
 		dates = []
-		if isinstance(datesConf, str):
-			dates = [dateDecode(date.strip()) for date in datesConf.split(",")]
-		else:
-			for date in datesConf:
-				if isinstance(date, str):
-					date = dateDecode(date)  # noqa: PLW2901
-				elif isinstance(date, tuple | list):
-					checkDate(date)
-				dates.append(date)
-		self.setDates(dates)
+		try:
+			if isinstance(datesConf, str):
+				dates = [dateDecode(date.strip()) for date in datesConf.split(",")]
+			else:
+				for date in datesConf:
+					if isinstance(date, str):
+						date = dateDecode(date)  # noqa: PLW2901
+					elif isinstance(date, tuple | list):
+						checkDate(date)
+					dates.append(date)
+			self.setDates(dates)
+		except ValueError:
+			log.exception("")
 
 	def changeCalType(self, calType: int) -> bool:
 		self.dates = [jd_to(jd, calType) for jd in self.jdList]
@@ -5132,7 +5156,10 @@ class UniversityTerm(EventGroup):
 		EventGroup.setData(self, data)
 		# self.setCourses(data["courses"])
 		if "classesEndDate" in data:
-			self.classesEndDate = dateDecode(data["classesEndDate"])
+			try:
+				self.classesEndDate = dateDecode(data["classesEndDate"])
+			except ValueError:
+				log.exception("")
 		if "classTimeBounds" in data:
 			self.classTimeBounds = sorted(
 				hmDecode(hm) for hm in data["classTimeBounds"]
