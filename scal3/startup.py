@@ -34,7 +34,7 @@ def addStartup():
 		text = f"""[Desktop Entry]
 Type=Application
 Name={core.APP_DESC} {core.VERSION}
-Icon={APP_NAME}
+Icon=starcal32
 Exec={core.COMMAND}"""
 		# FIXME: double quotes needed when the exec path has space
 		# f"{core.COMMAND!r}" or repr(core.COMMAND) adds single quotes
