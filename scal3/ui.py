@@ -413,6 +413,16 @@ class Cell(CellType):
 	# ocTimeSum = 0
 	def __init__(self, jd: int):
 		self._eventsData: list[dict] | None = None
+		# each item in self._eventsData has these keys and type:
+		# 	time: str (time descriptive string)
+		# 	time_epoch: int (epoch time)
+		# 	is_allday: bool
+		# 	text: tuple of text lines
+		# 	icon: str (icon path)
+		# 	color: tuple (r, g, b) or (r, g, b, a)
+		# 	ids: tuple (gid, eid)
+		# 	show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
+		# 	showInStatusIcon: bool
 		self._pluginsText: list[list[str]] = []
 		self._pluginsData: list[tuple[Any, str]] = []
 		# ---
@@ -473,7 +483,7 @@ class Cell(CellType):
 	def clearEventsData(self):
 		self._eventsData = None
 
-	def getEventsData(self):
+	def getEventsData(self) -> list[dict]:
 		if self._eventsData is not None:
 			return self._eventsData
 		# t0 = perf_counter()
@@ -483,20 +493,6 @@ class Cell(CellType):
 			tfmt=eventDayViewTimeFormat,
 		)
 		return self._eventsData
-		"""
-		self._eventsData is a list, each item is a dictionary
-		with these keys and type:
-			time: str (time descriptive string)
-			time_epoch: int (epoch time)
-			is_allday: bool
-			text: tuple of text lines
-			icon: str (icon path)
-			color: tuple (r, g, b) or (r, g, b, a)
-			ids: tuple (gid, eid)
-			show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
-			showInStatusIcon: bool
-		"""
-		return None
 		# dt = perf_counter() - t0
 		# Cell.ocTimeSum += dt
 		# Cell.ocTimeCount += 1
