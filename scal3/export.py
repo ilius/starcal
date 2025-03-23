@@ -52,13 +52,6 @@ def colorComposite(front, back):
 	# and don't multiply others by `a0`
 
 
-def colorComposite3(front, middle, back):  # FIXME
-	c1 = colorComposite(colorComposite(front, middle), back)
-	c2 = colorComposite(front, colorComposite(middle, back))
-	assert c1 == c2
-	return c1
-
-
 def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 	def sizeMap(size):
 		return fontSizeScale * (size * 0.25 - 0.5)

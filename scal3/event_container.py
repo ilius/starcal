@@ -32,7 +32,3 @@ class DummyEventContainer:
 			group = ui.eventGroups[groupId]
 			for eventId in eventIdList:
 				yield group[eventId]
-
-	def iterGroups(self):
-		for groupId in self.idsDict:
-			yield ui.eventGroups[groupId]

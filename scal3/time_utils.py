@@ -216,12 +216,6 @@ def getEpochFromJhms(
 	return getEpochFromJd(jd, tz) + hour * 3600 + minute * 60 + second
 
 
-def getJdAndSecondsFromEpoch(epoch: int) -> tuple[int, int]:
-	"""Return a tuple (julain_day, extra_seconds) from epoch."""
-	days, second = divmod(epoch, 24 * 3600)
-	return (days + J1970, second)
-
-
 durationUnitsRel: list[tuple[int, str]] = (
 	(1, "second"),
 	(60, "minute"),
@@ -289,16 +283,6 @@ def hmDecode(st: str) -> tuple[int, int]:
 	if len(parts) == 2:
 		return (int(parts[0]), int(parts[1]))
 	raise ValueError(f"bad hour:minute time '{st}'")
-
-
-def epochGregDateTimeEncode(epoch: int, tz: TZ = None) -> str:
-	jd, hms = getJhmsFromEpoch(epoch, tz)
-	year, month, day = jd_to_g(jd)
-	return f"{year:04d}/{month:02d}/{day:02d} {hms:HMS}"
-
-
-def encodeJd(jd: int) -> str:
-	return epochGregDateTimeEncode(getEpochFromJd(jd))
 
 
 def durationEncode(value: float, unit: int) -> str:
