@@ -424,7 +424,7 @@ class CustomizableToolBox(StaticToolBox):
 			5,
 			128,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.onIconSizeChange,
@@ -437,7 +437,7 @@ class CustomizableToolBox(StaticToolBox):
 			0,
 			99,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -450,7 +450,7 @@ class CustomizableToolBox(StaticToolBox):
 			0,
 			99,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.updateItems,
