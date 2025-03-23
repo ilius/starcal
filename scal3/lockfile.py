@@ -28,7 +28,7 @@ def checkAndSaveJsonLockFile(fpath):
 	my_pid = os.getpid()
 	if isfile(fpath):
 		try:
-			with open(fpath, encoding="utf-8") as fp:  # noqa: FURB101
+			with open(fpath, encoding="utf-8") as fp:
 				text = fp.read()
 		except Exception:
 			log.exception("")
@@ -77,7 +77,7 @@ def checkAndSaveJsonLockFile(fpath):
 			),
 		)
 		try:
-			with open(fpath, "w", encoding="utf-8") as fp:  # noqa: FURB103
+			with open(fpath, "w", encoding="utf-8") as fp:
 				fp.write(my_text)
 		except Exception as e:
 			log.error(f"failed to write lock file {fpath}: {e}")
