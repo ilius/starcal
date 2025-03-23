@@ -340,7 +340,7 @@ class PreferencesWindow(gtk.Window):
 			"fontCustomEnable",
 			_("Application Font"),
 		)
-		self.uiPrefItems.append(customCheckItem)  # noqa: FURB113
+		self.uiPrefItems.append(customCheckItem)
 		pack(hbox, customCheckItem.getWidget())
 		# ---
 		customItem = FontPrefItem(ui, "fontCustom")

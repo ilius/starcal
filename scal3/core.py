@@ -587,12 +587,12 @@ eventTextSep = ": "  # use to separate summary from description for display
 
 licenseText = _("__license__")
 if licenseText in {"__license__", ""}:
-	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:  # noqa: FURB101
+	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:
 		licenseText = fp.read()
 
 aboutText = _("aboutText")
 if aboutText in {"aboutText", ""}:
-	with open(f"{sourceDir}/about", encoding="utf-8") as fp:  # noqa: FURB101
+	with open(f"{sourceDir}/about", encoding="utf-8") as fp:
 		aboutText = fp.read()
 
 
