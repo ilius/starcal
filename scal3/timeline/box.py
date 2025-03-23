@@ -71,13 +71,6 @@ class Box:
 		self.lineW = lineW
 		# ----
 		self.hasBorder = False
-		self.tConflictBefore = []
-
-	def mt_key(self):
-		return self.mt
-
-	def dt_key(self):
-		return -self.dt
 
 	# ---------
 
@@ -239,6 +232,8 @@ def calcEventBoxes(
 		t1 = perf_counter()
 	# ---
 	graph = makeIntervalGraph(boxes)
+	if graph is None:
+		return
 	if debugMode:
 		log.debug(f"makeIntervalGraph: {perf_counter() - t1:e}")
 	# -----
