@@ -44,7 +44,7 @@ __all__ = [
 osName = getOsName()
 
 scalDir = dirname(__file__)
-cwd = os.getcwd()  # noqa: FURB104
+cwd = os.getcwd()
 if scalDir in {".", ""}:
 	scalDir = cwd
 elif os.sep == "/":

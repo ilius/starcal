@@ -759,7 +759,7 @@ def loadPlugin(_file=None, **kwargs):
 		)
 		return
 	try:
-		with open(file, encoding="utf-8") as fp:  # noqa: FURB101
+		with open(file, encoding="utf-8") as fp:
 			text = fp.read()
 	except Exception as e:
 		log.error(
