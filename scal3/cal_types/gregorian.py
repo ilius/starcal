@@ -134,7 +134,7 @@ def jd_to(jd: float) -> tuple[int, int, int]:
 
 	month = ((yearday + leapadj) * 12 + 373) // 367
 	day = jd - to_jd(year, month, 1) + 1
-	return int(year), int(month), int(day)  # noqa: FURB123
+	return int(year), int(month), int(day)
 
 
 def getMonthLen(y: int, m: int) -> int:
