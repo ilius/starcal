@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-import math
-from typing import TYPE_CHECKING
-
 from scal3 import cal_types
-from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
+from scal3.cal_types import to_jd
 from scal3.time_utils import getEpochFromJd
-
-if TYPE_CHECKING:
-	from collections.abc import Generator
 
 
 def monthPlus(y: int, m: int, p: int) -> tuple[int, int]:
@@ -66,24 +60,6 @@ def validDate(calType: int, year: int, month: int, day: int) -> bool:
 	return 1 <= day <= cal_types.getMonthLen(year, month, calType)
 
 
-def datesDiff(y1: int, m1: int, d1: int, y2: int, m2: int, d2: int) -> int:
-	return to_jd(
-		calTypes.primary,
-		y2,
-		m2,
-		d2,
-	) - to_jd(
-		calTypes.primary,
-		y1,
-		m1,
-		d1,
-	)
-
-
-def dayOfYear(y: int, m: int, d: int) -> int:
-	return datesDiff(y, 1, 1, y, m, d) + 1
-
-
 # FIXME: rename this function to weekDayByJd
 # jwday: Calculate day of week from Julian day
 # 0 = Sunday
@@ -100,26 +76,6 @@ def getJdRangeForMonth(year: int, month: int, calType: int) -> tuple[int, int]:
 	)
 
 
-def getFloatYearFromJd(jd: int, calType: int) -> float:
-	if calType not in calTypes:
-		raise RuntimeError(f"cal type '{calType}' not found")
-	year, _month, _day = jd_to(jd, calType)
-	yearStartJd = to_jd(year, 1, 1, calType)
-	nextYearStartJd = to_jd(year + 1, 1, 1, calType)
-	dayOfYear = jd - yearStartJd
-	return year + dayOfYear / (nextYearStartJd - yearStartJd)
-
-
-def getJdFromFloatYear(fyear: float, calType: int) -> int:
-	if calType not in calTypes:
-		raise RuntimeError(f"cal type '{calType}' not found")
-	year = math.floor(fyear)
-	yearStartJd = to_jd(year, 1, 1, calType)
-	nextYearStartJd = to_jd(year + 1, 1, 1, calType)
-	dayOfYear = int((fyear - year) * (nextYearStartJd - yearStartJd))
-	return yearStartJd + dayOfYear
-
-
 def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 	return getEpochFromJd(
 		to_jd(
@@ -129,37 +85,3 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 			calType,
 		),
 	)
-
-
-def ymdRange(
-	date1: tuple[int, int, int],
-	date2: tuple[int, int, int],
-	calType: int | None = None,
-) -> Generator[tuple[int, int, int], None, None]:
-	y1, m1, d1 = date1
-	y2, m2, d2 = date2
-	if y1 == y2 and m1 == m2:
-		for d in range(d1, d2):
-			yield y1, m1, d
-	if calType is None:
-		calType = GREGORIAN
-	if calType not in calTypes:
-		raise RuntimeError(f"cal type '{calType}' not found")
-	j1 = int(to_jd(y1, m1, d1, calType))
-	j2 = int(to_jd(y2, m2, d2, calType))
-	for j in range(j1, j2):
-		yield jd_to(j, calType)
-
-
-# def inputDate(msg: str) -> "tuple[int, int, int] | None":
-# 	while True:  # OK
-# 		try:
-# 			date = input(msg)
-# 		except KeyboardInterrupt:
-# 			return
-# 		if date.lower() == "q":
-# 			return
-# 		try:
-# 			return dateDecode(date)
-# 		except Exception as e:
-# 			log.info(str(e))
