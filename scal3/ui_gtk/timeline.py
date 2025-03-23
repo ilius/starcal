@@ -771,15 +771,15 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def onKeyMoveRight(self, gevent: gdk.EventKey):
 		self.movingUserEvent(
-			direction=1,  # noqa: FURB120
-			source="keyboard",  # noqa: FURB120
+			direction=1,
+			source="keyboard",
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
 	def onKeyMoveLeft(self, gevent: gdk.EventKey):
 		self.movingUserEvent(
-			direction=-1,  # noqa: FURB120
-			source="keyboard",  # noqa: FURB120
+			direction=-1,
+			source="keyboard",
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 

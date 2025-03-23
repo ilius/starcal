@@ -124,7 +124,7 @@ class ColumnBase(CustomizableCalObj):
 				1,
 				999,
 				digits=1,
-				step=1,  # noqa: FURB120
+				step=1,
 				label=_("Width"),
 				live=True,
 				onChangeFunc=self.onWidthChange,
@@ -405,8 +405,8 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			name="mainMenu",
 			imageNameDynamic=True,
 			desc=_("Main Menu"),
-			enableTooltip=True,  # noqa: FURB120
-			continuousClick=False,  # noqa: FURB120
+			enableTooltip=True,
+			continuousClick=False,
 			onPress=self.onButtonPress,
 		)
 		self._wcal = wcal
@@ -1448,7 +1448,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		page.pageIcon = ""
 		self.subPages = [page]
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
+		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button, padding=10)
 		# ---------
 		optionsWidget.show_all()

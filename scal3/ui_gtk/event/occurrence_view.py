@@ -549,7 +549,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 			1,
 			9999,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Maximum Height"),
 			live=True,
 			onChangeFunc=self.onMaximumHeightChange,

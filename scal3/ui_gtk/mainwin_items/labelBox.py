@@ -685,7 +685,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			0,
 			99,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
