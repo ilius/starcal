@@ -40,7 +40,7 @@ import httplib2
 # from httplib2 import
 from scal3.path import sourceDir
 
-sys.path.append(join(sourceDir, "google-api-python-client"))  # noqa: FURB113 # FIXME
+sys.path.append(join(sourceDir, "google-api-python-client"))
 sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
 
 from scal3 import core, event_lib

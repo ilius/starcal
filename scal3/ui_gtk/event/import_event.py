@@ -139,7 +139,7 @@ class EventsImportWindow(WizardWindow):
 		@staticmethod
 		def _runJson(fpath):
 			try:
-				with open(fpath, encoding="utf-8") as fp:  # noqa: FURB101
+				with open(fpath, encoding="utf-8") as fp:
 					text = fp.read()
 			except Exception as e:
 				sys.stderr.write(f"{_('Error in reading file')}\n{e}\n")

@@ -465,7 +465,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
 		# ---
-		ls.append((1, _("Years")))  # noqa: FURB113
+		ls.append((1, _("Years")))
 		ls.append((100, _("Centuries")))
 		ls.append((1000, _("Thousand Years")))
 		ls.append((1000**2, _("Million Years")))

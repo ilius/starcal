@@ -443,5 +443,5 @@ if __name__ == "__main__":
 	# dialog.connect("response", gtk.main_quit)
 	dialog.resize(600, 600)
 	result = dialog.run()
-	log.info(f"{result}")  # noqa: FURB183
+	log.info(f"{result}")
 	# gtk.main()
