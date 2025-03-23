@@ -59,12 +59,6 @@ class MonthStatus(list):  # FIXME
 	# 	yPos, xPos = divmod(day + self.offset - 1, 7)
 	# 	return self[yPos][xPos]
 
-	def allCells(self):
-		ls = []
-		for row in self:
-			ls += row
-		return ls
-
 
 def setParamsFunc(cell):
 	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
