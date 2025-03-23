@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from igraph import Graph
+
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from igraph import Graph
+__all__ = ["Graph", "addBoxHeightToColoredGraph", "colorGraph"]
 
 
 def colorGraph(g: Graph, vertexSortKey: Callable[[int], [Any]]):
