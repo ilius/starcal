@@ -522,7 +522,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			5,
 			999,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -789,7 +789,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			y,
 			geo["xalign"],
 			geo["yalign"],
-			autoDir=False,  # noqa: FURB120
+			autoDir=False,
 		)
 
 		xc = x + radius
