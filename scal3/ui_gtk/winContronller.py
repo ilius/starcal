@@ -305,7 +305,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			5,
 			128,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.updateButtons,
@@ -318,7 +318,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			0,
 			99,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.onButtonBorderChange,
@@ -331,7 +331,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			0,
 			99,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.onButtonPaddingChange,

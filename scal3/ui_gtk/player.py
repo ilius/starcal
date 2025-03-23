@@ -318,7 +318,7 @@ class PlayerBox(gtk.Box):
 			scale.set_value_pos(gtk.PositionType.TOP)
 			scale.connect("format-value", self.displayVolString)
 			scale.connect("key-press-event", self.divert)
-			pack(self, scale, False, False, 5)  # noqa: FURB120
+			pack(self, scale, False, False, 5)
 
 	def divert(self, _widget, gevent):
 		key = gevent.hardware_keycode

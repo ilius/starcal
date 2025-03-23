@@ -242,7 +242,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
+		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# -----
 		prefItem = FixedSizeOrRatioPrefItem(
@@ -267,7 +267,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			1,
 			999,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
@@ -284,7 +284,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
+		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
 		prefItem = SpinPrefItem(
@@ -293,7 +293,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			5,
 			128,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Event Icon Size"),
 			live=True,
 			onChangeFunc=self.onEventIconSizeChange,
@@ -311,7 +311,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
+		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
 		pack(pluginsVBox, self.plugItem.getOptionsWidget())

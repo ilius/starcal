@@ -185,7 +185,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			0,
 			999,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Left Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
@@ -199,7 +199,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			0,
 			999,
 			digits=1,
-			step=1,  # noqa: FURB120
+			step=1,
 			label=_("Top Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
