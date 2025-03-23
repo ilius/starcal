@@ -1,5 +1,4 @@
 import logging
-import sys
 from os.path import join
 
 from scal3.path import confDir
@@ -71,11 +70,3 @@ def get():
 	if log is None:
 		init()
 	return log
-
-
-def myRaise(File=None):
-	typ, value, tback = sys.exc_info()
-	text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
-	if File:
-		text = f'File "{File}", {text}'
-	log.error(text)

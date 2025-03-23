@@ -233,15 +233,9 @@ class JsonSObj(SObj):
 	def getDataOrdered(self):
 		return makeOrderedData(self.getData(), self.paramsOrder)
 
-	def getJson(self):
-		return dataToJson(self.getDataOrdered())
-
-	def setJson(self, jsonStr):
-		return self.setData(jsonToData(jsonStr))
-
 	def save(self):
 		if self.file:
-			jstr = self.getJson()
+			jstr = dataToJson(self.getDataOrdered())
 			with self.fs.open(self.file, "w") as fp:
 				fp.write(jstr)
 		else:

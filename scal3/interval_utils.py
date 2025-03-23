@@ -28,10 +28,6 @@ def ab_overlaps(a0: float, b0: float, a1: float, b1: float) -> None:
 	return b0 - a0 + b1 - a1 - abs(a0 + b0 - a1 - b1) > 0.01
 
 
-def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
-	return d0 + d1 - abs(m0 - m1) > 0.01
-
-
 def simplifyNumList(
 	nums: list[int],
 	minCount: int = 3,
