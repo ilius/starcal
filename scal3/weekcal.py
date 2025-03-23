@@ -43,9 +43,6 @@ class WeekStatus(list):
 			# log.debug("WeekStatus", jd)
 			self.append(cellCache.getCell(jd))
 
-	def allCells(self):
-		return self
-
 
 def setParamsFunc(cell):
 	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)

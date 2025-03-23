@@ -396,12 +396,6 @@ class OccurSet(SObj):
 	def getTimeRangeList(self) -> list[tuple[int, int]]:  # noqa: PLR6301
 		return []  # make generator FIXME
 
-	def getFloatJdRangeList(self) -> list[tuple[float, float]]:
-		return [
-			(getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1))
-			for ep0, ep1 in self.getTimeRangeList()
-		]
-
 	def getStartJd(self) -> int:
 		raise NotImplementedError
 
