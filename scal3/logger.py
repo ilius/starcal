@@ -44,7 +44,7 @@ def init():
 	try:
 		import logging.config
 
-		with open(join(sourceDir, "conf", "logging-user.conf"), encoding="utf-8") as fp:  # noqa: FURB101
+		with open(join(sourceDir, "conf", "logging-user.conf"), encoding="utf-8") as fp:
 			logConfText = fp.read()
 
 		# TODO: use str.format()
