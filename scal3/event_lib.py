@@ -273,7 +273,9 @@ class LastIdsWrapper(JsonEventObj):
 		self.group = self.scanDir("event/groups")
 		self.account = self.scanDir("event/accounts")
 		self.save()
-		log.info(f"Scanning last_ids took {perf_counter() - t0:.3f} seconds, {self}")
+		log.info(
+			f"Scanning last_ids took {int((perf_counter() - t0) * 1000)} ms, {self}",
+		)
 
 
 lastIds = None  # type: LastIdsWrapper
