@@ -277,7 +277,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 					self,
 					text=getMonthName(calType, month, year),
 					maxSize=(layoutMaxW, layoutMaxH),
-					maximizeScale=0.6,  # noqa: FURB120
+					maximizeScale=0.6,
 					# truncate=False,
 				)
 				layoutW, layoutH = layout.get_pixel_size()
