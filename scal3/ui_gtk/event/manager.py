@@ -385,7 +385,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# --
 		expandItem = MenuItem(_("Expand All"))
 		expandItem.connect("activate", self.onExpandAllAllClick)
-		viewMenu.append(expandItem)  # noqa: FURB113
+		viewMenu.append(expandItem)
 		# --
 		viewMenu.append(gtk.SeparatorMenuItem())
 		# --

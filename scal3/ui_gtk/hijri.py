@@ -90,7 +90,7 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		cell = gtk.CellRendererCombo(editable=True)
 		mLenModel = gtk.ListStore(int)
-		mLenModel.append([29])  # noqa: FURB113
+		mLenModel.append([29])
 		mLenModel.append([30])
 		cell.set_property("model", mLenModel)
 		# cell.set_property("has-entry", False)

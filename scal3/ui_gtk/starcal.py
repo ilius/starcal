@@ -1325,7 +1325,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
 		)
 		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
-		with open(imagePath, "rb") as fp:  # noqa: FURB101
+		with open(imagePath, "rb") as fp:
 			data = fp.read()
 		if ext == "svg":
 			if ui.statusIconLocalizeNumber:
