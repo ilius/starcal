@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -43,7 +45,7 @@ def getCommitList(
 	startJd=None,
 	endJd=None,
 	branch="",
-) -> "list[tuple[int, str]]":
+) -> list[tuple[int, str]]:
 	"""
 	Returns a list of (epoch, commit_id) tuples.
 
