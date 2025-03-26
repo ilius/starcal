@@ -48,13 +48,13 @@ from scal3.json_utils import (
 from scal3.locale_man import numDecode
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
-from scal3.types_starcal import CellType, CompiledTimeFormat
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.plugin_type import PluginType
 	from scal3.s_object import SObj
+	from scal3.types_starcal import CellType, CompiledTimeFormat
 
 
 # -------------------------------------------------------
@@ -241,7 +241,7 @@ confParamsCustomize = (
 )
 
 
-@dataclass(slots=True)
+@dataclass
 class Font:
 	family: str | None
 	bold: bool = False
@@ -403,7 +403,7 @@ def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
 # -----------------------------------------------------------------------
 
 
-class Cell(CellType):
+class Cell:
 
 	"""status and information of a cell."""
 
@@ -1221,7 +1221,6 @@ def getActiveMonthCalParams():
 		zip(
 			calTypes.active,
 			mcalTypeParams,
-			strict=False,
 		),
 	)
 

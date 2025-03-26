@@ -251,7 +251,7 @@ class ContainerField(Field):
 			child.setDefault()
 
 	def setValue(self, value):
-		if not isinstance(value, tuple | list):
+		if not isinstance(value, (tuple, list)):
 			value = (value,)
 		n = min(len(value), len(self))
 		for i in range(n):

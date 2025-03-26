@@ -313,7 +313,7 @@ def loadTranslator() -> Callable:
 
 		def tr(s, *a, nums=False, ctx=None, default=None, **ka):
 			orig = s
-			if isinstance(s, int | float):
+			if isinstance(s, (int, float)):
 				s = numEncode(s, *a, **ka)
 			else:
 				# pgettext is added in Python 3.8

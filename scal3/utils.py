@@ -116,7 +116,7 @@ class StrOrderedDict(dict):
 		if arg is None:
 			arg = []
 		self.reorderOnModify = reorderOnModify
-		if isinstance(arg, list | tuple):
+		if isinstance(arg, (list, tuple)):
 			self.keyList = [item[0] for item in arg]
 		elif isinstance(arg, dict):
 			self.keyList = sorted(arg)
@@ -345,7 +345,7 @@ def numRangesEncode(
 	for value in values:
 		if isinstance(value, int):
 			parts.append(str(value))
-		elif isinstance(value, tuple | list):
+		elif isinstance(value, (tuple, list)):
 			parts.append(f"{value[0]:d}-{value[1]:d}")
 	return sep.join(parts)
 

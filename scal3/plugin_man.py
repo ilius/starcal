@@ -340,7 +340,7 @@ class HolidayPlugin(BaseJsonPlugin):
 				for row in data["holidays"][calTypeName]:
 					if isinstance(row, str):  # comment
 						continue
-					if not isinstance(row, list | tuple):
+					if not isinstance(row, (list, tuple)):
 						log.error(f"Bad type for holiday item '{row}'")
 						continue
 					if len(row) not in {2, 3}:

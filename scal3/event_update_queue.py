@@ -58,7 +58,7 @@ class EventUpdateQueue(Queue):
 		if action not in {"r", "eg", "+g", "-g"} and obj.parent is None:
 			raise ValueError("obj.parent is None")
 		if action == "r":
-			if not isinstance(obj, event_lib.EventGroup | event_lib.EventTrash):
+			if not isinstance(obj, (event_lib.EventGroup, event_lib.EventTrash)):
 				raise TypeError(
 					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
