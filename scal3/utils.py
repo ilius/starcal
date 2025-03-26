@@ -29,7 +29,7 @@ from typing import Any
 if typing.TYPE_CHECKING:
 	from collections.abc import Iterator
 
-Number: typing.TypeAlias = int | float
+	Number: typing.TypeAlias = int | float
 
 
 def ifloor(x: float) -> int:
