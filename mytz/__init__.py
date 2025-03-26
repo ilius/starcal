@@ -2,6 +2,8 @@
 # in the Standard Library
 # https://www.python.org/dev/peps/pep-0615/
 
+from __future__ import annotations
+
 import logging
 
 log = logging.getLogger("root")
@@ -60,7 +62,7 @@ def readEtcLocaltime():
 	return dateutil.tz.gettz(tzname)
 
 
-def gettz(*args, **kwargs) -> "TimeZone | None":
+def gettz(*args, **kwargs) -> TimeZone | None:
 	global tzErrCount
 	if args and args[0].lstrip("/") == "etc/localtime":
 		return readEtcLocaltime()
