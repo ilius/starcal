@@ -16,6 +16,10 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import logger
 
 log = logger.get()
@@ -25,7 +29,9 @@ from scal3 import core
 from scal3.cal_types import calTypes, gregorian, to_jd
 from scal3.locale_man import tr as _
 from scal3.time_utils import getUtcOffsetByGDate
-from scal3.types_starcal import CompiledTimeFormat
+
+if TYPE_CHECKING:
+	from scal3.types_starcal import CompiledTimeFormat
 
 
 def iso_to_jd(year, week, day):
