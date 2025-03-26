@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -48,7 +50,7 @@ class LogLevelComboBox(gtk.ComboBox):
 		for num, name in self.levels:
 			model.append([num, name])
 
-	def get_value(self) -> "int | None":
+	def get_value(self) -> int | None:
 		index = self.get_active()
 		if index is None:
 			return None
