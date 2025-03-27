@@ -137,7 +137,7 @@ class MyStack(gtk.Stack):
 		backButton = gtk.Button()
 		backHbox = HBox(spacing=3)
 		backHbox.set_border_width(5)
-		backLabel = _("Back")
+		backText = _("Back")
 		if ui.buttonIconEnable:
 			pack(
 				backHbox,
@@ -147,8 +147,9 @@ class MyStack(gtk.Stack):
 				),
 			)
 		else:
-			backLabel = "  " + backLabel + "  "  # to make it bigger
-		pack(backHbox, gtk.Label(label=backLabel))
+			backText = "  " + backText + "  "  # to make it bigger
+		backLabel = gtk.Label(label=backText)
+		pack(backHbox, backLabel)
 		backButton.add(backHbox)
 		backButton.connect(
 			"clicked",
@@ -170,6 +171,11 @@ class MyStack(gtk.Stack):
 					iconImg = imageFromFile("empty.png", self._iconSize + spacing)
 					pack(hbox, iconImg, 0, 0)
 				pack(hbox, gtk.Label(), 1, 1)
+				dummyLabel = gtk.Label()
+				sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+				sizeGroup.add_widget(dummyLabel)
+				sizeGroup.add_widget(backLabel)
+				pack(hbox, dummyLabel, 0, 0)
 		hbox.show_all()
 		return hbox
 
