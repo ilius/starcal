@@ -71,7 +71,13 @@ except ImportError:
 TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
 
 
-def pack(box, child, expand=False, fill=False, padding=0):
+def pack(
+	box: gtk.Box | gtk.CellLayout,
+	child: gtk.Widget,
+	expand: bool | int = False,
+	fill: bool | int = False,
+	padding: int = 0,
+):
 	if isinstance(box, gtk.Box):
 		box.pack_start(child, expand=expand, fill=fill, padding=padding)
 	elif isinstance(box, gtk.CellLayout):
@@ -109,7 +115,7 @@ class Menu(gtk.Menu):
 	# 	self.imageSizeGroup.add_widget(item.get_image())
 
 
-def getScrollValue(gevent, last=""):
+def getScrollValue(gevent: gdk.Event, last: str = "") -> str:
 	"""Return value is either "up" or "down"."""
 	value = gevent.direction.value_nick
 	# gevent.delta_x is always 0
@@ -133,13 +139,13 @@ def getScrollValue(gevent, last=""):
 	return value
 
 
-def getOrientation(vertical: bool):
+def getOrientation(vertical: bool) -> gtk.Orientation:
 	if vertical:
 		return gtk.Orientation.VERTICAL
 	return gtk.Orientation.HORIZONTAL
 
 
 class MenuItem(gtk.MenuItem):
-	def __init__(self, label=""):
+	def __init__(self, label: str = ""):
 		gtk.MenuItem.__init__(self, label=label)
 		self.set_use_underline(True)
