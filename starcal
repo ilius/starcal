@@ -1,4 +1,9 @@
 #!/usr/bin/env sh
 export PYTHONPYCACHEPREFIX=~/.cache/python
 
+if [ -n "$STARCAL_DEV" ] ; then
+	python3 `dirname "$0"`/scal3/ui_gtk/starcal.py "$@"
+	exit
+fi
+
 python3 `dirname "$0"`/scal3/ui_gtk/starcal-main.py "$@"
