@@ -11,7 +11,7 @@ from json import JSONEncoder
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
+	from collections.abc import Iterable
 
 __all__ = [
 	"dataToCompactJson",
@@ -33,7 +33,11 @@ _default.default = JSONEncoder().default
 JSONEncoder.default = _default
 
 
-def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
+def dataToPrettyJson(
+	data: dict | list,
+	ensure_ascii: bool = False,
+	sort_keys: bool = False,
+) -> str:
 	try:
 		return json.dumps(
 			data,
@@ -45,7 +49,11 @@ def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 		log.exception(f"{data =}")
 
 
-def dataToCompactJson(data, ensure_ascii=False, sort_keys=False):
+def dataToCompactJson(
+	data: dict | list,
+	ensure_ascii: bool = False,
+	sort_keys: bool = False,
+) -> str:
 	return json.dumps(
 		data,
 		separators=(",", ":"),
@@ -57,7 +65,7 @@ def dataToCompactJson(data, ensure_ascii=False, sort_keys=False):
 jsonToData = json.loads
 
 
-def jsonToOrderedData(text):
+def jsonToOrderedData(text: str) -> dict:
 	return json.JSONDecoder(
 		object_pairs_hook=OrderedDict,
 	).decode(text)
@@ -66,7 +74,11 @@ def jsonToOrderedData(text):
 # -------------------------------
 
 
-def loadJsonConf(module, confPath, decoders: dict | None = None):
+def loadJsonConf(
+	module,
+	confPath: str,
+	decoders: dict | None = None,
+) -> None:
 	from os.path import isfile
 
 	# ---
@@ -97,9 +109,9 @@ def loadJsonConf(module, confPath, decoders: dict | None = None):
 def saveJsonConf(
 	module,
 	confPath: str,
-	params: Sequence[str] | dict[str, str],
+	params: Iterable[str],
 	encoders: dict | None = None,
-):
+) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
