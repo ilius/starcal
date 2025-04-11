@@ -104,7 +104,6 @@ confParams = {
 	"maxDayCacheSize": "maxDayCacheSize",
 	"eventDayViewTimeFormat": "eventDayView.timeFormat",
 	"cellMenuXOffset": "",
-	"showYmArrows": "showYearMonthArrows",  # FIXME: unused, remove
 	"preferencesPagePath": "preferencesPagePath",
 	"localTzHist": "localTimezoneHistory",  # move to a new file like local-tz.json?
 }
@@ -1562,7 +1561,6 @@ labelBoxPrimaryFont = None
 # --------------------
 
 boldYmLabel = True
-showYmArrows = True  # apply in Pref FIXME
 
 # delay for shift up/down items of menu for right click on YearLabel
 labelMenuDelay = 0.1
@@ -1801,7 +1799,6 @@ for key in (
 	"locale_man.lang",
 	"locale_man.enableNumLocale",
 	"winTaskbar",
-	"showYmArrows",
 	"useAppIndicator",
 	"buttonIconEnable",
 	"useSystemIcons",
