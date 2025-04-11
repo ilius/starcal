@@ -8,6 +8,10 @@ import json
 import sys
 from collections import OrderedDict
 from json import JSONEncoder
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = [
 	"dataToCompactJson",
@@ -90,7 +94,12 @@ def loadJsonConf(module, confPath, decoders: dict | None = None):
 		setattr(module, param, value)
 
 
-def saveJsonConf(module, confPath, params, encoders: dict | None = None):
+def saveJsonConf(
+	module,
+	confPath: str,
+	params: Sequence[str] | dict[str, str],
+	encoders: dict | None = None,
+):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---

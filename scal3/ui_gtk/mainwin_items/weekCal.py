@@ -80,18 +80,21 @@ class ColumnBase(CustomizableCalObj):
 
 	@classmethod
 	def getWidthAttr(cls):
+		# v4: f"wcal.{cls.objName}.width"
 		return f"wcal_{cls.objName}_width"
 
 	def getWidthValue(self):
 		return getattr(ui, self.getWidthAttr(), None)
 
 	def getExpandAttr(self):
+		# v4: f"wcal.{self.objName}.expand"
 		return f"wcal_{self.objName}_expand"
 
 	def getExpandValue(self):
 		return getattr(ui, self.getExpandAttr(), None)
 
 	def getFontAttr(self):
+		# v4: f"wcal.{self.objName}.font"
 		return f"wcalFont_{self.objName}"
 
 	def getFontValue(self):
