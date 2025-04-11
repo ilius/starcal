@@ -74,6 +74,13 @@ confParamsMapping = {
 	"showMain": ("mainWin.openOnStartup", MAIN_CONF),
 	"showDesktopWidget": ("dayCalWin.enable", MAIN_CONF),
 	"winTaskbar": ("mainWin.inTaskbar", MAIN_CONF),
+	"winX": ("mainWin.geo.x", LIVE),
+	"winY": ("mainWin.geo.y", LIVE),
+	"winWidth": ("mainWin.geo.width", LIVE),
+	"winHeight": ("mainWin.geo.height", LIVE),
+	"winKeepAbove": ("mainWin.keepAbove", LIVE),
+	"winSticky": ("mainWin.sticky", LIVE),
+	"winMaximized": ("mainWin.maximized", LIVE),
 	# -----------------
 	"useAppIndicator": ("useAppIndicator", MAIN_CONF),
 	"showDigClockTr": ("statusIcon.digitalClockEnable", MAIN_CONF),
@@ -115,17 +122,6 @@ confParamsMapping = {
 		MAIN_CONF,
 	),  # move to a new file like local-tz.json?
 	# -----------------
-	"winX": ("mainWin.geo.x", LIVE),
-	"winY": ("mainWin.geo.y", LIVE),
-	"winWidth": ("mainWin.geo.width", LIVE),
-	"winHeight": ("mainWin.geo.height", LIVE),
-	"winKeepAbove": ("mainWin.keepAbove", LIVE),
-	"winSticky": ("mainWin.sticky", LIVE),
-	"winMaximized": ("mainWin.maximized", LIVE),
-	"pluginsTextIsExpanded": ("pluginsText.isExpanded", LIVE),
-	"wcal_toolbar_weekNum_negative": ("weekcal.toolbar.weekNumNegative", LIVE),
-	"mainWinRightPanelRatio": ("rightPanel.ratio", LIVE),
-	# -----------------
 	"mainWinItems": ("mainWin.items", CUSTOMIZE),
 	"mainWinFooterItems": ("mainWin.footerItems", CUSTOMIZE),
 	# ------------ winController
@@ -136,13 +132,8 @@ confParamsMapping = {
 	"winControllerBorder": ("winController.border", CUSTOMIZE),
 	"winControllerSpacing": ("winController.spacing", CUSTOMIZE),
 	"winControllerPressState": ("winController.pressState", CUSTOMIZE),
-	# ------------
-	"statusBarEnable": ("statusBar.enable", CUSTOMIZE),
-	"pluginsTextEnable": ("pluginsText.enable", CUSTOMIZE),
-	"eventDayViewEnable": ("eventDayView.enable", CUSTOMIZE),
-	"eventDayViewEventSep": ("eventDayView.eventSep", CUSTOMIZE),
-	"eventViewMaxHeight": ("eventDayView.maxHeight", CUSTOMIZE),
 	# ------------ rightPanel
+	"mainWinRightPanelRatio": ("rightPanel.ratio", LIVE),
 	"mainWinRightPanelEnable": ("rightPanel.enable", CUSTOMIZE),
 	"mainWinRightPanelSwap": ("rightPanel.swap", CUSTOMIZE),
 	"mainWinRightPanelWidth": ("rightPanel.width", CUSTOMIZE),
@@ -193,6 +184,7 @@ confParamsMapping = {
 		CUSTOMIZE,
 	),
 	"wcal_eventsText_ongoingColor": ("weekcal.eventsText.ongoingColor", CUSTOMIZE),
+	"wcal_toolbar_weekNum_negative": ("weekcal.toolbar.weekNumNegative", LIVE),
 	"wcal_toolbar_mainMenu_icon": ("weekcal.toolbar.mainMenuIcon", CUSTOMIZE),
 	"wcal_weekDays_width": ("weekcal.weekDays.width", CUSTOMIZE),
 	"wcal_weekDays_expand": ("weekcal.weekDays.expand", CUSTOMIZE),
@@ -246,14 +238,23 @@ confParamsMapping = {
 	"dcalWinSeasonPieAutumnColor": ("dayCalWin.seasonPie.autumnColor", CUSTOMIZE),
 	"dcalWinSeasonPieWinterColor": ("dayCalWin.seasonPie.winterColor", CUSTOMIZE),
 	"dcalWinSeasonPieTextColor": ("dayCalWin.seasonPie.textColor", CUSTOMIZE),
-	# ------------
+	# ------------ pluginsText
+	"pluginsTextEnable": ("pluginsText.enable", CUSTOMIZE),
+	"pluginsTextIsExpanded": ("pluginsText.isExpanded", LIVE),
 	"pluginsTextInsideExpander": ("pluginsText.insideExpander", CUSTOMIZE),
+	# ------------ eventDayView
+	"eventDayViewEnable": ("eventDayView.enable", CUSTOMIZE),
+	"eventDayViewEventSep": ("eventDayView.eventSep", CUSTOMIZE),
+	"eventViewMaxHeight": ("eventDayView.maxHeight", CUSTOMIZE),
+	# ------------
 	"monthPBarCalType": ("monthPBar.calType", CUSTOMIZE),
 	"seasonPBar_southernHemisphere": ("seasonPBar.southernHemisphere", CUSTOMIZE),
 	"wcal_moonStatus_southernHemisphere": (
 		"weekcal.moonStatus.southernHemisphere",
 		CUSTOMIZE,
 	),
+	# ------------ statusBar
+	"statusBarEnable": ("statusBar.enable", CUSTOMIZE),
 	"statusBarDatesReverseOrder": ("statusBar.dates.reverseOrder", CUSTOMIZE),
 	"statusBarDatesColorEnable": ("statusBar.dates.colorEnable", CUSTOMIZE),
 	"statusBarDatesColor": ("statusBar.dates.color", CUSTOMIZE),
