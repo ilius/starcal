@@ -303,7 +303,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		cell = ui.cell
+		cell = ui.cells.current
 		self.textbuff.set_text("")
 		occurOffsets = []
 		eventSep = self.getEventSep()
@@ -530,7 +530,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		self.showHide()
 
 	def showHide(self):
-		self.set_visible(self.enable and bool(ui.cell.getEventsData()))
+		self.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
 		height = ui.eventViewMaxHeight
@@ -573,7 +573,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 	def __init__(self, abbreviateWeekDays=False):
 		self.initVars()
 		self.abbreviateWeekDays = abbreviateWeekDays
-		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)  # FIXME
+		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cells.current.jd)  # FIXME
 		gtk.TreeView.__init__(self)
 		self.set_headers_visible(False)
 		self.ls = gtk.ListStore(
@@ -618,8 +618,8 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.absWeekNumber = ui.cell.absWeekNumber
-		_cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
+		self.absWeekNumber = ui.cells.current.absWeekNumber
+		_cells, wEventData = ui.cells.getWeekData(self.absWeekNumber)
 		self.ls.clear()
 		for item in wEventData:
 			if not item.show[1]:
@@ -643,7 +643,7 @@ class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 		return self.updateDataByGroups(ui.eventGroups)
 
 	def __init__(self):
-		event_lib.MonthOccurrenceView.__init__(self, ui.cell.jd)
+		event_lib.MonthOccurrenceView.__init__(self, ui.cells.current.jd)
 		gtk.TreeView.__init__(self)
 		self.set_headers_visible(False)
 		self.ls = gtk.ListStore(

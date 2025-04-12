@@ -567,6 +567,13 @@ def popenDefaultLang(*args, **kwargs) -> subprocess.Popen:
 	return p
 
 
+def getNeedRestartParams() -> dict:
+	return {
+		"locale_man.lang": lang,
+		"locale_man.enableNumLocale": enableNumLocale,
+	}
+
+
 # ----------------------------------------------
 
 prepareLanguage()

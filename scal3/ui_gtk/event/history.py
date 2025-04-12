@@ -368,7 +368,7 @@ class EventHistoryDialog(gtk.Dialog):
 	@staticmethod
 	def formatEpoch(epoch):
 		jd, hms = getJhmsFromEpoch(epoch)
-		cell = ui.cellCache.getCell(jd)
+		cell = ui.cells.getCell(jd)
 		return cell.format(historyTimeBinFmt, tm=hms.tuple())
 
 	@staticmethod

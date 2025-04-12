@@ -27,9 +27,9 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 
-		year = ui.cell.year
+		year = ui.cells.current.year
 		jd0 = core.primary_to_jd(year, 1, 1)
-		jd1 = ui.cell.jd
+		jd1 = ui.cells.current.jd
 		jd2 = core.primary_to_jd(year + 1, 1, 1)
 		length = jd2 - jd0
 		past = jd1 - jd0
