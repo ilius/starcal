@@ -1,6 +1,8 @@
 from scal3.mywidgets.multi_spin import DayField
 from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
+__all__ = ["DaySpinButton"]
+
 
 class DaySpinButton(SingleSpinButton):
 	def __init__(self, **kwargs):

@@ -11,6 +11,8 @@ from scal3.mywidgets.multi_spin import (
 )
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
+__all__ = ["DateTimeButton"]
+
 
 class DateTimeButton(MultiSpinButton):
 	def __init__(self, date_time=None, **kwargs):

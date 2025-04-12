@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
+__all__ = ["ExpanderFrame"]
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
 

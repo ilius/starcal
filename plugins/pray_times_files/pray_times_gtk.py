@@ -32,6 +32,9 @@ from scal3.ui_gtk.utils import (
 	showMsg,
 )
 
+__all__ = ["LocationDialog", "TextPluginUI", "showDisclaimer"]
+
+
 # do I have to duplicate AboutDialog class code?
 
 

@@ -4,6 +4,8 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
 
+__all__ = ["AccountEditorDialog"]
+
 
 class AccountEditorDialog(gtk.Dialog):
 	def __init__(self, account=None, **kwargs):

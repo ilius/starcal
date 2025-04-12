@@ -3,6 +3,8 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 from scal3.vcs_modules import vcsModuleNames
 
+__all__ = ["VcsBaseWidgetClass"]
+
 
 class VcsBaseWidgetClass(NormalWidgetClass):
 	userCanAddEvents = False

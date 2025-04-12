@@ -6,6 +6,8 @@ from scal3.ui_gtk.utils import buffer_get_text
 gi.require_version("GtkSource", "4")
 from gi.repository import GtkSource
 
+__all__ = ["SourceEditorWithFrame"]
+
 
 class SourceEditor(GtkSource.View):
 	def __init__(self, onTextChange=None):

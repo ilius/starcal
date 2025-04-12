@@ -21,6 +21,8 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 )
 
+__all__ = ["EventHistoryDialog"]
+
 historyTimeBinFmt = compileTmFormat("%Y/%m/%d    %H:%M:%S")
 
 modifySymbol = "ⓜ"

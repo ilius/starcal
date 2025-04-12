@@ -9,6 +9,8 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.label import SLabel
 
+__all__ = ["CalObj"]
+
 
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalObj):

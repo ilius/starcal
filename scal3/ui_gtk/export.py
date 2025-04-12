@@ -18,6 +18,7 @@ from scal3 import logger
 
 log = logger.get()
 
+__all__ = ["ExportDialog", "ExportToIcsDialog"]
 
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes

@@ -5,6 +5,8 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button, showInfo
 
+__all__ = ["EventEditorDialog", "addNewEvent"]
+
 
 class EventEditorDialog(gtk.Dialog):
 	def __init__(

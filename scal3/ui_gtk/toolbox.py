@@ -24,6 +24,8 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+__all__ = ["CustomizableToolBox", "LabelToolBoxItem", "StaticToolBox", "ToolBoxItem"]
+
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
 	hasOptions = False

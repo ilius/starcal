@@ -36,6 +36,8 @@ from scal3.utils import (
 	toStr,
 )
 
+__all__ = ["NumRangesEntry"]
+
 
 @registerType
 class NumRangesEntry(gtk.Entry):

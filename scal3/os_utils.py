@@ -22,6 +22,17 @@ import shutil
 import sys
 from os.path import isdir, isfile
 
+__all__ = [
+	"fixStrForFileName",
+	"getOsName",
+	"getUserDisplayName",
+	"goodkill",
+	"makeDir",
+	"openUrl",
+	"osName",
+]
+
+
 log = logging.getLogger("starcal3")
 
 

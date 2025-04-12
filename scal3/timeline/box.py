@@ -19,13 +19,17 @@ import logging
 from scal3 import logger
 
 log = logger.get()
-debugMode = log.level <= logging.DEBUG
 
 from time import perf_counter
 
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.timeline import tl
+
+__all__ = ["calcEventBoxes"]
+
+
+debugMode = log.level <= logging.DEBUG
 
 movableEventTypes = (
 	"task",

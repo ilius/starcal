@@ -19,6 +19,8 @@
 
 from scal3 import logger
 
+__all__ = ["hijriUseDB", "jd_to", "monthDb", "to_jd"]
+
 log = logger.get()
 
 name = "hijri"

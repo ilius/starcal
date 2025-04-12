@@ -7,6 +7,8 @@ from scal3.s_object import SObj
 if TYPE_CHECKING:
 	from collections.abc import Sequence
 
+__all__ = ["PluginType"]
+
 
 class BasePlugin(SObj):
 	name: str | None

@@ -5,6 +5,8 @@ from scal3.ui_gtk import gtk
 
 # from scal3.ui_gtk import player
 
+__all__ = ["notify"]
+
 
 # class WidgetClass(player.PlayerBox):
 # 	def __init__(self, notifier):

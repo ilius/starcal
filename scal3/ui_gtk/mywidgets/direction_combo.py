@@ -1,6 +1,8 @@
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 
+__all__ = ["DirectionComboBox"]
+
 
 class DirectionComboBox(gtk.ComboBox):
 	keys = ["ltr", "rtl", "auto"]

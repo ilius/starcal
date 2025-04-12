@@ -17,6 +17,7 @@
 from scal3 import ui
 
 __all__ = [
+	"avgMonthLen",
 	"dayLen",
 	"fontFamily",
 	"minYearLenSec",

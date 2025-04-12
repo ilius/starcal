@@ -8,6 +8,7 @@ from time import time as now
 from scal3 import ui
 from scal3.ui_gtk import timeout_add_seconds
 
+__all__ = ["dateChange"]
 dayLen = 24 * 3600
 
 

@@ -27,6 +27,8 @@ from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.utils import dialog_add_button
 
+__all__ = ["DayInfoDialog"]
+
 
 @registerSignals
 class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):

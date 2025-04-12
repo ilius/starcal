@@ -21,6 +21,8 @@ from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.utils import set_tooltip
 
+__all__ = ["BaseWidgetClass"]
+
 
 class BaseWidgetClass(gtk.Box):
 	userCanAddEvents = True

@@ -28,6 +28,8 @@ from scal3.ui_gtk.utils import pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+__all__ = ["Button", "SVGButton"]
+
 
 class BaseButton:
 	def __init__(

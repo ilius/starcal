@@ -49,6 +49,8 @@ from scal3.ui_gtk.drawing import (
 if TYPE_CHECKING:
 	import cairo
 
+__all__ = ["YearWheelWindow"]
+
 
 @registerSignals
 class YearWheel(gtk.DrawingArea, ud.BaseCalObj):

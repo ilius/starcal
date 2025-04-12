@@ -2,6 +2,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.vcsBase import VcsBaseWidgetClass
 
+__all__ = ["VcsEpochBaseWidgetClass"]
+
 
 class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
 	def __init__(self, group):

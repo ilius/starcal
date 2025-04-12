@@ -19,6 +19,8 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.monthcal import getMonthDesc
 
+__all__ = ["exportToHtml"]
+
 
 def rgbToHtml(r, g, b, a=None):  # noqa: ARG001
 	return f"#{r:02x}{g:02x}{b:02x}"

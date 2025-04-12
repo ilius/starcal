@@ -2,6 +2,8 @@ from collections import OrderedDict
 
 from dateutil.tz.win import tzwin
 
+__all__ = ["getZoneInfoTree"]
+
 
 def getZoneInfoTree():
 	zoneTree = OrderedDict()

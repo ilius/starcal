@@ -6,6 +6,8 @@ from scal3.ui_gtk import timeout_add
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
+__all__ = ["TimerButton"]
+
 
 @registerSignals
 class TimerButton(TimeButton):

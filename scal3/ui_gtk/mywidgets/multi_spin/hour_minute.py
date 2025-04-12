@@ -3,6 +3,8 @@ from time import localtime
 from scal3.mywidgets.multi_spin import HourField, Z60Field
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
+__all__ = ["HourMinuteButton"]
+
 
 class HourMinuteButton(MultiSpinButton):
 	def __init__(self, hm=None, **kwargs):

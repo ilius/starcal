@@ -10,6 +10,9 @@ log = logger.get()
 
 from scal3 import event_lib
 
+__all__ = ["EventUpdateQueue", "EventUpdateRecord"]
+
+
 """
 Usage:
 	ui.eventUpdateQueue.put(action, event, self)

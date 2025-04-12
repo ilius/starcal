@@ -16,6 +16,8 @@
 
 from scal3.timeline import tl
 
+__all__ = ["Tick"]
+
 
 class Tick:
 	def __init__(self, epoch, pos, unitSize, label, color=None):

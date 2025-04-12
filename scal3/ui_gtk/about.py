@@ -4,6 +4,8 @@ from __future__ import annotations
 from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.utils import pixbufFromFile
 
+__all__ = ["AboutDialog"]
+
 
 class AboutDialog(gtk.AboutDialog):
 	def __init__(

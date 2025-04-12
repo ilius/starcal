@@ -33,6 +33,8 @@ if typing.TYPE_CHECKING:
 
 	from scal3.plugin_type import PluginType
 
+__all__ = ["init"]
+
 
 class Cell(CellType):
 

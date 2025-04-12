@@ -24,6 +24,9 @@ from scal3.date_utils import getJdRangeForMonth
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 
+__all__ = ["getCurrentMonthStatus", "getMonthDesc", "getMonthStatus"]
+
+
 pluginName = "MonthCal"
 
 

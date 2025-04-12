@@ -1,6 +1,8 @@
 from scal3 import core
 from scal3.ui_gtk import gtk, pack
 
+__all__ = ["WeekDayComboBox"]
+
 
 class WeekDayComboBox(gtk.ComboBox):
 	def __init__(self):
