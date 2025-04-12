@@ -100,6 +100,7 @@ confPathLive = join(confDir, "ui-live.json")
 MAIN_CONF = 1
 LIVE = 2
 CUSTOMIZE = 4
+NEED_RESTART = 8
 
 
 confParamsData: list[Param] = [
@@ -118,7 +119,7 @@ confParamsData: list[Param] = [
 	Param(
 		name="mainWin.inTaskbar",
 		v3Name="winTaskbar",
-		flags=MAIN_CONF,
+		flags=MAIN_CONF | NEED_RESTART,
 		type=bool,
 	),
 	Param(
@@ -179,7 +180,7 @@ confParamsData: list[Param] = [
 	Param(
 		name="useAppIndicator",
 		v3Name="useAppIndicator",
-		flags=MAIN_CONF,
+		flags=MAIN_CONF | NEED_RESTART,
 		type=bool,
 	),
 	Param(
@@ -203,19 +204,19 @@ confParamsData: list[Param] = [
 	Param(
 		name="buttonIconEnable",
 		v3Name="buttonIconEnable",
-		flags=MAIN_CONF,
+		flags=MAIN_CONF | NEED_RESTART,
 		type=bool,
 	),
 	Param(
 		name="useSystemIcons",
 		v3Name="useSystemIcons",
-		flags=MAIN_CONF,
+		flags=MAIN_CONF | NEED_RESTART,
 		type=bool,
 	),
 	Param(
 		name="oldStyleProgressBar",
 		v3Name="oldStyleProgressBar",
-		flags=MAIN_CONF,
+		flags=MAIN_CONF | NEED_RESTART,
 		type=bool,
 	),
 	# ----------------- colors
@@ -2624,17 +2625,16 @@ def evalParam(param: str) -> Any:
 	return value
 
 
-needRestartPref = {}  # Right place? FIXME
-for key in (
-	"locale_man.lang",
-	"locale_man.enableNumLocale",
-	"winTaskbar",
-	"useAppIndicator",
-	"buttonIconEnable",
-	"useSystemIcons",
-	"oldStyleProgressBar",
-):
-	needRestartPref[key] = evalParam(key)
+needRestartPref = {
+	p.v3Name: evalParam(p.v3Name) for p in confParamsData if p.flags & NEED_RESTART > 0
+}
+needRestartPref.update(
+	{
+		"locale_man.lang": locale_man.lang,
+		"locale_man.enableNumLocale": locale_man.enableNumLocale,
+	},
+)
+
 
 if menuTextColor is None:
 	menuTextColor = borderTextColor
