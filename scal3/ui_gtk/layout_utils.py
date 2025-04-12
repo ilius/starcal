@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+__all__ = ["moduleObjectInitializer"]
+
 
 def keeperCallable(obj: Any) -> Callable[[], Any]:
 	def res():

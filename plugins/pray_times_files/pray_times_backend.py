@@ -31,6 +31,9 @@
 import math
 from math import floor
 
+__all__ = ["PrayTimes", "methodsList", "timeNames"]
+
+
 tr = str  # FIXME
 
 timeNames = (

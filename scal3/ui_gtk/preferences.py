@@ -75,6 +75,8 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from scal3.plugin_type import PluginType
 
+__all__ = ["PreferencesWindow"]
+
 
 class PreferencesPluginsToolbar(StaticToolBox):
 	def __init__(self, parent):

@@ -31,6 +31,8 @@ from scal3.ui_gtk.utils import (
 	imageFromFile,
 )
 
+__all__ = ["TimeLinePreferencesWindow"]
+
 
 class TimeLinePreferencesWindow(gtk.Window):
 	def __init__(self, timeLine, **kwargs):

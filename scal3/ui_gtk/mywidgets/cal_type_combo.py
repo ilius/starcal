@@ -3,6 +3,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.utils import IdComboBox
 
+__all__ = ["CalTypeCombo"]
+
 
 class CalTypeCombo(IdComboBox):
 	def __init__(self, hasDefault=False):  # , showInactive=True FIXME

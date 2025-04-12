@@ -24,10 +24,12 @@ from scal3.os_utils import getOsName
 APP_NAME = "starcal3"
 
 __all__ = [
+	"APP_NAME",
 	"cacheDir",
 	"confDir",
 	"deskDir",
 	"homeDir",
+	"modDir",
 	"pixDir",
 	"plugDir",
 	"plugDirName",

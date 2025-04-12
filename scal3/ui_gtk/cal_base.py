@@ -27,6 +27,8 @@ from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
 
+__all__ = ["CalBase"]
+
 
 class CalBase(CustomizableCalObj):
 	dragAndDropEnable = True
@@ -165,7 +167,6 @@ class CalBase(CustomizableCalObj):
 
 		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
 		return True
-
 
 	def dragBegin(self, _obj, context):  # noqa: PLR6301
 		# context is instance of gi.repository.Gdk.DragContext
