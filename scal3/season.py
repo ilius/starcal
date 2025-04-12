@@ -16,6 +16,9 @@
 
 from scal3 import logger
 
+__all__ = ["getSeasonNamePercentFromJd", "getSpringJdAfter"]
+
+
 log = logger.get()
 
 avgYearLen = 365.24219

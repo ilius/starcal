@@ -18,6 +18,8 @@ from scal3.ui_gtk.event.occurrence_view import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
 
+__all__ = ["MainWinRightPanel"]
+
 
 class RightPanelDayOccurrenceView(DayOccurrenceView):
 	def __init__(self, rightPanel=None, **kwargs):

@@ -9,6 +9,8 @@ from scal3.ui_gtk.utils import (
 	window_set_size_aspect,
 )
 
+__all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
+
 
 class GroupSortDialog(gtk.Dialog):
 	def __init__(self, group, **kwargs):

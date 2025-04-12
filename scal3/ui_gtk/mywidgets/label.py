@@ -9,6 +9,8 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import toStr
 
+__all__ = ["SLabel"]
+
 
 class SLabel(gtk.Label):
 

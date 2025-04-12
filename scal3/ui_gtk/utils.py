@@ -51,6 +51,9 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 __all__ = [
+	"CopyLabelMenuItem",
+	"GLibError",
+	"IdComboBox",
 	"buffer_get_text",
 	"confirm",
 	"cssTextStyle",

@@ -22,6 +22,7 @@ log = logger.get()
 
 from scal3 import core, ui
 
+__all__ = ["getCurrentWeekStatus"]
 pluginName = "WeekCal"
 
 

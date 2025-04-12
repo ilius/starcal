@@ -1,5 +1,7 @@
 from scal3.ui_gtk import gtk
 
+__all__ = ["tree_path_split"]
+
 
 def tree_path_split(path):
 	if isinstance(path, gtk.TreePath):

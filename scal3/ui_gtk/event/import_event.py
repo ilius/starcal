@@ -13,6 +13,8 @@ from scal3.path import deskDir
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.wizard import WizardWindow
 
+__all__ = ["EventsImportWindow"]
+
 
 class EventsImportWindow(WizardWindow):
 	def __init__(self, manager):

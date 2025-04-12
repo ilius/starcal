@@ -2,6 +2,17 @@ from __future__ import annotations
 
 import typing
 
+__all__ = [
+	"ColorType",
+	"colorizeSpan",
+	"hslToRgb",
+	"rgbToCSS",
+	"rgbToHsl",
+	"rgbToHtmlColor",
+	"rgbToInt",
+]
+
+
 ColorType: typing.TypeAlias = "tuple[int,int,int] | tuple[int,int,int,int]"
 
 

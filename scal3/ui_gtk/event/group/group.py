@@ -7,6 +7,8 @@ from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(BaseWidgetClass):
 	def addStartEndWidgets(self):

@@ -12,6 +12,8 @@ from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
 
+__all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExportDialog"]
+
 
 class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 	def __init__(self, group, **kwargs):

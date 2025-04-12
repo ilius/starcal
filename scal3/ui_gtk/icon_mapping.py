@@ -1,3 +1,6 @@
+__all__ = ["iconNameByImageName", "rtlImageNameMapping"]
+
+
 rtlImageNameMapping = {
 	"go-next.svg": "go-previous.svg",
 	"go-previous.svg": "go-next.svg",

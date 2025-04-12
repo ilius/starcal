@@ -31,6 +31,8 @@ from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
 from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
+__all__ = ["SelectDateDialog"]
+
 
 @registerSignals
 class SelectDateDialog(gtk.Dialog):

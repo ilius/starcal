@@ -1,6 +1,8 @@
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import imageFromFile
 
+__all__ = ["ResizeButton"]
+
 
 class ResizeButton(gtk.EventBox):
 	def __init__(self, win, size=20, edge=gdk.WindowEdge.SOUTH_EAST):

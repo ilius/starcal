@@ -21,6 +21,8 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+__all__ = ["MyHButtonBox"]
+
 
 class MyHButtonBox(gtk.Box):
 	def __init__(self):

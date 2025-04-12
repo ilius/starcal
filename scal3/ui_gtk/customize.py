@@ -32,6 +32,13 @@ from scal3.ui_gtk.utils import imageFromFile
 if TYPE_CHECKING:
 	from scal3.ui_gtk.stack import StackPage
 
+__all__ = [
+	"CustomizableCalBox",
+	"CustomizableCalObj",
+	"DummyCalObj",
+	"newSubPageButton",
+]
+
 
 @registerSignals
 class DummyCalObj(ud.CalObjType):

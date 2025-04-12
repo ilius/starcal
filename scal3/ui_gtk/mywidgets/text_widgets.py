@@ -8,6 +8,8 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import findWordByPos, toStr
 
+__all__ = ["ReadOnlyTextView"]
+
 
 class ReadOnlyTextWidget:
 	def copyAll(self, _item):

@@ -84,6 +84,7 @@ from scal3.ui_gtk.utils import (
 	showError,
 )
 
+__all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
 ui.uiName = "gtk"
 
 

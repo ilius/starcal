@@ -39,6 +39,8 @@ from scal3.ui_gtk.utils import (
 	showInfo,
 )
 
+__all__ = ["CustomizeWindow"]
+
 
 class CustomizeWindowItemsToolbar(StaticToolBox):
 	def __init__(self, parent, onClickArgs):
