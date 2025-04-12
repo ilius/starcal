@@ -14,6 +14,8 @@ import psutil
 
 from scal3.json_utils import dataToPrettyJson, jsonToData
 
+__all__ = ["checkAndSaveJsonLockFile"]
+
 
 def get_cmdline(proc):
 	# log.debug(psutil.version_info, proc.cmdline)

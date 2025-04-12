@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+__all__ = ["escape"]
+
 
 def escape(data, entities: dict | None = None):  # noqa: ARG001
 	"""

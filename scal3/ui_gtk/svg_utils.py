@@ -23,6 +23,8 @@ from os.path import isabs, join
 from scal3.path import svgDir
 from scal3.ui_gtk import GdkPixbuf, GLibError, gtk
 
+__all__ = ["pixbufFromSvgFile"]
+
 
 def pixbufFromSvgFile(path: str, size: int):
 	if size <= 0:
