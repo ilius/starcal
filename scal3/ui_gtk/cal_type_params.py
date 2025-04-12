@@ -23,6 +23,8 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 
+__all__ = ["CalTypeParamWidget", "TextParamWidget"]
+
 
 class XAlignComboBox(gtk.ComboBoxText):
 	def __init__(self):

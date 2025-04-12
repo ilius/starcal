@@ -63,6 +63,8 @@ from scal3.ui_gtk.utils import pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+__all__ = ["DayCal"]
+
 
 class DayCal(gtk.DrawingArea, CalBase):
 	objName = "dayCal"

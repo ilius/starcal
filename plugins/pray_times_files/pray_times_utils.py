@@ -1,6 +1,9 @@
 import math
 from math import pi
 
+__all__ = ["earthDistance"]
+
+
 earthR = 6370
 
 

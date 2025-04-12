@@ -6,6 +6,8 @@ import sys
 
 from scal3.locale_man import popenDefaultLang
 
+__all__ = ["popenFile"]
+
 
 def getDefaultAppCommand(fpath):
 	from gi.repository import Gio as gio

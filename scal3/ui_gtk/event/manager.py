@@ -84,6 +84,8 @@ from scal3.ui_gtk.utils import (
 	showError,
 )
 
+__all__ = ["EventManagerDialog"]
+
 # log.debug("Testing translator", __file__, _("About"))
 
 

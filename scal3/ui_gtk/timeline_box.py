@@ -27,6 +27,8 @@ from scal3.timeline import tl
 from scal3.ui_gtk.drawing import fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
 
+__all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
+
 
 def drawBoxBG(cr, box, x, y, w, h):
 	d = box.lineW

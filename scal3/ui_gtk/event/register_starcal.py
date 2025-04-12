@@ -31,6 +31,8 @@ from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
+__all__ = ["StarCalendarRegisterDialog"]
+
 
 class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):

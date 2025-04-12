@@ -16,7 +16,10 @@
 
 from scal3.locale_man import rtl
 
+__all__ = ["getAbsPos"]
 
+
+# TODO: make private
 def oppositeAlign(align):
 	if align == "left":
 		return "right"
