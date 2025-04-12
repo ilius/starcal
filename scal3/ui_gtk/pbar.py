@@ -1,6 +1,8 @@
 from scal3 import ui
 from scal3.ui_gtk import gtk
 
+__all__ = ["MyProgressBar"]
+
 
 def MyProgressBar():
 	if ui.oldStyleProgressBar:

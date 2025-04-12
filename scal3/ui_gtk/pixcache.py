@@ -29,6 +29,14 @@ from scal3.os_utils import makeDir
 from scal3.path import cacheDir
 from scal3.ui_gtk import GdkPixbuf
 
+__all__ = [
+	"cacheSaveStart",
+	"cacheSaveStop",
+	"clear",
+	"clearFiles",
+	"getPixbuf",
+	"setPixbuf",
+]
 pixbufCache = {}
 saveQueue = Queue()
 saveThread = None

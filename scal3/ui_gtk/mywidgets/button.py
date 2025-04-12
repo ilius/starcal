@@ -10,6 +10,8 @@ from scal3 import ui
 from scal3.ui_gtk import gtk, pack, timeout_add
 from scal3.ui_gtk.decorators import registerSignals
 
+__all__ = ["ConButton", "ConButtonBase"]
+
 
 class ConButtonBase:
 	def __init__(self, button: int | None = None):

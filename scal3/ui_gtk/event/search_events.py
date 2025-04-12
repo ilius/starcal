@@ -65,6 +65,8 @@ from scal3.utils import cmp
 if typing.TYPE_CHECKING:
 	from typing import Any
 
+__all__ = ["EventSearchWindow"]
+
 
 @registerSignals
 class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):

@@ -22,6 +22,8 @@ from scal3.ui_gtk.mywidgets import MyColorButton
 from scal3.ui_gtk.mywidgets.floatingMsg import FloatingMsg, NoFillFloatingMsgWindow
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
+__all__ = ["notify"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, notifier):

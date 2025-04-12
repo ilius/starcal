@@ -33,6 +33,9 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 
+__all__ = ["WinLayoutBox", "WinLayoutObj"]
+
+
 class WinLayoutBase(CustomizableCalObj):
 	hasOptions = False
 	itemListCustomizable = False

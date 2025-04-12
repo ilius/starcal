@@ -37,6 +37,8 @@ from scal3.ui_gtk.utils import (
 	dialog_add_button,
 )
 
+__all__ = ["checkHijriMonthsExpiration"]
+
 hijriMode = calTypes.names.index("hijri")
 
 

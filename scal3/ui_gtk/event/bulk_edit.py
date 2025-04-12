@@ -12,6 +12,8 @@ from scal3.ui_gtk.utils import (
 	window_set_size_aspect,
 )
 
+__all__ = ["EventsBulkEditDialog"]
+
 
 class EventsBulkEditDialog(gtk.Dialog):
 	def __init__(self, container, **kwargs):

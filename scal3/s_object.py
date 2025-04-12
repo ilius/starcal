@@ -22,6 +22,21 @@ from scal3.json_utils import (
 	jsonToData,
 )
 
+__all__ = [
+	"BsonHistObj",
+	"DefaultFileSystem",
+	"FileSystem",
+	"JsonSObj",
+	"SObj",
+	"iterObjectFiles",
+	"loadBsonObject",
+	"makeOrderedData",
+	"objectDirName",
+	"saveBsonObject",
+	"updateBasicDataFromBson",
+]
+
+
 dataToJson = dataToPrettyJson
 # from scal3.core import dataToJson  # FIXME
 

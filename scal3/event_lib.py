@@ -106,6 +106,31 @@ from scal3.utils import (
 	toStr,
 )
 
+__all__ = [
+	"Account",
+	"DefaultFileSystem",
+	"Event",
+	"EventAccount",
+	"EventAccountsHolder",
+	"EventGroup",
+	"EventGroupsHolder",
+	"EventTrash",
+	"FileSystem",
+	"JdOccurSet",
+	"LargeScaleGroup",
+	"NoteBook",
+	"allReadOnly",
+	"classes",
+	"defaultGroupTypeIndex",
+	"getDayOccurrenceData",
+	"getWeekOccurrenceData",
+	"info",
+	"init",
+	"lastIds",
+	"removeUnusedObjects",
+]
+
+
 # --------------------------
 
 (

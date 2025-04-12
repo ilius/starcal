@@ -4,6 +4,8 @@ from scal3.cal_types import jd_to, to_jd
 from scal3.mywidgets.multi_spin import DayField, MonthField, YearField
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
+__all__ = ["DateButton"]
+
 
 class DateButton(MultiSpinButton):
 	def __init__(self, date=None, **kwargs):
