@@ -367,9 +367,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 						self.cy[i] - fonth / 2 + 2,
 					)
 				show_layout(cr, lay)
-		selectedCellPos = ui.cell.monthPos
-		if ui.todayCell.inSameMonth(ui.cell):
-			tx, ty = ui.todayCell.monthPos  # today x and y
+		selectedCellPos = ui.cells.current.monthPos
+		if ui.cells.today.inSameMonth(ui.cells.current):
+			tx, ty = ui.cells.today.monthPos  # today x and y
 			x0 = self.cx[tx] - self.dx / 2
 			y0 = self.cy[ty] - self.dy / 2
 			cr.rectangle(x0, y0, self.dx, self.dy)
@@ -380,7 +380,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				c = status[yPos][xPos]
 				x0 = self.cx[xPos]
 				y0 = self.cy[yPos]
-				cellInactive = c.month != ui.cell.month
+				cellInactive = c.month != ui.cells.current.month
 				cellHasCursor = cursor and (xPos, yPos) == selectedCellPos
 				if cellHasCursor:
 					# # Drawing Cursor
@@ -537,7 +537,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
 				self.emit("double-button-press")
-			if b == 3 and cell.month == ui.cell.month:  # right click on a normal cell
+			if (
+				b == 3 and cell.month == ui.cells.current.month
+			):  # right click on a normal cell
 				# self.emit("popup-cell-menu", *self.getCellPos())
 				self.emit("popup-cell-menu", gevent.x, gevent.y)
 		return True
@@ -561,7 +563,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.dy = (h - ui.mcalTopMargin) / 6  # delta y
 
 	def monthPlus(self, p):
-		ui.monthPlus(p)
+		ui.cells.monthPlus(p)
 		self.onDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
@@ -586,9 +588,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 				self.jdPlus(-1)
 		elif kname == "end":
 			self.changeDate(
-				ui.cell.year,
-				ui.cell.month,
-				cal_types.getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
+				ui.cells.current.year,
+				ui.cells.current.month,
+				cal_types.getMonthLen(
+					ui.cells.current.year,
+					ui.cells.current.month,
+					calTypes.primary,
+				),
 			)
 		elif kname in {"page_up", "k", "p"}:
 			self.monthPlus(-1)
@@ -616,8 +622,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 	def getCellPos(self, *_args):
 		return (
-			int(self.cx[ui.cell.monthPos[0]]),
-			int(self.cy[ui.cell.monthPos[1]] + self.dy / 2),
+			int(self.cx[ui.cells.current.monthPos[0]]),
+			int(self.cy[ui.cells.current.monthPos[1]] + self.dy / 2),
 		)
 
 	def getMainMenuPos(self, *_args):  # FIXME

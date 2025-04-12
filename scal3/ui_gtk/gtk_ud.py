@@ -234,12 +234,12 @@ class IntegatedWindowList(BaseCalObj):
 		self.lastAlphabetHeight = height
 
 	def onEventUpdate(self, _record: EventUpdateRecord) -> None:
-		# ui.cellCache.clear()  # causes crash, no idea why!
-		ui.cellCache.clearEventsData()
+		# ui.cells.clear()  # causes crash, no idea why!
+		ui.cells.clearEventsData()
 		self.onDateChange()
 
 	def onConfigChange(self, *a, **ka):
-		ui.cellCache.clear()
+		ui.cells.clear()
 		settings.set_property(
 			"gtk-font-name",
 			pfontEncode(ui.getFont()).to_string(),

@@ -1378,7 +1378,7 @@ class PreferencesWindow(gtk.Window):
 			core.weekNumberModeAuto = False
 			core.weekNumberMode = weekNumberMode
 		# ------
-		ui.cellCache.clear()  # Very important
+		ui.cells.clear()  # Very important
 		# ^ specially when calTypes.primary will be changed
 		# ------
 		ud.updateFormatsBin()
