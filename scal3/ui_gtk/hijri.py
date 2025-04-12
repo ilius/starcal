@@ -41,7 +41,7 @@ hijriMode = calTypes.names.index("hijri")
 
 
 def getCurrentYm():
-	y, m, _d = ui.todayCell.dates[hijriMode]
+	y, m, _d = ui.cells.today.dates[hijriMode]
 	return y * 12 + m - 1
 
 
@@ -319,7 +319,7 @@ def dbIsExpired() -> bool:
 	if expJd is None:
 		log.info("checkDbExpired: hijri.monthDb.expJd = None")
 		return False
-	return ui.todayCell.jd >= expJd
+	return ui.cells.today.jd >= expJd
 
 
 class HijriMonthsExpirationDialog(gtk.Dialog):

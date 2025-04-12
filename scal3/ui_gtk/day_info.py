@@ -51,7 +51,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 			sgroup.add_widget(label)
 			pack(hbox, gtk.Label(label="  "))
 			# ---
-			dateLabel = SLabel(label=ui.cell.format(ud.dateFormatBin, i))
+			dateLabel = SLabel(label=ui.cells.current.format(ud.dateFormatBin, i))
 			dateLabel.set_selectable(True)
 			dateLabel.set_xalign(1.0 if rtl else 0.0)
 			pack(hbox, dateLabel)
@@ -77,7 +77,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.get_buffer().set_text(ui.cell.getPluginsText())
+		self.get_buffer().set_text(ui.cells.current.getPluginsText())
 
 
 @registerSignals
@@ -99,7 +99,7 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.jdLabel.set_label(str(ui.cell.jd))
+		self.jdLabel.set_label(str(ui.cells.current.jd))
 
 
 @registerSignals
@@ -170,13 +170,13 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		return True
 
 	def goBack(self, _obj=None):
-		ui.jdPlus(-1)
+		ui.cells.jdPlus(-1)
 		self.onDateChange()
 
 	def goToday(self, _obj=None):
-		ui.gotoJd(core.getCurrentJd())
+		ui.cells.gotoJd(core.getCurrentJd())
 		self.onDateChange()
 
 	def goNext(self, _obj=None):
-		ui.jdPlus(1)
+		ui.cells.jdPlus(1)
 		self.onDateChange()

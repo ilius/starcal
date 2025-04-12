@@ -80,7 +80,7 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		# -----
 		if useSelectedDate:
-			self.event.setJd(ui.cell.jd)
+			self.event.setJd(ui.cells.current.jd)
 		self.activeWidget = makeWidget(event)
 		if self.isNew:
 			self.activeWidget.focusSummary()

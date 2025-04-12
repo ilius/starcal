@@ -166,9 +166,9 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			self.menuLabels[i].set_label(s)
 
 	def itemActivate(self, _item, index):
-		y, m, d = ui.cell.dates[self.calType]
+		y, m, d = ui.cells.current.dates[self.calType]
 		m = index + 1
-		ui.changeDate(y, m, d, self.calType)
+		ui.cells.changeDate(y, m, d, self.calType)
 		self.onDateChange()
 
 	def onButtonPress(self, _widget, gevent):
@@ -196,7 +196,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.setActive(ui.cell.dates[self.calType][1] - 1)
+		self.setActive(ui.cells.current.dates[self.calType][1] - 1)
 
 
 @registerSignals
@@ -394,8 +394,8 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 
 	def onChanged(self, _label, item):
 		calType = self.calType
-		_y, m, d = ui.cell.dates[calType]
-		ui.changeDate(item, m, d, calType)
+		_y, m, d = ui.cells.current.dates[calType]
+		ui.cells.changeDate(item, m, d, calType)
 		self.onDateChange()
 
 	def changeCalType(self, calType):
@@ -404,7 +404,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.setActive(ui.cell.dates[self.calType][0])
+		self.setActive(ui.cells.current.dates[self.calType][0])
 
 	def setActive(self, active):
 		text = _(active)
@@ -457,11 +457,11 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		pack(self, self.addButton)
 
 	def onPrevClick(self, _button):
-		ui.yearPlus(-1)
+		ui.cells.yearPlus(-1)
 		self.label.onDateChange()
 
 	def onNextClick(self, _button):
-		ui.yearPlus(1)
+		ui.cells.yearPlus(1)
 		self.label.onDateChange()
 
 	def changeCalType(self, calType):
@@ -495,11 +495,11 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		pack(self, self.addButton)
 
 	def onPrevClick(self, _button):
-		ui.monthPlus(-1)
+		ui.cells.monthPlus(-1)
 		self.label.onDateChange()
 
 	def onNextClick(self, _button):
-		ui.monthPlus(1)
+		ui.cells.monthPlus(1)
 		self.label.onDateChange()
 
 	def changeCalType(self, calType):
@@ -569,7 +569,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	@staticmethod
 	def getFontPreviewText(calType):
-		date = ui.cell.dates[calType]
+		date = ui.cells.current.dates[calType]
 		year = _(date[0])
 		month = getMonthName(calType, date[1])
 		return f"{year} {month}"

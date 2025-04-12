@@ -26,7 +26,7 @@ class DateChangeListener:
 		gdate = localtime(tm)[:3]
 		if gdate != self.gdate:
 			self.gdate = gdate
-			ui.todayCell = ui.cellCache.getTodayCell()
+			ui.cells.today = ui.cells.getTodayCell()
 			for obj in self.receivers:
 				obj.onCurrentDateChange(gdate)
 		# timeout_add_seconds(

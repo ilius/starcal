@@ -27,7 +27,7 @@ pluginName = "WeekCal"
 
 class WeekStatus(list):
 	# list (of 7 cells)
-	def __init__(self, cellCache, absWeekNumber):
+	def __init__(self, cells, absWeekNumber):
 		self.absWeekNumber = absWeekNumber
 		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
 		endJd = startJd + 7
@@ -36,12 +36,12 @@ class WeekStatus(list):
 		# self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
 		# ---------
 		# list.__init__(self, [
-		# 	cellCache.getCell(jd) for jd in range(startJd, endJd)
+		# 	cells.getCell(jd) for jd in range(startJd, endJd)
 		# ])
 		list.__init__(self, [])
 		for jd in range(startJd, endJd):
 			# log.debug("WeekStatus", jd)
-			self.append(cellCache.getCell(jd))
+			self.append(cells.getCell(jd))
 
 
 def setParamsFunc(cell):
@@ -49,22 +49,22 @@ def setParamsFunc(cell):
 
 
 def getWeekStatus(absWeekNumber):
-	return ui.cellCache.getCellGroup(
+	return ui.cells.getCellGroup(
 		pluginName,
 		absWeekNumber,
 	)
 
 
 def getCurrentWeekStatus():
-	return ui.cellCache.getCellGroup(
+	return ui.cells.getCellGroup(
 		pluginName,
-		ui.cell.absWeekNumber,
+		ui.cells.current.absWeekNumber,
 	)
 
 
 # ------------------------
 
-ui.cellCache.registerPlugin(
+ui.cells.registerPlugin(
 	pluginName,
 	setParamsFunc,
 	WeekStatus,

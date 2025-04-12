@@ -59,7 +59,7 @@ class CalBase(CustomizableCalObj):
 		if self.dragAndDropEnable:
 			self.defineDragAndDrop()
 		if self.doubleClickEnable:
-			self.connect("double-button-press", ui.dayOpenEvolution)
+			self.connect("double-button-press", ui.cells.current.dayOpenEvolution)
 		if self.win:
 			self.connect("popup-cell-menu", self.win.menuCellPopup)
 			self.connect("popup-main-menu", self.win.menuMainPopup)
@@ -69,18 +69,18 @@ class CalBase(CustomizableCalObj):
 		self.subPages = None
 
 	def gotoJd(self, jd):
-		ui.gotoJd(jd)
+		ui.cells.gotoJd(jd)
 		self.onDateChange()
 
 	def goToday(self, _obj=None):
 		return self.gotoJd(core.getCurrentJd())
 
 	def jdPlus(self, p):
-		ui.jdPlus(p)
+		ui.cells.jdPlus(p)
 		self.onDateChange()
 
 	def changeDate(self, year, month, day, calType=None):
-		ui.changeDate(year, month, day, calType)
+		ui.cells.changeDate(year, month, day, calType)
 		self.onDateChange()
 
 	def onCurrentDateChange(self, gdate):  # noqa: ARG002
@@ -127,10 +127,10 @@ class CalBase(CustomizableCalObj):
 		_etime,
 	):
 		# context is instance of gi.repository.Gdk.DragContext
-		y, m, d = ui.cell.dates[ui.dragGetCalType]
+		y, m, d = ui.cells.current.dates[ui.dragGetCalType]
 		text = f"{y:04d}/{m:02d}/{d:02d}"
 		selection.set_text(text, len(text))
-		# pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
+		# pbuf = newDndDatePixbuf(ui.cells.current.dates[ui.dragGetCalType])
 		# selection.set_pixbuf(pbuf)
 		return True
 
@@ -171,7 +171,7 @@ class CalBase(CustomizableCalObj):
 		# context is instance of gi.repository.Gdk.DragContext
 		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())
-		pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
+		pbuf = newDndDatePixbuf(ui.cells.current.dates[ui.dragGetCalType])
 		w = pbuf.get_width()
 		# log.debug(dir(context))
 		gtk.drag_set_icon_pixbuf(

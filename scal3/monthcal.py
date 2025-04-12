@@ -30,7 +30,7 @@ pluginName = "MonthCal"
 class MonthStatus(list):  # FIXME
 	# self[sy<6][sx<7] of cells
 	# list (of 6 lists, each list containing 7 cells)
-	def __init__(self, cellCache, year, month):
+	def __init__(self, cells, year, month):
 		self.year = year
 		self.month = month
 		self.monthLen = getMonthLen(year, month, calTypes.primary)
@@ -45,7 +45,7 @@ class MonthStatus(list):  # FIXME
 			self,
 			[
 				[
-					cellCache.getCell(
+					cells.getCell(
 						tableStartJd + yPos * 7 + xPos,
 					)
 					for xPos in range(7)
@@ -79,7 +79,7 @@ def setParamsFunc(cell):
 
 
 def getMonthStatus(year, month):
-	return ui.cellCache.getCellGroup(
+	return ui.cells.getCellGroup(
 		pluginName,
 		year,
 		month,
@@ -87,10 +87,10 @@ def getMonthStatus(year, month):
 
 
 def getCurrentMonthStatus():
-	return ui.cellCache.getCellGroup(
+	return ui.cells.getCellGroup(
 		pluginName,
-		ui.cell.year,
-		ui.cell.month,
+		ui.cells.current.year,
+		ui.cells.current.month,
 	)
 
 
@@ -206,7 +206,7 @@ def getMonthDesc(status=None):
 
 # ------------------------
 
-ui.cellCache.registerPlugin(
+ui.cells.registerPlugin(
 	pluginName,
 	setParamsFunc,
 	MonthStatus,

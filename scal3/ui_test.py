@@ -1,6 +1,6 @@
 import unittest
 
-from scal3.ui import parseDroppedDate
+from scal3.date_utils import parseDroppedDate
 
 
 class TestParseDroppedDate(unittest.TestCase):

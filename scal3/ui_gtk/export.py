@@ -96,7 +96,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 	def comboChanged(self, _widget=None, ym=None):
 		i = self.combo.get_active()
 		if ym is None:
-			ym = (ui.cell.year, ui.cell.month)
+			ym = (ui.cells.current.year, ui.cells.current.month)
 		if i == 0:
 			self.fcw.set_current_name(f"calendar-{ym[0]:04d}-{ym[1]:02d}.html")
 			self.hbox2.hide()
@@ -131,8 +131,8 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			)
 		elif comboItem == 1:
 			for i in range(1, 13):
-				months.append(getMonthStatus(ui.cell.year, i))
-			title = _("Calendar {year}").format(year=_(ui.cell.year))
+				months.append(getMonthStatus(ui.cells.current.year, i))
+			title = _("Calendar {year}").format(year=_(ui.cells.current.year))
 		elif comboItem == 2:
 			y0, m0 = self.ymBox0.get_value()
 			y1, m1 = self.ymBox1.get_value()
@@ -180,8 +180,8 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		h = n * aloc.height + (n - 1) * hspace
 		surface = cairo.SVGSurface(f"{path}.svg", w, h)
 		cr = cairo.Context(surface)
-		year = ui.cell.year
-		month = ui.cell.month
+		year = ui.cells.current.year
+		month = ui.cells.current.month
 		day = self.mcal.day
 		ui.mainWin.show() # ??????????????
 		for i in range(n):
@@ -212,7 +212,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		pack(hbox, self.endDateInput)
 		pack(self.vbox, hbox)
 		# ----
-		year, _month, _day = ui.todayCell.dates[calTypes.primary]
+		year, _month, _day = ui.cells.today.dates[calTypes.primary]
 		self.startDateInput.set_value((year, 1, 1))
 		self.endDateInput.set_value((year + 1, 1, 1))
 		# --------

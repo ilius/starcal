@@ -17,7 +17,7 @@ def formatTime(
 	jd: int,
 	tm: float,
 ) -> str:
-	cell = ui.cellCache.getCell(jd)
+	cell = ui.cells.getCell(jd)
 	pyFmt, funcs = compiledFmt
 	return pyFmt % tuple(f(cell, calType, tm) for f in funcs)
 
