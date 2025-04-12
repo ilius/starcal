@@ -30,6 +30,7 @@ from os.path import isabs, isdir, isfile, join
 from time import perf_counter
 from typing import (
 	Any,
+	NamedTuple,
 )
 
 from cachetools import LRUCache
@@ -70,636 +71,640 @@ LIVE = 2
 CUSTOMIZE = 4
 
 
-confParamsData = [
-	(
+class Param(NamedTuple):
+	name: str
+	v3Name: str
+	flags: int
+
+
+confParamsData: list[Param] = [
+	Param(
 		"mainWin.openOnStartup",
 		"showMain",
 		MAIN_CONF,
 	),
-	("dayCalWin.enable", "showDesktopWidget", MAIN_CONF),
-	("mainWin.inTaskbar", "winTaskbar", MAIN_CONF),
-	("mainWin.geo.x", "winX", LIVE),
-	("mainWin.geo.y", "winY", LIVE),
-	("mainWin.geo.width", "winWidth", LIVE),
-	("mainWin.geo.height", "winHeight", LIVE),
-	("mainWin.keepAbove", "winKeepAbove", LIVE),
-	("mainWin.sticky", "winSticky", LIVE),
-	("mainWin.maximized", "winMaximized", LIVE),
-	("mainWin.items", "mainWinItems", CUSTOMIZE),
-	("mainWin.footerItems", "mainWinFooterItems", CUSTOMIZE),
+	Param("dayCalWin.enable", "showDesktopWidget", MAIN_CONF),
+	Param("mainWin.inTaskbar", "winTaskbar", MAIN_CONF),
+	Param("mainWin.geo.x", "winX", LIVE),
+	Param("mainWin.geo.y", "winY", LIVE),
+	Param("mainWin.geo.width", "winWidth", LIVE),
+	Param("mainWin.geo.height", "winHeight", LIVE),
+	Param("mainWin.keepAbove", "winKeepAbove", LIVE),
+	Param("mainWin.sticky", "winSticky", LIVE),
+	Param("mainWin.maximized", "winMaximized", LIVE),
+	Param("mainWin.items", "mainWinItems", CUSTOMIZE),
+	Param("mainWin.footerItems", "mainWinFooterItems", CUSTOMIZE),
 	# -----------------
-	("useAppIndicator", "useAppIndicator", MAIN_CONF),
-	("statusIcon.digitalClockEnable", "showDigClockTr", MAIN_CONF),
-	("fontCustomEnable", "fontCustomEnable", MAIN_CONF),
-	("fontCustom", "fontCustom", MAIN_CONF),
-	("buttonIconEnable", "buttonIconEnable", MAIN_CONF),
-	("useSystemIcons", "useSystemIcons", MAIN_CONF),
-	("oldStyleProgressBar", "oldStyleProgressBar", MAIN_CONF),
+	Param("useAppIndicator", "useAppIndicator", MAIN_CONF),
+	Param("statusIcon.digitalClockEnable", "showDigClockTr", MAIN_CONF),
+	Param("fontCustomEnable", "fontCustomEnable", MAIN_CONF),
+	Param("fontCustom", "fontCustom", MAIN_CONF),
+	Param("buttonIconEnable", "buttonIconEnable", MAIN_CONF),
+	Param("useSystemIcons", "useSystemIcons", MAIN_CONF),
+	Param("oldStyleProgressBar", "oldStyleProgressBar", MAIN_CONF),
 	# ----------------- colors
-	("bgColor", "bgColor", MAIN_CONF | LIVE),
-	("borderColor", "borderColor", MAIN_CONF),
-	("cursorOutColor", "cursorOutColor", MAIN_CONF),
-	("cursorBgColor", "cursorBgColor", MAIN_CONF),
-	("todayCellColor", "todayCellColor", MAIN_CONF),
-	("textColor", "textColor", MAIN_CONF),
-	("holidayColor", "holidayColor", MAIN_CONF),
-	("inactiveColor", "inactiveColor", MAIN_CONF),
-	("borderTextColor", "borderTextColor", MAIN_CONF),
+	Param("bgColor", "bgColor", MAIN_CONF | LIVE),
+	Param("borderColor", "borderColor", MAIN_CONF),
+	Param("cursorOutColor", "cursorOutColor", MAIN_CONF),
+	Param("cursorBgColor", "cursorBgColor", MAIN_CONF),
+	Param("todayCellColor", "todayCellColor", MAIN_CONF),
+	Param("textColor", "textColor", MAIN_CONF),
+	Param("holidayColor", "holidayColor", MAIN_CONF),
+	Param("inactiveColor", "inactiveColor", MAIN_CONF),
+	Param("borderTextColor", "borderTextColor", MAIN_CONF),
 	# ----------------- statusIcon
-	("statusIcon.imagePath", "statusIconImage", MAIN_CONF),
-	("statusIcon.holidayImagePath", "statusIconImageHoli", MAIN_CONF),
-	("statusIcon.fontFamilyEnable", "statusIconFontFamilyEnable", MAIN_CONF),
-	("statusIcon.fontFamily", "statusIconFontFamily", MAIN_CONF),
-	(
+	Param("statusIcon.imagePath", "statusIconImage", MAIN_CONF),
+	Param("statusIcon.holidayImagePath", "statusIconImageHoli", MAIN_CONF),
+	Param("statusIcon.fontFamilyEnable", "statusIconFontFamilyEnable", MAIN_CONF),
+	Param("statusIcon.fontFamily", "statusIconFontFamily", MAIN_CONF),
+	Param(
 		"statusIcon.holidayFontColorEnable",
 		"statusIconHolidayFontColorEnable",
 		MAIN_CONF,
 	),
-	("statusIcon.holidayFontColor", "statusIconHolidayFontColor", MAIN_CONF),
-	("statusIcon.localizeNumber", "statusIconLocalizeNumber", MAIN_CONF),
-	("statusIcon.fixedSizeEnable", "statusIconFixedSizeEnable", MAIN_CONF),
-	("statusIcon.fixedSizeWH", "statusIconFixedSizeWH", MAIN_CONF),
-	("statusIcon.pluginsText", "pluginsTextStatusIcon", MAIN_CONF),
+	Param("statusIcon.holidayFontColor", "statusIconHolidayFontColor", MAIN_CONF),
+	Param("statusIcon.localizeNumber", "statusIconLocalizeNumber", MAIN_CONF),
+	Param("statusIcon.fixedSizeEnable", "statusIconFixedSizeEnable", MAIN_CONF),
+	Param("statusIcon.fixedSizeWH", "statusIconFixedSizeWH", MAIN_CONF),
+	Param("statusIcon.pluginsText", "pluginsTextStatusIcon", MAIN_CONF),
 	# -----------------
-	("maxDayCacheSize", "maxDayCacheSize", MAIN_CONF),
-	("eventDayView.timeFormat", "eventDayViewTimeFormat", MAIN_CONF),
-	("preferencesPagePath", "preferencesPagePath", MAIN_CONF),
-	(
+	Param("maxDayCacheSize", "maxDayCacheSize", MAIN_CONF),
+	Param("eventDayView.timeFormat", "eventDayViewTimeFormat", MAIN_CONF),
+	Param("preferencesPagePath", "preferencesPagePath", MAIN_CONF),
+	Param(
 		"localTimezoneHistory",
 		"localTzHist",
 		MAIN_CONF,
 	),  # move to a new file like local-tz.json?
 	# ------------ winController
-	("winController.enable", "winControllerEnable", CUSTOMIZE),
-	("winController.theme", "winControllerTheme", CUSTOMIZE),
-	("winController.buttons", "winControllerButtons", CUSTOMIZE),
-	("winController.iconSize", "winControllerIconSize", CUSTOMIZE),
-	("winController.border", "winControllerBorder", CUSTOMIZE),
-	("winController.spacing", "winControllerSpacing", CUSTOMIZE),
-	("winController.pressState", "winControllerPressState", CUSTOMIZE),
+	Param("winController.enable", "winControllerEnable", CUSTOMIZE),
+	Param("winController.theme", "winControllerTheme", CUSTOMIZE),
+	Param("winController.buttons", "winControllerButtons", CUSTOMIZE),
+	Param("winController.iconSize", "winControllerIconSize", CUSTOMIZE),
+	Param("winController.border", "winControllerBorder", CUSTOMIZE),
+	Param("winController.spacing", "winControllerSpacing", CUSTOMIZE),
+	Param("winController.pressState", "winControllerPressState", CUSTOMIZE),
 	# ------------ rightPanel
-	("rightPanel.ratio", "mainWinRightPanelRatio", LIVE),
-	("rightPanel.enable", "mainWinRightPanelEnable", CUSTOMIZE),
-	("rightPanel.swap", "mainWinRightPanelSwap", CUSTOMIZE),
-	(
+	Param("rightPanel.ratio", "mainWinRightPanelRatio", LIVE),
+	Param("rightPanel.enable", "mainWinRightPanelEnable", CUSTOMIZE),
+	Param("rightPanel.swap", "mainWinRightPanelSwap", CUSTOMIZE),
+	Param(
 		"rightPanel.width",
 		"mainWinRightPanelWidth",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.widthRatio",
 		"mainWinRightPanelWidthRatio",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.widthRatioEnable",
 		"mainWinRightPanelWidthRatioEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.fontEnable",
 		"mainWinRightPanelEventFontEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.font",
 		"mainWinRightPanelEventFont",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.timeFontEnable",
 		"mainWinRightPanelEventTimeFontEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.timeFont",
 		"mainWinRightPanelEventTimeFont",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.justification",
 		"mainWinRightPanelEventJustification",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.event.sep",
 		"mainWinRightPanelEventSep",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.plugins.fontEnable",
 		"mainWinRightPanelPluginsFontEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.plugins.font",
 		"mainWinRightPanelPluginsFont",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.plugins.justification",
 		"mainWinRightPanelPluginsJustification",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.resizeOnToggle",
 		"mainWinRightPanelResizeOnToggle",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"rightPanel.borderWidth",
 		"mainWinRightPanelBorderWidth",
 		CUSTOMIZE,
 	),
 	# ------------ monthcal
-	(
+	Param(
 		"monthcal.leftMargin",
 		"mcalLeftMargin",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.topMargin",
 		"mcalTopMargin",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.typeParams",
 		"mcalTypeParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.grid",
 		"mcalGrid",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.gridColor",
 		"mcalGridColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.cursorLineWidthFactor",
 		"mcalCursorLineWidthFactor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"monthcal.cursorRoundingFactor",
 		"mcalCursorRoundingFactor",
 		CUSTOMIZE,
 	),
 	# ------------ weekcal
-	(
+	Param(
 		"weekcal.textSizeScale",
 		"wcalTextSizeScale",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.items",
 		"wcalItems",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.grid",
 		"wcalGrid",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.gridColor",
 		"wcalGridColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.upperGradientEnable",
 		"wcalUpperGradientEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.upperGradientColor",
 		"wcalUpperGradientColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.pastColorEnable",
 		"wcal_eventsText_pastColorEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.pastColor",
 		"wcal_eventsText_pastColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.ongoingColorEnable",
 		"wcal_eventsText_ongoingColorEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.ongoingColor",
 		"wcal_eventsText_ongoingColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.toolbar.weekNumNegative",
 		"wcal_toolbar_weekNum_negative",
 		LIVE,
 	),
-	(
+	Param(
 		"weekcal.toolbar.mainMenuIcon",
 		"wcal_toolbar_mainMenu_icon",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.weekDays.width",
 		"wcal_weekDays_width",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.weekDays.expand",
 		"wcal_weekDays_expand",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.weekDays.font",
 		"wcalFont_weekDays",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.pluginsText.font",
 		"wcalFont_pluginsText",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.pluginsText.firstLineOnly",
 		"wcal_pluginsText_firstLineOnly",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsIcon.width",
 		"wcal_eventsIcon_width",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.showDesc",
 		"wcal_eventsText_showDesc",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.colorize",
 		"wcal_eventsText_colorize",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsText.font",
 		"wcalFont_eventsText",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.daysOfMonth.direction",
 		"wcal_daysOfMonth_dir",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.typeParams",
 		"wcalTypeParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.daysOfMonth.width",
 		"wcal_daysOfMonth_width",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.daysOfMonth.expand",
 		"wcal_daysOfMonth_expand",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsCount.width",
 		"wcal_eventsCount_width",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsCount.expand",
 		"wcal_eventsCount_expand",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.eventsBox.font",
 		"wcalFont_eventsBox",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.moonStatus.width",
 		"wcal_moonStatus_width",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.cursorLineWidthFactor",
 		"wcalCursorLineWidthFactor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.cursorRoundingFactor",
 		"wcalCursorRoundingFactor",
 		CUSTOMIZE,
 	),
 	# ------------ daycal
-	(
+	Param(
 		"daycal.widgetButtonsEnable",
 		"dcalWidgetButtonsEnable",
 		CUSTOMIZE,
 	),
-	# ("daycal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
-	(
+	# Param("daycal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
+	Param(
 		"daycal.day.params",
 		"dcalDayParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.month.params",
 		"dcalMonthParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.weekday.params",
 		"dcalWeekdayParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.navButtons.enable",
 		"dcalNavButtonsEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.navButtons.geo",
 		"dcalNavButtonsGeo",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.navButtons.opacity",
 		"dcalNavButtonsOpacity",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.weekday.localize",
 		"dcalWeekdayLocalize",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.weekday.abbreviate",
 		"dcalWeekdayAbbreviate",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.weekday.uppercase",
 		"dcalWeekdayUppercase",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.eventIconSize",
 		"dcalEventIconSize",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"daycal.eventTotalSizeRatio",
 		"dcalEventTotalSizeRatio",
 		CUSTOMIZE,
 	),
 	# ------------ dayCalWin
-	(
+	Param(
 		"dayCalWin.backgroundColor",
 		"dcalWinBackgroundColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.widgetButtonsEnable",
 		"dcalWinWidgetButtonsEnable",
 		CUSTOMIZE,
 	),
-	# ("dayCalWin.widgetButtons", "dcalWinWidgetButtons", CUSTOMIZE),
-	(
+	# Param("dayCalWin.widgetButtons", "dcalWinWidgetButtons", CUSTOMIZE),
+	Param(
 		"dayCalWin.weekday.localize",
 		"dcalWinWeekdayLocalize",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.weekday.abbreviate",
 		"dcalWinWeekdayAbbreviate",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.weekday.uppercase",
 		"dcalWinWeekdayUppercase",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.day.params",
 		"dcalWinDayParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.month.params",
 		"dcalWinMonthParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.weekday.params",
 		"dcalWinWeekdayParams",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.eventIconSize",
 		"dcalWinEventIconSize",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.eventTotalSizeRatio",
 		"dcalWinEventTotalSizeRatio",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.enable",
 		"dcalWinSeasonPieEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.geo",
 		"dcalWinSeasonPieGeo",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.springColor",
 		"dcalWinSeasonPieSpringColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.summerColor",
 		"dcalWinSeasonPieSummerColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.autumnColor",
 		"dcalWinSeasonPieAutumnColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.winterColor",
 		"dcalWinSeasonPieWinterColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"dayCalWin.seasonPie.textColor",
 		"dcalWinSeasonPieTextColor",
 		CUSTOMIZE,
 	),
 	# ------------ pluginsText
-	(
+	Param(
 		"pluginsText.enable",
 		"pluginsTextEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"pluginsText.isExpanded",
 		"pluginsTextIsExpanded",
 		LIVE,
 	),
-	(
+	Param(
 		"pluginsText.insideExpander",
 		"pluginsTextInsideExpander",
 		CUSTOMIZE,
 	),
 	# ------------ eventDayView
-	(
+	Param(
 		"eventDayView.enable",
 		"eventDayViewEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"eventDayView.eventSep",
 		"eventDayViewEventSep",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"eventDayView.maxHeight",
 		"eventViewMaxHeight",
 		CUSTOMIZE,
 	),
 	# ------------
-	(
+	Param(
 		"monthPBar.calType",
 		"monthPBarCalType",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"seasonPBar.southernHemisphere",
 		"seasonPBar_southernHemisphere",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"weekcal.moonStatus.southernHemisphere",
 		"wcal_moonStatus_southernHemisphere",
 		CUSTOMIZE,
 	),
 	# ------------ statusBar
-	(
+	Param(
 		"statusBar.enable",
 		"statusBarEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"statusBar.dates.reverseOrder",
 		"statusBarDatesReverseOrder",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"statusBar.dates.colorEnable",
 		"statusBarDatesColorEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"statusBar.dates.color",
 		"statusBarDatesColor",
 		CUSTOMIZE,
 	),
 	# ------------
-	(
+	Param(
 		"labelBox.borderWidth",
 		"labelBoxBorderWidth",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.menuActiveColor",
 		"labelBoxMenuActiveColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.yearColorEnable",
 		"labelBoxYearColorEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.yearColor",
 		"labelBoxYearColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.monthColorEnable",
 		"labelBoxMonthColorEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.monthColor",
 		"labelBoxMonthColor",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.fontEnable",
 		"labelBoxFontEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.font",
 		"labelBoxFont",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.primaryFontEnable",
 		"labelBoxPrimaryFontEnable",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.primaryFont",
 		"labelBoxPrimaryFont",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"labelBox.boldYearMonth",
 		"boldYmLabel",
 		CUSTOMIZE,
 	),
 	# ------------
-	(
+	Param(
 		"ud.wcalToolbarData",
 		"ud__wcalToolbarData",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"ud.mainToolbarData",
 		"ud__mainToolbarData",
 		CUSTOMIZE,
 	),
-	(
+	Param(
 		"customizePagePath",
 		"customizePagePath",
 		CUSTOMIZE,
 	),
 ]
 
-confParams = [name for _, name, flags in confParamsData if flags & MAIN_CONF > 0]
-confParamsLive = [name for _, name, flags in confParamsData if flags & LIVE > 0]
-confParamsCustomize = [
-	name for _, name, flags in confParamsData if flags & CUSTOMIZE > 0
-]
+confParams = [p.v3Name for p in confParamsData if p.flags & MAIN_CONF > 0]
+confParamsLive = [p.v3Name for p in confParamsData if p.flags & LIVE > 0]
+confParamsCustomize = [p.v3Name for p in confParamsData if p.flags & CUSTOMIZE > 0]
 # print(f"confParams = {sorted(confParams)}")
 # print(f"confParamsLive = {sorted(confParamsLive)}")
 # print(f"confParamsCustomize = {sorted(confParamsCustomize)}")
