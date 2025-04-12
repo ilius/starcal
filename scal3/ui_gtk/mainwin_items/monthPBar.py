@@ -33,11 +33,11 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		if calType == -1:
 			calType = calTypes.primary
 
-		dates = ui.cell.dates[calType]
+		dates = ui.cells.current.dates[calType]
 		year = dates[0]
 		month = dates[1]
 		jd0 = to_jd(year, month, 1, calType)
-		jd1 = ui.cell.jd
+		jd1 = ui.cells.current.jd
 		nyear, nmonth = monthPlus(year, month, 1)
 		jd2 = to_jd(nyear, nmonth, 1, calType)
 		length = jd2 - jd0

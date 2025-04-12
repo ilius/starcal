@@ -238,7 +238,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		rowH = h / 7
 		for i in range(7):
 			c = self.wcal.status[i]
-			if c.jd == ui.todayCell.jd:
+			if c.jd == ui.cells.today.jd:
 				cr.rectangle(
 					0,
 					i * rowH,
@@ -246,7 +246,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 					rowH,
 				)
 				fillColor(cr, ui.todayCellColor)
-			if self.showCursor and c.jd == ui.cell.jd:
+			if self.showCursor and c.jd == ui.cells.current.jd:
 				self.drawCursorBg(
 					cr,
 					0,  # x0
@@ -475,9 +475,9 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 
 	def updateLabel(self):
 		if ui.wcal_toolbar_weekNum_negative:
-			n = ui.cell.weekNumNeg
+			n = ui.cells.current.weekNumNeg
 		else:
-			n = ui.cell.weekNum
+			n = ui.cells.current.weekNum
 		self.label.set_label(_(n))
 
 	def onDateChange(self, *a, **ka):
@@ -1324,7 +1324,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 	@staticmethod
 	def getCellPagePlus(cell, plus):
-		return ui.cellCache.getCell(cell.jd + 7 * plus)
+		return ui.cells.getCell(cell.jd + 7 * plus)
 
 	def __init__(self, win):
 		self.win = win
@@ -1472,7 +1472,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		from scal3.weekcal import getCurrentWeekStatus
 
 		self.status = getCurrentWeekStatus()
-		index = ui.cell.jd - self.status[0].jd
+		index = ui.cells.current.jd - self.status[0].jd
 		if index > 6:
 			log.info(f"warning: drawCursorFg: {index = }")
 			return
@@ -1587,7 +1587,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		alloc = self.get_allocation()
 		return (
 			int(alloc.width / 2),
-			(ui.cell.weekDayIndex + 1) * alloc.height / 7,
+			(ui.cells.current.weekDayIndex + 1) * alloc.height / 7,
 		)
 
 	def getToolbar(self):
@@ -1609,7 +1609,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 
 if __name__ == "__main__":
+	from scal3 import cell
+
 	ui.init()
+	cell.init()
 	win = gtk.Dialog()
 	cal = CalObj()
 	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
