@@ -46,6 +46,10 @@ except Exception:
 
 	log = FallbackLogger()
 
+
+__all__ = ["BaseJsonPlugin", "loadPlugin"]
+
+
 # FIXME
 pluginsTitleByName = {
 	"pray_times": _("Islamic Pray Times"),

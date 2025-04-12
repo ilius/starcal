@@ -17,6 +17,7 @@ from scal3.ui_gtk.utils import (
 	resolveImagePath,
 )
 
+__all__ = ["IconSelectButton"]
 # FIXME
 # for uknown reason, the file chooser dialog comes logically behind it's parent
 # so it's not capturing mouse and keyboard unless you press Escape that closes

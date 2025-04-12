@@ -3,6 +3,8 @@ from time import localtime
 from scal3.mywidgets.multi_spin import DayField, MonthField, YearField
 from scal3.ui_gtk.mywidgets.multi_spin.option_box import MultiSpinOptionBox
 
+__all__ = ["DateButtonOption"]
+
 
 class DateButtonOption(MultiSpinOptionBox):
 	def __init__(self, date=None, **kwargs):

@@ -76,6 +76,9 @@ if TYPE_CHECKING:
 # FIXME: rewove this
 
 
+__all__ = ["TimeLineWindow"]
+
+
 def show_event(widget, gevent):
 	log.info(
 		type(widget),

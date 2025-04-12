@@ -1,6 +1,8 @@
 from scal3.mywidgets.multi_spin import FloatField
 from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
+__all__ = ["FloatSpinButton"]
+
 
 class FloatSpinButton(SingleSpinButton):
 	def __init__(self, _min, _max, digits, step=0.0, **kwargs):
