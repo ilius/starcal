@@ -26,7 +26,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
-		event.setJd(ui.cell.jd)
+		event.setJd(ui.cells.current.jd)
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
