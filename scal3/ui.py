@@ -81,6 +81,8 @@ confParamsMapping = {
 	"winKeepAbove": ("mainWin.keepAbove", LIVE),
 	"winSticky": ("mainWin.sticky", LIVE),
 	"winMaximized": ("mainWin.maximized", LIVE),
+	"mainWinItems": ("mainWin.items", CUSTOMIZE),
+	"mainWinFooterItems": ("mainWin.footerItems", CUSTOMIZE),
 	# -----------------
 	"useAppIndicator": ("useAppIndicator", MAIN_CONF),
 	"showDigClockTr": ("statusIcon.digitalClockEnable", MAIN_CONF),
@@ -121,9 +123,6 @@ confParamsMapping = {
 		"localTimezoneHistory",
 		MAIN_CONF,
 	),  # move to a new file like local-tz.json?
-	# -----------------
-	"mainWinItems": ("mainWin.items", CUSTOMIZE),
-	"mainWinFooterItems": ("mainWin.footerItems", CUSTOMIZE),
 	# ------------ winController
 	"winControllerEnable": ("winController.enable", CUSTOMIZE),
 	"winControllerTheme": ("winController.theme", CUSTOMIZE),
@@ -277,13 +276,13 @@ confParamsMapping = {
 }
 
 confParams = [
-	key for key, value in confParamsMapping.items() if value[1] & MAIN_CONF > 0
+	key for key, value in confParamsMapping.items() if value[-1] & MAIN_CONF > 0
 ]
 confParamsLive = [
-	key for key, value in confParamsMapping.items() if value[1] & LIVE > 0
+	key for key, value in confParamsMapping.items() if value[-1] & LIVE > 0
 ]
 confParamsCustomize = [
-	key for key, value in confParamsMapping.items() if value[1] & CUSTOMIZE > 0
+	key for key, value in confParamsMapping.items() if value[-1] & CUSTOMIZE > 0
 ]
 # print(f"confParams = {sorted(confParams)}")
 # print(f"confParamsLive = {sorted(confParamsLive)}")
