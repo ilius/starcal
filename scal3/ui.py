@@ -70,219 +70,635 @@ LIVE = 2
 CUSTOMIZE = 4
 
 
-confParamsMapping = {
-	"showMain": ("mainWin.openOnStartup", MAIN_CONF),
-	"showDesktopWidget": ("dayCalWin.enable", MAIN_CONF),
-	"winTaskbar": ("mainWin.inTaskbar", MAIN_CONF),
-	"winX": ("mainWin.geo.x", LIVE),
-	"winY": ("mainWin.geo.y", LIVE),
-	"winWidth": ("mainWin.geo.width", LIVE),
-	"winHeight": ("mainWin.geo.height", LIVE),
-	"winKeepAbove": ("mainWin.keepAbove", LIVE),
-	"winSticky": ("mainWin.sticky", LIVE),
-	"winMaximized": ("mainWin.maximized", LIVE),
-	"mainWinItems": ("mainWin.items", CUSTOMIZE),
-	"mainWinFooterItems": ("mainWin.footerItems", CUSTOMIZE),
-	# -----------------
-	"useAppIndicator": ("useAppIndicator", MAIN_CONF),
-	"showDigClockTr": ("statusIcon.digitalClockEnable", MAIN_CONF),
-	"fontCustomEnable": ("fontCustomEnable", MAIN_CONF),
-	"fontCustom": ("fontCustom", MAIN_CONF),
-	"buttonIconEnable": ("buttonIconEnable", MAIN_CONF),
-	"useSystemIcons": ("useSystemIcons", MAIN_CONF),
-	"oldStyleProgressBar": ("oldStyleProgressBar", MAIN_CONF),
-	# ----------------- colors
-	"bgColor": ("bgColor", MAIN_CONF | LIVE),
-	"borderColor": ("borderColor", MAIN_CONF),
-	"cursorOutColor": ("cursorOutColor", MAIN_CONF),
-	"cursorBgColor": ("cursorBgColor", MAIN_CONF),
-	"todayCellColor": ("todayCellColor", MAIN_CONF),
-	"textColor": ("textColor", MAIN_CONF),
-	"holidayColor": ("holidayColor", MAIN_CONF),
-	"inactiveColor": ("inactiveColor", MAIN_CONF),
-	"borderTextColor": ("borderTextColor", MAIN_CONF),
-	# ----------------- statusIcon
-	"statusIconImage": ("statusIcon.imagePath", MAIN_CONF),
-	"statusIconImageHoli": ("statusIcon.holidayImagePath", MAIN_CONF),
-	"statusIconFontFamilyEnable": ("statusIcon.fontFamilyEnable", MAIN_CONF),
-	"statusIconFontFamily": ("statusIcon.fontFamily", MAIN_CONF),
-	"statusIconHolidayFontColorEnable": (
-		"statusIcon.holidayFontColorEnable",
+confParamsData = [
+	(
+		"mainWin.openOnStartup",
+		"showMain",
 		MAIN_CONF,
 	),
-	"statusIconHolidayFontColor": ("statusIcon.holidayFontColor", MAIN_CONF),
-	"statusIconLocalizeNumber": ("statusIcon.localizeNumber", MAIN_CONF),
-	"statusIconFixedSizeEnable": ("statusIcon.fixedSizeEnable", MAIN_CONF),
-	"statusIconFixedSizeWH": ("statusIcon.fixedSizeWH", MAIN_CONF),
-	"pluginsTextStatusIcon": ("statusIcon.pluginsText", MAIN_CONF),
+	("dayCalWin.enable", "showDesktopWidget", MAIN_CONF),
+	("mainWin.inTaskbar", "winTaskbar", MAIN_CONF),
+	("mainWin.geo.x", "winX", LIVE),
+	("mainWin.geo.y", "winY", LIVE),
+	("mainWin.geo.width", "winWidth", LIVE),
+	("mainWin.geo.height", "winHeight", LIVE),
+	("mainWin.keepAbove", "winKeepAbove", LIVE),
+	("mainWin.sticky", "winSticky", LIVE),
+	("mainWin.maximized", "winMaximized", LIVE),
+	("mainWin.items", "mainWinItems", CUSTOMIZE),
+	("mainWin.footerItems", "mainWinFooterItems", CUSTOMIZE),
 	# -----------------
-	"maxDayCacheSize": ("maxDayCacheSize", MAIN_CONF),
-	"eventDayViewTimeFormat": ("eventDayView.timeFormat", MAIN_CONF),
-	"preferencesPagePath": ("preferencesPagePath", MAIN_CONF),
-	"localTzHist": (
+	("useAppIndicator", "useAppIndicator", MAIN_CONF),
+	("statusIcon.digitalClockEnable", "showDigClockTr", MAIN_CONF),
+	("fontCustomEnable", "fontCustomEnable", MAIN_CONF),
+	("fontCustom", "fontCustom", MAIN_CONF),
+	("buttonIconEnable", "buttonIconEnable", MAIN_CONF),
+	("useSystemIcons", "useSystemIcons", MAIN_CONF),
+	("oldStyleProgressBar", "oldStyleProgressBar", MAIN_CONF),
+	# ----------------- colors
+	("bgColor", "bgColor", MAIN_CONF | LIVE),
+	("borderColor", "borderColor", MAIN_CONF),
+	("cursorOutColor", "cursorOutColor", MAIN_CONF),
+	("cursorBgColor", "cursorBgColor", MAIN_CONF),
+	("todayCellColor", "todayCellColor", MAIN_CONF),
+	("textColor", "textColor", MAIN_CONF),
+	("holidayColor", "holidayColor", MAIN_CONF),
+	("inactiveColor", "inactiveColor", MAIN_CONF),
+	("borderTextColor", "borderTextColor", MAIN_CONF),
+	# ----------------- statusIcon
+	("statusIcon.imagePath", "statusIconImage", MAIN_CONF),
+	("statusIcon.holidayImagePath", "statusIconImageHoli", MAIN_CONF),
+	("statusIcon.fontFamilyEnable", "statusIconFontFamilyEnable", MAIN_CONF),
+	("statusIcon.fontFamily", "statusIconFontFamily", MAIN_CONF),
+	(
+		"statusIcon.holidayFontColorEnable",
+		"statusIconHolidayFontColorEnable",
+		MAIN_CONF,
+	),
+	("statusIcon.holidayFontColor", "statusIconHolidayFontColor", MAIN_CONF),
+	("statusIcon.localizeNumber", "statusIconLocalizeNumber", MAIN_CONF),
+	("statusIcon.fixedSizeEnable", "statusIconFixedSizeEnable", MAIN_CONF),
+	("statusIcon.fixedSizeWH", "statusIconFixedSizeWH", MAIN_CONF),
+	("statusIcon.pluginsText", "pluginsTextStatusIcon", MAIN_CONF),
+	# -----------------
+	("maxDayCacheSize", "maxDayCacheSize", MAIN_CONF),
+	("eventDayView.timeFormat", "eventDayViewTimeFormat", MAIN_CONF),
+	("preferencesPagePath", "preferencesPagePath", MAIN_CONF),
+	(
 		"localTimezoneHistory",
+		"localTzHist",
 		MAIN_CONF,
 	),  # move to a new file like local-tz.json?
 	# ------------ winController
-	"winControllerEnable": ("winController.enable", CUSTOMIZE),
-	"winControllerTheme": ("winController.theme", CUSTOMIZE),
-	"winControllerButtons": ("winController.buttons", CUSTOMIZE),
-	"winControllerIconSize": ("winController.iconSize", CUSTOMIZE),
-	"winControllerBorder": ("winController.border", CUSTOMIZE),
-	"winControllerSpacing": ("winController.spacing", CUSTOMIZE),
-	"winControllerPressState": ("winController.pressState", CUSTOMIZE),
+	("winController.enable", "winControllerEnable", CUSTOMIZE),
+	("winController.theme", "winControllerTheme", CUSTOMIZE),
+	("winController.buttons", "winControllerButtons", CUSTOMIZE),
+	("winController.iconSize", "winControllerIconSize", CUSTOMIZE),
+	("winController.border", "winControllerBorder", CUSTOMIZE),
+	("winController.spacing", "winControllerSpacing", CUSTOMIZE),
+	("winController.pressState", "winControllerPressState", CUSTOMIZE),
 	# ------------ rightPanel
-	"mainWinRightPanelRatio": ("rightPanel.ratio", LIVE),
-	"mainWinRightPanelEnable": ("rightPanel.enable", CUSTOMIZE),
-	"mainWinRightPanelSwap": ("rightPanel.swap", CUSTOMIZE),
-	"mainWinRightPanelWidth": ("rightPanel.width", CUSTOMIZE),
-	"mainWinRightPanelWidthRatio": ("rightPanel.widthRatio", CUSTOMIZE),
-	"mainWinRightPanelWidthRatioEnable": ("rightPanel.widthRatioEnable", CUSTOMIZE),
-	"mainWinRightPanelEventFontEnable": ("rightPanel.event.fontEnable", CUSTOMIZE),
-	"mainWinRightPanelEventFont": ("rightPanel.event.font", CUSTOMIZE),
-	"mainWinRightPanelEventTimeFontEnable": (
+	("rightPanel.ratio", "mainWinRightPanelRatio", LIVE),
+	("rightPanel.enable", "mainWinRightPanelEnable", CUSTOMIZE),
+	("rightPanel.swap", "mainWinRightPanelSwap", CUSTOMIZE),
+	(
+		"rightPanel.width",
+		"mainWinRightPanelWidth",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.widthRatio",
+		"mainWinRightPanelWidthRatio",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.widthRatioEnable",
+		"mainWinRightPanelWidthRatioEnable",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.event.fontEnable",
+		"mainWinRightPanelEventFontEnable",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.event.font",
+		"mainWinRightPanelEventFont",
+		CUSTOMIZE,
+	),
+	(
 		"rightPanel.event.timeFontEnable",
+		"mainWinRightPanelEventTimeFontEnable",
 		CUSTOMIZE,
 	),
-	"mainWinRightPanelEventTimeFont": ("rightPanel.event.timeFont", CUSTOMIZE),
-	"mainWinRightPanelEventJustification": (
+	(
+		"rightPanel.event.timeFont",
+		"mainWinRightPanelEventTimeFont",
+		CUSTOMIZE,
+	),
+	(
 		"rightPanel.event.justification",
+		"mainWinRightPanelEventJustification",
 		CUSTOMIZE,
 	),
-	"mainWinRightPanelEventSep": ("rightPanel.event.sep", CUSTOMIZE),
-	"mainWinRightPanelPluginsFontEnable": ("rightPanel.plugins.fontEnable", CUSTOMIZE),
-	"mainWinRightPanelPluginsFont": ("rightPanel.plugins.font", CUSTOMIZE),
-	"mainWinRightPanelPluginsJustification": (
+	(
+		"rightPanel.event.sep",
+		"mainWinRightPanelEventSep",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.plugins.fontEnable",
+		"mainWinRightPanelPluginsFontEnable",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.plugins.font",
+		"mainWinRightPanelPluginsFont",
+		CUSTOMIZE,
+	),
+	(
 		"rightPanel.plugins.justification",
+		"mainWinRightPanelPluginsJustification",
 		CUSTOMIZE,
 	),
-	"mainWinRightPanelResizeOnToggle": ("rightPanel.resizeOnToggle", CUSTOMIZE),
-	"mainWinRightPanelBorderWidth": ("rightPanel.borderWidth", CUSTOMIZE),
+	(
+		"rightPanel.resizeOnToggle",
+		"mainWinRightPanelResizeOnToggle",
+		CUSTOMIZE,
+	),
+	(
+		"rightPanel.borderWidth",
+		"mainWinRightPanelBorderWidth",
+		CUSTOMIZE,
+	),
 	# ------------ monthcal
-	"mcalLeftMargin": ("monthcal.leftMargin", CUSTOMIZE),
-	"mcalTopMargin": ("monthcal.topMargin", CUSTOMIZE),
-	"mcalTypeParams": ("monthcal.typeParams", CUSTOMIZE),
-	"mcalGrid": ("monthcal.grid", CUSTOMIZE),
-	"mcalGridColor": ("monthcal.gridColor", CUSTOMIZE),
-	"mcalCursorLineWidthFactor": ("monthcal.cursorLineWidthFactor", CUSTOMIZE),
-	"mcalCursorRoundingFactor": ("monthcal.cursorRoundingFactor", CUSTOMIZE),
+	(
+		"monthcal.leftMargin",
+		"mcalLeftMargin",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.topMargin",
+		"mcalTopMargin",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.typeParams",
+		"mcalTypeParams",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.grid",
+		"mcalGrid",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.gridColor",
+		"mcalGridColor",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.cursorLineWidthFactor",
+		"mcalCursorLineWidthFactor",
+		CUSTOMIZE,
+	),
+	(
+		"monthcal.cursorRoundingFactor",
+		"mcalCursorRoundingFactor",
+		CUSTOMIZE,
+	),
 	# ------------ weekcal
-	"wcalTextSizeScale": ("weekcal.textSizeScale", CUSTOMIZE),
-	"wcalItems": ("weekcal.items", CUSTOMIZE),
-	"wcalGrid": ("weekcal.grid", CUSTOMIZE),
-	"wcalGridColor": ("weekcal.gridColor", CUSTOMIZE),
-	"wcalUpperGradientEnable": ("weekcal.upperGradientEnable", CUSTOMIZE),
-	"wcalUpperGradientColor": ("weekcal.upperGradientColor", CUSTOMIZE),
-	"wcal_eventsText_pastColorEnable": (
+	(
+		"weekcal.textSizeScale",
+		"wcalTextSizeScale",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.items",
+		"wcalItems",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.grid",
+		"wcalGrid",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.gridColor",
+		"wcalGridColor",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.upperGradientEnable",
+		"wcalUpperGradientEnable",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.upperGradientColor",
+		"wcalUpperGradientColor",
+		CUSTOMIZE,
+	),
+	(
 		"weekcal.eventsText.pastColorEnable",
+		"wcal_eventsText_pastColorEnable",
 		CUSTOMIZE,
 	),
-	"wcal_eventsText_pastColor": ("weekcal.eventsText.pastColor", CUSTOMIZE),
-	"wcal_eventsText_ongoingColorEnable": (
+	(
+		"weekcal.eventsText.pastColor",
+		"wcal_eventsText_pastColor",
+		CUSTOMIZE,
+	),
+	(
 		"weekcal.eventsText.ongoingColorEnable",
+		"wcal_eventsText_ongoingColorEnable",
 		CUSTOMIZE,
 	),
-	"wcal_eventsText_ongoingColor": ("weekcal.eventsText.ongoingColor", CUSTOMIZE),
-	"wcal_toolbar_weekNum_negative": ("weekcal.toolbar.weekNumNegative", LIVE),
-	"wcal_toolbar_mainMenu_icon": ("weekcal.toolbar.mainMenuIcon", CUSTOMIZE),
-	"wcal_weekDays_width": ("weekcal.weekDays.width", CUSTOMIZE),
-	"wcal_weekDays_expand": ("weekcal.weekDays.expand", CUSTOMIZE),
-	"wcalFont_weekDays": ("weekcal.weekDays.font", CUSTOMIZE),
-	"wcalFont_pluginsText": ("weekcal.pluginsText.font", CUSTOMIZE),
-	"wcal_pluginsText_firstLineOnly": ("weekcal.pluginsText.firstLineOnly", CUSTOMIZE),
-	"wcal_eventsIcon_width": ("weekcal.eventsIcon.width", CUSTOMIZE),
-	"wcal_eventsText_showDesc": ("weekcal.eventsText.showDesc", CUSTOMIZE),
-	"wcal_eventsText_colorize": ("weekcal.eventsText.colorize", CUSTOMIZE),
-	"wcalFont_eventsText": ("weekcal.eventsText.font", CUSTOMIZE),
-	"wcal_daysOfMonth_dir": ("weekcal.daysOfMonth.direction", CUSTOMIZE),
-	"wcalTypeParams": ("weekcal.typeParams", CUSTOMIZE),
-	"wcal_daysOfMonth_width": ("weekcal.daysOfMonth.width", CUSTOMIZE),
-	"wcal_daysOfMonth_expand": ("weekcal.daysOfMonth.expand", CUSTOMIZE),
-	"wcal_eventsCount_width": ("weekcal.eventsCount.width", CUSTOMIZE),
-	"wcal_eventsCount_expand": ("weekcal.eventsCount.expand", CUSTOMIZE),
-	"wcalFont_eventsBox": ("weekcal.eventsBox.font", CUSTOMIZE),
-	"wcal_moonStatus_width": ("weekcal.moonStatus.width", CUSTOMIZE),
-	"wcalCursorLineWidthFactor": ("weekcal.cursorLineWidthFactor", CUSTOMIZE),
-	"wcalCursorRoundingFactor": ("weekcal.cursorRoundingFactor", CUSTOMIZE),
+	(
+		"weekcal.eventsText.ongoingColor",
+		"wcal_eventsText_ongoingColor",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.toolbar.weekNumNegative",
+		"wcal_toolbar_weekNum_negative",
+		LIVE,
+	),
+	(
+		"weekcal.toolbar.mainMenuIcon",
+		"wcal_toolbar_mainMenu_icon",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.weekDays.width",
+		"wcal_weekDays_width",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.weekDays.expand",
+		"wcal_weekDays_expand",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.weekDays.font",
+		"wcalFont_weekDays",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.pluginsText.font",
+		"wcalFont_pluginsText",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.pluginsText.firstLineOnly",
+		"wcal_pluginsText_firstLineOnly",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsIcon.width",
+		"wcal_eventsIcon_width",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsText.showDesc",
+		"wcal_eventsText_showDesc",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsText.colorize",
+		"wcal_eventsText_colorize",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsText.font",
+		"wcalFont_eventsText",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.daysOfMonth.direction",
+		"wcal_daysOfMonth_dir",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.typeParams",
+		"wcalTypeParams",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.daysOfMonth.width",
+		"wcal_daysOfMonth_width",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.daysOfMonth.expand",
+		"wcal_daysOfMonth_expand",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsCount.width",
+		"wcal_eventsCount_width",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsCount.expand",
+		"wcal_eventsCount_expand",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.eventsBox.font",
+		"wcalFont_eventsBox",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.moonStatus.width",
+		"wcal_moonStatus_width",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.cursorLineWidthFactor",
+		"wcalCursorLineWidthFactor",
+		CUSTOMIZE,
+	),
+	(
+		"weekcal.cursorRoundingFactor",
+		"wcalCursorRoundingFactor",
+		CUSTOMIZE,
+	),
 	# ------------ daycal
-	"dcalWidgetButtonsEnable": ("daycal.widgetButtonsEnable", CUSTOMIZE),
-	# "dcalWidgetButtons": "daycal.widgetButtons",
-	"dcalDayParams": ("daycal.day.params", CUSTOMIZE),
-	"dcalMonthParams": ("daycal.month.params", CUSTOMIZE),
-	"dcalWeekdayParams": ("daycal.weekday.params", CUSTOMIZE),
-	"dcalNavButtonsEnable": ("daycal.navButtons.enable", CUSTOMIZE),
-	"dcalNavButtonsGeo": ("daycal.navButtons.geo", CUSTOMIZE),
-	"dcalNavButtonsOpacity": ("daycal.navButtons.opacity", CUSTOMIZE),
-	"dcalWeekdayLocalize": ("daycal.weekday.localize", CUSTOMIZE),
-	"dcalWeekdayAbbreviate": ("daycal.weekday.abbreviate", CUSTOMIZE),
-	"dcalWeekdayUppercase": ("daycal.weekday.uppercase", CUSTOMIZE),
-	"dcalEventIconSize": ("daycal.eventIconSize", CUSTOMIZE),
-	"dcalEventTotalSizeRatio": ("daycal.eventTotalSizeRatio", CUSTOMIZE),
+	(
+		"daycal.widgetButtonsEnable",
+		"dcalWidgetButtonsEnable",
+		CUSTOMIZE,
+	),
+	# ("daycal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
+	(
+		"daycal.day.params",
+		"dcalDayParams",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.month.params",
+		"dcalMonthParams",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.weekday.params",
+		"dcalWeekdayParams",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.navButtons.enable",
+		"dcalNavButtonsEnable",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.navButtons.geo",
+		"dcalNavButtonsGeo",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.navButtons.opacity",
+		"dcalNavButtonsOpacity",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.weekday.localize",
+		"dcalWeekdayLocalize",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.weekday.abbreviate",
+		"dcalWeekdayAbbreviate",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.weekday.uppercase",
+		"dcalWeekdayUppercase",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.eventIconSize",
+		"dcalEventIconSize",
+		CUSTOMIZE,
+	),
+	(
+		"daycal.eventTotalSizeRatio",
+		"dcalEventTotalSizeRatio",
+		CUSTOMIZE,
+	),
 	# ------------ dayCalWin
-	"dcalWinBackgroundColor": ("dayCalWin.backgroundColor", CUSTOMIZE),
-	"dcalWinWidgetButtonsEnable": ("dayCalWin.widgetButtonsEnable", CUSTOMIZE),
-	# "dcalWinWidgetButtons": ("dayCalWin.widgetButtons", CUSTOMIZE),
-	"dcalWinWeekdayLocalize": ("dayCalWin.weekday.localize", CUSTOMIZE),
-	"dcalWinWeekdayAbbreviate": ("dayCalWin.weekday.abbreviate", CUSTOMIZE),
-	"dcalWinWeekdayUppercase": ("dayCalWin.weekday.uppercase", CUSTOMIZE),
-	"dcalWinDayParams": ("dayCalWin.day.params", CUSTOMIZE),
-	"dcalWinMonthParams": ("dayCalWin.month.params", CUSTOMIZE),
-	"dcalWinWeekdayParams": ("dayCalWin.weekday.params", CUSTOMIZE),
-	"dcalWinEventIconSize": ("dayCalWin.eventIconSize", CUSTOMIZE),
-	"dcalWinEventTotalSizeRatio": ("dayCalWin.eventTotalSizeRatio", CUSTOMIZE),
-	"dcalWinSeasonPieEnable": ("dayCalWin.seasonPie.enable", CUSTOMIZE),
-	"dcalWinSeasonPieGeo": ("dayCalWin.seasonPie.geo", CUSTOMIZE),
-	"dcalWinSeasonPieSpringColor": ("dayCalWin.seasonPie.springColor", CUSTOMIZE),
-	"dcalWinSeasonPieSummerColor": ("dayCalWin.seasonPie.summerColor", CUSTOMIZE),
-	"dcalWinSeasonPieAutumnColor": ("dayCalWin.seasonPie.autumnColor", CUSTOMIZE),
-	"dcalWinSeasonPieWinterColor": ("dayCalWin.seasonPie.winterColor", CUSTOMIZE),
-	"dcalWinSeasonPieTextColor": ("dayCalWin.seasonPie.textColor", CUSTOMIZE),
+	(
+		"dayCalWin.backgroundColor",
+		"dcalWinBackgroundColor",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.widgetButtonsEnable",
+		"dcalWinWidgetButtonsEnable",
+		CUSTOMIZE,
+	),
+	# ("dayCalWin.widgetButtons", "dcalWinWidgetButtons", CUSTOMIZE),
+	(
+		"dayCalWin.weekday.localize",
+		"dcalWinWeekdayLocalize",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.weekday.abbreviate",
+		"dcalWinWeekdayAbbreviate",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.weekday.uppercase",
+		"dcalWinWeekdayUppercase",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.day.params",
+		"dcalWinDayParams",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.month.params",
+		"dcalWinMonthParams",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.weekday.params",
+		"dcalWinWeekdayParams",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.eventIconSize",
+		"dcalWinEventIconSize",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.eventTotalSizeRatio",
+		"dcalWinEventTotalSizeRatio",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.enable",
+		"dcalWinSeasonPieEnable",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.geo",
+		"dcalWinSeasonPieGeo",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.springColor",
+		"dcalWinSeasonPieSpringColor",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.summerColor",
+		"dcalWinSeasonPieSummerColor",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.autumnColor",
+		"dcalWinSeasonPieAutumnColor",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.winterColor",
+		"dcalWinSeasonPieWinterColor",
+		CUSTOMIZE,
+	),
+	(
+		"dayCalWin.seasonPie.textColor",
+		"dcalWinSeasonPieTextColor",
+		CUSTOMIZE,
+	),
 	# ------------ pluginsText
-	"pluginsTextEnable": ("pluginsText.enable", CUSTOMIZE),
-	"pluginsTextIsExpanded": ("pluginsText.isExpanded", LIVE),
-	"pluginsTextInsideExpander": ("pluginsText.insideExpander", CUSTOMIZE),
+	(
+		"pluginsText.enable",
+		"pluginsTextEnable",
+		CUSTOMIZE,
+	),
+	(
+		"pluginsText.isExpanded",
+		"pluginsTextIsExpanded",
+		LIVE,
+	),
+	(
+		"pluginsText.insideExpander",
+		"pluginsTextInsideExpander",
+		CUSTOMIZE,
+	),
 	# ------------ eventDayView
-	"eventDayViewEnable": ("eventDayView.enable", CUSTOMIZE),
-	"eventDayViewEventSep": ("eventDayView.eventSep", CUSTOMIZE),
-	"eventViewMaxHeight": ("eventDayView.maxHeight", CUSTOMIZE),
+	(
+		"eventDayView.enable",
+		"eventDayViewEnable",
+		CUSTOMIZE,
+	),
+	(
+		"eventDayView.eventSep",
+		"eventDayViewEventSep",
+		CUSTOMIZE,
+	),
+	(
+		"eventDayView.maxHeight",
+		"eventViewMaxHeight",
+		CUSTOMIZE,
+	),
 	# ------------
-	"monthPBarCalType": ("monthPBar.calType", CUSTOMIZE),
-	"seasonPBar_southernHemisphere": ("seasonPBar.southernHemisphere", CUSTOMIZE),
-	"wcal_moonStatus_southernHemisphere": (
+	(
+		"monthPBar.calType",
+		"monthPBarCalType",
+		CUSTOMIZE,
+	),
+	(
+		"seasonPBar.southernHemisphere",
+		"seasonPBar_southernHemisphere",
+		CUSTOMIZE,
+	),
+	(
 		"weekcal.moonStatus.southernHemisphere",
+		"wcal_moonStatus_southernHemisphere",
 		CUSTOMIZE,
 	),
 	# ------------ statusBar
-	"statusBarEnable": ("statusBar.enable", CUSTOMIZE),
-	"statusBarDatesReverseOrder": ("statusBar.dates.reverseOrder", CUSTOMIZE),
-	"statusBarDatesColorEnable": ("statusBar.dates.colorEnable", CUSTOMIZE),
-	"statusBarDatesColor": ("statusBar.dates.color", CUSTOMIZE),
+	(
+		"statusBar.enable",
+		"statusBarEnable",
+		CUSTOMIZE,
+	),
+	(
+		"statusBar.dates.reverseOrder",
+		"statusBarDatesReverseOrder",
+		CUSTOMIZE,
+	),
+	(
+		"statusBar.dates.colorEnable",
+		"statusBarDatesColorEnable",
+		CUSTOMIZE,
+	),
+	(
+		"statusBar.dates.color",
+		"statusBarDatesColor",
+		CUSTOMIZE,
+	),
 	# ------------
-	"labelBoxBorderWidth": ("labelBox.borderWidth", CUSTOMIZE),
-	"labelBoxMenuActiveColor": ("labelBox.menuActiveColor", CUSTOMIZE),
-	"labelBoxYearColorEnable": ("labelBox.yearColorEnable", CUSTOMIZE),
-	"labelBoxYearColor": ("labelBox.yearColor", CUSTOMIZE),
-	"labelBoxMonthColorEnable": ("labelBox.monthColorEnable", CUSTOMIZE),
-	"labelBoxMonthColor": ("labelBox.monthColor", CUSTOMIZE),
-	"labelBoxFontEnable": ("labelBox.fontEnable", CUSTOMIZE),
-	"labelBoxFont": ("labelBox.font", CUSTOMIZE),
-	"labelBoxPrimaryFontEnable": ("labelBox.primaryFontEnable", CUSTOMIZE),
-	"labelBoxPrimaryFont": ("labelBox.primaryFont", CUSTOMIZE),
-	"boldYmLabel": ("labelBox.boldYearMonth", CUSTOMIZE),
+	(
+		"labelBox.borderWidth",
+		"labelBoxBorderWidth",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.menuActiveColor",
+		"labelBoxMenuActiveColor",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.yearColorEnable",
+		"labelBoxYearColorEnable",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.yearColor",
+		"labelBoxYearColor",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.monthColorEnable",
+		"labelBoxMonthColorEnable",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.monthColor",
+		"labelBoxMonthColor",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.fontEnable",
+		"labelBoxFontEnable",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.font",
+		"labelBoxFont",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.primaryFontEnable",
+		"labelBoxPrimaryFontEnable",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.primaryFont",
+		"labelBoxPrimaryFont",
+		CUSTOMIZE,
+	),
+	(
+		"labelBox.boldYearMonth",
+		"boldYmLabel",
+		CUSTOMIZE,
+	),
 	# ------------
-	"ud__wcalToolbarData": ("ud.wcalToolbarData", CUSTOMIZE),
-	"ud__mainToolbarData": ("ud.mainToolbarData", CUSTOMIZE),
-	"customizePagePath": ("customizePagePath", CUSTOMIZE),
-}
+	(
+		"ud.wcalToolbarData",
+		"ud__wcalToolbarData",
+		CUSTOMIZE,
+	),
+	(
+		"ud.mainToolbarData",
+		"ud__mainToolbarData",
+		CUSTOMIZE,
+	),
+	(
+		"customizePagePath",
+		"customizePagePath",
+		CUSTOMIZE,
+	),
+]
 
-confParams = [
-	key for key, value in confParamsMapping.items() if value[-1] & MAIN_CONF > 0
-]
-confParamsLive = [
-	key for key, value in confParamsMapping.items() if value[-1] & LIVE > 0
-]
+confParams = [name for _, name, flags in confParamsData if flags & MAIN_CONF > 0]
+confParamsLive = [name for _, name, flags in confParamsData if flags & LIVE > 0]
 confParamsCustomize = [
-	key for key, value in confParamsMapping.items() if value[-1] & CUSTOMIZE > 0
+	name for _, name, flags in confParamsData if flags & CUSTOMIZE > 0
 ]
 # print(f"confParams = {sorted(confParams)}")
 # print(f"confParamsLive = {sorted(confParamsLive)}")
