@@ -1,0 +1,1038 @@
+# Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import NamedTuple
+
+MAIN_CONF = 1
+LIVE = 2
+CUSTOMIZE = 4
+NEED_RESTART = 8
+
+# TODO: switch to NamedTuple
+ColorType = tuple[int, int, int, int]
+
+
+class Param(NamedTuple):
+	name: str
+	v3Name: str
+	flags: int
+	type: type | None = None
+
+
+@dataclass(slots=True)
+class Font:
+	family: str | None
+	bold: bool = False
+	italic: bool = False
+	size: float = 0
+
+	def fromList(lst: list | None):
+		if lst is None:
+			return
+		return Font(*lst)
+
+	def to_json(self):
+		return [self.family, self.bold, self.italic, self.size]
+
+	def copy(self):
+		return Font(*self.to_json())
+
+
+confParamsData: list[Param] = [
+	Param(
+		name="mainWin.openOnStartup",
+		v3Name="showMain",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="dayCalWin.enable",
+		v3Name="showDesktopWidget",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="mainWin.inTaskbar",
+		v3Name="winTaskbar",
+		flags=MAIN_CONF | NEED_RESTART,
+		type=bool,
+	),
+	Param(
+		name="mainWin.geo.x",
+		v3Name="winX",
+		flags=LIVE,
+		type=int,
+	),
+	Param(
+		name="mainWin.geo.y",
+		v3Name="winY",
+		flags=LIVE,
+		type=int,
+	),
+	Param(
+		name="mainWin.geo.width",
+		v3Name="winWidth",
+		flags=LIVE,
+		type=int,
+	),
+	Param(
+		name="mainWin.geo.height",
+		v3Name="winHeight",
+		flags=LIVE,
+		type=int,
+	),
+	Param(
+		name="mainWin.keepAbove",
+		v3Name="winKeepAbove",
+		flags=LIVE,
+		type=bool,
+	),
+	Param(
+		name="mainWin.sticky",
+		v3Name="winSticky",
+		flags=LIVE,
+		type=bool,
+	),
+	Param(
+		name="mainWin.maximized",
+		v3Name="winMaximized",
+		flags=LIVE,
+		type=bool,
+	),
+	Param(
+		name="mainWin.items",
+		v3Name="mainWinItems",
+		flags=CUSTOMIZE,
+		type=list[tuple[str, bool]],
+	),
+	Param(
+		name="mainWin.footerItems",
+		v3Name="mainWinFooterItems",
+		flags=CUSTOMIZE,
+		type=list[str],
+	),
+	# -----------------
+	Param(
+		name="useAppIndicator",
+		v3Name="useAppIndicator",
+		flags=MAIN_CONF | NEED_RESTART,
+		type=bool,
+	),
+	Param(
+		name="statusIcon.digitalClockEnable",
+		v3Name="showDigClockTr",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="fontCustomEnable",
+		v3Name="fontCustomEnable",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="fontCustom",
+		v3Name="fontCustom",
+		flags=MAIN_CONF,
+		type=Font,
+	),
+	Param(
+		name="buttonIconEnable",
+		v3Name="buttonIconEnable",
+		flags=MAIN_CONF | NEED_RESTART,
+		type=bool,
+	),
+	Param(
+		name="useSystemIcons",
+		v3Name="useSystemIcons",
+		flags=MAIN_CONF | NEED_RESTART,
+		type=bool,
+	),
+	Param(
+		name="oldStyleProgressBar",
+		v3Name="oldStyleProgressBar",
+		flags=MAIN_CONF | NEED_RESTART,
+		type=bool,
+	),
+	# ----------------- colors
+	Param(
+		name="bgColor",
+		v3Name="bgColor",
+		flags=MAIN_CONF | LIVE,
+		type=ColorType,
+	),
+	Param(
+		name="borderColor",
+		v3Name="borderColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		"cursorOutColor",
+		v3Name="cursorOutColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="cursorBgColor",
+		v3Name="cursorBgColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="todayCellColor",
+		v3Name="todayCellColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="textColor",
+		v3Name="textColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="holidayColor",
+		v3Name="holidayColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="inactiveColor",
+		v3Name="inactiveColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="borderTextColor",
+		v3Name="borderTextColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	# ----------------- statusIcon
+	Param(
+		name="statusIcon.imagePath",
+		v3Name="statusIconImage",
+		flags=MAIN_CONF,
+		type=str,
+	),
+	Param(
+		name="statusIcon.holidayImagePath",
+		v3Name="statusIconImageHoli",
+		flags=MAIN_CONF,
+		type=str,
+	),
+	Param(
+		name="statusIcon.fontFamilyEnable",
+		v3Name="statusIconFontFamilyEnable",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="statusIcon.fontFamily",
+		v3Name="statusIconFontFamily",
+		flags=MAIN_CONF,
+		type=str | None,
+	),
+	Param(
+		name="statusIcon.holidayFontColorEnable",
+		v3Name="statusIconHolidayFontColorEnable",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="statusIcon.holidayFontColor",
+		v3Name="statusIconHolidayFontColor",
+		flags=MAIN_CONF,
+		type=ColorType | None,
+	),
+	Param(
+		name="statusIcon.localizeNumber",
+		v3Name="statusIconLocalizeNumber",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="statusIcon.fixedSizeEnable",
+		v3Name="statusIconFixedSizeEnable",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	Param(
+		name="statusIcon.fixedSizeWH",
+		v3Name="statusIconFixedSizeWH",
+		flags=MAIN_CONF,
+		type=tuple[int, int],
+	),
+	Param(
+		name="statusIcon.pluginsText",
+		v3Name="pluginsTextStatusIcon",
+		flags=MAIN_CONF,
+		type=bool,
+	),
+	# -----------------
+	Param(
+		name="maxDayCacheSize",
+		v3Name="maxDayCacheSize",
+		flags=MAIN_CONF,
+		type=int,
+	),
+	Param(
+		name="eventDayView.timeFormat",
+		v3Name="eventDayViewTimeFormat",
+		flags=MAIN_CONF,
+		type=str,
+	),
+	Param(
+		name="preferencesPagePath",
+		v3Name="preferencesPagePath",
+		flags=MAIN_CONF,
+		type=str,
+	),
+	Param(
+		name="customizePagePath",
+		v3Name="customizePagePath",
+		flags=CUSTOMIZE,
+	),
+	# move to a new file like local-tz.json?
+	Param(
+		name="localTimezoneHistory",
+		v3Name="localTzHist",
+		flags=MAIN_CONF,
+		type=list[str],
+	),
+	# ------------ winController
+	Param(
+		name="winController.enable",
+		v3Name="winControllerEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="winController.theme",
+		v3Name="winControllerTheme",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="winController.buttons",
+		v3Name="winControllerButtons",
+		flags=CUSTOMIZE,
+		type=list[tuple[str, bool]],
+	),
+	Param(
+		name="winController.iconSize",
+		v3Name="winControllerIconSize",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="winController.border",
+		v3Name="winControllerBorder",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="winController.spacing",
+		v3Name="winControllerSpacing",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="winController.pressState",
+		v3Name="winControllerPressState",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# ------------ rightPanel
+	Param(
+		name="rightPanel.ratio",
+		v3Name="mainWinRightPanelRatio",
+		flags=LIVE,
+		type=float,
+	),
+	Param(
+		name="rightPanel.enable",
+		v3Name="mainWinRightPanelEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.swap",
+		v3Name="mainWinRightPanelSwap",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.width",
+		v3Name="mainWinRightPanelWidth",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="rightPanel.widthRatio",
+		v3Name="mainWinRightPanelWidthRatio",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="rightPanel.widthRatioEnable",
+		v3Name="mainWinRightPanelWidthRatioEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.event.fontEnable",
+		v3Name="mainWinRightPanelEventFontEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.event.font",
+		v3Name="mainWinRightPanelEventFont",
+		flags=CUSTOMIZE,
+		type=Font,
+	),
+	Param(
+		"rightPanel.event.timeFontEnable",
+		v3Name="mainWinRightPanelEventTimeFontEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.event.timeFont",
+		v3Name="mainWinRightPanelEventTimeFont",
+		flags=CUSTOMIZE,
+		type=Font,
+	),
+	Param(
+		name="rightPanel.event.justification",
+		v3Name="mainWinRightPanelEventJustification",
+		flags=CUSTOMIZE,
+		type=str,  # left, center, right
+	),
+	Param(
+		name="rightPanel.event.sep",
+		v3Name="mainWinRightPanelEventSep",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="rightPanel.plugins.fontEnable",
+		v3Name="mainWinRightPanelPluginsFontEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.plugins.font",
+		v3Name="mainWinRightPanelPluginsFont",
+		flags=CUSTOMIZE,
+		type=Font,
+	),
+	Param(
+		name="rightPanel.plugins.justification",
+		v3Name="mainWinRightPanelPluginsJustification",
+		flags=CUSTOMIZE,
+		type=str,  # left, center, right
+	),
+	Param(
+		name="rightPanel.resizeOnToggle",
+		v3Name="mainWinRightPanelResizeOnToggle",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="rightPanel.border",
+		v3Name="mainWinRightPanelBorderWidth",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	# ------------ monthcal
+	Param(
+		name="monthcal.leftMargin",
+		v3Name="mcalLeftMargin",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="monthcal.topMargin",
+		v3Name="mcalTopMargin",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="monthcal.typeParams",
+		v3Name="mcalTypeParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="monthcal.grid",
+		v3Name="mcalGrid",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="monthcal.gridColor",
+		v3Name="mcalGridColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="monthcal.cursorLineWidthFactor",
+		v3Name="mcalCursorLineWidthFactor",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="monthcal.cursorRoundingFactor",
+		v3Name="mcalCursorRoundingFactor",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	# ------------ weekcal
+	Param(
+		name="weekcal.textSizeScale",
+		v3Name="wcalTextSizeScale",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="weekcal.items",
+		v3Name="wcalItems",
+		flags=CUSTOMIZE,
+		type=list[tuple[str, bool]],
+	),
+	Param(
+		name="weekcal.grid",
+		v3Name="wcalGrid",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.gridColor",
+		v3Name="wcalGridColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="weekcal.upperGradientEnable",
+		v3Name="wcalUpperGradientEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.upperGradientColor",
+		v3Name="wcalUpperGradientColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="weekcal.eventsText.pastColorEnable",
+		v3Name="wcal_eventsText_pastColorEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsText.pastColor",
+		v3Name="wcal_eventsText_pastColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="weekcal.eventsText.ongoingColorEnable",
+		v3Name="wcal_eventsText_ongoingColorEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsText.ongoingColor",
+		v3Name="wcal_eventsText_ongoingColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="weekcal.toolbar.weekNumNegative",
+		v3Name="wcal_toolbar_weekNum_negative",
+		flags=LIVE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.toolbar.mainMenuIcon",
+		v3Name="wcal_toolbar_mainMenu_icon",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="weekcal.weekDays.width",
+		v3Name="wcal_weekDays_width",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="weekcal.weekDays.expand",
+		v3Name="wcal_weekDays_expand",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.weekDays.fontFamily",
+		v3Name="wcalFont_weekDays",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="weekcal.pluginsText.fontFamily",
+		v3Name="wcalFont_pluginsText",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="weekcal.pluginsText.firstLineOnly",
+		v3Name="wcal_pluginsText_firstLineOnly",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsIcon.width",
+		v3Name="wcal_eventsIcon_width",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="weekcal.eventsText.showDesc",
+		v3Name="wcal_eventsText_showDesc",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsText.colorize",
+		v3Name="wcal_eventsText_colorize",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsText.fontFamily",
+		v3Name="wcalFont_eventsText",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="weekcal.daysOfMonth.direction",
+		v3Name="wcal_daysOfMonth_dir",
+		flags=CUSTOMIZE,
+		type=str,  # ltr, rtl, auto
+	),
+	Param(
+		name="weekcal.typeParams",
+		v3Name="wcalTypeParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="weekcal.daysOfMonth.width",
+		v3Name="wcal_daysOfMonth_width",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="weekcal.daysOfMonth.expand",
+		v3Name="wcal_daysOfMonth_expand",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsCount.width",
+		v3Name="wcal_eventsCount_width",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="weekcal.eventsCount.expand",
+		v3Name="wcal_eventsCount_expand",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.eventsBox.fontFamily",
+		v3Name="wcalFont_eventsBox",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="weekcal.moonStatus.width",
+		v3Name="wcal_moonStatus_width",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="weekcal.cursorLineWidthFactor",
+		v3Name="wcalCursorLineWidthFactor",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="weekcal.cursorRoundingFactor",
+		v3Name="wcalCursorRoundingFactor",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	# ------------ daycal
+	Param(
+		name="daycal.widgetButtonsEnable",
+		v3Name="dcalWidgetButtonsEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# Param("daycal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
+	Param(
+		name="daycal.day.params",
+		v3Name="dcalDayParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="daycal.month.params",
+		v3Name="dcalMonthParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="daycal.weekday.params",
+		v3Name="dcalWeekdayParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="daycal.navButtons.enable",
+		v3Name="dcalNavButtonsEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="daycal.navButtons.geo",
+		v3Name="dcalNavButtonsGeo",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="daycal.navButtons.opacity",
+		v3Name="dcalNavButtonsOpacity",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="daycal.weekday.localize",
+		v3Name="dcalWeekdayLocalize",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="daycal.weekday.abbreviate",
+		v3Name="dcalWeekdayAbbreviate",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="daycal.weekday.uppercase",
+		v3Name="dcalWeekdayUppercase",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="daycal.eventIconSize",
+		v3Name="dcalEventIconSize",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="daycal.eventTotalSizeRatio",
+		v3Name="dcalEventTotalSizeRatio",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	# ------------ dayCalWin
+	Param(
+		name="dayCalWin.backgroundColor",
+		v3Name="dcalWinBackgroundColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="dayCalWin.widgetButtonsEnable",
+		v3Name="dcalWinWidgetButtonsEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# Param("dayCalWin.widgetButtons", "dcalWinWidgetButtons", CUSTOMIZE),
+	Param(
+		name="dayCalWin.weekday.localize",
+		v3Name="dcalWinWeekdayLocalize",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="dayCalWin.weekday.abbreviate",
+		v3Name="dcalWinWeekdayAbbreviate",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="dayCalWin.weekday.uppercase",
+		v3Name="dcalWinWeekdayUppercase",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="dayCalWin.day.params",
+		v3Name="dcalWinDayParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="dayCalWin.month.params",
+		v3Name="dcalWinMonthParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="dayCalWin.weekday.params",
+		v3Name="dcalWinWeekdayParams",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="dayCalWin.eventIconSize",
+		v3Name="dcalWinEventIconSize",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="dayCalWin.eventTotalSizeRatio",
+		v3Name="dcalWinEventTotalSizeRatio",
+		flags=CUSTOMIZE,
+		type=float,
+	),
+	Param(
+		name="dayCalWin.seasonPie.enable",
+		v3Name="dcalWinSeasonPieEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="dayCalWin.seasonPie.geo",
+		v3Name="dcalWinSeasonPieGeo",
+		flags=CUSTOMIZE,
+		type=list[dict],  # TODO: TypedDict?
+	),
+	Param(
+		name="dayCalWin.seasonPie.springColor",
+		v3Name="dcalWinSeasonPieSpringColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="dayCalWin.seasonPie.summerColor",
+		v3Name="dcalWinSeasonPieSummerColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="dayCalWin.seasonPie.autumnColor",
+		v3Name="dcalWinSeasonPieAutumnColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="dayCalWin.seasonPie.winterColor",
+		v3Name="dcalWinSeasonPieWinterColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="dayCalWin.seasonPie.textColor",
+		v3Name="dcalWinSeasonPieTextColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	# ------------ pluginsText
+	Param(
+		name="pluginsText.enable",
+		v3Name="pluginsTextEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="pluginsText.isExpanded",
+		v3Name="pluginsTextIsExpanded",
+		flags=LIVE,
+		type=bool,
+	),
+	Param(
+		name="pluginsText.insideExpander",
+		v3Name="pluginsTextInsideExpander",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# ------------ eventDayView
+	Param(
+		name="eventDayView.enable",
+		v3Name="eventDayViewEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="eventDayView.eventSep",
+		v3Name="eventDayViewEventSep",
+		flags=CUSTOMIZE,
+		type=str,
+	),
+	Param(
+		name="eventDayView.maxHeight",
+		v3Name="eventViewMaxHeight",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	# ------------
+	Param(
+		name="monthPBar.calType",
+		v3Name="monthPBarCalType",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="seasonPBar.southernHemisphere",
+		v3Name="seasonPBar_southernHemisphere",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="weekcal.moonStatus.southernHemisphere",
+		v3Name="wcal_moonStatus_southernHemisphere",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# ------------ statusBar
+	Param(
+		name="statusBar.enable",
+		v3Name="statusBarEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="statusBar.dates.reverseOrder",
+		v3Name="statusBarDatesReverseOrder",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="statusBar.dates.colorEnable",
+		v3Name="statusBarDatesColorEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="statusBar.dates.color",
+		v3Name="statusBarDatesColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	# ------------
+	Param(
+		name="labelBox.border",
+		v3Name="labelBoxBorderWidth",
+		flags=CUSTOMIZE,
+		type=int,
+	),
+	Param(
+		name="labelBox.menuActiveColor",
+		v3Name="labelBoxMenuActiveColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="labelBox.yearColorEnable",
+		v3Name="labelBoxYearColorEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="labelBox.yearColor",
+		v3Name="labelBoxYearColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="labelBox.monthColorEnable",
+		v3Name="labelBoxMonthColorEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="labelBox.monthColor",
+		v3Name="labelBoxMonthColor",
+		flags=CUSTOMIZE,
+		type=ColorType,
+	),
+	Param(
+		name="labelBox.fontEnable",
+		v3Name="labelBoxFontEnable",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="labelBox.font",
+		v3Name="labelBoxFont",
+		flags=CUSTOMIZE,
+		type=Font,
+	),
+	Param(
+		name="labelBox.primaryFontEnable",
+		v3Name="labelBoxPrimaryFontEnable",
+		flags=CUSTOMIZE,
+	),
+	Param(
+		name="labelBox.primaryFont",
+		v3Name="labelBoxPrimaryFont",
+		flags=CUSTOMIZE,
+		type=Font,
+	),
+	Param(
+		name="labelBox.boldYearMonth",
+		v3Name="boldYmLabel",
+		flags=CUSTOMIZE,
+		type=bool,
+	),
+	# ------------
+	Param(
+		name="ud.wcalToolbarData",
+		v3Name="ud__wcalToolbarData",
+		flags=CUSTOMIZE,
+		type=dict,  # TODO: TypedDict?
+	),
+	Param(
+		name="ud.mainToolbarData",
+		v3Name="ud__mainToolbarData",
+		flags=CUSTOMIZE,
+		type=dict,  # TODO: TypedDict?
+	),
+]
+
+
+def getParamNamesWithFlag(flag: int) -> list[str]:
+	return [p.v3Name for p in confParamsData if p.flags & flag > 0]
