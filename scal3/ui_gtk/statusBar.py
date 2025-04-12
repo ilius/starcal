@@ -55,7 +55,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
 		for label in labels:
-			text = ui.cell.format(ud.dateFormatBin, label.calType)
+			text = ui.cells.current.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"
 			if ui.statusBarDatesColorEnable:

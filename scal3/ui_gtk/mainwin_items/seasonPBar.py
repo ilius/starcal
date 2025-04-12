@@ -28,7 +28,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		name, frac = getSeasonNamePercentFromJd(
-			ui.cell.jd,
+			ui.cells.current.jd,
 			ui.seasonPBar_southernHemisphere,
 		)
 		if rtl:
