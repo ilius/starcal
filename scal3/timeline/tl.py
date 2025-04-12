@@ -23,6 +23,43 @@ from scal3.json_utils import (
 )
 from scal3.path import confDir, sysConfDir
 
+__all__ = [
+	"baseFontSize",
+	"baseTickHeight",
+	"basicButtonsSize",
+	"basicButtonsSpacing",
+	"boxEditBorderWidth",
+	"boxEditHelperLineWidth",
+	"boxEditInnerLineWidth",
+	"boxLineWidth",
+	"boxReverseGravity",
+	"boxSkipPixelLimit",
+	"changeHolidayBg",
+	"changeHolidayBgMaxDays",
+	"changeHolidayBgMinDays",
+	"enableAnimation",
+	"fgColor",
+	"keys",
+	"labelYRatio",
+	"majorStepMin",
+	"maxTickHeightRatio",
+	"minorStepMin",
+	"movementButtonsEnable",
+	"movementButtonsSize",
+	"movingFrictionForce",
+	"movingHandForceMouse",
+	"movingInitialVelocity",
+	"movingKeyTimeout",
+	"movingKeyTimeoutFirst",
+	"movingMaxVelocity",
+	"rotateBoxLabel",
+	"saveConf",
+	"showWeekStart",
+	"showWeekStartMaxDays",
+	"showWeekStartMinDays",
+]
+
+
 sysConfPath = join(sysConfDir, "timeline.json")
 
 confPath = join(confDir, "timeline.json")

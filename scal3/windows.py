@@ -3,6 +3,7 @@ from os.path import join
 
 from scal3.core import APP_NAME
 
+__all__ = ["winMakeShortcut", "winStartupDir", "winStartupFile"]
 winStartupRelPath = r"\Microsoft\Windows\Start Menu\Programs\Startup"
 winStartupDir = os.getenv("APPDATA") + winStartupRelPath
 # winStartupDirSys = os.getenv("ALLUSERSPROFILE") + winStartupRelPath

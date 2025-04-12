@@ -48,6 +48,16 @@ except (ImportError, ValueError):
 	log.exception("")
 	from scal3.ui_gtk.mywidgets import TextFrame as SourceEditorWithFrame
 
+__all__ = [
+	"DurationInputBox",
+	"GroupsTreeCheckList",
+	"NotificationBox",
+	"Scale10PowerComboBox",
+	"SingleGroupComboBox",
+	"WidgetClass",
+	"getGroupRow",
+]
+
 
 def getTreeGroupPixbuf(group):
 	return newColorCheckPixbuf(

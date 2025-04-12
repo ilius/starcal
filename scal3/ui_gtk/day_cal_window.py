@@ -41,6 +41,8 @@ from scal3.ui_gtk.utils import (
 	get_menu_width,
 )
 
+__all__ = ["DayCalWindow"]
+
 confPathLive = join(confDir, "ui-daycal-live.json")
 
 confParamsLive = (

@@ -26,6 +26,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.pref_utils import PrefItem
 
+__all__ = ["LogLevelPrefItem"]
+
 
 class LogLevelComboBox(gtk.ComboBox):
 	levels = [
