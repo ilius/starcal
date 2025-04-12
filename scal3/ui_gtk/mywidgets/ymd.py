@@ -5,6 +5,8 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 
+__all__ = ["YearMonthDayBox"]
+
 
 class YearMonthDayBox(gtk.Box):
 	def __init__(self):

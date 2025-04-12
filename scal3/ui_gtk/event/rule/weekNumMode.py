@@ -1,6 +1,8 @@
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.ComboBoxText):
 	def __init__(self, rule):

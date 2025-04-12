@@ -8,6 +8,8 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+__all__ = ["TrashEditorDialog"]
+
 
 class TrashEditorDialog(gtk.Dialog):
 	def __init__(self, **kwargs):

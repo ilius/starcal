@@ -20,6 +20,8 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import findWordByPos, toStr
 
+__all__ = ["PluginsTextBox"]
+
 
 @registerSignals
 class PluginsTextView(gtk.TextView, CustomizableCalObj):
