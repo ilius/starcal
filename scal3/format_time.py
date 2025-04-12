@@ -33,6 +33,8 @@ from scal3.time_utils import getUtcOffsetByGDate
 if TYPE_CHECKING:
 	from scal3.types_starcal import CompiledTimeFormat
 
+__all__ = ["compileTmFormat"]
+
 
 def iso_to_jd(year, week, day):
 	"""Return Julian day of given ISO year, week, and day."""

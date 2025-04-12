@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from scal3 import ui
 
+__all__ = ["DummyEventContainer"]
+
 
 class DummyEventContainer:
 	def __init__(self, idsDict: dict[int, list[int]]):

@@ -51,6 +51,9 @@ from scal3.timeline.utils import (
 from scal3.ui import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
+__all__ = ["calcTimeLineData"]
+
+
 # ----------------------------------------------------
 
 

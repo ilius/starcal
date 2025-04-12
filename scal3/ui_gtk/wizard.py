@@ -7,6 +7,8 @@ from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.stack import MyStack, StackPage
 
+__all__ = ["WizardWindow"]
+
 
 class WizardWindow(gtk.Window, MyDialog):
 	stepClasses = []

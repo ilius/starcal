@@ -7,6 +7,8 @@ from scal3.ui_gtk.utils import (
 	imageFromFile,
 )
 
+__all__ = ["notify"]
+
 
 class WidgetClass(gtk.Entry):
 	def __init__(self, notifier):

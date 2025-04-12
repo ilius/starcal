@@ -11,6 +11,7 @@ from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
+__all__ = ["CalObj"]
 themeFileSet = {
 	"close-focus-light.svg",
 	"close-focus.svg",

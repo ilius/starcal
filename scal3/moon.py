@@ -1,3 +1,6 @@
+__all__ = ["getMoonPhase"]
+
+
 def getMoonPhase(jd, southernHemisphere=False):
 	"""
 	Returns a float number that: 0 <= phase < 2

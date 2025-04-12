@@ -24,6 +24,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
 
+__all__ = ["MyStack", "StackPage"]
+
 
 class StackPage:
 	def __init__(self):

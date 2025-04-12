@@ -5,6 +5,8 @@ log = logger.get()
 from heapq import heappop, heappush
 from math import log2 as math_log2
 
+__all__ = ["MaxHeap"]
+
 
 class MaxHeap(list):
 	def copy(self):

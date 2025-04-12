@@ -24,6 +24,9 @@ log = logger.get()
 
 from scal3.bin_heap import MaxHeap
 
+__all__ = ["EventSearchTree"]
+
+
 # epsTm: seconds
 # TODO: configure somewhere?
 epsTm = 0.01

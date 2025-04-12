@@ -9,6 +9,8 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button
 
+__all__ = ["GroupEditorDialog"]
+
 
 class GroupEditorDialog(gtk.Dialog):
 	def __init__(self, group=None, **kwargs):

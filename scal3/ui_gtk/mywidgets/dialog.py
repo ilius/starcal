@@ -7,6 +7,8 @@ log = logger.get()
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
 
+__all__ = ["MyDialog"]
+
 
 def newCursor(cursor_type: gdk.CursorType) -> gdk.Cursor:
 	return gdk.Cursor.new_for_display(ud.display, cursor_type)

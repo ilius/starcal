@@ -10,6 +10,9 @@ from scal3.core import APP_NAME
 from scal3.os_utils import makeDir, osName
 from scal3.path import homeDir, sourceDir
 
+__all__ = ["addStartup", "removeStartup"]
+
+
 comDeskDir = f"{homeDir}/.config/autostart"
 comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
 # kdeDesk = f"{homeDir}/.kde/Autostart/{APP_NAME}.desktop"

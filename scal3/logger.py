@@ -3,6 +3,9 @@ from os.path import join
 
 from scal3.path import confDir
 
+__all__ = ["get", "logLevel"]
+
+
 confPath = join(confDir, "log.json")
 
 log = None

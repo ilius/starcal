@@ -32,6 +32,9 @@ from time import time as now
 
 from .simple_sched import scheduler
 
+__all__ = ["EventNotificationManager"]
+
+
 DISABLE = False
 
 

@@ -26,6 +26,16 @@ NEED_RESTART = 8
 # TODO: switch to NamedTuple
 ColorType = tuple[int, int, int, int]
 
+__all__ = [
+	"CUSTOMIZE",
+	"LIVE",
+	"MAIN_CONF",
+	"NEED_RESTART",
+	"Font",
+	"confParamsData",
+	"getParamNamesWithFlag",
+]
+
 
 class Param(NamedTuple):
 	name: str
