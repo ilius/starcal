@@ -21,6 +21,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
+from scal3.date_utils import parseDroppedDate
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
@@ -129,7 +130,7 @@ class SelectDateDialog(gtk.Dialog):
 		text = selection.get_text()
 		if text is None:
 			return
-		date = ui.parseDroppedDate(text)
+		date = parseDroppedDate(text)
 		if date is None:
 			log.info(f"selectDateDialog: dropped text {text!r}")
 			return
@@ -150,10 +151,10 @@ class SelectDateDialog(gtk.Dialog):
 	def show(self):
 		# Show a window that ask the date and set on the calendar
 		calType = calTypes.primary
-		y, m, d = ui.cell.dates[calType]
+		y, m, d = ui.cells.current.dates[calType]
 		self.setCalType(calType)
 		self.set(y, m, d)
-		self.jdInput.set_value(ui.cell.jd)
+		self.jdInput.set_value(ui.cells.current.jd)
 		openWindow(self)
 
 	def onResponse(self):
@@ -188,7 +189,7 @@ class SelectDateDialog(gtk.Dialog):
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		if prevDate is None:
-			y, m, d = ui.cell.dates[calType]
+			y, m, d = ui.cells.current.dates[calType]
 		else:
 			y0, m0, d0 = prevDate
 			y, m, d = convert(y0, m0, d0, prevCalType, calType)

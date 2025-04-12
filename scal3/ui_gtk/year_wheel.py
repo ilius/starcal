@@ -180,7 +180,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		calsN = len(calTypes.active)
 		deltaR = (maxR - minR) / calsN
 		calType0 = calTypes.active[0]
-		jd0 = to_jd(ui.todayCell.year, 1, 1, calType0)
+		jd0 = to_jd(ui.cells.today.year, 1, 1, calType0)
 		yearLen = calTypes.primaryModule().avgYearLen
 		angle0 = self.angleOffset * pi / 180 - pi / 2
 		avgDeltaAngle = 2 * pi / 12
@@ -191,7 +191,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				cx,
 				cy,
 				maxR,  # FIXME
-				angle0 + 2 * pi * (ui.todayCell.jd - jd0) / yearLen,
+				angle0 + 2 * pi * (ui.cells.today.jd - jd0) / yearLen,
 				self.todayIndicatorWidth,
 			)
 			fillColor(cr, self.todayIndicatorColor)
@@ -309,7 +309,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				# cr.restore()
 
 				if month == 1:
-					t_year = ui.cell.dates[calType][0]
+					t_year = ui.cells.current.dates[calType][0]
 					self.drawYearStartLine(
 						t_year,
 						1,
@@ -484,9 +484,12 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 
 
 if __name__ == "__main__":
+	from scal3 import cell
+
 	# locale_man.langActive = ""
 	# _ = locale_man.loadTranslator()
 	ui.init()
+	cell.init()
 	win = YearWheelWindow()
 	win.show()
 	gtk.main()

@@ -670,7 +670,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	@classmethod
 	def getCell(cls) -> ui.Cell:
-		return ui.cell
+		return ui.cells.current
 
 	def drawAll(self, _widget=None, cr=None, cursor=True):
 		win = self.get_window()
@@ -937,7 +937,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		return True
 
 	def jdPlus(self, p):
-		ui.jdPlus(p)
+		ui.cells.jdPlus(p)
 		self.onDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):

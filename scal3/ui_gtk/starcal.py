@@ -35,7 +35,7 @@ if typing.TYPE_CHECKING:
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
-from scal3 import logger
+from scal3 import cell, logger
 from scal3.cal_types import convert
 from scal3.path import (
 	pixDir,
@@ -512,7 +512,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return self.statusBar
 
 	def selectDateResponse(self, _widget, y, m, d):
-		ui.changeDate(y, m, d)
+		ui.cells.changeDate(y, m, d)
 		self.onDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
@@ -685,7 +685,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return True
 
 	def changeDate(self, year, month, day):
-		ui.changeDate(year, month, day)
+		ui.cells.changeDate(year, month, day)
 		self.onDateChange()
 
 	def goToday(self, _obj=None):
@@ -702,7 +702,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		for j in range(len(core.plugIndex)):
 			plug = core.allPlugList[core.plugIndex[j]]
 			if hasattr(plug, "date_change_after"):
-				plug.date_change_after(*ui.cell.date)
+				plug.date_change_after(*ui.cells.current.date)
 		# log.debug(
 		# 	f"Occurrence Time: max={ui.Cell.ocTimeMax:e}, " +
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
@@ -791,7 +791,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def addEditEventCellMenuItems(self, menu):
 		if event_lib.allReadOnly:
 			return
-		eventsData = ui.cell.getEventsData()
+		eventsData = ui.cells.current.getEventsData()
 		if not eventsData:
 			return
 		if len(eventsData) < 4:  # TODO: make it customizable
@@ -891,7 +891,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				ImageMenuItem(
 					label=_("In E_volution"),
 					imageName="evolution.png",
-					func=ui.dayOpenEvolution,
+					func=ui.cells.current.dayOpenEvolution,
 				),
 			)
 		# ----
@@ -1086,12 +1086,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	@staticmethod
 	def copyDate(calType: int):
-		setClipboard(ui.cell.format(ud.dateFormatBin, calType=calType))
+		setClipboard(ui.cells.current.format(ud.dateFormatBin, calType=calType))
 
 	@staticmethod
 	def copyDateGetCallback(calType: int):
 		return lambda _obj=None, _event=None: setClipboard(
-			ui.cell.format(
+			ui.cells.current.format(
 				ud.dateFormatBin,
 				calType=calType,
 			),
@@ -1099,12 +1099,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	@staticmethod
 	def copyCurrentDate(_obj=None, _event=None):
-		setClipboard(ui.todayCell.format(ud.dateFormatBin))
+		setClipboard(ui.cells.today.format(ud.dateFormatBin))
 
 	@staticmethod
 	def copyCurrentDateTime(_obj=None, _event=None):
-		dateStr = ui.todayCell.format(ud.dateFormatBin)
-		timeStr = ui.todayCell.format(
+		dateStr = ui.cells.today.format(ud.dateFormatBin)
+		timeStr = ui.cells.today.format(
 			ud.clockFormatBin,
 			tm=localtime()[3:6],
 		)
@@ -1296,19 +1296,19 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	@staticmethod
 	def getStatusIconTooltip():
 		# tt = core.weekDayName[core.getWeekDay(*ddate)]
-		tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
+		tt = core.weekDayName[core.jwday(ui.cells.today.jd)]
 		# if ui.pluginsTextStatusIcon:--?????????
 		# 	sep = _(",")+" "
 		# else:
 		sep = "\n"
 		for calType in calTypes.active:
-			y, m, d = ui.todayCell.dates[calType]
+			y, m, d = ui.cells.today.dates[calType]
 			tt += sep + _(d) + " " + locale_man.getMonthName(calType, m, y) + " " + _(y)
 		if ui.pluginsTextStatusIcon:
-			text = ui.todayCell.getPluginsText()
+			text = ui.cells.today.getPluginsText()
 			if text:
 				tt += "\n\n" + text  # .replace("\t", "\n") # FIXME
-		for item in ui.todayCell.getEventsData():
+		for item in ui.cells.today.getEventsData():
 			if not item.showInStatusIcon:
 				continue
 			itemS = ""
@@ -1322,7 +1322,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		from scal3.utils import toBytes
 
 		imagePath = (
-			ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
+			ui.statusIconImageHoli if ui.cells.today.holiday else ui.statusIconImage
 		)
 		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
 		with open(imagePath, "rb") as fp:
@@ -1345,7 +1345,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			if (
 				ui.statusIconHolidayFontColorEnable
 				and ui.statusIconHolidayFontColor
-				and ui.todayCell.holiday
+				and ui.cells.today.holiday
 			):
 				style.append(
 					("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)),
@@ -1587,7 +1587,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			from scal3.ui_gtk.timeline import TimeLineWindow
 
 			ui.timeLineWin = TimeLineWindow()
-		ui.timeLineWin.showDayInWeek(ui.cell.jd)
+		ui.timeLineWin.showDayInWeek(ui.cells.current.jd)
 		openWindow(ui.timeLineWin)
 
 	@staticmethod
@@ -1641,7 +1641,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.exportDialog.showDialog(year, month)
 
 	def onExportClick(self, _widget=None):
-		self.exportShow(ui.cell.year, ui.cell.month)
+		self.exportShow(ui.cells.current.year, ui.cells.current.month)
 
 	def onExportClickStatusIcon(self, _widget=None, _event=None):
 		year, month, _day = cal_types.getSysDate(calTypes.primary)
@@ -1727,6 +1727,7 @@ def main():
 		# 	action = "svg"
 	# -------------------------------
 	ui.init()
+	cell.init()
 	# -------------------------------
 	pixcache.cacheSaveStart()
 	ui.eventUpdateQueue.startLoop()

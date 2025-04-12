@@ -22,7 +22,7 @@ import os
 from os.path import join
 from time import perf_counter
 
-from scal3 import ui
+from scal3 import cell, ui
 from scal3.json_utils import loadJsonConf, saveJsonConf
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
@@ -160,8 +160,8 @@ class DayCalWindowWidget(DayCal):
 	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
 
 	@classmethod
-	def getCell(cls) -> ui.Cell:
-		return ui.todayCell
+	def getCell(cls) -> cell.Cell:
+		return ui.cells.today
 
 	def __init__(self, win):
 		DayCal.__init__(self, win)

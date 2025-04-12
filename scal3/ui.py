@@ -24,25 +24,21 @@ import os.path
 import typing
 from collections import OrderedDict
 from contextlib import suppress
-from os.path import isabs, isdir, isfile, join
+from os.path import isdir, isfile, join
 from time import perf_counter
 from typing import Any
 
-from cachetools import LRUCache
-
-from scal3 import cal_types, core, event_lib, locale_man
-from scal3.cal_types import calTypes, jd_to
-from scal3.date_utils import monthPlus as lowMonthPlus
+from scal3 import core, event_lib, locale_man
+from scal3.cal_types import calTypes
 from scal3.event_notification_thread import EventNotificationManager
+from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.json_utils import (
 	loadJsonConf,
 	saveJsonConf,
 )
-from scal3.locale_man import numDecode
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
-from scal3.types_starcal import CellType, CompiledTimeFormat
 from scal3.ui_params import (
 	CUSTOMIZE,
 	LIVE,
@@ -54,12 +50,13 @@ from scal3.ui_params import (
 )
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable
-
-	from scal3.plugin_type import PluginType
 	from scal3.s_object import SObj
 
 # -------------------------------------------------------
+
+__all__ = [
+	"eventTags",
+]
 
 sysConfPath = join(sysConfDir, "ui.json")  # also includes LIVE config
 
@@ -148,368 +145,10 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 # -------------------------------------------------------
 
 
-def parseDroppedDate(text) -> tuple[int, int, int] | None:
-	part = text.split("/")
-	if len(part) != 3:
-		return None
-	try:
-		part[0] = numDecode(part[0])
-		part[1] = numDecode(part[1])
-		part[2] = numDecode(part[2])
-	except ValueError:
-		log.exception("")
-		return
-	maxPart = max(part)
-	if maxPart <= 999:
-		valid = 0 <= part[0] <= 99 and 1 <= part[1] <= 12 and 1 <= part[2] <= 31
-		if not valid:
-			return
-		return (
-			2000 + part[0],
-			part[1],
-			part[2],
-		)
-
-	minMax = (
-		(1000, 2100),
-		(1, 12),
-		(1, 31),
-	)
-	formats = (
-		[0, 1, 2],
-		[1, 2, 0],
-		[2, 1, 0],
-	)
-	# "format" must be list because we use method "index"
-
-	def formatIsValid(fmt: list[int]):
-		for i in range(3):
-			f = fmt[i]
-			if not (minMax[f][0] <= part[i] <= minMax[f][1]):
-				return False
-		return True
-
-	for fmt in formats:
-		if formatIsValid(fmt):
-			return (
-				part[fmt.index(0)],
-				part[fmt.index(1)],
-				part[fmt.index(2)],
-			)
-	return None
-
-	# FIXME: when drag from a persian GtkCalendar with format %y/%m/%d
-	# if year < 100:
-	# 	year += 2000
-
-
-def checkNeedRestart() -> bool:
-	for key in needRestartPref:
-		if needRestartPref[key] != evalParam(key):
-			log.info(
-				f"checkNeedRestart: {key!r}, "
-				f"{needRestartPref[key]!r}, {evalParam(key)!r}",
-			)
-			return True
-	return False
-
-
-def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
-	from subprocess import Popen
-
-	# y, m, d = jd_to(cell.jd-1, core.GREGORIAN)
-	# in gnome-cal opens prev day! why??
-	y, m, d = cell.dates[core.GREGORIAN]
-	Popen(
-		f"LANG=en_US.UTF-8 evolution calendar:///?startdate={y:04d}{m:02d}{d:02d}",
-		shell=True,
-	)  # FIXME
-	# f"calendar:///?startdate={y:04d}{m:02d}{d:02d}T120000Z"
-	# What "Time" pass to evolution?
-	# like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
-	# evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
-
-
-# How do this with KOrginizer? FIXME
-
 # -----------------------------------------------------------------------
 
-
-class Cell(CellType):
-
-	"""status and information of a cell."""
-
-	# ocTimeMax = 0
-	# ocTimeCount = 0
-	# ocTimeSum = 0
-	def __init__(self, jd: int):
-		self._eventsData: list[dict] | None = None
-		# each item in self._eventsData has these keys and type:
-		# 	time: str (time descriptive string)
-		# 	time_epoch: int (epoch time)
-		# 	is_allday: bool
-		# 	text: tuple of text lines
-		# 	icon: str (icon path)
-		# 	color: tuple (r, g, b) or (r, g, b, a)
-		# 	ids: tuple (gid, eid)
-		# 	show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
-		# 	showInStatusIcon: bool
-		self._pluginsText: list[list[str]] = []
-		self._pluginsData: list[tuple[Any, str]] = []
-		# ---
-		self.jd = jd
-		date = core.jd_to_primary(jd)
-		self.year, self.month, self.day = date
-		self.weekDay = core.jwday(jd)
-		self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
-		# self.weekNumNeg = self.weekNum+1 - core.getYearWeeksCount(self.year)
-		self.weekNumNeg = self.weekNum - int(
-			calTypes.primaryModule().avgYearLen / 7,
-		)
-		self.holiday = self.weekDay in core.holidayWeekDays
-		# -------------------
-		self.dates = [
-			date if calType == calTypes.primary else jd_to(jd, calType)
-			for calType in range(len(calTypes))
-		]
-		"""
-		self.dates = dict([
-			(
-				calType, date if calType==calTypes.primary else jd_to(jd, calType)
-			)
-			for calType in calTypes.active
-		])
-		"""
-		# -------------------
-		for k in core.plugIndex:
-			plug = core.allPlugList[k]
-			if plug:
-				try:
-					plug.updateCell(self)
-				except Exception:
-					log.exception("")
-		# -------------------
-		self.getEventsData()
-
-	@property
-	def date(self) -> tuple[int, int, int]:
-		return (self.year, self.month, self.day)
-
-	def addPluginText(self, plug, text):
-		self._pluginsText.append(text.split("\n"))
-		self._pluginsData.append((plug, text))
-
-	def getPluginsData(
-		self,
-		firstLineOnly=False,
-	) -> list[tuple[PluginType, str]]:
-		return [
-			(plug, text.split("\n")[0]) if firstLineOnly else (plug, text)
-			for (plug, text) in self._pluginsData
-		]
-
-	def getPluginsText(self, firstLineOnly=False) -> str:
-		return "\n".join(text for (plug, text) in self.getPluginsData(firstLineOnly))
-
-	def clearEventsData(self):
-		self._eventsData = None
-
-	def getEventsData(self) -> list[dict]:
-		if self._eventsData is not None:
-			return self._eventsData
-		# t0 = perf_counter()
-		self._eventsData = event_lib.getDayOccurrenceData(
-			self.jd,
-			eventGroups,
-			tfmt=eventDayViewTimeFormat,
-		)
-		return self._eventsData
-		# dt = perf_counter() - t0
-		# Cell.ocTimeSum += dt
-		# Cell.ocTimeCount += 1
-		# Cell.ocTimeMax = max(Cell.ocTimeMax, dt)
-
-	def format(
-		self,
-		compiledFmt: CompiledTimeFormat,
-		calType: int | None = None,
-		tm: tuple[int, int, int] | None = None,
-	):
-		if calType is None:
-			calType = calTypes.primary
-		if tm is None:
-			tm = (0, 0, 0)
-		pyFmt, funcs = compiledFmt
-		return pyFmt % tuple(f(self, calType, tm) for f in funcs)
-
-	def getDate(self, calType: int) -> tuple[int, int, int]:
-		return self.dates[calType]
-
-	def inSameMonth(self, other: CellType) -> bool:
-		return self.getDate(calTypes.primary)[:2] == other.getDate(calTypes.primary)[:2]
-
-	def getEventIcons(self, showIndex: int) -> list[str]:
-		iconList = []
-		for item in self.getEventsData():
-			if not item.show[showIndex]:
-				continue
-			icon = item.icon
-			if icon and icon not in iconList:
-				iconList.append(icon)
-		return iconList
-
-	def getDayEventIcons(self) -> list[str]:
-		return self.getEventIcons(0)
-
-	def getWeekEventIcons(self) -> list[str]:
-		return self.getEventIcons(1)
-
-	def getMonthEventIcons(self) -> list[str]:
-		return self.getEventIcons(2)
-
-
-# I can't find the correct syntax for this `...`
-# CellPluginsType = dict[str, tuple[
-# 	Callable[[CellType], None],
-# 	Callable[[CellCache, ...], list[CellType]]
-# ]]
-
-
-class CellCache:
-	def __init__(self) -> None:
-		# a mapping from julan_day to Cell instance
-		self.resetCache()
-		self.plugins = {}  # disabled type: CellPluginsType
-
-	def resetCache(self):
-		log.debug(f"resetCache: {maxDayCacheSize=}, {maxWeekCacheSize=}")
-
-		# key: jd(int), value: CellType
-		self.jdCells = LRUCache(maxsize=maxDayCacheSize)
-
-		# key: absWeekNumber(int), value: list[dict]
-		self.weekEvents = LRUCache(maxsize=maxWeekCacheSize)
-
-	def clear(self) -> None:
-		global cell, todayCell
-		self.resetCache()
-		cell = self.getCell(cell.jd)
-		todayCell = self.getCell(todayCell.jd)
-
-	def clearEventsData(self):
-		for tmpCell in self.jdCells.values():
-			tmpCell.clearEventsData()
-		cell.clearEventsData()
-		todayCell.clearEventsData()
-		self.weekEvents = LRUCache(maxsize=maxWeekCacheSize)
-
-	def registerPlugin(
-		self,
-		name: str,
-		setParamsCallable: Callable[[CellType], None],
-		getCellGroupCallable: Callable[[CellCache, ...], list[CellType]],
-		# ^ FIXME: ...
-		# `...` is `absWeekNumber` for weekCal, and `year, month` for monthCal
-	):
-		"""
-		setParamsCallable(cell): cell.attr1 = value1 ....
-		getCellGroupCallable(cellCache, *args): return cell_group
-		call cellCache.getCell(jd) inside getCellGroupFunc.
-		"""
-		self.plugins[name] = (
-			setParamsCallable,
-			getCellGroupCallable,
-		)
-		for localCell in self.jdCells.values():
-			setParamsCallable(localCell)
-
-	def getCell(self, jd: int) -> CellType:
-		c = self.jdCells.get(jd)
-		if c is not None:
-			return c
-		return self.buildCell(jd)
-
-	def getTmpCell(self, jd: int) -> CellType:
-		# don't keep, no eventsData, no plugin params
-		c = self.jdCells.get(jd)
-		if c is not None:
-			return c
-		return Cell(jd)
-
-	def getCellByDate(self, y: int, m: int, d: int) -> CellType:
-		return self.getCell(core.primary_to_jd(y, m, d))
-
-	def getTodayCell(self) -> CellType:
-		return self.getCell(core.getCurrentJd())
-
-	def buildCell(self, jd: int) -> CellType:
-		localCell = Cell(jd)
-		for pluginData in self.plugins.values():
-			pluginData[0](localCell)
-		self.jdCells[jd] = localCell
-		return localCell
-
-	def getCellGroup(self, pluginName: int, *args) -> list[CellType]:
-		return self.plugins[pluginName][1](self, *args)
-
-	def getWeekData(
-		self,
-		absWeekNumber: int,
-	) -> tuple[list[CellType], list[dict]]:
-		cells = self.getCellGroup("WeekCal", absWeekNumber)
-		wEventData = self.weekEvents.get(absWeekNumber)
-		if wEventData is None:
-			wEventData = event_lib.getWeekOccurrenceData(
-				absWeekNumber,
-				eventGroups,
-				tfmt=eventWeekViewTimeFormat,
-			)
-			self.weekEvents[absWeekNumber] = wEventData
-			# log.info(f"weekEvents cache: {len(self.weekEvents)}")
-		return cells, wEventData
-
-	# def getMonthData(self, year, month):  # needed? FIXME
-
-
-def changeDate(
-	year: int,
-	month: int,
-	day: int,
-	calType: int | None = None,
-) -> None:
-	global cell
-	if calType is None:
-		calType = calTypes.primary
-	cell = cellCache.getCell(core.to_jd(year, month, day, calType))
-
-
-def gotoJd(jd: int) -> None:
-	global cell
-	cell = cellCache.getCell(jd)
-
-
-def jdPlus(plus: int = 1) -> None:
-	global cell
-	cell = cellCache.getCell(cell.jd + plus)
-
-
-def getMonthPlus(tmpCell: CellType, plus: int) -> CellType:
-	year, month = lowMonthPlus(tmpCell.year, tmpCell.month, plus)
-	day = min(tmpCell.day, cal_types.getMonthLen(year, month, calTypes.primary))
-	return cellCache.getCellByDate(year, month, day)
-
-
-def monthPlus(plus: int = 1) -> None:
-	global cell
-	cell = getMonthPlus(cell, plus)
-
-
-def yearPlus(plus: int = 1) -> None:
-	global cell
-	year = cell.year + plus
-	month = cell.month
-	day = min(cell.day, cal_types.getMonthLen(year, month, calTypes.primary))
-	cell = cellCache.getCellByDate(year, month, day)
+# moved to cells.:
+# getMonthPlus, changeDate, gotoJd, gotoJd, jdPlus, monthPlus, yearPlus
 
 
 def getFont(
@@ -588,13 +227,24 @@ def initFonts(fontDefaultNew: Font) -> None:
 def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
 	jdList = []
 	for jd in range(startJd, endJd):
-		tmpCell = cellCache.getTmpCell(jd)
+		tmpCell = cells.getTmpCell(jd)
 		if tmpCell.holiday:
 			jdList.append(jd)
 	return jdList
 
 
 # ----------------------------------------------------------------------
+
+
+def checkNeedRestart() -> bool:
+	for key in needRestartPref:
+		if needRestartPref[key] != evalParam(key):
+			log.info(
+				f"checkNeedRestart: {key!r}, "
+				f"{needRestartPref[key]!r}, {evalParam(key)!r}",
+			)
+			return True
+	return False
 
 
 def checkMainWinItems() -> None:
@@ -679,7 +329,7 @@ def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 
 
 def init() -> None:
-	global todayCell, cell, fs, eventAccounts, eventGroups, eventTrash, eventNotif
+	global fs, eventAccounts, eventGroups, eventTrash, eventNotif
 	core.init()
 
 	fs = core.fs
@@ -689,8 +339,6 @@ def init() -> None:
 	eventGroups = event_lib.EventGroupsHolder.load(fs)
 	eventTrash = event_lib.EventTrash.load(fs)
 	eventNotif = EventNotificationManager(eventGroups)
-	# ----
-	todayCell = cell = cellCache.getTodayCell()  # FIXME
 
 
 def withFS(obj: SObj) -> SObj:
@@ -1060,71 +708,6 @@ def getActiveMonthCalParams():
 
 # --------------------------------
 
-eventIconDir = join(svgDir, "event")
-
-
-class TagIconItem:
-	def __init__(self, name, desc="", icon="", eventTypes=()):
-		self.name = name
-		if not desc:
-			desc = name.capitalize()
-		self.desc = _(desc)
-		if icon:
-			if not isabs(icon):
-				icon = join(eventIconDir, icon)
-		else:
-			iconTmp = join(eventIconDir, name) + ".svg"
-			if isfile(iconTmp):
-				icon = iconTmp
-			else:
-				log.debug(f"TagIconItem: file not found: {iconTmp}")
-		self.icon = icon
-		self.eventTypes = eventTypes
-		self.usage = 0
-
-	def getIconRel(self):
-		icon = self.icon
-		if icon.startswith(svgDir + os.sep):
-			return icon[len(svgDir) + 1 :]
-		return icon
-
-	def __repr__(self):
-		return (
-			f"TagIconItem({self.name!r}, desc={self.desc!r}, "
-			f"icon={self.icon!r}, eventTypes={self.eventTypes!r})"
-		)
-
-
-eventTags = (
-	TagIconItem("alarm"),
-	TagIconItem("birthday", eventTypes=("yearly",), desc="Birthday (Balloons)"),
-	TagIconItem("birthday2", eventTypes=("yearly",), desc="Birthday (Cake)"),
-	TagIconItem("business"),
-	TagIconItem("education"),
-	TagIconItem("favorite"),
-	TagIconItem("green_clover", desc="Green Clover"),
-	TagIconItem("holiday"),
-	TagIconItem("important"),
-	TagIconItem("marriage", eventTypes=("yearly",)),
-	TagIconItem("note", eventTypes=("dailyNote",)),
-	TagIconItem("phone_call", desc="Phone Call", eventTypes=("task",)),
-	TagIconItem("task", eventTypes=("task",)),
-	TagIconItem("university", eventTypes=("task",)),  # FIXME: eventTypes
-	TagIconItem("shopping_cart", desc="Shopping Cart"),
-	TagIconItem("personal"),  # TODO: icon
-	TagIconItem("appointment", eventTypes=("task",)),  # TODO: icon
-	TagIconItem("meeting", eventTypes=("task",)),  # TODO: icon
-	TagIconItem("travel"),  # TODO: icon
-)
-
-
-def getEventTagsDict():
-	return {tagObj.name: tagObj for tagObj in eventTags}
-
-
-eventTagsDesc = {t.name: t.desc for t in eventTags}
-
-# -------------------
 fs: event_lib.FileSystem | None = None
 eventAccounts: list[event_lib.EventAccount] = []
 eventGroups: list[event_lib.EventGroup] = []
@@ -1142,25 +725,12 @@ def iterAllEvents():  # dosen"t include orphan events
 
 eventUpdateQueue = EventUpdateQueue()
 
-
-# def updateEventTagsUsage():  # FIXME where to use?
-# 	tagsDict = getEventTagsDict()
-# 	for tagObj in eventTags:
-# 		tagObj.usage = 0
-# 	for event in events:  # FIXME
-# 		for tag in event.tags:
-# 			td = tagsDict.get(tag)
-# 			if td is not None:
-# 				tagsDict[tag].usage += 1
-
-
 # -------------------
 # BUILD CACHE AFTER SETTING calTypes.primary
-maxDayCacheSize = 100  # maximum size of cellCache (days number)
+maxDayCacheSize = 100  # maximum size of cells (days number)
 maxWeekCacheSize = 12
 
-cellCache = CellCache()
-todayCell = cell = None
+cells = None  # FIXME: CellCacheType based on CellCache
 # ---------------------------
 # appLogo = join(pixDir, "starcal.png")
 appLogo = join(svgDir, "starcal.svg")
@@ -1568,11 +1138,35 @@ def updateFocusTime(*_args):
 	focusTime = perf_counter()
 
 
+def evalParam(param: str) -> Any:
+	parts = param.split(".")
+	if not parts:
+		raise ValueError(f"invalid {param = }")
+
+	if len(parts) == 1:
+		return globals()[param]
+
+	value = globals()
+	for part in parts:
+		if isinstance(value, dict):
+			value = value[part]
+		else:
+			value = getattr(value, part)
+
+	return value
+
+
 # --------------------------------------------------------
 
 loadConf()
 
 # --------------------------------------------------------
+
+needRestartPref = {
+	name: evalParam(name) for name in getParamNamesWithFlag(NEED_RESTART)
+}
+needRestartPref.update(locale_man.getNeedRestartParams())
+
 
 if not isfile(statusIconImage):
 	statusIconImage = statusIconImageDefault
@@ -1594,37 +1188,7 @@ else:
 	saveConf()
 
 
-def evalParam(param: str) -> Any:
-	parts = param.split(".")
-	if not parts:
-		raise ValueError(f"invalid {param = }")
-
-	if len(parts) == 1:
-		return globals()[param]
-
-	value = globals()
-	for part in parts:
-		if isinstance(value, dict):
-			value = value[part]
-		else:
-			value = getattr(value, part)
-
-	return value
-
-
-needRestartPref = {
-	name: evalParam(name) for name in getParamNamesWithFlag(NEED_RESTART)
-}
-needRestartPref.update(
-	{
-		"locale_man.lang": locale_man.lang,
-		"locale_man.enableNumLocale": locale_man.enableNumLocale,
-	},
-)
-
-
-if menuTextColor is None:
-	menuTextColor = borderTextColor
+menuTextColor = menuTextColor or borderTextColor
 
 # ----------------------------------
 
