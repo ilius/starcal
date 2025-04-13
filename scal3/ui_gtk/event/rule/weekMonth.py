@@ -3,6 +3,8 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
 from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):

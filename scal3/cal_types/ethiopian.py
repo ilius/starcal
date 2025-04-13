@@ -18,6 +18,7 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
 name = "ethiopian"
 desc = "Ethiopian"
