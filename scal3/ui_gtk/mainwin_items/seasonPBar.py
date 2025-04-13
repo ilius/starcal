@@ -6,6 +6,8 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.pbar import MyProgressBar
 
+__all__ = ["CalObj"]
+
 
 @registerSignals
 class CalObj(gtk.Frame, CustomizableCalObj):
