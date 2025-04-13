@@ -62,6 +62,8 @@ from scal3.ui_gtk.toolbox import (
 )
 from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
+__all__ = ["CalObj"]
+
 
 def show_event(widget, gevent):
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
