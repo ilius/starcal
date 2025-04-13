@@ -55,7 +55,13 @@ from scal3.core import (
 	getAbsWeekNumberFromJd,
 	jd_to_primary,
 )
-from scal3.date_utils import checkDate, dateDecode, dateEncode, jwday
+from scal3.date_utils import (
+	checkDate,
+	dateDecode,
+	dateEncode,
+	getJdRangeForMonth,
+	jwday,
+)
 from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
 	simplifyNumList,
@@ -68,6 +74,7 @@ from scal3.path import confDir, pixDir, svgDir
 # from scal3.interval_utils import
 from scal3.s_object import (
 	BsonHistObj,
+	DefaultFileSystem,
 	FileSystem,
 	JsonSObj,
 	SObj,
@@ -110,7 +117,6 @@ __all__ = [
 	"Account",
 	"DefaultFileSystem",
 	"Event",
-	"EventAccount",
 	"EventAccountsHolder",
 	"EventGroup",
 	"EventGroupsHolder",
@@ -6584,7 +6590,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
 
 
 def getMonthOccurrenceData(curYear, curMonth, groups, tfmt="HM$"):
-	startJd, endJd = core.getJdRangeForMonth(curYear, curMonth, calTypes.primary)
+	startJd, endJd = getJdRangeForMonth(curYear, curMonth, calTypes.primary)
 	data = []
 
 	def handleEvent(event, group):

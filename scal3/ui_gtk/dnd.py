@@ -8,9 +8,6 @@ from scal3.utils import urlToPath
 __all__ = ["processDroppedDate"]
 
 
-__all__ = ["processDroppedDate"]
-
-
 log = logger.get()
 
 

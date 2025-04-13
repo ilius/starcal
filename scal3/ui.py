@@ -100,7 +100,6 @@ __all__ = [
 	"labelMenuDelay",
 	"lastLiveConfChangeTime",
 	"localTzHist",
-	"lowMonthPlus",
 	"mainWin",
 	"mainWinItems",
 	"mainWinRightPanelEnable",
@@ -831,7 +830,7 @@ def getActiveMonthCalParams():
 # --------------------------------
 
 fs: event_lib.FileSystem | None = None
-eventAccounts: list[event_lib.EventAccount] = []
+eventAccounts: list[event_lib.Account] = []
 eventGroups: list[event_lib.EventGroup] = []
 eventTrash: event_lib.EventTrash | None = None
 eventNotif: EventNotificationManager | None = None
