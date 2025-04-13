@@ -26,6 +26,7 @@ from cachetools import LRUCache
 
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes, jd_to
+from scal3.date_utils import monthPlus as lowMonthPlus
 from scal3.types_starcal import CellType, CompiledTimeFormat
 
 if typing.TYPE_CHECKING:
@@ -292,7 +293,7 @@ class CellCache:
 	# def getMonthData(self, year, month):  # needed? FIXME
 
 	def getMonthPlus(self, tmpCell: CellType, plus: int) -> CellType:
-		year, month = ui.lowMonthPlus(tmpCell.year, tmpCell.month, plus)
+		year, month = lowMonthPlus(tmpCell.year, tmpCell.month, plus)
 		day = min(tmpCell.day, cal_types.getMonthLen(year, month, calTypes.primary))
 		return self.getCellByDate(year, month, day)
 
