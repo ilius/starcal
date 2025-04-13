@@ -38,6 +38,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib import Event, EventGroup
 
 
+__all__ = ["StarCalendarAccount"]
 # def encodeDateTimeRuleValue(
 # 	return {
 # 		"date": dateEncode(self.date),

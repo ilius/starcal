@@ -40,6 +40,8 @@ from scal3.ui_gtk.utils import (
 	dialog_add_button,
 )
 
+__all__ = ["WidgetClass"]
+
 
 class CourseListEditor(gtk.Box):
 	def __init__(

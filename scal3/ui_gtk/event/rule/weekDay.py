@@ -1,6 +1,8 @@
 from scal3 import core
 from scal3.ui_gtk import gtk, pack
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):

@@ -2,6 +2,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):

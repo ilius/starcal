@@ -24,6 +24,8 @@ from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(common.WidgetClass):
 	groups = [

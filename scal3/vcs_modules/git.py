@@ -31,6 +31,20 @@ from pygit2 import (
 from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat
 
+__all__ = [
+	"clearObj",
+	"getCommitInfo",
+	"getCommitList",
+	"getCommitShortStatLine",
+	"getFirstCommitEpoch",
+	"getLastCommitEpoch",
+	"getLatestParentBefore",
+	"getShortStat",
+	"getTagList",
+	"getTagShortStatLine",
+	"prepareObj",
+]
+
 
 def prepareObj(obj):  # noqa: ARG001
 	pass
