@@ -86,8 +86,13 @@ from scal3.ui_gtk.utils import (
 
 __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
 
-if os.getenv("STARCAL_FULL_IMPORT"):
+
+def doFullImport():
 	# to help with testing phase and also tell code analyzers these are imported
+	import scal3.cal_types.import_all  # noqa: F401
+	import scal3.event_lib_import_all  # noqa: F401
+	import scal3.ui_gtk.event.import_all  # noqa: F401
+	from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
 	from scal3.ui_gtk.mainwin_items.dayCal import CalObj as _CalObj  # noqa: F811
 	from scal3.ui_gtk.mainwin_items.labelBox import CalObj as _CalObj  # noqa: F811
 	from scal3.ui_gtk.mainwin_items.monthCal import CalObj as _CalObj  # noqa: F811
@@ -96,8 +101,10 @@ if os.getenv("STARCAL_FULL_IMPORT"):
 	from scal3.ui_gtk.mainwin_items.toolbar import CalObj as _CalObj  # noqa: F811
 	from scal3.ui_gtk.mainwin_items.weekCal import CalObj as _CalObj  # noqa: F811
 	from scal3.ui_gtk.mainwin_items.yearPBar import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.pluginsText import PluginsTextBox
 
-	print(_CalObj)  # to make ruff happy
+	# to make ruff happy:
+	print(_CalObj, PluginsTextBox, LimitedHeightDayOccurrenceView)
 
 
 ui.uiName = "gtk"
@@ -1744,6 +1751,8 @@ def main():
 	# -------------------------------
 	ui.init()
 	cell.init()
+	if os.getenv("STARCAL_FULL_IMPORT"):
+		doFullImport()
 	# -------------------------------
 	pixcache.cacheSaveStart()
 	ui.eventUpdateQueue.startLoop()

@@ -23,6 +23,8 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
