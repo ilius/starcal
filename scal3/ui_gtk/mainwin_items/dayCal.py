@@ -18,6 +18,8 @@ from scal3 import ui
 from scal3.ui_gtk.day_cal import DayCal
 from scal3.ui_gtk.decorators import registerSignals
 
+__all__ = ["CalObj"]
+
 
 @registerSignals
 class CalObj(DayCal):

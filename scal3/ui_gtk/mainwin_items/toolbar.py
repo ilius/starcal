@@ -7,6 +7,8 @@ from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
 )
 
+__all__ = ["CalObj"]
+
 
 class MainMenuToolBoxItem(ToolBoxItem):
 	def __init__(self):
