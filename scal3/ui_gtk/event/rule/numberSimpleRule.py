@@ -1,5 +1,7 @@
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(IntSpinButton):
 	def __init__(self, rule):

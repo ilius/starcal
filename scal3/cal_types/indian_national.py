@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
+
 name = "indian_national"
 desc = "Indian National"
 origLang = "hi"  # or "en" FIXME

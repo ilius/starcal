@@ -7,6 +7,7 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
+__all__ = ["WidgetClass"]
 maxStart = 999999
 maxDur = 99999
 

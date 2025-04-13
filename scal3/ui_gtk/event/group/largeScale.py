@@ -4,6 +4,7 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
+__all__ = ["WidgetClass"]
 maxStartEnd = 999999
 
 

@@ -4,6 +4,8 @@ from scal3.ui_gtk.event.group.vcsEpochBase import (
 	VcsEpochBaseWidgetClass as BaseWidgetClass,
 )
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(BaseWidgetClass):
 	def __init__(self, group):

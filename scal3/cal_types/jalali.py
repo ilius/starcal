@@ -22,7 +22,7 @@
 
 from scal3 import logger
 
-__all__ = ["getMonthLen", "isLeap", "jd_to", "to_jd"]
+__all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 
 
 log = logger.get()

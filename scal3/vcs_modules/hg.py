@@ -23,6 +23,24 @@ from scal3.event_search_tree import EventSearchTree
 from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
 
+__all__ = [
+	"clearObj",
+	"getCommitInfo",
+	"getCommitList",
+	"getCommitShortStatLine",
+	"getFirstCommitEpoch",
+	"getLastCommitEpoch",
+	"getLatestParentBefore",
+	"getShortStat",
+	"getTagList",
+	"getTagShortStatLine",
+	"prepareObj",
+]
+
+
+def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
+	raise NotImplementedError
+
 
 def prepareObj(obj):
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)

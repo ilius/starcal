@@ -53,6 +53,7 @@ from scal3.locale_man import tr as _
 from scal3.os_utils import getUserDisplayName, openUrl
 from scal3.utils import toBytes, toStr
 
+__all__ = ['GoogleAccount']
 userDisplayName = getUserDisplayName()
 
 

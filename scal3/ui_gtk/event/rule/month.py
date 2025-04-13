@@ -3,6 +3,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.utils import set_tooltip
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):
