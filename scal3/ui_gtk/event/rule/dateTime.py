@@ -3,6 +3,8 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, rule):

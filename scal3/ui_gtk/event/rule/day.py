@@ -1,5 +1,7 @@
 from scal3.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(NumRangesEntry):
 	def __init__(self, rule):
