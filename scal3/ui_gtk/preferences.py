@@ -27,7 +27,7 @@ from os.path import join
 
 from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
-from scal3.locale_man import langSh
+from scal3.locale_man import getLocaleFirstWeekDay, langSh
 from scal3.locale_man import tr as _
 from scal3.path import (
 	sourceDir,
@@ -1285,7 +1285,7 @@ class PreferencesWindow(gtk.Window):
 		f = self.comboFirstWD.get_active()  # 0 means Sunday
 		if f == 7:  # auto
 			with suppress(Exception):
-				f = core.getLocaleFirstWeekDay()
+				f = getLocaleFirstWeekDay()
 		# core.firstWeekDay will be later = f
 		self.holiWDItem.setStart(f)
 
@@ -1367,18 +1367,18 @@ class PreferencesWindow(gtk.Window):
 		if first == 7:
 			core.firstWeekDayAuto = True
 			with suppress(Exception):
-				core.firstWeekDay = core.getLocaleFirstWeekDay()
+				core.firstWeekDay = getLocaleFirstWeekDay()
 		else:
 			core.firstWeekDayAuto = False
 			core.firstWeekDay = first
 		# ------
 		weekNumberMode = self.comboWeekYear.get_active()
-		if weekNumberMode == 8:
-			core.weekNumberModeAuto = True
-			core.weekNumberMode = core.getLocaleweekNumberMode()
-		else:
-			core.weekNumberModeAuto = False
-			core.weekNumberMode = weekNumberMode
+		# if weekNumberMode == 7:
+		# core.weekNumberModeAuto = True
+		# core.weekNumberMode = getLocaleWeekNumberMode()
+		# else:
+		core.weekNumberModeAuto = False
+		core.weekNumberMode = weekNumberMode
 		# ------
 		ui.cells.clear()  # Very important
 		# ^ specially when calTypes.primary will be changed
