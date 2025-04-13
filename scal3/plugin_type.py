@@ -41,3 +41,7 @@ class BasePlugin(SObj):
 	def onCurrentDateChange(self, gdate): ...
 
 	def exportToIcs(self, fileName, startJd, endJd): ...
+
+
+class PluginType(BasePlugin):
+	pass
