@@ -85,6 +85,21 @@ from scal3.ui_gtk.utils import (
 )
 
 __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
+
+if os.getenv("STARCAL_FULL_IMPORT"):
+	# to help with testing phase and also tell code analyzers these are imported
+	from scal3.ui_gtk.mainwin_items.dayCal import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.labelBox import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.monthCal import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.monthPBar import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.seasonPBar import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.toolbar import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.weekCal import CalObj as _CalObj  # noqa: F811
+	from scal3.ui_gtk.mainwin_items.yearPBar import CalObj as _CalObj  # noqa: F811
+
+	print(_CalObj)  # to make ruff happy
+
+
 ui.uiName = "gtk"
 
 
