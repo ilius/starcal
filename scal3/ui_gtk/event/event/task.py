@@ -20,6 +20,8 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
