@@ -55,6 +55,8 @@ from scal3.ui_gtk.utils import pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+__all__ = ["CalObj"]
+
 
 @registerSignals
 class CalObj(gtk.DrawingArea, CalBase):
