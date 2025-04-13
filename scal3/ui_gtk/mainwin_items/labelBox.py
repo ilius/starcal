@@ -51,6 +51,7 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+__all__ = ["CalObj"]
 primaryCalStyleClass = "primarycal"
 
 
