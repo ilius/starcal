@@ -39,7 +39,7 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import toStr
 
-__all__ = ["DayOccurrenceView"]
+__all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
 
 @registerSignals

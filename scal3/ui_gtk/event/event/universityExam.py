@@ -28,6 +28,8 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.utils import showError
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, event):  # FIXME

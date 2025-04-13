@@ -2,6 +2,8 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(NormalWidgetClass):
 	def __init__(self, group):

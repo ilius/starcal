@@ -22,6 +22,8 @@ from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME

@@ -31,6 +31,8 @@ from scal3.ui_gtk.mywidgets.multi_spin.option_box.hour_minute import (
 from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 from scal3.ui_gtk.utils import showError
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(gtk.Box):
 	def __init__(self, event):  # FIXME

@@ -32,6 +32,8 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 )
 
+__all__ = ["WidgetClass"]
+
 
 def encode(d):
 	return textNumEncode(dateEncode(d))
