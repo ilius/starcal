@@ -1,5 +1,7 @@
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
+__all__ = ["WidgetClass"]
+
 
 class WidgetClass(DateButton):
 	def __init__(self, rule):
