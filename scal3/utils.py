@@ -47,6 +47,7 @@ __all__ = [
 	"s_join",
 	"toBytes",
 	"toStr",
+	"urlToPath",
 	"versionLessThan",
 ]
 

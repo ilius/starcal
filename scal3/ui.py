@@ -60,6 +60,7 @@ __all__ = [
 	"boldYmLabel",
 	"buttonIconEnable",
 	"buttonIconSize",
+	"cellMenuXOffset",
 	"cells",
 	"checkMainWinItems",
 	"checkNeedRestart",
