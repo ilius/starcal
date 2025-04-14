@@ -99,7 +99,7 @@ class CalBase(CustomizableCalObj):
 		self.drag_source_set(
 			gdk.ModifierType.MODIFIER_MASK,
 			[],
-			gdk.DragAction.MOVE,  # FIXME
+			gdk.DragAction.COPY,  # FIXME
 		)
 		self.drag_source_add_text_targets()
 		###
@@ -137,15 +137,19 @@ class CalBase(CustomizableCalObj):
 		context.drop_reply(False, etime)
 		return True
 
-	def dragDataRec(self, obj, context, x, y, selection, target_id, etime):
+	def dragDataRec(self, _obj, _context, _x, _y, selection, _target_id, _etime):
 		from scal3.ui_gtk.dnd import processDroppedDate
-		dtype = selection.get_data_type()
-		# dtype = selection.type, REMOVE
+
+		dtypeAtom = selection.get_data_type()
+		dtype = dtypeAtom.name()
+
 		text = selection.get_text()
 		dateM = processDroppedDate(text, dtype)
 		if dateM:
 			self.changeDate(*dateM)
-		elif dtype == "application/x-color":
+			return False
+
+		if dtype == "application/x-color":
 			# selection.get_text() is None
 			text = selection.data
 			ui.bgColor = (
@@ -156,13 +160,17 @@ class CalBase(CustomizableCalObj):
 			)
 			self.emit("pref-update-bg-color")
 			self.queue_draw()
-		else:
-			log.info(
-				f"Unknown dropped data type {dtype!r}, {text=}, " +
-				f"data={selection.data!r}"
-			)
-			return True
-		return False
+			return False
+
+		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
+		return True
+
+
+		self.drag_dest_set(
+			gtk.DestDefaults.ALL,
+			[],
+			gdk.DragAction.COPY,
+		)
 
 	def dragBegin(self, obj, context):
 		# context is instance of gi.repository.Gdk.DragContext
