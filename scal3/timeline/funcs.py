@@ -21,7 +21,7 @@ log = logger.get()
 from bisect import bisect_left, bisect_right
 from math import log10
 
-from scal3 import core
+from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.core import jd_to_primary, primary_to_jd
 from scal3.date_utils import getEpochFromDate, jwday
@@ -48,7 +48,7 @@ from scal3.timeline.utils import (
 	minYearLenSec,
 	unitSteps,
 )
-from scal3.ui import getHolidaysJdList
+from scal3.ui_funcs import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
 __all__ = ["calcTimeLineData"]
@@ -151,7 +151,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		tl.changeHolidayBg
 		and tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
 	):
-		holidays = [getJPos(jd) for jd in getHolidaysJdList(jd0, jd1 + 1)]
+		holidays = [getJPos(jd) for jd in getHolidaysJdList(ui.cells, jd0, jd1 + 1)]
 	# ---------------------- Ticks
 	ticks = []
 	tickEpochSet = set()

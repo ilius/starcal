@@ -38,6 +38,7 @@ from scal3.locale_man import (
 )
 from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
+from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	GLibError,
@@ -854,7 +855,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			layout = newTextLayout(
 				self,
 				_(c.dates[calType][2], calType),
-				ui.getParamsFont(params),
+				getParamsFont(params),
 			)
 			fontw, fonth = layout.get_pixel_size()
 			if calType == calTypes.primary and c.holiday:
@@ -870,7 +871,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			layout = newTextLayout(
 				self,
 				text,
-				ui.getParamsFont(params),
+				getParamsFont(params),
 			)
 			fontw, fonth = layout.get_pixel_size()
 			setColor(cr, params["color"])
@@ -899,7 +900,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				daynum = newTextLayout(
 					self,
 					text,
-					ui.getParamsFont(params),
+					getParamsFont(params),
 				)
 				fontw, fonth = daynum.get_pixel_size()
 				setColor(cr, params["color"])

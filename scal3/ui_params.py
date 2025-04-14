@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import NamedTuple
+
+from scal3.font import Font
 
 MAIN_CONF = 1
 LIVE = 2
@@ -42,25 +43,6 @@ class Param(NamedTuple):
 	v3Name: str
 	flags: int
 	type: type | None = None
-
-
-@dataclass(slots=True)
-class Font:
-	family: str | None
-	bold: bool = False
-	italic: bool = False
-	size: float = 0
-
-	def fromList(lst: list | None):
-		if lst is None:
-			return
-		return Font(*lst)
-
-	def to_json(self):
-		return [self.family, self.bold, self.italic, self.size]
-
-	def copy(self):
-		return Font(*self.to_json())
 
 
 confParamsData: list[Param] = [
