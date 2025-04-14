@@ -1,20 +1,21 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-import os
+import json
 import sys
 
 sys.path.append("/starcal2")
 
+from scal3 import event_lib, logger, ui
+from scal3.cal_types import calTypes
 from scal3.date_utils import dateDecode
-from scal3.core import to_jd, jd_to, convert, moduleNames
-from scal3 import event_lib
-from scal3 import ui
 
-dataToPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=2)
 
-GREGORIAN = moduleNames.index("gregorian")
-DATE_JALALI = moduleNames.index("jalali")
+def dataToPrettyJson(data):
+	return json.dumps(data, sort_keys=True, indent=2)
+
+
+log = logger.get()
+
+GREGORIAN = calTypes.get("gregorian")
+DATE_JALALI = calTypes.get("jalali")
 
 ui.eventGroups.load()
 
@@ -23,24 +24,24 @@ newGroupsDict = {}
 
 
 def getGroupByTitle(title):
-	global newGroupsDict
 	try:
 		return newGroupsDict[title]
 	except KeyError:
 		group = event_lib.NoteBook()
-		group.setData({
-			"calType": "jalali",
-			"color": [255, 255, 0],
-			"title": title,
-
-		})
+		group.setData(
+			{
+				"calType": "jalali",
+				"color": [255, 255, 0],
+				"title": title,
+			},
+		)
 		newGroupsDict[title] = group
 		ui.eventGroups.append(group)
 		return group
 
 
-for line in open("wikipedia-fa.tab"):
-	line = line.strip()
+for line in open("wikipedia-fa.tab", encoding="utf-8"):  # noqa: SIM115
+	line = line.strip()  # noqa: PLW2901
 	if not line:
 		continue
 	parts = line.split("\t")
@@ -50,7 +51,7 @@ for line in open("wikipedia-fa.tab"):
 		date_str, category, summary = parts
 		description = ""
 	else:
-		log.info("BAD LINE", line)
+		log.info(f"BAD LINE: {line}")
 		continue
 	year, month, day = dateDecode(date_str)
 	group = getGroupByTitle(groupTitlePrefix + category)
