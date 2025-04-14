@@ -1,4 +1,5 @@
 VERSION
+calendar-*.html
 *~
 *.py[oc]
 *.pywc
@@ -30,6 +31,10 @@ google-api-python-client
 oauth2client
 .[Tt]rash*
 /result
+
+imports_from_set.json
+imports_set.json
+module-attrs.json
 
 /bson/bson/tests
 /bson/test.py
