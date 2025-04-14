@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+if [ -z "$WARNINGS" ] ; then
+	export WARNINGS=ignore
+fi
+
 if [ -n "$STARCAL_DEV" ] ; then
 	python3 `dirname "$0"`/scal3/ui_gtk/starcal.py "$@"
 	exit
