@@ -41,6 +41,7 @@ from scal3.path import (
 	pixDir,
 	sourceDir,
 )
+from scal3.ui_msgs import menuMainItemDefs
 
 log = logger.get()
 
@@ -1021,7 +1022,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return
 		menu = gtk.Menu(reserve_toggle_size=0)
 		# ----
-		for propsTmp in ui.menuMainItemDefs.values():
+		for propsTmp in menuMainItemDefs.values():
 			props = dict(propsTmp)  # make a copy before modify
 			cls = getattr(menuitems, props.pop("cls"))
 			props["func"] = getattr(self, props["func"])
