@@ -529,7 +529,7 @@ def stopRunningThreads() -> None:
 		except AttributeError:
 			pass
 		else:
-			log.info(f"stopping thread {thread.getName()}")
+			log.info(f"stopping thread {thread.name}")
 			cancel()
 
 
