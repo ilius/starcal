@@ -30,6 +30,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
+from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	VBox,
@@ -970,7 +971,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		}
 
 	def set(self, data):
-		font = ui.getParamsFont(data)
+		font = getParamsFont(data)
 		self.fontCheck.set_active(bool(font))
 		if not font:
 			font = ui.getFont()
@@ -1000,7 +1001,7 @@ class DaysOfMonthColumn(Column):
 
 	def drawColumn(self, cr):
 		self.drawBg(cr)
-		font = ui.getParamsFont(ui.wcalTypeParams[self.index])
+		font = getParamsFont(ui.wcalTypeParams[self.index])
 		self.drawTextList(
 			cr,
 			[
