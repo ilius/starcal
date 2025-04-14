@@ -21,6 +21,7 @@ log = logger.get()
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
+from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
 __all__ = ["CalTypeParamWidget", "TextParamWidget"]
@@ -234,7 +235,7 @@ class TextParamWidget(gtk.Box):
 	def set(self, params):
 		self.spinX.set_value(params["pos"][0])
 		self.spinY.set_value(params["pos"][1])
-		self.fontb.set_font(ui.getParamsFont(params))
+		self.fontb.set_font(getParamsFont(params))
 		self.colorb.set_rgba(params["color"])
 		if self.hasEnable:
 			self.enableCheck.set_active(params.get("enable", True))
