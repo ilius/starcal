@@ -32,18 +32,19 @@ from scal3.cal_types import calTypes
 from scal3.event_notification_thread import EventNotificationManager
 from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
+from scal3.font import Font
 from scal3.json_utils import (
 	loadJsonConf,
 	saveJsonConf,
 )
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
+from scal3.ui_funcs import checkEnabledNamesItems
 from scal3.ui_params import (
 	CUSTOMIZE,
 	LIVE,
 	MAIN_CONF,
 	NEED_RESTART,
-	Font,
 	confParamsData,
 	getParamNamesWithFlag,
 )
@@ -85,8 +86,6 @@ __all__ = [
 	"getActiveMonthCalParams",
 	"getEvent",
 	"getFont",
-	"getHolidaysJdList",
-	"getParamsFont",
 	"holidayColor",
 	"init",
 	"initFonts",
@@ -285,17 +284,6 @@ def getFont(
 	)
 
 
-def getParamsFont(params: dict) -> Font | None:
-	font = params.get("font")
-	if not font:
-		return None
-	if not isinstance(font, Font):
-		font = Font(*font)
-	if font.family is None:
-		font.family = getFont().family
-	return font
-
-
 def initFonts(fontDefaultNew: Font) -> None:
 	global fontDefault, fontCustom
 	fontDefault = fontDefaultNew
@@ -344,15 +332,6 @@ def initFonts(fontDefaultNew: Font) -> None:
 		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
 
 
-def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
-	jdList = []
-	for jd in range(startJd, endJd):
-		tmpCell = cells.getTmpCell(jd)
-		if tmpCell.holiday:
-			jdList.append(jd)
-	return jdList
-
-
 # ----------------------------------------------------------------------
 
 
@@ -385,27 +364,7 @@ def checkWinControllerButtons() -> None:
 	# "sep" button can have duplicates
 
 
-def checkEnabledNamesItems(
-	items: list[tuple[str, bool]],
-	itemsDefault: list[tuple[str, bool]],
-) -> list[tuple[str, bool]]:
-	# cleaning and updating items
-	names = {name for (name, i) in items}
-	defaultNames = {name for (name, i) in itemsDefault}
-	# -----
-	# removing items that are no longer supported
-	items, itemsTmp = [], items
-	for name, enable in itemsTmp:
-		if name in defaultNames:
-			items.append((name, enable))
-	# -----
-	# adding items newly added in this version, this is for user"s convenience
-	newNames = defaultNames.difference(names)
-	log.debug(f"items: {newNames = }")
-	# --
-	for name in newNames:
-		items.append((name, False))  # FIXME
-	return items
+# ----------------------------------------------------------------------
 
 
 def moveEventToTrash(
@@ -446,6 +405,9 @@ def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 		newTitle, index = makeTitle(index), index + 1
 
 	group.title = newTitle
+
+
+# ----------------------------------------------------------------------
 
 
 def init() -> None:

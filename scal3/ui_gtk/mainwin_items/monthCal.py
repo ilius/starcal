@@ -31,6 +31,7 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus
+from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	VBox,
@@ -432,7 +433,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				daynum = newTextLayout(
 					self,
 					_(c.dates[calType][2], calType),
-					ui.getParamsFont(params),
+					getParamsFont(params),
 				)
 				fontw, fonth = daynum.get_pixel_size()
 				if cellInactive:
@@ -453,7 +454,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 						daynum = newTextLayout(
 							self,
 							_(c.dates[calType][2], calType),
-							ui.getParamsFont(params),
+							getParamsFont(params),
 						)
 						fontw, fonth = daynum.get_pixel_size()
 						setColor(cr, params["color"])
