@@ -3,6 +3,8 @@ import sys
 
 import gi
 
+from scal3.ui import conf
+
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk as gtk
@@ -15,7 +17,7 @@ from scal3.ui_gtk import pixcache, starcal
 ui.init()
 cell.init()
 
-ui.winKeepAbove = False
+conf.winKeepAbove = False
 
 pixcache.cacheSaveStart()
 ui.eventUpdateQueue.startLoop()

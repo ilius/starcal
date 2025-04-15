@@ -26,6 +26,7 @@ from scal3 import event_lib, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
+from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.event import makeWidget
@@ -62,7 +63,7 @@ __all__ = [
 def getTreeGroupPixbuf(group):
 	return newColorCheckPixbuf(
 		group.color,
-		ui.eventTreeGroupIconSize,
+		conf.eventTreeGroupIconSize,
 		group.enable,
 	)
 

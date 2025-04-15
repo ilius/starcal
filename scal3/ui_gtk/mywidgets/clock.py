@@ -24,8 +24,8 @@ from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
-from scal3 import ui
 from scal3.time_utils import clockWaitMilliseconds
+from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import fillColor, setColor
 
@@ -150,8 +150,8 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 
 	def drawWithContext(self, cr: cairo.Context):
 		text = self.text
-		fillColor(cr, ui.bgColor)
-		setColor(cr, ui.textColor)
+		fillColor(cr, conf.bgColor)
+		setColor(cr, conf.textColor)
 		lay = self.create_pango_layout(text)
 		show_layout(cr, lay)
 		w, h = lay.get_pixel_size()

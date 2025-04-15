@@ -1,5 +1,6 @@
-from scal3 import locale_man, ui
+from scal3 import locale_man
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
 
 __all__ = ["TimeZoneComboBoxEntry"]
@@ -42,7 +43,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 				False,
 			],
 		)
-		for tz_name in ui.localTzHist:
+		for tz_name in conf.localTzHist:
 			model.append(recentIter, [tz_name, True])
 		# ---
 		self.appendOrderedDict(

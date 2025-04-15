@@ -3,6 +3,7 @@ from scal3.cal_types import calTypes, to_jd
 from scal3.date_utils import monthPlus
 from scal3.locale_man import getMonthName, rtl, textNumEncode
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -31,7 +32,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 
-		calType = ui.monthPBarCalType
+		calType = conf.monthPBarCalType
 		if calType == -1:
 			calType = calTypes.primary
 
@@ -71,7 +72,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		# ----
 		self.optionsWidget = HBox()
 		prefItem = CalTypePrefItem(
-			ui,
+			conf,
 			"monthPBarCalType",
 			live=True,
 			onChangeFunc=self.onDateChange,

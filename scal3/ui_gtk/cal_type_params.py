@@ -18,9 +18,9 @@ from scal3 import logger
 
 log = logger.get()
 
-from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
@@ -248,7 +248,7 @@ class TextParamWidget(gtk.Box):
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
 	def onChange(self, _obj=None, _event=None):
-		setattr(ui, self.paramName, self.get())
+		setattr(conf, self.paramName, self.get())
 		self.cal.queue_draw()
 
 	def setFontPreviewText(self, text):
@@ -275,6 +275,6 @@ class CalTypeParamWidget(TextParamWidget):
 		TextParamWidget.__init__(self, *args, **kwargs)
 
 	def onChange(self, _obj=None, _event=None):
-		typeParams = getattr(ui, self.paramName)
+		typeParams = getattr(conf, self.paramName)
 		typeParams[self.index] = self.get()
 		self.cal.queue_draw()

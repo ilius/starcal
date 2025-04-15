@@ -13,13 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
 
-from scal3 import core, ui
+from scal3 import core
 from scal3.locale_man import numDecode, rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
@@ -381,9 +381,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
-		fillColor(cr, ui.bgColor)
-		textColor = ui.textColor
-		gridColor = ui.mcalGridColor  # FIXME
+		fillColor(cr, conf.bgColor)
+		textColor = conf.textColor
+		gridColor = conf.mcalGridColor  # FIXME
 		# ---
 		# classBounds = self.term.classTimeBounds
 		titles, tmfactors = self.term.getClassBoundsFormatted()

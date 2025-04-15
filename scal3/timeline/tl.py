@@ -13,15 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from os.path import join
 
-from scal3 import ui
 from scal3.json_utils import (
 	loadModuleJsonConf,
 	saveModuleJsonConf,
 )
 from scal3.path import confDir, sysConfDir
+from scal3.ui import conf
 
 __all__ = [
 	"baseFontSize",
@@ -141,8 +140,8 @@ def saveConf() -> None:
 # ---------------------------------------------
 
 
-bgColor = ui.bgColor
-fgColor = ui.textColor
+bgColor = conf.bgColor
+fgColor = conf.textColor
 
 baseFontSize = 8
 

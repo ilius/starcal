@@ -1,5 +1,6 @@
 from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.menuitems import (
@@ -79,7 +80,7 @@ def menuItemFromEventGroup(group, **kwargs):
 		group.title,
 		pixbuf=newColorCheckPixbuf(
 			group.color,
-			ui.menuEventCheckIconSize,
+			conf.menuEventCheckIconSize,
 			group.enable,
 		),
 		**kwargs,
@@ -89,5 +90,5 @@ def menuItemFromEventGroup(group, **kwargs):
 def eventTreeIconPixbuf(icon: str) -> GdkPixbuf.Pixbuf:
 	return pixbufFromFile(
 		icon,
-		ui.eventTreeIconSize,
+		conf.eventTreeIconSize,
 	)

@@ -29,6 +29,8 @@ import sys
 import typing
 from os.path import join
 
+from scal3.ui import conf
+
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
@@ -149,7 +151,7 @@ class BaseCalObj(CalObjType):
 				item.onDateChange(sender=sender, toParent=False)
 
 	def onEnableCheckClick(self):
-		enable = getattr(ui, self.enableParam)
+		enable = getattr(conf, self.enableParam)
 		self.enable = enable
 		self.onConfigChange()
 		self.showHide()
@@ -233,19 +235,19 @@ class IntegatedWindowList(BaseCalObj):
 		if height == self.lastAlphabetHeight:
 			return
 
-		ui.menuIconSize = int(height * 0.7)
-		ui.menuCheckSize = int(height * 0.8)
-		ui.menuEventCheckIconSize = height * 0.8
-		ui.buttonIconSize = height * 0.65
-		ui.stackIconSize = height * 0.8
-		ui.eventTreeIconSize = height * 0.7
-		ui.eventTreeGroupIconSize = height * 0.85
-		ui.imageInputIconSize = height * 1.2
-		ui.treeIconSize = height * 0.7
-		ui.comboBoxIconSize = height * 0.8
-		ui.toolbarIconSize = height * 0.9
-		ui.messageDialogIconSize = height * 2.0
-		ui.rightPanelEventIconSize = height * 0.8
+		conf.menuIconSize = int(height * 0.7)
+		conf.menuCheckSize = int(height * 0.8)
+		conf.menuEventCheckIconSize = height * 0.8
+		conf.buttonIconSize = height * 0.65
+		conf.stackIconSize = height * 0.8
+		conf.eventTreeIconSize = height * 0.7
+		conf.eventTreeGroupIconSize = height * 0.85
+		conf.imageInputIconSize = height * 1.2
+		conf.treeIconSize = height * 0.7
+		conf.comboBoxIconSize = height * 0.8
+		conf.toolbarIconSize = height * 0.9
+		conf.messageDialogIconSize = height * 2.0
+		conf.rightPanelEventIconSize = height * 0.8
 
 		pixcache.clear()
 		self.lastAlphabetHeight = height
@@ -290,7 +292,7 @@ class IntegatedWindowList(BaseCalObj):
 
 		css = ""
 
-		if ui.oldStyleProgressBar:
+		if conf.oldStyleProgressBar:
 			css += "progressbar progress, trough {min-height: 1.3em;}\n"
 		else:
 			textStyle = cssTextStyle(
@@ -309,7 +311,7 @@ class IntegatedWindowList(BaseCalObj):
 
 		css += "check {min-width: 1.42em; min-height: 1.42em;}\n"
 
-		mcs = ui.menuCheckSize
+		mcs = conf.menuCheckSize
 		css += f"menuitem check {{min-width: {mcs}px; min-height: {mcs}px;}}\n"
 
 		for func in self.cssFuncList:
@@ -433,7 +435,7 @@ justificationByName = {name: value for name, desc, value in justificationList}
 
 # ------------------------------
 
-# if ui.fontCustomEnable:-- FIXME
+# if conf.fontCustomEnable:-- FIXME
 # 	settings.set_property("gtk-font-name", fontCustom)
 
 dateFormat = "%Y/%m/%d"
@@ -538,14 +540,14 @@ wcalToolbarData = {
 # -----------------------------------------------------------
 
 # loaded from jsom
-tmpValue = getattr(ui, "ud__wcalToolbarData", None)
+tmpValue = getattr(conf, "ud__wcalToolbarData", None)
 if tmpValue is not None:
 	wcalToolbarData = tmpValue
 del tmpValue
 
 
 # loaded from jsom
-tmpValue = getattr(ui, "ud__mainToolbarData", None)
+tmpValue = getattr(conf, "ud__mainToolbarData", None)
 if tmpValue is not None:
 	mainToolbarData = tmpValue
 del tmpValue

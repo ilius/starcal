@@ -13,10 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -96,7 +96,7 @@ class CustomizeWindow(gtk.Dialog):
 		# --
 		self.stack = MyStack(
 			headerSpacing=10,
-			iconSize=ui.stackIconSize,
+			iconSize=conf.stackIconSize,
 		)
 		pack(self.vbox, self.stack, 1, 1)
 		# --
@@ -133,8 +133,8 @@ class CustomizeWindow(gtk.Dialog):
 			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
 		# ---
-		if ui.customizePagePath:
-			self.stack.tryToGotoPage(ui.customizePagePath)
+		if conf.customizePagePath:
+			self.stack.tryToGotoPage(conf.customizePagePath)
 		# ---
 		self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
@@ -148,7 +148,7 @@ class CustomizeWindow(gtk.Dialog):
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
-			return pixbufFromFile("document-edit.svg", ui.treeIconSize)
+			return pixbufFromFile("document-edit.svg", conf.treeIconSize)
 		return None
 
 	def newItemList(
@@ -371,7 +371,7 @@ class CustomizeWindow(gtk.Dialog):
 		if item.enableParam:
 			hbox = HBox(spacing=10)
 			prefItem = CheckPrefItem(
-				ui,
+				conf,
 				item.enableParam,
 				_("Enable"),
 				live=True,
@@ -538,9 +538,9 @@ class CustomizeWindow(gtk.Dialog):
 	def save(self):
 		item = self.rootItem
 		item.updateVars()
-		ui.ud__wcalToolbarData = ud.wcalToolbarData
-		ui.ud__mainToolbarData = ud.mainToolbarData
-		ui.customizePagePath = self.stack.currentPagePath()
+		conf.ud__wcalToolbarData = ud.wcalToolbarData
+		conf.ud__mainToolbarData = ud.mainToolbarData
+		conf.customizePagePath = self.stack.currentPagePath()
 		ui.saveConfCustomize()
 		# data = item.getData()-- remove? FIXME
 

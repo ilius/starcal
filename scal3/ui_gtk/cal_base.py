@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -155,7 +156,7 @@ class CalBase(CustomizableCalObj):
 		if dtype == "application/x-color":
 			# selection.get_text() is None
 			text = selection.data
-			ui.bgColor = (
+			conf.bgColor = (
 				ord(text[1]),
 				ord(text[3]),
 				ord(text[5]),

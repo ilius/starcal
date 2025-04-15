@@ -28,6 +28,7 @@ from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes, jd_to
 from scal3.date_utils import monthPlus as lowMonthPlus
 from scal3.types_starcal import CellType, CompiledTimeFormat
+from scal3.ui import conf
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
@@ -123,7 +124,7 @@ class Cell(CellType):
 		self._eventsData = event_lib.getDayOccurrenceData(
 			self.jd,
 			ui.eventGroups,
-			tfmt=ui.eventDayViewTimeFormat,
+			tfmt=conf.eventDayViewTimeFormat,
 		)
 		return self._eventsData
 		# dt = perf_counter() - t0
@@ -202,13 +203,13 @@ class CellCache:
 		self.current = self.today
 
 	def resetCache(self):
-		log.debug(f"resetCache: {ui.maxDayCacheSize=}, {ui.maxWeekCacheSize=}")
+		log.debug(f"resetCache: {conf.maxDayCacheSize=}, {conf.maxWeekCacheSize=}")
 
 		# key: jd(int), value: CellType
-		self.jdCells = LRUCache(maxsize=ui.maxDayCacheSize)
+		self.jdCells = LRUCache(maxsize=conf.maxDayCacheSize)
 
 		# key: absWeekNumber(int), value: list[dict]
-		self.weekEvents = LRUCache(maxsize=ui.maxWeekCacheSize)
+		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize)
 
 	def clear(self) -> None:
 		self.resetCache()
@@ -220,7 +221,7 @@ class CellCache:
 			tmpCell.clearEventsData()
 		self.current.clearEventsData()
 		self.today.clearEventsData()
-		self.weekEvents = LRUCache(maxsize=ui.maxWeekCacheSize)
+		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize)
 
 	def registerPlugin(
 		self,
@@ -276,7 +277,7 @@ class CellCache:
 		self,
 		absWeekNumber: int,
 	) -> tuple[list[CellType], list[dict]]:
-		from scal3.ui import eventGroups, eventWeekViewTimeFormat
+		from scal3.ui import eventGroups
 
 		cell_list = self.getCellGroup("WeekCal", absWeekNumber)
 		wEventData = self.weekEvents.get(absWeekNumber)
@@ -284,7 +285,7 @@ class CellCache:
 			wEventData = event_lib.getWeekOccurrenceData(
 				absWeekNumber,
 				eventGroups,
-				tfmt=eventWeekViewTimeFormat,
+				tfmt=conf.eventWeekViewTimeFormat,
 			)
 			self.weekEvents[absWeekNumber] = wEventData
 			# log.info(f"weekEvents cache: {len(self.weekEvents)}")

@@ -1,6 +1,7 @@
 from scal3 import ui
 from scal3.locale_man import rtl, textNumEncode
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -31,7 +32,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		name, frac = getSeasonNamePercentFromJd(
 			ui.cells.current.jd,
-			ui.seasonPBar_southernHemisphere,
+			conf.seasonPBar_southernHemisphere,
 		)
 		if rtl:
 			percent = f"{int(frac * 100)}%"
@@ -55,7 +56,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		# ----
 		self.optionsWidget = HBox()
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"seasonPBar_southernHemisphere",
 			label=_("Southern Hemisphere"),
 			live=True,

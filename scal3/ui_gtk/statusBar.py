@@ -3,6 +3,7 @@ from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
@@ -42,7 +43,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			label.destroy()
 		# ---
 		activeCalTypes = calTypes.active
-		if ui.statusBarDatesReverseOrder:
+		if conf.statusBarDatesReverseOrder:
 			activeCalTypes = reversed(activeCalTypes)  # to not modify calTypes.active
 		for calType in activeCalTypes:
 			label = SLabel()
@@ -60,8 +61,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			text = ui.cells.current.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"
-			if ui.statusBarDatesColorEnable:
-				text = colorizeSpan(text, ui.statusBarDatesColor)
+			if conf.statusBarDatesColorEnable:
+				text = colorizeSpan(text, conf.statusBarDatesColor)
 			label.set_label(text)
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -77,7 +78,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		optionsWidget = VBox(spacing=10)
 		# ----
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"statusBarDatesReverseOrder",
 			label=_("Reverse the order of dates"),
 			live=True,
@@ -86,8 +87,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(ui, "statusBarDatesColorEnable", _("Dates Color")),
-			ColorPrefItem(ui, "statusBarDatesColor", True),
+			CheckPrefItem(conf, "statusBarDatesColorEnable", _("Dates Color")),
+			ColorPrefItem(conf, "statusBarDatesColor", True),
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)

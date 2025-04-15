@@ -1,11 +1,11 @@
-from scal3 import ui
+from scal3.ui import conf
 from scal3.ui_gtk import gtk
 
 __all__ = ["MyProgressBar"]
 
 
 def MyProgressBar():
-	if ui.oldStyleProgressBar:
+	if conf.oldStyleProgressBar:
 		return OldStyleProgressBar()
 	return NewStyleProgressBar()
 

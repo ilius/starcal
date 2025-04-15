@@ -14,6 +14,7 @@ from os.path import isfile, islink
 
 import dateutil.tz
 
+__all__ = ["UTC", "gettz"]
 defaultTZ = None
 tzErrCount = 0
 

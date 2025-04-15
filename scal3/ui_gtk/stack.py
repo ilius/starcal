@@ -13,13 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
 
-from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
@@ -140,7 +139,7 @@ class MyStack(gtk.Stack):
 		backHbox = HBox(spacing=3)
 		backHbox.set_border_width(5)
 		backText = _("Back")
-		if ui.buttonIconEnable:
+		if conf.buttonIconEnable:
 			pack(
 				backHbox,
 				imageFromFile(

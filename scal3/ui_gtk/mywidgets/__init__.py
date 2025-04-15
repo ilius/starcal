@@ -34,6 +34,8 @@ from scal3.ui_gtk.font_utils import (
 )
 from scal3.ui_gtk.utils import buffer_get_text
 
+__all__ = ["MyColorButton", "MyFontButton", "TextFrame"]
+
 
 def show_event(widget, gevent):
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
