@@ -126,6 +126,8 @@ confEncoders = {
 
 
 def loadConf() -> None:
+	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
+		return
 	loadJsonConf(
 		conf,
 		sysConfPath,
