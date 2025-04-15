@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 
-__all__ = ["checkEnabledNamesItems"]
+__all__ = ["checkEnabledNamesItems", "getHolidaysJdList"]
 
 log = logger.get()
 
