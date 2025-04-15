@@ -1,5 +1,6 @@
 from scal3.locale_man import tr as _
 
+__all__ = ["mainWinItemsDesc"]
 mainWinItemsDesc = {
 	"dayCal": _("Day Calendar"),
 	"labelBox": _("Year & Month Labels"),

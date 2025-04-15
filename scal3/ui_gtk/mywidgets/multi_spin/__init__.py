@@ -30,6 +30,8 @@ from scal3.ui_gtk.drawing import calcTextPixelWidth
 from scal3.ui_gtk.utils import imageClassButton
 from scal3.utils import toStr
 
+__all__ = ["MultiSpinButton", "SingleSpinButton"]
+
 
 class AutoSizeEntry(gtk.Entry):
 	extra_width = 10  # optimal value depends on theme
