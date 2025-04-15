@@ -13,10 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -186,8 +186,8 @@ def newSubPageButton(
 	label.set_use_underline(True)
 	label.set_angle(labelAngle)
 	pack(hbox, gtk.Label(), 1, 1)
-	if page.pageIcon and ui.buttonIconEnable:
-		pack(hbox, imageFromFile(page.pageIcon, size=ui.stackIconSize))
+	if page.pageIcon and conf.buttonIconEnable:
+		pack(hbox, imageFromFile(page.pageIcon, size=conf.stackIconSize))
 	pack(hbox, label, 0, 0)
 	pack(hbox, gtk.Label(), 1, 1)
 	button = gtk.Button()
