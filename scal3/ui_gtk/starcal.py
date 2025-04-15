@@ -42,7 +42,7 @@ from scal3.path import (
 	sourceDir,
 )
 from scal3.ui import conf
-from scal3.ui_msgs import menuMainItemDefs
+from scal3.ui.msgs import menuMainItemDefs
 
 log = logger.get()
 

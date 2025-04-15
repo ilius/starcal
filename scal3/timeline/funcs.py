@@ -48,7 +48,7 @@ from scal3.timeline.utils import (
 	minYearLenSec,
 	unitSteps,
 )
-from scal3.ui_funcs import getHolidaysJdList
+from scal3.ui.funcs import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
 __all__ = ["calcTimeLineData"]
