@@ -32,6 +32,7 @@ from scal3.locale_man import tr as _
 from scal3.path import (
 	sourceDir,
 )
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, Menu, VBox, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.log_pref import LogLevelPrefItem
@@ -198,7 +199,7 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages = []
 		# ----------------------------------------------
 		stack = MyStack(
-			iconSize=ui.stackIconSize,
+			iconSize=conf.stackIconSize,
 		)
 		stack.setTitleFontSize("large")
 		stack.setTitleCentered(True)
@@ -255,7 +256,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"showMain",
 			_("Open main window on start"),
 		)
@@ -263,7 +264,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# ------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"showDesktopWidget",
 			_("Open desktop widget on start"),
 		)
@@ -271,7 +272,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# --------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"winTaskbar",
 			_("Window in Taskbar"),
 		)
@@ -288,7 +289,7 @@ class PreferencesWindow(gtk.Window):
 			pass
 		else:
 			item = CheckPrefItem(
-				ui,
+				conf,
 				"useAppIndicator",
 				_("Use AppIndicator"),
 			)
@@ -302,7 +303,7 @@ class PreferencesWindow(gtk.Window):
 		# pack(hbox, gtk.Label(label=_("Show Digital Clock:")))
 		# pack(hbox, gtk.Label(), 1, 1)
 		# #item = CheckPrefItem(
-		# #	ui,
+		# #	conf,
 		# #	"showDigClockTb",
 		# #	_("On Toolbar"),
 		# #)  # FIXME
@@ -310,7 +311,7 @@ class PreferencesWindow(gtk.Window):
 		# #pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
 		# item = CheckPrefItem(
-		# 	ui,
+		# 	conf,
 		# 	"showDigClockTr",
 		# 	_("On Status Icon"),
 		# 	"Notification Area",
@@ -338,14 +339,14 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=2)
 		# ---
 		customCheckItem = CheckPrefItem(
-			ui,
+			conf,
 			"fontCustomEnable",
 			_("Application Font"),
 		)
 		self.uiPrefItems.append(customCheckItem)
 		pack(hbox, customCheckItem.getWidget())
 		# ---
-		customItem = FontPrefItem(ui, "fontCustom")
+		customItem = FontPrefItem(conf, "fontCustom")
 		self.uiPrefItems.append(customItem)
 		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -353,7 +354,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, hbox, padding=padding)
 		# ---------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"buttonIconEnable",
 			_("Show icons in buttons"),
 		)
@@ -361,7 +362,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# ---------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"useSystemIcons",
 			_("Use System Icons"),
 		)
@@ -369,7 +370,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# ---------------------------
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"oldStyleProgressBar",
 			_("Old-style Progress Bar"),
 		)
@@ -385,7 +386,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Background")))
-		item = ColorPrefItem(ui, "bgColor", True)
+		item = ColorPrefItem(conf, "bgColor", True)
 		self.uiPrefItems.append(item)
 		self.colorbBg = item.getWidget()  # FIXME
 		pack(hbox, item.getWidget())
@@ -394,7 +395,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border")))
-		item = ColorPrefItem(ui, "borderColor", True)
+		item = ColorPrefItem(conf, "borderColor", True)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -402,7 +403,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor")))
-		item = ColorPrefItem(ui, "cursorOutColor", False)
+		item = ColorPrefItem(conf, "cursorOutColor", False)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -410,7 +411,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor BG")))
-		item = ColorPrefItem(ui, "cursorBgColor", True)
+		item = ColorPrefItem(conf, "cursorBgColor", True)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -418,7 +419,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Today")))
-		item = ColorPrefItem(ui, "todayCellColor", True)
+		item = ColorPrefItem(conf, "todayCellColor", True)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -431,7 +432,7 @@ class PreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Normal Text")))
-		item = ColorPrefItem(ui, "textColor", False)
+		item = ColorPrefItem(conf, "textColor", False)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -439,7 +440,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Holidays Font")))
-		item = ColorPrefItem(ui, "holidayColor", False)
+		item = ColorPrefItem(conf, "holidayColor", False)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -447,7 +448,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Inactive Day Font")))
-		item = ColorPrefItem(ui, "inactiveColor", True)
+		item = ColorPrefItem(conf, "inactiveColor", True)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -455,7 +456,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = HBox(spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border Font")))
-		item = ColorPrefItem(ui, "borderTextColor", False)
+		item = ColorPrefItem(conf, "borderTextColor", False)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -483,7 +484,7 @@ class PreferencesWindow(gtk.Window):
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
 		pack(hbox, label)
 		item = ImageFileChooserPrefItem(
-			ui,
+			conf,
 			"statusIconImage",
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
@@ -497,7 +498,7 @@ class PreferencesWindow(gtk.Window):
 		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
 		pack(hbox, label)
 		item = ImageFileChooserPrefItem(
-			ui,
+			conf,
 			"statusIconImageHoli",
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
@@ -509,7 +510,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = HBox(spacing=1)
 		checkItem = CheckPrefItem(
-			ui,
+			conf,
 			"statusIconFontFamilyEnable",
 			label=_("Change font family to"),
 			# tooltip=_("In SVG files"),
@@ -518,7 +519,7 @@ class PreferencesWindow(gtk.Window):
 		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
 		item = FontFamilyPrefItem(
-			ui,
+			conf,
 			"statusIconFontFamily",
 		)
 		self.uiPrefItems.append(item)
@@ -527,7 +528,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=1)
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"statusIconLocalizeNumber",
 			label=_("Localize the number"),
 		)
@@ -538,12 +539,12 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=1)
 		item = CheckColorPrefItem(
 			CheckPrefItem(
-				ui,
+				conf,
 				"statusIconHolidayFontColorEnable",
 				label=_("Holiday font color"),
 			),
 			ColorPrefItem(
-				ui,
+				conf,
 				"statusIconHolidayFontColor",
 			),
 		)
@@ -553,7 +554,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = HBox(spacing=1)
 		checkItem = CheckPrefItem(
-			ui,
+			conf,
 			"statusIconFixedSizeEnable",
 			label=_("Fixed Size"),
 			# tooltip=_(""),
@@ -563,7 +564,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, checkItem.getWidget())
 		pack(hbox, gtk.Label(label=" "))
 		item = WidthHeightPrefItem(
-			ui,
+			conf,
 			"statusIconFixedSizeWH",
 			999,
 		)
@@ -765,7 +766,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, label)
 		# sgroup.add_widget(label)
 		item = ComboEntryTextPrefItem(
-			ui,
+			conf,
 			"eventDayViewTimeFormat",
 			(
 				"HM$",
@@ -827,7 +828,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = SpinPrefItem(ui, "maxDayCacheSize", 100, 9999, digits=0, step=10)
+		item = SpinPrefItem(conf, "maxDayCacheSize", 100, 9999, digits=0, step=10)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
@@ -835,7 +836,7 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
-		item = SpinPrefItem(ui, "cellMenuXOffset", 0, 999, digits=0, step=1)
+		item = SpinPrefItem(conf, "cellMenuXOffset", 0, 999, digits=0, step=1)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
@@ -863,7 +864,7 @@ class PreferencesWindow(gtk.Window):
 		# pluginsTextStatusIcon:
 		hbox = HBox()
 		item = CheckPrefItem(
-			ui,
+			conf,
 			"pluginsTextStatusIcon",
 			_("Show in Status Icon (for today)"),
 		)
@@ -1240,8 +1241,8 @@ class PreferencesWindow(gtk.Window):
 		for page in self.prefPages:
 			page.pagePath = page.pageName
 			stack.addPage(page)
-		# if ui.preferencesPagePath:
-		# 	self.stack.gotoPage(ui.preferencesPagePath)
+		# if conf.preferencesPagePath:
+		# 	self.stack.gotoPage(conf.preferencesPagePath)
 		# -----------------------
 		pack(self.vbox, stack, 1, 1)
 		pack(self.vbox, self.buttonbox)
@@ -1271,7 +1272,7 @@ class PreferencesWindow(gtk.Window):
 			iconSize = page.iconSize
 		else:
 			iconSize = self.stack.iconSize()
-		if page.pageIcon and ui.buttonIconEnable:
+		if page.pageIcon and conf.buttonIconEnable:
 			pack(hbox, imageFromFile(page.pageIcon, iconSize))
 		pack(hbox, label, 0, 0)
 		pack(hbox, gtk.Label(), 1, 1)
@@ -1338,7 +1339,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		# log.debug(f"{ui.fontDefault=}")
 		# -----
-		ui.preferencesPagePath = self.stack.currentPagePath()
+		conf.preferencesPagePath = self.stack.currentPagePath()
 		# -----
 		# -------------------- Updating pref variables ---------------------
 		for prefItem in self.iterAllPrefItems():

@@ -13,10 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
-from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.timeline import tl
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.pref_utils import (
@@ -69,7 +68,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages = []
 		# ----------------------------------------------------
 		stack = MyStack(
-			iconSize=ui.stackIconSize,
+			iconSize=conf.stackIconSize,
 		)
 		stack.setTitleFontSize("large")
 		stack.setTitleCentered(True)
@@ -977,7 +976,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
-		if page.pageIcon and ui.buttonIconEnable:
+		if page.pageIcon and conf.buttonIconEnable:
 			pack(hbox, imageFromFile(page.pageIcon, self.stack.iconSize()))
 		pack(hbox, label, 0, 0)
 		pack(hbox, gtk.Label(), 1, 1)
