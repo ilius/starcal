@@ -13,11 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.monthcal import getMonthDesc
+from scal3.ui import conf
 
 __all__ = ["exportToHtml"]
 
@@ -68,13 +68,13 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 	pluginsTextSep = " <B>–</B> "
 	pluginsTextPerLine = True  # description of each day in one line
 	# ---------------------
-	bgColor = rgbToHtml(*ui.bgColor)
-	inactiveColor = rgbToHtml(*colorComposite(ui.inactiveColor, ui.bgColor))
-	borderColor = rgbToHtml(*colorComposite(ui.borderColor, ui.bgColor))
-	borderTextColor = rgbToHtml(*ui.borderTextColor)
-	textColor = rgbToHtml(*ui.textColor)
-	holidayColor = rgbToHtml(*ui.holidayColor)
-	colors = [rgbToHtml(*x["color"]) for x in ui.mcalTypeParams]
+	bgColor = rgbToHtml(*conf.bgColor)
+	inactiveColor = rgbToHtml(*colorComposite(conf.inactiveColor, conf.bgColor))
+	borderColor = rgbToHtml(*colorComposite(conf.borderColor, conf.bgColor))
+	borderTextColor = rgbToHtml(*conf.borderTextColor)
+	textColor = rgbToHtml(*conf.textColor)
+	holidayColor = rgbToHtml(*conf.holidayColor)
+	colors = [rgbToHtml(*x["color"]) for x in conf.mcalTypeParams]
 	if locale_man.rtl:
 		DIR = "RTL"
 	else:
@@ -100,7 +100,7 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 		text += "\n".join(
 			[
 				f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
-				f'BORDER={int(ui.mcalGrid)} BORDERCOLOR="#000000"',
+				f'BORDER={int(conf.mcalGrid)} BORDERCOLOR="#000000"',
 				"\t\tCELLPADDING=4 CELLSPACING=0>",
 				"\t\t<TR VALIGN=TOP>\n",
 			],
@@ -137,7 +137,7 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 					except IndexError:
 						continue
 					try:
-						params = ui.mcalTypeParams[calTypeIndex]
+						params = conf.mcalTypeParams[calTypeIndex]
 					except IndexError:
 						continue
 					day = _(cell.dates[calType][2], calType)

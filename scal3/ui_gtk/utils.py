@@ -13,10 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -270,7 +270,7 @@ def labelIconButton(
 	size: gtk.IconSize = gtk.IconSize.BUTTON,
 ):
 	button = gtk.Button()
-	if ui.buttonIconEnable:
+	if conf.buttonIconEnable:
 		button.add(
 			newButtonImageBox(
 				label,
@@ -293,9 +293,9 @@ def labelImageButton(
 	spacing: int = 10,
 ):
 	button = gtk.Button()
-	if ui.buttonIconEnable or not label:
+	if conf.buttonIconEnable or not label:
 		if size == 0:
-			size = ui.buttonIconSize
+			size = conf.buttonIconSize
 		button.add(
 			newButtonImageBox(
 				label,
@@ -400,11 +400,11 @@ def dialog_add_button(
 	b = dialog.add_button(label, res)
 	if label:
 		b.set_label(label)
-	if ui.buttonIconEnable:
+	if conf.buttonIconEnable:
 		b.set_always_show_image(True)
 		# FIXME: how to get rid of set_image calls?
 		useIconName = bool(iconName)
-		if ui.useSystemIcons and imageName and not iconName:
+		if conf.useSystemIcons and imageName and not iconName:
 			iconName = iconNameByImageName.get(imageName, "")
 			useIconName = bool(iconName)
 		if useIconName:
@@ -415,7 +415,7 @@ def dialog_add_button(
 			b.set_image(
 				imageFromFile(
 					imageName,
-					size=ui.buttonIconSize,
+					size=conf.buttonIconSize,
 				),
 			)
 	if onClick:
@@ -483,7 +483,7 @@ def showMsg(
 			hbox,
 			imageFromFile(
 				imageName,
-				size=ui.messageDialogIconSize,
+				size=conf.messageDialogIconSize,
 			),
 		)
 	label = gtk.Label(label=msg)
@@ -521,7 +521,7 @@ def showInfo(msg, **kwargs):
 
 
 def openWindow(win):
-	# win.set_keep_above(ui.winKeepAbove)
+	# win.set_keep_above(conf.winKeepAbove)
 	win.set_keep_above(True)
 	win.present()
 
@@ -554,7 +554,7 @@ def get_menu_width(menu):
 	items = menu.get_children()
 	if items:
 		mw = max(item.get_preferred_size()[1].width for item in items)
-		return mw + ui.cellMenuXOffset
+		return mw + conf.cellMenuXOffset
 	return 0
 
 

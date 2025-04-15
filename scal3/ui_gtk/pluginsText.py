@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -292,12 +293,12 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		if insideExpanderParam:
 			self.expander = ExpanderFrame(label=self.desc)
 			self.expander.connect("activate", self.expanderExpanded)
-			self.expanderEnable = getattr(ui, insideExpanderParam)
+			self.expanderEnable = getattr(conf, insideExpanderParam)
 			if self.expanderEnable:
 				self.textview.show()
 				self.expander.add(self.textview)
 				pack(self, self.expander)
-				self.expander.set_expanded(ui.pluginsTextIsExpanded)
+				self.expander.set_expanded(conf.pluginsTextIsExpanded)
 			else:
 				pack(self, self.textview, 1, 1)
 		else:
@@ -307,9 +308,9 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		from scal3.ui_gtk.utils import cssTextStyle
 
 		enableParam, fontParam = self.fontParams
-		if not getattr(ui, enableParam):
+		if not getattr(conf, enableParam):
 			return ""
-		font = getattr(ui, fontParam)
+		font = getattr(conf, fontParam)
 		if not font:
 			return ""
 		return "." + self.styleClass + " " + cssTextStyle(font=font)
@@ -317,7 +318,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 	def updateJustification(self):
 		if not self.justificationParam:
 			return
-		value = getattr(ui, self.justificationParam)
+		value = getattr(conf, self.justificationParam)
 		self.textview.set_justification(ud.justificationByName[value])
 
 	@staticmethod
@@ -340,7 +341,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		# ----
 		if self.insideExpanderParam:
 			prefItem = CheckPrefItem(
-				ui,
+				conf,
 				self.insideExpanderParam,
 				_("Inside Expander"),
 				live=True,
@@ -350,7 +351,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		# ----
 		if self.justificationParam:
 			prefItem = JustificationPrefItem(
-				ui,
+				conf,
 				self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
@@ -360,8 +361,8 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		if self.fontParams:
 			enableParam, fontParam = self.fontParams
 			prefItem = CheckFontPrefItem(
-				CheckPrefItem(ui, enableParam, label=_("Font")),
-				FontPrefItem(ui, fontParam),
+				CheckPrefItem(conf, enableParam, label=_("Font")),
+				FontPrefItem(conf, fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
@@ -372,7 +373,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		return optionsWidget
 
 	def onInsideExpanderCheckClick(self):
-		enable = getattr(ui, self.insideExpanderParam)
+		enable = getattr(conf, self.insideExpanderParam)
 		prevEnable = self.expanderEnable
 		self.expanderEnable = enable
 		if enable:
@@ -390,7 +391,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 
 	@staticmethod
 	def expanderExpanded(exp):
-		ui.pluginsTextIsExpanded = not exp.get_expanded()
+		conf.pluginsTextIsExpanded = not exp.get_expanded()
 		ui.saveLiveConf()
 
 	def getWidget(self):

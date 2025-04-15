@@ -23,7 +23,7 @@ log = logger.get()
 
 from typing import TYPE_CHECKING
 
-from scal3 import ui
+from scal3.ui import conf
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
@@ -113,7 +113,7 @@ class WinLayoutObj(WinLayoutBase):
 			raise TypeError(f"initializer returned non-widget: {type(item)}")
 		item.enableParam = self.enableParam
 		if item.enableParam:
-			item.enable = getattr(ui, item.enableParam)
+			item.enable = getattr(conf, item.enableParam)
 		self.appendItem(item)
 		self._item = item
 		return item
@@ -247,7 +247,7 @@ class WinLayoutBox(WinLayoutBase):
 			if item.loaded:
 				pack(box, item.getWidget(), item.expand, item.expand)
 				item.showHide()
-		setattr(ui, self.itemsParam, itemNames)
+		setattr(conf, self.itemsParam, itemNames)
 
 	def setItemsOrder(self, itemNames):
 		itemByName = {item.objName: item for item in self.items}

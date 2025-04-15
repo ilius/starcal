@@ -7,6 +7,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import VBox, gtk, pack, timeout_add
 
 # WeekOccurrenceView,
@@ -134,7 +135,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			self.eventItem,
 			self.plugItem,
 		]
-		if ui.mainWinRightPanelSwap:
+		if conf.mainWinRightPanelSwap:
 			items.reverse()
 		for item in items:
 			self.appendItem(item)
@@ -149,7 +150,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.addItems()
 
 	def swapItems(self):
-		ui.mainWinRightPanelSwap = not ui.mainWinRightPanelSwap
+		conf.mainWinRightPanelSwap = not conf.mainWinRightPanelSwap
 		self.resetItems()
 		self.show_all()
 		ui.saveConfCustomize()
@@ -164,7 +165,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.eventItem.onDateChange(toParent=False)
 
 	def onBorderWidthChange(self):
-		self.set_border_width(ui.mainWinRightPanelBorderWidth)
+		self.set_border_width(conf.mainWinRightPanelBorderWidth)
 
 	def updatePosition(self, height: int):
 		log.debug(
@@ -174,12 +175,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		if height <= 1:
 			return
 		if height != self.setPosAtHeight:
-			pos = int(height * ui.mainWinRightPanelRatio)
+			pos = int(height * conf.mainWinRightPanelRatio)
 			self.set_position(pos)
 			self.setPosAtHeight = height
 			timeout_add(10, self.queue_resize)
 			return
-		ui.mainWinRightPanelRatio = self.get_position() / height
+		conf.mainWinRightPanelRatio = self.get_position() / height
 		ui.saveLiveConf()
 
 	def onSizeAllocate(self, _widget, requisition):
@@ -211,14 +212,14 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 
 	def do_get_preferred_width(self):  # noqa: PLR6301
 		# must return minimum_size, natural_size
-		if ui.mainWinRightPanelWidthRatioEnable:
+		if conf.mainWinRightPanelWidthRatioEnable:
 			if ui.mainWin and ui.mainWin.is_maximized():
 				winWidth = ui.mainWin.get_size()[0]
 			else:
-				winWidth = ui.winWidth
-			width = ui.mainWinRightPanelWidthRatio * winWidth
+				winWidth = conf.winWidth
+			width = conf.mainWinRightPanelWidthRatio * winWidth
 		else:
-			width = ui.mainWinRightPanelWidth
+			width = conf.mainWinRightPanelWidth
 		return width, width
 
 	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
@@ -250,12 +251,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		pack(optionsWidget, button)
 		# -----
 		prefItem = FixedSizeOrRatioPrefItem(
-			ui,
+			conf,
 			ratioEnableVarName="mainWinRightPanelWidthRatioEnable",
 			fixedLabel=_("Fixed width"),
-			fixedItem=SpinPrefItem(ui, "mainWinRightPanelWidth", 1, 9999, digits=0),
+			fixedItem=SpinPrefItem(conf, "mainWinRightPanelWidth", 1, 9999, digits=0),
 			ratioLabel=_("Relative to window"),
-			ratioItem=SpinPrefItem(ui, "mainWinRightPanelWidthRatio", 0, 1, digits=3),
+			ratioItem=SpinPrefItem(conf, "mainWinRightPanelWidthRatio", 0, 1, digits=3),
 			onChangeFunc=self.queue_resize,
 			vspacing=3,
 			# hspacing=0,
@@ -266,7 +267,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		pack(sizesVBox, frame)
 		# ---
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"mainWinRightPanelBorderWidth",
 			1,
 			999,
@@ -292,7 +293,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		pack(optionsWidget, button)
 		# ---
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"rightPanelEventIconSize",
 			5,
 			128,
@@ -321,7 +322,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		pack(pluginsVBox, self.plugItem.getOptionsWidget())
 		# ------
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"mainWinRightPanelResizeOnToggle",
 			label=_("Resize on show/hide\nfrom window controller"),
 			# tooltip="",

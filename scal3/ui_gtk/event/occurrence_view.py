@@ -13,10 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -98,19 +98,19 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		font = ui.getFont(bold=True)  # bold by default
 		if self.timeFontParams:
 			enableParam, fontParam = self.timeFontParams
-			if getattr(ui, enableParam):
-				font = getattr(ui, fontParam)
+			if getattr(conf, enableParam):
+				font = getattr(conf, fontParam)
 		self.timeTag.set_property("font", gfontEncode(font))
 
 	def getEventSep(self):
 		if self.eventSepParam:
-			return getattr(ui, self.eventSepParam)
+			return getattr(conf, self.eventSepParam)
 		return "\n\n"
 
 	def updateJustification(self):
 		if not self.justificationParam:
 			return
-		value = getattr(ui, self.justificationParam)
+		value = getattr(conf, self.justificationParam)
 		self.set_justification(ud.justificationByName[value])
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -128,7 +128,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		if self.justificationParam:
 			prefItem = JustificationPrefItem(
-				ui,
+				conf,
 				self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
@@ -138,8 +138,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if self.fontParams:
 			enableParam, fontParam = self.fontParams
 			prefItem = CheckFontPrefItem(
-				CheckPrefItem(ui, enableParam, label=_("Font")),
-				FontPrefItem(ui, fontParam),
+				CheckPrefItem(conf, enableParam, label=_("Font")),
+				FontPrefItem(conf, fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
@@ -147,8 +147,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if self.timeFontParams:
 			enableParam, fontParam = self.timeFontParams
 			prefItem = CheckFontPrefItem(
-				CheckPrefItem(ui, enableParam, label=_("Time Font")),
-				FontPrefItem(ui, fontParam),
+				CheckPrefItem(conf, enableParam, label=_("Time Font")),
+				FontPrefItem(conf, fontParam),
 				live=True,
 				onChangeFunc=self.updateTimeFont,
 			)
@@ -156,7 +156,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		if self.eventSepParam:
 			prefItem = TextPrefItem(
-				ui,
+				conf,
 				self.eventSepParam,
 				label=_("Event Text Separator"),
 				live=True,
@@ -172,9 +172,9 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		from scal3.ui_gtk.utils import cssTextStyle
 
 		enableParam, fontParam = self.fontParams
-		if not getattr(ui, enableParam):
+		if not getattr(conf, enableParam):
 			return ""
-		font = getattr(ui, fontParam)
+		font = getattr(conf, fontParam)
 		if not font:
 			return ""
 		return "." + self.styleClass + " " + cssTextStyle(font=font)
@@ -298,7 +298,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
 			icon,
-			size=ui.rightPanelEventIconSize,
+			size=conf.rightPanelEventIconSize,
 		)
 		self.textbuff.insert_pixbuf(endIter, pixbuf)
 
@@ -538,7 +538,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		self.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
-		height = ui.eventViewMaxHeight
+		height = conf.eventViewMaxHeight
 		return height, height
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -549,7 +549,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		optionsWidget = self._item.getOptionsWidget()
 		# ---
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"eventViewMaxHeight",
 			1,
 			9999,
