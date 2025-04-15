@@ -39,6 +39,7 @@ from scal3.json_utils import (
 )
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, svgDir, sysConfDir
+from scal3.ui.funcs import checkEnabledNamesItems
 from scal3.ui.params import (
 	CUSTOMIZE,
 	LIVE,
@@ -47,7 +48,6 @@ from scal3.ui.params import (
 	confParamsData,
 	getParamNamesWithFlag,
 )
-from scal3.ui_funcs import checkEnabledNamesItems
 
 from . import conf
 
