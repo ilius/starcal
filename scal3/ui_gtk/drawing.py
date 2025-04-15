@@ -30,6 +30,7 @@ from scal3.locale_man import cutText
 from scal3.path import (
 	sourceDir,
 )
+from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.font_utils import (
 	pfontEncode,
@@ -55,8 +56,8 @@ __all__ = [
 	"setColor",
 ]
 
-if not ui.fontCustom:
-	ui.fontCustom = ui.fontDefault.copy()
+if not conf.fontCustom:
+	conf.fontCustom = ui.fontDefault.copy()
 
 with open(join(sourceDir, "svg", "special", "color-check.svg"), encoding="utf-8") as fp:
 	colorCheckSvgTextChecked = fp.read()
