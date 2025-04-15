@@ -21,7 +21,7 @@ log = logger.get()
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_font import getParamsFont
+from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
 __all__ = ["CalTypeParamWidget", "TextParamWidget"]
