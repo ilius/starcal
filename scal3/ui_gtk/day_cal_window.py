@@ -29,6 +29,7 @@ from scal3.locale_man import tr as _
 from scal3.path import (
 	confDir,
 )
+from scal3.ui import conf
 from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
@@ -54,11 +55,11 @@ confParamsLive = (
 
 lastLiveConfChangeTime = 0
 
-loadJsonConf(ui, confPathLive)
+loadJsonConf(conf, confPathLive)
 
 
 def saveLiveConf():  # FIXME: rename to saveConfLive
-	saveJsonConf(ui, confPathLive, confParamsLive)
+	saveJsonConf(conf, confPathLive, confParamsLive)
 
 
 def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
@@ -98,7 +99,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# --
 		self.stack = MyStack(
 			headerSpacing=10,
-			iconSize=ui.stackIconSize,
+			iconSize=conf.stackIconSize,
 		)
 		pack(self.vbox, self.stack, 1, 1)
 		pageName = "dayCalWin"
@@ -283,8 +284,8 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		self.resize(ui.dcalWinWidth, ui.dcalWinHeight)
-		self.move(ui.dcalWinX, ui.dcalWinY)
+		self.resize(conf.dcalWinWidth, conf.dcalWinHeight)
+		self.move(conf.dcalWinX, conf.dcalWinY)
 		self.set_skip_taskbar_hint(True)
 		self.set_decorated(False)
 		self.set_keep_below(True)
@@ -358,8 +359,8 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 			return
 		wx, wy = self.get_position()
 		ww, wh = self.get_size()
-		ui.dcalWinX, ui.dcalWinY = (wx, wy)
-		ui.dcalWinWidth = ww
-		ui.dcalWinHeight = wh
+		conf.dcalWinX, conf.dcalWinY = (wx, wy)
+		conf.dcalWinWidth = ww
+		conf.dcalWinHeight = wh
 		liveConfChanged()
 		return False

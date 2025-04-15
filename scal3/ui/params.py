@@ -175,20 +175,8 @@ confParamsData: list[Param] = [
 		type=ColorType,
 	),
 	Param(
-		"cursorOutColor",
-		v3Name="cursorOutColor",
-		flags=MAIN_CONF,
-		type=ColorType,
-	),
-	Param(
-		name="cursorBgColor",
-		v3Name="cursorBgColor",
-		flags=MAIN_CONF,
-		type=ColorType,
-	),
-	Param(
-		name="todayCellColor",
-		v3Name="todayCellColor",
+		name="borderTextColor",
+		v3Name="borderTextColor",
 		flags=MAIN_CONF,
 		type=ColorType,
 	),
@@ -211,8 +199,20 @@ confParamsData: list[Param] = [
 		type=ColorType,
 	),
 	Param(
-		name="borderTextColor",
-		v3Name="borderTextColor",
+		name="todayCellColor",
+		v3Name="todayCellColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		"cursorOutColor",
+		v3Name="cursorOutColor",
+		flags=MAIN_CONF,
+		type=ColorType,
+	),
+	Param(
+		name="cursorBgColor",
+		v3Name="cursorBgColor",
 		flags=MAIN_CONF,
 		type=ColorType,
 	),
@@ -353,16 +353,16 @@ confParamsData: list[Param] = [
 	),
 	# ------------ rightPanel
 	Param(
-		name="rightPanel.ratio",
-		v3Name="mainWinRightPanelRatio",
-		flags=LIVE,
-		type=float,
-	),
-	Param(
 		name="rightPanel.enable",
 		v3Name="mainWinRightPanelEnable",
 		flags=CUSTOMIZE,
 		type=bool,
+	),
+	Param(
+		name="rightPanel.ratio",
+		v3Name="mainWinRightPanelRatio",
+		flags=LIVE,
+		type=float,
 	),
 	Param(
 		name="rightPanel.swap",
@@ -870,15 +870,15 @@ confParamsData: list[Param] = [
 		type=bool,
 	),
 	Param(
-		name="pluginsText.isExpanded",
-		v3Name="pluginsTextIsExpanded",
-		flags=LIVE,
-		type=bool,
-	),
-	Param(
 		name="pluginsText.insideExpander",
 		v3Name="pluginsTextInsideExpander",
 		flags=CUSTOMIZE,
+		type=bool,
+	),
+	Param(
+		name="pluginsText.isExpanded",
+		v3Name="pluginsTextIsExpanded",
+		flags=LIVE,
 		type=bool,
 	),
 	# ------------ eventDayView
@@ -900,7 +900,7 @@ confParamsData: list[Param] = [
 		flags=CUSTOMIZE,
 		type=int,
 	),
-	# ------------
+	# ------------ progress bars
 	Param(
 		name="monthPBar.calType",
 		v3Name="monthPBarCalType",

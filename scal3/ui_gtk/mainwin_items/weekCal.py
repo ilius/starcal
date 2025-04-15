@@ -30,6 +30,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
@@ -87,21 +88,21 @@ class ColumnBase(CustomizableCalObj):
 		return f"wcal_{cls.objName}_width"
 
 	def getWidthValue(self):
-		return getattr(ui, self.getWidthAttr(), None)
+		return getattr(conf, self.getWidthAttr(), None)
 
 	def getExpandAttr(self):
 		# v4: f"wcal.{self.objName}.expand"
 		return f"wcal_{self.objName}_expand"
 
 	def getExpandValue(self):
-		return getattr(ui, self.getExpandAttr(), None)
+		return getattr(conf, self.getExpandAttr(), None)
 
 	def getFontAttr(self):
 		# v4: f"wcal.{self.objName}.font"
 		return f"wcalFont_{self.objName}"
 
 	def getFontValue(self):
-		return getattr(ui, self.getFontAttr(), None)
+		return getattr(conf, self.getFontAttr(), None)
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
@@ -125,7 +126,7 @@ class ColumnBase(CustomizableCalObj):
 		# ----
 		if self.customizeWidth:
 			prefItem = SpinPrefItem(
-				ui,
+				conf,
 				self.getWidthAttr(),
 				1,
 				999,
@@ -139,7 +140,7 @@ class ColumnBase(CustomizableCalObj):
 		# ----
 		if self.customizeExpand:
 			prefItem = CheckPrefItem(
-				ui,
+				conf,
 				self.getExpandAttr(),
 				_("Expand"),
 				live=True,
@@ -149,7 +150,7 @@ class ColumnBase(CustomizableCalObj):
 		# ----
 		if self.customizeFont:
 			prefItem = FontFamilyPrefItem(
-				ui,
+				conf,
 				self.getFontAttr(),
 				hasAuto=True,
 				label=_("Font Family"),
@@ -237,7 +238,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		w = alloc.width
 		h = alloc.height
 		cr.rectangle(0, 0, w, h)
-		fillColor(cr, ui.bgColor)
+		fillColor(cr, conf.bgColor)
 		rowH = h / 7
 		for i in range(7):
 			c = self.wcal.status[i]
@@ -248,7 +249,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 					w,
 					rowH,
 				)
-				fillColor(cr, ui.todayCellColor)
+				fillColor(cr, conf.todayCellColor)
 			if self.showCursor and c.jd == ui.cells.current.jd:
 				self.drawCursorBg(
 					cr,
@@ -257,14 +258,14 @@ class Column(gtk.DrawingArea, ColumnBase):
 					w,  # width
 					rowH,  # height
 				)
-				fillColor(cr, ui.cursorBgColor)
+				fillColor(cr, conf.cursorBgColor)
 
-		if ui.wcalUpperGradientEnable:
+		if conf.wcalUpperGradientEnable:
 			for rowI in range(7):
 				y0 = rowI * rowH
 				y1 = y0 + rowH / 2
 				gradient = cairo.LinearGradient(0, y0, 0, y1)
-				red1, green1, blue1, alpha1 = ui.wcalUpperGradientColor
+				red1, green1, blue1, alpha1 = conf.wcalUpperGradientColor
 				gradient.add_color_stop_rgba(
 					0,  # offset
 					red1 / 255,
@@ -285,8 +286,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 
 				del gradient
 
-		if ui.wcalGrid:
-			setColor(cr, ui.wcalGridColor)
+		if conf.wcalGrid:
+			setColor(cr, conf.wcalGridColor)
 			# ---
 			cr.rectangle(
 				w - 1,
@@ -313,8 +314,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 		cw: float,
 		ch: float,
 	):
-		cursorRadius = ui.wcalCursorRoundingFactor * min(cw, ch) * 0.5
-		cursorLineWidth = ui.wcalCursorLineWidthFactor * min(cw, ch) * 0.5
+		cursorRadius = conf.wcalCursorRoundingFactor * min(cw, ch) * 0.5
+		cursorLineWidth = conf.wcalCursorLineWidthFactor * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
 	@staticmethod
@@ -325,7 +326,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		cw: float,
 		ch: float,
 	):
-		cursorRadius = ui.wcalCursorRoundingFactor * min(cw, ch) * 0.5
+		cursorRadius = conf.wcalCursorRoundingFactor * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
 	def drawCursorFg(self, cr: cairo.Context):
@@ -342,7 +343,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 			w,  # width
 			rowH,  # height
 		)
-		fillColor(cr, ui.cursorOutColor)
+		fillColor(cr, conf.cursorOutColor)
 
 	def drawTextList(
 		self,
@@ -355,7 +356,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		h = alloc.height
 		# ---
 		rowH = h / 7
-		itemW = w - ui.wcalPadding
+		itemW = w - conf.wcalPadding
 		if font is None:
 			fontName = self.getFontValue()
 			fontSize = ui.getFont().size  # FIXME
@@ -374,7 +375,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 						text=line,
 						font=font,
 						maxSize=(itemW, lineH),
-						maximizeScale=ui.wcalTextSizeScale,
+						maximizeScale=conf.wcalTextSizeScale,
 						truncate=self.truncateText,
 					)
 					if not layout:
@@ -384,9 +385,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 					layoutY = i * rowH + (lineI + 0.5) * lineH - layoutH / 2
 					cr.move_to(layoutX, layoutY)
 					if self.colorizeHolidayText and self.wcal.status[i].holiday:
-						color = ui.holidayColor  # noqa: PLW2901
+						color = conf.holidayColor  # noqa: PLW2901
 					if not color:
-						color = ui.textColor  # noqa: PLW2901
+						color = conf.textColor  # noqa: PLW2901
 					setColor(cr, color)
 					show_layout(cr, layout)
 					lineI += 1
@@ -429,7 +430,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
 		# ---
 		prefItem = IconChooserPrefItem(
-			ui,
+			conf,
 			"wcal_toolbar_mainMenu_icon",
 			label=_("Icon"),
 			live=True,
@@ -442,7 +443,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		return optionsWidget
 
 	def updateImage(self):
-		self.setIconFile(ui.wcal_toolbar_mainMenu_icon)
+		self.setIconFile(conf.wcal_toolbar_mainMenu_icon)
 		self.build()
 		self.showHide()
 
@@ -477,7 +478,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		self.label.set_direction(gtk.TextDirection.LTR)
 
 	def updateLabel(self):
-		if ui.wcal_toolbar_weekNum_negative:
+		if conf.wcal_toolbar_weekNum_negative:
 			n = ui.cells.current.weekNumNeg
 		else:
 			n = ui.cells.current.weekNum
@@ -488,7 +489,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		self.updateLabel()
 
 	def onClick(self, *_a):
-		ui.wcal_toolbar_weekNum_negative = not ui.wcal_toolbar_weekNum_negative
+		conf.wcal_toolbar_weekNum_negative = not conf.wcal_toolbar_weekNum_negative
 		self.updateLabel()
 		ui.saveLiveConf()
 
@@ -599,7 +600,7 @@ class PluginsTextColumn(Column):
 			(line, "")
 			for line in self.wcal.status[i]
 			.getPluginsText(
-				firstLineOnly=ui.wcal_pluginsText_firstLineOnly,
+				firstLineOnly=conf.wcal_pluginsText_firstLineOnly,
 			)
 			.split("\n")
 		]
@@ -616,7 +617,7 @@ class PluginsTextColumn(Column):
 
 		# -----
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"wcal_pluginsText_firstLineOnly",
 			label=_("Only first line of text"),
 			live=True,
@@ -646,8 +647,8 @@ class EventsIconColumn(Column):
 		h = self.get_allocation().height
 		# ---
 		# rowH = h / 7
-		# itemW = w - ui.wcalPadding
-		iconSizeMax = ui.wcalEventIconSizeMax
+		# itemW = w - conf.wcalPadding
+		iconSizeMax = conf.wcalEventIconSizeMax
 		for i in range(7):
 			c = self.wcal.status[i]
 			iconList = c.getWeekEventIcons()
@@ -737,19 +738,19 @@ class EventsTextColumn(Column):
 		for item in self.wcal.status[i].getEventsData():
 			if not item.show[1]:
 				continue
-			line = "".join(item.text) if ui.wcal_eventsText_showDesc else item.text[0]
+			line = "".join(item.text) if conf.wcal_eventsText_showDesc else item.text[0]
 			line = escape(line)
 			if item.time:
 				line = item.time + " " + line
 			color = ""
-			if ui.wcal_eventsText_colorize:
+			if conf.wcal_eventsText_colorize:
 				color = item.color
 			if item.time_epoch[1] < currentTime:
-				if ui.wcal_eventsText_pastColorEnable:
-					color = ui.wcal_eventsText_pastColor
+				if conf.wcal_eventsText_pastColorEnable:
+					color = conf.wcal_eventsText_pastColor
 			elif item.time_epoch[0] <= currentTime:  # noqa: SIM102
-				if ui.wcal_eventsText_ongoingColorEnable:
-					color = ui.wcal_eventsText_ongoingColor
+				if conf.wcal_eventsText_ongoingColorEnable:
+					color = conf.wcal_eventsText_ongoingColor
 			data.append((line, color))
 		return data
 
@@ -776,12 +777,12 @@ class EventsTextColumn(Column):
 			optionsWidget,
 			CheckColorPrefItem(
 				CheckPrefItem(
-					ui,
+					conf,
 					"wcal_eventsText_pastColorEnable",
 					_("Past Event Color"),
 				),
 				ColorPrefItem(
-					ui,
+					conf,
 					"wcal_eventsText_pastColor",
 					useAlpha=True,
 				),
@@ -795,12 +796,12 @@ class EventsTextColumn(Column):
 			optionsWidget,
 			CheckColorPrefItem(
 				CheckPrefItem(
-					ui,
+					conf,
 					"wcal_eventsText_ongoingColorEnable",
 					_("Ongoing Event Color"),
 				),
 				ColorPrefItem(
-					ui,
+					conf,
 					"wcal_eventsText_ongoingColor",
 					useAlpha=True,
 				),
@@ -813,7 +814,7 @@ class EventsTextColumn(Column):
 		pack(
 			optionsWidget,
 			CheckPrefItem(
-				ui,
+				conf,
 				"wcal_eventsText_colorize",
 				label=_("Use color of event group\nfor event text"),
 				live=True,
@@ -824,7 +825,7 @@ class EventsTextColumn(Column):
 		pack(
 			optionsWidget,
 			CheckPrefItem(
-				ui,
+				conf,
 				"wcal_eventsText_showDesc",
 				label=_("Show Description"),
 				live=True,
@@ -978,7 +979,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		self.fontb.set_font(font)
 
 	def onChange(self, _obj=None, _event=None):
-		ui.wcalTypeParams[self.index] = self.get()
+		conf.wcalTypeParams[self.index] = self.get()
 		self.wcal.queue_draw()
 
 
@@ -1001,7 +1002,7 @@ class DaysOfMonthColumn(Column):
 
 	def drawColumn(self, cr):
 		self.drawBg(cr)
-		font = getParamsFont(ui.wcalTypeParams[self.index])
+		font = getParamsFont(conf.wcalTypeParams[self.index])
 		self.drawTextList(
 			cr,
 			[
@@ -1027,7 +1028,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 	optionsPageSpacing = 15
 
 	def updateDirection(self):
-		self.set_direction(ud.textDirDict[ui.wcal_daysOfMonth_dir])
+		self.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir])
 		# set_direction does not apply to existing children.
 		# that's why we remove children(columns) and add them again
 		columns = self.get_children()
@@ -1056,7 +1057,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 
 		# ---
 		prefItem = DirectionPrefItem(
-			ui,
+			conf,
 			"wcal_daysOfMonth_dir",
 			onChangeFunc=self.updateDirection,
 		)
@@ -1096,10 +1097,10 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		n = len(columns)
 		n2 = len(calTypes.active)
 
-		if len(ui.wcalTypeParams) < n2:
-			while len(ui.wcalTypeParams) < n2:
+		if len(conf.wcalTypeParams) < n2:
+			while len(conf.wcalTypeParams) < n2:
 				log.info("appending to wcalTypeParams")
-				ui.wcalTypeParams.append(
+				conf.wcalTypeParams.append(
 					{
 						"font": None,
 					},
@@ -1128,8 +1129,8 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 			child.destroy()
 		# ---
 		n = len(calTypes.active)
-		while len(ui.wcalTypeParams) < n:
-			ui.wcalTypeParams.append(
+		while len(conf.wcalTypeParams) < n:
+			conf.wcalTypeParams.append(
 				{
 					"font": None,
 				},
@@ -1138,7 +1139,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		sgroupFont = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, calType in enumerate(calTypes.active):
 			# try:
-			params = ui.wcalTypeParams[i]
+			params = conf.wcalTypeParams[i]
 			# except IndexError:
 			# --
 			hbox = DaysOfMonthCalTypeParamBox(
@@ -1180,7 +1181,7 @@ class MoonStatusColumn(Column):
 		alloc = self.get_allocation()
 		w = alloc.width
 		h = alloc.height
-		itemW = w - ui.wcalPadding
+		itemW = w - conf.wcalPadding
 		rowH = h / 7
 
 		imgSize = min(rowH, itemW)
@@ -1238,7 +1239,7 @@ class MoonStatusColumn(Column):
 		for index in range(7):
 			bigPhase = getMoonPhase(
 				self.wcal.status[index].jd,
-				ui.wcal_moonStatus_southernHemisphere,
+				conf.wcal_moonStatus_southernHemisphere,
 			)
 			# 0 <= bigPhase < 2
 
@@ -1287,7 +1288,7 @@ class MoonStatusColumn(Column):
 
 		# ----
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"wcal_moonStatus_southernHemisphere",
 			label=_("Southern Hemisphere"),
 			live=True,
@@ -1323,7 +1324,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	signals = CalBase.signals
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
-		return 0, ui.winHeight / 3
+		return 0, conf.winHeight / 3
 
 	@staticmethod
 	def getCellPagePlus(cell, plus):
@@ -1357,7 +1358,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		]
 		defaultItemsDict = {item.objName: item for item in defaultItems}
 		itemNames = list(defaultItemsDict)
-		for name, enable in ui.wcalItems:
+		for name, enable in conf.wcalItems:
 			item = defaultItemsDict.get(name)
 			if item is None:
 				log.info(f"weekCal item '{name}' does not exist")
@@ -1384,7 +1385,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
 		# -----
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"wcalTextSizeScale",
 			0.01,
 			1,
@@ -1397,16 +1398,16 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(ui, "wcalGrid", _("Grid")),
-			ColorPrefItem(ui, "wcalGridColor", useAlpha=True),
+			CheckPrefItem(conf, "wcalGrid", _("Grid")),
+			ColorPrefItem(conf, "wcalGridColor", useAlpha=True),
 			live=True,
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(ui, "wcalUpperGradientEnable", _("Row's Upper Gradient")),
-			ColorPrefItem(ui, "wcalUpperGradientColor", useAlpha=True),
+			CheckPrefItem(conf, "wcalUpperGradientEnable", _("Row's Upper Gradient")),
+			ColorPrefItem(conf, "wcalUpperGradientColor", useAlpha=True),
 			live=True,
 			onChangeFunc=self.queue_draw,
 		)
@@ -1417,7 +1418,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"wcalCursorLineWidthFactor",
 			0,
 			1,
@@ -1431,7 +1432,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		pack(pageVBox, prefItem.getWidget())
 		# ---
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"wcalCursorRoundingFactor",
 			0,
 			1,
@@ -1469,7 +1470,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
-		ui.wcalItems = self.getItemsData()
+		conf.wcalItems = self.getItemsData()
 
 	def updateStatus(self):
 		from scal3.weekcal import getCurrentWeekStatus

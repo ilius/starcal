@@ -1,6 +1,8 @@
 __all__ = [
+	"makeWidget",
 	"notifiers",  # noqa: F822
 	"rules",  # noqa: F822
+	"setActionFuncs",
 ]
 
 # --------------------------------------------

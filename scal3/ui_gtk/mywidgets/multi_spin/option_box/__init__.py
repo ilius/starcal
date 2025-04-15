@@ -3,6 +3,8 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 from scal3.ui_gtk.utils import imageClassButton
 
+__all__ = ["MultiSpinOptionBox"]
+
 
 @registerSignals
 class MultiSpinOptionBox(gtk.Box):

@@ -5,6 +5,7 @@ from scal3 import ui
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
+from scal3.ui import conf
 from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
@@ -12,6 +13,7 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 __all__ = ["CalObj"]
+
 themeFileSet = {
 	"close-focus-light.svg",
 	"close-focus.svg",
@@ -68,7 +70,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 	def __init__(self, controller):
 		gtk.EventBox.__init__(self)
-		self.set_border_width(ui.winControllerBorder)
+		self.set_border_width(conf.winControllerBorder)
 		self.initVars()
 		# ---
 		self.controller = controller
@@ -87,10 +89,10 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			pixbufFromFile(
 				join(
 					"wm",
-					ui.winControllerTheme,
+					conf.winControllerTheme,
 					imName + ".svg",
 				),
-				ui.winControllerIconSize,
+				conf.winControllerIconSize,
 			),
 		)
 
@@ -104,7 +106,9 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 	def setPressed(self):
 		self.setImage(
-			self.imageNamePress if ui.winControllerPressState else self.imageNameFocus,
+			self.imageNamePress
+			if conf.winControllerPressState
+			else self.imageNameFocus,
 		)
 
 	def build(self):
@@ -242,16 +246,16 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		gtk.Box.__init__(
 			self,
 			orientation=gtk.Orientation.HORIZONTAL,
-			spacing=ui.winControllerSpacing,
+			spacing=conf.winControllerSpacing,
 		)
-		self.set_spacing(ui.winControllerSpacing)
+		self.set_spacing(conf.winControllerSpacing)
 		self.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
 		self.light = ud.hasLightTheme(win)
 		# -----------
-		for bname, enable in ui.winControllerButtons:
+		for bname, enable in conf.winControllerButtons:
 			button = self.buttonClassDict[bname](self)
 			button.enable = enable
 			self.appendItem(button)
@@ -277,7 +281,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
-		ui.winControllerButtons = self.getItemsData()
+		conf.winControllerButtons = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
@@ -291,7 +295,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		optionsWidget = VBox()
 		# ----
 		prefItem = ComboTextPrefItem(
-			ui,
+			conf,
 			"winControllerTheme",
 			items=ui.winControllerThemeList,
 			label=_("Theme"),
@@ -301,7 +305,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"winControllerIconSize",
 			5,
 			128,
@@ -314,7 +318,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"winControllerBorder",
 			0,
 			99,
@@ -327,7 +331,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			ui,
+			conf,
 			"winControllerSpacing",
 			0,
 			99,
@@ -340,7 +344,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = CheckPrefItem(
-			ui,
+			conf,
 			"winControllerPressState",
 			label=_("Change icon on button press"),
 			live=True,
@@ -352,7 +356,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		return optionsWidget
 
 	def updateTheme(self):  # noqa: PLR6301
-		name = ui.winControllerTheme
+		name = conf.winControllerTheme
 		dirPath = join(svgDir, "wm", name)
 		fileSet = set(os.listdir(dirPath))
 		if fileSet == themeFileSet:
@@ -371,9 +375,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 
 	def onButtonBorderChange(self) -> None:
 		for item in self.items:
-			item.set_border_width(ui.winControllerBorder)
+			item.set_border_width(conf.winControllerBorder)
 		self.updateButtons()
 
 	def onButtonPaddingChange(self) -> None:
-		self.set_spacing(ui.winControllerSpacing)
+		self.set_spacing(conf.winControllerSpacing)
 		self.updateButtons()

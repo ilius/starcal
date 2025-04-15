@@ -17,6 +17,7 @@
 import logging
 
 from scal3 import logger
+from scal3.ui import conf
 
 log = logger.get()
 
@@ -69,7 +70,7 @@ class Box:
 		# ----
 		self.text = text
 		if color is None:
-			color = ui.textColor  # FIXME
+			color = conf.textColor  # FIXME
 		self.color = color
 		self.ids = ids  # (groupId, eventId)
 		self.lineW = lineW

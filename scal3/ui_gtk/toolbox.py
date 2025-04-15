@@ -6,12 +6,13 @@ log = logger.get()
 
 import typing
 
+from scal3.ui import conf
+
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
 from typing import Any
 
-from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import GdkPixbuf, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
@@ -297,9 +298,9 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 		self.box.show()
 		self.add(self.box)
 		self.funcOwner = funcOwner
-		self.preferIconName = ui.useSystemIcons
+		self.preferIconName = conf.useSystemIcons
 		if iconSize == 0:
-			iconSize = ui.toolbarIconSize
+			iconSize = conf.toolbarIconSize
 		self.iconSize = iconSize
 		self.continuousClick = continuousClick
 		self.buttonBorder = buttonBorder
