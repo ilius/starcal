@@ -30,6 +30,7 @@ from scal3.path import (
 	confDir,
 )
 from scal3.ui import conf
+from scal3.ui.params import DAYCAL_WIN_LIVE, getParamNamesWithFlag
 from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
@@ -46,12 +47,7 @@ __all__ = ["DayCalWindow"]
 
 confPathLive = join(confDir, "ui-daycal-live.json")
 
-confParamsLive = (
-	"dcalWinX",
-	"dcalWinY",
-	"dcalWinWidth",
-	"dcalWinHeight",
-)
+confParamsLive = getParamNamesWithFlag(DAYCAL_WIN_LIVE)
 
 lastLiveConfChangeTime = 0
 

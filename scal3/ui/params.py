@@ -23,6 +23,7 @@ MAIN_CONF = 1
 LIVE = 2
 CUSTOMIZE = 4
 NEED_RESTART = 8
+DAYCAL_WIN_LIVE = 16
 
 # TODO: switch to NamedTuple
 ColorType = tuple[int, int, int, int]
@@ -760,6 +761,30 @@ confParamsData: list[Param] = [
 	),
 	# ------------ dayCalWin
 	Param(
+		name="dayCalWin.geo.x",
+		v3Name="dcalWinX",
+		flags=DAYCAL_WIN_LIVE,
+		type=int,
+	),
+	Param(
+		name="dayCalWin.geo.y",
+		v3Name="dcalWinY",
+		flags=DAYCAL_WIN_LIVE,
+		type=int,
+	),
+	Param(
+		name="dayCalWin.geo.width",
+		v3Name="dcalWinWidth",
+		flags=DAYCAL_WIN_LIVE,
+		type=int,
+	),
+	Param(
+		name="dayCalWin.geo.height",
+		v3Name="dcalWinHeight",
+		flags=DAYCAL_WIN_LIVE,
+		type=int,
+	),
+	Param(
 		name="dayCalWin.backgroundColor",
 		v3Name="dcalWinBackgroundColor",
 		flags=CUSTOMIZE,
@@ -1023,7 +1048,172 @@ confParamsData: list[Param] = [
 		flags=CUSTOMIZE,
 		type=dict,  # TODO: TypedDict?
 	),
+	Param(
+		name="",
+		v3Name="menuIconPadding",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="eventTreeGroupIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="treeIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="cellMenuXOffset",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="menuTextColor",
+		flags=0,
+		type=ColorType,
+	),
+	Param(
+		name="showDigClockTb",
+		v3Name="labelBoxIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="stackIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="dcalWidgetButtons",
+		flags=0,
+		type=list[dict],
+	),
+	Param(
+		name="",
+		v3Name="dcalWinWidgetButtons",
+		flags=0,
+		type=list[dict],
+	),
+	Param(
+		name="",
+		v3Name="menuIconEdgePadding",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="rightPanelEventIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="eventTreeIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="menuEventCheckIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="toolbarIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="mcalEventIconSizeMax",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="messageDialogIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="menuCheckSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="mainWinItemsDefault",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="menuIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="comboBoxIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="imageInputIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="maxWeekCacheSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="wcalPadding",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="buttonIconSize",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="wcalEventIconSizeMax",
+		flags=0,
+		type=int,
+	),
+	Param(
+		name="",
+		v3Name="eventWeekViewTimeFormat",
+		flags=0,
+		type=str,
+	),
+	Param(
+		name="",
+		v3Name="showDigClockTb",
+		flags=0,
+		type=bool,
+	),
 ]
+
+_v3Names = [p.v3Name for p in confParamsData]
+assert len(_v3Names) == len(set(_v3Names))
 
 
 def getParamNamesWithFlag(flag: int) -> list[str]:
