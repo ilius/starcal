@@ -38,7 +38,7 @@ from scal3.locale_man import (
 )
 from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
-from scal3.ui_font import getParamsFont
+from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	GLibError,
