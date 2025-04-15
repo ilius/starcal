@@ -5,6 +5,7 @@ from scal3.locale_man import tr as _
 from scal3.path import (
 	pixDir,
 )
+from scal3.ui import conf
 from scal3.ui_gtk import Menu, gtk
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import (
@@ -127,7 +128,7 @@ class IconSelectButton(gtk.Button):
 		self.image.set_from_pixbuf(
 			pixbufFromFile(
 				filename,
-				ui.imageInputIconSize,
+				conf.imageInputIconSize,
 			),
 		)
 
