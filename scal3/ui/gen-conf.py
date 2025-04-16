@@ -15,16 +15,21 @@ all_names = sorted([p.v3Name for p in params.confParamsData])
 
 
 output = io.StringIO()
-output.write("from os.path import join\n\n")
+
+output.write("from __future__ import annotations\n\n")
+output.write("from os.path import join\n")
+output.write("import typing\n")
+output.write("if typing.TYPE_CHECKING:\n\tfrom scal3.font import Font\n\n")
 output.write("from scal3.path import sourceDir\n\n")
 output.write(f"__all__ = {all_names!r}\n\n")
 
 for p in params.confParamsData:
 	assert p.default is not params.NOT_SET
 	value = p.default
-	# if isinstance(value, str) and value.startswith(rootDir + os.sep):
-	# value = value[len(rootDir) + 1 :]
-	output.write(f"{p.v3Name} = {value!r}" + "\n")
+	if p.type.startswith("Color"):
+		output.write(f"{p.v3Name} = {value!r}" + "\n")
+		continue
+	output.write(f"{p.v3Name}: {p.type} = {value!r}" + "\n")
 
 
 output.write("\n")
