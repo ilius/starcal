@@ -32,9 +32,11 @@ ColorType = tuple[int, int, int, int]
 
 __all__ = [
 	"CUSTOMIZE",
+	"DAYCAL_WIN_LIVE",
 	"LIVE",
 	"MAIN_CONF",
 	"NEED_RESTART",
+	"NOT_SET",
 	"Font",
 	"confParamsData",
 	"getParamNamesWithFlag",
