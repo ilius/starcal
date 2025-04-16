@@ -35,6 +35,7 @@ for name in paramNames - attrNames:
 
 
 for param in params.confParamsData:
+	assert isinstance(param.type, str), param.v3Name
 	if param.v3Name in ignoreMissingParams:
 		continue
 	value = getattr(conf, param.v3Name)
