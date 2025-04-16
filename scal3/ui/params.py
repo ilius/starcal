@@ -19,7 +19,6 @@ from os.path import join
 from typing import Any, NamedTuple
 
 from scal3.font import Font
-from scal3.path import sourceDir
 
 MAIN_CONF = 1
 LIVE = 2
@@ -269,14 +268,14 @@ confParamsData: list[Param] = [
 		v3Name="statusIconImage",
 		flags=MAIN_CONF,
 		type=str,
-		default=join(sourceDir, "status-icons", "dark-green.svg"),
+		default=join("status-icons", "dark-green.svg"),
 	),
 	Param(
 		name="statusIcon.holidayImagePath",
 		v3Name="statusIconImageHoli",
 		flags=MAIN_CONF,
 		type=str,
-		default=join(sourceDir, "status-icons", "dark-red.svg"),
+		default=join("status-icons", "dark-red.svg"),
 	),
 	Param(
 		name="statusIcon.fontFamilyEnable",
