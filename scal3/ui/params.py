@@ -50,7 +50,7 @@ class Param(NamedTuple):
 	name: str
 	v3Name: str
 	flags: int
-	type: str | None = None
+	type: str
 	default: Any = NOT_SET
 
 
@@ -359,6 +359,7 @@ confParamsData: list[Param] = [
 		name="customizePagePath",
 		v3Name="customizePagePath",
 		flags=CUSTOMIZE,
+		type="str",
 		default="",
 	),
 	# move to a new file like local-tz.json?
@@ -1334,6 +1335,7 @@ confParamsData: list[Param] = [
 		name="labelBox.primaryFontEnable",
 		v3Name="labelBoxPrimaryFontEnable",
 		flags=CUSTOMIZE,
+		type="bool",
 		default=False,
 	),
 	Param(
