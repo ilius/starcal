@@ -175,7 +175,7 @@ confParamsData: list[Param] = [
 		name="fontCustom",
 		v3Name="fontCustom",
 		flags=MAIN_CONF,
-		type=Font | None,
+		type=Font,  # adding `| None` breaks it
 		default=None,
 	),
 	Param(
