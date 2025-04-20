@@ -23,7 +23,7 @@ import os
 import os.path
 import typing
 from contextlib import suppress
-from os.path import isdir, isfile, join
+from os.path import isabs, isdir, isfile, join
 from time import perf_counter
 from typing import Any
 
@@ -38,7 +38,7 @@ from scal3.json_utils import (
 	saveJsonConf,
 )
 from scal3.locale_man import tr as _
-from scal3.path import confDir, pixDir, svgDir, sysConfDir
+from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.ui.funcs import checkEnabledNamesItems
 from scal3.ui.params import (
 	CUSTOMIZE,
@@ -148,6 +148,14 @@ def loadConf() -> None:
 		confPathLive,
 		decoders=confDecoders,
 	)
+	if not isabs(conf.statusIconImage):
+		conf.statusIconImage = join(sourceDir, conf.statusIconImage)
+	if not isabs(conf.statusIconImageHoli):
+		conf.statusIconImageHoli = join(sourceDir, conf.statusIconImageHoli)
+	if not isfile(conf.statusIconImage):
+		conf.statusIconImage = conf.statusIconImageDefault
+	if not isfile(conf.statusIconImageHoli):
+		conf.statusIconImageHoli = conf.statusIconImageHoliDefault
 
 
 def saveConf() -> None:
@@ -481,12 +489,6 @@ needRestartPref = {
 	name: evalParam(name) for name in getParamNamesWithFlag(NEED_RESTART)
 }
 needRestartPref.update(locale_man.getNeedRestartParams())
-
-
-if not isfile(conf.statusIconImage):
-	conf.statusIconImage = conf.statusIconImageDefault
-if not isfile(conf.statusIconImageHoli):
-	conf.statusIconImageHoli = conf.statusIconImageHoliDefault
 
 
 _localTzName = str(locale_man.localTz)
