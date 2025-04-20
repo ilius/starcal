@@ -580,7 +580,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageName = "statusIcon"
 		page.pageTitle = _("Status Icon") + " - " + _("Appearance")
 		page.pageLabel = _("Status Icon")
-		page.pageIcon = ""
+		page.pageIcon = "status-icon-example.svg"
 		self.prefPages.append(page)
 		# -----
 		appearanceSubPages.append(page)
