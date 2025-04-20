@@ -505,7 +505,7 @@ else:
 	saveConf()
 
 
-conf.menuTextColor = conf.menuTextColor or conf.borderTextColor
+conf.mcalCornerMenuTextColor = conf.mcalCornerMenuTextColor or conf.borderTextColor
 
 # ----------------------------------
 
