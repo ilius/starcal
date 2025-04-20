@@ -814,11 +814,20 @@ confParamsData: list[Param] = [
 		default=(255, 252, 0, 82),
 	),
 	Param(
+		name="monthcal.cornerMenuTextColor",
+		v3Name="mcalCornerMenuTextColor",
+		flags=CUSTOMIZE,
+		type="ColorType",
+		where="MainWin: Customize: Month Calendar",
+		desc="Corner Menu Text Color",
+		default=(255, 255, 255, 255),
+	),
+	Param(
 		name="monthcal.cursorLineWidthFactor",
 		v3Name="mcalCursorLineWidthFactor",
 		flags=CUSTOMIZE,
 		type="float",
-		where="MainWin: Customize: Month Calendar",
+		where="MainWin: Customize: Month Calendar: Cursor",
 		desc="Line Width Factor",
 		default=0.12,
 	),
@@ -830,15 +839,6 @@ confParamsData: list[Param] = [
 		where="MainWin: Customize: Month Calendar: Cursor",
 		desc="Rounding Factor",
 		default=0.5,
-	),
-	Param(
-		name="monthcal.cornerMenuTextColor",
-		v3Name="mcalCornerMenuTextColor",
-		flags=0,
-		type="ColorType",
-		where="",
-		desc="",
-		default=(255, 255, 255, 255),
 	),
 	# ------------ weekcal
 	Param(

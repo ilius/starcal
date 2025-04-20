@@ -34,6 +34,7 @@ from scal3.monthcal import getCurrentMonthStatus
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
+	HBox,
 	VBox,
 	gdk,
 	getScrollValue,
@@ -51,7 +52,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.stack import StackPage
-from scal3.ui_gtk.utils import pixbufFromFile
+from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 
 if TYPE_CHECKING:
 	import cairo
@@ -217,6 +218,19 @@ class CalObj(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		hbox = prefItem.getWidget()
+		pack(optionsWidget, hbox)
+		# ---
+		hbox = HBox(spacing=10)
+		pack(hbox, newAlignLabel(label=_("Corner Menu Text Color")))
+		prefItem = ColorPrefItem(
+			conf,
+			"mcalCornerMenuTextColor",
+			useAlpha=True,
+			live=True,
+			onChangeFunc=self.queue_draw,
+		)
+		pack(hbox, prefItem.getWidget())
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(optionsWidget, hbox)
 		# ------------
 		pageVBox = VBox(spacing=20)
