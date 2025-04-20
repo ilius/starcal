@@ -99,6 +99,7 @@ confParams = (
 	"statusIconFixedSizeWH",
 	"maxDayCacheSize",
 	"eventDayViewTimeFormat",
+	"cellMenuXOffset",
 	"pluginsTextStatusIcon",
 	"showYmArrows",
 	"preferencesPagePath",
