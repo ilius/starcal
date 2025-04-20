@@ -3019,6 +3019,10 @@ msgid "Top Margin"
 msgstr ""
 "حاشیهٔ بالا"
 
+msgid "Corner Menu Text Color"
+msgstr ""
+"رنگ متن منوی گوشه"
+
 msgid "Cursor"
 msgstr ""
 "مکان‌نما"
