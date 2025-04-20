@@ -98,6 +98,7 @@ __all__ = [
 	"mainWinRightPanelWidthRatioEnable",
 	"maxDayCacheSize",
 	"maxWeekCacheSize",
+	"mcalCornerMenuTextColor",
 	"mcalCursorLineWidthFactor",
 	"mcalCursorRoundingFactor",
 	"mcalEventIconSizeMax",
@@ -111,7 +112,6 @@ __all__ = [
 	"menuIconEdgePadding",
 	"menuIconPadding",
 	"menuIconSize",
-	"menuTextColor",
 	"messageDialogIconSize",
 	"monthPBarCalType",
 	"oldStyleProgressBar",
@@ -303,7 +303,7 @@ mcalGrid: bool = False
 mcalGridColor = (255, 252, 0, 82)
 mcalCursorLineWidthFactor: float = 0.12
 mcalCursorRoundingFactor: float = 0.5
-menuTextColor = (255, 255, 255, 255)
+mcalCornerMenuTextColor = (255, 255, 255, 255)
 wcalTextSizeScale: float = 0.6
 wcalItems: list[tuple[str, bool]] = [
 	("toolbar", True),
