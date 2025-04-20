@@ -526,6 +526,15 @@ confParamsData: list[Param] = [
 		desc="Event Time Format",
 		default="HM$",
 	),
+	Param(
+		name="cellMenuHorizontalOffset",
+		v3Name="cellMenuXOffset",
+		flags=MAIN_CONF,
+		type="int",
+		where="Preferences: Advanced",
+		desc="Horizontal offset for day right-click menu",
+		default=0,
+	),
 	# TODO: ud.clockFormat: Digital Clock Format
 	# ------------ Window Controller
 	Param(
@@ -1764,15 +1773,6 @@ confParamsData: list[Param] = [
 		where="",
 		desc="Tree Icon Size",
 		default=22,
-	),
-	Param(
-		name="cellMenuHorizontalOffset",
-		v3Name="cellMenuXOffset",
-		flags=0,
-		type="int",
-		where="Preferences: Advanced",
-		desc="Horizontal offset for day right-click menu",
-		default=0,
 	),
 	Param(
 		name="",
