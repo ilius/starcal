@@ -345,9 +345,30 @@ wcalCursorLineWidthFactor: float = 0.12
 wcalCursorRoundingFactor: float = 0.5
 dcalWidgetButtonsEnable: bool = False
 dcalDayParams: list[dict] = [
-	{"enable": True, "pos": (0, -12), "font": None, "color": (220, 220, 220)},
-	{"enable": True, "pos": (125, 30), "font": None, "color": (165, 255, 114)},
-	{"enable": True, "pos": (-125, 24), "font": None, "color": (0, 200, 205)},
+	{
+		"enable": True,
+		"pos": (0, -12),
+		"xalign": "center",
+		"yalign": "center",
+		"font": None,
+		"color": (220, 220, 220),
+	},
+	{
+		"enable": True,
+		"pos": (125, 30),
+		"xalign": "center",
+		"yalign": "center",
+		"font": None,
+		"color": (165, 255, 114),
+	},
+	{
+		"enable": True,
+		"pos": (-125, 24),
+		"xalign": "center",
+		"yalign": "center",
+		"font": None,
+		"color": (0, 200, 205),
+	},
 ]
 dcalMonthParams: list[dict] = [
 	{
