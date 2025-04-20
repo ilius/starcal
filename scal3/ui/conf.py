@@ -301,9 +301,9 @@ mcalTypeParams: list[dict] = [
 ]
 mcalGrid: bool = False
 mcalGridColor = (255, 252, 0, 82)
+mcalCornerMenuTextColor = (255, 255, 255, 255)
 mcalCursorLineWidthFactor: float = 0.12
 mcalCursorRoundingFactor: float = 0.5
-mcalCornerMenuTextColor = (255, 255, 255, 255)
 wcalTextSizeScale: float = 0.6
 wcalItems: list[tuple[str, bool]] = [
 	("toolbar", True),
