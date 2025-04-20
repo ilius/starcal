@@ -323,7 +323,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				)
 				show_layout(cr, wday)
 			# ------ Drawing "Menu" label
-			setColor(cr, conf.menuTextColor)
+			setColor(cr, conf.mcalCornerMenuTextColor)
 			text = newTextLayout(self, _("Menu"))
 			fontw, fonth = text.get_pixel_size()
 			if rtl:

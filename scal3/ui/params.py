@@ -832,8 +832,8 @@ confParamsData: list[Param] = [
 		default=0.5,
 	),
 	Param(
-		name="monthcal.menuTextColor",
-		v3Name="menuTextColor",
+		name="monthcal.cornerMenuTextColor",
+		v3Name="mcalCornerMenuTextColor",
 		flags=0,
 		type="ColorType",
 		where="",
