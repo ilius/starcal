@@ -476,115 +476,6 @@ class PreferencesWindow(gtk.Window):
 		# -----
 		appearanceSubPages = [page]
 		# -------------------
-		pageVBox = VBox(spacing=10)
-		pageVBox.set_border_width(10)
-		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		# ----
-		hbox = HBox(spacing=1)
-		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
-		pack(hbox, label)
-		item = ImageFileChooserPrefItem(
-			conf,
-			"statusIconImage",
-			title=_("Select Icon"),
-			currentFolder=join(sourceDir, "status-icons"),
-			defaultVarName="statusIconImageDefault",
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# ----
-		hbox = HBox(spacing=1)
-		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
-		pack(hbox, label)
-		item = ImageFileChooserPrefItem(
-			conf,
-			"statusIconImageHoli",
-			title=_("Select Icon"),
-			currentFolder=join(sourceDir, "status-icons"),
-			defaultVarName="statusIconImageHoliDefault",
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# ----
-		hbox = HBox(spacing=1)
-		checkItem = CheckPrefItem(
-			conf,
-			"statusIconFontFamilyEnable",
-			label=_("Change font family to"),
-			# tooltip=_("In SVG files"),
-		)
-		self.uiPrefItems.append(checkItem)
-		# sgroup.add_widget(checkItem.getWidget())
-		pack(hbox, checkItem.getWidget())
-		item = FontFamilyPrefItem(
-			conf,
-			"statusIconFontFamily",
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# ---
-		hbox = HBox(spacing=1)
-		item = CheckPrefItem(
-			conf,
-			"statusIconLocalizeNumber",
-			label=_("Localize the number"),
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# ----
-		hbox = HBox(spacing=1)
-		item = CheckColorPrefItem(
-			CheckPrefItem(
-				conf,
-				"statusIconHolidayFontColorEnable",
-				label=_("Holiday font color"),
-			),
-			ColorPrefItem(
-				conf,
-				"statusIconHolidayFontColor",
-			),
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# ----
-		hbox = HBox(spacing=1)
-		checkItem = CheckPrefItem(
-			conf,
-			"statusIconFixedSizeEnable",
-			label=_("Fixed Size"),
-			# tooltip=_(""),
-		)
-		self.uiPrefItems.append(checkItem)
-		# sgroup.add_widget(checkItem.getWidget())
-		pack(hbox, checkItem.getWidget())
-		pack(hbox, gtk.Label(label=" "))
-		item = WidthHeightPrefItem(
-			conf,
-			"statusIconFixedSizeWH",
-			999,
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget(), 1, 1)
-		pack(pageVBox, hbox)
-		# --------
-		checkItem.syncSensitive(item.getWidget(), reverse=False)
-		# ----
-		page = StackPage()
-		page.pageParent = "appearance"
-		page.pageWidget = pageVBox
-		page.pageName = "statusIcon"
-		page.pageTitle = _("Status Icon") + " - " + _("Appearance")
-		page.pageLabel = _("Status Icon")
-		page.pageIcon = "status-icon-example.svg"
-		self.prefPages.append(page)
-		# -----
-		appearanceSubPages.append(page)
-		# ---------------
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
@@ -1084,7 +975,114 @@ class PreferencesWindow(gtk.Window):
 		# -------------
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
-		# ------------------------------------- Page 6 (Accounts)
+		# ------------------------------------- Page: Status Icon
+		pageVBox = VBox(spacing=10)
+		pageVBox.set_border_width(10)
+		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		# ----
+		hbox = HBox(spacing=1)
+		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
+		pack(hbox, label)
+		item = ImageFileChooserPrefItem(
+			conf,
+			"statusIconImage",
+			title=_("Select Icon"),
+			currentFolder=join(sourceDir, "status-icons"),
+			defaultVarName="statusIconImageDefault",
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ----
+		hbox = HBox(spacing=1)
+		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
+		pack(hbox, label)
+		item = ImageFileChooserPrefItem(
+			conf,
+			"statusIconImageHoli",
+			title=_("Select Icon"),
+			currentFolder=join(sourceDir, "status-icons"),
+			defaultVarName="statusIconImageHoliDefault",
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ----
+		hbox = HBox(spacing=1)
+		checkItem = CheckPrefItem(
+			conf,
+			"statusIconFontFamilyEnable",
+			label=_("Change font family to"),
+			# tooltip=_("In SVG files"),
+		)
+		self.uiPrefItems.append(checkItem)
+		# sgroup.add_widget(checkItem.getWidget())
+		pack(hbox, checkItem.getWidget())
+		item = FontFamilyPrefItem(
+			conf,
+			"statusIconFontFamily",
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ---
+		hbox = HBox(spacing=1)
+		item = CheckPrefItem(
+			conf,
+			"statusIconLocalizeNumber",
+			label=_("Localize the number"),
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ----
+		hbox = HBox(spacing=1)
+		item = CheckColorPrefItem(
+			CheckPrefItem(
+				conf,
+				"statusIconHolidayFontColorEnable",
+				label=_("Holiday font color"),
+			),
+			ColorPrefItem(
+				conf,
+				"statusIconHolidayFontColor",
+			),
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ----
+		hbox = HBox(spacing=1)
+		checkItem = CheckPrefItem(
+			conf,
+			"statusIconFixedSizeEnable",
+			label=_("Fixed Size"),
+			# tooltip=_(""),
+		)
+		self.uiPrefItems.append(checkItem)
+		# sgroup.add_widget(checkItem.getWidget())
+		pack(hbox, checkItem.getWidget())
+		pack(hbox, gtk.Label(label=" "))
+		item = WidthHeightPrefItem(
+			conf,
+			"statusIconFixedSizeWH",
+			999,
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# --------
+		checkItem.syncSensitive(item.getWidget(), reverse=False)
+		# ----
+		page = StackPage()
+		page.pageParent = ""
+		page.pageWidget = pageVBox
+		page.pageName = "statusIcon"
+		page.pageTitle = _("Status Icon") + " - " + _("Appearance")
+		page.pageLabel = _("Status Icon")
+		page.pageIcon = "status-icon-example.svg"
+		self.prefPages.append(page)
+		# ------------------------------------- Page: Accounts
 		vbox = VBox()
 		vbox.set_border_width(5)
 		page = StackPage()
