@@ -453,7 +453,8 @@ class FontPrefItem(PrefItem):
 		self._widget.set_font(value)
 
 	def setPreviewText(self, text):
-		self._widget.set_property("preview-text", text)
+		self._widget.set_preview_text(text)
+		# self._widget.set_property("preview-text", text)
 
 
 class CheckPrefItem(PrefItem):
