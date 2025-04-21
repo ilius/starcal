@@ -626,7 +626,10 @@ class PluginsTextColumn(Column):
 		pack(optionsWidget, prefItem.getWidget())
 
 	def getFontPreviewText(self):  # noqa: PLR6301
-		return ""  # TODO
+		cell = ui.cells.current
+		for occurData in cell.getPluginsData():
+			return occurData[1].replace("\n", " ")
+		return ""
 
 
 @registerSignals
