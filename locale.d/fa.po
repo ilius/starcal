@@ -2470,9 +2470,9 @@ msgstr ""
 "نمایش در تقویم"
 
 
-msgid "Show in Status Icon (for today)"
+msgid "Show Plugins Text in Status Icon (for today)"
 msgstr ""
-"نمایش در نماد وضعیت (برای امروز)"
+"نمایش متن رویدادها در نماد وضعیت (برای امروز)"
 
 
 msgid "Show in applet (for today)"
