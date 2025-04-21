@@ -514,7 +514,7 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalObj):
 	objName = "labelBox"
-	desc = _("Year & Month Labels")
+	desc = _("Year & Month Bar")
 	itemListCustomizable = False
 	hasOptions = True
 	styleClass = "labelbox"

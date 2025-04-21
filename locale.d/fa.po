@@ -3454,9 +3454,9 @@ msgid "Toolbar (Vertical)"
 msgstr ""
 "نوار ابزار (عمودی)"
 
-msgid "Year & Month Labels"
+msgid "Year & Month Bar"
 msgstr ""
-"برچسب‌های سال و ماه"
+"نوار سال و ماه"
 
 msgid "Active menu item color"
 msgstr ""
