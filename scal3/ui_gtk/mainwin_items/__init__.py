@@ -3,7 +3,7 @@ from scal3.locale_man import tr as _
 __all__ = ["mainWinItemsDesc"]
 mainWinItemsDesc = {
 	"dayCal": _("Day Calendar"),
-	"labelBox": _("Year & Month Labels"),
+	"labelBox": _("Year & Month Bar"),
 	"monthCal": _("Month Calendar"),
 	"monthPBar": _("Month Progress Bar"),
 	"seasonPBar": _("Season Progress Bar"),
