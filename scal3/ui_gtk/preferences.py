@@ -752,18 +752,6 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-plugin.svg"
 		self.prefPages.append(page)
 		# -----
-		# pluginsTextStatusIcon:
-		hbox = HBox()
-		item = CheckPrefItem(
-			conf,
-			"pluginsTextStatusIcon",
-			_("Show in Status Icon (for today)"),
-		)
-		self.uiPrefItems.append(item)
-		pack(hbox, item.getWidget())
-		pack(hbox, gtk.Label(), 1, 1)
-		pack(vbox, hbox)
-		# -----
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		treeModel = gtk.ListStore(
@@ -1071,9 +1059,20 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
-		# --------
 		checkItem.syncSensitive(item.getWidget(), reverse=False)
-		# ----
+		# --------
+		# pluginsTextStatusIcon:
+		hbox = HBox()
+		item = CheckPrefItem(
+			conf,
+			"pluginsTextStatusIcon",
+			_("Show Plugins Text in Status Icon (for today)"),
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget())
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(pageVBox, hbox)
+		# --------
 		page = StackPage()
 		page.pageParent = ""
 		page.pageWidget = pageVBox
