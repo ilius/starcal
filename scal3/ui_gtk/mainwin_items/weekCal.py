@@ -1615,10 +1615,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 
 if __name__ == "__main__":
-	from scal3 import cell
+	from scal3.cell import init as initCell
 
 	ui.init()
-	cell.init()
+	initCell()
 	win = gtk.Dialog()
 	cal = CalObj()
 	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
