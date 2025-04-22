@@ -35,8 +35,9 @@ if typing.TYPE_CHECKING:
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
-from scal3 import cell, logger
+from scal3 import logger
 from scal3.cal_types import convert
+from scal3.cell import init as initCell
 from scal3.path import (
 	pixDir,
 	sourceDir,
@@ -1752,7 +1753,7 @@ def main():
 		# 	action = "svg"
 	# -------------------------------
 	ui.init()
-	cell.init()
+	initCell()
 	if os.getenv("STARCAL_FULL_IMPORT"):
 		doFullImport()
 	# -------------------------------
