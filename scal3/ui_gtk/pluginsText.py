@@ -69,12 +69,11 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		cell = ui.cells.current
 		textbuff = self.get_buffer()
 		textbuff.set_text("")
 		occurOffsets = []
 		eventSep = "\n"
-		for index, occurData in enumerate(cell.getPluginsData()):
+		for index, occurData in enumerate(ui.cells.current.getPluginsData()):
 			_plug, text = occurData
 			lastEndOffset = textbuff.get_end_iter().get_offset()
 			occurOffsets.append((lastEndOffset, occurData))
