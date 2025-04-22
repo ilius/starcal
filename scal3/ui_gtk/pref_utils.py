@@ -173,6 +173,11 @@ class ModuleOptionButton:
 
 
 class PrefItem:
+	# def __new__(cls, *args, **kwargs):
+	# print("PrefItem:", args, kwargs)
+	# obj = object.__new__(cls)
+	# return obj
+
 	@classmethod
 	def valueString(cls, value: Any) -> str:
 		return str(value)
