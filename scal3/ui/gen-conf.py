@@ -1,7 +1,7 @@
 import io
 import os
 import sys
-from os.path import dirname
+from os.path import dirname, join
 
 rootDir = dirname(dirname(dirname(__file__)))
 
@@ -40,5 +40,5 @@ output.write("winControllerButtonsDefault = winControllerButtons.copy()\n")
 output.write("mainWinItemsDefault = mainWinItems.copy()\n")
 output.write("wcalItemsDefault = wcalItems.copy()\n")
 
-with open("conf.py", "w", encoding="utf-8") as file:
+with open(join(rootDir, "scal3/ui/conf.py"), "w", encoding="utf-8") as file:
 	file.write(output.getvalue())
