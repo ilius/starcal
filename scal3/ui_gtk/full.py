@@ -14,6 +14,7 @@ from scal3 import event_lib, ui
 from scal3.cell import init as initCell
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk import pixcache, starcal
+from scal3.ui_gtk.starcal_import_all import doFullImport
 
 ui.init()
 initCell()
@@ -30,6 +31,8 @@ starcal.checkEventsReadOnly(False)
 event_lib.info.updateAndSave()
 
 mainWin = starcal.MainWin(statusIconMode=2)
+
+doFullImport(mainWin)
 
 mainWin.present()
 
