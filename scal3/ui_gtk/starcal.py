@@ -78,6 +78,7 @@ from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
+from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
 	get_menu_height,
 	get_menu_width,
@@ -88,26 +89,6 @@ from scal3.ui_gtk.utils import (
 )
 
 __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
-
-
-def doFullImport():
-	# to help with testing phase and also tell code analyzers these are imported
-	import scal3.cal_types.import_all  # noqa: F401
-	import scal3.event_lib_import_all  # noqa: F401
-	import scal3.ui_gtk.event.import_all  # noqa: F401
-	from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
-	from scal3.ui_gtk.mainwin_items.dayCal import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.labelBox import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.monthCal import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.monthPBar import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.seasonPBar import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.toolbar import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.weekCal import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.mainwin_items.yearPBar import CalObj as _CalObj  # noqa: F811
-	from scal3.ui_gtk.pluginsText import PluginsTextBox
-
-	# to make ruff happy:
-	print(_CalObj, PluginsTextBox, LimitedHeightDayOccurrenceView)
 
 
 ui.uiName = "gtk"
@@ -1754,8 +1735,6 @@ def main():
 	# -------------------------------
 	ui.init()
 	initCell()
-	if os.getenv("STARCAL_FULL_IMPORT"):
-		doFullImport()
 	# -------------------------------
 	pixcache.cacheSaveStart()
 	ui.eventUpdateQueue.startLoop()
@@ -1768,6 +1747,8 @@ def main():
 	event_lib.info.updateAndSave()
 	# -------------------------------
 	mainWin = MainWin(statusIconMode=statusIconMode)
+	if os.getenv("STARCAL_FULL_IMPORT"):
+		doFullImport(mainWin)
 	# -------------------------------
 	# if action == "html":
 	# 	mainWin.exportHtml("calendar.html") # exportHtml(path, months, title)
