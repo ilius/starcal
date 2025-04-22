@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -21,8 +23,9 @@ log = logger.get()
 import os
 from os.path import join
 from time import perf_counter
+from typing import TYPE_CHECKING
 
-from scal3 import cell, ui
+from scal3 import ui
 from scal3.json_utils import loadJsonConf, saveJsonConf
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
@@ -42,6 +45,9 @@ from scal3.ui_gtk.utils import (
 	get_menu_height,
 	get_menu_width,
 )
+
+if TYPE_CHECKING:
+	from scal3.cell import Cell
 
 __all__ = ["DayCalWindow"]
 
@@ -159,7 +165,7 @@ class DayCalWindowWidget(DayCal):
 	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
 
 	@classmethod
-	def getCell(cls) -> cell.Cell:
+	def getCell(cls) -> Cell:
 		return ui.cells.today
 
 	def __init__(self, win):

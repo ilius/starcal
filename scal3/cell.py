@@ -35,7 +35,7 @@ if typing.TYPE_CHECKING:
 
 	from scal3.plugin_type import PluginType
 
-__all__ = ["init"]
+__all__ = ["Cell", "init"]
 
 
 class Cell(CellType):
