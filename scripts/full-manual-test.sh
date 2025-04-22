@@ -9,4 +9,7 @@ fi
 myDir=$(dirname "$myPath")
 sourceDir=$(dirname "$myDir")
 
-PYTHONPATH=$sourceDir /usr/bin/python3 "$sourceDir/scal3/ui_gtk/full.py"
+export STARCAL_FULL_IMPORT=1
+export PYTHONPATH=$sourceDir
+
+/usr/bin/python3 "$sourceDir/scal3/ui_gtk/full.py"
