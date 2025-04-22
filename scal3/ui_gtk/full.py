@@ -10,12 +10,13 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
 from gi.repository.GLib import idle_add
 
-from scal3 import cell, event_lib, ui
+from scal3 import event_lib, ui
+from scal3.cell import init as initCell
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk import pixcache, starcal
 
 ui.init()
-cell.init()
+initCell()
 
 conf.winKeepAbove = False
 
