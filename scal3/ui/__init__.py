@@ -157,6 +157,8 @@ def loadConf() -> None:
 	if not isfile(conf.statusIconImageHoli):
 		conf.statusIconImageHoli = conf.statusIconImageHoliDefault
 
+	conf.mcalCornerMenuTextColor = conf.mcalCornerMenuTextColor or conf.borderTextColor
+
 
 def saveConf() -> None:
 	saveJsonConf(
@@ -192,6 +194,26 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 		saveLiveConf()
 		return False  # Finish loop
 	return True  # Continue loop
+
+
+def updateLocalTimezoneHistory() -> bool:
+	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
+		return False
+
+	localTzName = str(locale_man.localTz)
+	if not conf.localTzHist:
+		conf.localTzHist.insert(0, localTzName)
+		return True
+
+	if conf.localTzHist[0] != localTzName:
+		with suppress(ValueError):
+			conf.localTzHist.remove(localTzName)
+		conf.localTzHist.insert(0, localTzName)
+		if len(conf.localTzHist) > 10:
+			conf.localTzHist = conf.localTzHist[:10]
+		return True
+
+	return False
 
 
 # -----------------------------------------------------------------------
@@ -483,29 +505,13 @@ def evalParam(param: str) -> Any:
 
 loadConf()
 
-# --------------------------------------------------------
+if updateLocalTimezoneHistory():
+	saveConf()
 
 needRestartPref = {
 	name: evalParam(name) for name in getParamNamesWithFlag(NEED_RESTART)
 }
 needRestartPref.update(locale_man.getNeedRestartParams())
-
-
-_localTzName = str(locale_man.localTz)
-if conf.localTzHist:
-	if conf.localTzHist[0] != _localTzName:
-		with suppress(ValueError):
-			conf.localTzHist.remove(_localTzName)
-		conf.localTzHist.insert(0, _localTzName)
-		if len(conf.localTzHist) > 10:
-			conf.localTzHist = conf.localTzHist[:10]
-		saveConf()
-else:
-	conf.localTzHist.insert(0, _localTzName)
-	saveConf()
-
-
-conf.mcalCornerMenuTextColor = conf.mcalCornerMenuTextColor or conf.borderTextColor
 
 # ----------------------------------
 
