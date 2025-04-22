@@ -99,8 +99,8 @@ BuildRequires:  gettext
 
 %description
 StarCalendar is a full-featured international calendar written in Python,
-using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
-and Indian National calendars, as well as common English(Gregorian) calendar
+using Gtk3-based interface, that supports Persian(Iranian) and Hijri(Islamic)
+calendars as well as common Gregorian calendar
 
 %install
 \"$sourceDir/distro/base/install.sh\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
