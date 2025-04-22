@@ -166,6 +166,10 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"F401", # imported but unused
 	"F811", # Redefinition of unused ...
 ]
+"scal3/ui_gtk/starcal_import_all.py" = [
+	"F401", # imported but unused
+	"F811", # Redefinition of unused ...
+]
 "scal3/ui_gtk/event/import_all.py" = [
 	"F401", # imported but unused
 	"F811", # Redefinition of unused ...
