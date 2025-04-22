@@ -486,12 +486,12 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 
 
 if __name__ == "__main__":
-	from scal3 import cell
+	from scal3.cell import init as initCell
 
 	# locale_man.langActive = ""
 	# _ = locale_man.loadTranslator()
 	ui.init()
-	cell.init()
+	initCell()
 	win = YearWheelWindow()
 	win.show()
 	gtk.main()
