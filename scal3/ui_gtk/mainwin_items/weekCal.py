@@ -626,8 +626,7 @@ class PluginsTextColumn(Column):
 		pack(optionsWidget, prefItem.getWidget())
 
 	def getFontPreviewText(self):  # noqa: PLR6301
-		cell = ui.cells.current
-		for occurData in cell.getPluginsData():
+		for occurData in ui.cells.current.getPluginsData():
 			return occurData[1].replace("\n", " ")
 		return ""
 
