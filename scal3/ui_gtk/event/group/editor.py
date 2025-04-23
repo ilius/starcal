@@ -3,6 +3,7 @@ from scal3 import logger
 log = logger.get()
 
 from scal3 import event_lib, ui
+from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -107,7 +108,7 @@ class GroupEditorDialog(gtk.Dialog):
 		self.activeWidget.updateVars()
 		self._group.save()  # FIXME
 		if self.isNew:
-			event_lib.lastIds.save()
+			event_state.lastIds.save()
 		else:
 			ui.eventGroups[self._group.id] = self._group  # FIXME
 		ui.eventNotif.checkGroup(self._group)

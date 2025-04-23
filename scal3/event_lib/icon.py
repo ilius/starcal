@@ -1,0 +1,44 @@
+import os
+from os.path import isabs, join, split
+
+from scal3.path import pixDir, svgDir
+
+__all__ = ["WithIcon", "iconAbsToRelativelnData", "iconRelativeToAbsInObj"]
+
+
+class WithIcon:
+	def getIcon(self):
+		return self.icon
+
+	def getIconRel(self):
+		icon = self.icon
+		for direc in (svgDir, pixDir):
+			if icon.startswith(direc + os.sep):
+				return icon[len(direc) + 1 :]
+		return icon
+
+
+def iconAbsToRelativelnData(data):
+	icon = data["icon"]
+	iconDir, iconName = split(icon)
+	if iconName == "obituary.png":
+		iconName = "green_clover.svg"
+	elif iconDir in {
+		"event",
+		join(svgDir, "event"),
+		join(pixDir, "event"),
+	}:
+		icon = iconName
+	data["icon"] = icon
+
+
+def iconRelativeToAbsInObj(self):
+	icon = self.icon
+	if icon and not isabs(icon):
+		if "/" not in icon:
+			icon = join("event", icon)
+		if icon.endswith(".png"):
+			icon = join(pixDir, icon)
+		else:
+			icon = join(svgDir, icon)
+	self.icon = icon
