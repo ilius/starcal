@@ -2,7 +2,7 @@ import json
 
 from scal3 import event_lib
 from scal3.path import confDir
-from scal3.s_object import saveBsonObject
+from scal3.s_object import saveBinaryObject
 
 if __name__ == "__main__":
 	fs = event_lib.DefaultFileSystem(confDir)
@@ -15,5 +15,5 @@ if __name__ == "__main__":
 		jsonStr += line
 	data = json.loads(jsonStr)
 	print("-------------------------------")  # noqa: T201
-	_hash = saveBsonObject(data, fs)
+	_hash = saveBinaryObject(data, fs)
 	print("Created object with hash:", _hash)  # noqa: T201
