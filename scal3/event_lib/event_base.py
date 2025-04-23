@@ -150,6 +150,14 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def __str__(self) -> str:
 		return f"{self.__class__.__name__}(id={self.id!r}, summary={self.summary!r})"
 
+	def icsUID(self) -> str:
+		import socket
+
+		event_st = core.compressLongInt(hash(str(self.getData())))
+		time_st = core.getCompactTime()
+		host = socket.gethostname()
+		return event_st + "_" + time_st + "@" + host
+
 	def __init__(self, _id=None, parent=None):
 		if _id is None:
 			self.id = None
