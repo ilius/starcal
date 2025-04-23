@@ -26,7 +26,7 @@ from time import perf_counter
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.json_utils import loadJsonConf, saveJsonConf
+from scal3.json_utils import loadSingleConfig, saveSingleConfig
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import (
@@ -57,11 +57,11 @@ confParamsLive = getParamNamesWithFlag(DAYCAL_WIN_LIVE)
 
 lastLiveConfChangeTime = 0
 
-loadJsonConf(conf, confPathLive)
+loadSingleConfig(conf, confPathLive)
 
 
 def saveLiveConf():  # FIXME: rename to saveConfLive
-	saveJsonConf(conf, confPathLive, confParamsLive)
+	saveSingleConfig(conf, confPathLive, confParamsLive)
 
 
 def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop

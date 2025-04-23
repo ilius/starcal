@@ -36,8 +36,8 @@ from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
 from scal3.event_lib import state as event_state
 from scal3.json_utils import (
-	loadModuleJsonConf,
-	saveModuleJsonConf,
+	loadModuleConfig,
+	saveModuleConfig,
 )
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
@@ -107,11 +107,11 @@ eventManShowDescription = True
 
 
 def loadConf() -> None:
-	loadModuleJsonConf(__name__)
+	loadModuleConfig(__name__)
 
 
 def saveConf() -> None:
-	saveModuleJsonConf(__name__)
+	saveModuleConfig(__name__)
 
 
 class EventManagerToolbar(StaticToolBox):
