@@ -20,6 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
+import json
 from os.path import join
 from time import perf_counter
 
@@ -46,7 +47,6 @@ from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
 	simplifyNumList,
 )
-from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, svgDir
@@ -220,7 +220,7 @@ def removeUnusedObjects(fs: FileSystem):
 			for fpath in cls.iterFiles(fs):
 				with fs.open(fpath) as fp:
 					jsonStr = fp.read()
-				data = jsonToData(jsonStr)
+				data = json.loads(jsonStr)
 				history = data.get("history")
 				if not history:
 					log.error(f"No history in file: {fpath}")

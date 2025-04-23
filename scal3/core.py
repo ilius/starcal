@@ -30,16 +30,12 @@ from typing import Any, NamedTuple
 import scal3
 from scal3 import locale_man, logger, s_object
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
+from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.date_utils import (
 	dateEncode,
 	jwday,
 )
-from scal3.json_utils import (
-	dataToCompactJson,
-	dataToPrettyJson,
-	loadModuleConfig,
-	saveModuleConfig,
-)
+from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import (
 	APP_NAME,
