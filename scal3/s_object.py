@@ -29,11 +29,11 @@ __all__ = [
 	"SObjBinaryModel",
 	"SObjTextModel",
 	"iterObjectFiles",
-	"loadBsonObject",
+	"loadBinaryObject",
 	"makeOrderedData",
 	"objectDirName",
-	"saveBsonObject",
-	"updateBasicDataFromBson",
+	"saveBinaryObject",
+	"updateBinaryObjectBasicData",
 ]
 
 
@@ -304,7 +304,7 @@ def iterObjectFiles(fs: FileSystem):
 			yield hash_, fpath
 
 
-def saveBsonObject(data: dict | list, fs: FileSystem):
+def saveBinaryObject(data: dict | list, fs: FileSystem):
 	data = getSortedDict(data)
 	bsonBytes = bytes(bson.dumps(data))
 	hash_ = sha1(bsonBytes).hexdigest()
@@ -316,7 +316,7 @@ def saveBsonObject(data: dict | list, fs: FileSystem):
 	return hash_
 
 
-def loadBsonObject(_hash, fs: FileSystem):
+def loadBinaryObject(_hash, fs: FileSystem):
 	_dpath, fpath = getObjectPath(_hash)
 	with fs.open(fpath, "rb") as fp:
 		bsonBytes = fp.read()
@@ -327,7 +327,7 @@ def loadBsonObject(_hash, fs: FileSystem):
 	return bson.loads(bsonBytes)
 
 
-def updateBasicDataFromBson(
+def updateBinaryObjectBasicData(
 	data: dict | list,
 	filePath: str,
 	fileType: str,
@@ -346,7 +346,7 @@ def updateBasicDataFromBson(
 		raise ValueError(
 			f'invalid {fileType} file "{filePath}", no "history"',
 		) from None
-	data.update(loadBsonObject(lastHash, fs))
+	data.update(loadBinaryObject(lastHash, fs))
 	data["modified"] = lastEpoch  # FIXME
 	return (lastEpoch, lastHash)
 
@@ -381,7 +381,7 @@ class SObjBinaryModel(SObj):
 				log.error(f'error while opening json file "{file}"')
 				raise
 		else:
-			lastEpoch, lastHash = updateBasicDataFromBson(data, file, cls.name, fs)
+			lastEpoch, lastHash = updateBinaryObjectBasicData(data, file, cls.name, fs)
 
 		if lastEpoch is None:
 			lastEpoch = now()  # FIXME
@@ -442,7 +442,7 @@ class SObjBinaryModel(SObj):
 			basicData[param] = data.pop(param)
 		if "modified" in data:
 			del data["modified"]
-		hash_ = saveBsonObject(data, self.fs)
+		hash_ = saveBinaryObject(data, self.fs)
 		# ---
 		history = self.loadHistory()
 		# ---
@@ -461,7 +461,7 @@ class SObjBinaryModel(SObj):
 	def getRevision(self, revHash, *args):
 		cls = self.__class__
 		data = self.loadBasicData()
-		data.update(loadBsonObject(revHash, self.fs))
+		data.update(loadBinaryObject(revHash, self.fs))
 		try:
 			type_ = data["type"]
 		except (KeyError, TypeError):

@@ -59,10 +59,10 @@ from scal3.s_object import (
 	SObjBinaryModel,
 	SObjTextModel,
 	iterObjectFiles,
-	loadBsonObject,
+	loadBinaryObject,
 	makeOrderedData,
 	objectDirName,
-	updateBasicDataFromBson,
+	updateBinaryObjectBasicData,
 )
 from scal3.time_utils import (
 	HMS,
@@ -162,7 +162,7 @@ __all__ = [
 	"jd_to_primary",
 	"jsonTimeFromEpoch",
 	"jwday",
-	"loadBsonObject",
+	"loadBinaryObject",
 	"makeOrderedData",
 	"numRangesEncode",
 	"pixDir",
@@ -178,7 +178,7 @@ __all__ = [
 	"timeToFloatHour",
 	"toStr",
 	"to_jd",
-	"updateBasicDataFromBson",
+	"updateBinaryObjectBasicData",
 ]
 
 # --------------------------
