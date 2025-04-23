@@ -33,5 +33,4 @@ def getCommitListFromEst(obj, startJd, endJd, format_rev_id=None):
 vcsModuleNames = [
 	"git",
 	"hg",
-	"bzr",
 ]
