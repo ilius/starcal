@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from .events import Event
+	from .event_base import Event
 
 
 from scal3.locale_man import tr as _

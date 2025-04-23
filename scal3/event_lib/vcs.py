@@ -43,7 +43,7 @@ from scal3.time_utils import (
 )
 from scal3.utils import toStr
 
-from .events import Event
+from .event_base import Event
 from .groups import EventGroup
 from .occur import JdOccurSet, OccurSet, TimeListOccurSet
 from .register import classes
