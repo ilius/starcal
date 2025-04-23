@@ -26,9 +26,8 @@ if TYPE_CHECKING:
 	from typing import Any
 
 
+import json
 from os.path import join
-
-from scal3.json_utils import jsonToData
 
 # from scal3.interval_utils import
 from scal3.s_object import (
@@ -79,7 +78,7 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 			return
 			# FIXME: or raise FileNotFoundError?
 		with self.fs.open(objFile) as fp:
-			data = jsonToData(fp.read())
+			data = json.loads(fp.read())
 		updateBinaryObjectBasicData(data, objFile, "account", self.fs)
 		# if data["id"] != _id:
 		# 	log.error(

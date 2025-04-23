@@ -15,7 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from os.path import join
 
-from scal3.json_utils import (
+from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )

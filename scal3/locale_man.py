@@ -27,6 +27,7 @@ if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
 import gettext
+import json
 import os
 import string
 from contextlib import suppress
@@ -39,8 +40,7 @@ from os.path import (
 
 import mytz
 from scal3.cal_types import calTypes
-from scal3.json_utils import (
-	jsonToData,
+from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )
@@ -272,7 +272,7 @@ for fname in langFileList:
 	fpath = join(langDir, fname)
 	try:
 		with open(fpath, encoding="utf-8") as fp:
-			data = jsonToData(fp.read())
+			data = json.loads(fp.read())
 	except Exception:
 		log.error(f"failed to load json file {fpath}")
 		raise

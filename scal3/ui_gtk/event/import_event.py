@@ -2,12 +2,10 @@ from scal3 import logger
 
 log = logger.get()
 
+import json
 import sys
 
 from scal3 import ui
-from scal3.json_utils import (
-	jsonToData,
-)
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
@@ -148,7 +146,7 @@ class EventsImportWindow(WizardWindow):
 				return
 
 			try:
-				data = jsonToData(text)
+				data = json.loads(text)
 			except Exception as e:
 				sys.stderr.write(f"{_('Error in loading JSON data')}\n{e}\n")
 			else:

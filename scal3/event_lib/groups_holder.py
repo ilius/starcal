@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+import json
+
 from scal3 import logger
 
 log = logger.get()
@@ -32,7 +34,6 @@ from contextlib import suppress
 from os.path import join, splitext
 
 from scal3 import core, ics
-from scal3.json_utils import jsonToData
 from scal3.locale_man import tr as _
 
 # from scal3.interval_utils import
@@ -222,7 +223,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 	def importJsonFile(self, fpath: str) -> EventGroupsImportResult:
 		with self.fs.open(fpath, "rb") as fp:
 			jsonStr = fp.read()
-		return self.importData(jsonToData(jsonStr))
+		return self.importData(json.loads(jsonStr))
 
 	def exportToIcs(self, fpath: str, gidList: list[int]) -> None:
 		fp = self.fs.open(fpath, "w")
@@ -268,7 +269,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 				newGroup.idList.append(eid)
 
 			with fs.open(join(eventsDir, fname)) as fp:
-				data = jsonToData(fp.read())
+				data = json.loads(fp.read())
 			history = data.get("history")
 			if history:
 				eventHashSet.update(record[1] for record in history)
