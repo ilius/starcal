@@ -28,8 +28,8 @@ from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 
+from .event_base import Event
 from .event_container import EventContainer
-from .events import Event
 from .icon import WithIcon
 
 if TYPE_CHECKING:
