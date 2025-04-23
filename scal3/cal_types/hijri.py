@@ -101,8 +101,8 @@ from os.path import isfile, join
 from scal3.json_utils import (
 	dataToPrettyJson,
 	jsonToData,
-	loadJsonConf,
-	saveJsonConf,
+	loadSingleConfig,
+	saveSingleConfig,
 )
 from scal3.path import confDir, modDir, sysConfDir
 
@@ -116,11 +116,11 @@ if isfile(oldDbPath):
 
 # Here load user options (hijriUseDB) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadJsonConf(__name__, sysConfPath)
+loadSingleConfig(__name__, sysConfPath)
 
 
 confPath = f"{confDir}/{name}.json"
-loadJsonConf(__name__, confPath)
+loadSingleConfig(__name__, confPath)
 
 
 def ifloor(x: float) -> int:
@@ -133,7 +133,7 @@ def iceil(x: float) -> int:
 
 def save():
 	"""Save user options to file."""
-	saveJsonConf(
+	saveSingleConfig(
 		__name__,
 		confPath,
 		("hijriUseDB",),

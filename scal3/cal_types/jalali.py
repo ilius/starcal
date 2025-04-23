@@ -172,23 +172,23 @@ for i in range(12):
 from bisect import bisect_left
 
 from scal3.json_utils import (
-	loadJsonConf,
-	saveJsonConf,
+	loadSingleConfig,
+	saveSingleConfig,
 )
 from scal3.path import confDir, sysConfDir
 
 # Here load user options(jalaliAlg) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadJsonConf(__name__, sysConfPath)
+loadSingleConfig(__name__, sysConfPath)
 
 
 confPath = f"{confDir}/{name}.json"
-loadJsonConf(__name__, confPath)
+loadSingleConfig(__name__, confPath)
 
 
 def save():
 	"""Save user options to file."""
-	saveJsonConf(
+	saveSingleConfig(
 		__name__,
 		confPath,
 		(
