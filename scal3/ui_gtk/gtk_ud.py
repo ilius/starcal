@@ -42,8 +42,8 @@ from gi.overrides.GObject import Object
 from scal3 import locale_man, ui
 from scal3.format_time import compileTmFormat
 from scal3.json_utils import (
-	loadModuleJsonConf,
-	saveModuleJsonConf,
+	loadModuleConfig,
+	saveModuleConfig,
 )
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
@@ -88,12 +88,12 @@ confParams = (
 
 
 def loadConf():
-	loadModuleJsonConf(__name__)
+	loadModuleConfig(__name__)
 	updateFormatsBin()
 
 
 def saveConf():
-	saveModuleJsonConf(__name__)
+	saveModuleConfig(__name__)
 
 
 # ------------------------------------------------------------
