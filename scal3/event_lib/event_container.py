@@ -34,7 +34,7 @@ from scal3.locale_man import tr as _
 # from scal3.interval_utils import
 from scal3.s_object import updateBinaryObjectBasicData
 
-from .events import Event
+from .event_base import Event
 from .icon import iconAbsToRelativelnData, iconRelativeToAbsInObj
 from .objects import HistoryEventObjBinaryModel
 from .register import classes

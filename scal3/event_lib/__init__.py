@@ -94,12 +94,13 @@ from scal3.utils import (
 )
 
 from . import (
+	events,  # noqa: F401
 	state,
 	vcs,  # noqa: F401
 )
 from .accounts import Account, accountsDir
 from .accounts_holder import EventAccountsHolder
-from .events import Event, eventsDir
+from .event_base import Event, eventsDir
 from .groups import EventGroup, LargeScaleGroup, NoteBook, groupsDir
 from .groups_holder import EventGroupsHolder
 from .icon import WithIcon
