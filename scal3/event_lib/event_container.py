@@ -36,7 +36,7 @@ from scal3.s_object import updateBasicDataFromBson
 
 from .events import Event
 from .icon import iconAbsToRelativelnData, iconRelativeToAbsInObj
-from .objects import BsonHistEventObj
+from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
 __all__ = ["EventContainer"]
@@ -59,14 +59,14 @@ class Smallest:
 smallest = Smallest()
 
 
-class EventContainer(BsonHistEventObj):
+class EventContainer(HistoryEventObjBinaryModel):
 	name = ""
 	desc = ""
 	basicParams = (
 		"idList",  # FIXME
 		"uuid",
 	)
-	# BsonHistEventObj.params is empty
+	# HistoryEventObjBinaryModel.params is empty
 	params = (
 		"timeZoneEnable",
 		"timeZone",
@@ -230,17 +230,17 @@ class EventContainer(BsonHistEventObj):
 		return index
 
 	def copyFrom(self, other):
-		BsonHistEventObj.copyFrom(self, other)
+		HistoryEventObjBinaryModel.copyFrom(self, other)
 		self.calType = other.calType
 
 	def getData(self):
-		data = BsonHistEventObj.getData(self)
+		data = HistoryEventObjBinaryModel.getData(self)
 		data["calType"] = calTypes.names[self.calType]
 		iconAbsToRelativelnData(data)
 		return data
 
 	def setData(self, data) -> None:
-		BsonHistEventObj.setData(self, data)
+		HistoryEventObjBinaryModel.setData(self, data)
 		if "calType" in data:
 			calType = data["calType"]
 			try:

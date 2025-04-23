@@ -50,9 +50,9 @@ from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.s_object import (
-	BsonHistObj,
 	FileSystem,
 	SObj,
+	SObjBinaryModel,
 )
 from scal3.time_utils import (
 	durationDecode,
@@ -68,7 +68,7 @@ from .icon import (
 	iconAbsToRelativelnData,
 	iconRelativeToAbsInObj,
 )
-from .objects import BsonHistEventObj
+from .objects import HistoryEventObjBinaryModel
 from .register import classes
 from .rule_container import RuleContainer
 
@@ -82,7 +82,7 @@ icsMinStartYear = 1970
 
 # Should not be registered, or instantiate directly
 @classes.event.setMain
-class Event(BsonHistEventObj, RuleContainer, WithIcon):
+class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	name = "custom"  # or "event" or "" FIXME
 	desc = _("Custom Event")
 	iconName = ""
@@ -154,7 +154,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		return path
 
 	def getRevision(self, revHash):
-		return BsonHistObj.getRevision(self, revHash, self.id)
+		return SObjBinaryModel.getRevision(self, revHash, self.id)
 
 	def __bool__(self):
 		return bool(self.rulesOd)  # FIXME
@@ -344,10 +344,10 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		if self.id is None:
 			self.setId()
 		# self.fs.makeDir(self.dir)
-		BsonHistEventObj.save(self)
+		HistoryEventObjBinaryModel.save(self)
 
 	def copyFrom(self, other, exact=False):
-		BsonHistEventObj.copyFrom(self, other)
+		HistoryEventObjBinaryModel.copyFrom(self, other)
 		self.calType = other.calType
 		self.notifyBefore = other.notifyBefore[:]
 		# self.files = other.files[:]
@@ -365,7 +365,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 					self.setJd(jd)
 
 	def getData(self):
-		data = BsonHistEventObj.getData(self)
+		data = HistoryEventObjBinaryModel.getData(self)
 		data.update(
 			{
 				"type": self.name,
@@ -379,7 +379,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		return data
 
 	def setData(self, data) -> None:
-		BsonHistEventObj.setData(self, data)
+		HistoryEventObjBinaryModel.setData(self, data)
 		if self.remoteIds:
 			self.remoteIds = tuple(self.remoteIds)
 		if "id" in data:

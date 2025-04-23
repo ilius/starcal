@@ -36,18 +36,18 @@ from scal3.s_object import (
 )
 
 from .accounts import Account, DummyAccount, accountsDir
-from .holders import JsonObjectsHolder
+from .holders import ObjectsHolderTextModel
 from .register import classes
 
 __all__ = ["EventAccountsHolder"]
 
 
-class EventAccountsHolder(JsonObjectsHolder):
+class EventAccountsHolder(ObjectsHolderTextModel):
 	file = join("event", "account_list.json")
 	childName = "account"
 
 	def __init__(self, _id: int | None = None) -> None:
-		JsonObjectsHolder.__init__(self)
+		ObjectsHolderTextModel.__init__(self)
 		self.id = None
 		self.parent = None
 		self.idByUuid = {}

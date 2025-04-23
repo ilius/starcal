@@ -23,22 +23,22 @@ log = logger.get()
 
 from scal3.event_lib import state
 from scal3.s_object import (
-	BsonHistObj,
-	JsonSObj,
+	SObjBinaryModel,
+	SObjTextModel,
 )
 
-__all__ = ["BsonHistEventObj", "JsonEventObj"]
+__all__ = ["EventObjTextModel", "HistoryEventObjBinaryModel"]
 
 
-class JsonEventObj(JsonSObj):
+class EventObjTextModel(SObjTextModel):
 	def save(self) -> None:
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return
-		JsonSObj.save(self)
+		SObjTextModel.save(self)
 
 
-class BsonHistEventObj(BsonHistObj):
+class HistoryEventObjBinaryModel(SObjBinaryModel):
 	def set_uuid(self) -> None:
 		from uuid import uuid4
 
@@ -50,4 +50,4 @@ class BsonHistEventObj(BsonHistObj):
 			return
 		if hasattr(self, "uuid") and self.uuid is None:
 			self.set_uuid()
-		return BsonHistObj.save(self, *args)
+		return SObjBinaryModel.save(self, *args)

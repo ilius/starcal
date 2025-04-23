@@ -34,7 +34,7 @@ from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.path import APP_NAME, plugDir
-from scal3.s_object import JsonSObj, SObj
+from scal3.s_object import SObj, SObjTextModel
 from scal3.time_utils import getJdListFromEpochRange
 
 try:
@@ -119,7 +119,7 @@ class BasePlugin(SObj):
 		self.lastDayMerge = True
 
 	def getData(self):
-		data = JsonSObj.getData(self)
+		data = SObjTextModel.getData(self)
 		data["calType"] = calTypes.names[self.calType]
 		return data
 
@@ -155,7 +155,7 @@ class BasePlugin(SObj):
 				self.calType = None
 			del data["calType"]
 		# -----
-		JsonSObj.setData(self, data)
+		SObjTextModel.setData(self, data)
 
 	def clear(self):
 		pass
@@ -217,7 +217,7 @@ class BasePlugin(SObj):
 			_file.write(icsText)
 
 
-class BaseJsonPlugin(BasePlugin, JsonSObj):
+class BaseJsonPlugin(BasePlugin, SObjTextModel):
 	def save(self):  # json file self.file is read-only
 		pass
 
