@@ -32,7 +32,7 @@ from scal3.json_utils import jsonToData
 from scal3.locale_man import tr as _
 
 # from scal3.interval_utils import
-from scal3.s_object import updateBasicDataFromBson
+from scal3.s_object import updateBinaryObjectBasicData
 
 from .events import Event
 from .icon import iconAbsToRelativelnData, iconRelativeToAbsInObj
@@ -156,7 +156,7 @@ class EventContainer(HistoryEventObjBinaryModel):
 		with self.fs.open(eventFile) as fp:
 			data = jsonToData(fp.read())
 		data["id"] = eid  # FIXME
-		lastEpoch, lastHash = updateBasicDataFromBson(
+		lastEpoch, lastHash = updateBinaryObjectBasicData(
 			data,
 			eventFile,
 			"event",
