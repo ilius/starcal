@@ -26,7 +26,7 @@ from time import perf_counter
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.json_utils import loadSingleConfig, saveSingleConfig
+from scal3.config_utils import loadSingleConfig, saveSingleConfig
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import (

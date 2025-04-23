@@ -40,11 +40,11 @@ if typing.TYPE_CHECKING:
 from gi.overrides.GObject import Object
 
 from scal3 import locale_man, ui
-from scal3.format_time import compileTmFormat
-from scal3.json_utils import (
+from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )
+from scal3.format_time import compileTmFormat
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import (

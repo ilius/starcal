@@ -17,6 +17,8 @@
 
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
+import json
+
 from scal3 import logger
 
 __all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
@@ -98,12 +100,8 @@ from collections import OrderedDict
 from math import ceil, floor
 from os.path import isfile, join
 
-from scal3.json_utils import (
-	dataToPrettyJson,
-	jsonToData,
-	loadSingleConfig,
-	saveSingleConfig,
-)
+from scal3.config_utils import loadSingleConfig, saveSingleConfig
+from scal3.json_utils import dataToPrettyJson
 from scal3.path import confDir, modDir, sysConfDir
 
 monthDbExpiredIgnoreFile = join(confDir, "hijri-expired-ignore")
@@ -177,12 +175,12 @@ class MonthDbHolder:
 
 	def load(self):
 		with open(self.sysDbPath, encoding="utf-8") as fp:
-			data = jsonToData(fp.read())
+			data = json.loads(fp.read())
 		self.origVersion = data["version"]
 		# --
 		if isfile(self.userDbPath):
 			with open(self.userDbPath, encoding="utf-8") as fp:
-				userData = jsonToData(fp.read())
+				userData = json.loads(fp.read())
 			if userData["origVersion"] >= self.origVersion:
 				data = userData
 			else:
