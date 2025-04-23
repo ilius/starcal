@@ -37,7 +37,7 @@ from scal3.time_utils import (
 from .occur import IntervalOccurSet, JdOccurSet, TimeListOccurSet
 
 if TYPE_CHECKING:
-	from .events import Event
+	from .event_base import Event
 	from .groups import EventGroup
 
 __all__ = ["getDayOccurrenceData", "getWeekOccurrenceData"]
