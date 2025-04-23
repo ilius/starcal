@@ -23,11 +23,11 @@ from scal3.json_utils import (
 )
 
 __all__ = [
-	"BsonHistObj",
 	"DefaultFileSystem",
 	"FileSystem",
-	"JsonSObj",
 	"SObj",
+	"SObjBinaryModel",
+	"SObjTextModel",
 	"iterObjectFiles",
 	"loadBsonObject",
 	"makeOrderedData",
@@ -205,7 +205,7 @@ def getSortedDict(data):
 	return OrderedDict(sorted(data.items()))
 
 
-class JsonSObj(SObj):
+class SObjTextModel(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
@@ -351,7 +351,7 @@ def updateBasicDataFromBson(
 	return (lastEpoch, lastHash)
 
 
-class BsonHistObj(SObj):
+class SObjBinaryModel(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
