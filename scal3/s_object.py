@@ -4,6 +4,7 @@ from scal3 import logger
 
 log = logger.get()
 
+import json
 import os
 import os.path
 import sys
@@ -17,10 +18,7 @@ from scal3.path import sourceDir
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
 import bson
 
-from scal3.json_utils import (
-	dataToPrettyJson,
-	jsonToData,
-)
+from scal3.json_utils import dataToPrettyJson
 
 __all__ = [
 	"DefaultFileSystem",
@@ -224,7 +222,7 @@ class SObjTextModel(SObj):
 			try:
 				with fs.open(fpath) as fp:
 					jsonStr = fp.read()
-				data = jsonToData(jsonStr)
+				data = json.loads(jsonStr)
 			except Exception:
 				if not cls.skipLoadExceptions:
 					raise
@@ -372,7 +370,7 @@ class SObjBinaryModel(SObj):
 		try:
 			with fs.open(file) as fp:
 				jsonStr = fp.read()
-			data = jsonToData(jsonStr)
+			data = json.loads(jsonStr)
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
 				raise FileNotFoundError(f"{file} : file not found") from None
@@ -410,7 +408,7 @@ class SObjBinaryModel(SObj):
 			return {}
 		with self.fs.open(self.file) as fp:
 			jsonStr = fp.read()
-		return jsonToData(jsonStr)
+		return json.loads(jsonStr)
 
 	def loadHistory(self):
 		lastBasicData = self.loadBasicData()

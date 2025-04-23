@@ -29,14 +29,14 @@ from typing import Any
 
 from scal3 import core, event_lib, locale_man
 from scal3.cal_types import calTypes
+from scal3.config_utils import (
+	loadSingleConfig,
+	saveSingleConfig,
+)
 from scal3.event_notification_thread import EventNotificationManager
 from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.font import Font
-from scal3.json_utils import (
-	loadSingleConfig,
-	saveSingleConfig,
-)
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.ui.funcs import checkEnabledNamesItems
