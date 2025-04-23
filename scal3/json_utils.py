@@ -18,10 +18,10 @@ __all__ = [
 	"dataToPrettyJson",
 	"jsonToData",
 	"jsonToOrderedData",
-	"loadJsonConf",
-	"loadModuleJsonConf",
-	"saveJsonConf",
-	"saveModuleJsonConf",
+	"loadModuleConfig",
+	"loadSingleConfig",
+	"saveModuleConfig",
+	"saveSingleConfig",
 ]
 
 
@@ -74,7 +74,7 @@ def jsonToOrderedData(text: str) -> dict:
 # -------------------------------
 
 
-def loadJsonConf(
+def loadSingleConfig(
 	module,
 	confPath: str,
 	decoders: dict | None = None,
@@ -106,7 +106,7 @@ def loadJsonConf(
 		setattr(module, param, value)
 
 
-def saveJsonConf(
+def saveSingleConfig(
 	module,
 	confPath: str,
 	params: Iterable[str],
@@ -131,7 +131,7 @@ def saveJsonConf(
 		return
 
 
-def loadModuleJsonConf(module):
+def loadModuleConfig(module):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
@@ -142,13 +142,13 @@ def loadModuleJsonConf(module):
 	except AttributeError:
 		pass
 	else:
-		loadJsonConf(
+		loadSingleConfig(
 			module,
 			sysConfPath,
 			decoders,
 		)
 	# ----
-	loadJsonConf(
+	loadSingleConfig(
 		module,
 		module.confPath,
 		decoders,
@@ -156,11 +156,11 @@ def loadModuleJsonConf(module):
 	# FIXME: should use module.confParams to restrict json keys?
 
 
-def saveModuleJsonConf(module):
+def saveModuleConfig(module):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
-	saveJsonConf(
+	saveSingleConfig(
 		module,
 		module.confPath,
 		module.confParams,

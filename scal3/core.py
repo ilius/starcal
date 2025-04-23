@@ -37,8 +37,8 @@ from scal3.date_utils import (
 from scal3.json_utils import (
 	dataToCompactJson,
 	dataToPrettyJson,
-	loadModuleJsonConf,
-	saveModuleJsonConf,
+	loadModuleConfig,
+	saveModuleConfig,
 )
 from scal3.locale_man import tr as _
 from scal3.path import (
@@ -157,7 +157,7 @@ confEncoders = {
 def loadConf() -> None:
 	global version, prefVersion, activeCalTypes, inactiveCalTypes  # noqa: PLW0602
 	# -----------
-	loadModuleJsonConf(__name__)
+	loadModuleConfig(__name__)
 	# -----------
 	if "version" in globals():
 		prefVersion = version
@@ -181,7 +181,7 @@ def saveConf() -> None:
 		calTypes.activeNames,
 		calTypes.inactiveNames,
 	)
-	saveModuleJsonConf(__name__)
+	saveModuleConfig(__name__)
 	activeCalTypes = inactiveCalTypes = None
 
 
