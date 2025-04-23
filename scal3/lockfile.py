@@ -5,6 +5,7 @@ from scal3 import logger
 log = logger.get()
 
 import atexit
+import json
 import os
 from collections import OrderedDict
 from os.path import exists, isfile
@@ -12,7 +13,7 @@ from time import time as now
 
 import psutil
 
-from scal3.json_utils import dataToPrettyJson, jsonToData
+from scal3.json_utils import dataToPrettyJson
 
 __all__ = ["checkAndSaveJsonLockFile"]
 
@@ -37,7 +38,7 @@ def checkAndSaveJsonLockFile(fpath):
 			locked = True
 		else:
 			try:
-				data = jsonToData(text)
+				data = json.loads(text)
 			except Exception:
 				log.info(f"lock file {fpath} is not valid")
 			else:
