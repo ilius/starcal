@@ -34,11 +34,11 @@ from typing import Any
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
-from scal3.event_lib import state as event_state
-from scal3.json_utils import (
+from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )
+from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import (

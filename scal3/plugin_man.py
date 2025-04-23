@@ -20,6 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
+import json
 from os.path import isabs, isfile, join, split, splitext
 from time import localtime, strftime
 
@@ -30,7 +31,6 @@ from scal3.cal_types import (
 	jd_to,
 )
 from scal3.ics import getEpochByIcsTime, getIcsDateByJd, icsHeader, icsTmFormat
-from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.path import APP_NAME, plugDir
@@ -773,7 +773,7 @@ def loadPlugin(_file=None, **kwargs):
 		)
 		return
 	try:
-		data = jsonToData(text)
+		data = json.loads(text)
 	except Exception:
 		log.error(f'invalid json file "{file}"')
 		log.exception("")

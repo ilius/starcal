@@ -171,7 +171,7 @@ for i in range(12):
 
 from bisect import bisect_left
 
-from scal3.json_utils import (
+from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
 )
