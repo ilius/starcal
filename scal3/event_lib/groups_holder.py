@@ -42,7 +42,7 @@ from scal3.s_object import (
 	loadBinaryObject,
 )
 
-from .events import eventsDir
+from .event_base import eventsDir
 from .groups import EventGroup, groupsDir
 from .groups_import import (
 	IMPORT_MODE_SKIP_MODIFIED,
