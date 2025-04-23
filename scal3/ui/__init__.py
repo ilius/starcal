@@ -34,8 +34,8 @@ from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.font import Font
 from scal3.json_utils import (
-	loadJsonConf,
-	saveJsonConf,
+	loadSingleConfig,
+	saveSingleConfig,
 )
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
@@ -128,22 +128,22 @@ confEncoders = {
 def loadConf() -> None:
 	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
 		return
-	loadJsonConf(
+	loadSingleConfig(
 		conf,
 		sysConfPath,
 		decoders=confDecoders,
 	)
-	loadJsonConf(
+	loadSingleConfig(
 		conf,
 		confPath,
 		decoders=confDecoders,
 	)
-	loadJsonConf(
+	loadSingleConfig(
 		conf,
 		confPathCustomize,
 		decoders=confDecoders,
 	)
-	loadJsonConf(
+	loadSingleConfig(
 		conf,
 		confPathLive,
 		decoders=confDecoders,
@@ -161,7 +161,7 @@ def loadConf() -> None:
 
 
 def saveConf() -> None:
-	saveJsonConf(
+	saveSingleConfig(
 		conf,
 		confPath,
 		confParams,
@@ -170,7 +170,7 @@ def saveConf() -> None:
 
 
 def saveConfCustomize() -> None:
-	saveJsonConf(
+	saveSingleConfig(
 		conf,
 		confPathCustomize,
 		confParamsCustomize,
@@ -180,7 +180,7 @@ def saveConfCustomize() -> None:
 
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 	log.debug(f"saveLiveConf: {conf.winX=}, {conf.winY=}, {conf.winWidth=}")
-	saveJsonConf(
+	saveSingleConfig(
 		conf,
 		confPathLive,
 		confParamsLive,
