@@ -16,8 +16,8 @@
 from os.path import join
 
 from scal3.json_utils import (
-	loadModuleJsonConf,
-	saveModuleJsonConf,
+	loadModuleConfig,
+	saveModuleConfig,
 )
 from scal3.path import confDir, sysConfDir
 from scal3.ui import conf
@@ -130,11 +130,11 @@ confParams = (
 
 
 def loadConf() -> None:
-	loadModuleJsonConf(__name__)
+	loadModuleConfig(__name__)
 
 
 def saveConf() -> None:
-	saveModuleJsonConf(__name__)
+	saveModuleConfig(__name__)
 
 
 # ---------------------------------------------

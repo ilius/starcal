@@ -41,8 +41,8 @@ import mytz
 from scal3.cal_types import calTypes
 from scal3.json_utils import (
 	jsonToData,
-	loadModuleJsonConf,
-	saveModuleJsonConf,
+	loadModuleConfig,
+	saveModuleConfig,
 )
 from scal3.path import (
 	APP_NAME,
@@ -101,11 +101,11 @@ confParams = (
 
 
 def loadConf() -> None:
-	loadModuleJsonConf(__name__)
+	loadModuleConfig(__name__)
 
 
 def saveConf() -> None:
-	saveModuleJsonConf(__name__)
+	saveModuleConfig(__name__)
 
 
 # ----------------------------------------------------------
