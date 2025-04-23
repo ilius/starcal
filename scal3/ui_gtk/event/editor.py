@@ -1,4 +1,5 @@
 from scal3 import event_lib, locale_man, ui
+from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -152,7 +153,7 @@ class EventEditorDialog(gtk.Dialog):
 			group.add(event)
 			group.save()
 		event.afterAddedToGroup()
-		event_lib.lastIds.save()
+		event_state.lastIds.save()
 		ui.eventNotif.checkEvent(group, event)
 
 		self.destroy()
