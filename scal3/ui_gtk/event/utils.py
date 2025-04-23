@@ -1,4 +1,5 @@
-from scal3 import event_lib, ui
+from scal3 import ui
+from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf
@@ -51,7 +52,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 
 
 def checkEventsReadOnly(doException=True):
-	if event_lib.allReadOnly:
+	if event_state.allReadOnly:
 		error = (
 			"Events are Read-Only because they are locked by "
 			"another StarCalendar 3.x process"
@@ -65,13 +66,13 @@ def checkEventsReadOnly(doException=True):
 
 def eventWriteMenuItem(*args, sensitive=True, **kwargs):
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(sensitive and not event_lib.allReadOnly)
+	item.set_sensitive(sensitive and not event_state.allReadOnly)
 	return item
 
 
 def eventWriteImageMenuItem(*args, **kwargs):
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(not event_lib.allReadOnly)
+	item.set_sensitive(not event_state.allReadOnly)
 	return item
 
 
