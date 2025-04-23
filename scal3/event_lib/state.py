@@ -27,12 +27,12 @@ from time import time as now
 
 from scal3 import core
 
-from .objects import JsonEventObj
+from .objects import EventObjTextModel
 
 __all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
 
 
-class InfoWrapper(JsonEventObj):
+class InfoWrapper(EventObjTextModel):
 	file = join("event", "info.json")
 	skipLoadNoFile = True
 	params = (
@@ -57,7 +57,7 @@ class InfoWrapper(JsonEventObj):
 		self.save()
 
 
-class LastIdsWrapper(JsonEventObj):
+class LastIdsWrapper(EventObjTextModel):
 	skipLoadNoFile = True
 	file = join("event", "last_ids.json")
 	params = (

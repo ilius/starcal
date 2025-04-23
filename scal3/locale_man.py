@@ -50,7 +50,7 @@ from scal3.path import (
 	pixDir,
 	sourceDir,
 )
-from scal3.s_object import JsonSObj
+from scal3.s_object import SObjTextModel
 from scal3.utils import StrOrderedDict, toStr
 
 __all__ = [
@@ -177,7 +177,7 @@ def tr(s: str | int, *a, **ka) -> str:
 	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
 
-class LangData(JsonSObj):
+class LangData(SObjTextModel):
 	params = (
 		"code",
 		"name",
@@ -204,7 +204,7 @@ class LangData(JsonSObj):
 		self.timeZoneList: list[str] = []
 
 	def setData(self, data: dict):
-		JsonSObj.setData(self, data)
+		SObjTextModel.setData(self, data)
 		# -----
 		for param in (
 			"code",
