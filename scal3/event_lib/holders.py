@@ -27,13 +27,13 @@ if TYPE_CHECKING:
 	from typing import Any
 
 
-from .objects import JsonEventObj
+from .objects import EventObjTextModel
 from .register import classes
 
-__all__ = ["JsonObjectsHolder"]
+__all__ = ["ObjectsHolderTextModel"]
 
 
-class JsonObjectsHolder(JsonEventObj):
+class ObjectsHolderTextModel(EventObjTextModel):
 	# keeps all objects in memory
 	# Only use to keep groups and accounts, but not events
 	skipLoadNoFile = True
