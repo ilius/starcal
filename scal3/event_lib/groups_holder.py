@@ -47,18 +47,18 @@ from .groups_import import (
 	IMPORT_MODE_SKIP_MODIFIED,
 	EventGroupsImportResult,
 )
-from .holders import JsonObjectsHolder
+from .holders import ObjectsHolderTextModel
 from .register import classes
 
 __all__ = ["EventGroupsHolder"]
 
 
-class EventGroupsHolder(JsonObjectsHolder):
+class EventGroupsHolder(ObjectsHolderTextModel):
 	file = join("event", "group_list.json")
 	childName = "group"
 
 	def __init__(self, _id: int | None = None) -> None:
-		JsonObjectsHolder.__init__(self)
+		ObjectsHolderTextModel.__init__(self)
 		self.id = None
 		self.parent = None
 		self.idByUuid = {}
@@ -71,12 +71,12 @@ class EventGroupsHolder(JsonObjectsHolder):
 	def delete(self, obj: EventGroup) -> None:
 		assert not obj.idList  # FIXME
 		obj.parent = None
-		JsonObjectsHolder.delete(self, obj)
+		ObjectsHolderTextModel.delete(self, obj)
 
 	def setData(self, data: list[Any]) -> None:
 		self.clear()
 		if data:
-			JsonObjectsHolder.setData(self, data)
+			ObjectsHolderTextModel.setData(self, data)
 			for group in self:
 				if group.uuid is None:
 					group.save()

@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING
 from scal3.event_lib import state
 from scal3.locale_man import tr as _
 
-from .objects import BsonHistEventObj
+from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
 if TYPE_CHECKING:
@@ -68,7 +68,7 @@ class DummyAccount:
 
 # Should not be registered, or instantiate directly
 @classes.account.setMain
-class Account(BsonHistEventObj):
+class Account(HistoryEventObjBinaryModel):
 	loaded = True
 	name = ""
 	desc = ""
@@ -125,7 +125,7 @@ class Account(BsonHistEventObj):
 	def save(self):
 		if self.id is None:
 			self.setId()
-		BsonHistEventObj.save(self)
+		HistoryEventObjBinaryModel.save(self)
 
 	def setId(self, id_=None):
 		if id_ is None or id_ < 0:
@@ -149,6 +149,6 @@ class Account(BsonHistEventObj):
 		raise NotImplementedError
 
 	def getData(self):
-		data = BsonHistEventObj.getData(self)
+		data = HistoryEventObjBinaryModel.getData(self)
 		data["type"] = self.name
 		return data
