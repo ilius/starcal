@@ -52,6 +52,7 @@ from gi.repository import Gio as gio
 from scal3 import cal_types, core, event_lib, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.color_utils import rgbToHtmlColor
+from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl  # import scal3.locale_man after core
 
 # _ = locale_man.loadTranslator()  # FIXME
@@ -227,7 +228,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		appId = "apps.starcal"
 		# if this application_id is already running, Gtk will crash
 		# with Segmentation fault
-		if event_lib.allReadOnly:
+		if event_state.allReadOnly:
 			appId += "2"
 		self.app = gtk.Application(application_id=appId)
 		self.app.register(gio.Cancellable.new())
@@ -718,7 +719,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
-		if event_lib.allReadOnly:
+		if event_state.allReadOnly:
 			return None
 		menu2 = Menu()
 		# --
@@ -796,7 +797,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return s
 
 	def addEditEventCellMenuItems(self, menu):
-		if event_lib.allReadOnly:
+		if event_state.allReadOnly:
 			return
 		eventsData = ui.cells.current.getEventsData()
 		if not eventsData:
@@ -1744,7 +1745,7 @@ def main():
 	# -------------------------------
 	checkEventsReadOnly(False)
 	# FIXME: right place?
-	event_lib.info.updateAndSave()
+	event_state.info.updateAndSave()
 	# -------------------------------
 	mainWin = MainWin(statusIconMode=statusIconMode)
 	if os.getenv("STARCAL_FULL_IMPORT"):

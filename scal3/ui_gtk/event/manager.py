@@ -34,6 +34,7 @@ from typing import Any
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
+from scal3.event_lib import state as event_state
 from scal3.json_utils import (
 	loadModuleJsonConf,
 	saveModuleJsonConf,
@@ -302,7 +303,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		menubar.append(fileItem)
 		# --
 		addGroupItem = MenuItem(_("Add New Group"))
-		addGroupItem.set_sensitive(not lib.allReadOnly)
+		addGroupItem.set_sensitive(not event_state.allReadOnly)
 		addGroupItem.connect("activate", self.addGroupBeforeSelection)
 		# FIXME: or before selected group?
 		fileMenu.append(addGroupItem)
@@ -317,17 +318,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		fileMenu.append(exportItem)
 		# --
 		importItem = MenuItem(_("_Import", ctx="menu"))
-		importItem.set_sensitive(not lib.allReadOnly)
+		importItem.set_sensitive(not event_state.allReadOnly)
 		importItem.connect("activate", self.onMenuBarImportClick)
 		fileMenu.append(importItem)
 		# --
 		orphanItem = MenuItem(_("Check for Orphan Events"))
-		orphanItem.set_sensitive(not lib.allReadOnly)
+		orphanItem.set_sensitive(not event_state.allReadOnly)
 		orphanItem.connect("activate", self.onMenuBarOrphanClick)
 		fileMenu.append(orphanItem)
 		# ----
 		editItem = self.editItem = MenuItem(_("_Edit"))
-		if lib.allReadOnly:
+		if event_state.allReadOnly:
 			editItem.set_sensitive(False)
 		else:
 			editMenu = Menu()

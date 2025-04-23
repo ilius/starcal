@@ -23,6 +23,7 @@ log = logger.get()
 from typing import Any
 
 from scal3 import core, event_lib, ui
+from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import GdkPixbuf, Menu, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
@@ -465,7 +466,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		)
 
 	def addEventMenuItems(self, menu, occurData: dict[str, Any]):
-		if event_lib.allReadOnly:
+		if event_state.allReadOnly:
 			return
 		# ----
 		groupId, eventId = occurData.ids
