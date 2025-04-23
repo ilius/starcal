@@ -25,10 +25,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from typing import Any
 
+import json
 from time import time as now
 
 from scal3.cal_types import calTypes
-from scal3.json_utils import jsonToData
 from scal3.locale_man import tr as _
 
 # from scal3.interval_utils import
@@ -154,7 +154,7 @@ class EventContainer(HistoryEventObjBinaryModel):
 				f"file not found. {eid=}, container={self!r}",
 			)
 		with self.fs.open(eventFile) as fp:
-			data = jsonToData(fp.read())
+			data = json.loads(fp.read())
 		data["id"] = eid  # FIXME
 		lastEpoch, lastHash = updateBinaryObjectBasicData(
 			data,
