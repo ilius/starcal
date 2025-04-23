@@ -38,7 +38,7 @@ from scal3.locale_man import tr as _
 # from scal3.interval_utils import
 from scal3.s_object import (
 	iterObjectFiles,
-	loadBsonObject,
+	loadBinaryObject,
 )
 
 from .events import eventsDir
@@ -278,7 +278,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 		for _hash, _fpath in iterObjectFiles(fs):
 			if _hash in eventHashSet:
 				continue
-			data = loadBsonObject(_hash, fs)
+			data = loadBinaryObject(_hash, fs)
 			if data.get("type") not in eventTypeSet:
 				continue
 			# newEventHashList.append(_hash)

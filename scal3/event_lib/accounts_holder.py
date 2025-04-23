@@ -32,7 +32,7 @@ from scal3.json_utils import jsonToData
 
 # from scal3.interval_utils import
 from scal3.s_object import (
-	updateBasicDataFromBson,
+	updateBinaryObjectBasicData,
 )
 
 from .accounts import Account, DummyAccount, accountsDir
@@ -80,7 +80,7 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 			# FIXME: or raise FileNotFoundError?
 		with self.fs.open(objFile) as fp:
 			data = jsonToData(fp.read())
-		updateBasicDataFromBson(data, objFile, "account", self.fs)
+		updateBinaryObjectBasicData(data, objFile, "account", self.fs)
 		# if data["id"] != _id:
 		# 	log.error(
 		# 		"attribute 'id' in json file " +
