@@ -83,18 +83,14 @@ from .occur import (
 )
 from .register import classes
 
-__all__ = ["EventGroup", "LargeScaleGroup", "NoteBook", "groupsDir"]
+__all__ = [
+	"EventGroup",
+	"LargeScaleGroup",
+	"NoteBook",
+	"groupsDir",
+]
+
 groupsDir = join("event", "groups")
-
-
-# FIXME move this o Event class
-def getEventUID(event: Event) -> str:
-	import socket
-
-	event_st = core.compressLongInt(hash(str(event.getData())))
-	time_st = core.getCompactTime()
-	host = socket.gethostname()
-	return event_st + "_" + time_st + "@" + host
 
 
 @classes.group.register
@@ -668,7 +664,7 @@ class EventGroup(EventContainer):
 					"LOCATION:",
 					"SEQUENCE:0",
 					"STATUS:CONFIRMED",
-					"UID:" + getEventUID(event),
+					"UID:" + event.icsUID(),
 				],
 			)
 			+ "\n"
