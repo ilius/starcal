@@ -166,14 +166,17 @@ class EventGroup(EventContainer):
 		# "eventIdByRemoteIds",
 		"deletedRemoteEvents",
 	)
+
+	@staticmethod
+	def _timezoneFilter(event, tz):
+		return event.timeZone == tz if tz else not event.timeZoneEnable
+
 	simpleFilters = {
 		"text": lambda event, text: not text or text in event.getText(),
 		"text_lower": lambda event, text: not text or text in event.getText().lower(),
 		"modified_from": lambda event, epoch: event.modified >= epoch,
 		"type": lambda event, _type: event.name == _type,
-		"timezone": lambda event, timeZone: event.timeZone == timeZone
-		if timeZone
-		else not event.timeZoneEnable,
+		"timezone": _timezoneFilter,
 	}
 
 	@classmethod
