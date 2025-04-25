@@ -23,7 +23,7 @@ from math import pi
 from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
-from scal3.timeline import tl
+from scal3.timeline import conf
 from scal3.ui_gtk.drawing import fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
 
@@ -46,7 +46,7 @@ def drawBoxBG(cr, box, x, y, w, h):
 			box.color[0],
 			box.color[1],
 			box.color[2],
-			int(alpha * tl.boxInnerAlpha),
+			int(alpha * conf.boxInnerAlpha),
 		),
 	)
 	# ---
@@ -67,9 +67,9 @@ def drawBoxBG(cr, box, x, y, w, h):
 
 def drawBoxBorder(cr, box, x, y, w, h):
 	if box.hasBorder:
-		if w > 2 * tl.boxEditBorderWidth and h > tl.boxEditBorderWidth:
-			b = tl.boxEditBorderWidth
-			bd = tl.boxEditInnerLineWidth
+		if w > 2 * conf.boxEditBorderWidth and h > conf.boxEditBorderWidth:
+			b = conf.boxEditBorderWidth
+			bd = conf.boxEditInnerLineWidth
 			# cr.set_line_width(bd)
 			cr.move_to(x + b - bd, y + h)
 			cr.line_to(x + b - bd, y + b - bd)
@@ -117,7 +117,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	textH = 0.95 * h
 	textLen = len(text)
 	# log.debug(f"{textLen=}")
-	avgCharW = (textW if tl.rotateBoxLabel == 0 else max(textW, textH)) / textLen
+	avgCharW = (textW if conf.rotateBoxLabel == 0 else max(textW, textH)) / textLen
 
 	if avgCharW < 3:  # FIXME
 		return
@@ -136,9 +136,9 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		textH / layoutW,
 	)
 
-	fillColor(cr, tl.fgColor)  # before cr.move_to
+	fillColor(cr, conf.fgColor)  # before cr.move_to
 
-	if tl.rotateBoxLabel == 0 or rotateRatio <= normRatio:
+	if conf.rotateBoxLabel == 0 or rotateRatio <= normRatio:
 		font.size *= normRatio
 		layout.set_font_description(pfontEncode(font))
 		layoutW, layoutH = layout.get_pixel_size()
@@ -153,14 +153,14 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
 	cr.move_to(
-		x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
-		y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
+		x + (w - conf.rotateBoxLabel * layoutH) / 2.0,
+		y + (h + conf.rotateBoxLabel * layoutW) / 2.0,
 	)
-	cr.rotate(-tl.rotateBoxLabel * pi / 2)
+	cr.rotate(-conf.rotateBoxLabel * pi / 2)
 	show_layout(cr, layout)
 	try:
-		cr.rotate(tl.rotateBoxLabel * pi / 2)
+		cr.rotate(conf.rotateBoxLabel * pi / 2)
 	except Exception:
 		log.warning(
-			f"could not rotate by {tl.rotateBoxLabel * pi / 2 = }",
+			f"could not rotate by {conf.rotateBoxLabel * pi / 2 = }",
 		)
