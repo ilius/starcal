@@ -1,3 +1,4 @@
+.dmypy.json
 VERSION
 calendar-*.html
 *~
@@ -21,12 +22,6 @@ screenshots
 *.txz
 *.tar.gz
 PKGBUILD
-scal2
-ui_qt
-pixmaps_qt
-starcal2-qt
-starcal2-qt.pyw
-plugins/pray_times_files/pray_times_qt.py
 google-api-python-client
 oauth2client
 .[Tt]rash*
