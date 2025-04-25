@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any, NamedTuple
 
+__all__ = ["NOT_SET", "confParamsData"]
+
 
 class NOT_SET:
 	pass

@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
+import scal3.timeline.tl  # noqa: F401  # just to load the config
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import localTz
@@ -37,7 +38,7 @@ from scal3.time_utils import (
 	getUtcOffsetByEpoch,
 	getUtcOffsetByJd,
 )
-from scal3.timeline import tl
+from scal3.timeline import conf
 from scal3.timeline.funcs import (
 	calcTimeLineData,
 )
@@ -163,8 +164,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.animTimerSource = None
 
 	def updateBasicButtons(self):
-		size = tl.basicButtonsSize
-		space = size + tl.basicButtonsSpacing
+		size = conf.basicButtonsSize
+		space = size + conf.basicButtonsSpacing
 		self.basicButtons = [
 			SVGButton(
 				imageName="go-home.svg",
@@ -175,7 +176,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="left",
 				yalign="buttom",
-				opacity=tl.basicButtonsOpacity,
+				opacity=conf.basicButtonsOpacity,
 			),
 			SVGButton(
 				imageName="zoom-question.svg",
@@ -186,7 +187,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="left",
 				yalign="buttom",
-				opacity=tl.basicButtonsOpacity,
+				opacity=conf.basicButtonsOpacity,
 			),
 			SVGButton(
 				imageName="preferences-system.svg",
@@ -197,7 +198,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="left",
 				yalign="buttom",
-				opacity=tl.basicButtonsOpacity,
+				opacity=conf.basicButtonsOpacity,
 			),
 			SVGButton(
 				imageName="application-exit.svg",
@@ -208,7 +209,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="left",
 				yalign="buttom",
-				opacity=tl.basicButtonsOpacity,
+				opacity=conf.basicButtonsOpacity,
 			),
 			SVGButton(
 				imageName="resize-small.svg",
@@ -220,16 +221,16 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="right",
 				yalign="buttom",
-				opacity=tl.basicButtonsOpacity,
+				opacity=conf.basicButtonsOpacity,
 			),
 		]
 
 	def updateMovementButtons(self):
-		if not tl.movementButtonsEnable:
+		if not conf.movementButtonsEnable:
 			self.movementButtons = []
 			return
 
-		size = tl.movementButtonsSize
+		size = conf.movementButtonsSize
 		self.movementButtons = [
 			SVGButton(
 				imageName="go-previous.svg",
@@ -240,7 +241,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="center",
 				yalign="buttom",
-				opacity=tl.movementButtonsOpacity,
+				opacity=conf.movementButtonsOpacity,
 				onRelease=self.arrowButtonReleased,
 			),
 			SVGButton(
@@ -252,7 +253,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="center",
 				yalign="buttom",
-				opacity=tl.movementButtonsOpacity,
+				opacity=conf.movementButtonsOpacity,
 			),
 			SVGButton(
 				imageName="go-next.svg",
@@ -263,7 +264,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=size,
 				xalign="center",
 				yalign="buttom",
-				opacity=tl.movementButtonsOpacity,
+				opacity=conf.movementButtonsOpacity,
 				onRelease=self.arrowButtonReleased,
 			),
 		]
@@ -272,11 +273,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		return self.basicButtons + self.movementButtons
 
 	def onMoveLeftClick(self, _button: gdk.EventButton):
-		self.startAnimConstantAccel(-1, tl.movingHandForceButton)
+		self.startAnimConstantAccel(-1, conf.movingHandForceButton)
 		# FIXME: what if animation is disabled?
 
 	def onMoveRightClick(self, _button: gdk.EventButton):
-		self.startAnimConstantAccel(1, tl.movingHandForceButton)
+		self.startAnimConstantAccel(1, conf.movingHandForceButton)
 		# FIXME: what if animation is disabled?
 
 	def onMoveStopClick(self, _button: gdk.EventButton):
@@ -361,7 +362,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def updateData(self):
 		width = self.get_allocation().width
 		self.pixelPerSec = width / self.timeWidth  # pixel/second
-		self.borderTm = tl.boxEditBorderWidth / self.pixelPerSec  # second
+		self.borderTm = conf.boxEditBorderWidth / self.pixelPerSec  # second
 		self.data = calcTimeLineData(
 			self.timeStart,
 			self.timeWidth,
@@ -394,14 +395,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			font=font,
 			maxSize=(tick.maxLabelWidth, 0),
 			maximizeScale=1.0,
-			truncate=tl.truncateTickLabel,
+			truncate=conf.truncateTickLabel,
 		)  # FIXME
 		if layout:
 			# layout.set_auto_dir(0)  # FIXME
 			# log.debug(f"{layout.get_auto_dir() = }")
 			layoutW, _layoutH = layout.get_pixel_size()
 			layoutX = tick.pos - layoutW / 2.0
-			layoutY = tickH * tl.labelYRatio
+			layoutY = tickH * conf.labelYRatio
 			cr.move_to(layoutX, layoutY)
 			# cr.move_to never seems to raise exception anymore
 			show_layout(cr, layout)  # with the same tick.color
@@ -420,8 +421,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		if not self.boxEditing:
 			return
 		_editType, _event, box, _x0, _t0 = self.boxEditing
-		setColor(cr, tl.fgColor)
-		d = tl.boxEditHelperLineWidth
+		setColor(cr, conf.fgColor)
+		d = conf.boxEditHelperLineWidth
 		cr.rectangle(
 			box.x,
 			0,
@@ -446,12 +447,12 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		height = self.get_allocation().height
 		pixelPerSec = self.pixelPerSec
 		dayPixel = dayLen * pixelPerSec  # pixel
-		maxTickHeight = tl.maxTickHeightRatio * height
+		maxTickHeight = conf.maxTickHeightRatio * height
 		# -----
 		cr.rectangle(0, 0, width, height)
-		fillColor(cr, tl.bgColor)
+		fillColor(cr, conf.bgColor)
 		# -----
-		setColor(cr, tl.holidayBgBolor)
+		setColor(cr, conf.holidayBgBolor)
 		for x in self.data["holidays"]:
 			cr.rectangle(x, 0, dayPixel, height)
 			cr.fill()
@@ -493,12 +494,12 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# Draw Current Time Marker
 		dt = self.currentTime - timeStart
 		if 0 <= dt <= timeWidth:
-			setColor(cr, tl.currentTimeMarkerColor)
+			setColor(cr, conf.currentTimeMarkerColor)
 			cr.rectangle(
-				dt * pixelPerSec - tl.currentTimeMarkerWidth / 2.0,
+				dt * pixelPerSec - conf.currentTimeMarkerWidth / 2.0,
 				0,
-				tl.currentTimeMarkerWidth,
-				tl.currentTimeMarkerHeightRatio * self.get_allocation().height,
+				conf.currentTimeMarkerWidth,
+				conf.currentTimeMarkerHeightRatio * self.get_allocation().height,
 			)
 			cr.fill()
 		# ------
@@ -556,7 +557,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
 			self.zoom(
 				dirStr == "up",
-				tl.scrollZoomStep,
+				conf.scrollZoomStep,
 				gevent.x / self.get_allocation().width,
 			)
 		else:
@@ -598,7 +599,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				top = y - box.y
 				left = x - box.x
 				right = box.x + box.w - x
-				minA = min(tl.boxEditBorderWidth, top, left, right)
+				minA = min(conf.boxEditBorderWidth, top, left, right)
 				editType = None
 				if top == minA:
 					editType = 0
@@ -686,10 +687,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			if editType == 0:
 				event.modifyPos(t1)
 			elif editType == 1:
-				if t1 - box.t0 > 2 * tl.boxEditBorderWidth / self.pixelPerSec:
+				if t1 - box.t0 > 2 * conf.boxEditBorderWidth / self.pixelPerSec:
 					event.modifyEnd(t1)
 			elif editType == -1:  # noqa: SIM102
-				if box.t1 - t1 > 2 * tl.boxEditBorderWidth / self.pixelPerSec:
+				if box.t1 - t1 > 2 * conf.boxEditBorderWidth / self.pixelPerSec:
 					event.modifyStart(t1)
 			box.t0 = max(
 				event.getStartEpoch(),
@@ -767,7 +768,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.timeWidth *= zoomValue
 
 	def keyboardZoom(self, zoomIn):
-		self.zoom(zoomIn, tl.keyboardZoomStep, 0.5)
+		self.zoom(zoomIn, conf.keyboardZoomStep, 0.5)
 
 	def onKeyMoveToNow(self, _gevent: gdk.EventKey):
 		self.centerToNow()
@@ -801,7 +802,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		k = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(f"{now():.3f}")
-		action = tl.keys.get(k)
+		action = conf.keys.get(k)
 		if action:
 			func = self.keysActionDict.get(action)
 			if func is not None:
@@ -826,7 +827,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):
 		"""Source in ("keyboard", "scroll", "button")."""
-		if tl.enableAnimation:
+		if conf.enableAnimation:
 			tm = perf_counter()
 			# dtEvent = tm - self.movingLastPress
 			self.movingLastPress = tm
@@ -838,23 +839,23 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			"""
 			if (
 				self.movingF * direction < 0 or self.movingF * self.movingV == 0
-				# or dtEvent > tl.movingKeyTimeout
+				# or dtEvent > conf.movingKeyTimeout
 			):
 				if source == "scroll":
-					force = tl.movingHandForceMouse
+					force = conf.movingHandForceMouse
 					if smallForce:
-						force = (force + tl.movingFrictionForce) / 2.0
+						force = (force + conf.movingFrictionForce) / 2.0
 				elif source == "keyboard":
 					if smallForce:
-						force = tl.movingHandForceKeyboardSmall
+						force = conf.movingHandForceKeyboardSmall
 					else:
-						force = tl.movingHandForceKeyboard
+						force = conf.movingHandForceKeyboard
 				elif source == "button":
-					force = tl.movingHandForceButton
+					force = conf.movingHandForceButton
 				else:
 					raise ValueError(f"invalid {source=}")
 				self.movingF = direction * force
-				self.movingV += tl.movingInitialVelocity * direction
+				self.movingV += conf.movingInitialVelocity * direction
 				self.stopAnimTimers()
 				self.updateMovingAnim(
 					self.movingF,
@@ -867,9 +868,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.timeStart += (
 				direction
 				* (
-					tl.movingStaticStepMouse
+					conf.movingStaticStepMouse
 					if source == "mouse"
-					else tl.movingStaticStepKeyboard
+					else conf.movingStaticStepKeyboard
 				)
 				* self.timeWidth
 				/ self.get_allocation().width
@@ -889,14 +890,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.stopAnimTimers()
 		self.movingF = direction * force
 		if self.movingV == 0:
-			self.movingV = tl.movingInitialVelocity * direction
+			self.movingV = conf.movingInitialVelocity * direction
 		tm = perf_counter()
 		self.updateMovingAnim(
 			self.movingF,  # f1
 			tm,  # t0
 			tm,  # t1
 			self.movingV,  # v0
-			force - tl.movingFrictionForce,  # a1
+			force - conf.movingFrictionForce,  # a1
 			holdForce=True,
 		)
 
@@ -919,18 +920,18 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		if f == v1 == 0:
 			return
 		timeout = (
-			tl.movingKeyTimeoutFirst
-			if t2 - t0 < tl.movingKeyTimeoutFirst
-			else tl.movingKeyTimeout
+			conf.movingKeyTimeoutFirst
+			if t2 - t0 < conf.movingKeyTimeoutFirst
+			else conf.movingKeyTimeout
 		)
 		if not holdForce and f != 0 and t2 - self.movingLastPress >= timeout:
 			# Stopping
 			# log.debug("Stopping force")
 			f = self.movingF = 0
 		if v1 > 0:
-			a2 = f - tl.movingFrictionForce
+			a2 = f - conf.movingFrictionForce
 		elif v1 < 0:
-			a2 = f + tl.movingFrictionForce
+			a2 = f + conf.movingFrictionForce
 		else:
 			a2 = f
 		if a2 != a1:
@@ -943,16 +944,16 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				holdForce=holdForce,
 			)
 		v2 = v0 + a2 * (t2 - t0)
-		if v2 > tl.movingMaxVelocity:
-			v2 = tl.movingMaxVelocity
-		elif v2 < -tl.movingMaxVelocity:
-			v2 = -tl.movingMaxVelocity
+		if v2 > conf.movingMaxVelocity:
+			v2 = conf.movingMaxVelocity
+		elif v2 < -conf.movingMaxVelocity:
+			v2 = -conf.movingMaxVelocity
 		if f == 0 and v1 * v2 <= 0:
 			# log.debug("Stopping movement: f == 0 and v1 * v2 <= 0")
 			self.movingV = 0
 			return
 		source_id = timeout_add(
-			tl.movingUpdateTime,
+			conf.movingUpdateTime,
 			self.updateMovingAnim,
 			f,
 			t0,

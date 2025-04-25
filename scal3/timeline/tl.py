@@ -17,115 +17,21 @@ import os
 from os.path import join
 
 from scal3.config_utils import (
-	loadModuleConfig,
-	saveModuleConfig,
+	loadSingleConfig,
+	saveSingleConfig,
 )
 from scal3.path import confDir, sysConfDir
-from scal3.ui import conf
+from scal3.timeline import conf
+from scal3.timeline.params import confParamsData
+from scal3.ui import conf as uiConf
 
-__all__ = [
-	"baseFontSize",
-	"baseTickHeight",
-	"basicButtonsSize",
-	"basicButtonsSpacing",
-	"boxEditBorderWidth",
-	"boxEditHelperLineWidth",
-	"boxEditInnerLineWidth",
-	"boxLineWidth",
-	"boxReverseGravity",
-	"boxSkipPixelLimit",
-	"changeHolidayBg",
-	"changeHolidayBgMaxDays",
-	"changeHolidayBgMinDays",
-	"enableAnimation",
-	"fgColor",
-	"keys",
-	"labelYRatio",
-	"majorStepMin",
-	"maxTickHeightRatio",
-	"minorStepMin",
-	"movementButtonsEnable",
-	"movementButtonsSize",
-	"movingFrictionForce",
-	"movingHandForceMouse",
-	"movingInitialVelocity",
-	"movingKeyTimeout",
-	"movingKeyTimeoutFirst",
-	"movingMaxVelocity",
-	"rotateBoxLabel",
-	"saveConf",
-	"showWeekStart",
-	"showWeekStartMaxDays",
-	"showWeekStartMinDays",
-]
-
+__all__ = ["saveConf"]
 
 sysConfPath = join(sysConfDir, "timeline.json")
 
 confPath = join(confDir, "timeline.json")
 
-confParams = (
-	"bgColor",
-	"fgColor",
-	"baseFontSize",
-	"changeHolidayBg",
-	"changeHolidayBgMinDays",
-	"changeHolidayBgMaxDays",
-	"holidayBgBolor",
-	# ---------------------
-	"basicButtonsSize",
-	"basicButtonsSpacing",
-	"basicButtonsOpacity",
-	"movementButtonsEnable",
-	"movementButtonsSize",
-	"movementButtonsOpacity",
-	# ---------------------
-	"majorStepMin",
-	"minorStepMin",
-	"maxLabelWidth",
-	"baseTickHeight",
-	"baseTickWidth",
-	"maxTickWidth",
-	"maxTickHeightRatio",
-	"labelYRatio",
-	"yearPrettyPower",
-	"truncateTickLabel",
-	"currentTimeMarkerHeightRatio",
-	"currentTimeMarkerWidth",
-	"currentTimeMarkerColor",
-	"showWeekStart",
-	"showWeekStartMinDays",
-	"showWeekStartMaxDays",
-	"weekStartTickColor",
-	# ---------------------
-	"boxLineWidth",
-	"boxInnerAlpha",
-	"boxEditBorderWidth",
-	"boxEditInnerLineWidth",
-	"boxEditHelperLineWidth",
-	"boxReverseGravity",
-	"boxSkipPixelLimit",
-	"rotateBoxLabel",
-	# ---------------------
-	"enableAnimation",
-	"movingStaticStepKeyboard",
-	"movingStaticStepMouse",
-	"movingUpdateTime",
-	"movingInitialVelocity",
-	"movingHandForceMouse",
-	"movingHandForceKeyboard",
-	"movingHandForceKeyboardSmall",
-	"movingHandForceButton",
-	"movingFrictionForce",
-	"movingMaxVelocity",
-	"movingKeyTimeoutFirst",
-	"movingKeyTimeout",
-	# ---------------------
-	"scrollZoomStep",
-	"keyboardZoomStep",
-	# ---------------------
-	"keys",
-)
+confParams = [p.v3Name for p in confParamsData]
 
 # ---------------------------------------------
 
@@ -133,140 +39,27 @@ confParams = (
 def loadConf() -> None:
 	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
 		return
-	loadModuleConfig(__name__)
+	loadSingleConfig(
+		conf,
+		sysConfPath,
+		# decoders=confDecoders,
+	)
+	loadSingleConfig(
+		conf,
+		confPath,
+		# decoders=confDecoders,
+	)
+	conf.bgColor = conf.bgColor or uiConf.bgColor
+	conf.fgColor = conf.fgColor or uiConf.textColor
 
 
 def saveConf() -> None:
-	saveModuleConfig(__name__)
-
-
-# ---------------------------------------------
-
-
-bgColor = conf.bgColor
-fgColor = conf.textColor
-
-baseFontSize = 8
-
-changeHolidayBg = False
-changeHolidayBgMinDays = 1  # day
-changeHolidayBgMaxDays = 60  # day
-holidayBgBolor = (60, 35, 35)
-
-# ---------------------------------------------
-
-basicButtonsSize = 22
-basicButtonsSpacing = 3
-basicButtonsOpacity = 1.0  # 0.0 <= value <= 1.0
-
-movementButtonsEnable = True
-movementButtonsSize = 22
-movementButtonsOpacity = 1.0  # 0.0 <= value <= 1.0
-
-# ---------------------------------------------
-
-majorStepMin = 50  # with label
-minorStepMin = 5  # with or without label
-maxLabelWidth = 60  # or the same majorStepMin
-baseTickHeight = 1.0  # pixel
-baseTickWidth = 0.5  # pixel
-maxTickWidth = 40.0  # pixel
-maxTickHeightRatio = 0.3  # 0 < maxTickHeightRatio < 1
-labelYRatio = 1.1
-yearPrettyPower = True
-truncateTickLabel = False
-
-currentTimeMarkerHeightRatio = 0.3
-currentTimeMarkerWidth = 2
-currentTimeMarkerColor = (255, 100, 100)
-
-# TODO: change timeline background according to daylight
-# sunLightEnable = False
-# sunLightH = 10
-
-showWeekStart = True
-showWeekStartMinDays = 1  # day
-showWeekStartMaxDays = 60  # day
-weekStartTickColor = (0, 200, 0)
-
-# ---------------------------------------------
-
-boxLineWidth = 2  # pixel
-boxInnerAlpha = 0.1  # 0 <= boxInnerAlpha <= 1
-
-# if boxLineWidth==0 inside the box will be solid (like boxInnerAlpha==0)
-
-boxEditBorderWidth = 10  # pixel
-boxEditInnerLineWidth = 0.5  # pixel
-boxEditHelperLineWidth = 0.3  # pixel
-
-boxReverseGravity = False
-
-boxSkipPixelLimit = 0.1  # pixel
-
-rotateBoxLabel = -1
-# rotateBoxLabel: 0, 1 or -1
-# 0: no rotation
-# 1: 90 deg CCW (if needed)
-# -1: 90 deg CW (if needed)
-
-# ---------------------------------------------
-
-enableAnimation = False
-
-# movingStaticStep* is used only when enableAnimation==False
-# number of pixels on each step (keyboard / mouse event)
-movingStaticStepKeyboard = 20  # pixel
-movingStaticStepMouse = 20  # pixel
-
-movingUpdateTime = 10  # milisecons
-
-# pixel/second, initial speed/velocity when moving time range
-movingInitialVelocity = 0
-
-# Force is the same as Acceleration, assuming Mass == 1
-
-
-movingHandForceMouse = 1100  # pixel / second^2
-movingHandForceKeyboard = 1100  # pixel / second^2
-movingHandForceKeyboardSmall = 850  # pixel / second^2
-# movingHandForceKeyboardSmall is when press Shift with Left/Right arrow
-movingHandForceButton = 1100
-
-movingFrictionForce = 600  # pixel / second^2
-# movingHandForce > movingFrictionForce
-
-movingMaxVelocity = 1200  # pixel / second
-# movingMaxVelocity = movingAccel * 4 to reach maximum speed in 4 seconds
-
-movingKeyTimeoutFirst = 0.5  # second
-
-movingKeyTimeout = 0.1  # seconds
-# ^ continuous onKeyPress delay is about 0.05 sec
-
-# ---------------------------------------------
-
-scrollZoomStep = 1.2  # > 1.0
-keyboardZoomStep = 1.2  # > 1.0
-
-# ---------------------------------------------
-
-keys = {
-	"space": "moveToNow",
-	"home": "moveToNow",
-	"right": "moveRight",
-	"left": "moveLeft",
-	"down": "moveStop",
-	"q": "close",
-	"escape": "close",
-	"plus": "zoomIn",
-	"equal": "zoomIn",
-	"kp_add": "zoomIn",
-	"minus": "zoomOut",
-	"kp_subtract": "zoomOut",
-}
-
-keyActions = sorted(keys.values())
+	saveSingleConfig(
+		conf,
+		confPath,
+		confParams,
+		# encoders=confEncoders,
+	)
 
 
 # ---------------------------------------------
