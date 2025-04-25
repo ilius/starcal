@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+import os
 from os.path import join
 
 from scal3.config_utils import (
@@ -130,6 +131,8 @@ confParams = (
 
 
 def loadConf() -> None:
+	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
+		return
 	loadModuleConfig(__name__)
 
 
@@ -224,13 +227,13 @@ movingInitialVelocity = 0
 # Force is the same as Acceleration, assuming Mass == 1
 
 
-movingHandForceMouse = 1100  # pixel / (second^2)
-movingHandForceKeyboard = 1100  # pixel / (second^2)
-movingHandForceKeyboardSmall = 850  # pixel / (second^2)
+movingHandForceMouse = 1100  # pixel / second^2
+movingHandForceKeyboard = 1100  # pixel / second^2
+movingHandForceKeyboardSmall = 850  # pixel / second^2
 # movingHandForceKeyboardSmall is when press Shift with Left/Right arrow
 movingHandForceButton = 1100
 
-movingFrictionForce = 600  # pixel / (second^2)
+movingFrictionForce = 600  # pixel / second^2
 # movingHandForce > movingFrictionForce
 
 movingMaxVelocity = 1200  # pixel / second
