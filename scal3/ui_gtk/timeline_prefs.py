@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+from scal3 import timeline
 from scal3.locale_man import tr as _
-from scal3.timeline import conf, tl
+from scal3.timeline import conf
 from scal3.ui import conf as uiConf
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
@@ -991,7 +992,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 	def onSaveClick(self, _obj=None):
 		self.hide()
-		tl.saveConf()
+		timeline.saveConf()
 		return True
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
