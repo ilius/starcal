@@ -27,7 +27,6 @@ from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
-import scal3.timeline.tl  # noqa: F401  # just to load the config
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import localTz
