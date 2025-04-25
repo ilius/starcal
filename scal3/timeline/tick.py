@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.timeline import tl
+from scal3.timeline import conf
 
 __all__ = ["Tick"]
 
@@ -23,11 +23,11 @@ class Tick:
 	def __init__(self, epoch, pos, unitSize, label, color=None):
 		self.epoch = epoch
 		self.pos = pos  # pixel position
-		self.height = unitSize**0.5 * tl.baseTickHeight
-		self.width = min(unitSize**0.2 * tl.baseTickWidth, tl.maxTickWidth)
-		self.fontSize = unitSize**0.1 * tl.baseFontSize
-		self.maxLabelWidth = min(unitSize * 0.5, tl.maxLabelWidth)  # FIXME
+		self.height = unitSize**0.5 * conf.baseTickHeight
+		self.width = min(unitSize**0.2 * conf.baseTickWidth, conf.maxTickWidth)
+		self.fontSize = unitSize**0.1 * conf.baseFontSize
+		self.maxLabelWidth = min(unitSize * 0.5, conf.maxLabelWidth)  # FIXME
 		self.label = label
 		if color is None:
-			color = tl.fgColor
+			color = conf.fgColor
 		self.color = color

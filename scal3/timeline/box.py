@@ -17,7 +17,6 @@
 import logging
 
 from scal3 import logger
-from scal3.ui import conf
 
 log = logger.get()
 
@@ -25,7 +24,8 @@ from time import perf_counter
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.timeline import tl
+from scal3.timeline import conf
+from scal3.ui import conf as uiConf
 
 __all__ = ["calcEventBoxes"]
 
@@ -70,7 +70,7 @@ class Box:
 		# ----
 		self.text = text
 		if color is None:
-			color = conf.textColor  # FIXME
+			color = uiConf.textColor  # FIXME
 		self.color = color
 		self.ids = ids  # (groupId, eventId)
 		self.lineW = lineW
@@ -127,7 +127,7 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
 	for v in min_vertices:
 		box = boxes[v["name"]]
 		box_du = du * v["box_height"]
-		box.u0 = minU if tl.boxReverseGravity else 1 - minU - box_du
+		box.u0 = minU if conf.boxReverseGravity else 1 - minU - box_du
 		box.du = box_du
 	graph.delete_vertices(min_vertices)
 	for subGraph in graph.decompose():
@@ -161,7 +161,7 @@ def calcEventBoxes(
 				errorBoxH,  # du
 				text='Install "python3-igraph" to see events',
 				color=(128, 0, 0),  # FIXME
-				lineW=2 * tl.boxLineWidth,
+				lineW=2 * conf.boxLineWidth,
 			),
 		]
 	boxesDict = {}
@@ -181,7 +181,7 @@ def calcEventBoxes(
 			eid = item.eid
 			odt = item.dt
 			pixBoxW = (t1 - t0) * pixelPerSec
-			if pixBoxW < tl.boxSkipPixelLimit:
+			if pixBoxW < conf.boxSkipPixelLimit:
 				continue
 			# if not isinstance(eid, int):
 			# 	log.error(f"----- bad eid from search: {eid!r}")
@@ -190,7 +190,7 @@ def calcEventBoxes(
 			if t0 <= timeStart and timeEnd <= t1:
 				# Fills Range, FIXME
 				continue
-			lineW = tl.boxLineWidth
+			lineW = conf.boxLineWidth
 			if lineW >= 0.5 * pixBoxW:
 				lineW = 0
 			box = Box(
