@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from scal3.locale_man import tr as _
-from scal3.timeline import tl
-from scal3.ui import conf
+from scal3.timeline import conf, tl
+from scal3.ui import conf as uiConf
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.pref_utils import (
@@ -68,7 +68,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages = []
 		# ----------------------------------------------------
 		stack = MyStack(
-			iconSize=conf.stackIconSize,
+			iconSize=uiConf.stackIconSize,
 		)
 		stack.setTitleFontSize("large")
 		stack.setTitleCentered(True)
@@ -88,7 +88,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Background Color")))
 		prefItem = ColorPrefItem(
-			tl,
+			conf,
 			"bgColor",
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -99,7 +99,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Foreground Color")))
 		prefItem = ColorPrefItem(
-			tl,
+			conf,
 			"fgColor",
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -109,7 +109,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"baseFontSize",
 			0.1,
 			999,
@@ -127,12 +127,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		prefItem = CheckColorPrefItem(
 			CheckPrefItem(
-				tl,
+				conf,
 				"changeHolidayBg",
 				_("Change Holidays Background"),
 			),
 			ColorPrefItem(
-				tl,
+				conf,
 				"holidayBgBolor",
 				# useAlpha=False,
 			),
@@ -162,7 +162,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"basicButtonsSize",
 			1,
 			999,
@@ -178,7 +178,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"basicButtonsSpacing",
 			0,
 			999,
@@ -200,7 +200,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
-			tl,
+			conf,
 			"movementButtonsEnable",
 			label=_("Movement Buttons"),
 			live=True,
@@ -211,7 +211,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movementButtonsSize",
 			1,
 			999,
@@ -228,7 +228,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"basicButtonsOpacity",
 			0.0,
 			1.0,
@@ -243,7 +243,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movementButtonsOpacity",
 			0.0,
 			1.0,
@@ -268,7 +268,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"majorStepMin",
 			1,
 			999,
@@ -285,7 +285,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"minorStepMin",
 			1,
 			999,
@@ -313,7 +313,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"baseTickHeight",
 			0.1,
 			999,
@@ -329,7 +329,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"baseTickWidth",
 			0.1,
 			99,
@@ -345,7 +345,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"maxTickWidth",
 			0.1,
 			99,
@@ -361,7 +361,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"maxTickHeightRatio",
 			0.01,
 			1,
@@ -377,7 +377,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"maxLabelWidth",
 			1,
 			999,
@@ -412,7 +412,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"currentTimeMarkerHeightRatio",
 			0.01,
 			1,
@@ -428,7 +428,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"currentTimeMarkerWidth",
 			0.1,
 			99,
@@ -445,7 +445,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		prefItem = ColorPrefItem(
-			tl,
+			conf,
 			"currentTimeMarkerColor",
 			# useAlpha=False,
 			live=True,
@@ -468,7 +468,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
-			tl,
+			conf,
 			"showWeekStart",
 			label=_("Show Week Start"),
 			live=True,
@@ -480,7 +480,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		prefItem = ColorPrefItem(
-			tl,
+			conf,
 			"weekStartTickColor",
 			# useAlpha=False,
 			live=True,
@@ -491,7 +491,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"showWeekStartMinDays",
 			1,
 			999,
@@ -507,7 +507,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"showWeekStartMaxDays",
 			1,
 			999,
@@ -533,7 +533,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"boxLineWidth",
 			0.0,
 			99,
@@ -549,7 +549,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"boxInnerAlpha",
 			0.0,
 			1.0,
@@ -564,7 +564,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"boxEditBorderWidth",
 			0.0,
 			999,
@@ -580,7 +580,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"boxEditInnerLineWidth",
 			0.0,
 			99,
@@ -596,7 +596,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"boxEditHelperLineWidth",
 			0.0,
 			99,
@@ -612,7 +612,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
-			tl,
+			conf,
 			"boxReverseGravity",
 			label=_("Reverse Gravity"),
 			live=True,
@@ -638,16 +638,16 @@ class TimeLinePreferencesWindow(gtk.Window):
 		noAnimVBox = gtk.VBox()
 		animVBox = gtk.VBox()
 
-		noAnimVBox.set_sensitive(not tl.enableAnimation)
-		animVBox.set_sensitive(tl.enableAnimation)
+		noAnimVBox.set_sensitive(not conf.enableAnimation)
+		animVBox.set_sensitive(conf.enableAnimation)
 
 		def enableAnimationChanged():
-			noAnimVBox.set_sensitive(not tl.enableAnimation)
-			animVBox.set_sensitive(tl.enableAnimation)
+			noAnimVBox.set_sensitive(not conf.enableAnimation)
+			animVBox.set_sensitive(conf.enableAnimation)
 			timeLine.queue_draw()
 
 		prefItem = CheckPrefItem(
-			tl,
+			conf,
 			"enableAnimation",
 			label=_("Animation"),
 			live=True,
@@ -664,7 +664,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingStaticStepMouse",
 			0.1,
 			9999,
@@ -680,7 +680,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingStaticStepKeyboard",
 			0.1,
 			9999,
@@ -710,7 +710,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingInitialVelocity",
 			0.0,
 			9999,
@@ -726,7 +726,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingMaxVelocity",
 			0.1,
 			9999,
@@ -742,7 +742,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingHandForceMouse",
 			0.1,
 			9999,
@@ -764,7 +764,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingHandForceKeyboard",
 			0.1,
 			9999,
@@ -786,7 +786,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingHandForceKeyboardSmall",
 			0.1,
 			9999,
@@ -808,7 +808,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingHandForceButton",
 			0.1,
 			9999,
@@ -830,7 +830,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"movingFrictionForce",
 			0.0,
 			9999,
@@ -865,7 +865,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"scrollZoomStep",
 			1.0,
 			9,
@@ -880,7 +880,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl,
+			conf,
 			"keyboardZoomStep",
 			1.0,
 			9,
@@ -904,9 +904,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# -----
 		prefItem = KeyBindingPrefItem(
-			tl,
+			conf,
 			"keys",
-			tl.keyActions,
+			sorted(conf.keys.values()),
 		)
 		prefItem.updateWidget()
 		pack(vbox, prefItem.getWidget(), 1, 1)
@@ -976,7 +976,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
-		if page.pageIcon and conf.buttonIconEnable:
+		if page.pageIcon and uiConf.buttonIconEnable:
 			pack(hbox, imageFromFile(page.pageIcon, self.stack.iconSize()))
 		pack(hbox, label, 0, 0)
 		pack(hbox, gtk.Label(), 1, 1)

@@ -9,7 +9,7 @@ os.environ["STARCAL_NO_LOAD_CONFIG"] = "1"
 
 sys.path.insert(0, rootDir)
 
-from scal3.timeline import params, tl
+from scal3.timeline import params
 
 all_names = sorted([p.v3Name for p in params.confParamsData])
 
@@ -24,9 +24,6 @@ output.write(f"__all__ = {all_names!r}\n\n")
 for p in params.confParamsData:
 	assert p.default is not params.NOT_SET
 	value = p.default
-	currentValue = getattr(tl, p.v3Name)
-	if p.v3Name not in {"bgColor", "fgColor"}:
-		assert value == currentValue, f"default={value}, tl.{p.v3Name}={currentValue}"
 	if p.type.startswith("Color"):
 		output.write(f"{p.v3Name} = {value!r}" + "\n")
 		continue
