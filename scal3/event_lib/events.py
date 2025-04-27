@@ -55,7 +55,7 @@ from scal3.utils import iceil, ifloor
 from .event_base import Event
 from .register import classes
 
-__all__ = []
+__all__ = ["Event"]
 
 
 dayLen = 24 * 3600
