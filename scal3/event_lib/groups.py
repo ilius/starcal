@@ -175,7 +175,7 @@ class EventGroup(EventContainer):
 		"text": lambda event, text: not text or text in event.getText(),
 		"text_lower": lambda event, text: not text or text in event.getText().lower(),
 		"modified_from": lambda event, epoch: event.modified >= epoch,
-		"type": lambda event, _type: event.name == _type,
+		"type": lambda event, typeName: event.name == typeName,
 		"timezone": _timezoneFilter,
 	}
 
@@ -192,8 +192,8 @@ class EventGroup(EventContainer):
 			yield fpath
 
 	@classmethod
-	def getSubclass(cls, _type: str) -> type[EventGroup]:
-		return classes.group.byName[_type]
+	def getSubclass(cls, typeName: str) -> type[EventGroup]:
+		return classes.group.byName[typeName]
 
 	def getTimeZoneObj(self) -> datetime.tzinfo:
 		if self.timeZoneEnable and self.timeZone:

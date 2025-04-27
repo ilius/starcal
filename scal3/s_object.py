@@ -108,7 +108,7 @@ class DefaultFileSystem(FileSystem):
 
 class SObj:
 	@classmethod
-	def getSubclass(cls, _type):
+	def getSubclass(cls, typeName: str) -> type:  # noqa: ARG003
 		return cls
 
 	params = ()  # used in getData, setData and copyFrom
