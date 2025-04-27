@@ -72,12 +72,8 @@ eventTags = (
 )
 
 
-def getEventTagsDict():
-	return {tagObj.name: tagObj for tagObj in eventTags}
-
-
 # def updateEventTagsUsage():  # FIXME where to use?
-# 	tagsDict = getEventTagsDict()
+# 	tagsDict = {tagObj.name: tagObj for tagObj in eventTags}
 # 	for tagObj in eventTags:
 # 		tagObj.usage = 0
 # 	for event in events:  # FIXME
