@@ -95,9 +95,9 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 		"shortHash",
 	)
 
-	def __init__(self, parent: EventContainer, _id: str) -> None:
+	def __init__(self, parent: EventContainer, ident: str) -> None:
 		Event.__init__(self, parent=parent)
-		self.id = _id  # commit full hash
+		self.id = ident  # commit full hash
 		# ---
 		self.epoch = None
 		self.author = ""
@@ -112,9 +112,9 @@ class VcsTagEvent(VcsEpochBaseEvent):
 	desc = _("VCS Tag")
 	params = VcsEpochBaseEvent.params + ()
 
-	def __init__(self, parent: EventContainer, _id: str) -> None:
+	def __init__(self, parent: EventContainer, ident: str) -> None:
 		Event.__init__(self, parent=parent)
-		self.id = _id  # tag name
+		self.id = ident  # tag name
 		self.epoch = None
 		self.author = ""
 
@@ -127,15 +127,15 @@ class VcsBaseEventGroup(EventGroup):
 		"vcsBranch",
 	)
 
-	def __init__(self, _id: str | None = None) -> None:
+	def __init__(self, ident: str | None = None) -> None:
 		self.vcsType = "git"
 		self.vcsDir = ""
 		self.vcsBranch = "main"
-		EventGroup.__init__(self, _id)
+		EventGroup.__init__(self, ident)
 
 	def __str__(self) -> str:
 		return (
-			f"{self.__class__.__name__}(_id={self.id!r}, "
+			f"{self.__class__.__name__}(ident={self.id!r}, "
 			f"title='{self.title}', vcsType={self.vcsType!r}, "
 			f"vcsDir={self.vcsDir!r}, vcsBranch={self.vcsBranch!r})"
 		)
@@ -159,7 +159,7 @@ class VcsBaseEventGroup(EventGroup):
 	def __getitem__(self, key: str) -> Event:
 		if key in classes.rule.names:
 			return EventGroup.__getitem__(self, key)
-		# len(commit_id)==40 for git
+		# len(commitId)==40 for git
 		return self.getEvent(key)
 
 	def getVcsModule(self) -> Any:
@@ -198,10 +198,10 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 	myParams = VcsBaseEventGroup.myParams + ("showSeconds",)
 	canConvertTo = VcsBaseEventGroup.canConvertTo + ("taskList",)
 
-	def __init__(self, _id: str | None = None) -> None:
+	def __init__(self, ident: str | None = None) -> None:
 		self.showSeconds = True
 		self.vcsIds = []
-		VcsBaseEventGroup.__init__(self, _id)
+		VcsBaseEventGroup.__init__(self, ident)
 
 	def clear(self) -> None:
 		EventGroup.clear(self)
@@ -254,8 +254,8 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, _id)
+	def __init__(self, ident: str | None = None) -> None:
+		VcsEpochBaseEventGroup.__init__(self, ident)
 		self.showAuthor = True
 		self.showShortHash = True
 		self.showStat = True
@@ -283,10 +283,10 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			)
 			log.exception("")
 			return
-		for epoch, commit_id in commitsData:
+		for epoch, commitId in commitsData:
 			if not self.showSeconds:
 				epoch -= epoch % 60  # noqa: PLW2901
-			self.addOccur(epoch, epoch, commit_id)
+			self.addOccur(epoch, epoch, commitId)
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
@@ -309,17 +309,17 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		event.description = "\n".join(lines)
 
 	# TODO: cache commit data
-	def getEvent(self, commit_id: str) -> Event:
+	def getEvent(self, commitId: str) -> Event:
 		mod = self.getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
-		data = mod.getCommitInfo(self, commit_id)
+		data = mod.getCommitInfo(self, commitId)
 		if not data:
-			raise ValueError(f"No commit with {commit_id=}")
+			raise ValueError(f"No commit with {commitId=}")
 		data["summary"] = self.title + ": " + data["summary"]
 		data["icon"] = self.icon
-		event = VcsCommitEvent(self, commit_id)
+		event = VcsCommitEvent(self, commitId)
 		event.setData(data)
 		self.updateEventDesc(event)
 		return event
@@ -333,8 +333,8 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, _id)
+	def __init__(self, ident: str | None = None) -> None:
+		VcsEpochBaseEventGroup.__init__(self, ident)
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
@@ -442,8 +442,8 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: str | None = None) -> None:
-		VcsBaseEventGroup.__init__(self, _id)
+	def __init__(self, ident: str | None = None) -> None:
+		VcsBaseEventGroup.__init__(self, ident)
 		self.statByJd = {}
 
 	def clear(self) -> None:

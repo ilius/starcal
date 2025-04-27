@@ -53,10 +53,10 @@ class DummyAccount:
 		"google": _("Google"),
 	}
 
-	def __init__(self, typeName: str, _id: int, title: str) -> None:
+	def __init__(self, typeName: str, ident: int, title: str) -> None:
 		self.name = typeName
 		self.desc = self.accountsDesc[typeName]
-		self.id = _id
+		self.id = ident
 		self.title = title
 
 	def save(self) -> None:
@@ -96,13 +96,13 @@ class Account(HistoryEventObjBinaryModel):
 	)
 
 	@classmethod
-	def getFile(cls, _id: int) -> str:
-		return join(accountsDir, f"{_id}.json")
+	def getFile(cls, ident: int) -> str:
+		return join(accountsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
-		for _id in range(1, state.lastIds.account + 1):
-			fpath = cls.getFile(_id)
+		for ident in range(1, state.lastIds.account + 1):
+			fpath = cls.getFile(ident)
 			if not fs.isfile(fpath):
 				continue
 			yield fpath
@@ -114,11 +114,11 @@ class Account(HistoryEventObjBinaryModel):
 	def __bool__(self) -> bool:
 		return True
 
-	def __init__(self, _id: int | None = None) -> None:
-		if _id is None:
+	def __init__(self, ident: int | None = None) -> None:
+		if ident is None:
 			self.id = None
 		else:
-			self.setId(_id)
+			self.setId(ident)
 		self.enable = True
 		self.title = "Account"
 

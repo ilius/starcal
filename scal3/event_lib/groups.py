@@ -180,13 +180,13 @@ class EventGroup(EventContainer):
 	}
 
 	@classmethod
-	def getFile(cls, _id: int) -> str:
-		return join(groupsDir, f"{_id}.json")
+	def getFile(cls, ident: int) -> str:
+		return join(groupsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
-		for _id in range(1, state.lastIds.group + 1):
-			fpath = cls.getFile(_id)
+		for ident in range(1, state.lastIds.group + 1):
+			fpath = cls.getFile(ident)
 			if not fs.isfile(fpath):
 				continue
 			yield fpath
@@ -244,17 +244,17 @@ class EventGroup(EventContainer):
 		return event.name in self.acceptsEventTypes
 
 	def __repr__(self) -> str:
-		return f"{self.__class__.__name__}(_id={self.id!r})"
+		return f"{self.__class__.__name__}(ident={self.id!r})"
 
 	def __str__(self) -> str:
-		return f"{self.__class__.__name__}(_id={self.id!r}, title='{self.title}')"
+		return f"{self.__class__.__name__}(ident={self.id!r}, title='{self.title}')"
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		EventContainer.__init__(self, title=self.desc)
-		if _id is None:
+		if ident is None:
 			self.id = None
 		else:
-			self.setId(_id)
+			self.setId(ident)
 		self.enable = True
 		self.__readOnly = False  # set True when syncing with remote group
 		self.dataIsSet = False
@@ -912,8 +912,8 @@ class TaskList(EventGroup):
 				return event.getEndEpoch()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: int | None = None) -> None:
-		EventGroup.__init__(self, _id)
+	def __init__(self, ident: int | None = None) -> None:
+		EventGroup.__init__(self, ident)
 		self.defaultDuration = (0, 1)  # (value, unit)
 
 	def copyFrom(self, other: EventGroup) -> None:
@@ -959,8 +959,8 @@ class YearlyGroup(EventGroup):
 	canConvertTo = ("noteBook",)
 	params = EventGroup.params + ("showDate",)
 
-	def __init__(self, _id: int | None = None) -> None:
-		EventGroup.__init__(self, _id)
+	def __init__(self, ident: int | None = None) -> None:
+		EventGroup.__init__(self, ident)
 		self.showDate = True
 
 
@@ -1022,8 +1022,8 @@ class UniversityTerm(EventGroup):
 					return date.getJd(), dayTimeRange.getHourRange()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: int | None = None) -> None:
-		EventGroup.__init__(self, _id)
+	def __init__(self, ident: int | None = None) -> None:
+		EventGroup.__init__(self, ident)
 		self.classesEndDate = getSysDate(self.calType)  # FIXME
 		self.setCourses([])  # list of (courseId, courseName, courseUnits)
 		self.classTimeBounds = [
@@ -1225,9 +1225,9 @@ class LifetimeGroup(EventGroup):
 				return event.getEndJd()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		self.showSeparateYmdInputs = False
-		EventGroup.__init__(self, _id)
+		EventGroup.__init__(self, ident)
 
 	def setData(self, data: dict[str, Any]) -> None:
 		if "showSeperatedYmdInputs" in data:
@@ -1264,9 +1264,9 @@ class LargeScaleGroup(EventGroup):
 				return event.getEnd() * event.scale
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		self.scale = 1  # 1, 1000, 1000**2, 1000**3
-		EventGroup.__init__(self, _id)
+		EventGroup.__init__(self, ident)
 
 	def setDefaults(self) -> None:
 		self.startJd = 0
