@@ -620,10 +620,10 @@ def newAlignLabel(sgroup=None, label=""):
 
 
 class IdComboBox(gtk.ComboBox):
-	def set_active(self, _id):
+	def set_active(self, ident):
 		ls = self.get_model()
 		for i in range(len(ls)):
-			if ls[i][0] == _id:
+			if ls[i][0] == ident:
 				gtk.ComboBox.set_active(self, i)
 				return
 
