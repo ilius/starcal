@@ -37,6 +37,8 @@ from scal3.time_utils import (
 from .occur import IntervalOccurSet, JdOccurSet, TimeListOccurSet
 
 if TYPE_CHECKING:
+	from collections.abc import Iterable
+
 	from .event_base import Event
 	from .groups import EventGroup
 
@@ -74,7 +76,11 @@ class MonthOccurData(NamedTuple):
 	ids: tuple[int, int]
 
 
-def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
+def getDayOccurrenceData(
+	curJd: int,
+	groups: Iterable[EventGroup],
+	tfmt: str = "HM$",
+) -> list[DayOccurData]:
 	data = []
 	for groupIndex, group in enumerate(groups):
 		if not group.enable:
@@ -136,12 +142,16 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 	return [item[1] for item in data]
 
 
-def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
+def getWeekOccurrenceData(
+	curAbsWeekNumber: int,
+	groups: Iterable[EventGroup],
+	tfmt: str = "HM$",
+) -> list[DayOccurData]:
 	startJd = core.getStartJdOfAbsWeekNumber(curAbsWeekNumber)
 	endJd = startJd + 7
 	data = []
 
-	def add(group: EventGroup, event: Event, eData: dict):
+	def add(group: EventGroup, event: Event, eData: dict) -> None:
 		eData["show"] = (
 			group.showInDCal,
 			group.showInWCal,
@@ -150,7 +160,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
 		eData["ids"] = (group.id, event.id)
 		data.append(eData)
 
-	def handleEvent(event, group):
+	def handleEvent(event: Event, group: EventGroup) -> None:
 		occur = event.calcEventOccurrenceIn(startJd, endJd)
 		if not occur:
 			return
@@ -259,11 +269,16 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
 	return data
 
 
-def getMonthOccurrenceData(curYear, curMonth, groups, tfmt="HM$"):
+def getMonthOccurrenceData(
+	curYear: int,
+	curMonth: int,
+	groups: Iterable[EventGroup],
+	tfmt: str = "HM$",
+) -> list[DayOccurData]:
 	startJd, endJd = getJdRangeForMonth(curYear, curMonth, calTypes.primary)
 	data = []
 
-	def handleEvent(event, group):
+	def handleEvent(event: Event, group: EventGroup) -> None:
 		occur = event.calcEventOccurrenceIn(startJd, endJd)
 		if not occur:
 			return
