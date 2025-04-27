@@ -134,13 +134,13 @@ class Account(HistoryEventObjBinaryModel):
 			self.setId()
 		HistoryEventObjBinaryModel.save(self)
 
-	def setId(self, id_: int | None = None) -> None:
-		if id_ is None or id_ < 0:
-			id_ = state.lastIds.account + 1  # FIXME
-			state.lastIds.account = id_
-		elif id_ > state.lastIds.account:
-			state.lastIds.account = id_
-		self.id = id_
+	def setId(self, ident: int | None = None) -> None:
+		if ident is None or ident < 0:
+			ident = state.lastIds.account + 1  # FIXME
+			state.lastIds.account = ident
+		elif ident > state.lastIds.account:
+			state.lastIds.account = ident
+		self.id = ident
 		self.file = self.getFile(self.id)
 
 	def stop(self) -> None:
