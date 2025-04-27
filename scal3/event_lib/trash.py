@@ -33,9 +33,10 @@ from .event_container import EventContainer
 from .icon import WithIcon
 
 if TYPE_CHECKING:
-	from scal3.s_object import (
-		FileSystem,
-	)
+	from collections.abc import Iterable
+	from typing import Any
+
+	from scal3.s_object import FileSystem
 
 
 __all__ = ["EventTrash"]
@@ -50,23 +51,23 @@ class EventTrash(EventContainer, WithIcon):
 	defaultIcon = "./user-trash.svg"
 
 	@classmethod
-	def iterFiles(cls, fs: FileSystem):
+	def iterFiles(cls, fs: FileSystem) -> Iterable[str]:
 		if fs.isfile(cls.file):
 			yield cls.file
 
-	def __init__(self):
+	def __init__(self) -> None:
 		EventContainer.__init__(self, title=_("Trash"))
 		self.icon = self.defaultIcon
 		self.enable = False
 		self.addEventsToBeginning = True
 
-	def setData(self, data):
+	def setData(self, data: dict[str, Any]) -> None:
 		EventContainer.setData(self, data)
 		if not os.path.isfile(self.icon):
 			log.info(f"Trash icon {self.icon} does not exist, using {self.defaultIcon}")
 			self.icon = self.defaultIcon
 
-	def delete(self, eid):
+	def delete(self, eid: int) -> None:
 		# different from EventContainer.remove
 		# remove() only removes event from this group,
 		# but event file and data still available
@@ -82,7 +83,7 @@ class EventTrash(EventContainer, WithIcon):
 		else:
 			self.idList.remove(eid)
 
-	def empty(self):
+	def empty(self) -> None:
 		idList2 = self.idList[:]
 		for eid in self.idList:
 			try:
