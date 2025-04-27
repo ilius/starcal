@@ -90,20 +90,20 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 
 	# FIXME: types
 	def getLoadedObj(self, obj: DummyAccount) -> Account:
-		id_ = obj.id
-		data = self.loadData(id_)
+		ident = obj.id
+		data = self.loadData(ident)
 		name = data["type"]
 		cls = self.loadClass(name)
 		if cls is None:
 			return
-		obj = cls(id_)
+		obj = cls(ident)
 		obj.fs = self.fs
-		data = self.loadData(id_)
+		data = self.loadData(ident)
 		obj.setData(data)
 		return obj
 
 	def replaceDummyObj(self, obj: DummyAccount) -> Account:
-		id_ = obj.id
+		ident = obj.id
 		obj = self.getLoadedObj(obj)
-		self.byId[id_] = obj
+		self.byId[ident] = obj
 		return obj
