@@ -5759,7 +5759,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 
 	def __init__(self, _id: Optional[int] = None) -> None:
 		JsonObjectsHolder.__init__(self)
-		self.id = None
+		self.id = _id
 		self.parent = None
 		self.idByUuid = {}
 
@@ -5991,7 +5991,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 
 	def __init__(self, _id: Optional[int] = None) -> None:
 		JsonObjectsHolder.__init__(self)
-		self.id = None
+		self.id = _id
 		self.parent = None
 		self.idByUuid = {}
 
