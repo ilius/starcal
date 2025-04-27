@@ -209,7 +209,7 @@ def getMonthLen(year: int, month: int, calType: int) -> int:
 	return module.getMonthLen(year, month)
 
 
-def getSysDate(calType):
+def getSysDate(calType) -> tuple[int, int, int]:
 	if calType == GREGORIAN:
 		return localtime()[:3]
 	gy, gm, gd = localtime()[:3]

@@ -36,7 +36,7 @@ __all__ = [
 
 
 class EventGroupsImportResult:
-	def __init__(self):
+	def __init__(self) -> None:
 		self.newGroupIds = set()  # type: Set[int]
 		self.newEventIds = set()  # type: Set[Tuple[int, int]]
 		self.modifiedEventIds = set()  # type: Set[Tuple[int, int]]
