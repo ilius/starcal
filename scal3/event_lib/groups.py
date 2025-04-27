@@ -372,13 +372,13 @@ class EventGroup(EventContainer):
 	def __bool__(self) -> bool:
 		return self.enable  # FIXME
 
-	def setId(self, id_: int | None = None) -> None:
-		if id_ is None or id_ < 0:
-			id_ = state.lastIds.group + 1  # FIXME
-			state.lastIds.group = id_
-		elif id_ > state.lastIds.group:
-			state.lastIds.group = id_
-		self.id = id_
+	def setId(self, ident: int | None = None) -> None:
+		if ident is None or ident < 0:
+			ident = state.lastIds.group + 1  # FIXME
+			state.lastIds.group = ident
+		elif ident > state.lastIds.group:
+			state.lastIds.group = ident
+		self.id = ident
 		self.file = self.getFile(self.id)
 
 	def setTitle(self, title: str) -> None:
