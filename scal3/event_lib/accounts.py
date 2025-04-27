@@ -53,9 +53,9 @@ class DummyAccount:
 		"google": _("Google"),
 	}
 
-	def __init__(self, _type: str, _id: int, title: str) -> None:
-		self.name = _type
-		self.desc = self.accountsDesc[_type]
+	def __init__(self, typeName: str, _id: int, title: str) -> None:
+		self.name = typeName
+		self.desc = self.accountsDesc[typeName]
 		self.id = _id
 		self.title = title
 
@@ -108,8 +108,8 @@ class Account(HistoryEventObjBinaryModel):
 			yield fpath
 
 	@classmethod
-	def getSubclass(cls, _type: str) -> type:
-		return classes.account.byName[_type]
+	def getSubclass(cls, typeName: str) -> type:
+		return classes.account.byName[typeName]
 
 	def __bool__(self) -> bool:
 		return True
