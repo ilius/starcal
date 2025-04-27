@@ -829,11 +829,11 @@ class UniversityClassEvent(Event):
 
 	def __init__(
 		self,
-		_id: int | None = None,
+		ident: int | None = None,
 		parent: EventContainer | None = None,
 	) -> None:
 		# assert parent is not None
-		Event.__init__(self, _id, parent)
+		Event.__init__(self, ident, parent)
 		self.courseId = None  # FIXME
 
 	def setDefaults(
@@ -956,11 +956,11 @@ class UniversityExamEvent(DailyNoteEvent):
 
 	def __init__(
 		self,
-		_id: int | None = None,
+		ident: int | None = None,
 		parent: EventContainer | None = None,
 	) -> None:
 		# assert group is not None  # FIXME
-		DailyNoteEvent.__init__(self, _id, parent)
+		DailyNoteEvent.__init__(self, ident, parent)
 		self.courseId = None  # FIXME
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
@@ -1119,14 +1119,14 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 
 	def __init__(
 		self,
-		_id: int | None = None,
+		ident: int | None = None,
 		parent: EventContainer | None = None,
 	) -> None:
 		self.scale = 1  # 1, 1000, 1000**2, 1000**3
 		self.start = 0
 		self.end = 1
 		self.endRel = True
-		Event.__init__(self, _id, parent)
+		Event.__init__(self, ident, parent)
 
 	def setData(self, data: dict[str, Any]) -> None:
 		Event.setData(self, data)

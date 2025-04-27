@@ -119,8 +119,8 @@ def testEventUpdateQueue():
 		pass
 
 	class MockEvent:
-		def __init__(self, _id, parent):
-			self.id = _id
+		def __init__(self, ident, parent):
+			self.id = ident
 			self.parent = parent
 
 		def getPath(self):

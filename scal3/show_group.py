@@ -10,8 +10,8 @@ from scal3.s_object import loadBinaryObject
 
 if __name__ == "__main__":
 	fs = event_lib.DefaultFileSystem(confDir)
-	_id = int(sys.argv[1])
-	with fs.open(event_lib.EventGroup.getFile(_id)) as fp:
+	ident = int(sys.argv[1])
+	with fs.open(event_lib.EventGroup.getFile(ident)) as fp:
 		eventJsonData = json.load(fp)
 
 	lastHash = eventJsonData["history"][0][1]

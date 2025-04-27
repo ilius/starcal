@@ -45,9 +45,9 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 	file = join("event", "account_list.json")
 	childName = "account"
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		ObjectsHolderTextModel.__init__(self)
-		self.id = None
+		self.id = ident
 		self.parent = None
 		self.idByUuid = {}
 
@@ -69,8 +69,8 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 		)
 		return None
 
-	def loadData(self, _id: int) -> dict[str, Any]:
-		objFile = join(accountsDir, f"{_id}.json")
+	def loadData(self, ident: int) -> dict[str, Any]:
+		objFile = join(accountsDir, f"{ident}.json")
 		if not self.fs.isfile(objFile):
 			log.error(
 				f"error while loading account file {objFile!r}: file not found",
@@ -80,7 +80,7 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 		with self.fs.open(objFile) as fp:
 			data = json.loads(fp.read())
 		updateBinaryObjectBasicData(data, objFile, "account", self.fs)
-		# if data["id"] != _id:
+		# if data["id"] != ident:
 		# 	log.error(
 		# 		"attribute 'id' in json file " +
 		# 		f"does not match the file name: {objFile}"

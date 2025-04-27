@@ -105,13 +105,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	)
 
 	@classmethod
-	def getFile(cls, _id: int) -> str:
-		return join(eventsDir, f"{_id}.json")
+	def getFile(cls, ident: int) -> str:
+		return join(eventsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
-		for _id in range(1, state.lastIds.event + 1):
-			fpath = cls.getFile(_id)
+		for ident in range(1, state.lastIds.event + 1):
+			fpath = cls.getFile(ident)
 			if not fs.isfile(fpath):
 				continue
 			yield fpath
@@ -162,13 +162,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	def __init__(
 		self,
-		_id: int | None = None,
+		ident: int | None = None,
 		parent: EventContainer | None = None,
 	) -> None:
-		if _id is None:
+		if ident is None:
 			self.id = None
 		else:
-			self.setId(_id)
+			self.setId(ident)
 		self.fs = None
 		self.uuid = None
 		self.parent = parent

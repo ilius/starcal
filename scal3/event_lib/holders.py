@@ -38,7 +38,10 @@ class ObjectsHolderTextModel(EventObjTextModel):
 	# Only use to keep groups and accounts, but not events
 	skipLoadNoFile = True
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(
+		self,
+		ident: int | None = None,  # noqa: ARG002 # FIXME?
+	) -> None:
 		self.fs = None
 		self.clear()
 
@@ -47,8 +50,8 @@ class ObjectsHolderTextModel(EventObjTextModel):
 		self.idList = []
 
 	def __iter__(self) -> Iterator[Any]:
-		for _id in self.idList:
-			yield self.byId[_id]
+		for ident in self.idList:
+			yield self.byId[ident]
 
 	def __len__(self) -> int:
 		return len(self.idList)
@@ -56,18 +59,18 @@ class ObjectsHolderTextModel(EventObjTextModel):
 	def __bool__(self) -> bool:
 		return bool(self.idList)
 
-	def index(self, _id: int) -> Any:
-		return self.idList.index(_id)
-		# or get object instead of obj_id? FIXME
+	def index(self, ident: int) -> Any:
+		return self.idList.index(ident)
+		# or get object instead of obj id? FIXME
 
-	def __getitem__(self, _id: int) -> Any:
-		return self.byId.__getitem__(_id)
+	def __getitem__(self, ident: int) -> Any:
+		return self.byId.__getitem__(ident)
 
 	def byIndex(self, index: int) -> Any:
 		return self.byId[self.idList[index]]
 
-	def __setitem__(self, _id: int, obj: Any) -> None:
-		return self.byId.__setitem__(_id, obj)
+	def __setitem__(self, ident: int, obj: Any) -> None:
+		return self.byId.__setitem__(ident, obj)
 
 	def insert(self, index: int, obj: Any) -> None:
 		if obj.id in self.idList:
@@ -129,4 +132,4 @@ class ObjectsHolderTextModel(EventObjTextModel):
 			self.byId[obj.id] = obj
 
 	def getData(self) -> list[int]:
-		return [_id if self.byId[_id] else -_id for _id in self.idList]
+		return [ident if self.byId[ident] else -ident for ident in self.idList]
