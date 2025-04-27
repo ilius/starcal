@@ -16,9 +16,17 @@ from time import time as now
 from scal3.path import sourceDir
 
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
+
+from typing import TYPE_CHECKING
+
 import bson
 
 from scal3.json_utils import dataToPrettyJson
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable, Sequence
+	from io import TextIOBase
+	from typing import Any, Self
 
 __all__ = [
 	"DefaultFileSystem",
@@ -42,16 +50,21 @@ objectDirName = "objects"
 
 
 class FileSystem:
-	def open(self, fpath, mode="r", encoding=None):
+	def open(
+		self,
+		fpath: str,
+		mode: str = "r",
+		encoding: str | None = None,
+	) -> TextIOBase:
 		raise NotImplementedError
 
-	def abspath(self, path):
+	def abspath(self, path: str) -> str:
 		raise NotImplementedError
 
-	def isdir(self, path):
+	def isdir(self, path: str) -> bool:
 		raise NotImplementedError
 
-	def listdir(self, dpath: str):
+	def listdir(self, dpath: str) -> list[str]:
 		raise NotImplementedError
 
 	def makeDir(self, dpath: str) -> None:
@@ -62,20 +75,25 @@ class FileSystem:
 
 
 class DefaultFileSystem(FileSystem):
-	def __init__(self, rootPath):
+	def __init__(self, rootPath: str) -> None:
 		self._rootPath = rootPath
 
-	def abspath(self, path):
+	def abspath(self, path: str) -> str:
 		if isabs(path):
 			return path
 		return join(self._rootPath, path)
 
-	def isdir(self, path):
+	def isdir(self, path: str) -> bool:
 		if isabs(path):
 			log.warning(f"DefaultFileSystem: isdir: reading abs path {path}")
 		return os.path.isdir(self.abspath(path))
 
-	def open(self, fpath, mode="r", encoding=None):
+	def open(
+		self,
+		fpath: str,
+		mode: str = "r",
+		encoding: str | None = None,
+	) -> TextIOBase:
 		if isabs(fpath):
 			log.warning(f"DefaultFileSystem: open: reading abs path {fpath}")
 		fpath = self.abspath(fpath)
@@ -83,12 +101,12 @@ class DefaultFileSystem(FileSystem):
 			encoding = "utf-8"
 		return open(fpath, mode=mode, encoding=encoding)  # noqa: SIM115
 
-	def listdir(self, dpath):
+	def listdir(self, dpath: str) -> list[str]:
 		if isabs(dpath):
 			log.warning(f"DefaultFileSystem: listdir: reading abs path {dpath}")
 		return os.listdir(self.abspath(dpath))
 
-	def isfile(self, fpath):
+	def isfile(self, fpath: str) -> bool:
 		if isabs(fpath):
 			log.warning(f"DefaultFileSystem: isfile: reading abs path {fpath}")
 		return os.path.isfile(self.abspath(fpath))
@@ -114,10 +132,10 @@ class SObj:
 	params = ()  # used in getData, setData and copyFrom
 	canSetDataMultipleTimes = True
 
-	def __bool__(self):
+	def __bool__(self) -> bool:
 		raise NotImplementedError
 
-	def copyFrom(self, other):
+	def copyFrom(self, other: Self) -> None:
 		from copy import deepcopy
 
 		for attr in self.params:
@@ -131,16 +149,16 @@ class SObj:
 				deepcopy(value),
 			)
 
-	def copy(self):
+	def copy(self) -> Self:
 		newObj = self.__class__()
 		newObj.fs = self.fs
 		newObj.copyFrom(self)
 		return newObj
 
-	def getData(self):
+	def getData(self) -> dict[str, Any]:
 		return {param: getattr(self, param) for param in self.params}
 
-	def setData(self, data: dict | list, force=False):
+	def setData(self, data: dict[str, Any] | list, force: bool = False) -> bool:
 		if not force and not self.__class__.canSetDataMultipleTimes:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
@@ -154,7 +172,7 @@ class SObj:
 			if key in self.params:
 				setattr(self, key, value)
 
-	def getIdPath(self):
+	def getIdPath(self) -> str:
 		try:
 			parent = self.parent
 		except AttributeError:
@@ -175,7 +193,7 @@ class SObj:
 			return path
 		return parent.getIdPath() + path
 
-	def getPath(self):
+	def getPath(self) -> list[str]:
 		parent = self.parent
 		if parent is None:
 			return []
@@ -183,11 +201,14 @@ class SObj:
 		return parent.getPath() + [index]
 
 
-def makeOrderedData(data: dict | list, params):
+def makeOrderedData(
+	data: dict[str, Any] | Sequence,
+	params: Sequence[str],
+) -> dict[str, Any] | list:
 	if isinstance(data, dict) and params:
 		data = list(data.items())
 
-		def paramIndex(key):
+		def paramIndex(key: str) -> int:
 			try:
 				return params.index(key)
 			except ValueError:
@@ -199,7 +220,7 @@ def makeOrderedData(data: dict | list, params):
 	return data
 
 
-def getSortedDict(data):
+def getSortedDict(data: dict[str, Any]) -> dict[str, Any]:
 	return OrderedDict(sorted(data.items()))
 
 
@@ -211,11 +232,15 @@ class SObjTextModel(SObj):
 	paramsOrder = ()
 
 	@classmethod
-	def getFile(cls, ident=None):  # noqa: ARG003
+	def getFile(cls, ident: int | None = None) -> str:  # noqa: ARG003
 		return cls.file
 
 	@classmethod
-	def load(cls, fs: FileSystem, *args):
+	def load(
+		cls,
+		fs: FileSystem,
+		*args,  # noqa: ANN002
+	) -> Self:
 		fpath = cls.getFile(*args)
 		data = {}
 		if fs.isfile(fpath):
@@ -243,10 +268,10 @@ class SObjTextModel(SObj):
 
 	# -----
 
-	def getDataOrdered(self):
+	def getDataOrdered(self) -> dict[str, Any]:
 		return makeOrderedData(self.getData(), self.paramsOrder)
 
-	def save(self):
+	def save(self) -> None:
 		if self.file:
 			jstr = dataToJson(self.getDataOrdered())
 			with self.fs.open(self.file, "w") as fp:
@@ -256,11 +281,11 @@ class SObjTextModel(SObj):
 				f"save method called for object {self!r} while file is not set",
 			)
 
-	def setData(self, data):
+	def setData(self, data: dict[str, Any]) -> None:
 		SObj.setData(self, data)
 		self.setModifiedFromFile()
 
-	def setModifiedFromFile(self):
+	def setModifiedFromFile(self) -> None:
 		if hasattr(self, "modified"):
 			try:
 				self.modified = int(os.stat(self.file).st_mtime)
@@ -276,7 +301,7 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 	return dpath, fpath
 
 
-def iterObjectFiles(fs: FileSystem):
+def iterObjectFiles(fs: FileSystem) -> Iterable[tuple[str, str]]:
 	for dname in fs.listdir(objectDirName):
 		dpath = join(objectDirName, dname)
 		if not fs.isdir(dpath):
@@ -302,7 +327,7 @@ def iterObjectFiles(fs: FileSystem):
 			yield hash_, fpath
 
 
-def saveBinaryObject(data: dict | list, fs: FileSystem):
+def saveBinaryObject(data: dict | list, fs: FileSystem) -> str:
 	data = getSortedDict(data)
 	bsonBytes = bytes(bson.dumps(data))
 	hash_ = sha1(bsonBytes).hexdigest()
@@ -314,11 +339,11 @@ def saveBinaryObject(data: dict | list, fs: FileSystem):
 	return hash_
 
 
-def loadBinaryObject(_hash, fs: FileSystem):
-	_dpath, fpath = getObjectPath(_hash)
+def loadBinaryObject(hashStr: str, fs: FileSystem) -> dict | list:
+	_dpath, fpath = getObjectPath(hashStr)
 	with fs.open(fpath, "rb") as fp:
 		bsonBytes = fp.read()
-	if _hash != sha1(bsonBytes).hexdigest():
+	if hashStr != sha1(bsonBytes).hexdigest():
 		raise OSError(
 			f"sha1 diggest does not match for object file '{fpath}'",
 		)
@@ -330,7 +355,7 @@ def updateBinaryObjectBasicData(
 	filePath: str,
 	fileType: str,
 	fs: FileSystem,
-):
+) -> tuple[int, str]:
 	"""
 	fileType: "event" | "group" | "account"...,
 	display only, does not matter much
@@ -359,11 +384,15 @@ class SObjBinaryModel(SObj):
 	basicParams = ()
 
 	@classmethod
-	def getFile(cls, ident=None):  # noqa: ARG003
+	def getFile(cls, ident: int | None = None) -> str:  # noqa: ARG003
 		return cls.file
 
 	@classmethod
-	def load(cls, fs: FileSystem, *args):
+	def load(
+		cls,
+		fs: FileSystem,
+		*args,  # noqa: ANN002
+	) -> Self:
 		file = cls.getFile(*args)
 		data = {}
 		lastEpoch, lastHash = None, None
@@ -400,17 +429,17 @@ class SObjBinaryModel(SObj):
 
 	# -------
 
-	def getDataOrdered(self):
+	def getDataOrdered(self) -> dict[str, Any] | list:
 		return makeOrderedData(self.getData(), self.paramsOrder)
 
-	def loadBasicData(self):
+	def loadBasicData(self) -> dict[str, Any] | list:
 		if not self.fs.isfile(self.file):
 			return {}
 		with self.fs.open(self.file) as fp:
 			jsonStr = fp.read()
 		return json.loads(jsonStr)
 
-	def loadHistory(self):
+	def loadHistory(self) -> list[tuple[int, str]]:  # (epoch, hashStr)
 		lastBasicData = self.loadBasicData()
 		history = lastBasicData.get("history")
 		if history is None:
@@ -419,12 +448,15 @@ class SObjBinaryModel(SObj):
 			history = []
 		return history
 
-	def saveBasicData(self, basicData):
+	def saveBasicData(self, basicData: dict[str, Any]) -> None:
 		jsonStr = dataToJson(basicData)
 		with self.fs.open(self.file, "w") as fp:
 			fp.write(jsonStr)
 
-	def save(self, *histArgs):
+	def save(
+		self,
+		*histArgs,  # noqa: ANN002  # FIXME?
+	) -> tuple[int, str]:
 		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
 			raise RuntimeError(
@@ -456,7 +488,11 @@ class SObjBinaryModel(SObj):
 		self.saveBasicData(basicData)
 		return history[0]
 
-	def getRevision(self, revHash, *args):
+	def getRevision(
+		self,
+		revHash: str,
+		*args,  # noqa: ANN002
+	) -> Self:
 		cls = self.__class__
 		data = self.loadBasicData()
 		data.update(loadBinaryObject(revHash, self.fs))
