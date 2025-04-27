@@ -58,9 +58,9 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 	file = join("event", "group_list.json")
 	childName = "group"
 
-	def __init__(self, _id: int | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		ObjectsHolderTextModel.__init__(self)
-		self.id = None
+		self.id = ident
 		self.parent = None
 		self.idByUuid = {}
 
