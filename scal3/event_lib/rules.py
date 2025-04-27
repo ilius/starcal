@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from typing import Any
 
-	from .event import Event
+	from .events import Event
 	from .rule_container import RuleContainer
 
 import json
@@ -93,7 +93,7 @@ class EventRule(SObj):
 	def __bool__(self) -> bool:
 		return True
 
-	def __init__(self, parent: Event):
+	def __init__(self, parent: Event) -> None:
 		"""Parent can be an event for now (maybe later a group too)."""
 		self.parent = parent
 
@@ -158,7 +158,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	def getData(self) -> list[Any]:
 		return self.values
 
-	def setData(self, data: Any):
+	def setData(self, data: Any) -> None:
 		if not isinstance(data, tuple | list):
 			data = [data]
 		self.values = data
@@ -211,7 +211,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		self,
 		newCalType: int,
 	) -> list[int | tuple[int, int]]:
-		def yearConv(year):
+		def yearConv(year: int) -> tuple[int, int, int]:
 			return convert(year, 7, 1, curCalType, newCalType)[0]
 
 		curCalType = self.getCalType()
@@ -735,7 +735,7 @@ class DayTimeRangeEventRule(EventRule):
 		H2, M2, S2 = self.dayTimeEnd
 		return f"{H1:02d}:{M1:02d}:{S1:02d} {H2:02d}:{M2:02d}:{S2:02d}"
 
-	def __init__(self, parent) -> None:
+	def __init__(self, parent: RuleContainer | None) -> None:
 		EventRule.__init__(self, parent)
 		self.dayTimeStart = (0, 0, 0)
 		self.dayTimeEnd = (24, 0, 0)
@@ -1161,7 +1161,7 @@ class ExDatesEventRule(EventRule):
 	def __str__(self) -> str:
 		return " ".join(f"{y:04d}/{m:02d}/{d:02d}" for y, m, d in self.dates)
 
-	def __init__(self, parent) -> None:
+	def __init__(self, parent: RuleContainer | None) -> None:
 		EventRule.__init__(self, parent)
 		self.setDates([])
 

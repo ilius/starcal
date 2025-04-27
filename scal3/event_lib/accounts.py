@@ -22,10 +22,9 @@ log = logger.get()
 
 
 from os.path import join
-
-# from scal3.interval_utils import
 from typing import TYPE_CHECKING
 
+# from scal3.interval_utils import
 from scal3.event_lib import state
 from scal3.locale_man import tr as _
 
@@ -33,9 +32,13 @@ from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
 if TYPE_CHECKING:
-	from scal3.s_object import (
-		FileSystem,
-	)
+	from collections.abc import Iterator
+	from typing import Any
+
+	from scal3.s_object import FileSystem
+
+	from .groups import EventGroup
+
 
 __all__ = ["Account", "DummyAccount", "accountsDir"]
 accountsDir = join("event", "accounts")
@@ -50,19 +53,23 @@ class DummyAccount:
 		"google": _("Google"),
 	}
 
-	def __init__(self, _type, _id, title):
+	def __init__(self, _type: str, _id: int, title: str) -> None:
 		self.name = _type
 		self.desc = self.accountsDesc[_type]
 		self.id = _id
 		self.title = title
 
-	def save(self):
+	def save(self) -> None:
 		pass
 
-	def load(cls, fs: FileSystem, *args):
+	def load(
+		cls,
+		fs: FileSystem,
+		*args,  # noqa: ANN002
+	) -> None:
 		pass
 
-	def getLoadedObj(self):
+	def getLoadedObj(self) -> None:
 		pass
 
 
@@ -89,11 +96,11 @@ class Account(HistoryEventObjBinaryModel):
 	)
 
 	@classmethod
-	def getFile(cls, _id):
+	def getFile(cls, _id: int) -> str:
 		return join(accountsDir, f"{_id}.json")
 
 	@classmethod
-	def iterFiles(cls, fs: FileSystem):
+	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
 		for _id in range(1, state.lastIds.account + 1):
 			fpath = cls.getFile(_id)
 			if not fs.isfile(fpath):
@@ -101,13 +108,13 @@ class Account(HistoryEventObjBinaryModel):
 			yield fpath
 
 	@classmethod
-	def getSubclass(cls, _type):
+	def getSubclass(cls, _type: str) -> type:
 		return classes.account.byName[_type]
 
-	def __bool__(self):
+	def __bool__(self) -> bool:
 		return True
 
-	def __init__(self, _id=None):
+	def __init__(self, _id: int | None = None) -> None:
 		if _id is None:
 			self.id = None
 		else:
@@ -122,12 +129,12 @@ class Account(HistoryEventObjBinaryModel):
 		# action values: "fetchGroups", "pull", "push"
 		self.status = None
 
-	def save(self):
+	def save(self) -> None:
 		if self.id is None:
 			self.setId()
 		HistoryEventObjBinaryModel.save(self)
 
-	def setId(self, id_=None):
+	def setId(self, id_: int | None = None) -> None:
 		if id_ is None or id_ < 0:
 			id_ = state.lastIds.account + 1  # FIXME
 			state.lastIds.account = id_
@@ -136,19 +143,19 @@ class Account(HistoryEventObjBinaryModel):
 		self.id = id_
 		self.file = self.getFile(self.id)
 
-	def stop(self):
+	def stop(self) -> None:
 		self.status = None
 
-	def fetchGroups(self):
+	def fetchGroups(self) -> None:
 		raise NotImplementedError
 
-	def fetchAllEventsInGroup(self, _remoteGroupId):
+	def fetchAllEventsInGroup(self, _remoteGroupId: Any) -> list[dict]:
 		raise NotImplementedError
 
-	def sync(self, _group, _remoteGroupId):
+	def sync(self, _group: EventGroup, _remoteGroupId: Any) -> None:
 		raise NotImplementedError
 
-	def getData(self):
+	def getData(self) -> dict:
 		data = HistoryEventObjBinaryModel.getData(self)
 		data["type"] = self.name
 		return data

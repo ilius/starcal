@@ -44,7 +44,10 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 
 		self.uuid = uuid4().hex
 
-	def save(self, *args) -> None:
+	def save(
+		self,
+		*args,  # noqa: ANN002
+	) -> None:
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return

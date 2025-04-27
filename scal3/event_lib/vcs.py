@@ -55,7 +55,11 @@ class VcsEpochBaseEvent(Event):
 
 	# FIXME
 	@classmethod
-	def load(cls, fs: FileSystem, *args) -> type:
+	def load(
+		cls,
+		fs: FileSystem,
+		*args,  # noqa: ANN002
+	) -> type:
 		pass
 
 	def __bool__(self) -> bool:
@@ -400,7 +404,11 @@ class VcsDailyStatEvent(Event):
 	params = Event.params + ("jd",)
 
 	@classmethod
-	def load(cls, fs: FileSystem, *args):  # FIXME
+	def load(
+		cls,
+		fs: FileSystem,
+		*args,  # noqa: ANN002
+	) -> None:  # FIXME
 		pass
 
 	def __bool__(self) -> bool:
