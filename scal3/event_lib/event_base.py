@@ -323,13 +323,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def getText(self, showDesc: bool = True) -> str:
 		return "".join(self.getTextParts(showDesc))
 
-	def setId(self, id_: int | None = None) -> None:
-		if id_ is None or id_ < 0:
-			id_ = state.lastIds.event + 1  # FIXME
-			state.lastIds.event = id_
-		elif id_ > state.lastIds.event:
-			state.lastIds.event = id_
-		self.id = id_
+	def setId(self, ident: int | None = None) -> None:
+		if ident is None or ident < 0:
+			ident = state.lastIds.event + 1  # FIXME
+			state.lastIds.event = ident
+		elif ident > state.lastIds.event:
+			state.lastIds.event = ident
+		self.id = ident
 		self.file = self.getFile(self.id)
 		# self.filesDir = join(self.dir, "files")
 		self.loadFiles()
