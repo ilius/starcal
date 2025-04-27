@@ -117,18 +117,17 @@ class ObjectsHolderTextModel(EventObjTextModel):
 		for sid in data:
 			if not isinstance(sid, int) or sid == 0:
 				raise RuntimeError(f"unexpected {sid=}, {self=}")
-			id_ = sid
-			id_ = abs(sid)
+			idTmp = abs(sid)
 			try:
 				cls = getattr(classes, self.childName).main
-				obj = cls.load(self.fs, id_)
+				obj = cls.load(self.fs, idTmp)
 			except Exception:
 				log.error(f"error loading {self.childName}")
 				log.exception("")
 				continue
 			obj.parent = self
 			obj.enable = sid > 0
-			self.idList.append(id_)
+			self.idList.append(idTmp)
 			self.byId[obj.id] = obj
 
 	def getData(self) -> list[int]:
