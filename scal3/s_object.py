@@ -162,15 +162,15 @@ class SObj:
 				f"{self.__class__.__name__}.getIdPath: no parent attribute",
 			) from None
 		try:
-			id_ = self.id
+			ident = self.id
 		except AttributeError:
 			raise NotImplementedError(
 				f"{self.__class__.__name__}.getIdPath: no id attribute",
 			) from None
 		# ------
 		path = []
-		if id_ is not None:
-			path.append(id_)
+		if ident is not None:
+			path.append(ident)
 		if parent is None:
 			return path
 		return parent.getIdPath() + path

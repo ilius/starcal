@@ -88,11 +88,11 @@ class LastIdsWrapper(EventObjTextModel):
 			if ext != ".json":
 				continue
 			try:
-				id_ = int(idStr)
+				ident = int(idStr)
 			except ValueError:
 				log.error(f"invalid file name: {dpath}")
 				continue
-			lastId = max(id_, lastId)
+			lastId = max(ident, lastId)
 		return lastId
 
 	def scan(self) -> None:
