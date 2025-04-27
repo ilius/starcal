@@ -210,12 +210,12 @@ def init(fs: FileSystem) -> None:
 # ---------------------------------------------------------------------------
 
 
-def removeUnusedObjects(fs: FileSystem):
+def removeUnusedObjects(fs: FileSystem) -> None:
 	global allReadOnly
 	if allReadOnly:
 		raise RuntimeError("removeUnusedObjects: EVENTS ARE READ-ONLY")
 
-	def do_removeUnusedObjects():
+	def do_removeUnusedObjects() -> None:
 		hashSet = set()
 		for cls in (Account, EventTrash, EventGroup, Event):
 			for fpath in cls.iterFiles(fs):
