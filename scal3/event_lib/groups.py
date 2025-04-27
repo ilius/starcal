@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 	from datetime import datetime
 	from typing import Any
 
-	from .event import Event
+	from .events import Event
 
 from contextlib import suppress
 from os.path import join
@@ -168,7 +168,7 @@ class EventGroup(EventContainer):
 	)
 
 	@staticmethod
-	def _timezoneFilter(event, tz):
+	def _timezoneFilter(event: Event, tz: str) -> bool:
 		return event.timeZone == tz if tz else not event.timeZoneEnable
 
 	simpleFilters = {
@@ -301,13 +301,13 @@ class EventGroup(EventContainer):
 		# -----------
 		self.clearRemoteAttrs()
 
-	def resetCache(self):
+	def resetCache(self) -> None:
 		if self.eventCacheSize < 1:
 			self.eventCache = None
 			return
 		self.eventCache = LRUCache(maxsize=self.eventCacheSize)
 
-	def clearCache(self):
+	def clearCache(self) -> None:
 		if self.eventCache:
 			self.eventCache.clear()
 
@@ -449,7 +449,7 @@ class EventGroup(EventContainer):
 		if self.eventCache.get(eid) is not None:
 			self.eventCache.pop(eid)
 
-	def setToCache(self, event: Event):
+	def setToCache(self, event: Event) -> None:
 		if not self.eventCache:
 			return
 		self.eventCache[event.id] = event
@@ -514,7 +514,7 @@ class EventGroup(EventContainer):
 		if self.enable:
 			self.updateOccurrenceEvent(event)
 
-	def updateCache(self, event: Event):
+	def updateCache(self, event: Event) -> None:
 		if self.eventCache and self.eventCache.get(event.id) is not None:
 			self.setToCache(event)
 		event.afterModify()
@@ -768,7 +768,7 @@ class EventGroup(EventContainer):
 	def importData(
 		self,
 		data: dict[str, Any],
-		importMode=IMPORT_MODE_APPEND,
+		importMode: int = IMPORT_MODE_APPEND,
 	) -> EventGroupsImportResult:
 		"""The caller must call group.save() after this."""
 		if not self.dataIsSet:
@@ -816,7 +816,7 @@ class EventGroup(EventContainer):
 
 		return res
 
-	def _searchTimeFilter(self, conds):
+	def _searchTimeFilter(self, conds: dict[str, Any]) -> Iterator[int]:
 		if not ("time_from" in conds or "time_to" in conds):
 			yield from self.idList
 			return
@@ -837,7 +837,7 @@ class EventGroup(EventContainer):
 		for item in self.occur.search(time_from, time_to):
 			yield item.eid
 
-	def search(self, conds):
+	def search(self, conds: dict[str, Any]) -> Iterator[Event]:
 		conds = dict(conds)  # take a copy, we may modify it
 
 		for eid in self._searchTimeFilter(conds):
