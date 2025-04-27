@@ -117,8 +117,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			yield fpath
 
 	@classmethod
-	def getSubclass(cls, _type: str) -> type:
-		return classes.event.byName[_type]
+	def getSubclass(cls, typeName: str) -> type:
+		return classes.event.byName[typeName]
 
 	@classmethod
 	def getDefaultIcon(cls) -> str:
