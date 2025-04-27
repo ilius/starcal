@@ -211,7 +211,7 @@ class SObjTextModel(SObj):
 	paramsOrder = ()
 
 	@classmethod
-	def getFile(cls, _id=None):
+	def getFile(cls, ident=None):  # noqa: ARG003
 		return cls.file
 
 	@classmethod
@@ -359,7 +359,7 @@ class SObjBinaryModel(SObj):
 	basicParams = ()
 
 	@classmethod
-	def getFile(cls, _id=None):
+	def getFile(cls, ident=None):  # noqa: ARG003
 		return cls.file
 
 	@classmethod
