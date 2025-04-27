@@ -265,7 +265,7 @@ with open(join(langDir, "list"), encoding="utf-8") as fp:
 
 
 for fname in langFileList:
-	fname_nox, ext = splitext(fname)
+	_fname_nox, ext = splitext(fname)
 	ext = ext.lower()
 	if ext != ".json":
 		continue

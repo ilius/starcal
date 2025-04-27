@@ -5,7 +5,6 @@ from scal3 import logger
 log = logger.get()
 
 import json
-from collections import OrderedDict
 from json import JSONEncoder
 
 __all__ = ["dataToCompactJson", "dataToPrettyJson"]
@@ -46,9 +45,3 @@ def dataToCompactJson(
 		ensure_ascii=ensure_ascii,
 		sort_keys=sort_keys,
 	)
-
-
-def jsonToOrderedData(text: str) -> dict:
-	return json.JSONDecoder(
-		object_pairs_hook=OrderedDict,
-	).decode(text)
