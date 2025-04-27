@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+ruff check --fix
+
+ruff check --select ANN --ignore ANN401 --fix "$@" | head -n33
