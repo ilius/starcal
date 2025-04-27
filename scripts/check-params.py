@@ -29,7 +29,7 @@ attrNames = {name for name in dir(conf) if not name.startswith("_")} - {
 }
 
 
-paramByName = {p.v3Name: p for p in params.confParamsData}
+# paramByName = {p.v3Name: p for p in params.confParamsData}
 paramNames = {p.v3Name for p in params.confParamsData}
 
 for name in attrNames - paramNames - ignoreMissingParams:

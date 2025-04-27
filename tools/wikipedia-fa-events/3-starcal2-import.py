@@ -4,7 +4,6 @@ import sys
 sys.path.append("/starcal2")
 
 from scal3 import event_lib, logger, ui
-from scal3.cal_types import calTypes
 from scal3.date_utils import dateDecode
 
 
@@ -13,9 +12,6 @@ def dataToPrettyJson(data):
 
 
 log = logger.get()
-
-GREGORIAN = calTypes.get("gregorian")
-DATE_JALALI = calTypes.get("jalali")
 
 ui.eventGroups.load()
 
