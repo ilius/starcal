@@ -23,6 +23,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+	from collections.abc import Iterator
 	from typing import Any
 
 import json
@@ -35,7 +36,7 @@ from scal3.locale_man import tr as _
 from scal3.s_object import updateBinaryObjectBasicData
 
 from .event_base import Event
-from .icon import iconAbsToRelativelnData, iconRelativeToAbsInObj
+from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
@@ -52,14 +53,14 @@ class Smallest:
 	def __gt__(self, other: Any) -> bool:
 		return False
 
-	def __hash__(self):
+	def __hash__(self) -> int:
 		return hash(Smallest)
 
 
 smallest = Smallest()
 
 
-class EventContainer(HistoryEventObjBinaryModel):
+class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	name = ""
 	desc = ""
 	basicParams = (
@@ -100,25 +101,25 @@ class EventContainer(HistoryEventObjBinaryModel):
 	)
 	sortByDefault = "summary"
 
-	def __getitem__(self, key):
+	def __getitem__(self, key: int) -> Event:
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
 		raise TypeError(
 			f"invalid key type for {key!r} given to EventContainer.__getitem__",
 		)
 
-	def getTimeZoneStr(self):
+	def getTimeZoneStr(self) -> str:
 		if self.timeZoneEnable and self.timeZone:
 			return self.timeZone
 		return ""
 
-	def byIndex(self, index):
+	def byIndex(self, index: int) -> Event:
 		return self.getEvent(self.idList[index])
 
 	def __str__(self) -> str:
 		return f"{self.__class__.__name__}(title='{self.title}')"
 
-	def __init__(self, title="Untitled"):
+	def __init__(self, title: str = "Untitled") -> None:
 		self.fs = None
 		self.parent = None
 		self.timeZoneEnable = False
@@ -136,15 +137,15 @@ class EventContainer(HistoryEventObjBinaryModel):
 		######
 		self.notificationEnabled = False
 
-	def afterModify(self):
+	def afterModify(self) -> None:
 		self.modified = now()
 
-	def getEvent(self, eid):
+	def getEvent(self, eid: int) -> Event:
 		if eid not in self.idList:
 			raise ValueError(f"{self} does not contain {eid!r}")
 		return self._getEvent(eid)
 
-	def _getEvent(self, eid):
+	def _getEvent(self, eid: int) -> Event:
 		eventFile = Event.getFile(eid)
 		if not self.fs.isfile(eventFile):
 			# self.idList.remove(eid)
@@ -170,7 +171,7 @@ class EventContainer(HistoryEventObjBinaryModel):
 		event.modified = lastEpoch
 		return event
 
-	def __iter__(self):
+	def __iter__(self) -> Iterator[Event]:
 		for eid in self.idList:
 			try:
 				event = self.getEvent(eid)
@@ -179,10 +180,10 @@ class EventContainer(HistoryEventObjBinaryModel):
 			else:
 				yield event
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self.idList)
 
-	def preAdd(self, event: Event):
+	def preAdd(self, event: Event) -> None:
 		if event.id in self.idList:
 			raise ValueError(f"{self} already contains {event}")
 		if event.parent not in {None, self}:
@@ -190,15 +191,15 @@ class EventContainer(HistoryEventObjBinaryModel):
 				f"{event} already has a parent={event.parent}, trying to add to {self}",
 			)
 
-	def postAdd(self, event: Event):
+	def postAdd(self, event: Event) -> None:
 		event.parent = self  # needed? FIXME
 
-	def insert(self, index, event: Event):
+	def insert(self, index: int, event: Event) -> None:
 		self.preAdd(event)
 		self.idList.insert(index, event.id)
 		self.postAdd(event)
 
-	def append(self, event: Event):
+	def append(self, event: Event) -> None:
 		self.preAdd(event)
 		self.idList.append(event.id)
 		self.postAdd(event)
@@ -209,16 +210,16 @@ class EventContainer(HistoryEventObjBinaryModel):
 		else:
 			self.append(event)
 
-	def index(self, eid):
+	def index(self, eid: int) -> int:
 		return self.idList.index(eid)
 
-	def moveUp(self, index):
-		return self.idList.insert(index - 1, self.idList.pop(index))
+	def moveUp(self, index: int) -> None:
+		self.idList.insert(index - 1, self.idList.pop(index))
 
-	def moveDown(self, index):
-		return self.idList.insert(index + 1, self.idList.pop(index))
+	def moveDown(self, index: int) -> None:
+		self.idList.insert(index + 1, self.idList.pop(index))
 
-	def remove(self, event: Event):  # call when moving to trash
+	def remove(self, event: Event) -> int:  # call when moving to trash
 		"""
 		Excludes event from this container (group or trash),
 		not delete event data completely
@@ -229,17 +230,17 @@ class EventContainer(HistoryEventObjBinaryModel):
 		event.parent = None
 		return index
 
-	def copyFrom(self, other):
+	def copyFrom(self, other: EventContainer) -> None:
 		HistoryEventObjBinaryModel.copyFrom(self, other)
 		self.calType = other.calType
 
-	def getData(self):
+	def getData(self) -> dict[str, Any]:
 		data = HistoryEventObjBinaryModel.getData(self)
 		data["calType"] = calTypes.names[self.calType]
 		iconAbsToRelativelnData(data)
 		return data
 
-	def setData(self, data) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		HistoryEventObjBinaryModel.setData(self, data)
 		if "calType" in data:
 			calType = data["calType"]
@@ -248,7 +249,7 @@ class EventContainer(HistoryEventObjBinaryModel):
 			except ValueError:
 				raise ValueError(f"Invalid calType: '{calType}'") from None
 		# ---
-		iconRelativeToAbsInObj(self)
+		self.iconRelativeToAbsInObj()
 
 	def getEventNoCache(self, eid: int) -> Event:
 		"""
@@ -298,12 +299,12 @@ class EventContainer(HistoryEventObjBinaryModel):
 				break
 		if isTypeDep:
 
-			def event_key(event: Event):
+			def event_key(event: Event) -> Any:
 				return (event.name, self.getSortByValue(event, attr))
 
 		else:
 
-			def event_key(event: Event):
+			def event_key(event: Event) -> Any:
 				return self.getSortByValue(event, attr)
 
 		self.idList.sort(

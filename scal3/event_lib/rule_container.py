@@ -23,7 +23,8 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from collections.abc import Iterator
+	from collections.abc import Iterator, Sequence
+	from datetime import tzinfo
 	from typing import Any
 
 	from .rules import EventRule
@@ -80,7 +81,7 @@ class RuleContainer:
 	def getRuleIfExists(self, key: str) -> EventRule | None:
 		return self.rulesOd.get(key)
 
-	def setRule(self, key: str, value: EventRule):
+	def setRule(self, key: str, value: EventRule) -> None:
 		self.rulesOd[key] = value
 
 	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
@@ -154,7 +155,10 @@ class RuleContainer:
 			self.addRule(rule)
 		return (ok, msg)
 
-	def removeSomeRuleTypes(self, *rmTypes) -> None:
+	def removeSomeRuleTypes(
+		self,
+		*rmTypes: Sequence[str],
+	) -> None:
 		for ruleType in rmTypes:
 			if ruleType in self.rulesOd:
 				del self.rulesOd[ruleType]
@@ -225,7 +229,7 @@ class RuleContainer:
 				continue
 			self.getAddRule(ruleType).copyFrom(rule)
 
-	def getTimeZoneObj(self):
+	def getTimeZoneObj(self) -> tzinfo:
 		if self.timeZoneEnable and self.timeZone:
 			# mytz.gettz does not raise exception, returns None if invalid
 			tz = mytz.gettz(self.timeZone)
@@ -233,17 +237,17 @@ class RuleContainer:
 				return tz
 		return locale_man.localTz
 
-	def getTimeZoneStr(self):
+	def getTimeZoneStr(self) -> str:
 		return str(self.getTimeZoneObj())
 
-	def getEpochFromJd(self, jd):
+	def getEpochFromJd(self, jd: int) -> int:
 		return getEpochFromJd(jd, tz=self.getTimeZoneObj())
 
-	def getJdFromEpoch(self, jd):
+	def getJdFromEpoch(self, jd: int) -> int:
 		return getJdFromEpoch(jd, tz=self.getTimeZoneObj())
 
-	def getJhmsFromEpoch(self, epoch):
+	def getJhmsFromEpoch(self, epoch: int) -> int:
 		return getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
 
-	def getEpochFromJhms(self, jd, h, m, s):
+	def getEpochFromJhms(self, jd: int, h: int, m: int, s: int) -> int:
 		return getEpochFromJhms(jd, h, m, s, tz=self.getTimeZoneObj())

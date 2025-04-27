@@ -200,7 +200,10 @@ class IntervalOccurSet(OccurSet):
 class TimeListOccurSet(OccurSet):
 	name = "repeativeTime"
 
-	def __init__(self, *args) -> None:
+	def __init__(
+		self,
+		*args,  # noqa: ANN002
+	) -> None:
 		OccurSet.__init__(self)
 		if not args:
 			self.startEpoch = 0
