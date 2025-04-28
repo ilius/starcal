@@ -52,6 +52,7 @@ from scal3.ui.params import (
 from . import conf
 
 if typing.TYPE_CHECKING:
+	from scal3.filesystem import FileSystem
 	from scal3.s_object import SObj
 
 
@@ -393,7 +394,7 @@ def getActiveMonthCalParams():
 
 # --------------------------------
 
-fs: event_lib.FileSystem | None = None
+fs: FileSystem | None = None
 eventAccounts: list[event_lib.Account] = []
 eventGroups: list[event_lib.EventGroup] = []
 eventTrash: event_lib.EventTrash | None = None
