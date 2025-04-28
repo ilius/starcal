@@ -640,13 +640,13 @@ class DateAndTimeEventRule(DateEventRule):
 			if "time" in arg:
 				try:
 					self.time = timeDecode(arg["time"])
-				except ValueError:
-					log.exception("")
+				except ValueError as e:
+					raise BadEventFile(str(e)) from e
 		elif isinstance(arg, str):
 			try:
 				self.date = dateDecode(arg)
-			except ValueError:
-				log.exception("")
+			except ValueError as e:
+				raise BadEventFile(str(e)) from e
 		else:
 			raise BadEventFile(f"bad rule {self.name}={arg!r}")
 
