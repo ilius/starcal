@@ -1,7 +1,7 @@
 import json
 import sys
 
-from scal3 import event_lib
+from scal3.filesystem import DefaultFileSystem
 from scal3.path import confDir
 from scal3.s_object import getObjectPath, loadBinaryObject
 
@@ -16,7 +16,7 @@ def dataToPrettyJson(data):
 
 
 if __name__ == "__main__":
-	fs = event_lib.DefaultFileSystem(confDir)
+	fs = DefaultFileSystem(confDir)
 	for hashStr in sys.argv[1:]:
 		_dpath, fpath = getObjectPath(hashStr)
 		data = loadBinaryObject(hashStr, fs)

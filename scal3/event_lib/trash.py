@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 	from collections.abc import Iterable
 	from typing import Any
 
-	from scal3.s_object import FileSystem
+	from scal3.filesystem import FileSystem
 
 
 __all__ = ["EventTrash"]

@@ -25,9 +25,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from typing import Any
 
-	from scal3.s_object import (
-		FileSystem,
-	)
+	from scal3.filesystem import FileSystem
 
 	from .event_container import EventContainer
 
