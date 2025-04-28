@@ -27,7 +27,6 @@ class TestJalali(unittest.TestCase):
 			# 	f"{'L' if isLeap2 else ' '}")
 			print(f'{year}: "{"L" if isLeap1 else " "}{"L" if isLeap2 else " "}",')
 
-	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
 		10: "  ",
 		9: "L ",
@@ -235,55 +234,49 @@ class TestJalali(unittest.TestCase):
 	}
 
 	def test_isLeap(self):
-		for alg in range(2):
-			jalali.jalaliAlg = alg
-			for year, isLeapByAlg in self.isLeapDict.items():
-				isLeap = isLeapByAlg[alg] == "L"
-				lastMonthLen = lastMonthLenByConvert(year)
-				isLeapActual = jalali.isLeap(year)
-				lastMonthLenExpected = 29
-				if isLeap:
-					lastMonthLenExpected = 30
-				self.assertEqual(
-					isLeapActual,
-					isLeap,
-					f"{year=}, {isLeap=}, {isLeapActual=}, {alg=}",
-				)
-				self.assertEqual(
-					lastMonthLen,
-					lastMonthLenExpected,
-					f"{year=}, {isLeap=}, {alg=}",
-				)
+		for year, isLeapByAlg in self.isLeapDict.items():
+			isLeap = isLeapByAlg[0] == "L"
+			lastMonthLen = lastMonthLenByConvert(year)
+			isLeapActual = jalali.isLeap(year)
+			lastMonthLenExpected = 29
+			if isLeap:
+				lastMonthLenExpected = 30
+			self.assertEqual(
+				isLeapActual,
+				isLeap,
+				f"{year=}, {isLeap=}, {isLeapActual=}",
+			)
+			self.assertEqual(
+				lastMonthLen,
+				lastMonthLenExpected,
+				f"{year=}, {isLeap=}",
+			)
 
 	def test_to_jd(self):
-		for alg in range(2):
-			jalali.jalaliAlg = alg
-			for date, jdByAlg in self.dateToJdDict.items():
-				jd = jdByAlg[alg]
-				jdActual = jalali.to_jd(*date)
-				self.assertEqual(
-					jdActual,
-					jd,
-					f"{date=}, {jd=}, {jdActual=}, {alg=}",
-				)
+		for date, jdByAlg in self.dateToJdDict.items():
+			jd = jdByAlg[0]
+			jdActual = jalali.to_jd(*date)
+			self.assertEqual(
+				jdActual,
+				jd,
+				f"{date=}, {jd=}, {jdActual=}",
+			)
 
 	def test_convert(self):
-		for alg in range(2):
-			jalali.jalaliAlg = alg
-			startYear = 1360
-			endYear = 1450
-			for year in range(startYear, endYear):
-				for month in range(1, 13):
-					monthLen = jalali.getMonthLen(year, month)
-					for day in range(1, monthLen + 1):
-						date = (year, month, day)
-						jd = jalali.to_jd(*date)
-						ndate = jalali.jd_to(jd)
-						self.assertEqual(
-							ndate,
-							date,
-							f"{jd=}, {date}, {ndate=}",
-						)
+		startYear = 1360
+		endYear = 1450
+		for year in range(startYear, endYear):
+			for month in range(1, 13):
+				monthLen = jalali.getMonthLen(year, month)
+				for day in range(1, monthLen + 1):
+					date = (year, month, day)
+					jd = jalali.to_jd(*date)
+					ndate = jalali.jd_to(jd)
+					self.assertEqual(
+						ndate,
+						date,
+						f"{jd=}, {date}, {ndate=}",
+					)
 
 
 if __name__ == "__main__":
