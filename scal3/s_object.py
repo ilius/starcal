@@ -8,7 +8,6 @@ import json
 import os
 import os.path
 import sys
-from collections import OrderedDict
 from hashlib import sha1
 from os.path import join
 from time import time as now
@@ -21,10 +20,10 @@ from typing import TYPE_CHECKING
 
 import bson
 
+from scal3.dict_utils import makeOrderedData
 from scal3.json_utils import dataToPrettyJson
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
 	from typing import Any, Self
 
 	from scal3.filesystem import FileSystem
@@ -34,7 +33,6 @@ __all__ = [
 	"SObjBinaryModel",
 	"SObjTextModel",
 	"loadBinaryObject",
-	"makeOrderedData",
 	"objectDirName",
 	"saveBinaryObject",
 ]
@@ -121,25 +119,6 @@ class SObj:
 			return []
 		index = parent.index(self.id)
 		return parent.getPath() + [index]
-
-
-def makeOrderedData(
-	data: dict[str, Any] | Sequence,
-	params: Sequence[str],
-) -> dict[str, Any] | list:
-	if isinstance(data, dict) and params:
-		data = list(data.items())
-
-		def paramIndex(key: str) -> int:
-			try:
-				return params.index(key)
-			except ValueError:
-				return len(params)
-
-		data.sort(key=lambda x: paramIndex(x[0]))
-		data = OrderedDict(data)
-
-	return data
 
 
 class SObjTextModel(SObj):

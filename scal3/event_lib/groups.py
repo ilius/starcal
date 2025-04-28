@@ -50,13 +50,11 @@ from scal3.cal_types import (
 )
 from scal3.core import getAbsWeekNumberFromJd
 from scal3.date_utils import dateDecode, dateEncode
+from scal3.dict_utils import makeOrderedData
 from scal3.event_lib import state
 from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
-from scal3.s_object import (
-	SObj,
-	makeOrderedData,
-)
+from scal3.s_object import SObj
 from scal3.time_utils import (
 	durationDecode,
 	durationEncode,

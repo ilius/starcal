@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from io import TextIOBase
 
-__all__ = ['FileSystem', 'DefaultFileSystem']
+__all__ = ["DefaultFileSystem", "FileSystem"]
+
 
 class FileSystem:
 	def open(
