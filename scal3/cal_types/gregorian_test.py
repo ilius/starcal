@@ -15,7 +15,6 @@ class Testgregorian(unittest.TestCase):
 			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}")
 			print(f'{year}: "{"L" if isLeap else " "}",')
 
-	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
 		-50: " ",
 		-49: " ",
