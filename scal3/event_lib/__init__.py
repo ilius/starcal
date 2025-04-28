@@ -62,7 +62,6 @@ from scal3.s_object import (
 	loadBinaryObject,
 	makeOrderedData,
 	objectDirName,
-	updateBinaryObjectBasicData,
 )
 from scal3.time_utils import (
 	HMS,
@@ -179,7 +178,6 @@ __all__ = [
 	"timeToFloatHour",
 	"toStr",
 	"to_jd",
-	"updateBinaryObjectBasicData",
 ]
 
 # --------------------------

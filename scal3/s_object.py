@@ -39,7 +39,6 @@ __all__ = [
 	"makeOrderedData",
 	"objectDirName",
 	"saveBinaryObject",
-	"updateBinaryObjectBasicData",
 ]
 
 
@@ -350,30 +349,6 @@ def loadBinaryObject(hashStr: str, fs: FileSystem) -> dict | list:
 	return bson.loads(bsonBytes)
 
 
-def updateBinaryObjectBasicData(
-	data: dict | list,
-	filePath: str,
-	fileType: str,
-	fs: FileSystem,
-) -> tuple[int, str]:
-	"""
-	fileType: "event" | "group" | "account"...,
-	display only, does not matter much
-	return lastHistRecord = (lastEpoch, lastHash).
-	"""
-	try:
-		lastHistRecord = data["history"][0]
-		lastEpoch = lastHistRecord[0]
-		lastHash = lastHistRecord[1]
-	except (KeyError, IndexError):
-		raise ValueError(
-			f'invalid {fileType} file "{filePath}", no "history"',
-		) from None
-	data.update(loadBinaryObject(lastHash, fs))
-	data["modified"] = lastEpoch  # FIXME
-	return (lastEpoch, lastHash)
-
-
 class SObjBinaryModel(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
@@ -408,7 +383,12 @@ class SObjBinaryModel(SObj):
 				log.error(f'error while opening json file "{file}"')
 				raise
 		else:
-			lastEpoch, lastHash = updateBinaryObjectBasicData(data, file, cls.name, fs)
+			lastEpoch, lastHash = SObjBinaryModel.updateBasicData(
+				data,
+				file,
+				cls.name,
+				fs,
+			)
 
 		if lastEpoch is None:
 			lastEpoch = now()  # FIXME
@@ -426,6 +406,31 @@ class SObjBinaryModel(SObj):
 		obj.lastHash = lastHash
 		obj.modified = lastEpoch
 		return obj
+
+	@classmethod
+	def updateBasicData(
+		cls,
+		data: dict | list,
+		filePath: str,
+		fileType: str,
+		fs: FileSystem,
+	) -> tuple[int, str]:
+		"""
+		fileType: "event" | "group" | "account"...,
+		display only, does not matter much
+		return lastHistRecord = (lastEpoch, lastHash).
+		"""
+		try:
+			lastHistRecord = data["history"][0]
+			lastEpoch = lastHistRecord[0]
+			lastHash = lastHistRecord[1]
+		except (KeyError, IndexError):
+			raise ValueError(
+				f'invalid {fileType} file "{filePath}", no "history"',
+			) from None
+		data.update(loadBinaryObject(lastHash, fs))
+		data["modified"] = lastEpoch  # FIXME
+		return (lastEpoch, lastHash)
 
 	# -------
 
