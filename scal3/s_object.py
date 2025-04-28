@@ -219,10 +219,6 @@ def makeOrderedData(
 	return data
 
 
-def getSortedDict(data: dict[str, Any]) -> dict[str, Any]:
-	return OrderedDict(sorted(data.items()))
-
-
 class SObjTextModel(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
@@ -327,7 +323,7 @@ def iterObjectFiles(fs: FileSystem) -> Iterable[tuple[str, str]]:
 
 
 def saveBinaryObject(data: dict | list, fs: FileSystem) -> str:
-	data = getSortedDict(data)
+	data = dict(sorted(data.items()))
 	bsonBytes = bytes(bson.dumps(data))
 	hash_ = sha1(bsonBytes).hexdigest()
 	dpath, fpath = getObjectPath(hash_)
