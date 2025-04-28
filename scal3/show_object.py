@@ -3,7 +3,7 @@ import sys
 
 from scal3 import event_lib
 from scal3.path import confDir
-from scal3.s_object import loadBinaryObject
+from scal3.s_object import getObjectPath, loadBinaryObject
 
 
 def dataToPrettyJson(data):
@@ -17,8 +17,10 @@ def dataToPrettyJson(data):
 
 if __name__ == "__main__":
 	fs = event_lib.DefaultFileSystem(confDir)
-	for arg in sys.argv[1:]:
-		data = loadBinaryObject(arg, fs)
+	for hashStr in sys.argv[1:]:
+		_dpath, fpath = getObjectPath(hashStr)
+		data = loadBinaryObject(hashStr, fs)
 		# plog.info(data, indent=4, width=80)
+		print(f"File: {fpath}")
 		print(dataToPrettyJson(data))  # noqa: T201
 		print("-------------------")  # noqa: T201
