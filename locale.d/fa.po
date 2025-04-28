@@ -1098,17 +1098,6 @@ msgstr "افغانی/دری"
 msgid "Pashto"
 msgstr "پشتو"
 
-msgid "Jalali Calculation Algorithm"
-msgstr ""
-"الگوریتم محاسبهٔ تاریخ جلالی"
-
-msgid "33 year algorithm"
-msgstr ""
-"الگوریتم ۳۳ ساله"
-
-msgid "2820 year algorithm"
-msgstr ""
-"الگوریتم ۲۸۲۰ ساله"
 
 msgid "Hijri Calculation Algorithm"
 msgstr ""
