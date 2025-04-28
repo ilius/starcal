@@ -24,7 +24,7 @@ import bson
 from scal3.json_utils import dataToPrettyJson
 
 if TYPE_CHECKING:
-	from collections.abc import Iterable, Sequence
+	from collections.abc import Sequence
 	from typing import Any, Self
 
 	from scal3.filesystem import FileSystem
@@ -33,7 +33,6 @@ __all__ = [
 	"SObj",
 	"SObjBinaryModel",
 	"SObjTextModel",
-	"iterObjectFiles",
 	"loadBinaryObject",
 	"makeOrderedData",
 	"objectDirName",
@@ -218,32 +217,6 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 	dpath = join(objectDirName, _hash[:2])
 	fpath = join(dpath, _hash[2:])
 	return dpath, fpath
-
-
-def iterObjectFiles(fs: FileSystem) -> Iterable[tuple[str, str]]:
-	for dname in fs.listdir(objectDirName):
-		dpath = join(objectDirName, dname)
-		if not fs.isdir(dpath):
-			continue
-		if len(dname) != 2:
-			if dname.startswith("."):
-				continue
-			log.error(f"Unexpected directory: {dname}")  # do not skip it!
-		for fname in fs.listdir(dpath):
-			fpath = join(dpath, fname)
-			if not fs.isfile(fpath):
-				log.error(f"Object file does not exist or not a file: {fpath}")
-				continue
-			hash_ = dname + fname
-			if len(hash_) != 40:
-				log.debug(f"Skipping non-object file {fpath}")
-				continue
-			try:
-				int(hash_, 16)
-			except ValueError:
-				log.debug(f"Skipping non-object file {fpath}  (not hexadecimal)")
-				continue
-			yield hash_, fpath
 
 
 def saveBinaryObject(data: dict | list, fs: FileSystem) -> str:

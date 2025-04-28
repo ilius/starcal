@@ -34,13 +34,9 @@ from contextlib import suppress
 from os.path import join, splitext
 
 from scal3 import core, ics
+from scal3.event_lib.objects import iterObjectFiles
 from scal3.locale_man import tr as _
-
-# from scal3.interval_utils import
-from scal3.s_object import (
-	iterObjectFiles,
-	loadBinaryObject,
-)
+from scal3.s_object import loadBinaryObject
 
 from .event_base import eventsDir
 from .groups import EventGroup, groupsDir
