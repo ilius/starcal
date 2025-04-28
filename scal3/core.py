@@ -28,13 +28,14 @@ from time import time as now
 from typing import Any, NamedTuple
 
 import scal3
-from scal3 import locale_man, logger, s_object
+from scal3 import locale_man, logger
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.date_utils import (
 	dateEncode,
 	jwday,
 )
+from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import (
@@ -183,7 +184,7 @@ def saveConf() -> None:
 
 log = logger.get()
 
-fs: s_object.FileSystem | None = None
+fs: FileSystem | None = None
 
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
@@ -398,7 +399,7 @@ def validatePlugList() -> None:
 			m -= 1
 
 
-def initPlugins(fs: s_object.FileSystem) -> None:
+def initPlugins(fs: FileSystem) -> None:
 	# log.debug("----------------------- initPlugins")
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
@@ -548,7 +549,6 @@ def dataToJson(data: Any) -> str:
 
 def init() -> None:
 	global VERSION, fs
-	from scal3.s_object import DefaultFileSystem
 
 	VERSION = getVersion()  # right place?
 

@@ -31,7 +31,6 @@ from scal3.event_lib import state
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.s_object import (
-	FileSystem,
 	SObj,
 	SObjBinaryModel,
 )
@@ -47,6 +46,8 @@ from .rule_container import RuleContainer
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator, Sequence
 	from typing import Any
+
+	from scal3.filesystem import FileSystem
 
 	from .event_container import EventContainer
 	from .groups import EventGroup

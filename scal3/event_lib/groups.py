@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 	from datetime import datetime
 	from typing import Any
 
+	from scal3.filesystem import FileSystem
+
 	from .events import Event
 
 from contextlib import suppress
@@ -51,10 +53,7 @@ from scal3.date_utils import dateDecode, dateEncode
 from scal3.event_lib import state
 from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
-
-# from scal3.interval_utils import
 from scal3.s_object import (
-	FileSystem,
 	SObj,
 	makeOrderedData,
 )

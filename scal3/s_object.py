@@ -10,7 +10,7 @@ import os.path
 import sys
 from collections import OrderedDict
 from hashlib import sha1
-from os.path import isabs, join
+from os.path import join
 from time import time as now
 
 from scal3.path import sourceDir
@@ -25,12 +25,11 @@ from scal3.json_utils import dataToPrettyJson
 
 if TYPE_CHECKING:
 	from collections.abc import Iterable, Sequence
-	from io import TextIOBase
 	from typing import Any, Self
 
+	from scal3.filesystem import FileSystem
+
 __all__ = [
-	"DefaultFileSystem",
-	"FileSystem",
 	"SObj",
 	"SObjBinaryModel",
 	"SObjTextModel",
@@ -46,81 +45,6 @@ dataToJson = dataToPrettyJson
 # from scal3.core import dataToJson  # FIXME
 
 objectDirName = "objects"
-
-
-class FileSystem:
-	def open(
-		self,
-		fpath: str,
-		mode: str = "r",
-		encoding: str | None = None,
-	) -> TextIOBase:
-		raise NotImplementedError
-
-	def abspath(self, path: str) -> str:
-		raise NotImplementedError
-
-	def isdir(self, path: str) -> bool:
-		raise NotImplementedError
-
-	def listdir(self, dpath: str) -> list[str]:
-		raise NotImplementedError
-
-	def makeDir(self, dpath: str) -> None:
-		raise NotImplementedError
-
-	def removeFile(self, fpath: str) -> None:
-		raise NotImplementedError
-
-
-class DefaultFileSystem(FileSystem):
-	def __init__(self, rootPath: str) -> None:
-		self._rootPath = rootPath
-
-	def abspath(self, path: str) -> str:
-		if isabs(path):
-			return path
-		return join(self._rootPath, path)
-
-	def isdir(self, path: str) -> bool:
-		if isabs(path):
-			log.warning(f"DefaultFileSystem: isdir: reading abs path {path}")
-		return os.path.isdir(self.abspath(path))
-
-	def open(
-		self,
-		fpath: str,
-		mode: str = "r",
-		encoding: str | None = None,
-	) -> TextIOBase:
-		if isabs(fpath):
-			log.warning(f"DefaultFileSystem: open: reading abs path {fpath}")
-		fpath = self.abspath(fpath)
-		if mode == "r" and encoding is None:
-			encoding = "utf-8"
-		return open(fpath, mode=mode, encoding=encoding)  # noqa: SIM115
-
-	def listdir(self, dpath: str) -> list[str]:
-		if isabs(dpath):
-			log.warning(f"DefaultFileSystem: listdir: reading abs path {dpath}")
-		return os.listdir(self.abspath(dpath))
-
-	def isfile(self, fpath: str) -> bool:
-		if isabs(fpath):
-			log.warning(f"DefaultFileSystem: isfile: reading abs path {fpath}")
-		return os.path.isfile(self.abspath(fpath))
-
-	def makeDir(self, dpath: str) -> None:
-		if isabs(dpath):
-			log.warning(f"DefaultFileSystem: makeDir: reading abs path {dpath}")
-		dpathAbs = self.abspath(dpath)
-		if not os.path.isdir(dpathAbs):
-			os.makedirs(dpathAbs)
-
-	def removeFile(self, fpath: str) -> None:
-		if isabs(fpath):
-			log.warning(f"DefaultFileSystem: removeFile: reading abs path {fpath}")
-		os.remove(self.abspath(fpath))
 
 
 class SObj:

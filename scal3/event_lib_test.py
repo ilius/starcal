@@ -7,7 +7,7 @@ import unittest
 sys.path.append(".")
 
 from scal3 import event_lib
-from scal3.s_object import DefaultFileSystem
+from scal3.filesystem import DefaultFileSystem
 
 myTmpDir = tempfile.mkdtemp(prefix="starcal-event_lib_test-")
 

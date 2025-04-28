@@ -43,6 +43,7 @@ from scal3.date_utils import (
 	getJdRangeForMonth,
 	jwday,
 )
+from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
 	simplifyNumList,
@@ -50,11 +51,7 @@ from scal3.interval_utils import (
 from scal3.locale_man import getMonthName, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, svgDir
-
-# from scal3.interval_utils import
 from scal3.s_object import (
-	DefaultFileSystem,
-	FileSystem,
 	SObj,
 	SObjBinaryModel,
 	SObjTextModel,
@@ -119,7 +116,6 @@ __all__ = [
 	"EventGroup",
 	"EventGroupsHolder",
 	"EventTrash",
-	"FileSystem",
 	"JdOccurSet",
 	"LargeScaleGroup",
 	"NoteBook",
