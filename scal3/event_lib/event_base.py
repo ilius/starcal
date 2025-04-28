@@ -37,6 +37,7 @@ from scal3.s_object import (
 )
 from scal3.time_utils import durationDecode, durationEncode
 
+from .exceptions import BadEventFile
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
 from .occur import JdOccurSet
@@ -382,7 +383,10 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				raise ValueError(f"Invalid calType: '{calType}'") from None
 		self.clearRules()
 		if "rules" in data:
-			self.setRulesData(data["rules"])
+			try:
+				self.setRulesData(data["rules"])
+			except BadEventFile:
+				log.exception(f"{data=}")
 		self.notifiers = []
 		if "notifiers" in data:
 			for notifierName, notifierData in data["notifiers"]:
