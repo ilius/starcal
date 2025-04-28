@@ -43,6 +43,7 @@ from scal3.date_utils import (
 	getJdRangeForMonth,
 	jwday,
 )
+from scal3.event_lib.objects import iterObjectFiles
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
@@ -55,7 +56,6 @@ from scal3.s_object import (
 	SObj,
 	SObjBinaryModel,
 	SObjTextModel,
-	iterObjectFiles,
 	loadBinaryObject,
 	makeOrderedData,
 	objectDirName,
