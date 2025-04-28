@@ -20,9 +20,28 @@ from scal3 import logger
 
 log = logger.get()
 
+from os.path import join
+from time import time as now
 from typing import TYPE_CHECKING
 
+import mytz
+from scal3 import core
+from scal3.cal_types import calTypes
+from scal3.event_lib import state
+from scal3.locale_man import tr as _
+from scal3.path import pixDir
+from scal3.s_object import (
+	FileSystem,
+	SObj,
+	SObjBinaryModel,
+)
+from scal3.time_utils import durationDecode, durationEncode
+
+from .icon import WithIcon, iconAbsToRelativelnData
+from .objects import HistoryEventObjBinaryModel
 from .occur import JdOccurSet
+from .register import classes
+from .rule_container import RuleContainer
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator, Sequence
@@ -33,34 +52,6 @@ if TYPE_CHECKING:
 	from .occur import OccurSet
 	from .rules import EventRule
 
-from os.path import join
-from time import time as now
-
-import mytz
-from scal3 import core
-from scal3.cal_types import (
-	calTypes,
-)
-from scal3.event_lib import state
-from scal3.locale_man import tr as _
-from scal3.path import pixDir
-from scal3.s_object import (
-	FileSystem,
-	SObj,
-	SObjBinaryModel,
-)
-from scal3.time_utils import (
-	durationDecode,
-	durationEncode,
-)
-
-from .icon import (
-	WithIcon,
-	iconAbsToRelativelnData,
-)
-from .objects import HistoryEventObjBinaryModel
-from .register import classes
-from .rule_container import RuleContainer
 
 __all__ = ["Event", "eventsDir"]
 
