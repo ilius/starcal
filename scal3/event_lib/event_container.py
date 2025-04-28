@@ -33,8 +33,6 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 
 # from scal3.interval_utils import
-from scal3.s_object import updateBinaryObjectBasicData
-
 from .event_base import Event
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
@@ -157,7 +155,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		with self.fs.open(eventFile) as fp:
 			data = json.loads(fp.read())
 		data["id"] = eid  # FIXME
-		lastEpoch, lastHash = updateBinaryObjectBasicData(
+		lastEpoch, lastHash = self.updateBasicData(
 			data,
 			eventFile,
 			"event",
