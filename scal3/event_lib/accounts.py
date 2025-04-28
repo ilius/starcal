@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 	from collections.abc import Iterator
 	from typing import Any
 
-	from scal3.s_object import FileSystem
+	from scal3.filesystem import FileSystem
 
 	from .groups import EventGroup
 
