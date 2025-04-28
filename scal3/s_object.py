@@ -32,6 +32,7 @@ __all__ = [
 	"SObj",
 	"SObjBinaryModel",
 	"SObjTextModel",
+	"getObjectPath",
 	"loadBinaryObject",
 	"objectDirName",
 	"saveBinaryObject",
