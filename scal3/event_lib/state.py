@@ -20,16 +20,25 @@ from scal3 import logger
 
 log = logger.get()
 
-
 from os.path import join, splitext
 from time import perf_counter
 from time import time as now
 
 from scal3 import core
-
-from .objects import EventObjTextModel
+from scal3.s_object import SObjTextModel
 
 __all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
+
+
+allReadOnly = False
+
+
+class EventObjTextModel(SObjTextModel):
+	def save(self) -> None:
+		if allReadOnly:
+			log.info(f"events are read-only, ignored file {self.file}")
+			return
+		SObjTextModel.save(self)
 
 
 class InfoWrapper(EventObjTextModel):
@@ -108,4 +117,3 @@ class LastIdsWrapper(EventObjTextModel):
 
 info = None  # type: InfoWrapper
 lastIds = None  # type: LastIdsWrappe
-allReadOnly = False
