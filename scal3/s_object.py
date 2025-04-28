@@ -35,7 +35,6 @@ __all__ = [
 	"getObjectPath",
 	"loadBinaryObject",
 	"objectDirName",
-	"saveBinaryObject",
 ]
 
 
@@ -199,18 +198,6 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 	return dpath, fpath
 
 
-def saveBinaryObject(data: dict | list, fs: FileSystem) -> str:
-	data = dict(sorted(data.items()))
-	bsonBytes = bytes(bson.dumps(data))
-	hash_ = sha1(bsonBytes).hexdigest()
-	dpath, fpath = getObjectPath(hash_)
-	if not fs.isfile(fpath):
-		fs.makeDir(dpath)
-		with fs.open(fpath, "wb") as fp:
-			fp.write(bsonBytes)
-	return hash_
-
-
 def loadBinaryObject(hashStr: str, fs: FileSystem) -> dict | list:
 	_dpath, fpath = getObjectPath(hashStr)
 	with fs.open(fpath, "rb") as fp:
@@ -331,6 +318,18 @@ class SObjBinaryModel(SObj):
 		with self.fs.open(self.file, "w") as fp:
 			fp.write(jsonStr)
 
+	@classmethod
+	def saveData(cls, data: dict | list, fs: FileSystem) -> str:
+		data = dict(sorted(data.items()))
+		bsonBytes = bytes(bson.dumps(data))
+		hash_ = sha1(bsonBytes).hexdigest()
+		dpath, fpath = getObjectPath(hash_)
+		if not fs.isfile(fpath):
+			fs.makeDir(dpath)
+			with fs.open(fpath, "wb") as fp:
+				fp.write(bsonBytes)
+		return hash_
+
 	def save(
 		self,
 		*histArgs,  # noqa: ANN002  # FIXME?
@@ -350,7 +349,7 @@ class SObjBinaryModel(SObj):
 			basicData[param] = data.pop(param)
 		if "modified" in data:
 			del data["modified"]
-		hash_ = saveBinaryObject(data, self.fs)
+		hash_ = self.saveData(data, self.fs)
 		# ---
 		history = self.loadHistory()
 		# ---
