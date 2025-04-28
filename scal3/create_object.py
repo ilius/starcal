@@ -2,7 +2,7 @@ import json
 
 from scal3.filesystem import DefaultFileSystem
 from scal3.path import confDir
-from scal3.s_object import saveBinaryObject
+from scal3.s_object import SObjBinaryModel
 
 if __name__ == "__main__":
 	fs = DefaultFileSystem(confDir)
@@ -15,5 +15,5 @@ if __name__ == "__main__":
 		jsonStr += line
 	data = json.loads(jsonStr)
 	print("-------------------------------")  # noqa: T201
-	_hash = saveBinaryObject(data, fs)
+	_hash = SObjBinaryModel.saveData(data, fs)
 	print("Created object with hash:", _hash)  # noqa: T201
