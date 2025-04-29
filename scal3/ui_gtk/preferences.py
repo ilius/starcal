@@ -155,7 +155,7 @@ class PreferencesWindow(gtk.Window):
 		from scal3.ui_gtk.utils import cssTextStyle
 
 		return ".preferences-main-grid " + cssTextStyle(
-			font=ui.getFont(scale=1.6),
+			font=ui.getFont(scale=1.5),
 		)
 
 	def __init__(self, **kwargs):
@@ -166,6 +166,9 @@ class PreferencesWindow(gtk.Window):
 		self.connect("key-press-event", self.onKeyPress)
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
+		# ---
+		self.spacing = ui.getFont().size
+		self.mainGridSpacing = ui.getFont(scale=0.8).size
 		# ---
 		self.vbox = VBox()
 		self.add(self.vbox)
@@ -206,8 +209,8 @@ class PreferencesWindow(gtk.Window):
 		stack.setupWindowTitle(self, _("Preferences"), False)
 		self.stack = stack
 		# --------------- Page 0 (Language and Calendar Types) ----------------
-		vbox = VBox(spacing=5)
-		vbox.set_border_width(5)
+		vbox = VBox(spacing=self.spacing)
+		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "lang_calTypes"
@@ -216,7 +219,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-desktop-locale.png"
 		self.prefPages.append(page)
 		# --------------------------
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 2)
 		pack(hbox, gtk.Label(label=_("Language")))
 		itemLang = LangPrefItem()
 		self.localePrefItems.append(itemLang)
@@ -239,8 +242,8 @@ class PreferencesWindow(gtk.Window):
 		frame.set_border_width(0)
 		pack(vbox, hbox, 1, 1)
 		# ------------------------------ Page 1 (General) ---------------------
-		vbox = VBox()
-		vbox.set_border_width(5)
+		vbox = VBox(spacing=self.spacing)
+		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "general"
@@ -249,7 +252,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
 		# --------------------------
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 2)
 		item = CheckStartupPrefItem()
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
@@ -277,7 +280,7 @@ class PreferencesWindow(gtk.Window):
 			_("Window in Taskbar"),
 		)
 		self.uiPrefItems.append(item)
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 2)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		# -----------
@@ -294,12 +297,12 @@ class PreferencesWindow(gtk.Window):
 				_("Use AppIndicator"),
 			)
 			self.uiPrefItems.append(item)
-			hbox = HBox(spacing=3)
+			hbox = HBox(spacing=self.spacing / 2)
 			pack(hbox, item.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(vbox, hbox)
 		# --------------------------
-		# hbox = HBox(spacing=3)
+		# hbox = HBox(spacing=self.spacing/2)
 		# pack(hbox, gtk.Label(label=_("Show Digital Clock:")))
 		# pack(hbox, gtk.Label(), 1, 1)
 		# #item = CheckPrefItem(
@@ -321,8 +324,8 @@ class PreferencesWindow(gtk.Window):
 		# pack(hbox, gtk.Label(), 1, 1)
 		# pack(vbox, hbox)
 		# ------------------------------ Page 2 (Appearance) ------------------
-		vbox = VBox(spacing=0)
-		vbox.set_border_width(5)
+		vbox = VBox(spacing=self.spacing)
+		vbox.set_border_width(self.spacing)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "appearance"
@@ -333,10 +336,10 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-desktop-theme.png"
 		self.prefPages.append(page)
 		# --------
-		buttonPadding = 7
-		padding = 5
+		buttonPadding = self.spacing
+		padding = self.spacing / 2
 		# ---
-		hbox = HBox(spacing=2)
+		hbox = HBox(spacing=self.spacing / 2)
 		# ---
 		customCheckItem = CheckPrefItem(
 			conf,
@@ -378,8 +381,8 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		# ------------------------- Theme ---------------------
 		pageHBox = HBox()
-		pageHBox.set_border_width(10)
-		spacing = 3
+		pageHBox.set_border_width(self.spacing)
+		spacing = self.spacing / 3
 		# ---
 		pageVBox = VBox()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -462,7 +465,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
-		pack(pageHBox, pageVBox, 1, 1, padding=5)
+		pack(pageHBox, pageVBox, 1, 1, padding=self.spacing / 2)
 		# ----
 		page = StackPage()
 		page.pageParent = "appearance"
@@ -497,7 +500,7 @@ class PreferencesWindow(gtk.Window):
 		# ------
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox(spacing=10)
+		hbox = HBox(spacing=self.spacing)
 		label = gtk.Label(label=_("Date Format"))
 		pack(hbox, label)
 		sgroup.add_widget(label)
@@ -520,7 +523,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# --------------------------------
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 3)
 		item = CheckPrefItem(
 			locale_man,
 			"enableNumLocale",
@@ -529,11 +532,11 @@ class PreferencesWindow(gtk.Window):
 		self.localePrefItems.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(vbox, hbox, padding=10)
+		pack(vbox, hbox, padding=self.spacing)
 		# --------------------------------
-		pageVBox = VBox(spacing=5)
+		pageVBox = VBox(spacing=self.spacing / 2)
 		# ----
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 3)
 		pack(hbox, gtk.Label(label=_("First day of week")))
 		# item = ComboTextPrefItem(  # FIXME
 		self.comboFirstWD = gtk.ComboBoxText()
@@ -544,7 +547,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, self.comboFirstWD)
 		pack(pageVBox, hbox)
 		# ---------
-		hbox = HBox(spacing=3)
+		hbox = HBox(spacing=self.spacing / 3)
 		pack(hbox, gtk.Label(label=_("First week of year containts")))
 		combo = gtk.ComboBoxText()
 		texts = [
@@ -594,7 +597,7 @@ class PreferencesWindow(gtk.Window):
 		for mod in calTypes:
 			if not mod.options:
 				continue
-			pageVBox = VBox(spacing=10)
+			pageVBox = VBox(spacing=self.spacing)
 			page = StackPage()
 			page.pageParent = "regional"
 			page.pageWidget = pageVBox
@@ -627,16 +630,18 @@ class PreferencesWindow(gtk.Window):
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
-		grid.set_row_spacing(4)
+		# grid.set_row_spacing(self.spacing)
 		for index, page in enumerate(regionalSubPages):
-			grid.attach(self.newWideButton(page), 0, index, 1, 1)
+			button = self.newWideButton(page)
+			button.set_border_width(self.spacing * 0.7)
+			grid.attach(button, 0, index, 1, 1)
 		grid.show_all()
 		pack(vbox, grid)
 		# ---
 		self.moduleOptions = options
 		# ------------------------------ Page 4 (Advanced) -------------------
-		vbox = VBox(spacing=10)
-		vbox.set_border_width(5)
+		vbox = VBox(spacing=self.spacing)
+		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "advanced"
@@ -651,7 +656,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		self.initialLogLevel = logger.logLevel
 		# ------
-		hbox = HBox(spacing=5)
+		hbox = HBox(spacing=self.spacing / 2)
 		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Event Time Format"))
 		pack(hbox, label)
@@ -686,7 +691,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# ------
-		hbox = HBox(spacing=5)
+		hbox = HBox(spacing=self.spacing / 2)
 		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Digital Clock Format"))
 		pack(hbox, label)
@@ -715,7 +720,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# ------
-		hbox = HBox(spacing=5)
+		hbox = HBox(spacing=self.spacing / 2)
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
@@ -724,7 +729,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
 		# ------
-		hbox = HBox(spacing=5)
+		hbox = HBox(spacing=self.spacing / 2)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
 		item = SpinPrefItem(conf, "cellMenuXOffset", 0, 999, digits=0, step=1)
@@ -732,7 +737,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
 		# ------
-		hbox = HBox(spacing=5)
+		hbox = HBox(spacing=self.spacing / 2)
 		button = labelImageButton(
 			label=_("Clear Image Cache"),
 			# TODO: _("Clear Image Cache ({size})").format(size=""),
@@ -742,9 +747,9 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, button)
 		pack(vbox, hbox)
 		# ------------------------------ Page 5 (Plugins) --------------------
-		vbox = VBox()
+		vbox = VBox(spacing=self.spacing / 2)
 		page = StackPage()
-		vbox.set_border_width(5)
+		vbox.set_border_width(self.spacing / 2)
 		page.pageWidget = vbox
 		page.pageName = "plugins"
 		page.pageTitle = _("Plugins")
@@ -964,8 +969,8 @@ class PreferencesWindow(gtk.Window):
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
 		# ------------------------------------- Page: Status Icon
-		pageVBox = VBox(spacing=10)
-		pageVBox.set_border_width(10)
+		pageVBox = VBox(spacing=self.spacing * 0.8)
+		pageVBox.set_border_width(self.spacing)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		hbox = HBox(spacing=1)
@@ -1082,8 +1087,8 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "status-icon-example.svg"
 		self.prefPages.append(page)
 		# ------------------------------------- Page: Accounts
-		vbox = VBox()
-		vbox.set_border_width(5)
+		vbox = VBox(spacing=self.spacing / 2)
+		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "accounts"
@@ -1206,9 +1211,9 @@ class PreferencesWindow(gtk.Window):
 		grid = gtk.Grid()
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
-		grid.set_row_spacing(15)
-		grid.set_column_spacing(15)
-		grid.set_border_width(20)
+		grid.set_row_spacing(self.mainGridSpacing)
+		grid.set_column_spacing(self.mainGridSpacing)
+		grid.set_border_width(self.mainGridSpacing * 4 // 3)
 		# ----
 		grid.get_style_context().add_class(self.mainGridStyleClass)
 		# ----
@@ -1260,8 +1265,8 @@ class PreferencesWindow(gtk.Window):
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
-		hbox = HBox(spacing=10)
-		hbox.set_border_width(10)
+		hbox = HBox(spacing=self.spacing)
+		hbox.set_border_width(self.spacing)
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
