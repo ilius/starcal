@@ -560,7 +560,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def setJdExact(self, jd: int) -> None:
 		return self.setJd(jd)
 
-	def getServerData(self) -> dict[str, Any]:
+	def getV4Data(self) -> dict[str, Any]:
 		data = {
 			"summary": self.getSummary(),
 			"description": self.getDescription(),
@@ -582,8 +582,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		if oldEvent.name != self.name:
 			patch["newEventType"] = self.name
 
-		oldData = oldEvent.getServerData()
-		newData = self.getServerData()
+		oldData = oldEvent.getV4Data()
+		newData = self.getV4Data()
 
 		items = []
 		for fieldName, newValue in newData.items():
