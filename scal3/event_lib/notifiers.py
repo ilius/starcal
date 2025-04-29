@@ -130,6 +130,7 @@ class CommandNotifier(EventNotifier):
 		self.pyEval = False
 
 	def notify(self, finishFunc: Callable) -> None:
-		from scal3.ui_gtk.event.command.alarm import notify
+		raise NotImplementedError
+		# from scal3.ui_gtk.event.command.alarm import notify
 
-		notify(self, finishFunc)
+		# notify(self, finishFunc)
