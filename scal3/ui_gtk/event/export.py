@@ -6,7 +6,7 @@ from scal3.json_utils import (
 	dataToPrettyJson,
 )
 from scal3.locale_man import tr as _
-from scal3.path import deskDir
+from scal3.path import homeDir
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
@@ -65,7 +65,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		pack(self.vbox, hbox)
 		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
-		self.fcw.set_current_folder(deskDir)
+		self.fcw.set_current_folder(homeDir)
 		pack(self.vbox, self.fcw, 1, 1)
 		# ----
 		self.vbox.show_all()
@@ -185,7 +185,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
 		self.fpathEntry.set_text(
 			join(
-				deskDir,
+				homeDir,
 				f"events-{y:04d}-{m:02d}-{d:02d}",
 			),
 		)
@@ -296,7 +296,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		pack(self.vbox, hbox)
 		# --------
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
-		self.fcw.set_current_folder(deskDir)
+		self.fcw.set_current_folder(homeDir)
 		pack(self.vbox, self.fcw, 1, 1)
 		# ----
 		self.vbox.show_all()
