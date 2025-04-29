@@ -33,7 +33,6 @@ __all__ = [
 	"SObjBinaryModel",
 	"SObjTextModel",
 	"getObjectPath",
-	"loadBinaryObject",
 	"objectDirName",
 ]
 
@@ -198,17 +197,6 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 	return dpath, fpath
 
 
-def loadBinaryObject(hashStr: str, fs: FileSystem) -> dict | list:
-	_dpath, fpath = getObjectPath(hashStr)
-	with fs.open(fpath, "rb") as fp:
-		bsonBytes = fp.read()
-	if hashStr != sha1(bsonBytes).hexdigest():
-		raise OSError(
-			f"sha1 diggest does not match for object file '{fpath}'",
-		)
-	return bson.loads(bsonBytes)
-
-
 class SObjBinaryModel(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
@@ -268,6 +256,17 @@ class SObjBinaryModel(SObj):
 		return obj
 
 	@classmethod
+	def loadData(cls, hashStr: str, fs: FileSystem) -> dict | list:
+		_dpath, fpath = getObjectPath(hashStr)
+		with fs.open(fpath, "rb") as fp:
+			bsonBytes = fp.read()
+		if hashStr != sha1(bsonBytes).hexdigest():
+			raise OSError(
+				f"sha1 diggest does not match for object file '{fpath}'",
+			)
+		return bson.loads(bsonBytes)
+
+	@classmethod
 	def updateBasicData(
 		cls,
 		data: dict | list,
@@ -288,7 +287,7 @@ class SObjBinaryModel(SObj):
 			raise ValueError(
 				f'invalid {fileType} file "{filePath}", no "history"',
 			) from None
-		data.update(loadBinaryObject(lastHash, fs))
+		data.update(cls.loadData(lastHash, fs))
 		data["modified"] = lastEpoch  # FIXME
 		return (lastEpoch, lastHash)
 
@@ -372,7 +371,7 @@ class SObjBinaryModel(SObj):
 	) -> Self:
 		cls = self.__class__
 		data = self.loadBasicData()
-		data.update(loadBinaryObject(revHash, self.fs))
+		data.update(self.loadData(revHash, self.fs))
 		try:
 			type_ = data["type"]
 		except (KeyError, TypeError):

@@ -36,7 +36,7 @@ from os.path import join, splitext
 from scal3 import core, ics
 from scal3.event_lib.objects import iterObjectFiles
 from scal3.locale_man import tr as _
-from scal3.s_object import loadBinaryObject
+from scal3.s_object import SObjBinaryModel
 
 from .event_base import eventsDir
 from .groups import EventGroup, groupsDir
@@ -275,7 +275,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 		for _hash, _fpath in iterObjectFiles(fs):
 			if _hash in eventHashSet:
 				continue
-			data = loadBinaryObject(_hash, fs)
+			data = SObjBinaryModel.loadData(_hash, fs)
 			if data.get("type") not in eventTypeSet:
 				continue
 			# newEventHashList.append(_hash)

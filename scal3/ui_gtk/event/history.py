@@ -10,7 +10,7 @@ from scal3 import ui
 from scal3.format_time import compileTmFormat
 from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
-from scal3.s_object import loadBinaryObject
+from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import getJhmsFromEpoch
 from scal3.ui_gtk import HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
@@ -388,7 +388,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return {}
 		if _hash in self.objectCache:
 			return self.objectCache[_hash]
-		data = loadBinaryObject(_hash, ui.fs)
+		data = SObjBinaryModel.loadData(_hash, ui.fs)
 		data = self.normalizeObjectData(data)
 		if len(self.objectCache) > 100:
 			self.objectCache.popitem()
