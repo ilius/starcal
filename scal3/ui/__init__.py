@@ -118,7 +118,9 @@ confParamsCustomize = getParamNamesWithFlag(CUSTOMIZE)
 # print(f"confParamsCustomize = {sorted(confParamsCustomize)}")
 
 
-fontParams = ["fontDefault"] + [p.v3Name for p in confParamsData if p.type == "Font"]
+fontParams = ["fontDefault"] + [
+	p.v3Name for p in confParamsData if p.type.startswith("Font")
+]
 
 confDecoders = dict.fromkeys(fontParams, Font.fromList)
 confEncoders = {
