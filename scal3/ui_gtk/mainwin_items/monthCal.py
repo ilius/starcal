@@ -385,7 +385,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 					)
 				show_layout(cr, lay)
 		selectedCellPos = ui.cells.current.monthPos
-		if ui.cells.today.inSameMonth(ui.cells.current):
+		# cell.getDate(calTypes.primary)[:2] == other.getDate(calTypes.primary)[:2]
+		if ui.cells.today.date[:2] == ui.cells.current.date[:2]:
 			tx, ty = ui.cells.today.monthPos  # today x and y
 			x0 = self.cx[tx] - self.dx / 2
 			y0 = self.cy[ty] - self.dy / 2
