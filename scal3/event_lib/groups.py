@@ -870,7 +870,7 @@ class EventGroup(EventContainer):
 							"eventId": event.id,
 							"eventType": event.name,
 							"action": "add",
-							"newEventData": event.getServerData(),
+							"newEventData": event.getV4Data(),
 						},
 					)
 				else:

@@ -124,13 +124,13 @@ class TaskEvent(SingleStartEndEvent):
 	)
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
+	def getV4Data(self) -> dict[str, Any]:
 		try:
 			durationUnit = self["duration"].unit
 		except KeyError:
 			durationUnit = 0
 
-		data = Event.getServerData(self)
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"startTime": jsonTimeFromEpoch(self["start"].getEpoch()),
@@ -308,7 +308,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	)
 	isAllDay = True
 
-	def getServerData(self) -> dict[str, Any]:
+	def getV4Data(self) -> dict[str, Any]:
 		try:
 			self["duration"]
 		except KeyError:
@@ -316,7 +316,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		else:
 			durationEnable = True
 
-		data = Event.getServerData(self)
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"startJd": self["start"].getJd(),
@@ -438,8 +438,8 @@ class DailyNoteEvent(Event):
 	supportedRules = ("date",)
 	isAllDay = True
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"jd": self.getJd(),
@@ -509,8 +509,8 @@ class YearlyEvent(Event):
 	paramsOrder = Event.paramsOrder + ("startYear", "month", "day")
 	isAllDay = True
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"month": self.getMonth(),
@@ -705,8 +705,8 @@ class MonthlyEvent(Event):
 	supportedRules = requiredRules
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		startSec, endSec = self["dayTimeRange"].getSecondsRange()
 		data.update(
 			{
@@ -763,8 +763,8 @@ class WeeklyEvent(Event):
 	supportedRules = requiredRules
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		startSec, endSec = self["dayTimeRange"].getSecondsRange()
 		data.update(
 			{
@@ -813,8 +813,8 @@ class UniversityClassEvent(Event):
 	params = Event.params + ("courseId",)
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		startSec, endSec = self["dayTimeRange"].getSecondsRange()
 		data.update(
 			{
@@ -941,8 +941,8 @@ class UniversityExamEvent(DailyNoteEvent):
 	params = DailyNoteEvent.params + ("courseId",)
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		startSec, endSec = self["dayTimeRange"].getSecondsRange()
 		data.update(
 			{
@@ -1047,8 +1047,8 @@ class LifetimeEvent(SingleStartEndEvent):
 	# 	if ok:
 	# 		start.date = ...
 
-	def getServerData(self) -> dict[str, str]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, str]:
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"startJd": self["start"].getJd(),
@@ -1105,8 +1105,8 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 
 	isAllDay = True
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"scale": self.scale,
@@ -1207,8 +1207,8 @@ class CustomEvent(Event):
 	desc = _("Custom Event")
 	isAllDay = False
 
-	def getServerData(self) -> dict[str, Any]:
-		data = Event.getServerData(self)
+	def getV4Data(self) -> dict[str, Any]:
+		data = Event.getV4Data(self)
 		data.update(
 			{
 				"rules": [
