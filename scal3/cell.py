@@ -148,9 +148,6 @@ class Cell(CellType):
 	def getDate(self, calType: int) -> tuple[int, int, int]:
 		return self.dates[calType]
 
-	def inSameMonth(self, other: CellType) -> bool:
-		return self.getDate(calTypes.primary)[:2] == other.getDate(calTypes.primary)[:2]
-
 	def getEventIcons(self, showIndex: int) -> list[str]:
 		iconList = []
 		for item in self.getEventsData():
