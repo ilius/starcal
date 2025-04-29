@@ -413,8 +413,8 @@ dcalWeekdayParams: list[dict] = {
 dcalNavButtonsEnable: bool = True
 dcalNavButtonsGeo: list[dict] = {
 	"auto_rtl": True,
-	"size": 64,
-	"spacing": 10,
+	"size": 64.0,
+	"spacing": 10.0,
 	"pos": (0, 20),
 	"xalign": "center",
 	"yalign": "buttom",
@@ -423,12 +423,12 @@ dcalNavButtonsOpacity: float = 0.7
 dcalWeekdayLocalize: bool = True
 dcalWeekdayAbbreviate: bool = False
 dcalWeekdayUppercase: bool = False
-dcalEventIconSize: int = 20
+dcalEventIconSize: float = 20.0
 dcalEventTotalSizeRatio: float = 0.3
 dcalWinX: int = 0
 dcalWinY: int = 0
-dcalWinWidth: int = 180
-dcalWinHeight: int = 180
+dcalWinWidth: float = 180.0
+dcalWinHeight: float = 180.0
 dcalWinBackgroundColor = (0, 10, 0)
 dcalWinWidgetButtonsEnable: bool = True
 dcalWinWeekdayLocalize: bool = True
@@ -497,7 +497,7 @@ dcalWinWeekdayParams: list[dict] = {
 	"font": None,
 	"color": (0, 200, 205),
 }
-dcalWinEventIconSize: int = 20
+dcalWinEventIconSize: float = 20.0
 dcalWinEventTotalSizeRatio: float = 0.3
 dcalWinSeasonPieEnable: bool = False
 dcalWinSeasonPieGeo: list[dict] = {
