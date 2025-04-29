@@ -11,7 +11,7 @@ from os.path import isabs, isfile, join
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
 
-__all__ = ["eventTags"]
+__all__ = ["eventTags", "eventTagsDesc"]
 
 
 eventIconDir = join(svgDir, "event")
