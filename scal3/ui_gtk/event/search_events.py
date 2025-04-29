@@ -776,8 +776,6 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		return False
 
 	def onTreeviewKeyPress(self, treev, gevent):
-		# from scal3.time_utils import getGtkTimeFromEpoch
-		# log.debug(gevent.time-getGtkTimeFromEpoch(now())-- FIXME)
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
 		# gdk.CURRENT_TIME == 0
 		# gevent.time == gtk.get_current_event_time() # OK

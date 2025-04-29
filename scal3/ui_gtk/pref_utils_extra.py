@@ -291,14 +291,14 @@ class LangPrefItem(PrefItem):
 		i = self._widget.get_active()
 		if i == 0:
 			return ""
-		return langDict.keyList[i - 1]
+		return list(langDict)[i - 1]
 
 	def set(self, value: str) -> None:
 		if not value:
 			self._widget.set_active(0)
 		else:
 			try:
-				i = langDict.keyList.index(value)
+				i = list(langDict).index(value)
 			except ValueError:
 				log.info(f"language {value!r} in not in list!")
 				self._widget.set_active(0)

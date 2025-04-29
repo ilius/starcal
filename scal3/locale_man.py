@@ -31,6 +31,7 @@ import json
 import os
 import string
 from contextlib import suppress
+from operator import attrgetter
 from os.path import (
 	isabs,
 	isfile,
@@ -44,6 +45,7 @@ from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )
+from scal3.dict_utils import sortDict
 from scal3.path import (
 	APP_NAME,
 	confDir,
@@ -51,7 +53,7 @@ from scal3.path import (
 	sourceDir,
 )
 from scal3.s_object import SObjTextModel
-from scal3.utils import StrOrderedDict, toStr
+from scal3.utils import toStr
 
 __all__ = [
 	"addLRM",
@@ -247,7 +249,7 @@ class LangData(SObjTextModel):
 # ----------------------------------------------------------
 
 
-langDict = StrOrderedDict()
+langDict = {}
 try:
 	with open(join(langDir, "default"), encoding="utf-8") as fp:
 		langDefault = fp.read().strip()
@@ -285,7 +287,7 @@ for fname in langFileList:
 
 
 # maybe sort by "code" or "nativeName"
-langDict.sort("name")
+langDict = sortDict(langDict, attrgetter("name"))
 
 
 def popen_output(cmd: list[str] | str) -> str:
@@ -303,10 +305,10 @@ def prepareLanguage() -> str:
 	if lang == "":  # noqa: PLC1901
 		# langActive = locale.setlocale(locale.LC_ALL, "")
 		langActive = sysLangDefault
-		if langActive not in langDict.keyList:
+		if langActive not in langDict:
 			langActive = langDefault
 		# os.environ["LANG"] = langActive
-	elif lang in langDict.keyList:
+	elif lang in langDict:
 		# try:
 		# 	lang = locale.setlocale(locale.LC_ALL, locale.normalize(lang))
 		# except locale.Error:
@@ -317,7 +319,7 @@ def prepareLanguage() -> str:
 		# locale.setlocale(locale.LC_ALL, lang) # lang = locale.setlocale(...
 		langActive = lang
 		os.environ["LANG"] = lang
-	else:  # not lang in langDict.keyList
+	else:  # not lang in langDict
 		# locale.setlocale(locale.LC_ALL, langDefault) # lang = locale.setlocale(...
 		lang = langDefault
 		langActive = langDefault

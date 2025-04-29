@@ -14,6 +14,15 @@ if TYPE_CHECKING:
 __all__ = ["makeOrderedData"]
 
 
+def sortDict(data: dict[str, Any], keyFunc: str) -> dict[str, Any]:
+	return dict(
+		sorted(
+			data.items(),
+			key=lambda item: keyFunc(item[1]),
+		),
+	)
+
+
 def makeOrderedData(
 	data: dict[str, Any] | Sequence,
 	params: Sequence[str],
