@@ -20,14 +20,9 @@ from scal3 import logger
 
 log = logger.get()
 
-import typing
-from os.path import split, splitext
 from time import gmtime, mktime, strftime, strptime
 
 from scal3.cal_types import GREGORIAN, jd_to, to_jd
-
-if typing.TYPE_CHECKING:
-	from scal3.plugin_type import PluginType
 
 # from scal3.path import
 
@@ -121,49 +116,3 @@ def splitIcsValue(value: str) -> list[str]:
 		else:
 			raise ValueError(f"unkown ics value {value!r}")
 	return data
-
-
-def convertHolidayPlugToIcs(
-	plug: PluginType,
-	startJd: int,
-	endJd: int,
-	namePostfix: str = "",
-) -> None:
-	fname = split(plug.fpath)[-1]
-	fname = splitext(fname)[0] + f"{namePostfix}.ics"
-	plug.exportToIcs(fname, startJd, endJd)
-
-
-def convertBuiltinTextPlugToIcs(
-	plug: PluginType,
-	startJd: int,
-	endJd: int,
-	namePostfix: str = "",
-) -> None:
-	plug.load()  # FIXME
-	calType = plug.calType
-	icsText = icsHeader
-	currentTimeStamp = strftime(icsTmFormat)
-	for jd in range(startJd, endJd):
-		myear, mmonth, mday = jd_to(jd, calType)
-		dayText = plug.getText(myear, mmonth, mday)
-		if dayText:
-			icsText += (
-				"\n".join(
-					[
-						"BEGIN:VEVEN",
-						"CREATED:" + currentTimeStamp,
-						"LAST-MODIFIED:" + currentTimeStamp,
-						"DTSTART;VALUE=DATE:" + getIcsDateByJd(jd),
-						"DTEND;VALUE=DATE:" + getIcsDateByJd(jd + 1),
-						"SUMMARY:" + dayText,
-						"END:VEVENT",
-					],
-				)
-				+ "\n"
-			)
-	icsText += "END:VCALENDAR\n"
-	fname = split(plug.fpath)[-1]
-	fname = splitext(fname)[0] + f"{namePostfix}.ics"
-	with open(fname, "w", encoding="utf-8") as _file:
-		_file.write(icsText)
