@@ -765,7 +765,7 @@ confParamsData: list[Param] = [
 	),
 	# ------------ Month Calendar
 	Param(
-		name="monthcal.leftMargin",
+		name="monthCal.leftMargin",
 		v3Name="mcalLeftMargin",
 		flags=CUSTOMIZE,
 		type="int",
@@ -774,7 +774,7 @@ confParamsData: list[Param] = [
 		default=30,
 	),
 	Param(
-		name="monthcal.topMargin",
+		name="monthCal.topMargin",
 		v3Name="mcalTopMargin",
 		flags=CUSTOMIZE,
 		type="int",
@@ -783,7 +783,7 @@ confParamsData: list[Param] = [
 		default=30,
 	),
 	Param(
-		name="monthcal.typeParams",
+		name="monthCal.typeParams",
 		v3Name="mcalTypeParams",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -796,7 +796,7 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="monthcal.grid",
+		name="monthCal.grid",
 		v3Name="mcalGrid",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -805,7 +805,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="monthcal.gridColor",
+		name="monthCal.gridColor",
 		v3Name="mcalGridColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -814,7 +814,7 @@ confParamsData: list[Param] = [
 		default=(255, 252, 0, 82),
 	),
 	Param(
-		name="monthcal.cornerMenuTextColor",
+		name="monthCal.cornerMenuTextColor",
 		v3Name="mcalCornerMenuTextColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -823,7 +823,7 @@ confParamsData: list[Param] = [
 		default=(255, 255, 255, 255),
 	),
 	Param(
-		name="monthcal.cursorLineWidthFactor",
+		name="monthCal.cursorLineWidthFactor",
 		v3Name="mcalCursorLineWidthFactor",
 		flags=CUSTOMIZE,
 		type="float",
@@ -832,7 +832,7 @@ confParamsData: list[Param] = [
 		default=0.12,
 	),
 	Param(
-		name="monthcal.cursorRoundingFactor",
+		name="monthCal.cursorRoundingFactor",
 		v3Name="mcalCursorRoundingFactor",
 		flags=CUSTOMIZE,
 		type="float",
@@ -842,7 +842,7 @@ confParamsData: list[Param] = [
 	),
 	# ------------ weekcal
 	Param(
-		name="weekcal.textSizeScale",
+		name="weekCal.textSizeScale",
 		v3Name="wcalTextSizeScale",
 		flags=CUSTOMIZE,
 		type="float",
@@ -851,7 +851,7 @@ confParamsData: list[Param] = [
 		default=0.6,
 	),
 	Param(
-		name="weekcal.items",
+		name="weekCal.items",
 		v3Name="wcalItems",
 		flags=CUSTOMIZE,
 		type="list[tuple[str, bool]]",
@@ -867,7 +867,7 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="weekcal.grid",
+		name="weekCal.grid",
 		v3Name="wcalGrid",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -876,7 +876,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.gridColor",
+		name="weekCal.gridColor",
 		v3Name="wcalGridColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -885,7 +885,7 @@ confParamsData: list[Param] = [
 		default=(255, 252, 0, 82),
 	),
 	Param(
-		name="weekcal.upperGradientEnable",
+		name="weekCal.upperGradientEnable",
 		v3Name="wcalUpperGradientEnable",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -894,7 +894,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.upperGradientColor",
+		name="weekCal.upperGradientColor",
 		v3Name="wcalUpperGradientColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -903,7 +903,7 @@ confParamsData: list[Param] = [
 		default=(255, 255, 255, 60),
 	),
 	Param(
-		name="weekcal.eventsText.pastColorEnable",
+		name="weekCal.eventsText.pastColorEnable",
 		v3Name="wcal_eventsText_pastColorEnable",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -912,7 +912,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsText.pastColor",
+		name="weekCal.eventsText.pastColor",
 		v3Name="wcal_eventsText_pastColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -921,7 +921,7 @@ confParamsData: list[Param] = [
 		default=(100, 100, 100, 50),
 	),
 	Param(
-		name="weekcal.eventsText.ongoingColorEnable",
+		name="weekCal.eventsText.ongoingColorEnable",
 		v3Name="wcal_eventsText_ongoingColorEnable",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -930,7 +930,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsText.ongoingColor",
+		name="weekCal.eventsText.ongoingColor",
 		v3Name="wcal_eventsText_ongoingColor",
 		flags=CUSTOMIZE,
 		type="ColorType",
@@ -939,7 +939,7 @@ confParamsData: list[Param] = [
 		default=(80, 255, 80, 255),
 	),
 	Param(
-		name="weekcal.eventsText.showDesc",
+		name="weekCal.eventsText.showDesc",
 		v3Name="wcal_eventsText_showDesc",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -948,7 +948,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsText.colorize",
+		name="weekCal.eventsText.colorize",
 		v3Name="wcal_eventsText_colorize",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -957,7 +957,7 @@ confParamsData: list[Param] = [
 		default=True,
 	),
 	Param(
-		name="weekcal.eventsText.fontFamily",
+		name="weekCal.eventsText.fontFamily",
 		v3Name="wcalFont_eventsText",
 		flags=CUSTOMIZE,
 		type="str",
@@ -966,7 +966,7 @@ confParamsData: list[Param] = [
 		default=None,
 	),
 	Param(
-		name="weekcal.toolbar.weekNumNegative",
+		name="weekCal.toolbar.weekNumNegative",
 		v3Name="wcal_toolbar_weekNum_negative",
 		flags=LIVE,
 		type="bool",
@@ -975,7 +975,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.toolbar.mainMenuIcon",
+		name="weekCal.toolbar.mainMenuIcon",
 		v3Name="wcal_toolbar_mainMenu_icon",
 		flags=CUSTOMIZE,
 		type="str",
@@ -984,7 +984,7 @@ confParamsData: list[Param] = [
 		default="starcal.png",
 	),
 	Param(
-		name="weekcal.weekDays.width",
+		name="weekCal.weekDays.width",
 		v3Name="wcal_weekDays_width",
 		flags=CUSTOMIZE,
 		type="int",
@@ -993,7 +993,7 @@ confParamsData: list[Param] = [
 		default=80,
 	),
 	Param(
-		name="weekcal.weekDays.expand",
+		name="weekCal.weekDays.expand",
 		v3Name="wcal_weekDays_expand",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1002,7 +1002,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.weekDays.fontFamily",
+		name="weekCal.weekDays.fontFamily",
 		v3Name="wcalFont_weekDays",
 		flags=CUSTOMIZE,
 		type="str",
@@ -1011,7 +1011,7 @@ confParamsData: list[Param] = [
 		default=None,
 	),
 	Param(
-		name="weekcal.pluginsText.fontFamily",
+		name="weekCal.pluginsText.fontFamily",
 		v3Name="wcalFont_pluginsText",
 		flags=CUSTOMIZE,
 		type="str",
@@ -1020,7 +1020,7 @@ confParamsData: list[Param] = [
 		default=None,
 	),
 	Param(
-		name="weekcal.pluginsText.firstLineOnly",
+		name="weekCal.pluginsText.firstLineOnly",
 		v3Name="wcal_pluginsText_firstLineOnly",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1029,7 +1029,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsIcon.width",
+		name="weekCal.eventsIcon.width",
 		v3Name="wcal_eventsIcon_width",
 		flags=CUSTOMIZE,
 		type="int",
@@ -1038,7 +1038,7 @@ confParamsData: list[Param] = [
 		default=50,
 	),
 	Param(
-		name="weekcal.daysOfMonth.typeParams",
+		name="weekCal.daysOfMonth.typeParams",
 		v3Name="wcalTypeParams",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -1047,7 +1047,7 @@ confParamsData: list[Param] = [
 		default=[{"font": None}, {"font": None}, {"font": None}],
 	),
 	Param(
-		name="weekcal.daysOfMonth.direction",
+		name="weekCal.daysOfMonth.direction",
 		v3Name="wcal_daysOfMonth_dir",
 		flags=CUSTOMIZE,
 		type="str",  # ltr, rtl, auto
@@ -1056,7 +1056,7 @@ confParamsData: list[Param] = [
 		default="ltr",
 	),
 	Param(
-		name="weekcal.daysOfMonth.width",
+		name="weekCal.daysOfMonth.width",
 		v3Name="wcal_daysOfMonth_width",
 		flags=CUSTOMIZE,
 		type="int",
@@ -1065,7 +1065,7 @@ confParamsData: list[Param] = [
 		default=30,
 	),
 	Param(
-		name="weekcal.daysOfMonth.expand",
+		name="weekCal.daysOfMonth.expand",
 		v3Name="wcal_daysOfMonth_expand",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1074,7 +1074,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsCount.width",
+		name="weekCal.eventsCount.width",
 		v3Name="wcal_eventsCount_width",
 		flags=CUSTOMIZE,
 		type="int",
@@ -1083,7 +1083,7 @@ confParamsData: list[Param] = [
 		default=80,
 	),
 	Param(
-		name="weekcal.eventsCount.expand",
+		name="weekCal.eventsCount.expand",
 		v3Name="wcal_eventsCount_expand",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1092,7 +1092,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.eventsBox.fontFamily",
+		name="weekCal.eventsBox.fontFamily",
 		v3Name="wcalFont_eventsBox",
 		flags=CUSTOMIZE,
 		type="str",
@@ -1101,7 +1101,7 @@ confParamsData: list[Param] = [
 		default=None,
 	),
 	Param(
-		name="weekcal.moonStatus.width",
+		name="weekCal.moonStatus.width",
 		v3Name="wcal_moonStatus_width",
 		flags=CUSTOMIZE,
 		type="int",
@@ -1110,7 +1110,7 @@ confParamsData: list[Param] = [
 		default=48,
 	),
 	Param(
-		name="weekcal.moonStatus.southernHemisphere",
+		name="weekCal.moonStatus.southernHemisphere",
 		v3Name="wcal_moonStatus_southernHemisphere",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1119,7 +1119,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="weekcal.cursorLineWidthFactor",
+		name="weekCal.cursorLineWidthFactor",
 		v3Name="wcalCursorLineWidthFactor",
 		flags=CUSTOMIZE,
 		type="float",
@@ -1128,7 +1128,7 @@ confParamsData: list[Param] = [
 		default=0.12,
 	),
 	Param(
-		name="weekcal.cursorRoundingFactor",
+		name="weekCal.cursorRoundingFactor",
 		v3Name="wcalCursorRoundingFactor",
 		flags=CUSTOMIZE,
 		type="float",
@@ -1138,7 +1138,7 @@ confParamsData: list[Param] = [
 	),
 	# ------------ daycal
 	Param(
-		name="daycal.widgetButtonsEnable",
+		name="dayCal.widgetButtonsEnable",
 		v3Name="dcalWidgetButtonsEnable",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1146,9 +1146,9 @@ confParamsData: list[Param] = [
 		desc="Widget buttons",
 		default=False,
 	),
-	# Param("daycal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
+	# Param("dayCal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
 	Param(
-		name="daycal.day.params",
+		name="dayCal.day.params",
 		v3Name="dcalDayParams",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -1182,7 +1182,7 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="daycal.month.params",
+		name="dayCal.month.params",
 		v3Name="dcalMonthParams",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -1222,7 +1222,7 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="daycal.weekday.params",
+		name="dayCal.weekday.params",
 		v3Name="dcalWeekdayParams",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -1238,7 +1238,7 @@ confParamsData: list[Param] = [
 		},
 	),
 	Param(
-		name="daycal.navButtons.enable",
+		name="dayCal.navButtons.enable",
 		v3Name="dcalNavButtonsEnable",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1248,7 +1248,7 @@ confParamsData: list[Param] = [
 	),
 	Param(
 		# FIXME: where is the GUI?
-		name="daycal.navButtons.geo",
+		name="dayCal.navButtons.geo",
 		v3Name="dcalNavButtonsGeo",
 		flags=CUSTOMIZE,
 		type="list[dict]",  # TODO: TypedDict?
@@ -1256,8 +1256,8 @@ confParamsData: list[Param] = [
 		desc="Navigation Buttons",
 		default={
 			"auto_rtl": True,
-			"size": 64,
-			"spacing": 10,
+			"size": 64.0,
+			"spacing": 10.0,
 			"pos": (0, 20),
 			"xalign": "center",
 			"yalign": "buttom",
@@ -1265,7 +1265,7 @@ confParamsData: list[Param] = [
 	),
 	Param(
 		# FIXME: where is the GUI?
-		name="daycal.navButtons.opacity",
+		name="dayCal.navButtons.opacity",
 		v3Name="dcalNavButtonsOpacity",
 		flags=CUSTOMIZE,
 		type="float",
@@ -1274,7 +1274,7 @@ confParamsData: list[Param] = [
 		default=0.7,
 	),
 	Param(
-		name="daycal.weekday.localize",
+		name="dayCal.weekday.localize",
 		v3Name="dcalWeekdayLocalize",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1283,7 +1283,7 @@ confParamsData: list[Param] = [
 		default=True,
 	),
 	Param(
-		name="daycal.weekday.abbreviate",
+		name="dayCal.weekday.abbreviate",
 		v3Name="dcalWeekdayAbbreviate",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1292,7 +1292,7 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="daycal.weekday.uppercase",
+		name="dayCal.weekday.uppercase",
 		v3Name="dcalWeekdayUppercase",
 		flags=CUSTOMIZE,
 		type="bool",
@@ -1301,16 +1301,16 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="daycal.event.iconSize",
+		name="dayCal.event.iconSize",
 		v3Name="dcalEventIconSize",
 		flags=CUSTOMIZE,
-		type="int",
+		type="float",
 		where="MainWin: Customize: Day Calendar: Events",
 		desc="Icon Size",
-		default=20,
+		default=20.0,
 	),
 	Param(
-		name="daycal.event.totalSizeRatio",
+		name="dayCal.event.totalSizeRatio",
 		v3Name="dcalEventTotalSizeRatio",
 		flags=CUSTOMIZE,
 		type="float",
@@ -1341,19 +1341,19 @@ confParamsData: list[Param] = [
 		name="dayCalWin.geo.width",
 		v3Name="dcalWinWidth",
 		flags=DAYCAL_WIN_LIVE,
-		type="int",
+		type="float",
 		where="DayCalWin: Resize",
 		desc="Geometry: Width",
-		default=180,
+		default=180.0,
 	),
 	Param(
 		name="dayCalWin.geo.height",
 		v3Name="dcalWinHeight",
 		flags=DAYCAL_WIN_LIVE,
-		type="int",
+		type="float",
 		where="DayCalWin: Resize",
 		desc="Geometry: Height",
-		default=180,
+		default=180.0,
 	),
 	Param(
 		name="dayCalWin.backgroundColor",
@@ -1492,10 +1492,10 @@ confParamsData: list[Param] = [
 		name="dayCalWin.event.iconSize",
 		v3Name="dcalWinEventIconSize",
 		flags=CUSTOMIZE,
-		type="int",
+		type="float",
 		where="DayCalWin: Customize: Events",
 		desc="Icon Size",
-		default=20,
+		default=20.0,
 	),
 	Param(
 		name="dayCalWin.event.totalSizeRatio",
@@ -1697,7 +1697,7 @@ confParamsData: list[Param] = [
 	),
 	# ------------
 	Param(
-		name="weekcal.toolbar.items",
+		name="weekCal.toolbar.items",
 		v3Name="ud__wcalToolbarData",
 		flags=CUSTOMIZE,
 		type="dict | None",  # TODO: TypedDict?
