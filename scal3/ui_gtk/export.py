@@ -25,7 +25,7 @@ from scal3.cal_types import calTypes
 from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus, getMonthStatus
-from scal3.path import deskDir
+from scal3.path import homeDir
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
@@ -92,7 +92,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		)
 		# --
 		self.connect("delete-event", self.onDelete)
-		self.fcw.set_current_folder(deskDir)
+		self.fcw.set_current_folder(homeDir)
 
 	def comboChanged(self, _widget=None, ym=None):
 		i = self.combo.get_active()
@@ -240,7 +240,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		self.connect("delete-event", self.onDelete)
 		self.fcw.connect("file-activated", self.save)  # not working FIXME
 		# --
-		self.fcw.set_current_folder(deskDir)
+		self.fcw.set_current_folder(homeDir)
 		if not defaultFileName.endswith(".ics"):
 			defaultFileName += ".ics"
 		self.fcw.set_current_name(defaultFileName)
