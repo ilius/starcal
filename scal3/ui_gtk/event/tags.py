@@ -19,6 +19,7 @@ from scal3 import logger
 log = logger.get()
 
 from scal3 import ui
+from scal3.event_tags import eventTagsDesc
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
@@ -300,7 +301,7 @@ class ViewEditTagsHbox(gtk.Box):
 		self.tags = tags
 		self.dialog.setData(tags)
 		sep = _(",") + " "
-		self.tagsLabel.set_label(sep.join([ui.eventTagsDesc[tag] for tag in tags]))
+		self.tagsLabel.set_label(sep.join([eventTagsDesc[tag] for tag in tags]))
 
 	def getData(self):
 		return self.tags
