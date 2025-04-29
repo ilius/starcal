@@ -181,10 +181,6 @@ def getUtcOffsetCurrent(tz: TZ = None) -> int:
 	return getUtcOffsetByEpoch(now(), tz)
 
 
-def getGtkTimeFromEpoch(epoch: int) -> int:
-	return int((epoch - 1321715288.39) * 1000 // 1)
-
-
 def getFloatJdFromEpoch(epoch, tz: TZ = None) -> float:
 	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0 * 3600) + J1970
 
