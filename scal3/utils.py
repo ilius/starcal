@@ -27,13 +27,10 @@ from math import ceil, floor
 from typing import Any
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Iterator
-
 	Number: typing.TypeAlias = int | float
 
 __all__ = [
 	"FallbackLogger",
-	"StrOrderedDict",
 	"arange",
 	"cmp",
 	"findNearestIndex",
@@ -125,142 +122,6 @@ def restartLow() -> typing.NoReturn:
 	)
 
 
-class StrOrderedDict(dict):
-	# A dict from strings to objects, with ordered keys
-	# and some looks like a list
-	def __init__(
-		self,
-		arg: list | tuple | dict | None = None,
-		reorderOnModify: bool = True,
-	) -> None:
-		if arg is None:
-			arg = []
-		self.reorderOnModify = reorderOnModify
-		if isinstance(arg, list | tuple):
-			self.keyList = [item[0] for item in arg]
-		elif isinstance(arg, dict):
-			self.keyList = sorted(arg)
-		else:
-			raise TypeError(
-				f"StrOrderedDict: bad type for first argument: {type(arg)}",
-			)
-		dict.__init__(self, arg)
-
-	def keys(self) -> list[str]:
-		return self.keyList
-
-	def values(self) -> list[Any]:
-		return [
-			dict.__getitem__(self, key)  # noqa: PLC2801
-			for key in self.keyList
-		]
-
-	def items(self) -> list[tuple[str, Any]]:
-		return [
-			(key, dict.__getitem__(self, key))  # noqa: PLC2801
-			for key in self.keyList
-		]
-
-	def __getitem__(self, arg: int | str | slice) -> Any:
-		if isinstance(arg, int):
-			return dict.__getitem__(self, self.keyList[arg])
-		if isinstance(arg, str):
-			return dict.__getitem__(self, arg)
-		if isinstance(arg, slice):  # not tested FIXME
-			return StrOrderedDict(
-				[
-					(key, dict.__getitem__(self, key))
-					for key in self.keyList.__getitem__(arg)
-				],
-			)
-		raise ValueError(
-			f"Bad type argument given to StrOrderedDict.__getitem__: {type(arg)}",
-		)
-
-	def __setitem__(self, arg: int | str, value) -> None:
-		if isinstance(arg, int):
-			dict.__setitem__(self, self.keyList[arg], value)
-		elif isinstance(arg, str):
-			if arg in self.keyList:  # Modifying value for an existing key
-				if self.reorderOnModify:
-					self.keyList.remove(arg)
-					self.keyList.append(arg)
-			# elif isinstance(arg, slice):-- ???????????? is not tested
-			# 	#assert isinstance(value, StrOrderedDict)
-			# 	if isinstance(value, StrOrderedDict):
-			# 		for key in self.keyList.__getitem__(arg):
-			else:
-				self.keyList.append(arg)
-			dict.__setitem__(self, arg, value)
-		else:
-			raise TypeError(
-				f"Bad type argument given to StrOrderedDict.__setitem__: {type(arg)}",
-			)
-
-	def __delitem__(self, arg: int | str | slice) -> None:
-		if isinstance(arg, int):
-			self.keyList.__delitem__(arg)
-			dict.__delitem__(self, self.keyList[arg])
-		elif isinstance(arg, str):
-			self.keyList.remove(arg)
-			dict.__delitem__(self, arg)
-		elif isinstance(arg, slice):  # FIXME is not tested
-			for key in self.keyList.__getitem__(arg):
-				dict.__delitem__(self, key)
-			self.keyList.__delitem__(arg)
-		else:
-			raise TypeError(
-				f"Bad type argument given to StrOrderedDict.__delitem__: {type(arg)}",
-			)
-
-	# def pop(self, key: str) -> Any:  # FIXME
-	# 	value = dict.pop(self, key)
-	# 	del self.keyList[key]
-	# 	return value
-
-	def clear(self) -> None:
-		self.keyList = []
-		dict.clear(self)
-
-	def append(self, key: str, value: Any):
-		assert isinstance(key, str)
-		assert key not in self.keyList
-		self.keyList.append(key)
-		dict.__setitem__(self, key, value)  # noqa: PLC2801
-
-	def insert(self, index: int, key: str, value: Any):
-		assert isinstance(key, str)
-		assert key not in self.keyList
-		self.keyList.insert(index, key)
-		dict.__setitem__(self, key, value)  # noqa: PLC2801
-
-	def sort(self, attr: str | None = None) -> Iterator:
-		if attr is None:
-			self.keyList.sort()
-		else:
-			self.keyList.sort(
-				key=lambda k: getattr(dict.__getitem__(self, k), attr),  # noqa: PLC2801
-			)
-
-	def __iter__(self):
-		return self.keyList.__iter__()
-
-	# lambda self: self.items().__iter__()
-	def iteritems(self):
-		for key in self.keyList:
-			yield (key, dict.__getitem__(self, key))  # noqa: PLC2801
-
-	def __str__(self):
-		return f"StrOrderedDict({self.items()!r})"
-		# "StrOrderedDict{" + ", ".join([
-		# 	repr(k) + ":" + repr(self[k])
-		# 	for k in self.keyList
-		# ]) + "}"
-
-	def __repr__(self):
-		return f"StrOrderedDict(({self.items()!r})"
-
-
 # a fully transparent object
 class NullObj:
 	def __setattr__(self, attr: str, value: Any) -> None:
@@ -280,10 +141,6 @@ class NullObj:
 
 	def __int__(self) -> int:
 		return 0
-
-
-def int_split(s: str) -> list[int]:
-	return [int(x) for x in s.split()]
 
 
 def s_join(ls: list[Any]) -> str:
@@ -333,15 +190,6 @@ def findNearestIndex(lst: list[int], num: int) -> int:
 		if abs(lst[i] - num) < abs(lst[index] - num):
 			index = i
 	return index
-
-
-def strFindNth(st: str, sub: str, n: int) -> int:
-	pos = 0
-	for _i in range(n):
-		pos = st.find(sub, pos + 1)
-		if pos == -1:
-			break
-	return pos
 
 
 def findWordByPos(text: str, pos: int) -> tuple[str, int]:

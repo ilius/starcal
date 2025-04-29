@@ -49,13 +49,6 @@ def setParamsFunc(cell):
 	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 
-def getWeekStatus(absWeekNumber):
-	return ui.cells.getCellGroup(
-		pluginName,
-		absWeekNumber,
-	)
-
-
 def getCurrentWeekStatus():
 	return ui.cells.getCellGroup(
 		pluginName,

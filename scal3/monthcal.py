@@ -15,7 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import core, ui
-from scal3.cal_types import calTypes, getMonthLen
+from scal3.cal_types import calTypes
 from scal3.core import (
 	getWeekDay,
 	getWeekNumberByJd,
@@ -36,7 +36,6 @@ class MonthStatus(list):  # FIXME
 	def __init__(self, cells, year, month):
 		self.year = year
 		self.month = month
-		self.monthLen = getMonthLen(year, month, calTypes.primary)
 		self.offset = getWeekDay(year, month, 1)  # month start offset
 		initJd = core.primary_to_jd(year, month, 1)
 		self.weekNum = [getWeekNumberByJd(initJd + i * 7) for i in range(6)]

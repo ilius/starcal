@@ -61,6 +61,15 @@ class AutoSizeEntry(gtk.Entry):
 		self.queue_resize()
 
 
+# def strFindNth(st: str, sub: str, n: int) -> int:
+# 	pos = 0
+# 	for _i in range(n):
+# 		pos = st.find(sub, pos + 1)
+# 		if pos == -1:
+# 			break
+# 	return pos
+
+
 @registerSignals
 class MultiSpinButton(gtk.Box):
 	signals = [
@@ -269,7 +278,6 @@ class MultiSpinButton(gtk.Box):
 			}[kname]
 			self.entry_plus(p)
 
-			# from scal3.utils import strFindNth
 			# if fieldIndex==0:
 			# 	i1 = 0
 			# else:
