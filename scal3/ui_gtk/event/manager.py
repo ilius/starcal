@@ -38,6 +38,7 @@ from scal3.config_utils import (
 	loadModuleConfig,
 	saveModuleConfig,
 )
+from scal3.datetime_utils import epochDateTimeEncode
 from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
@@ -1803,7 +1804,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		comma = _(",")
 		modifiedLabel = _("Last Modified")
 		modifiedTime = locale_man.textNumEncode(
-			core.epochDateTimeEncode(modified),
+			epochDateTimeEncode(modified),
 		)
 		text += f"{comma} {modifiedLabel}: {modifiedTime}"
 		if hasattr(self, "sbar"):

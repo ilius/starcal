@@ -32,7 +32,6 @@ from scal3 import locale_man, logger
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.date_utils import (
-	dateEncode,
 	jwday,
 )
 from scal3.filesystem import DefaultFileSystem, FileSystem
@@ -47,7 +46,6 @@ from scal3.path import (
 	sysConfDir,
 )
 from scal3.plugin_man import loadPlugin
-from scal3.time_utils import getJhmsFromEpoch
 
 try:
 	__file__  # noqa: B018
@@ -517,11 +515,6 @@ def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 			now() % (maxDays * 24 * 3600) / minSec,
 		),
 	)
-
-
-def epochDateTimeEncode(epoch: int) -> str:
-	jd, hms = getJhmsFromEpoch(epoch)
-	return dateEncode(jd_to_primary(jd)) + f" {hms:HMS}"
 
 
 def stopRunningThreads() -> None:
