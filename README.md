@@ -7,45 +7,60 @@ written in Python, supporting Jalali/Persian, Gregorian and Islamic calendars.
 
 To get the latest codes via git, run this:
 
-	git clone git://github.com/ilius/starcal.git
+```
+git clone git://github.com/ilius/starcal.git
+```
 
 To get the latest stable snapshot (without git) open this URL in your browser:
 
-	http://github.com/ilius/starcal/tarball/main
+```
+http://github.com/ilius/starcal/tarball/main
+```
 
 To get the latest development snapshot:
 
-	http://github.com/ilius/starcal/tarball/next
+```
+http://github.com/ilius/starcal/tarball/next
+```
 
-## Installation on GNU/Linux or *BSD
-	sudo ./install-auto.sh
+## Installation on GNU/Linux or \*BSD
+
+```
+sudo ./install-auto.sh
+```
 
 ## Uninstallation
 
 - Debian, Ubuntu or other Debian-based distributions
-	+ `sudo apt-get remove starcal3`
+  - `sudo apt-get remove starcal3`
 - ArchLinux
-	+ `sudo pacman -R starcal3`
+  - `sudo pacman -R starcal3`
 - openSUSE
-	+ `sudo zypper remove starcal3`
+  - `sudo zypper remove starcal3`
 - Fedora
-	+ `sudo yum remove starcal3`
+  - `sudo yum remove starcal3`
 - Other Linux/BSD distributions
-	+ `sudo /usr/share/starcal3/uninstall`
+  - `sudo /usr/share/starcal3/uninstall`
 
 ### Running on Windows:
+
 1. Install Python 3.x
-2. Install Gtk3 and PyGI
-3. Copy starcal source folder somewhere you want to keep
-4. Send a shortcut from file starcal.pyw (inside source folder) to you desktop
-5. Click on the shortcut to starcal.pyw (or the file itself) to run
+1. Install Gtk3 and PyGI
+1. Copy starcal source folder somewhere you want to keep
+1. Send a shortcut from file starcal.pyw (inside source folder) to you desktop
+1. Click on the shortcut to starcal.pyw (or the file itself) to run
 
 ## Home Page:
-	https://ilius.github.io/starcal
+
+```
+https://ilius.github.io/starcal
+```
 
 ## License:
-StartCalendar is licensed under GNU Genaral Public License version 3+
+
+StartCalendar is licensed under GNU Affero Genaral Public License version 3+
 
 ## Follow Us:
+
 To get notified on new releases, subscribe to
 [releases atom feed](https://github.com/ilius/starcal/releases.atom)
