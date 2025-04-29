@@ -20,9 +20,6 @@ class CellType:
 	def getDate(self, calType: int) -> tuple[int, int, int]:
 		raise NotImplementedError
 
-	def inSameMonth(self, other: CellType) -> bool:
-		raise NotImplementedError
-
 	def getEventIcons(self, showIndex: int) -> list[str]:
 		raise NotImplementedError
 
