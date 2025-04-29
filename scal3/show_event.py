@@ -7,7 +7,7 @@ from scal3 import event_lib
 from scal3.filesystem import DefaultFileSystem
 from scal3.json_utils import dataToPrettyJson
 from scal3.path import confDir
-from scal3.s_object import loadBinaryObject
+from scal3.s_object import SObjBinaryModel
 
 if __name__ == "__main__":
 	fs = DefaultFileSystem(confDir)
@@ -16,5 +16,5 @@ if __name__ == "__main__":
 		eventJsonData = json.load(eventFile)
 
 	lastHash = eventJsonData["history"][0][1]
-	data = loadBinaryObject(lastHash, fs)
+	data = SObjBinaryModel.loadData(lastHash, fs)
 	print(dataToPrettyJson(data))  # noqa: T201

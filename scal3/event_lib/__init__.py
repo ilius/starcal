@@ -57,7 +57,6 @@ from scal3.s_object import (
 	SObj,
 	SObjBinaryModel,
 	SObjTextModel,
-	loadBinaryObject,
 	objectDirName,
 )
 from scal3.time_utils import (
@@ -158,7 +157,6 @@ __all__ = [
 	"jd_to_primary",
 	"jsonTimeFromEpoch",
 	"jwday",
-	"loadBinaryObject",
 	"makeOrderedData",
 	"numRangesEncode",
 	"pixDir",
