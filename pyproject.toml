@@ -291,3 +291,22 @@ disable = ["fixit.rules"]
 
 [tool.import-analyzer]
 exclude = ["libs/", "build/"]
+exclude_toplevel_module = [
+	"cachetools",
+	"cairo",
+	"dateutil",
+	"gi",
+	"gnomevfs",
+	"httplib2",
+	"igraph",
+	"numpy",
+	"oauth2client",
+	"packaging",
+	"psutil",
+	"pygit2",
+	"pytz",
+	"win32api",
+	"win32com",
+	"bson",
+]
+
