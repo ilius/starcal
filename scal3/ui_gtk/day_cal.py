@@ -301,7 +301,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			calTypeDesc = _(module.desc, ctx="calendar")
+			calTypeDesc = _("{calType} Calendar").format(
+				calType=_(module.desc, ctx="calendar"),
+			)
 			# --
 			pageWidget = VBox(spacing=5)
 			# ---
