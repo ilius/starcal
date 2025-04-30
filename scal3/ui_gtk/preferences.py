@@ -598,6 +598,7 @@ class PreferencesWindow(gtk.Window):
 			if not mod.options:
 				continue
 			pageVBox = VBox(spacing=self.spacing)
+			pageVBox.set_border_width(self.spacing)
 			page = StackPage()
 			page.pageParent = "regional"
 			page.pageWidget = pageVBox
@@ -622,7 +623,7 @@ class PreferencesWindow(gtk.Window):
 						log.exception("")
 						continue
 				else:
-					optl = ModuleOptionItem(mod, opt)
+					optl = ModuleOptionItem(mod, opt, spacing=self.spacing)
 				options.append(optl)
 				pack(pageVBox, optl.getWidget())
 			# -----
