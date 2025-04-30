@@ -80,6 +80,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 	weekdayUppercaseParam = ""
 
 	widgetButtonsEnableParam = ""
+	widgetButtonsSizeParam = ""
+	widgetButtonsOpacityParam = ""
 	widgetButtonsParam = ""
 
 	navButtonsEnableParam = ""
@@ -153,6 +155,16 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return []
 		if not getattr(conf, self.widgetButtonsEnableParam):
 			return []
+		iconSize = (
+			getattr(conf, self.widgetButtonsSizeParam)
+			if self.widgetButtonsSizeParam
+			else 16
+		)
+		opacity = (
+			getattr(conf, self.widgetButtonsOpacityParam)
+			if self.widgetButtonsOpacityParam
+			else 1.0
+		)
 		return [
 			Button(
 				imageName=d.get("imageName", ""),
@@ -161,9 +173,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 				y=d["pos"][1],
 				autoDir=d["autoDir"],
 				iconName=d.get("iconName", ""),
-				iconSize=d.get("iconSize", 16),
+				iconSize=iconSize,
+				# d.get("iconSize", getattr(conf, self.widgetButtonsSizeParam)),
 				xalign=d.get("xalign", "left"),
 				yalign=d.get("yalign", "top"),
+				opacity=opacity,
 			)
 			for d in getattr(conf, self.widgetButtonsParam)
 		]
@@ -433,7 +447,33 @@ class DayCal(gtk.DrawingArea, CalBase):
 			prefItem = CheckPrefItem(
 				conf,
 				self.widgetButtonsEnableParam,
-				label=_("Widget buttons"),
+				label=_("Widget Buttons"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(pageWidget, prefItem.getWidget())
+		if self.widgetButtonsSizeParam:
+			prefItem = SpinPrefItem(
+				conf,
+				self.widgetButtonsSizeParam,
+				_min=0,
+				_max=99,
+				digits=1,
+				step=1,
+				label=_("Widget Buttons Size"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(pageWidget, prefItem.getWidget())
+		if self.widgetButtonsOpacityParam:
+			prefItem = SpinPrefItem(
+				conf,
+				self.widgetButtonsOpacityParam,
+				_min=0,
+				_max=1,
+				digits=2,
+				step=0.1,
+				label=_("Widget Buttons Opacity"),
 				live=True,
 				onChangeFunc=self.queue_draw,
 			)
