@@ -50,6 +50,8 @@ __all__ = [
 	"dcalWinWeekdayUppercase",
 	"dcalWinWidgetButtons",
 	"dcalWinWidgetButtonsEnable",
+	"dcalWinWidgetButtonsOpacity",
+	"dcalWinWidgetButtonsSize",
 	"dcalWinWidth",
 	"dcalWinX",
 	"dcalWinY",
@@ -431,6 +433,8 @@ dcalWinWidth: float = 180.0
 dcalWinHeight: float = 180.0
 dcalWinBackgroundColor = (0, 10, 0)
 dcalWinWidgetButtonsEnable: bool = True
+dcalWinWidgetButtonsSize: float = 16
+dcalWinWidgetButtonsOpacity: float = 1.0
 dcalWinWeekdayLocalize: bool = True
 dcalWinWeekdayAbbreviate: bool = False
 dcalWinWeekdayUppercase: bool = False
@@ -574,7 +578,6 @@ dcalWinWidgetButtons: list[dict] = [
 	},
 	{
 		"imageName": "document-edit.svg",
-		"iconSize": 16,
 		"onClick": "openCustomize",
 		"pos": (0, 1),
 		"xalign": "left",
