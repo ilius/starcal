@@ -28,7 +28,7 @@ __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 log = logger.get()
 
 name = "jalali"
-desc = "Jalali"
+desc = "Persian"
 origLang = "fa"
 
 monthNameMode = 0
@@ -36,7 +36,7 @@ options = (
 	(
 		"monthNameMode",
 		list,
-		"Jalali Month Names",
+		"Month Names",
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 )
