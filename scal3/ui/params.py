@@ -67,15 +67,6 @@ confParamsData: list[Param] = [
 		default=True,
 	),
 	Param(
-		name="dayCalWin.enable",
-		v3Name="showDesktopWidget",
-		flags=MAIN_CONF,
-		type="bool",
-		where="Preferences: General",
-		desc="Open desktop widget on start",
-		default=False,
-	),
-	Param(
 		name="mainWin.inTaskbar",
 		v3Name="winTaskbar",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -1319,6 +1310,15 @@ confParamsData: list[Param] = [
 		default=0.3,
 	),
 	# ------------ dayCalWin
+	Param(
+		name="dayCalWin.enable",
+		v3Name="showDesktopWidget",
+		flags=MAIN_CONF,
+		type="bool",
+		where="Preferences: General",
+		desc="Open desktop widget on start",
+		default=False,
+	),
 	Param(
 		name="dayCalWin.geo.x",
 		v3Name="dcalWinX",
