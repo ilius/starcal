@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.day_cal_config import ConfigHandlerBase
 
 log = logger.get()
 
@@ -33,7 +34,7 @@ from scal3.path import (
 	confDir,
 )
 from scal3.ui import conf
-from scal3.ui.params import DAYCAL_WIN_LIVE, getParamNamesWithFlag
+from scal3.ui.params import DAYCAL_WIN_LIVE, ColorType, getParamNamesWithFlag
 from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
@@ -137,40 +138,179 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		return True
 
 
+class ConfigHandler(ConfigHandlerBase):
+	@property
+	def backgroundColor(self) -> ColorType | None:
+		return conf.dcalWinBackgroundColor
+
+	@backgroundColor.setter
+	def backgroundColor(self, value: ColorType):
+		conf.dcalWinBackgroundColor = value
+
+	@property
+	def dayParams(self) -> list[dict] | None:
+		return conf.dcalWinDayParams
+
+	@dayParams.setter
+	def dayParams(self, value: list[dict]):
+		conf.dcalWinDayParams = value
+
+	@property
+	def monthParams(self) -> list[dict] | None:
+		return conf.dcalWinMonthParams
+
+	@monthParams.setter
+	def monthParams(self, value: list[dict]):
+		conf.dcalWinMonthParams = value
+
+	@property
+	def weekdayParams(self) -> list[dict] | None:
+		return conf.dcalWinWeekdayParams
+
+	@weekdayParams.setter
+	def weekdayParams(self, value: list[dict]) -> None:
+		conf.dcalWinWeekdayParams = value
+
+	@property
+	def widgetButtonsEnable(self) -> bool | None:
+		return conf.dcalWinWidgetButtonsEnable
+
+	@widgetButtonsEnable.setter
+	def widgetButtonsEnable(self, value: bool) -> None:
+		conf.dcalWinWidgetButtonsEnable = value
+
+	@property
+	def widgetButtonsSize(self) -> float | None:
+		return conf.dcalWinWidgetButtonsSize
+
+	@widgetButtonsSize.setter
+	def widgetButtonsSize(self, value: float) -> None:
+		conf.dcalWinWidgetButtonsSize = value
+
+	@property
+	def widgetButtonsOpacity(self) -> float | None:
+		return conf.dcalWinWidgetButtonsOpacity
+
+	@widgetButtonsOpacity.setter
+	def widgetButtonsOpacity(self, value: float) -> None:
+		conf.dcalWinWidgetButtonsOpacity = value
+
+	@property
+	def widgetButtons(self) -> list[dict] | None:
+		return conf.dcalWinWidgetButtons
+
+	@widgetButtons.setter
+	def widgetButtons(self, value: list[dict]) -> None:
+		conf.dcalWinWidgetButtons = value
+
+	@property
+	def eventIconSize(self) -> float | None:
+		return conf.dcalWinEventIconSize
+
+	@eventIconSize.setter
+	def eventIconSize(self, value: float) -> None:
+		conf.dcalWinEventIconSize = value
+
+	@property
+	def eventTotalSizeRatio(self) -> float | None:
+		return conf.dcalWinEventTotalSizeRatio
+
+	@eventTotalSizeRatio.setter
+	def eventTotalSizeRatio(self, value: float) -> None:
+		conf.dcalWinEventTotalSizeRatio = value
+
+	@property
+	def weekdayLocalize(self) -> bool | None:
+		return conf.dcalWinWeekdayLocalize
+
+	@weekdayLocalize.setter
+	def weekdayLocalize(self, value: bool) -> None:
+		conf.dcalWinWeekdayLocalize = value
+
+	@property
+	def weekdayAbbreviate(self) -> bool | None:
+		return conf.dcalWinWeekdayAbbreviate
+
+	@weekdayAbbreviate.setter
+	def weekdayAbbreviate(self, value: bool) -> None:
+		conf.dcalWinWeekdayAbbreviate = value
+
+	@property
+	def weekdayUppercase(self) -> bool | None:
+		return conf.dcalWinWeekdayUppercase
+
+	@weekdayUppercase.setter
+	def weekdayUppercase(self, value: bool) -> None:
+		conf.dcalWinWeekdayUppercase = value
+
+	@property
+	def seasonPieEnable(self) -> bool | None:
+		return conf.dcalWinSeasonPieEnable
+
+	@seasonPieEnable.setter
+	def seasonPieEnable(self, value: bool) -> None:
+		conf.dcalWinSeasonPieEnable = value
+
+	@property
+	def seasonPieGeo(self) -> list[dict] | None:
+		return conf.dcalWinSeasonPieGeo
+
+	@seasonPieGeo.setter
+	def seasonPieGeo(self, value: list[dict]) -> None:
+		conf.dcalWinSeasonPieGeo = value
+
+	@property
+	def seasonPieSpringColor(self) -> ColorType | None:
+		return conf.dcalWinSeasonPieSpringColor
+
+	@seasonPieSpringColor.setter
+	def seasonPieSpringColors(self, value: ColorType) -> None:
+		conf.dcalWinSeasonPieSpringColor = value
+
+	@property
+	def seasonPieSummerColor(self) -> ColorType | None:
+		return conf.dcalWinSeasonPieSummerColor
+
+	@seasonPieSummerColor.setter
+	def seasonPieSummerColors(self, value: ColorType) -> None:
+		conf.dcalWinSeasonPieSummerColor = value
+
+	@property
+	def seasonPieAutumnColor(self) -> ColorType | None:
+		return conf.dcalWinSeasonPieAutumnColor
+
+	@seasonPieAutumnColor.setter
+	def seasonPieAutumnColors(self, value: ColorType) -> None:
+		conf.dcalWinSeasonPieAutumnColor = value
+
+	@property
+	def seasonPieWinterColor(self) -> ColorType | None:
+		return conf.dcalWinSeasonPieWinterColor
+
+	@seasonPieWinterColor.setter
+	def seasonPieWinterColors(self, value: ColorType) -> None:
+		conf.dcalWinSeasonPieWinterColor = value
+
+	@property
+	def seasonPieTextColor(self) -> ColorType | None:
+		return conf.dcalWinSeasonPieTextColor
+
+	@seasonPieTextColor.setter
+	def seasonPieTextColor(self, value: ColorType) -> None:
+		conf.dcalWinSeasonPieTextColor = value
+
+
 @registerSignals
 class DayCalWindowWidget(DayCal):
 	dragAndDropEnable = False
 	doubleClickEnable = False
-	backgroundColorParam = "dcalWinBackgroundColor"
-	dayParamsParam = "dcalWinDayParams"
-	monthParamsParam = "dcalWinMonthParams"
-	weekdayParamsParam = "dcalWinWeekdayParams"
-	widgetButtonsEnableParam = "dcalWinWidgetButtonsEnable"
-	widgetButtonsSizeParam = "dcalWinWidgetButtonsSize"
-	widgetButtonsOpacityParam = "dcalWinWidgetButtonsOpacity"
-	widgetButtonsParam = "dcalWinWidgetButtons"
-	eventIconSizeParam = "dcalWinEventIconSize"
-	eventTotalSizeRatioParam = "dcalWinEventTotalSizeRatio"
-	weekdayLocalizeParam = "dcalWinWeekdayLocalize"
-	weekdayAbbreviateParam = "dcalWinWeekdayAbbreviate"
-	weekdayUppercaseParam = "dcalWinWeekdayUppercase"
-
-	seasonPieEnableParam = "dcalWinSeasonPieEnable"
-	seasonPieGeoParam = "dcalWinSeasonPieGeo"
-	seasonPieColorsParam = {
-		"Spring": "dcalWinSeasonPieSpringColor",
-		"Summer": "dcalWinSeasonPieSummerColor",
-		"Autumn": "dcalWinSeasonPieAutumnColor",
-		"Winter": "dcalWinSeasonPieWinterColor",
-	}
-	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
 
 	@classmethod
 	def getCell(cls) -> Cell:
 		return ui.cells.today
 
 	def __init__(self, win):
-		DayCal.__init__(self, win)
+		DayCal.__init__(self, win, config=ConfigHandler())
 		self.set_size_request(50, 50)
 		self.menu = None
 		self.customizeWindow = None

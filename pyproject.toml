@@ -65,6 +65,7 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"PLR6301", # Method `...` could be a function, class method, or static method
 	"FURB189", # Subclassing `list` can be error prone, use `collections.UserList` instead
 	"FURB103", # `open` and `write` should be replaced by `Path(...)....`
 	"PYI024",  # Use `typing.NamedTuple` instead of `collections.namedtuple`

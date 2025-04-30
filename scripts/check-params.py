@@ -41,6 +41,9 @@ for name in paramNames - attrNames:
 for param in params.confParamsData:
 	assert isinstance(param.type, str), param.v3Name
 	assert param.type, param.v3Name
+	if param.name.startswith("dayCal"):
+		# because of ConfigHandler
+		assert param.default is not None
 	if param.v3Name in ignoreMissingParams:
 		continue
 	value = getattr(conf, param.v3Name)

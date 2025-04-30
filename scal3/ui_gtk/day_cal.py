@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.day_cal_config import ConfigHandlerBase
 
 log = logger.get()
 
@@ -71,30 +72,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 	objName = "dayCal"
 	desc = _("Day Calendar")
 	itemListCustomizable = False
-	backgroundColorParam = ""
-	dayParamsParam = ""
-	monthParamsParam = ""
-	weekdayParamsParam = ""
-	weekdayLocalizeParam = ""
-	weekdayAbbreviateParam = ""
-	weekdayUppercaseParam = ""
-
-	widgetButtonsEnableParam = ""
-	widgetButtonsSizeParam = ""
-	widgetButtonsOpacityParam = ""
-	widgetButtonsParam = ""
-
-	navButtonsEnableParam = ""
-	navButtonsGeoParam = ""
-	navButtonsOpacityParam = ""
-
-	eventIconSizeParam = ""
-	eventTotalSizeRatioParam = ""
-
-	seasonPieEnableParam = ""
-	seasonPieGeoParam = ""
-	seasonPieColorsParam: dict | None = None
-	seasonPieTextColorParam = ""
 
 	myKeys = CalBase.myKeys + (
 		"up",
@@ -380,7 +357,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		return subPages
 
-	def __init__(self, win):
+	def __init__(self, win, config: ConfigHandlerBase):
+		self.config = config
 		gtk.DrawingArea.__init__(self)
 		self.win = win
 		self._window = None
@@ -742,9 +720,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 		iconList = c.getDayEventIcons()
 		if not iconList:
 			return
+		if self.config.eventTotalSizeRatio is None:
+			return
 		iconsN = len(iconList)
 
-		maxTotalSize = getattr(conf, self.eventTotalSizeRatioParam) * min(w, h)
+		maxTotalSize = self.config.eventTotalSizeRatio * min(w, h)
 		sideCount = isqrt(iconsN - 1) + 1
 		iconSize = min(
 			getattr(conf, self.eventIconSizeParam),
@@ -925,8 +905,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			if params.get("enable", True):
 				text = core.getWeekDayAuto(
 					c.weekDay,
-					localize=self.getWeekdayLocalize(),
-					abbreviate=self.getWeekdayAbbreviate(),
+					localize=self.config.weekdayLocalize,
+					abbreviate=self.config.weekdayAbbreviate,
 					relative=False,
 				)
 				if (
