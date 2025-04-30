@@ -88,13 +88,14 @@ class ModuleOptionItem:
 		self,
 		obj: Any,
 		opt: tuple,
+		spacing=0,
 	) -> None:
 		t = opt[1]
 		self.opt = opt  # needed??
 		self.obj = obj
 		self.type = t
 		self.attrName = opt[0]
-		hbox = HBox()
+		hbox = HBox(spacing=spacing)
 		if t is bool:
 			w = gtk.CheckButton(label=_(opt[2]))
 			self.get = w.get_active
