@@ -19,7 +19,11 @@ output = io.StringIO()
 output.write("from __future__ import annotations\n\n")
 output.write("from os.path import join\n")
 output.write("import typing\n")
-output.write("if typing.TYPE_CHECKING:\n\tfrom scal3.font import Font\n\n")
+output.write(
+	"if typing.TYPE_CHECKING:\n"
+	"\tfrom typing import Any\n\n"
+	"\tfrom scal3.font import Font\n\n",
+)
 output.write("from scal3.path import sourceDir\n\n")
 output.write(f"__all__ = {all_names!r}\n\n")
 
