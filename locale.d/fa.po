@@ -288,6 +288,10 @@ msgid "Jalali"
 msgstr "جلالی"
 
 msgctxt "calendar"
+msgid "Persian"
+msgstr "هجری شمسی"
+
+msgctxt "calendar"
 msgid "Hijri(Islamic)"
 msgstr "هجری قمری"
 
@@ -1082,9 +1086,9 @@ msgid "Activate/Inactivate"
 msgstr ""
 "فعال/غیرفعال کردن"
 
-msgid "Jalali Month Names"
+msgid "Month Names"
 msgstr ""
-"نام ماه‌های جلالی"
+"نام ماه‌ها"
 
 msgid "Iranian"
 msgstr "ایرانی"
