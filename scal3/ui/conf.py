@@ -3,6 +3,8 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
+	from typing import Any
+
 	from scal3.font import Font
 
 
@@ -295,7 +297,7 @@ mainWinRightPanelResizeOnToggle: bool = True
 mainWinRightPanelBorderWidth: int = 7
 mcalLeftMargin: int = 30
 mcalTopMargin: int = 30
-mcalTypeParams: list[dict] = [
+mcalTypeParams: list[dict[str, Any]] = [
 	{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 	{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
 	{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
@@ -333,7 +335,7 @@ wcalFont_weekDays: str | None = None
 wcalFont_pluginsText: str | None = None
 wcal_pluginsText_firstLineOnly: bool = False
 wcal_eventsIcon_width: int = 50
-wcalTypeParams: list[dict] = [{"font": None}, {"font": None}, {"font": None}]
+wcalTypeParams: list[dict[str, Any]] = [{"font": None}, {"font": None}, {"font": None}]
 wcal_daysOfMonth_dir: str = "ltr"
 wcal_daysOfMonth_width: int = 30
 wcal_daysOfMonth_expand: bool = False
@@ -345,7 +347,7 @@ wcal_moonStatus_southernHemisphere: bool = False
 wcalCursorLineWidthFactor: float = 0.12
 wcalCursorRoundingFactor: float = 0.5
 dcalWidgetButtonsEnable: bool = False
-dcalDayParams: list[dict] = [
+dcalDayParams: list[dict[str, Any]] = [
 	{
 		"enable": True,
 		"pos": (0, -12),
@@ -371,7 +373,7 @@ dcalDayParams: list[dict] = [
 		"color": (0, 200, 205),
 	},
 ]
-dcalMonthParams: list[dict] = [
+dcalMonthParams: list[dict[str, Any]] = [
 	{
 		"enable": False,
 		"pos": (0, -12),
@@ -403,7 +405,7 @@ dcalMonthParams: list[dict] = [
 		"uppercase": False,
 	},
 ]
-dcalWeekdayParams: list[dict] = {
+dcalWeekdayParams: dict[str, Any] = {
 	"enable": False,
 	"pos": (20, 10),
 	"xalign": "right",
@@ -412,7 +414,7 @@ dcalWeekdayParams: list[dict] = {
 	"color": (0, 200, 205),
 }
 dcalNavButtonsEnable: bool = True
-dcalNavButtonsGeo: list[dict] = {
+dcalNavButtonsGeo: dict[str, Any] = {
 	"auto_rtl": True,
 	"size": 64.0,
 	"spacing": 10.0,
@@ -438,7 +440,7 @@ dcalWinWidgetButtonsOpacity: float = 1.0
 dcalWinWeekdayLocalize: bool = True
 dcalWinWeekdayAbbreviate: bool = False
 dcalWinWeekdayUppercase: bool = False
-dcalWinDayParams: list[dict] = [
+dcalWinDayParams: list[dict[str, Any]] = [
 	{
 		"pos": (0, 5),
 		"xalign": "left",
@@ -461,7 +463,7 @@ dcalWinDayParams: list[dict] = [
 		"color": (0, 200, 205),
 	},
 ]
-dcalWinMonthParams: list[dict] = [
+dcalWinMonthParams: list[dict[str, Any]] = [
 	{
 		"enable": False,
 		"pos": (0, 5),
@@ -493,7 +495,7 @@ dcalWinMonthParams: list[dict] = [
 		"uppercase": False,
 	},
 ]
-dcalWinWeekdayParams: list[dict] = {
+dcalWinWeekdayParams: dict[str, Any] = {
 	"enable": False,
 	"pos": (20, 10),
 	"xalign": "right",
@@ -504,7 +506,7 @@ dcalWinWeekdayParams: list[dict] = {
 dcalWinEventIconSize: float = 20.0
 dcalWinEventTotalSizeRatio: float = 0.3
 dcalWinSeasonPieEnable: bool = False
-dcalWinSeasonPieGeo: list[dict] = {
+dcalWinSeasonPieGeo: dict[str, Any] = {
 	"size": 64,
 	"thickness": 0.3,
 	"pos": (0, 0),
@@ -541,7 +543,7 @@ eventTreeGroupIconSize: int = 24
 treeIconSize: int = 22
 labelBoxIconSize: int = 20
 stackIconSize: int = 22
-dcalWidgetButtons: list[dict] = [
+dcalWidgetButtons: list[dict[str, Any]] = [
 	{
 		"imageName": "transform-move.svg",
 		"onClick": "startMove",
@@ -559,7 +561,7 @@ dcalWidgetButtons: list[dict] = [
 		"autoDir": False,
 	},
 ]
-dcalWinWidgetButtons: list[dict] = [
+dcalWinWidgetButtons: list[dict[str, Any]] = [
 	{
 		"imageName": "transform-move.svg",
 		"onClick": "startMove",
