@@ -133,7 +133,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			# setting pageParent and pagePath here is ugly, but it's needed
 			page.pageParent = self.pagePath
 			page.pagePath = page.pageParent + "." + page.pageName
-			page.pageTitle = page.pageLabel = _(module.desc, ctx="calendar")
+			page.pageTitle = page.pageLabel = _("{calType} Calendar").format(
+				calType=_(module.desc, ctx="calendar"),
+			)
 			page.pageExpand = False
 			subPages.append(page)
 			button = newSubPageButton(self, page, borderWidth=7)
