@@ -200,7 +200,6 @@ __all__ = [
 ]
 
 showMain: bool = True
-showDesktopWidget: bool = False
 winTaskbar: bool = False
 useAppIndicator: bool = True
 winX: int = 0
@@ -425,6 +424,7 @@ dcalWeekdayAbbreviate: bool = False
 dcalWeekdayUppercase: bool = False
 dcalEventIconSize: float = 20.0
 dcalEventTotalSizeRatio: float = 0.3
+showDesktopWidget: bool = False
 dcalWinX: int = 0
 dcalWinY: int = 0
 dcalWinWidth: float = 180.0
