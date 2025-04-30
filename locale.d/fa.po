@@ -3606,8 +3606,14 @@ msgid "Change icon on button press"
 msgstr ""
 "تغییر آیکون هنگام فشردن دکمه"
 
-msgid "Widget buttons"
+msgid "Widget Buttons"
 msgstr "دکمه‌های ویجت"
+
+msgid "Widget Buttons Size"
+msgstr "اندازهٔ دکمه‌های ویجت"
+
+msgid "Widget Buttons Opacity"
+msgstr "ماتی دکمه‌های ویجت"
 
 msgid "Navigation buttons"
 msgstr "دکمه‌های ناوبری"
