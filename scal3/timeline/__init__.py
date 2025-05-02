@@ -22,16 +22,15 @@ from scal3.config_utils import (
 )
 from scal3.path import confDir, sysConfDir
 from scal3.timeline import conf
+from scal3.timeline.conf import confParams
 from scal3.timeline.params import confParamsData
-from scal3.ui import conf as uiConf
+from scal3.ui import conf as uiconf
 
-__all__ = ["saveConf"]
+__all__ = ["confParamsData", "saveConf"]
 
 sysConfPath = join(sysConfDir, "timeline.json")
 
 confPath = join(confDir, "timeline.json")
-
-confParams = [p.v3Name for p in confParamsData]
 
 # ---------------------------------------------
 
@@ -42,15 +41,17 @@ def loadConf() -> None:
 	loadSingleConfig(
 		conf,
 		sysConfPath,
+		confParams,
 		# decoders=confDecoders,
 	)
 	loadSingleConfig(
 		conf,
 		confPath,
+		confParams,
 		# decoders=confDecoders,
 	)
-	conf.bgColor = conf.bgColor or uiConf.bgColor
-	conf.fgColor = conf.fgColor or uiConf.textColor
+	conf.bgColor.v = conf.bgColor.v or uiconf.bgColor.v
+	conf.fgColor.v = conf.fgColor.v or uiconf.textColor.v
 
 
 def saveConf() -> None:

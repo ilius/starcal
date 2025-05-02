@@ -21,7 +21,7 @@ from scal3.ui_gtk.starcal_import_all import doFullImport
 ui.init()
 initCell()
 
-conf.winKeepAbove = False
+conf.winKeepAbove.v = False
 
 pixcache.cacheSaveStart()
 ui.eventUpdateQueue.startLoop()

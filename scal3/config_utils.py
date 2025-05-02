@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.property import Property
 
 log = logger.get()
 
 import json
 import sys
-from typing import TYPE_CHECKING
 
 from scal3.json_utils import dataToPrettyJson
-
-if TYPE_CHECKING:
-	from collections.abc import Iterable
 
 __all__ = [
 	"loadModuleConfig",
@@ -24,6 +21,7 @@ __all__ = [
 def loadSingleConfig(
 	module,
 	confPath: str,
+	params: dict[str, Property],
 	decoders: dict | None = None,
 ) -> None:
 	from os.path import isfile
@@ -48,23 +46,29 @@ def loadSingleConfig(
 	if isinstance(module, str):
 		module = sys.modules[module]
 	for param, value in data.items():
+		if param not in params:
+			log.warning(f"Ignoring config option {param} in {module.__name__}")
+			continue
 		if decoders and param in decoders:
 			value = decoders[param](value)  # noqa: PLW2901
-		setattr(module, param, value)
+		prop = params[param]
+		assert isinstance(prop, Property), f"{module.__name__}.{param}"
+		prop.v = value
 
 
 def saveSingleConfig(
 	module,
 	confPath: str,
-	params: Iterable[str],
+	params: dict[str, Property],
 	encoders: dict | None = None,
 ) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
 	data = {}
-	for param in params:
-		value = getattr(module, param)
+	for param, prop in params.items():
+		assert isinstance(prop, Property)
+		value = prop.v
 		if encoders and param in encoders:
 			value = encoders[param](value)
 		data[param] = value
@@ -92,12 +96,14 @@ def loadModuleConfig(module):
 		loadSingleConfig(
 			module,
 			sysConfPath,
+			module.confParams,
 			decoders,
 		)
 	# ----
 	loadSingleConfig(
 		module,
 		module.confPath,
+		module.confParams,
 		decoders,
 	)
 	# FIXME: should use module.confParams to restrict json keys?

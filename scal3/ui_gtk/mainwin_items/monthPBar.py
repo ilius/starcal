@@ -32,7 +32,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 
-		calType = conf.monthPBarCalType
+		calType = conf.monthPBarCalType.v
 		if calType == -1:
 			calType = calTypes.primary
 
@@ -72,8 +72,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		# ----
 		self.optionsWidget = HBox()
 		prefItem = CalTypePrefItem(
-			conf,
-			"monthPBarCalType",
+			prop=conf.monthPBarCalType,
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)
