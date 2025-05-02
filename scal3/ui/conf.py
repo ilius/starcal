@@ -274,7 +274,7 @@ winControllerButtons: list[tuple[str, bool]] = [
 	("sep", False),
 	("sep", False),
 ]
-winControllerIconSize: int = 24
+winControllerIconSize: float = 24
 winControllerBorder: int = 0
 winControllerSpacing: int = 0
 winControllerPressState: bool = False
@@ -295,8 +295,8 @@ mainWinRightPanelPluginsFont: Font | None = None
 mainWinRightPanelPluginsJustification: str = "left"
 mainWinRightPanelResizeOnToggle: bool = True
 mainWinRightPanelBorderWidth: int = 7
-mcalLeftMargin: int = 30
-mcalTopMargin: int = 30
+mcalLeftMargin: float = 30
+mcalTopMargin: float = 30
 mcalTypeParams: list[dict[str, Any]] = [
 	{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 	{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
@@ -329,20 +329,20 @@ wcal_eventsText_colorize: bool = True
 wcalFont_eventsText: str | None = None
 wcal_toolbar_weekNum_negative: bool = False
 wcal_toolbar_mainMenu_icon: str = "starcal.png"
-wcal_weekDays_width: int = 80
+wcal_weekDays_width: float = 80
 wcal_weekDays_expand: bool = False
 wcalFont_weekDays: str | None = None
 wcalFont_pluginsText: str | None = None
 wcal_pluginsText_firstLineOnly: bool = False
-wcal_eventsIcon_width: int = 50
+wcal_eventsIcon_width: float = 50
 wcalTypeParams: list[dict[str, Any]] = [{"font": None}, {"font": None}, {"font": None}]
 wcal_daysOfMonth_dir: str = "ltr"
-wcal_daysOfMonth_width: int = 30
+wcal_daysOfMonth_width: float = 30
 wcal_daysOfMonth_expand: bool = False
-wcal_eventsCount_width: int = 80
+wcal_eventsCount_width: float = 80
 wcal_eventsCount_expand: bool = False
 wcalFont_eventsBox: str | None = None
-wcal_moonStatus_width: int = 48
+wcal_moonStatus_width: float = 48
 wcal_moonStatus_southernHemisphere: bool = False
 wcalCursorLineWidthFactor: float = 0.12
 wcalCursorRoundingFactor: float = 0.5
@@ -539,10 +539,10 @@ customizePagePath: str = ""
 localTzHist: list[str] = []
 showDigClockTb: bool = True
 menuIconPadding: int = 7
-eventTreeGroupIconSize: int = 24
-treeIconSize: int = 22
-labelBoxIconSize: int = 20
-stackIconSize: int = 22
+eventTreeGroupIconSize: float = 24
+treeIconSize: float = 22
+labelBoxIconSize: float = 20
+stackIconSize: float = 22
 dcalWidgetButtons: list[dict[str, Any]] = [
 	{
 		"imageName": "transform-move.svg",
@@ -588,20 +588,20 @@ dcalWinWidgetButtons: list[dict[str, Any]] = [
 	},
 ]
 menuIconEdgePadding: int = 3
-rightPanelEventIconSize: int = 20
-eventTreeIconSize: int = 22
-menuEventCheckIconSize: int = 20
-toolbarIconSize: int = 24
-mcalEventIconSizeMax: int = 26
-messageDialogIconSize: int = 48
-menuCheckSize: int = 22
-menuIconSize: int = 18
-comboBoxIconSize: int = 20
-imageInputIconSize: int = 32
+rightPanelEventIconSize: float = 20
+eventTreeIconSize: float = 22
+menuEventCheckIconSize: float = 20
+toolbarIconSize: float = 24
+mcalEventIconSizeMax: float = 26
+messageDialogIconSize: float = 48
+menuCheckSize: float = 22
+menuIconSize: float = 18
+comboBoxIconSize: float = 20
+imageInputIconSize: float = 32
 maxWeekCacheSize: int = 12
 wcalPadding: int = 10
-buttonIconSize: int = 20
-wcalEventIconSizeMax: int = 26
+buttonIconSize: float = 20
+wcalEventIconSizeMax: float = 26
 eventWeekViewTimeFormat: str = "HM$"
 
 statusIconImageDefault = statusIconImage
