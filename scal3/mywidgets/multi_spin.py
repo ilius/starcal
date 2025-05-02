@@ -75,19 +75,19 @@ class Field:
 
 
 class NumField(Field):
-	def setRange(self, _min, _max):
-		self._min = _min
-		self._max = _max
+	def setRange(self, minim, maxim):
+		self.minim = minim
+		self.maxim = maxim
 		self.setValue(self.value)
 
 	def setDefault(self):
-		self.value = self._min
+		self.value = self.minim
 
 	def setValue(self, v):
-		if v < self._min:
-			v = self._min
-		elif v > self._max:
-			v = self._max
+		if v < self.minim:
+			v = self.minim
+		elif v > self.maxim:
+			v = self.maxim
 		self.value = v
 
 	def getValue(self):
@@ -95,9 +95,9 @@ class NumField(Field):
 
 
 class IntField(NumField):
-	def __init__(self, _min, _max, fill=0):
-		self._min = _min
-		self._max = _max
+	def __init__(self, minim, maxim, fill=0):
+		self.minim = minim
+		self.maxim = maxim
 		self.fill = fill
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
@@ -123,8 +123,8 @@ class IntField(NumField):
 
 	def getMaxWidth(self):
 		return max(
-			len(str(self._min)),
-			len(str(self._max)),
+			len(str(self.minim)),
+			len(str(self.maxim)),
 		)
 
 	def plus(self, p):
@@ -132,9 +132,9 @@ class IntField(NumField):
 
 
 class FloatField(NumField):
-	def __init__(self, _min, _max, digits):
-		self._min = _min
-		self._max = _max
+	def __init__(self, minim, maxim, digits):
+		self.minim = minim
+		self.maxim = maxim
 		self.digits = digits
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
@@ -156,8 +156,8 @@ class FloatField(NumField):
 
 	def getMaxWidth(self):
 		return max(
-			len(f"{self._min:.{self.digits}f}"),
-			len(f"{self._max:.{self.digits}f}"),
+			len(f"{self.minim:.{self.digits}f}"),
+			len(f"{self.maxim:.{self.digits}f}"),
 		)
 
 	def plus(self, p: float):
@@ -180,10 +180,10 @@ class DayField(IntField):
 	def __init__(self, pad=2):
 		IntField.__init__(self, 1, 31, pad)
 
-	def setMax(self, _max):
-		self._max = _max
-		# if self.value > _max:
-		# 	self.value = _max
+	def setMax(self, maxim):
+		self.maxim = maxim
+		# if self.value > maxim:
+		# 	self.value = maxim
 
 
 class HourField(IntField):
