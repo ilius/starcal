@@ -22,6 +22,6 @@ class DateButtonOption(MultiSpinOptionBox):
 			date = localtime()[:3]
 		self.set_value(date)
 
-	def setMaxDay(self, _max):
-		self.spin.field.children[2].setMax(_max)
+	def setMaxDay(self, maxDay):
+		self.spin.field.children[2].setMax(maxDay)
 		self.spin.update()
