@@ -85,7 +85,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 	)
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
-		return 0, conf.winHeight / 3
+		return 0, conf.winHeight.v / 3
 
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
@@ -99,12 +99,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# ---
 		subPages = [self.cursorPage]
 		n = len(calTypes.active)
-		while len(conf.mcalTypeParams) < n:
-			conf.mcalTypeParams.append(
+		while len(conf.mcalTypeParams.v) < n:
+			conf.mcalTypeParams.v.append(
 				{
 					"pos": (0, 0),
 					"font": ui.getFont(0.6),
-					"color": conf.textColor,
+					"color": conf.textColor.v,
 				},
 			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -114,7 +114,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				raise RuntimeError(f"cal type '{calType}' not found")
 			# ---
 			# try:
-			params = conf.mcalTypeParams[index]
+			params = conf.mcalTypeParams.v[index]
 			# except IndexError:
 			# --
 			pageWidget = CalTypeParamWidget(
@@ -146,13 +146,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 	@staticmethod
 	def drawCursorOutline(cr, cx0, cy0, cw, ch):
-		cursorRadius = conf.mcalCursorRoundingFactor * min(cw, ch) * 0.5
-		cursorLineWidth = conf.mcalCursorLineWidthFactor * min(cw, ch) * 0.5
+		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
+		cursorLineWidth = conf.mcalCursorLineWidthFactor.v * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
 	@staticmethod
 	def drawCursorBg(cr, cx0, cy0, cw, ch):
-		cursorRadius = conf.mcalCursorRoundingFactor * min(cw, ch) * 0.5
+		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
 	def __init__(self, win):
@@ -186,10 +186,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"mcalLeftMargin",
-			0,
-			999,
+			prop=conf.mcalLeftMargin,
+			bounds=(0, 999),
 			digits=1,
 			step=1,
 			label=_("Left Margin"),
@@ -200,10 +198,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"mcalTopMargin",
-			0,
-			999,
+			prop=conf.mcalTopMargin,
+			bounds=(0, 999),
 			digits=1,
 			step=1,
 			label=_("Top Margin"),
@@ -214,8 +210,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(optionsWidget, prefItem.getWidget())
 		# --------
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(conf, "mcalGrid", _("Grid")),
-			ColorPrefItem(conf, "mcalGridColor", True),
+			CheckPrefItem(prop=conf.mcalGrid, label=_("Grid")),
+			ColorPrefItem(prop=conf.mcalGridColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.queue_draw,
 		)
@@ -225,8 +221,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		hbox = HBox(spacing=10)
 		pack(hbox, newAlignLabel(label=_("Corner Menu Text Color")))
 		prefItem = ColorPrefItem(
-			conf,
-			"mcalCornerMenuTextColor",
+			prop=conf.mcalCornerMenuTextColor,
 			useAlpha=True,
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -240,10 +235,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"mcalCursorLineWidthFactor",
-			0,
-			1,
+			prop=conf.mcalCursorLineWidthFactor,
+			bounds=(0, 1),
 			digits=2,
 			step=0.1,
 			label=_("Line Width Factor"),
@@ -254,10 +247,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(pageVBox, prefItem.getWidget())
 		# ---
 		prefItem = SpinPrefItem(
-			conf,
-			"mcalCursorRoundingFactor",
-			0,
-			1,
+			prop=conf.mcalCursorRoundingFactor,
+			bounds=(0, 1),
 			digits=2,
 			step=0.1,
 			label=_("Rounding Factor"),
@@ -315,16 +306,16 @@ class CalObj(gtk.DrawingArea, CalBase):
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
-		fillColor(cr, conf.bgColor)
+		fillColor(cr, conf.bgColor.v)
 		status = getCurrentMonthStatus()
 		# ---------------------------------- Drawing Border
-		if conf.mcalTopMargin > 0:
+		if conf.mcalTopMargin.v > 0:
 			# # Drawing border top background
 			# mcalMenuCellBgColor == borderColor
-			cr.rectangle(0, 0, w, conf.mcalTopMargin)
-			fillColor(cr, conf.borderColor)
+			cr.rectangle(0, 0, w, conf.mcalTopMargin.v)
+			fillColor(cr, conf.borderColor.v)
 			# ------ Drawing weekDays names
-			setColor(cr, conf.borderTextColor)
+			setColor(cr, conf.borderTextColor.v)
 			wdayAb = self.wdaysWidth > w
 			for i in range(7):
 				wday = newTextLayout(self, core.getWeekDayAuto(i, abbreviate=wdayAb))
@@ -335,54 +326,54 @@ class CalObj(gtk.DrawingArea, CalBase):
 					fontw, fonth = wday.get_pixel_size()
 				cr.move_to(
 					self.cx[i] - fontw / 2,
-					(conf.mcalTopMargin - fonth) / 2 - 1,
+					(conf.mcalTopMargin.v - fonth) / 2 - 1,
 				)
 				show_layout(cr, wday)
 			# ------ Drawing "Menu" label
-			setColor(cr, conf.mcalCornerMenuTextColor)
+			setColor(cr, conf.mcalCornerMenuTextColor.v)
 			text = newTextLayout(self, _("Menu"))
 			fontw, fonth = text.get_pixel_size()
 			if rtl:
 				cr.move_to(
-					w - (conf.mcalLeftMargin + fontw) / 2 - 3,
-					(conf.mcalTopMargin - fonth) / 2 - 1,
+					w - (conf.mcalLeftMargin.v + fontw) / 2 - 3,
+					(conf.mcalTopMargin.v - fonth) / 2 - 1,
 				)
 			else:
 				cr.move_to(
-					(conf.mcalLeftMargin - fontw) / 2,
-					(conf.mcalTopMargin - fonth) / 2 - 1,
+					(conf.mcalLeftMargin.v - fontw) / 2,
+					(conf.mcalTopMargin.v - fonth) / 2 - 1,
 				)
 			show_layout(cr, text)
-		if conf.mcalLeftMargin > 0:
+		if conf.mcalLeftMargin.v > 0:
 			# # Drawing border left background
 			if rtl:
 				cr.rectangle(
-					w - conf.mcalLeftMargin,
-					conf.mcalTopMargin,
-					conf.mcalLeftMargin,
-					h - conf.mcalTopMargin,
+					w - conf.mcalLeftMargin.v,
+					conf.mcalTopMargin.v,
+					conf.mcalLeftMargin.v,
+					h - conf.mcalTopMargin.v,
 				)
 			else:
 				cr.rectangle(
 					0,
-					conf.mcalTopMargin,
-					conf.mcalLeftMargin,
-					h - conf.mcalTopMargin,
+					conf.mcalTopMargin.v,
+					conf.mcalLeftMargin.v,
+					h - conf.mcalTopMargin.v,
 				)
-			fillColor(cr, conf.borderColor)
+			fillColor(cr, conf.borderColor.v)
 			# # Drawing week numbers
-			setColor(cr, conf.borderTextColor)
+			setColor(cr, conf.borderTextColor.v)
 			for i in range(6):
 				lay = newTextLayout(self, _(status.weekNum[i]))
 				fontw, fonth = lay.get_pixel_size()
 				if rtl:
 					cr.move_to(
-						w - (conf.mcalLeftMargin + fontw) / 2,
+						w - (conf.mcalLeftMargin.v + fontw) / 2,
 						self.cy[i] - fonth / 2 + 2,
 					)
 				else:
 					cr.move_to(
-						(conf.mcalLeftMargin - fontw) / 2,
+						(conf.mcalLeftMargin.v - fontw) / 2,
 						self.cy[i] - fonth / 2 + 2,
 					)
 				show_layout(cr, lay)
@@ -393,8 +384,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 			x0 = self.cx[tx] - self.dx / 2
 			y0 = self.cy[ty] - self.dy / 2
 			cr.rectangle(x0, y0, self.dx, self.dy)
-			fillColor(cr, conf.todayCellColor)
-		iconSizeMax = conf.mcalEventIconSizeMax
+			fillColor(cr, conf.todayCellColor.v)
+		iconSizeMax = conf.mcalEventIconSizeMax.v
 		for yPos in range(6):
 			for xPos in range(7):
 				c = status[yPos][xPos]
@@ -410,7 +401,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					ch = self.dy - 1
 					# ------- Circular Rounded
 					self.drawCursorBg(cr, cx0, cy0, cw, ch)
-					fillColor(cr, conf.cursorBgColor)
+					fillColor(cr, conf.cursorBgColor.v)
 				# ------ end of Drawing Cursor
 				if not cellInactive:
 					iconList = c.getMonthEventIcons()
@@ -446,7 +437,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				# 	self.dy - 1,
 				# )
 				calType = calTypes.primary
-				params = conf.mcalTypeParams[0]
+				params = conf.mcalTypeParams.v[0]
 				daynum = newTextLayout(
 					self,
 					_(c.dates[calType][2], calType),
@@ -454,9 +445,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 				)
 				fontw, fonth = daynum.get_pixel_size()
 				if cellInactive:
-					setColor(cr, conf.inactiveColor)
+					setColor(cr, conf.inactiveColor.v)
 				elif c.holiday:
-					setColor(cr, conf.holidayColor)
+					setColor(cr, conf.holidayColor.v)
 				else:
 					setColor(cr, params["color"])
 				cr.move_to(
@@ -488,12 +479,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 						ch = self.dy - 1
 						# ------- Circular Rounded
 						self.drawCursorOutline(cr, cx0, cy0, cw, ch)
-						fillColor(cr, conf.cursorOutColor)
+						fillColor(cr, conf.cursorOutColor.v)
 						# # end of Drawing Cursor Outline
 		# -------------- end of drawing cells
 		# # drawGrid
-		if conf.mcalGrid:
-			setColor(cr, conf.mcalGridColor)
+		if conf.mcalGrid.v:
+			setColor(cr, conf.mcalGridColor.v)
 			for i in range(7):
 				cr.rectangle(
 					self.cx[i] + rtlSgn() * self.dx / 2,
@@ -524,8 +515,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 			# w = lay.get_pixel_extents()[0]  # FIXME
 			# log.debug(w,)
 			wm = max(w, wm)
-		self.wdaysWidth = wm * 7 + conf.mcalLeftMargin
-		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin
+		self.wdaysWidth = wm * 7 + conf.mcalLeftMargin.v
+		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin.v
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
 	def onButtonPress(self, _obj, gevent):
@@ -569,18 +560,20 @@ class CalObj(gtk.DrawingArea, CalBase):
 		h = self.get_allocation().height
 		# self.cx is centers x, self.cy is centers y
 		if rtl:
-			self.cx = [(w - conf.mcalLeftMargin) * (13 - 2 * i) / 14 for i in range(7)]
+			self.cx = [
+				(w - conf.mcalLeftMargin.v) * (13 - 2 * i) / 14 for i in range(7)
+			]
 		else:
 			self.cx = [
-				conf.mcalLeftMargin + ((w - conf.mcalLeftMargin) * (1 + 2 * i) / 14)
+				conf.mcalLeftMargin.v + ((w - conf.mcalLeftMargin.v) * (1 + 2 * i) / 14)
 				for i in range(7)
 			]
 		self.cy = [
-			conf.mcalTopMargin + (h - conf.mcalTopMargin) * (1 + 2 * i) / 12
+			conf.mcalTopMargin.v + (h - conf.mcalTopMargin.v) * (1 + 2 * i) / 12
 			for i in range(6)
 		]
-		self.dx = (w - conf.mcalLeftMargin) / 7  # delta x
-		self.dy = (h - conf.mcalTopMargin) / 6  # delta y
+		self.dx = (w - conf.mcalLeftMargin.v) / 7  # delta x
+		self.dy = (h - conf.mcalTopMargin.v) / 6  # delta y
 
 	def monthPlus(self, p):
 		ui.cells.monthPlus(p)
@@ -649,12 +642,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 	def getMainMenuPos(self, *_args):  # FIXME
 		if rtl:
 			return (
-				int(self.get_allocation().width - conf.mcalLeftMargin / 2),
-				int(conf.mcalTopMargin / 2),
+				int(self.get_allocation().width - conf.mcalLeftMargin.v / 2),
+				int(conf.mcalTopMargin.v / 2),
 			)
 		return (
-			int(conf.mcalLeftMargin / 2),
-			int(conf.mcalTopMargin / 2),
+			int(conf.mcalLeftMargin.v / 2),
+			int(conf.mcalTopMargin.v / 2),
 		)
 
 	def onDateChange(self, *a, **kw):

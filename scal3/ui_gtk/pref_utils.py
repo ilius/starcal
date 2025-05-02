@@ -43,7 +43,9 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
-ColorType: typing.TypeAlias = "tuple[int, int, int] | tuple[int, int, int, int]"
+	from scal3.property import Property
+
+type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
 
 __all__ = [
 	"CheckColorPrefItem",
@@ -86,15 +88,12 @@ class ModuleOptionItem:
 
 	def __init__(
 		self,
-		obj: Any,
+		prop: Property,
 		opt: tuple,
 		spacing=0,
 	) -> None:
+		self.prop = prop
 		t = opt[1]
-		self.opt = opt  # needed??
-		self.obj = obj
-		self.type = t
-		self.attrName = opt[0]
 		hbox = HBox(spacing=spacing)
 		if t is bool:
 			w = gtk.CheckButton(label=_(opt[2]))
@@ -124,16 +123,10 @@ class ModuleOptionItem:
 		# ----
 
 	def updateVar(self) -> None:
-		setattr(
-			self.obj,
-			self.attrName,
-			self.get(),
-		)
+		self.prop.v = self.get()
 
 	def updateWidget(self) -> None:
-		self.set(
-			getattr(self.obj, self.attrName),
-		)
+		self.set(self.prop.v)
 
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
@@ -174,6 +167,7 @@ class ModuleOptionButton:
 
 
 class PrefItem:
+	prop: Property
 	# def __new__(cls, *args, **kwargs):
 	# print("PrefItem:", args, kwargs)
 	# obj = object.__new__(cls)
@@ -183,8 +177,6 @@ class PrefItem:
 	def valueString(cls, value: Any) -> str:
 		return str(value)
 
-	# self.__init__, self.obj, self.attrName, self._widget
-	# self.attrName is string, the name of attribute of `self.obj`
 	def get(self) -> Any:
 		raise NotImplementedError
 
@@ -192,16 +184,10 @@ class PrefItem:
 		raise NotImplementedError
 
 	def updateVar(self) -> None:
-		setattr(
-			self.obj,
-			self.attrName,
-			self.get(),
-		)
+		self.prop.v = self.get()
 
 	def updateWidget(self) -> None:
-		self.set(
-			getattr(self.obj, self.attrName),
-		)
+		self.set(self.prop.v)
 
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
@@ -216,16 +202,14 @@ class ComboTextPrefItem(PrefItem):
 
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		items: list[str] | None = None,
 		label: str = "",
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	) -> None:
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		combo = gtk.ComboBoxText()
 		self._combo = combo
 		self._items = items
@@ -264,14 +248,12 @@ class ComboTextPrefItem(PrefItem):
 class FontFamilyPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		hasAuto: bool = False,
 		label: str = "",
 		onChangeFunc: Callable | None = None,
 	):
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
 		# ---
@@ -344,24 +326,22 @@ class FontFamilyPrefItem(PrefItem):
 # 		semi-condensed | normal | semi-expanded | expanded |
 # 		extra-expanded | ultra-expanded
 
-# Constructor can accept argument `attrNameDict: dict[str, str]`
+# Constructor can accept argument `propDict: dict[str, Property]`
 # with keys being a subset these 6 style keys, and values
 # being the attribute/variable names for reading (in updateWidget)
 # and storing (in updateVar) the style values
 # or maybe we should leave that to the user of class, and just accept
-# a `attrName: str` argument like other classes
+# a `prop: Property` argument like other classes
 
 
 class ComboEntryTextPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		items: list[str] | None = None,
 	):
 		"""Items is a list of strings."""
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		w = gtk.ComboBoxText.new_with_entry()
 		self._widget = w
 		if items:
@@ -387,13 +367,11 @@ class ComboEntryTextPrefItem(PrefItem):
 class ComboImageTextPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[int],
 		items: list[tuple[str, str]] | None = None,
 	):
 		"""Items is a list of (imagePath, text) tuples."""
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		# ---
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
@@ -436,15 +414,13 @@ class FontPrefItem(PrefItem):
 
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[ui.Font],
 		dragAndDrop: bool = True,
 		previewText: str = "",
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyFontButton
 
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		w = MyFontButton(dragAndDrop=dragAndDrop)
 		self._widget = w
 		if previewText:
@@ -466,15 +442,13 @@ class FontPrefItem(PrefItem):
 class CheckPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[bool],
 		label: str = "",
 		tooltip: str = "",
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	) -> None:
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		checkb = gtk.CheckButton(label=label)
 		if tooltip:
 			set_tooltip(checkb, tooltip)
@@ -525,16 +499,14 @@ class ColorPrefItem(PrefItem):
 
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[ColorType],
 		useAlpha: bool = False,
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton
 
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		colorb = MyColorButton()
 		gtk.ColorChooser.set_use_alpha(colorb, useAlpha)
 		# All methods of Gtk.ColorButton are deprecated since version 3.4:
@@ -675,10 +647,8 @@ class CheckFontPrefItem(PrefItem):
 class SpinPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
-		_min: float,
-		_max: float,
+		prop: Property[float] | Property[int],
+		bounds: tuple[float, float],
 		digits: int = 1,
 		step: float = 0,
 		label: str = "",
@@ -687,14 +657,14 @@ class SpinPrefItem(PrefItem):
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	):
-		self.obj = obj
-		self.attrName = attrName
+		minim, maxim = bounds
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# --
 		if digits == 0:
-			spinb = IntSpinButton(_min, _max, step=step)
+			spinb = IntSpinButton(minim, maxim, step=int(step))
 		else:
-			spinb = FloatSpinButton(_min, _max, digits, step=step)
+			spinb = FloatSpinButton(minim, maxim, digits, step=step)
 		self._spinb = spinb
 
 		if labelSizeGroup and not label:
@@ -733,16 +703,14 @@ class SpinPrefItem(PrefItem):
 class TextPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	):
 		from scal3.ui_gtk.mywidgets import TextFrame
 
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
 		kwargs = {}
@@ -777,16 +745,14 @@ class TextPrefItem(PrefItem):
 class WidthHeightPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
-		_max: float,
+		prop: Property[tuple[int, int]],
+		maxim: float,
 	):
-		min_ = 0
-		self.obj = obj
-		self.attrName = attrName
+		minim = 0
+		self.prop = prop
 		# ---
-		self.widthItem = IntSpinButton(min_, _max)
-		self.heightItem = IntSpinButton(min_, _max)
+		self.widthItem = IntSpinButton(minim, maxim)
+		self.heightItem = IntSpinButton(minim, maxim)
 		# ---
 		hbox = self._widget = HBox()
 		pack(hbox, gtk.Label(label=_("Width") + ":"))
@@ -810,14 +776,11 @@ class WidthHeightPrefItem(PrefItem):
 class FileChooserPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		title: str = "Select File",
 		currentFolder: str = "",
-		defaultVarName: str = "",
 	):
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		# ---
 		dialog = gtk.FileChooserDialog(
 			title=title,
@@ -840,15 +803,13 @@ class FileChooserPrefItem(PrefItem):
 		if currentFolder:
 			w.set_current_folder(currentFolder)
 		# ---
-		self.defaultVarName = defaultVarName
-		if defaultVarName:
-			dialog_add_button(
-				dialog,
-				imageName="edit-undo.svg",
-				label=_("_Revert"),
-				res=gtk.ResponseType.NONE,
-				onClick=self.onRevertClick,
-			)
+		dialog_add_button(
+			dialog,
+			imageName="edit-undo.svg",
+			label=_("_Revert"),
+			res=gtk.ResponseType.NONE,
+			onClick=self.onRevertClick,
+		)
 		# ---
 		self._widget = w
 
@@ -859,12 +820,8 @@ class FileChooserPrefItem(PrefItem):
 		self._widget.set_filename(value)
 
 	def onRevertClick(self, _button: gtk.Button) -> None:
-		defaultValue = getattr(self.obj, self.defaultVarName)
-		setattr(
-			self.obj,
-			self.attrName,
-			defaultValue,
-		)
+		defaultValue = self.prop.default()
+		self.prop.v = defaultValue
 		self.set(defaultValue)
 
 
@@ -884,16 +841,14 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 class IconChooserPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		hbox = HBox()
 		if label:
@@ -932,14 +887,12 @@ class RadioListPrefItem(PrefItem):
 	def __init__(
 		self,
 		vertical: bool,
-		obj: Any,
-		attrName: str,
+		prop: Property[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
 		self.num = len(texts)
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		if vertical:
 			box = VBox()
 		else:
@@ -981,12 +934,10 @@ class ListPrefItem(PrefItem):
 	def __init__(
 		self,
 		vertical: bool,
-		obj: Any,
-		attrName: str,
+		prop: Property[list[Any]],
 		items: list[PrefItem] | None = None,
 	) -> None:
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		if vertical:
 			box = VBox()
 		else:
@@ -1024,15 +975,13 @@ class VListPrefItem(ListPrefItem):
 class DirectionPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		onChangeFunc: Callable | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
 
 		# ---
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = HBox()
@@ -1062,16 +1011,14 @@ class DirectionPrefItem(PrefItem):
 class JustificationPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[str],
 		label: str = "",
 		onChangeFunc: Callable | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
 
 		# ---
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = HBox(spacing=10)

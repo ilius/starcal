@@ -23,7 +23,6 @@ log = logger.get()
 
 from typing import TYPE_CHECKING
 
-from scal3.ui import conf
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
@@ -31,6 +30,8 @@ from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.property import Property
 
 
 __all__ = ["WinLayoutBox", "WinLayoutObj"]
@@ -44,7 +45,7 @@ class WinLayoutBase(CustomizableCalObj):
 		self,
 		name: str = "",
 		desc: str = "",
-		enableParam: str = "",
+		enableParam: Property | None = None,
 		vertical: bool | None = None,
 		expand: bool | None = None,
 	):
@@ -74,7 +75,7 @@ class WinLayoutObj(WinLayoutBase):
 		self,
 		name: str = "",
 		desc: str = "",
-		enableParam: str = "",
+		enableParam: Property | None = None,
 		vertical: bool | None = None,
 		expand: bool | None = None,
 		movable: bool = False,
@@ -113,7 +114,7 @@ class WinLayoutObj(WinLayoutBase):
 			raise TypeError(f"initializer returned non-widget: {type(item)}")
 		item.enableParam = self.enableParam
 		if item.enableParam:
-			item.enable = getattr(conf, item.enableParam)
+			item.enable = item.enableParam.v
 		self.appendItem(item)
 		self._item = item
 		return item
@@ -176,11 +177,11 @@ class WinLayoutBox(WinLayoutBase):
 		self,
 		name: str = "",
 		desc: str = "",
-		enableParam: str = "",
+		enableParam: Property | None = None,
 		vertical: bool | None = None,
 		expand: bool | None = None,
 		itemsMovable: bool = False,
-		itemsParam: str = "",
+		itemsParam: Property | None = None,
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,
@@ -247,7 +248,8 @@ class WinLayoutBox(WinLayoutBase):
 			if item.loaded:
 				pack(box, item.getWidget(), item.expand, item.expand)
 				item.showHide()
-		setattr(conf, self.itemsParam, itemNames)
+		if self.itemsParam:
+			self.itemsParam.v = itemNames
 
 	def setItemsOrder(self, itemNames):
 		itemByName = {item.objName: item for item in self.items}

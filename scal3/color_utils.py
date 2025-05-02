@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import typing
-
 __all__ = [
 	"ColorType",
 	"colorizeSpan",
@@ -13,7 +11,7 @@ __all__ = [
 ]
 
 
-ColorType: typing.TypeAlias = "tuple[int,int,int] | tuple[int,int,int,int]"
+type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
 
 
 def rgbToInt(r, g, b):

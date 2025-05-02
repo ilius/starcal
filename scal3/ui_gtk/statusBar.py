@@ -43,7 +43,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			label.destroy()
 		# ---
 		activeCalTypes = calTypes.active
-		if conf.statusBarDatesReverseOrder:
+		if conf.statusBarDatesReverseOrder.v:
 			activeCalTypes = reversed(activeCalTypes)  # to not modify calTypes.active
 		for calType in activeCalTypes:
 			label = SLabel()
@@ -61,8 +61,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			text = ui.cells.current.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"
-			if conf.statusBarDatesColorEnable:
-				text = colorizeSpan(text, conf.statusBarDatesColor)
+			if conf.statusBarDatesColorEnable.v:
+				text = colorizeSpan(text, conf.statusBarDatesColor.v)
 			label.set_label(text)
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -78,8 +78,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		optionsWidget = VBox(spacing=10)
 		# ----
 		prefItem = CheckPrefItem(
-			conf,
-			"statusBarDatesReverseOrder",
+			prop=conf.statusBarDatesReverseOrder,
 			label=_("Reverse the order of dates"),
 			live=True,
 			onChangeFunc=self.onConfigChange,
@@ -87,8 +86,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(conf, "statusBarDatesColorEnable", _("Dates Color")),
-			ColorPrefItem(conf, "statusBarDatesColor", True),
+			CheckPrefItem(prop=conf.statusBarDatesColorEnable, label=_("Dates Color")),
+			ColorPrefItem(prop=conf.statusBarDatesColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)

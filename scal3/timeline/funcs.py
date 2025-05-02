@@ -148,14 +148,14 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	# ---------------------- Holidays
 	holidays = []
 	if (
-		conf.changeHolidayBg
-		and conf.changeHolidayBgMinDays < widthDays < conf.changeHolidayBgMaxDays
+		conf.changeHolidayBg.v
+		and conf.changeHolidayBgMinDays.v < widthDays < conf.changeHolidayBgMaxDays.v
 	):
 		holidays = [getJPos(jd) for jd in getHolidaysJdList(ui.cells, jd0, jd1 + 1)]
 	# ---------------------- Ticks
 	ticks = []
 	tickEpochSet = set()
-	minStep = conf.minorStepMin / pixelPerSec  # second
+	minStep = conf.minorStepMin.v / pixelPerSec  # second
 	# -----------------
 	year0, month0, day0 = jd_to_primary(jd0)
 	year1, month1, day1 = jd_to_primary(jd1)
@@ -171,8 +171,8 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		if tmEpoch in tickEpochSet:
 			continue
 		unitSize = size * yearPixel
-		if unitSize >= conf.majorStepMin:
-			label = formatYear(year, prettyPower=conf.yearPrettyPower)
+		if unitSize >= conf.majorStepMin.v:
+			label = formatYear(year, prettyPower=conf.yearPrettyPower.v)
 		else:
 			label = ""
 		ticks.append(
@@ -206,7 +206,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			unitSize = monthPixel * monthUnit
 			monthName = (
 				getMonthName(calTypes.primary, month)
-				if unitSize >= conf.majorStepMin
+				if unitSize >= conf.majorStepMin.v
 				else ""
 			)
 			ticks.append(
@@ -220,16 +220,16 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			tickEpochSet.add(tmEpoch)
 	# -------------- Week days
 	if (
-		conf.showWeekStart
-		and conf.showWeekStartMinDays < widthDays < conf.showWeekStartMaxDays
+		conf.showWeekStart.v
+		and conf.showWeekStartMinDays.v < widthDays < conf.showWeekStartMaxDays.v
 	):
 		wd0 = jwday(jd0)
-		jdw0 = jd0 + (core.firstWeekDay - wd0) % 7
+		jdw0 = jd0 + (core.firstWeekDay.v - wd0) % 7
 		unitSize = dayPixel * 7
-		if unitSize < conf.majorStepMin:
+		if unitSize < conf.majorStepMin.v:
 			label = ""
 		else:
-			label = core.weekDayNameAb[core.firstWeekDay]
+			label = core.weekDayNameAb[core.firstWeekDay.v]
 		for jd in range(jdw0, jd1 + 1, 7):
 			tmEpoch = getEpochFromJd(jd)
 			ticks.append(
@@ -238,7 +238,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 					getEPos(tmEpoch),
 					unitSize,
 					label,
-					color=conf.weekStartTickColor,
+					color=conf.weekStartTickColor.v,
 				),
 			)
 			# tickEpochSet.add(tmEpoch)
@@ -249,7 +249,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	def addDayOfMonthTick(jd, month, day, dayUnit):
 		tmEpoch = getEpochFromJd(jd)
 		unitSize = dayPixel * dayUnit
-		if unitSize < conf.majorStepMin:
+		if unitSize < conf.majorStepMin.v:
 			label = ""
 		elif hasMonthName:
 			label = _(day) + " " + getMonthName(calTypes.primary, month)
@@ -328,7 +328,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			):
 				if tmEpoch in tickEpochSet:
 					continue
-				if unitSize < conf.majorStepMin:
+				if unitSize < conf.majorStepMin.v:
 					label = ""
 				else:
 					_jd, hms = getJhmsFromEpoch(tmEpoch)

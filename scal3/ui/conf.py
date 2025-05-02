@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import typing
 
+from scal3.property import Property
+
 if typing.TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.font import Font
-
 
 __all__ = [
 	"bgColor",
@@ -17,9 +18,13 @@ __all__ = [
 	"buttonIconSize",
 	"cellMenuXOffset",
 	"comboBoxIconSize",
+	"confParams",
+	"confParamsCustomize",
+	"confParamsLive",
 	"cursorBgColor",
 	"cursorOutColor",
 	"customizePagePath",
+	"dayCalWinParamsLive",
 	"dcalDayParams",
 	"dcalEventIconSize",
 	"dcalEventTotalSizeRatio",
@@ -203,410 +208,622 @@ __all__ = [
 	"winY",
 ]
 
-showMain: bool = True
-winTaskbar: bool = False
-useAppIndicator: bool = True
-winX: int = 0
-winY: int = 0
-winWidth: int = 480
-winHeight: int = 300
-winKeepAbove: bool = True
-winSticky: bool = True
-winMaximized: bool = False
-mainWinItems: list[tuple[str, bool]] = [
-	("toolbar", True),
-	("labelBox", True),
-	("monthCal", False),
-	("weekCal", True),
-	("dayCal", False),
-	("monthPBar", False),
-	("seasonPBar", True),
-	("yearPBar", False),
-]
-mainWinFooterItems: list[str] = ["pluginsText", "eventDayView", "statusBar"]
-pluginsTextEnable: bool = False
-pluginsTextInsideExpander: bool = True
-pluginsTextIsExpanded: bool = True
-eventDayViewEnable: bool = False
-eventDayViewEventSep: str = "\n"
-eventViewMaxHeight: int = 200
-statusBarEnable: bool = True
-statusBarDatesReverseOrder: bool = False
-statusBarDatesColorEnable: bool = False
-statusBarDatesColor = (255, 132, 255, 255)
-fontCustomEnable: bool = False
-fontCustom: Font | None = None
-buttonIconEnable: bool = True
-useSystemIcons: bool = False
-oldStyleProgressBar: bool = False
-bgColor = (26, 0, 1, 255)
-borderColor = (123, 40, 0, 255)
-borderTextColor = (255, 255, 255, 255)
-textColor = (255, 255, 255, 255)
-holidayColor = (255, 160, 0, 255)
-inactiveColor = (255, 255, 255, 115)
-todayCellColor = (0, 255, 0, 50)
-cursorOutColor = (213, 207, 0, 255)
-cursorBgColor = (41, 41, 41, 255)
-showDigClockTr: bool = True
-statusIconImage: str = "status-icons/dark-green.svg"
-statusIconImageHoli: str = "status-icons/dark-red.svg"
-statusIconFontFamilyEnable: bool = False
-statusIconFontFamily: str | None = None
-statusIconHolidayFontColorEnable: bool = False
-statusIconHolidayFontColor = None
-statusIconLocalizeNumber: bool = True
-statusIconFixedSizeEnable: bool = False
-statusIconFixedSizeWH: tuple[int, int] = (24, 24)
-pluginsTextStatusIcon: bool = False
-maxDayCacheSize: int = 100
-eventDayViewTimeFormat: str = "HM$"
-cellMenuXOffset: int = 0
-winControllerEnable: bool = True
-winControllerTheme: str = "default"
-winControllerButtons: list[tuple[str, bool]] = [
-	("sep", True),
-	("rightPanel", True),
-	("min", True),
-	("max", True),
-	("close", True),
-	("sep", False),
-	("sep", False),
-	("sep", False),
-]
-winControllerIconSize: float = 24
-winControllerBorder: int = 0
-winControllerSpacing: int = 0
-winControllerPressState: bool = False
-mainWinRightPanelEnable: bool = True
-mainWinRightPanelRatio: float = 0.5
-mainWinRightPanelSwap: bool = False
-mainWinRightPanelWidth: int = 200
-mainWinRightPanelWidthRatio: float = 0.25
-mainWinRightPanelWidthRatioEnable: bool = True
-mainWinRightPanelEventFontEnable: bool = False
-mainWinRightPanelEventFont: Font | None = None
-mainWinRightPanelEventTimeFontEnable: bool = False
-mainWinRightPanelEventTimeFont: Font | None = None
-mainWinRightPanelEventJustification: str = "left"
-mainWinRightPanelEventSep: str = "\n\n"
-mainWinRightPanelPluginsFontEnable: bool = False
-mainWinRightPanelPluginsFont: Font | None = None
-mainWinRightPanelPluginsJustification: str = "left"
-mainWinRightPanelResizeOnToggle: bool = True
-mainWinRightPanelBorderWidth: int = 7
-mcalLeftMargin: float = 30
-mcalTopMargin: float = 30
-mcalTypeParams: list[dict[str, Any]] = [
-	{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
-	{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
-	{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
-]
-mcalGrid: bool = False
-mcalGridColor = (255, 252, 0, 82)
-mcalCornerMenuTextColor = (255, 255, 255, 255)
-mcalCursorLineWidthFactor: float = 0.12
-mcalCursorRoundingFactor: float = 0.5
-wcalTextSizeScale: float = 0.6
-wcalItems: list[tuple[str, bool]] = [
-	("toolbar", True),
-	("weekDays", True),
-	("pluginsText", True),
-	("eventsIcon", True),
-	("eventsText", True),
-	("daysOfMonth", True),
-]
-wcalGrid: bool = False
-wcalGridColor = (255, 252, 0, 82)
-wcalUpperGradientEnable: bool = False
-wcalUpperGradientColor = (255, 255, 255, 60)
-wcal_eventsText_pastColorEnable: bool = False
-wcal_eventsText_pastColor = (100, 100, 100, 50)
-wcal_eventsText_ongoingColorEnable: bool = False
-wcal_eventsText_ongoingColor = (80, 255, 80, 255)
-wcal_eventsText_showDesc: bool = False
-wcal_eventsText_colorize: bool = True
-wcalFont_eventsText: str | None = None
-wcal_toolbar_weekNum_negative: bool = False
-wcal_toolbar_mainMenu_icon: str = "starcal.png"
-wcal_weekDays_width: float = 80
-wcal_weekDays_expand: bool = False
-wcalFont_weekDays: str | None = None
-wcalFont_pluginsText: str | None = None
-wcal_pluginsText_firstLineOnly: bool = False
-wcal_eventsIcon_width: float = 50
-wcalTypeParams: list[dict[str, Any]] = [{"font": None}, {"font": None}, {"font": None}]
-wcal_daysOfMonth_dir: str = "ltr"
-wcal_daysOfMonth_width: float = 30
-wcal_daysOfMonth_expand: bool = False
-wcal_eventsCount_width: float = 80
-wcal_eventsCount_expand: bool = False
-wcalFont_eventsBox: str | None = None
-wcal_moonStatus_width: float = 48
-wcal_moonStatus_southernHemisphere: bool = False
-wcalCursorLineWidthFactor: float = 0.12
-wcalCursorRoundingFactor: float = 0.5
-dcalWidgetButtonsEnable: bool = False
-dcalDayParams: list[dict[str, Any]] = [
-	{
-		"enable": True,
-		"pos": (0, -12),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (220, 220, 220),
-	},
-	{
-		"enable": True,
-		"pos": (125, 30),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (165, 255, 114),
-	},
-	{
-		"enable": True,
-		"pos": (-125, 24),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (0, 200, 205),
-	},
-]
-dcalMonthParams: list[dict[str, Any]] = [
+showMain: Property[bool] = Property(True)
+winTaskbar: Property[bool] = Property(False)
+useAppIndicator: Property[bool] = Property(True)
+winX: Property[int] = Property(0)
+winY: Property[int] = Property(0)
+winWidth: Property[int] = Property(480)
+winHeight: Property[int] = Property(300)
+winKeepAbove: Property[bool] = Property(True)
+winSticky: Property[bool] = Property(True)
+winMaximized: Property[bool] = Property(False)
+mainWinItems: Property[list[tuple[str, bool]]] = Property(
+	[
+		("toolbar", True),
+		("labelBox", True),
+		("monthCal", False),
+		("weekCal", True),
+		("dayCal", False),
+		("monthPBar", False),
+		("seasonPBar", True),
+		("yearPBar", False),
+	],
+)
+mainWinFooterItems: Property[list[str]] = Property(
+	["pluginsText", "eventDayView", "statusBar"],
+)
+pluginsTextEnable: Property[bool] = Property(False)
+pluginsTextInsideExpander: Property[bool] = Property(True)
+pluginsTextIsExpanded: Property[bool] = Property(True)
+eventDayViewEnable: Property[bool] = Property(False)
+eventDayViewEventSep: Property[str] = Property("\n")
+eventViewMaxHeight: Property[int] = Property(200)
+statusBarEnable: Property[bool] = Property(True)
+statusBarDatesReverseOrder: Property[bool] = Property(False)
+statusBarDatesColorEnable: Property[bool] = Property(False)
+statusBarDatesColor = Property((255, 132, 255, 255))
+fontCustomEnable: Property[bool] = Property(False)
+fontCustom: Property[Font | None] = Property(None)
+buttonIconEnable: Property[bool] = Property(True)
+useSystemIcons: Property[bool] = Property(False)
+oldStyleProgressBar: Property[bool] = Property(False)
+bgColor = Property((26, 0, 1, 255))
+borderColor = Property((123, 40, 0, 255))
+borderTextColor = Property((255, 255, 255, 255))
+textColor = Property((255, 255, 255, 255))
+holidayColor = Property((255, 160, 0, 255))
+inactiveColor = Property((255, 255, 255, 115))
+todayCellColor = Property((0, 255, 0, 50))
+cursorOutColor = Property((213, 207, 0, 255))
+cursorBgColor = Property((41, 41, 41, 255))
+showDigClockTr: Property[bool] = Property(True)
+statusIconImage: Property[str] = Property("status-icons/dark-green.svg")
+statusIconImageHoli: Property[str] = Property("status-icons/dark-red.svg")
+statusIconFontFamilyEnable: Property[bool] = Property(False)
+statusIconFontFamily: Property[str | None] = Property(None)
+statusIconHolidayFontColorEnable: Property[bool] = Property(False)
+statusIconHolidayFontColor = Property(None)
+statusIconLocalizeNumber: Property[bool] = Property(True)
+statusIconFixedSizeEnable: Property[bool] = Property(False)
+statusIconFixedSizeWH: Property[tuple[int, int]] = Property((24, 24))
+pluginsTextStatusIcon: Property[bool] = Property(False)
+maxDayCacheSize: Property[int] = Property(100)
+eventDayViewTimeFormat: Property[str] = Property("HM$")
+cellMenuXOffset: Property[int] = Property(0)
+winControllerEnable: Property[bool] = Property(True)
+winControllerTheme: Property[str] = Property("default")
+winControllerButtons: Property[list[tuple[str, bool]]] = Property(
+	[
+		("sep", True),
+		("rightPanel", True),
+		("min", True),
+		("max", True),
+		("close", True),
+		("sep", False),
+		("sep", False),
+		("sep", False),
+	],
+)
+winControllerIconSize: Property[float] = Property(24)
+winControllerBorder: Property[int] = Property(0)
+winControllerSpacing: Property[int] = Property(0)
+winControllerPressState: Property[bool] = Property(False)
+mainWinRightPanelEnable: Property[bool] = Property(True)
+mainWinRightPanelRatio: Property[float] = Property(0.5)
+mainWinRightPanelSwap: Property[bool] = Property(False)
+mainWinRightPanelWidth: Property[int] = Property(200)
+mainWinRightPanelWidthRatio: Property[float] = Property(0.25)
+mainWinRightPanelWidthRatioEnable: Property[bool] = Property(True)
+mainWinRightPanelEventFontEnable: Property[bool] = Property(False)
+mainWinRightPanelEventFont: Property[Font | None] = Property(None)
+mainWinRightPanelEventTimeFontEnable: Property[bool] = Property(False)
+mainWinRightPanelEventTimeFont: Property[Font | None] = Property(None)
+mainWinRightPanelEventJustification: Property[str] = Property("left")
+mainWinRightPanelEventSep: Property[str] = Property("\n\n")
+mainWinRightPanelPluginsFontEnable: Property[bool] = Property(False)
+mainWinRightPanelPluginsFont: Property[Font | None] = Property(None)
+mainWinRightPanelPluginsJustification: Property[str] = Property("left")
+mainWinRightPanelResizeOnToggle: Property[bool] = Property(True)
+mainWinRightPanelBorderWidth: Property[int] = Property(7)
+mcalLeftMargin: Property[float] = Property(30)
+mcalTopMargin: Property[float] = Property(30)
+mcalTypeParams: Property[list[dict[str, Any]]] = Property(
+	[
+		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
+		{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
+		{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
+	],
+)
+mcalGrid: Property[bool] = Property(False)
+mcalGridColor = Property((255, 252, 0, 82))
+mcalCornerMenuTextColor = Property((255, 255, 255, 255))
+mcalCursorLineWidthFactor: Property[float] = Property(0.12)
+mcalCursorRoundingFactor: Property[float] = Property(0.5)
+wcalTextSizeScale: Property[float] = Property(0.6)
+wcalItems: Property[list[tuple[str, bool]]] = Property(
+	[
+		("toolbar", True),
+		("weekDays", True),
+		("pluginsText", True),
+		("eventsIcon", True),
+		("eventsText", True),
+		("daysOfMonth", True),
+	],
+)
+wcalGrid: Property[bool] = Property(False)
+wcalGridColor = Property((255, 252, 0, 82))
+wcalUpperGradientEnable: Property[bool] = Property(False)
+wcalUpperGradientColor = Property((255, 255, 255, 60))
+wcal_eventsText_pastColorEnable: Property[bool] = Property(False)
+wcal_eventsText_pastColor = Property((100, 100, 100, 50))
+wcal_eventsText_ongoingColorEnable: Property[bool] = Property(False)
+wcal_eventsText_ongoingColor = Property((80, 255, 80, 255))
+wcal_eventsText_showDesc: Property[bool] = Property(False)
+wcal_eventsText_colorize: Property[bool] = Property(True)
+wcalFont_eventsText: Property[str | None] = Property(None)
+wcal_toolbar_weekNum_negative: Property[bool] = Property(False)
+wcal_toolbar_mainMenu_icon: Property[str] = Property("starcal.png")
+wcal_weekDays_width: Property[float] = Property(80)
+wcal_weekDays_expand: Property[bool] = Property(False)
+wcalFont_weekDays: Property[str | None] = Property(None)
+wcalFont_pluginsText: Property[str | None] = Property(None)
+wcal_pluginsText_firstLineOnly: Property[bool] = Property(False)
+wcal_eventsIcon_width: Property[float] = Property(50)
+wcalTypeParams: Property[list[dict[str, Any]]] = Property(
+	[{"font": None}, {"font": None}, {"font": None}],
+)
+wcal_daysOfMonth_dir: Property[str] = Property("ltr")
+wcal_daysOfMonth_width: Property[float] = Property(30)
+wcal_daysOfMonth_expand: Property[bool] = Property(False)
+wcal_eventsCount_width: Property[float] = Property(80)
+wcal_eventsCount_expand: Property[bool] = Property(False)
+wcalFont_eventsBox: Property[str | None] = Property(None)
+wcal_moonStatus_width: Property[float] = Property(48)
+wcal_moonStatus_southernHemisphere: Property[bool] = Property(False)
+wcalCursorLineWidthFactor: Property[float] = Property(0.12)
+wcalCursorRoundingFactor: Property[float] = Property(0.5)
+dcalWidgetButtonsEnable: Property[bool] = Property(False)
+dcalDayParams: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"enable": True,
+			"pos": (0, -12),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (220, 220, 220),
+		},
+		{
+			"enable": True,
+			"pos": (125, 30),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (165, 255, 114),
+		},
+		{
+			"enable": True,
+			"pos": (-125, 24),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (0, 200, 205),
+		},
+	],
+)
+dcalMonthParams: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"enable": False,
+			"pos": (0, -12),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (220, 220, 220),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+		{
+			"enable": False,
+			"pos": (125, 30),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (165, 255, 114),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+		{
+			"enable": False,
+			"pos": (-125, 24),
+			"xalign": "center",
+			"yalign": "center",
+			"font": None,
+			"color": (0, 200, 205),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+	],
+)
+dcalWeekdayParams: Property[dict[str, Any]] = Property(
 	{
 		"enable": False,
-		"pos": (0, -12),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (220, 220, 220),
-		"abbreviate": False,
-		"uppercase": False,
-	},
-	{
-		"enable": False,
-		"pos": (125, 30),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (165, 255, 114),
-		"abbreviate": False,
-		"uppercase": False,
-	},
-	{
-		"enable": False,
-		"pos": (-125, 24),
-		"xalign": "center",
-		"yalign": "center",
-		"font": None,
-		"color": (0, 200, 205),
-		"abbreviate": False,
-		"uppercase": False,
-	},
-]
-dcalWeekdayParams: dict[str, Any] = {
-	"enable": False,
-	"pos": (20, 10),
-	"xalign": "right",
-	"yalign": "buttom",
-	"font": None,
-	"color": (0, 200, 205),
-}
-dcalNavButtonsEnable: bool = True
-dcalNavButtonsGeo: dict[str, Any] = {
-	"auto_rtl": True,
-	"size": 64.0,
-	"spacing": 10.0,
-	"pos": (0, 20),
-	"xalign": "center",
-	"yalign": "buttom",
-}
-dcalNavButtonsOpacity: float = 0.7
-dcalWeekdayLocalize: bool = True
-dcalWeekdayAbbreviate: bool = False
-dcalWeekdayUppercase: bool = False
-dcalEventIconSize: float = 20.0
-dcalEventTotalSizeRatio: float = 0.3
-showDesktopWidget: bool = False
-dcalWinX: int = 0
-dcalWinY: int = 0
-dcalWinWidth: float = 180.0
-dcalWinHeight: float = 180.0
-dcalWinBackgroundColor = (0, 10, 0)
-dcalWinWidgetButtonsEnable: bool = True
-dcalWinWidgetButtonsSize: float = 16
-dcalWinWidgetButtonsOpacity: float = 1.0
-dcalWinWeekdayLocalize: bool = True
-dcalWinWeekdayAbbreviate: bool = False
-dcalWinWeekdayUppercase: bool = False
-dcalWinDayParams: list[dict[str, Any]] = [
-	{
-		"pos": (0, 5),
-		"xalign": "left",
-		"yalign": "center",
-		"font": None,
-		"color": (220, 220, 220),
-	},
-	{
-		"pos": (5, 0),
-		"xalign": "right",
-		"yalign": "top",
-		"font": None,
-		"color": (165, 255, 114),
-	},
-	{
-		"pos": (0, 0),
+		"pos": (20, 10),
 		"xalign": "right",
 		"yalign": "buttom",
 		"font": None,
 		"color": (0, 200, 205),
 	},
-]
-dcalWinMonthParams: list[dict[str, Any]] = [
+)
+dcalNavButtonsEnable: Property[bool] = Property(True)
+dcalNavButtonsGeo: Property[dict[str, Any]] = Property(
 	{
-		"enable": False,
-		"pos": (0, 5),
-		"xalign": "left",
-		"yalign": "center",
-		"font": None,
-		"color": (220, 220, 220),
-		"abbreviate": False,
-		"uppercase": False,
+		"auto_rtl": True,
+		"size": 64.0,
+		"spacing": 10.0,
+		"pos": (0, 20),
+		"xalign": "center",
+		"yalign": "buttom",
 	},
+)
+dcalNavButtonsOpacity: Property[float] = Property(0.7)
+dcalWeekdayLocalize: Property[bool] = Property(True)
+dcalWeekdayAbbreviate: Property[bool] = Property(False)
+dcalWeekdayUppercase: Property[bool] = Property(False)
+dcalEventIconSize: Property[float] = Property(20.0)
+dcalEventTotalSizeRatio: Property[float] = Property(0.3)
+showDesktopWidget: Property[bool] = Property(False)
+dcalWinX: Property[int] = Property(0)
+dcalWinY: Property[int] = Property(0)
+dcalWinWidth: Property[float] = Property(180.0)
+dcalWinHeight: Property[float] = Property(180.0)
+dcalWinBackgroundColor = Property((0, 10, 0))
+dcalWinWidgetButtonsEnable: Property[bool] = Property(True)
+dcalWinWidgetButtonsSize: Property[float] = Property(16)
+dcalWinWidgetButtonsOpacity: Property[float] = Property(1.0)
+dcalWinWeekdayLocalize: Property[bool] = Property(True)
+dcalWinWeekdayAbbreviate: Property[bool] = Property(False)
+dcalWinWeekdayUppercase: Property[bool] = Property(False)
+dcalWinDayParams: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"pos": (0, 5),
+			"xalign": "left",
+			"yalign": "center",
+			"font": None,
+			"color": (220, 220, 220),
+		},
+		{
+			"pos": (5, 0),
+			"xalign": "right",
+			"yalign": "top",
+			"font": None,
+			"color": (165, 255, 114),
+		},
+		{
+			"pos": (0, 0),
+			"xalign": "right",
+			"yalign": "buttom",
+			"font": None,
+			"color": (0, 200, 205),
+		},
+	],
+)
+dcalWinMonthParams: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"enable": False,
+			"pos": (0, 5),
+			"xalign": "left",
+			"yalign": "center",
+			"font": None,
+			"color": (220, 220, 220),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+		{
+			"enable": False,
+			"pos": (5, 0),
+			"xalign": "right",
+			"yalign": "top",
+			"font": None,
+			"color": (165, 255, 114),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+		{
+			"enable": False,
+			"pos": (0, 0),
+			"xalign": "right",
+			"yalign": "buttom",
+			"font": None,
+			"color": (0, 200, 205),
+			"abbreviate": False,
+			"uppercase": False,
+		},
+	],
+)
+dcalWinWeekdayParams: Property[dict[str, Any]] = Property(
 	{
 		"enable": False,
-		"pos": (5, 0),
-		"xalign": "right",
-		"yalign": "top",
-		"font": None,
-		"color": (165, 255, 114),
-		"abbreviate": False,
-		"uppercase": False,
-	},
-	{
-		"enable": False,
-		"pos": (0, 0),
+		"pos": (20, 10),
 		"xalign": "right",
 		"yalign": "buttom",
 		"font": None,
 		"color": (0, 200, 205),
-		"abbreviate": False,
-		"uppercase": False,
 	},
-]
-dcalWinWeekdayParams: dict[str, Any] = {
-	"enable": False,
-	"pos": (20, 10),
-	"xalign": "right",
-	"yalign": "buttom",
-	"font": None,
-	"color": (0, 200, 205),
-}
-dcalWinEventIconSize: float = 20.0
-dcalWinEventTotalSizeRatio: float = 0.3
-dcalWinSeasonPieEnable: bool = False
-dcalWinSeasonPieGeo: dict[str, Any] = {
-	"size": 64,
-	"thickness": 0.3,
-	"pos": (0, 0),
-	"xalign": "right",
-	"yalign": "top",
-	"startAngle": 270,
-}
-dcalWinSeasonPieSpringColor = (167, 252, 1, 180)
-dcalWinSeasonPieSummerColor = (255, 254, 0, 180)
-dcalWinSeasonPieAutumnColor = (255, 127, 0, 180)
-dcalWinSeasonPieWinterColor = (1, 191, 255, 180)
-dcalWinSeasonPieTextColor = (255, 255, 255, 180)
-monthPBarCalType: int = -1
-seasonPBar_southernHemisphere: bool = False
-labelBoxBorderWidth: int = 0
-labelBoxMenuActiveColor = (0, 255, 0, 255)
-labelBoxYearColorEnable: bool = False
-labelBoxYearColor = (255, 132, 255, 255)
-labelBoxMonthColorEnable: bool = False
-labelBoxMonthColor = (255, 132, 255, 255)
-labelBoxFontEnable: bool = False
-labelBoxFont: Font | None = None
-labelBoxPrimaryFontEnable: bool = False
-labelBoxPrimaryFont: Font | None = None
-boldYmLabel: bool = True
-ud__wcalToolbarData: dict | None = None
-ud__mainToolbarData: dict | None = None
-preferencesPagePath: str = ""
-customizePagePath: str = ""
-localTzHist: list[str] = []
-showDigClockTb: bool = True
-menuIconPadding: int = 7
-eventTreeGroupIconSize: float = 24
-treeIconSize: float = 22
-labelBoxIconSize: float = 20
-stackIconSize: float = 22
-dcalWidgetButtons: list[dict[str, Any]] = [
+)
+dcalWinEventIconSize: Property[float] = Property(20.0)
+dcalWinEventTotalSizeRatio: Property[float] = Property(0.3)
+dcalWinSeasonPieEnable: Property[bool] = Property(False)
+dcalWinSeasonPieGeo: Property[dict[str, Any]] = Property(
 	{
-		"imageName": "transform-move.svg",
-		"onClick": "startMove",
+		"size": 64,
+		"thickness": 0.3,
 		"pos": (0, 0),
-		"xalign": "left",
-		"yalign": "top",
-		"autoDir": False,
-	},
-	{
-		"imageName": "resize-small.svg",
-		"onClick": "startResize",
-		"pos": (1, 1),
 		"xalign": "right",
-		"yalign": "buttom",
-		"autoDir": False,
-	},
-]
-dcalWinWidgetButtons: list[dict[str, Any]] = [
-	{
-		"imageName": "transform-move.svg",
-		"onClick": "startMove",
-		"pos": (0, 0),
-		"xalign": "left",
 		"yalign": "top",
-		"autoDir": False,
+		"startAngle": 270,
 	},
-	{
-		"imageName": "resize-small.svg",
-		"onClick": "startResize",
-		"pos": (1, 1),
-		"xalign": "right",
-		"yalign": "buttom",
-		"autoDir": False,
-	},
-	{
-		"imageName": "document-edit.svg",
-		"onClick": "openCustomize",
-		"pos": (0, 1),
-		"xalign": "left",
-		"yalign": "buttom",
-		"autoDir": False,
-	},
-]
-menuIconEdgePadding: int = 3
-rightPanelEventIconSize: float = 20
-eventTreeIconSize: float = 22
-menuEventCheckIconSize: float = 20
-toolbarIconSize: float = 24
-mcalEventIconSizeMax: float = 26
-messageDialogIconSize: float = 48
-menuCheckSize: float = 22
-menuIconSize: float = 18
-comboBoxIconSize: float = 20
-imageInputIconSize: float = 32
-maxWeekCacheSize: int = 12
-wcalPadding: int = 10
-buttonIconSize: float = 20
-wcalEventIconSizeMax: float = 26
-eventWeekViewTimeFormat: str = "HM$"
+)
+dcalWinSeasonPieSpringColor = Property((167, 252, 1, 180))
+dcalWinSeasonPieSummerColor = Property((255, 254, 0, 180))
+dcalWinSeasonPieAutumnColor = Property((255, 127, 0, 180))
+dcalWinSeasonPieWinterColor = Property((1, 191, 255, 180))
+dcalWinSeasonPieTextColor = Property((255, 255, 255, 180))
+monthPBarCalType: Property[int] = Property(-1)
+seasonPBar_southernHemisphere: Property[bool] = Property(False)
+labelBoxBorderWidth: Property[int] = Property(0)
+labelBoxMenuActiveColor = Property((0, 255, 0, 255))
+labelBoxYearColorEnable: Property[bool] = Property(False)
+labelBoxYearColor = Property((255, 132, 255, 255))
+labelBoxMonthColorEnable: Property[bool] = Property(False)
+labelBoxMonthColor = Property((255, 132, 255, 255))
+labelBoxFontEnable: Property[bool] = Property(False)
+labelBoxFont: Property[Font | None] = Property(None)
+labelBoxPrimaryFontEnable: Property[bool] = Property(False)
+labelBoxPrimaryFont: Property[Font | None] = Property(None)
+boldYmLabel: Property[bool] = Property(True)
+ud__wcalToolbarData: Property[dict | None] = Property(None)
+ud__mainToolbarData: Property[dict | None] = Property(None)
+preferencesPagePath: Property[str] = Property("")
+customizePagePath: Property[str] = Property("")
+localTzHist: Property[list[str]] = Property([])
+showDigClockTb: Property[bool] = Property(True)
+menuIconPadding: Property[int] = Property(7)
+eventTreeGroupIconSize: Property[float] = Property(24)
+treeIconSize: Property[float] = Property(22)
+labelBoxIconSize: Property[float] = Property(20)
+stackIconSize: Property[float] = Property(22)
+dcalWidgetButtons: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"imageName": "transform-move.svg",
+			"onClick": "startMove",
+			"pos": (0, 0),
+			"xalign": "left",
+			"yalign": "top",
+			"autoDir": False,
+		},
+		{
+			"imageName": "resize-small.svg",
+			"onClick": "startResize",
+			"pos": (1, 1),
+			"xalign": "right",
+			"yalign": "buttom",
+			"autoDir": False,
+		},
+	],
+)
+dcalWinWidgetButtons: Property[list[dict[str, Any]]] = Property(
+	[
+		{
+			"imageName": "transform-move.svg",
+			"onClick": "startMove",
+			"pos": (0, 0),
+			"xalign": "left",
+			"yalign": "top",
+			"autoDir": False,
+		},
+		{
+			"imageName": "resize-small.svg",
+			"onClick": "startResize",
+			"pos": (1, 1),
+			"xalign": "right",
+			"yalign": "buttom",
+			"autoDir": False,
+		},
+		{
+			"imageName": "document-edit.svg",
+			"onClick": "openCustomize",
+			"pos": (0, 1),
+			"xalign": "left",
+			"yalign": "buttom",
+			"autoDir": False,
+		},
+	],
+)
+menuIconEdgePadding: Property[int] = Property(3)
+rightPanelEventIconSize: Property[float] = Property(20)
+eventTreeIconSize: Property[float] = Property(22)
+menuEventCheckIconSize: Property[float] = Property(20)
+toolbarIconSize: Property[float] = Property(24)
+mcalEventIconSizeMax: Property[float] = Property(26)
+messageDialogIconSize: Property[float] = Property(48)
+menuCheckSize: Property[float] = Property(22)
+menuIconSize: Property[float] = Property(18)
+comboBoxIconSize: Property[float] = Property(20)
+imageInputIconSize: Property[float] = Property(32)
+maxWeekCacheSize: Property[int] = Property(12)
+wcalPadding: Property[int] = Property(10)
+buttonIconSize: Property[float] = Property(20)
+wcalEventIconSizeMax: Property[float] = Property(26)
+eventWeekViewTimeFormat: Property[str] = Property("HM$")
 
-statusIconImageDefault = statusIconImage
-wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
-statusIconImageHoliDefault = statusIconImageHoli
-winControllerButtonsDefault = winControllerButtons.copy()
-mainWinItemsDefault = mainWinItems.copy()
-wcalItemsDefault = wcalItems.copy()
+
+confParams = {
+	"showMain": showMain,
+	"winTaskbar": winTaskbar,
+	"useAppIndicator": useAppIndicator,
+	"fontCustomEnable": fontCustomEnable,
+	"fontCustom": fontCustom,
+	"buttonIconEnable": buttonIconEnable,
+	"useSystemIcons": useSystemIcons,
+	"oldStyleProgressBar": oldStyleProgressBar,
+	"bgColor": bgColor,
+	"borderColor": borderColor,
+	"borderTextColor": borderTextColor,
+	"textColor": textColor,
+	"holidayColor": holidayColor,
+	"inactiveColor": inactiveColor,
+	"todayCellColor": todayCellColor,
+	"cursorOutColor": cursorOutColor,
+	"cursorBgColor": cursorBgColor,
+	"showDigClockTr": showDigClockTr,
+	"statusIconImage": statusIconImage,
+	"statusIconImageHoli": statusIconImageHoli,
+	"statusIconFontFamilyEnable": statusIconFontFamilyEnable,
+	"statusIconFontFamily": statusIconFontFamily,
+	"statusIconHolidayFontColorEnable": statusIconHolidayFontColorEnable,
+	"statusIconHolidayFontColor": statusIconHolidayFontColor,
+	"statusIconLocalizeNumber": statusIconLocalizeNumber,
+	"statusIconFixedSizeEnable": statusIconFixedSizeEnable,
+	"statusIconFixedSizeWH": statusIconFixedSizeWH,
+	"pluginsTextStatusIcon": pluginsTextStatusIcon,
+	"maxDayCacheSize": maxDayCacheSize,
+	"eventDayViewTimeFormat": eventDayViewTimeFormat,
+	"cellMenuXOffset": cellMenuXOffset,
+	"showDesktopWidget": showDesktopWidget,
+	"preferencesPagePath": preferencesPagePath,
+	"localTzHist": localTzHist,
+}
+confParamsLive = {
+	"winX": winX,
+	"winY": winY,
+	"winWidth": winWidth,
+	"winHeight": winHeight,
+	"winKeepAbove": winKeepAbove,
+	"winSticky": winSticky,
+	"winMaximized": winMaximized,
+	"pluginsTextIsExpanded": pluginsTextIsExpanded,
+	"bgColor": bgColor,
+	"mainWinRightPanelRatio": mainWinRightPanelRatio,
+	"wcal_toolbar_weekNum_negative": wcal_toolbar_weekNum_negative,
+}
+confParamsCustomize = {
+	"mainWinItems": mainWinItems,
+	"mainWinFooterItems": mainWinFooterItems,
+	"pluginsTextEnable": pluginsTextEnable,
+	"pluginsTextInsideExpander": pluginsTextInsideExpander,
+	"eventDayViewEnable": eventDayViewEnable,
+	"eventDayViewEventSep": eventDayViewEventSep,
+	"eventViewMaxHeight": eventViewMaxHeight,
+	"statusBarEnable": statusBarEnable,
+	"statusBarDatesReverseOrder": statusBarDatesReverseOrder,
+	"statusBarDatesColorEnable": statusBarDatesColorEnable,
+	"statusBarDatesColor": statusBarDatesColor,
+	"winControllerEnable": winControllerEnable,
+	"winControllerTheme": winControllerTheme,
+	"winControllerButtons": winControllerButtons,
+	"winControllerIconSize": winControllerIconSize,
+	"winControllerBorder": winControllerBorder,
+	"winControllerSpacing": winControllerSpacing,
+	"winControllerPressState": winControllerPressState,
+	"mainWinRightPanelEnable": mainWinRightPanelEnable,
+	"mainWinRightPanelSwap": mainWinRightPanelSwap,
+	"mainWinRightPanelWidth": mainWinRightPanelWidth,
+	"mainWinRightPanelWidthRatio": mainWinRightPanelWidthRatio,
+	"mainWinRightPanelWidthRatioEnable": mainWinRightPanelWidthRatioEnable,
+	"mainWinRightPanelEventFontEnable": mainWinRightPanelEventFontEnable,
+	"mainWinRightPanelEventFont": mainWinRightPanelEventFont,
+	"mainWinRightPanelEventTimeFontEnable": mainWinRightPanelEventTimeFontEnable,
+	"mainWinRightPanelEventTimeFont": mainWinRightPanelEventTimeFont,
+	"mainWinRightPanelEventJustification": mainWinRightPanelEventJustification,
+	"mainWinRightPanelEventSep": mainWinRightPanelEventSep,
+	"mainWinRightPanelPluginsFontEnable": mainWinRightPanelPluginsFontEnable,
+	"mainWinRightPanelPluginsFont": mainWinRightPanelPluginsFont,
+	"mainWinRightPanelPluginsJustification": mainWinRightPanelPluginsJustification,
+	"mainWinRightPanelResizeOnToggle": mainWinRightPanelResizeOnToggle,
+	"mainWinRightPanelBorderWidth": mainWinRightPanelBorderWidth,
+	"mcalLeftMargin": mcalLeftMargin,
+	"mcalTopMargin": mcalTopMargin,
+	"mcalTypeParams": mcalTypeParams,
+	"mcalGrid": mcalGrid,
+	"mcalGridColor": mcalGridColor,
+	"mcalCornerMenuTextColor": mcalCornerMenuTextColor,
+	"mcalCursorLineWidthFactor": mcalCursorLineWidthFactor,
+	"mcalCursorRoundingFactor": mcalCursorRoundingFactor,
+	"wcalTextSizeScale": wcalTextSizeScale,
+	"wcalItems": wcalItems,
+	"wcalGrid": wcalGrid,
+	"wcalGridColor": wcalGridColor,
+	"wcalUpperGradientEnable": wcalUpperGradientEnable,
+	"wcalUpperGradientColor": wcalUpperGradientColor,
+	"wcal_eventsText_pastColorEnable": wcal_eventsText_pastColorEnable,
+	"wcal_eventsText_pastColor": wcal_eventsText_pastColor,
+	"wcal_eventsText_ongoingColorEnable": wcal_eventsText_ongoingColorEnable,
+	"wcal_eventsText_ongoingColor": wcal_eventsText_ongoingColor,
+	"wcal_eventsText_showDesc": wcal_eventsText_showDesc,
+	"wcal_eventsText_colorize": wcal_eventsText_colorize,
+	"wcalFont_eventsText": wcalFont_eventsText,
+	"wcal_toolbar_mainMenu_icon": wcal_toolbar_mainMenu_icon,
+	"wcal_weekDays_width": wcal_weekDays_width,
+	"wcal_weekDays_expand": wcal_weekDays_expand,
+	"wcalFont_weekDays": wcalFont_weekDays,
+	"wcalFont_pluginsText": wcalFont_pluginsText,
+	"wcal_pluginsText_firstLineOnly": wcal_pluginsText_firstLineOnly,
+	"wcal_eventsIcon_width": wcal_eventsIcon_width,
+	"wcalTypeParams": wcalTypeParams,
+	"wcal_daysOfMonth_dir": wcal_daysOfMonth_dir,
+	"wcal_daysOfMonth_width": wcal_daysOfMonth_width,
+	"wcal_daysOfMonth_expand": wcal_daysOfMonth_expand,
+	"wcal_eventsCount_width": wcal_eventsCount_width,
+	"wcal_eventsCount_expand": wcal_eventsCount_expand,
+	"wcalFont_eventsBox": wcalFont_eventsBox,
+	"wcal_moonStatus_width": wcal_moonStatus_width,
+	"wcal_moonStatus_southernHemisphere": wcal_moonStatus_southernHemisphere,
+	"wcalCursorLineWidthFactor": wcalCursorLineWidthFactor,
+	"wcalCursorRoundingFactor": wcalCursorRoundingFactor,
+	"dcalWidgetButtonsEnable": dcalWidgetButtonsEnable,
+	"dcalDayParams": dcalDayParams,
+	"dcalMonthParams": dcalMonthParams,
+	"dcalWeekdayParams": dcalWeekdayParams,
+	"dcalNavButtonsEnable": dcalNavButtonsEnable,
+	"dcalNavButtonsGeo": dcalNavButtonsGeo,
+	"dcalNavButtonsOpacity": dcalNavButtonsOpacity,
+	"dcalWeekdayLocalize": dcalWeekdayLocalize,
+	"dcalWeekdayAbbreviate": dcalWeekdayAbbreviate,
+	"dcalWeekdayUppercase": dcalWeekdayUppercase,
+	"dcalEventIconSize": dcalEventIconSize,
+	"dcalEventTotalSizeRatio": dcalEventTotalSizeRatio,
+	"dcalWinBackgroundColor": dcalWinBackgroundColor,
+	"dcalWinWidgetButtonsEnable": dcalWinWidgetButtonsEnable,
+	"dcalWinWidgetButtonsSize": dcalWinWidgetButtonsSize,
+	"dcalWinWidgetButtonsOpacity": dcalWinWidgetButtonsOpacity,
+	"dcalWinWeekdayLocalize": dcalWinWeekdayLocalize,
+	"dcalWinWeekdayAbbreviate": dcalWinWeekdayAbbreviate,
+	"dcalWinWeekdayUppercase": dcalWinWeekdayUppercase,
+	"dcalWinDayParams": dcalWinDayParams,
+	"dcalWinMonthParams": dcalWinMonthParams,
+	"dcalWinWeekdayParams": dcalWinWeekdayParams,
+	"dcalWinEventIconSize": dcalWinEventIconSize,
+	"dcalWinEventTotalSizeRatio": dcalWinEventTotalSizeRatio,
+	"dcalWinSeasonPieEnable": dcalWinSeasonPieEnable,
+	"dcalWinSeasonPieGeo": dcalWinSeasonPieGeo,
+	"dcalWinSeasonPieSpringColor": dcalWinSeasonPieSpringColor,
+	"dcalWinSeasonPieSummerColor": dcalWinSeasonPieSummerColor,
+	"dcalWinSeasonPieAutumnColor": dcalWinSeasonPieAutumnColor,
+	"dcalWinSeasonPieWinterColor": dcalWinSeasonPieWinterColor,
+	"dcalWinSeasonPieTextColor": dcalWinSeasonPieTextColor,
+	"monthPBarCalType": monthPBarCalType,
+	"seasonPBar_southernHemisphere": seasonPBar_southernHemisphere,
+	"labelBoxBorderWidth": labelBoxBorderWidth,
+	"labelBoxMenuActiveColor": labelBoxMenuActiveColor,
+	"labelBoxYearColorEnable": labelBoxYearColorEnable,
+	"labelBoxYearColor": labelBoxYearColor,
+	"labelBoxMonthColorEnable": labelBoxMonthColorEnable,
+	"labelBoxMonthColor": labelBoxMonthColor,
+	"labelBoxFontEnable": labelBoxFontEnable,
+	"labelBoxFont": labelBoxFont,
+	"labelBoxPrimaryFontEnable": labelBoxPrimaryFontEnable,
+	"labelBoxPrimaryFont": labelBoxPrimaryFont,
+	"boldYmLabel": boldYmLabel,
+	"ud__wcalToolbarData": ud__wcalToolbarData,
+	"ud__mainToolbarData": ud__mainToolbarData,
+	"customizePagePath": customizePagePath,
+}
+dayCalWinParamsLive = {
+	"dcalWinX": dcalWinX,
+	"dcalWinY": dcalWinY,
+	"dcalWinWidth": dcalWinWidth,
+	"dcalWinHeight": dcalWinHeight,
+}
+
+needRestartList = [
+	winTaskbar,
+	useAppIndicator,
+	buttonIconEnable,
+	useSystemIcons,
+	oldStyleProgressBar,
+]

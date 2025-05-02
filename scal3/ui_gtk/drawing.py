@@ -56,8 +56,8 @@ __all__ = [
 	"setColor",
 ]
 
-if not conf.fontCustom:
-	conf.fontCustom = ui.fontDefault.copy()
+if not conf.fontCustom.v:
+	conf.fontCustom.v = ui.fontDefault.copy()
 
 with open(join(sourceDir, "svg", "special", "color-check.svg"), encoding="utf-8") as fp:
 	colorCheckSvgTextChecked = fp.read()
@@ -105,6 +105,7 @@ def newTextLayout(
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
 		assert isinstance(font, ui.Font)
+		assert isinstance(font.family, str), font
 		# should we copy the font? font = font.copy()
 	else:
 		font = ui.getFont()

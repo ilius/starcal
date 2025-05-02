@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.property import Property
 
 log = logger.get()
 
@@ -96,7 +97,8 @@ class ToolBoxItem(BaseToolBoxItem):
 		if args is None:
 			args = ()
 		self.args = args
-		self.iconSize = 0
+		self.preferIconName = Property(False)
+		self.iconSize = Property(conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
 		self.vertical = False
 		# ------
@@ -122,7 +124,6 @@ class ToolBoxItem(BaseToolBoxItem):
 			iconName = iconNameByImageName.get(imageName, "")
 		self.imageName = imageName
 		self.iconName = iconName
-		self.preferIconName = False
 		# ------
 		self.initVars()
 		if enableTooltip:
@@ -134,9 +135,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		"""
 		Call this after creating instance and calling one/many of these methods:
 		- setIconName
-		- setIconFile
-		- setIconSize
-		- setPreferIconName.
+		- setIconFile.
 		"""
 		imageName = self.imageName
 		iconName = self.iconName
@@ -147,7 +146,7 @@ class ToolBoxItem(BaseToolBoxItem):
 			return
 
 		useIconName = bool(iconName)
-		if useIconName and self.imageName and not self.preferIconName:
+		if useIconName and self.imageName and not self.preferIconName.v:
 			useIconName = False
 
 		if useIconName:
@@ -155,25 +154,19 @@ class ToolBoxItem(BaseToolBoxItem):
 				self.iconName,
 				gtk.IconSize.DIALOG,
 			)
-			self._setIconSizeImage(self.iconSize)
+			self._setIconSizeImage(self.iconSize.v)
 		else:
-			self.bigPixbuf = pixbufFromFile(self.imageName, size=self.iconSize)
+			self.bigPixbuf = pixbufFromFile(self.imageName, size=self.iconSize.v)
 			if self.imageName.endswith(".svg"):
 				self.image.set_from_pixbuf(self.bigPixbuf)
 			else:
-				self._setIconSizeImage(self.iconSize)
+				self._setIconSizeImage(self.iconSize.v)
 
 	def setIconName(self, iconName: str) -> None:
 		self.iconName = iconName
 
 	def setIconFile(self, fname: str) -> None:
 		self.imageName = fname
-
-	def setIconSize(self, iconSize: int) -> None:
-		self.iconSize = iconSize
-
-	def setPreferIconName(self, preferIconName: bool) -> None:
-		self.preferIconName = preferIconName
 
 	def _setIconSizeImage(self, iconSize: int) -> None:
 		if self.bigPixbuf is None:
@@ -249,12 +242,6 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		if enableTooltip:
 			set_tooltip(self, desc)
 
-	def setIconSize(self, iconSize: int) -> None:
-		pass
-
-	def setPreferIconName(self, preferIconName: bool) -> None:
-		pass
-
 	def build(self):
 		pass
 
@@ -285,7 +272,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 		self,
 		funcOwner: Any,
 		vertical: bool = False,
-		iconSize: int = 0,
+		iconSize: float = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
@@ -298,13 +285,11 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 		self.box.show()
 		self.add(self.box)
 		self.funcOwner = funcOwner
-		self.preferIconName = conf.useSystemIcons
-		if iconSize == 0:
-			iconSize = conf.toolbarIconSize
-		self.iconSize = iconSize
+		self.preferIconName: Property[bool] = conf.useSystemIcons
+		self.iconSize: Property[float] = Property(iconSize or conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
-		self.buttonBorder = buttonBorder
-		self.buttonPadding = buttonPadding
+		self.buttonBorder = Property(buttonBorder)
+		self.buttonPadding = Property(buttonPadding)
 		self.initVars()
 
 	def get_orientation(self) -> gtk.Orientation:
@@ -335,7 +320,7 @@ class StaticToolBox(BaseToolBox):
 		self,
 		funcOwner: Any,
 		vertical: bool = False,
-		iconSize: int = 0,
+		iconSize: float = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
@@ -350,18 +335,15 @@ class StaticToolBox(BaseToolBox):
 			buttonPadding=buttonPadding,
 		)
 
-	def getIconSize(self) -> int:
-		return self.iconSize
-
 	def append(self, item: BaseToolBoxItem) -> BaseToolBoxItem:
 		item.setVertical(self.vertical)
-		item.setIconSize(self.iconSize)
-		item.setPreferIconName(self.preferIconName)
-		item.set_border_width(self.buttonBorder)
+		item.iconSize = self.iconSize
+		item.preferIconName = self.preferIconName
+		item.set_border_width(self.buttonBorder.v)
 		item.build()
 		item.onConfigChange(toParent=False)
 		self.setupItemSignals(item)
-		pack(self.box, item, padding=self.buttonPadding)
+		pack(self.box, item, padding=self.buttonPadding.v)
 		item.show()
 		return item
 
@@ -388,7 +370,7 @@ class CustomizableToolBox(StaticToolBox):
 		self,
 		funcOwner: Any,
 		vertical: bool = False,
-		iconSize: int = 0,
+		iconSize: float = 0,
 		continuousClick: bool = True,
 	) -> None:
 		BaseToolBox.__init__(
@@ -413,8 +395,7 @@ class CustomizableToolBox(StaticToolBox):
 		optionsWidget = VBox()
 		# ----
 		prefItem = CheckPrefItem(
-			self,
-			"preferIconName",
+			prop=self.preferIconName,
 			label=_("Use System Icons"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -422,10 +403,8 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			self,
-			"iconSize",
-			5,
-			128,
+			prop=self.iconSize,
+			bounds=(5, 128),
 			digits=1,
 			step=1,
 			label=_("Icon Size"),
@@ -435,10 +414,8 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			self,
-			"buttonBorder",
-			0,
-			99,
+			prop=self.buttonBorder,
+			bounds=(0, 99),
 			digits=1,
 			step=1,
 			label=_("Buttons Border"),
@@ -448,10 +425,8 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			self,
-			"buttonPadding",
-			0,
-			99,
+			prop=self.buttonPadding,
+			bounds=(0, 99),
 			digits=1,
 			step=1,
 			label=_("Space between buttons"),
@@ -464,25 +439,11 @@ class CustomizableToolBox(StaticToolBox):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
-	def setPreferIconName(self, preferIconName: bool) -> None:
-		self.preferIconName = preferIconName
-
-	def setIconSize(self, size: int) -> None:
-		self.iconSize = size
-
 	# this method is for optimization
 	# otherwide can be replaced with updateItems
 	def onIconSizeChange(self) -> None:
-		iconSize = self.iconSize
 		for item in self.items:
-			item.setIconSize(iconSize)
 			item.build()
-
-	def setButtonBorder(self, buttonBorder):
-		self.buttonBorder = buttonBorder
-
-	def setButtonPadding(self, padding: int) -> None:
-		self.buttonPadding = padding
 
 	def repackAll(self):
 		for item in self.items:
@@ -498,7 +459,7 @@ class CustomizableToolBox(StaticToolBox):
 
 	def appendItem(self, item: BaseToolBoxItem) -> None:
 		CustomizableCalObj.appendItem(self, item)
-		pack(self.box, item)
+		self.append(item)
 		if item.enable:
 			item.show()
 
@@ -509,13 +470,9 @@ class CustomizableToolBox(StaticToolBox):
 		buttonBorder, buttonPadding) are changed.
 		Must be called before onConfigChange().
 		"""
-		preferIconName = self.preferIconName
-		iconSize = self.iconSize
-		buttonBorder = self.buttonBorder
-		buttonPadding = self.buttonPadding
+		buttonBorder = self.buttonBorder.v
+		buttonPadding = self.buttonPadding.v
 		for item in self.items:
-			item.setPreferIconName(preferIconName)
-			item.setIconSize(iconSize)
 			item.set_border_width(buttonBorder)
 			self.box.set_child_packing(
 				child=item,
@@ -531,10 +488,10 @@ class CustomizableToolBox(StaticToolBox):
 		self.data.update(
 			{
 				"items": self.getItemsData(),
-				"iconSizePixel": self.getIconSize(),
-				"buttonBorder": self.buttonBorder,
-				"buttonPadding": self.buttonPadding,
-				"preferIconName": self.preferIconName,
+				"iconSizePixel": self.iconSize.v,
+				"buttonBorder": self.buttonBorder.v,
+				"buttonPadding": self.buttonPadding.v,
+				"preferIconName": self.preferIconName.v,
 			},
 		)
 		return self.data
@@ -553,17 +510,17 @@ class CustomizableToolBox(StaticToolBox):
 		# ---
 		preferIconName = data.get("preferIconName")
 		if preferIconName is not None:
-			self.setPreferIconName(preferIconName)
+			self.preferIconName.v = preferIconName
 		# ---
 		iconSize = data.get("iconSizePixel")
 		if iconSize:
-			self.setIconSize(iconSize)
+			self.iconSize.v = iconSize
 		# ---
 		bb = data.get("buttonBorder", 0)
-		self.setButtonBorder(bb)
+		self.buttonBorder.v = bb
 		# ---
 		padding = data.get("buttonPadding", 0)
-		self.setButtonPadding(padding)
+		self.buttonPadding.v = padding
 		self.optionsWidget = None
 		# ---
 		self.updateItems()

@@ -186,8 +186,8 @@ def newSubPageButton(
 	label.set_use_underline(True)
 	label.set_angle(labelAngle)
 	pack(hbox, gtk.Label(), 1, 1)
-	if page.pageIcon and conf.buttonIconEnable:
-		pack(hbox, imageFromFile(page.pageIcon, size=conf.stackIconSize))
+	if page.pageIcon and conf.buttonIconEnable.v:
+		pack(hbox, imageFromFile(page.pageIcon, size=conf.stackIconSize.v))
 	pack(hbox, label, 0, 0)
 	pack(hbox, gtk.Label(), 1, 1)
 	button = gtk.Button()

@@ -144,17 +144,17 @@ class CalObj(CustomizableToolBox):
 			# vertical=False,
 			continuousClick=False,
 		)
-		if not ud.mainToolbarData["items"]:
-			ud.mainToolbarData["items"] = [
+		if not ud.mainToolbarData.v["items"]:
+			ud.mainToolbarData.v["items"] = [
 				(item.objName, True) for item in self.defaultItems
 			]
 		else:
-			currentNames = {item[0] for item in ud.mainToolbarData["items"]}
+			currentNames = {item[0] for item in ud.mainToolbarData.v["items"]}
 			for name in self.defaultItemsDict:
 				if name not in currentNames:
-					ud.mainToolbarData["items"].append((name, False))
+					ud.mainToolbarData.v["items"].append((name, False))
 
-		self.setData(ud.mainToolbarData)
+		self.setData(ud.mainToolbarData.v)
 		if win:
 			self.connect("button-press-event", win.childButtonPress)
 			self.connect("popup-main-menu", win.menuMainPopup)

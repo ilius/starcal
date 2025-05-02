@@ -140,7 +140,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		win = self.win
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
 
-		for name, enable in conf.mainWinItems:
+		for name, enable in conf.mainWinItems.v:
 			if name in {"winContronller", "statusBar"}:
 				log.warning(f"Skipping main win item {name!r}")
 				continue
@@ -168,7 +168,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 				# modify_bg_all(
 				# 	item,
 				# 	gtk.StateType.NORMAL,
-				# 	rgbToGdkColor(*conf.bgColor),
+				# 	rgbToGdkColor(*conf.bgColor.v),
 				# )
 			else:
 				desc = mainWinItemsDesc[name]
@@ -177,7 +177,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
-		conf.mainWinItems = self.getItemsData()
+		conf.mainWinItems.v = self.getItemsData()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		CustomizableCalBox.onKeyPress(self, arg, gevent)
@@ -219,7 +219,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	]
 
 	def autoResize(self):
-		self.resize(conf.winWidth, conf.winHeight)
+		self.resize(conf.winWidth.v, conf.winHeight.v)
 
 	# def maximize(self):
 	# 	pass
@@ -268,14 +268,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# self.connect("main-show", lambda arg: self.present())
 		# self.connect("main-hide", lambda arg: self.hide())
 		self.set_decorated(False)
-		self.set_property("skip-taskbar-hint", not conf.winTaskbar)
+		self.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
 		# self.set_skip_taskbar_hint  # FIXME
 		self.set_role("starcal")
 		# self.set_focus_on_map(True)#????????
 		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		# self.connect("realize", self.onRealize)
-		self.set_default_size(conf.winWidth, 1)
-		self.move(conf.winX, conf.winY)
+		self.set_default_size(conf.winWidth.v, 1)
+		self.move(conf.winX.v, conf.winY.v)
 		# -------------------------------------------------------------
 		self.connect("focus-in-event", self.focusIn, "Main")
 		self.connect("focus-out-event", self.focusOut, "Main")
@@ -316,17 +316,16 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		layoutFooter = WinLayoutBox(
 			name="footer",
 			desc="Footer",  # should not be seen in GUI
-			# enableParam="",
 			vertical=True,
 			expand=False,
 			itemsMovable=True,
-			itemsParam="mainWinFooterItems",
+			itemsParam=conf.mainWinFooterItems,
 			buttonSpacing=2,
 			items=[
 				WinLayoutObj(
 					name="statusBar",
 					desc=_("Status Bar"),
-					enableParam="statusBarEnable",
+					enableParam=conf.statusBarEnable,
 					vertical=False,
 					expand=False,
 					movable=True,
@@ -336,7 +335,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				WinLayoutObj(
 					name="pluginsText",
 					desc=_("Plugins Text"),
-					enableParam="pluginsTextEnable",
+					enableParam=conf.pluginsTextEnable,
 					vertical=False,
 					expand=False,
 					movable=True,
@@ -344,13 +343,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					initializer=moduleObjectInitializer(
 						"scal3.ui_gtk.pluginsText",
 						"PluginsTextBox",
-						insideExpanderParam="pluginsTextInsideExpander",
+						insideExpanderParam=conf.pluginsTextInsideExpander,
 					),
 				),
 				WinLayoutObj(
 					name="eventDayView",
 					desc=_("Events of Day"),
-					enableParam="eventDayViewEnable",
+					enableParam=conf.eventDayViewEnable,
 					vertical=False,
 					expand=False,
 					movable=True,
@@ -358,12 +357,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					initializer=moduleObjectInitializer(
 						"scal3.ui_gtk.event.occurrence_view",
 						"LimitedHeightDayOccurrenceView",
-						eventSepParam="eventDayViewEventSep",
+						eventSepParam=conf.eventDayViewEventSep,
 					),
 				),
 			],
 		)
-		layoutFooter.setItemsOrder(conf.mainWinFooterItems)
+		layoutFooter.setItemsOrder(conf.mainWinFooterItems.v)
 
 		def x_large(text):
 			return "<span size='x-large'>" + text + "</span>"
@@ -371,14 +370,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.layout = WinLayoutBox(
 			name="layout",
 			desc=_("Main Window"),
-			# enableParam="",
 			vertical=True,
 			expand=True,
 			items=[
 				WinLayoutObj(
 					name="layout_winContronller",
 					desc=_("Window Controller"),
-					enableParam="winControllerEnable",
+					enableParam=conf.winControllerEnable,
 					vertical=False,
 					expand=False,
 					initializer=self.createWindowControllers,
@@ -386,14 +384,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				WinLayoutBox(
 					name="middleBox",
 					desc="Middle Box",  # should not be seen in GUI
-					# enableParam="",
 					vertical=False,
 					expand=True,
 					items=[
 						WinLayoutObj(
 							name="mainPanel",
 							desc=x_large(_("Main Panel")),
-							# enableParam="",
 							vertical=True,
 							expand=True,
 							initializer=self.createMainVBox,
@@ -401,7 +397,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 						WinLayoutObj(
 							name="rightPanel",
 							desc=_("Right Panel"),
-							enableParam="mainWinRightPanelEnable",
+							enableParam=conf.mainWinRightPanelEnable,
 							vertical=True,
 							expand=False,
 							labelAngle=90 if rtl else -90,
@@ -418,7 +414,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.vbox.show()
 		self.add(self.vbox)
 		# --------------------
-		if conf.winMaximized:
+		if conf.winMaximized.v:
 			self.maximize()
 		# --------------------
 		# ui.prefWindow = None
@@ -430,8 +426,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.menuMain = None
 		self.menuCell = None
 		# -----
-		self.set_keep_above(conf.winKeepAbove)
-		if conf.winSticky:
+		self.set_keep_above(conf.winKeepAbove.v)
+		if conf.winSticky.v:
 			self.stick()
 		# ------------------------------------------------------------
 		self.statusIconInit()
@@ -439,7 +435,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# ---------
 		self.connect("delete-event", self.onDeleteEvent)
 		# -----------------------------------------
-		for plug in core.allPlugList:
+		for plug in core.allPlugList.v:
 			if plug.external and hasattr(plug, "set_dialog"):
 				plug.set_dialog(self)
 		# ---------------------------
@@ -479,8 +475,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return self.rightPanel
 
 	def _onToggleRightPanel(self):
-		enable = not conf.mainWinRightPanelEnable
-		conf.mainWinRightPanelEnable = enable
+		enable = not conf.mainWinRightPanelEnable.v
+		conf.mainWinRightPanelEnable.v = enable
 		self.rightPanel.enable = enable
 		self.rightPanel.showHide()
 		self.rightPanel.onDateChange()
@@ -488,9 +484,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# update Enable checkbutton in Customize dialog
 		self.rightPanel.onToggleFromMainWin()
 
-		if conf.mainWinRightPanelResizeOnToggle:
+		if conf.mainWinRightPanelResizeOnToggle.v:
 			ww, wh = self.get_size()
-			mw = conf.mainWinRightPanelWidth
+			mw = conf.mainWinRightPanelWidth.v
 			if enable:
 				ww += mw
 			else:
@@ -559,28 +555,28 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def focusOutDo(self):
 		if not self.focus:  # and t-self.focusOutTime>0.002:
-			self.set_keep_above(conf.winKeepAbove)
+			self.set_keep_above(conf.winKeepAbove.v)
 			if self.winCon and self.winCon.enable:
 				self.winCon.windowFocusOut()
 		return False
 
 	def toggleMinimized(self, gevent):
-		if conf.winTaskbar:
+		if conf.winTaskbar.v:
 			self.iconify()
 		else:
 			self.emit("delete-event", gdk.Event(gevent))
 
 	def toggleMaximized(self, _gevent):
-		if conf.winMaximized:
+		if conf.winMaximized.v:
 			self.unmaximize()
 		else:
-			self.unmaxWinWidth = conf.winWidth
+			self.unmaxWinWidth = conf.winWidth.v
 			self.maximize()
-		conf.winMaximized = not conf.winMaximized
+		conf.winMaximized.v = not conf.winMaximized.v
 		ui.saveLiveConf()
 
 	def toggleWidthMaximized(self, _gevent):
-		ww = conf.winWidth
+		ww = conf.winWidth.v
 		workAreaW = ud.workAreaW
 		if ww < workAreaW:
 			self.unmaxWinWidth = ww
@@ -589,21 +585,21 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			ww = self.unmaxWinWidth
 		else:
 			return
-		conf.winWidth = ww
-		self.resize(ww, conf.winHeight)
+		conf.winWidth.v = ww
+		self.resize(ww, conf.winHeight.v)
 
 	def screenSizeChanged(self, rect: gdk.Rectangle):
-		if conf.winMaximized:
+		if conf.winMaximized.v:
 			return
-		winWidth = min(conf.winWidth, rect.width)
-		winHeight = min(conf.winHeight, rect.height)
-		winX = min(conf.winX, rect.width - conf.winWidth)
-		winY = min(conf.winY, rect.height - conf.winHeight)
+		winWidth = min(conf.winWidth.v, rect.width)
+		winHeight = min(conf.winHeight.v, rect.height)
+		winX = min(conf.winX.v, rect.width - conf.winWidth.v)
+		winY = min(conf.winY.v, rect.height - conf.winHeight.v)
 
-		if (winWidth, winHeight) != (conf.winWidth, conf.winHeight):
+		if (winWidth, winHeight) != (conf.winWidth.v, conf.winHeight.v):
 			self.resize(winWidth, winHeight)
 
-		if (winX, winY) != (conf.winX, conf.winY):
+		if (winX, winY) != (conf.winX.v, conf.winY.v):
 			self.move(winX, winY)
 
 	def onConfigureEvent(self, _widget, _gevent):
@@ -611,16 +607,16 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return
 		wx, wy = self.get_position()
 		# maxPosDelta = max(
-		# 	abs(conf.winX - wx),
-		# 	abs(conf.winY - wy),
+		# 	abs(conf.winX.v - wx),
+		# 	abs(conf.winY.v - wy),
 		# )
 		# log.debug(wx, wy)
 		ww, wh = self.get_size()
 		if self.get_property("visible"):
-			conf.winX, conf.winY = (wx, wy)
-		if not conf.winMaximized:
-			conf.winWidth = ww
-			conf.winHeight = wh
+			conf.winX.v, conf.winY.v = (wx, wy)
+		if not conf.winMaximized.v:
+			conf.winWidth.v = ww
+			conf.winHeight.v = wh
 		self.onWindowSizeChange()
 		liveConfChanged()
 		return False
@@ -676,7 +672,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return result
 
 	def begin_resize_drag(self, *args):
-		conf.winMaximized = False
+		conf.winMaximized.v = False
 		ui.updateFocusTime()
 		return gtk.Window.begin_resize_drag(self, *args)
 
@@ -700,15 +696,17 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return self.changeDate(*cal_types.getSysDate(calTypes.primary))
 
 	def onDateChange(self, *a, **kw):
+		plugIndex = core.plugIndex.v
+		allPlugList = core.allPlugList.v
 		# log.debug("MainWin.onDateChange")
 		ud.BaseCalObj.onDateChange(self, *a, **kw)
-		# for j in range(len(core.plugIndex)):--????????????????????
+		# for j in range(len(plugIndex)):--????????????????????
 		# 	try:
-		# 		core.allPlugList[core.plugIndex[j]].date_change(*date)
+		# 		allPlugList[plugIndex[j]].date_change(*date)
 		# 	except AttributeError:
 		# 		pass
-		for j in range(len(core.plugIndex)):
-			plug = core.allPlugList[core.plugIndex[j]]
+		for j in range(len(plugIndex)):
+			plug = allPlugList[plugIndex[j]]
 			if hasattr(plug, "date_change_after"):
 				plug.date_change_after(*ui.cells.current.date)
 		# log.debug(
@@ -1073,23 +1071,23 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	@staticmethod
 	def prefUpdateBgColor(_cal):
 		if ui.prefWindow:
-			ui.prefWindow.colorbBg.set_rgba(conf.bgColor)
+			ui.prefWindow.colorbBg.set_rgba(conf.bgColor.v)
 		# else:  # FIXME
 		ui.saveLiveConf()
 
 	def onKeepAboveClick(self, check):
 		act = check.get_active()
 		self.set_keep_above(act)
-		conf.winKeepAbove = act
+		conf.winKeepAbove.v = act
 		ui.saveLiveConf()
 
 	def onStickyClick(self, check):
 		if check.get_active():
 			self.stick()
-			conf.winSticky = True
+			conf.winSticky.v = True
 		else:
 			self.unstick()
-			conf.winSticky = False
+			conf.winSticky.v = False
 		ui.saveLiveConf()
 
 	@staticmethod
@@ -1120,7 +1118,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	"""
 	def updateToolbarClock(self):
-		if conf.showDigClockTb:
+		if conf.showDigClockTb.v:
 			if self.clock is None:
 				from scal3.ui_gtk.mywidgets.clock import FClockLabel
 				self.clock = FClockLabel(ud.clockFormat)
@@ -1136,7 +1134,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def updateStatusIconClock(self, checkStatusIconMode=True):
 		if checkStatusIconMode and self.statusIconMode!=2:
 			return
-		if conf.showDigClockTr:
+		if conf.showDigClockTr.v:
 			if self.clockTr is None:
 				from scal3.ui_gtk.mywidgets.clock import FClockLabel
 				self.clockTr = FClockLabel(ud.clockFormat)
@@ -1160,7 +1158,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	@staticmethod
 	def useAppIndicator() -> bool:
-		if not conf.useAppIndicator:
+		if not conf.useAppIndicator.v:
 			return False
 		try:
 			import scal3.ui_gtk.starcal_appindicator  # noqa: F401
@@ -1305,14 +1303,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def getStatusIconTooltip():
 		# tt = core.weekDayName[core.getWeekDay(*ddate)]
 		tt = core.weekDayName[core.jwday(ui.cells.today.jd)]
-		# if conf.pluginsTextStatusIcon:--?????????
+		# if conf.pluginsTextStatusIcon.v:--?????????
 		# 	sep = _(",")+" "
 		# else:
 		sep = "\n"
 		for calType in calTypes.active:
 			y, m, d = ui.cells.today.dates[calType]
 			tt += sep + _(d) + " " + locale_man.getMonthName(calType, m, y) + " " + _(y)
-		if conf.pluginsTextStatusIcon:
+		if conf.pluginsTextStatusIcon.v:
 			text = ui.cells.today.getPluginsText()
 			if text:
 				tt += "\n\n" + text  # .replace("\t", "\n") # FIXME
@@ -1330,13 +1328,15 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		from scal3.utils import toBytes
 
 		imagePath = (
-			conf.statusIconImageHoli if ui.cells.today.holiday else conf.statusIconImage
+			conf.statusIconImageHoli.v
+			if ui.cells.today.holiday
+			else conf.statusIconImage.v
 		)
 		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
 		with open(imagePath, "rb") as fp:
 			data = fp.read()
 		if ext == "svg":
-			if conf.statusIconLocalizeNumber:
+			if conf.statusIconLocalizeNumber.v:
 				dayNum = locale_man.numEncode(
 					ddate[2],
 					localeMode=calTypes.primary,  # FIXME
@@ -1344,19 +1344,19 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			else:
 				dayNum = str(ddate[2])
 			style: list[tuple[str, Any]] = []
-			if conf.statusIconFontFamilyEnable:
-				if conf.statusIconFontFamily:
-					family = conf.statusIconFontFamily
+			if conf.statusIconFontFamilyEnable.v:
+				if conf.statusIconFontFamily.v:
+					family = conf.statusIconFontFamily.v
 				else:
 					family = ui.getFont().family
 				style.append(("font-family", family))
 			if (
-				conf.statusIconHolidayFontColorEnable
-				and conf.statusIconHolidayFontColor
+				conf.statusIconHolidayFontColorEnable.v
+				and conf.statusIconHolidayFontColor.v
 				and ui.cells.today.holiday
 			):
 				style.append(
-					("fill", rgbToHtmlColor(conf.statusIconHolidayFontColor)),
+					("fill", rgbToHtmlColor(conf.statusIconHolidayFontColor.v)),
 				)
 			if style:
 				styleStr = "".join([f"{key}:{value};" for key, value in style])
@@ -1366,9 +1366,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				toBytes(dayNum),
 			)
 		loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
-		if conf.statusIconFixedSizeEnable:
+		if conf.statusIconFixedSizeEnable.v:
 			try:
-				width, height = conf.statusIconFixedSizeWH
+				width, height = conf.statusIconFixedSizeWH.v
 				loader.set_size(width, height)
 			except Exception:
 				log.exception("")
@@ -1422,17 +1422,17 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def onStatusIconClick(self, _obj=None):
 		if self.get_property("visible"):
-			# conf.winX, conf.winY = self.get_position()
+			# conf.winX.v, conf.winY.v = self.get_position()
 			# FIXME: ^ gives bad position sometimes
 			# liveConfChanged()
-			# log.debug(conf.winX, conf.winY)
+			# log.debug(conf.winX.v, conf.winY.v)
 			self.hide()
 		else:
-			self.move(conf.winX, conf.winY)
+			self.move(conf.winX.v, conf.winY.v)
 			# every calling of .hide() and .present(), makes dialog not on top
 			# (forgets being on top)
-			self.set_keep_above(conf.winKeepAbove)
-			if conf.winSticky:
+			self.set_keep_above(conf.winKeepAbove.v)
+			if conf.winSticky.v:
 				self.stick()
 			self.deiconify()
 			self.present()
@@ -1441,10 +1441,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			# while worked in Xfce and GNOME.
 
 	def onDeleteEvent(self, _widget=None, _event=None):
-		# conf.winX, conf.winY = self.get_position()
+		# conf.winX.v, conf.winY.v = self.get_position()
 		# FIXME: ^ gives bad position sometimes
 		# liveConfChanged()
-		# log.debug(conf.winX, conf.winY)
+		# log.debug(conf.winX.v, conf.winY.v)
 		if self.statusIconMode == 0 or not self.sicon:
 			self.quit()
 		elif self.statusIconMode > 1:
@@ -1455,10 +1455,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return True
 
 	def onEscape(self):
-		# conf.winX, conf.winY = self.get_position()
+		# conf.winX.v, conf.winY.v = self.get_position()
 		# FIXME: ^ gives bad position sometimes
 		# liveConfChanged()
-		# log.debug(conf.winX, conf.winY)
+		# log.debug(conf.winX.v, conf.winY.v)
 		if self.statusIconMode == 0:
 			self.quit()
 		elif self.statusIconMode > 1:  # noqa: SIM102
@@ -1664,7 +1664,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			self.menuCell = None
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
 		self.autoResize()
-		# self.set_property("skip-taskbar-hint", not conf.winTaskbar)
+		# self.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
 		# self.set_skip_taskbar_hint  # FIXME
 		# skip-taskbar-hint need to restart ro be applied
 		# self.updateToolbarClock()  # FIXME
@@ -1696,7 +1696,7 @@ gtk.init_check(sys.argv)
 # FIXME
 
 
-for plug in core.allPlugList:
+for plug in core.allPlugList.v:
 	if hasattr(plug, "onCurrentDateChange"):
 		listener.dateChange.add(plug)
 
@@ -1719,7 +1719,7 @@ if theme is not None:
 def main():
 	statusIconMode = 2
 	action = ""
-	if conf.showMain:
+	if conf.showMain.v:
 		action = "show"
 	if len(sys.argv) > 1:
 		if sys.argv[1] in {"--no-tray-icon", "--no-status-icon"}:
@@ -1759,7 +1759,7 @@ def main():
 	# 	sys.exit(0)
 	if action == "show" or not mainWin.sicon:
 		mainWin.present()
-	if conf.showDesktopWidget:
+	if conf.showDesktopWidget.v:
 		mainWin.dayCalWinShow()
 	# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 	# FIXME: ^

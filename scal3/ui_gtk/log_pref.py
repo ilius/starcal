@@ -67,8 +67,7 @@ class LogLevelComboBox(gtk.ComboBox):
 
 class LogLevelPrefItem(PrefItem):
 	def __init__(self):
-		self.obj = logger
-		self.attrName = "logLevel"
+		self.prop = logger.logLevel
 		# ---
 		self.combo = LogLevelComboBox()
 		# ---
@@ -86,7 +85,7 @@ class LogLevelPrefItem(PrefItem):
 		self.combo.set_value(levelNum)
 
 	def save(self):  # noqa: PLR6301
-		logData = {"logLevel": logger.logLevel}
+		logData = {"logLevel": self.prop.v}
 		logJson = dataToCompactJson(logData)
 		with open(logger.confPath, "w", encoding="utf-8") as file:
 			file.write(logJson)
