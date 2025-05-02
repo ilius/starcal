@@ -5,19 +5,19 @@ __all__ = ["FloatSpinButton"]
 
 
 class FloatSpinButton(SingleSpinButton):
-	def __init__(self, _min, _max, digits, step=0.0, **kwargs):
+	def __init__(self, minim, maxim, digits, step=0.0, **kwargs):
 		if digits < 1:
 			raise ValueError(f"FloatSpinButton: invalid {digits=}")
 		if step == 0.0:
 			step = 10 ** (1 - digits)
 		SingleSpinButton.__init__(
 			self,
-			field=FloatField(_min, _max, digits),
+			field=FloatField(minim, maxim, digits),
 			step_inc=step,
 			page_inc=step * 10,
 			**kwargs,
 		)
 
-	def set_range(self, _min: float, _max: float):
-		self.field.children[0].setRange(_min, _max)
+	def set_range(self, minim: float, maxim: float):
+		self.field.children[0].setRange(minim, maxim)
 		self.set_text(self.field.getText())
