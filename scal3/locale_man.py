@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.property import Property
 
 log = logger.get()
 
@@ -66,6 +67,7 @@ __all__ = [
 	"getDigits",
 	"getLocaleFirstWeekDay",
 	"getMonthName",
+	"lang",
 	"langDict",
 	"langHasUppercase",
 	"langSh",
@@ -96,10 +98,13 @@ localTzStr = str(localTz)
 
 confPath = join(confDir, "locale.json")
 
-confParams = (
-	"lang",
-	"enableNumLocale",
-)
+lang = Property("")
+enableNumLocale = Property(True)
+
+confParams = {
+	"lang": lang,
+	"enableNumLocale": enableNumLocale,
+}
 
 
 def loadConf() -> None:
@@ -155,7 +160,6 @@ ZWJ = "\u200d"  # zero width joiner
 sysLangDefault = os.environ.get("LANG", "")
 
 langDefault = ""
-lang = ""
 langActive = ""
 # langActive==lang except when lang==""
 # (in that case, langActive will be taken from system)
@@ -165,7 +169,6 @@ langSh = ""  # short language name, for example "en", "fa", "fr", ...
 rtl = False  # right to left
 langHasUppercase = True
 
-enableNumLocale = True
 
 # ----------------------------------------------------------
 
@@ -301,27 +304,27 @@ def getLocaleFirstWeekDay() -> int:
 
 
 def prepareLanguage() -> str:
-	global lang, langActive, langSh, rtl, langHasUppercase
-	if lang == "":  # noqa: PLC1901
+	global langActive, langSh, rtl, langHasUppercase
+	if lang.v == "":  # noqa: PLC1901
 		# langActive = locale.setlocale(locale.LC_ALL, "")
 		langActive = sysLangDefault
 		if langActive not in langDict:
 			langActive = langDefault
 		# os.environ["LANG"] = langActive
-	elif lang in langDict:
+	elif lang.v in langDict:
 		# try:
-		# 	lang = locale.setlocale(locale.LC_ALL, locale.normalize(lang))
+		# 	lang.v = locale.setlocale(locale.LC_ALL, locale.normalize(lang))
 		# except locale.Error:
-		# lang = lang.lower()
+		# lang.v = lang.lower()
 		# lines = popen_output("locale -a").split("\n")  # FIXME
 		# for line in lines:
-		# 	if line.lower().starts(lang)
-		# locale.setlocale(locale.LC_ALL, lang) # lang = locale.setlocale(...
-		langActive = lang
-		os.environ["LANG"] = lang
+		# 	if line.lower().starts(lang.v)
+		# locale.setlocale(locale.LC_ALL, lang) # lang.v = locale.setlocale(...
+		langActive = lang.v
+		os.environ["LANG"] = lang.v
 	else:  # not lang in langDict
-		# locale.setlocale(locale.LC_ALL, langDefault) # lang = locale.setlocale(...
-		lang = langDefault
+		# locale.setlocale(locale.LC_ALL, langDefault) # lang.v = locale.setlocale(...
+		lang.v = langDefault
 		langActive = langDefault
 		os.environ["LANG"] = langDefault
 	langSh = langActive.split("_")[0]
@@ -599,11 +602,11 @@ def popenDefaultLang(*args, **kwargs) -> subprocess.Popen:
 	return p
 
 
-def getNeedRestartParams() -> dict:
-	return {
-		"locale_man.lang": lang,
-		"locale_man.enableNumLocale": enableNumLocale,
-	}
+def getNeedRestartParams() -> list[Property]:
+	return [
+		lang,
+		enableNumLocale,
+	]
 
 
 # ----------------------------------------------
