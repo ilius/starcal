@@ -5,19 +5,19 @@ __all__ = ["IntSpinButton"]
 
 
 class IntSpinButton(SingleSpinButton):
-	def __init__(self, _min, _max, step=0, **kwargs):
+	def __init__(self, minim, maxim, step=0, **kwargs):
 		if step == 0:
 			step = 1
 		SingleSpinButton.__init__(
 			self,
-			field=IntField(_min, _max),
+			field=IntField(minim, maxim),
 			step_inc=step,
 			page_inc=step * 10,
 			**kwargs,
 		)
 
-	def set_range(self, _min: int, _max: int):
-		self.field.children[0].setRange(_min, _max)
+	def set_range(self, minim: int, maxim: int):
+		self.field.children[0].setRange(minim, maxim)
 		self.set_text(self.field.getText())
 
 	def get_value(self):

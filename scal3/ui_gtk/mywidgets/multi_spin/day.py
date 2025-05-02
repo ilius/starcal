@@ -12,6 +12,6 @@ class DaySpinButton(SingleSpinButton):
 			**kwargs,
 		)
 
-	def set_range(self, _min: int, _max: int):
-		self.field.children[0].setRange(_min, _max)
+	def set_range(self, minim: int, maxim: int):
+		self.field.children[0].setRange(minim, maxim)
 		self.set_text(self.field.getText())

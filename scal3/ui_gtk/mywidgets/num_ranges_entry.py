@@ -41,9 +41,9 @@ __all__ = ["NumRangesEntry"]
 
 @registerType
 class NumRangesEntry(gtk.Entry):
-	def __init__(self, _min, _max, page_inc=10):
-		self._min = _min
-		self._max = _max
+	def __init__(self, minim, maxim, page_inc=10):
+		self.minim = minim
+		self.maxim = maxim
 		self.digs = locale_man.digits[locale_man.langSh]
 		self.page_inc = page_inc
 		# ----
@@ -93,12 +93,12 @@ class NumRangesEntry(gtk.Entry):
 		if thisNumStr:
 			thisNum = numDecode(thisNumStr)
 			newNum = thisNum + plus
-			if not self._min <= newNum <= self._max:
+			if not self.minim <= newNum <= self.maxim:
 				return
 		elif plus > 0:
-			newNum = self._max
+			newNum = self.maxim
 		else:
-			newNum = self._min
+			newNum = self.minim
 		newNumStr = _(newNum)
 		newText = text[:startI] + newNumStr + text[endI:]
 		self.set_text(newText)

@@ -35,6 +35,6 @@ class DateButton(MultiSpinButton):
 			),
 		)
 
-	def setMaxDay(self, _max):
-		self.field.children[2].setMax(_max)
+	def setMaxDay(self, maxDay):
+		self.field.children[2].setMax(maxDay)
 		self.update()

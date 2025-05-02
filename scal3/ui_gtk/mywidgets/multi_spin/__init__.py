@@ -99,8 +99,8 @@ class MultiSpinButton(gtk.Box):
 	def get_increments(self) -> "tuple[int, int]":
 		return (self.step_inc, self.page_inc)
 
-	# def set_range(self, _min: int, _max: int):
-	# 	self.field.children[0].setRange(_min, _max)
+	# def set_range(self, minim: int, maxim: int):
+	# 	self.field.children[0].setRange(minim, maxim)
 	# 	self.set_text(self.field.getText())
 
 	def __init__(
@@ -378,10 +378,10 @@ class SingleSpinButton(MultiSpinButton):
 			**kwargs,
 		)
 		# if isinstance(field, NumField):
-		# 	gtk.SpinButton.set_range(self, field._min, field._max)
+		# 	gtk.SpinButton.set_range(self, field.minim, field.maxim)
 
-	# def set_range(self, _min, _max): FIXME
-	# 	gtk.SpinButton.set_range(self, _min, _max)
+	# def set_range(self, minim, maxim): FIXME
+	# 	gtk.SpinButton.set_range(self, minim, maxim)
 
 	def get_value(self):
 		return MultiSpinButton.get_value(self)[0]
