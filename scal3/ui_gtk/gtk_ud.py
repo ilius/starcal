@@ -21,6 +21,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.property import Property
 
 log = logger.get()
 
@@ -80,11 +81,13 @@ sysConfPath = join(sysConfDir, "ui-gtk.json")
 
 confPath = join(confDir, "ui-gtk.json")
 
-confParams = (
-	"dateFormat",
-	"clockFormat",
-	# "adjustTimeCmd",
-)
+dateFormat = Property("%Y/%m/%d")
+clockFormat = Property("%X")  # "%T", "%X" (local), "<b>%T</b>", "%m:%d"
+confParams = {
+	"dateFormat": dateFormat,
+	"clockFormat": clockFormat,
+	# "adjustTimeCmd": adjustTimeCmd,
+}
 
 
 def loadConf():
@@ -235,19 +238,19 @@ class IntegatedWindowList(BaseCalObj):
 		if height == self.lastAlphabetHeight:
 			return
 
-		conf.menuIconSize = int(height * 0.7)
-		conf.menuCheckSize = int(height * 0.8)
-		conf.menuEventCheckIconSize = height * 0.8
-		conf.buttonIconSize = height * 0.65
-		conf.stackIconSize = height * 0.8
-		conf.eventTreeIconSize = height * 0.7
-		conf.eventTreeGroupIconSize = height * 0.85
-		conf.imageInputIconSize = height * 1.2
-		conf.treeIconSize = height * 0.7
-		conf.comboBoxIconSize = height * 0.8
-		conf.toolbarIconSize = height * 0.9
-		conf.messageDialogIconSize = height * 2.0
-		conf.rightPanelEventIconSize = height * 0.8
+		conf.menuIconSize.v = int(height * 0.7)
+		conf.menuCheckSize.v = int(height * 0.8)
+		conf.menuEventCheckIconSize.v = height * 0.8
+		conf.buttonIconSize.v = height * 0.65
+		conf.stackIconSize.v = height * 0.8
+		conf.eventTreeIconSize.v = height * 0.7
+		conf.eventTreeGroupIconSize.v = height * 0.85
+		conf.imageInputIconSize.v = height * 1.2
+		conf.treeIconSize.v = height * 0.7
+		conf.comboBoxIconSize.v = height * 0.8
+		conf.toolbarIconSize.v = height * 0.9
+		conf.messageDialogIconSize.v = height * 2.0
+		conf.rightPanelEventIconSize.v = height * 0.8
 
 		pixcache.clear()
 		self.lastAlphabetHeight = height
@@ -292,7 +295,7 @@ class IntegatedWindowList(BaseCalObj):
 
 		css = ""
 
-		if conf.oldStyleProgressBar:
+		if conf.oldStyleProgressBar.v:
 			css += "progressbar progress, trough {min-height: 1.3em;}\n"
 		else:
 			textStyle = cssTextStyle(
@@ -311,7 +314,7 @@ class IntegatedWindowList(BaseCalObj):
 
 		css += "check {min-width: 1.42em; min-height: 1.42em;}\n"
 
-		mcs = conf.menuCheckSize
+		mcs = conf.menuCheckSize.v
 		css += f"menuitem check {{min-width: {mcs}px; min-height: {mcs}px;}}\n"
 
 		for func in self.cssFuncList:
@@ -435,12 +438,9 @@ justificationByName = {name: value for name, desc, value in justificationList}
 
 # ------------------------------
 
-# if conf.fontCustomEnable:-- FIXME
+# if conf.fontCustomEnable.v:-- FIXME
 # 	settings.set_property("gtk-font-name", fontCustom)
 
-dateFormat = "%Y/%m/%d"
-clockFormat = "%X"
-# "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 
 dateFormatBin = None
 clockFormatBin = None
@@ -448,8 +448,8 @@ clockFormatBin = None
 
 def updateFormatsBin():
 	global dateFormatBin, clockFormatBin
-	dateFormatBin = compileTmFormat(dateFormat)
-	clockFormatBin = compileTmFormat(clockFormat)
+	dateFormatBin = compileTmFormat(dateFormat.v)
+	clockFormatBin = compileTmFormat(clockFormat.v)
 
 
 # ------------------------------

@@ -24,25 +24,25 @@ __all__ = ["CalObj"]
 class CalObj(DayCal):
 	expand = True
 
-	dayParamsParam = "dcalDayParams"
-	monthParamsParam = "dcalMonthParams"
-	weekdayParamsParam = "dcalWeekdayParams"
+	dayParams = conf.dcalDayParams
+	monthParams = conf.dcalMonthParams
+	weekdayParams = conf.dcalWeekdayParams
 
-	widgetButtonsEnableParam = "dcalWidgetButtonsEnable"
-	widgetButtonsParam = "dcalWidgetButtons"
+	widgetButtonsEnable = conf.dcalWidgetButtonsEnable
+	widgetButtons = conf.dcalWidgetButtons
 
-	navButtonsEnableParam = "dcalNavButtonsEnable"
-	navButtonsGeoParam = "dcalNavButtonsGeo"
-	navButtonsOpacityParam = "dcalNavButtonsOpacity"
+	navButtonsEnable = conf.dcalNavButtonsEnable
+	navButtonsGeo = conf.dcalNavButtonsGeo
+	navButtonsOpacity = conf.dcalNavButtonsOpacity
 
-	eventIconSizeParam = "dcalEventIconSize"
-	eventTotalSizeRatioParam = "dcalEventTotalSizeRatio"
-	weekdayLocalizeParam = "dcalWeekdayLocalize"
-	weekdayAbbreviateParam = "dcalWeekdayAbbreviate"
-	weekdayUppercaseParam = "dcalWeekdayUppercase"
+	eventIconSize = conf.dcalEventIconSize
+	eventTotalSizeRatio = conf.dcalEventTotalSizeRatio
+	weekdayLocalize = conf.dcalWeekdayLocalize
+	weekdayAbbreviate = conf.dcalWeekdayAbbreviate
+	weekdayUppercase = conf.dcalWeekdayUppercase
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
-		return 0, conf.winHeight / 3
+		return 0, conf.winHeight.v / 3
 
 	def getWindow(self):
 		return self.win
