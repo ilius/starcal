@@ -27,7 +27,7 @@ from math import ceil, floor
 from typing import Any
 
 if typing.TYPE_CHECKING:
-	Number: typing.TypeAlias = int | float
+	type Number = int | float
 
 __all__ = [
 	"FallbackLogger",

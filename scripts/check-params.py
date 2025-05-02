@@ -12,12 +12,6 @@ sys.path.insert(0, rootDir)
 from scal3.ui import conf, params
 
 ignoreMissingParams = {
-	"statusIconImageDefault",
-	"winControllerButtonsDefault",
-	"wcal_toolbar_mainMenu_icon_default",
-	"statusIconImageHoliDefault",
-	"mainWinItemsDefault",
-	"wcalItemsDefault",
 	"localTzHist",
 }
 

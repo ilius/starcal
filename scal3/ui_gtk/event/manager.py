@@ -26,6 +26,8 @@ from collections import OrderedDict as odict
 from contextlib import suppress
 from os.path import join
 
+from scal3.property import Property
+
 if typing.TYPE_CHECKING:
 	from scal3.event_container import DummyEventContainer
 	from scal3.event_update_queue import EventUpdateRecord
@@ -91,20 +93,20 @@ __all__ = ["EventManagerDialog"]
 # log.debug("Testing translator", __file__, _("About"))
 
 
-EventOrGroup: typing.TypeAlias = "lib.Event | lib.EventGroup"
+type EventOrGroup = lib.Event | lib.EventGroup
 
 confPath = join(confDir, "event", "manager.json")
 
-confParams = (
-	"eventManPos",
-	"eventManShowDescription",
-)
+
+eventManPos = Property((0, 0))
+eventManShowDescription = Property(True)
+confParams = {
+	"eventManPos": eventManPos,
+	"eventManShowDescription": eventManShowDescription,
+}
 
 # change date of a dailyNoteEvent when editing it
 # dailyNoteChDateOnEdit = True
-
-eventManPos = (0, 0)
-eventManShowDescription = True
 
 
 def loadConf() -> None:
@@ -171,7 +173,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	desc = _("Event Manager")
 
 	def onShow(self, _widget: gtk.Widget) -> None:
-		self.move(*eventManPos)
+		self.move(*eventManPos.v)
 		self.onConfigChange()
 
 	@staticmethod
@@ -183,8 +185,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return True
 
 	def onResponse(self, _dialog: gtk.Dialog, _response_id: int) -> None:
-		global eventManPos
-		eventManPos = self.get_position()
+		eventManPos.v = self.get_position()
 		saveConf()
 		# ---
 		self.hide()
@@ -395,7 +396,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# --
 		self.showDescItem = gtk.CheckMenuItem(label=_("Show _Description"))
 		self.showDescItem.set_use_underline(True)
-		self.showDescItem.set_active(eventManShowDescription)
+		self.showDescItem.set_active(eventManShowDescription.v)
 		self.showDescItem.connect("toggled", self.showDescItemToggled)
 		viewMenu.append(self.showDescItem)
 		# ----
@@ -606,7 +607,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		col.set_sizing(gtk.TreeViewColumnSizing.FIXED)
 		col.set_property("expand", True)
-		if eventManShowDescription:
+		if eventManShowDescription.v:
 			self.treev.append_column(col)
 		# ---
 		# self.treev.set_search_column(2)-- or 3
@@ -1752,9 +1753,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return self.treev.expand_all()
 
 	def _do_showDescItemToggled(self) -> None:
-		global eventManShowDescription
 		active = self.showDescItem.get_active()
-		eventManShowDescription = active
+		eventManShowDescription.v = active
 		saveConf()
 		if active:
 			self.treev.append_column(self.colDesc)

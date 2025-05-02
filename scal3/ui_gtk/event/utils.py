@@ -81,7 +81,7 @@ def menuItemFromEventGroup(group, **kwargs):
 		group.title,
 		pixbuf=newColorCheckPixbuf(
 			group.color,
-			conf.menuEventCheckIconSize,
+			conf.menuEventCheckIconSize.v,
 			group.enable,
 		),
 		**kwargs,
@@ -91,5 +91,5 @@ def menuItemFromEventGroup(group, **kwargs):
 def eventTreeIconPixbuf(icon: str) -> GdkPixbuf.Pixbuf:
 	return pixbufFromFile(
 		icon,
-		conf.eventTreeIconSize,
+		conf.eventTreeIconSize.v,
 	)

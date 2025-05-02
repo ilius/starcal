@@ -96,7 +96,7 @@ class CustomizeWindow(gtk.Dialog):
 		# --
 		self.stack = MyStack(
 			headerSpacing=10,
-			iconSize=conf.stackIconSize,
+			iconSize=conf.stackIconSize.v,
 		)
 		pack(self.vbox, self.stack, 1, 1)
 		# --
@@ -133,8 +133,8 @@ class CustomizeWindow(gtk.Dialog):
 			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
 		# ---
-		if conf.customizePagePath:
-			self.stack.tryToGotoPage(conf.customizePagePath)
+		if conf.customizePagePath.v:
+			self.stack.tryToGotoPage(conf.customizePagePath.v)
 		# ---
 		self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
@@ -148,7 +148,7 @@ class CustomizeWindow(gtk.Dialog):
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
-			return pixbufFromFile("document-edit.svg", conf.treeIconSize)
+			return pixbufFromFile("document-edit.svg", conf.treeIconSize.v)
 		return None
 
 	def newItemList(
@@ -371,9 +371,8 @@ class CustomizeWindow(gtk.Dialog):
 		if item.enableParam:
 			hbox = HBox(spacing=10)
 			prefItem = CheckPrefItem(
-				conf,
-				item.enableParam,
-				_("Enable"),
+				prop=item.enableParam,
+				label=_("Enable"),
 				live=True,
 				onChangeFunc=item.onEnableCheckClick,
 			)
@@ -538,9 +537,9 @@ class CustomizeWindow(gtk.Dialog):
 	def save(self):
 		item = self.rootItem
 		item.updateVars()
-		conf.ud__wcalToolbarData = ud.wcalToolbarData
-		conf.ud__mainToolbarData = ud.mainToolbarData
-		conf.customizePagePath = self.stack.currentPagePath()
+		conf.ud__wcalToolbarData.v = ud.wcalToolbarData
+		conf.ud__mainToolbarData.v = ud.mainToolbarData
+		conf.customizePagePath.v = self.stack.currentPagePath()
 		ui.saveConfCustomize()
 		# data = item.getData()-- remove? FIXME
 
