@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 	from collections.abc import Sequence
 	from typing import Any
 
-__all__ = ["makeOrderedData"]
+__all__ = ["makeOrderedData", "sortDict"]
 
 
 def sortDict(data: dict[str, Any], keyFunc: str) -> dict[str, Any]:

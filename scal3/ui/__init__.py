@@ -39,6 +39,12 @@ from scal3.event_update_queue import EventUpdateQueue
 from scal3.font import Font
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
+from scal3.property import Property
+from scal3.ui.conf import (
+	confParams,
+	confParamsCustomize,
+	confParamsLive,
+)
 from scal3.ui.funcs import checkEnabledNamesItems
 from scal3.ui.params import (
 	CUSTOMIZE,
@@ -57,7 +63,12 @@ if typing.TYPE_CHECKING:
 
 
 __all__ = [
+	"CUSTOMIZE",
+	"LIVE",
+	"MAIN_CONF",
+	"NEED_RESTART",
 	"Font",
+	"Property",
 	"cells",
 	"checkMainWinItems",
 	"checkNeedRestart",
@@ -79,6 +90,7 @@ __all__ = [
 	"getActiveMonthCalParams",
 	"getEvent",
 	"getFont",
+	"getParamNamesWithFlag",
 	"init",
 	"initFonts",
 	"iterAllEvents",
@@ -109,15 +121,6 @@ confPathCustomize = join(confDir, "ui-customize.json")
 
 confPathLive = join(confDir, "ui-live.json")
 
-
-confParams = getParamNamesWithFlag(MAIN_CONF)
-confParamsLive = getParamNamesWithFlag(LIVE)
-confParamsCustomize = getParamNamesWithFlag(CUSTOMIZE)
-# print(f"confParams = {sorted(confParams)}")
-# print(f"confParamsLive = {sorted(confParamsLive)}")
-# print(f"confParamsCustomize = {sorted(confParamsCustomize)}")
-
-
 fontParams = ["fontDefault"] + [
 	p.v3Name for p in confParamsData if p.type.startswith("Font")
 ]
@@ -134,33 +137,39 @@ def loadConf() -> None:
 	loadSingleConfig(
 		conf,
 		sysConfPath,
+		confParams,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		conf,
 		confPath,
+		confParams,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		conf,
 		confPathCustomize,
+		confParamsCustomize,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		conf,
 		confPathLive,
+		confParamsLive,
 		decoders=confDecoders,
 	)
-	if not isabs(conf.statusIconImage):
-		conf.statusIconImage = join(sourceDir, conf.statusIconImage)
-	if not isabs(conf.statusIconImageHoli):
-		conf.statusIconImageHoli = join(sourceDir, conf.statusIconImageHoli)
-	if not isfile(conf.statusIconImage):
-		conf.statusIconImage = conf.statusIconImageDefault
-	if not isfile(conf.statusIconImageHoli):
-		conf.statusIconImageHoli = conf.statusIconImageHoliDefault
+	if not isabs(conf.statusIconImage.v):
+		conf.statusIconImage.v = join(sourceDir, conf.statusIconImage.v)
+	if not isabs(conf.statusIconImageHoli.v):
+		conf.statusIconImageHoli.v = join(sourceDir, conf.statusIconImageHoli.v)
+	if not isfile(conf.statusIconImage.v):
+		conf.statusIconImage.v = conf.statusIconImage.default
+	if not isfile(conf.statusIconImageHoli.v):
+		conf.statusIconImageHoli.v = conf.statusIconImageHoli.default
 
-	conf.mcalCornerMenuTextColor = conf.mcalCornerMenuTextColor or conf.borderTextColor
+	conf.mcalCornerMenuTextColor.v = (
+		conf.mcalCornerMenuTextColor.v or conf.borderTextColor.v
+	)
 
 
 def saveConf() -> None:
@@ -182,7 +191,7 @@ def saveConfCustomize() -> None:
 
 
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
-	log.debug(f"saveLiveConf: {conf.winX=}, {conf.winY=}, {conf.winWidth=}")
+	log.debug(f"saveLiveConf: {conf.winX.v=}, {conf.winY.v=}, {conf.winWidth.v=}")
 	saveSingleConfig(
 		conf,
 		confPathLive,
@@ -204,16 +213,17 @@ def updateLocalTimezoneHistory() -> bool:
 		return False
 
 	localTzName = str(locale_man.localTz)
-	if not conf.localTzHist:
-		conf.localTzHist.insert(0, localTzName)
+	hist = conf.localTzHist.v
+	if not hist:
+		hist.insert(0, localTzName)
 		return True
 
-	if conf.localTzHist[0] != localTzName:
+	if hist[0] != localTzName:
 		with suppress(ValueError):
-			conf.localTzHist.remove(localTzName)
-		conf.localTzHist.insert(0, localTzName)
-		if len(conf.localTzHist) > 10:
-			conf.localTzHist = conf.localTzHist[:10]
+			hist.remove(localTzName)
+		hist.insert(0, localTzName)
+		if len(hist) > 10:
+			conf.localTzHist.v = hist[:10]
 		return True
 
 	return False
@@ -229,8 +239,9 @@ def getFont(
 	scale=1.0,
 	family=True,
 	bold=False,
-) -> tuple[str | None, bool, bool, float]:
-	f = conf.fontCustom if conf.fontCustomEnable else fontDefaultInit
+) -> Font:
+	f = (conf.fontCustom.v if conf.fontCustomEnable.v else None) or fontDefaultInit
+	# assert isinstance(f.family, str)
 	return Font(
 		family=f.family if family else None,
 		bold=f.bold or bold,
@@ -242,77 +253,75 @@ def getFont(
 def initFonts(fontDefaultNew: Font) -> None:
 	global fontDefault
 	fontDefault = fontDefaultNew
-	if not conf.fontCustom:
-		conf.fontCustom = fontDefault
+	if not conf.fontCustom.v:
+		conf.fontCustom.v = fontDefault
 	# --------
 	# ---
-	if conf.mcalTypeParams[0]["font"] is None:
-		conf.mcalTypeParams[0]["font"] = getFont(1.0, family=False)
+	if conf.mcalTypeParams.v[0]["font"] is None:
+		conf.mcalTypeParams.v[0]["font"] = getFont(1.0, family=False)
 	# ---
-	for item in conf.mcalTypeParams[1:]:
+	for item in conf.mcalTypeParams.v[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(0.6, family=False)
 	# ------
-	if conf.dcalDayParams[0]["font"] is None:
-		conf.dcalDayParams[0]["font"] = getFont(10.0, family=False)
+	if conf.dcalDayParams.v[0]["font"] is None:
+		conf.dcalDayParams.v[0]["font"] = getFont(10.0, family=False)
 	# ---
-	for item in conf.dcalDayParams[1:]:
+	for item in conf.dcalDayParams.v[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(3.0, family=False)
 	# ------
-	if conf.dcalMonthParams[0]["font"] is None:
-		conf.dcalMonthParams[0]["font"] = getFont(5.0, family=False)
+	if conf.dcalMonthParams.v[0]["font"] is None:
+		conf.dcalMonthParams.v[0]["font"] = getFont(5.0, family=False)
 	# ---
-	for item in conf.dcalMonthParams[1:]:
+	for item in conf.dcalMonthParams.v[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(2.0, family=False)
 	# ------
-	if conf.dcalWinDayParams[0]["font"] is None:
-		conf.dcalWinDayParams[0]["font"] = getFont(5.0, family=False)
+	if conf.dcalWinDayParams.v[0]["font"] is None:
+		conf.dcalWinDayParams.v[0]["font"] = getFont(5.0, family=False)
 	# ---
-	for item in conf.dcalWinDayParams[1:]:
+	for item in conf.dcalWinDayParams.v[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(2.0, family=False)
 	# ------
-	if conf.dcalWinMonthParams[0]["font"] is None:
-		conf.dcalWinMonthParams[0]["font"] = getFont(2.5, family=False)
+	if conf.dcalWinMonthParams.v[0]["font"] is None:
+		conf.dcalWinMonthParams.v[0]["font"] = getFont(2.5, family=False)
 	# ---
-	for item in conf.dcalWinMonthParams[1:]:
+	for item in conf.dcalWinMonthParams.v[1:]:
 		if item["font"] is None:
 			item["font"] = getFont(1.5, family=False)
 	# ------
-	if conf.dcalWeekdayParams["font"] is None:
-		conf.dcalWeekdayParams["font"] = getFont(1.0, family=False)
-	if conf.dcalWinWeekdayParams["font"] is None:
-		conf.dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
+	if conf.dcalWeekdayParams.v["font"] is None:
+		conf.dcalWeekdayParams.v["font"] = getFont(1.0, family=False)
+	if conf.dcalWinWeekdayParams.v["font"] is None:
+		conf.dcalWinWeekdayParams.v["font"] = getFont(1.0, family=False)
 
 
 # ----------------------------------------------------------------------
 
 
 def checkNeedRestart() -> bool:
-	for key in needRestartPref:
-		if needRestartPref[key] != evalParam(key):
-			log.info(
-				f"checkNeedRestart: {key!r}, "
-				f"{needRestartPref[key]!r}, {evalParam(key)!r}",
-			)
+	print(f"{needRestartPref=}")
+	for prop, value in needRestartPref:
+		print(prop, prop.v, value)
+		if prop.v != value:
 			return True
 	return False
 
 
 def checkMainWinItems() -> None:
-	conf.mainWinItems = checkEnabledNamesItems(
-		conf.mainWinItems,
-		conf.mainWinItemsDefault,
+	conf.mainWinItems.v = checkEnabledNamesItems(
+		conf.mainWinItems.v,
+		conf.mainWinItems.default,
 	)
 	# TODO: make sure there are no duplicates, by removing duplicates
 
 
 def checkWinControllerButtons() -> None:
-	conf.winControllerButtons = checkEnabledNamesItems(
-		conf.winControllerButtons,
-		conf.winControllerButtonsDefault,
+	conf.winControllerButtons.v = checkEnabledNamesItems(
+		conf.winControllerButtons.v,
+		conf.winControllerButtons.default,
 	)
 	# "sep" button can have duplicates
 
@@ -388,7 +397,7 @@ def getActiveMonthCalParams():
 	return list(
 		zip(
 			calTypes.active,
-			conf.mcalTypeParams,
+			conf.mcalTypeParams.v,
 			strict=False,
 		),
 	)
@@ -482,28 +491,6 @@ def updateFocusTime(*_args):
 	focusTime = perf_counter()
 
 
-def evalParam(param: str) -> Any:
-	parts = param.split(".")
-	if not parts:
-		raise ValueError(f"invalid {param = }")
-
-	if len(parts) == 1:
-		return getattr(conf, param)
-
-	if parts[0] == "locale_man":
-		value = locale_man
-		parts = parts[1:]
-	else:
-		value = conf
-	for part in parts:
-		if isinstance(value, dict):
-			value = value[part]
-		else:
-			value = getattr(value, part)
-
-	return value
-
-
 # --------------------------------------------------------
 
 loadConf()
@@ -511,10 +498,10 @@ loadConf()
 if updateLocalTimezoneHistory():
 	saveConf()
 
-needRestartPref = {
-	name: evalParam(name) for name in getParamNamesWithFlag(NEED_RESTART)
-}
-needRestartPref.update(locale_man.getNeedRestartParams())
+
+needRestartPref: list[tuple[Property, Any]] = [
+	(prop, prop.v) for prop in conf.needRestartList + locale_man.getNeedRestartParams()
+]
 
 # ----------------------------------
 

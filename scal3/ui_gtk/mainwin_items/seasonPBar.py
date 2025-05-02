@@ -32,7 +32,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		name, frac = getSeasonNamePercentFromJd(
 			ui.cells.current.jd,
-			conf.seasonPBar_southernHemisphere,
+			conf.seasonPBar_southernHemisphere.v,
 		)
 		if rtl:
 			percent = f"{int(frac * 100)}%"
@@ -56,8 +56,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		# ----
 		self.optionsWidget = HBox()
 		prefItem = CheckPrefItem(
-			conf,
-			"seasonPBar_southernHemisphere",
+			prop=conf.seasonPBar_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onDateChange,

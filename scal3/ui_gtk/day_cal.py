@@ -64,6 +64,8 @@ from scal3.ui_gtk.utils import pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+	from scal3.property import Property
+
 __all__ = ["DayCal"]
 
 
@@ -71,30 +73,31 @@ class DayCal(gtk.DrawingArea, CalBase):
 	objName = "dayCal"
 	desc = _("Day Calendar")
 	itemListCustomizable = False
-	backgroundColorParam = ""
-	dayParamsParam = ""
-	monthParamsParam = ""
-	weekdayParamsParam = ""
-	weekdayLocalizeParam = ""
-	weekdayAbbreviateParam = ""
-	weekdayUppercaseParam = ""
 
-	widgetButtonsEnableParam = ""
-	widgetButtonsSizeParam = ""
-	widgetButtonsOpacityParam = ""
-	widgetButtonsParam = ""
+	backgroundColor: Property | None = None
+	dayParams: Property | None = None
+	monthParams: Property | None = None
+	weekdayParams: Property | None = None
+	weekdayLocalize: Property | None = None
+	weekdayAbbreviate: Property | None = None
+	weekdayUppercase: Property | None = None
 
-	navButtonsEnableParam = ""
-	navButtonsGeoParam = ""
-	navButtonsOpacityParam = ""
+	widgetButtonsEnable: Property | None = None
+	widgetButtonsSize: Property | None = None
+	widgetButtonsOpacity: Property | None = None
+	widgetButtons: Property | None = None
 
-	eventIconSizeParam = ""
-	eventTotalSizeRatioParam = ""
+	navButtonsEnable: Property | None = None
+	navButtonsGeo: Property | None = None
+	navButtonsOpacity: Property | None = None
 
-	seasonPieEnableParam = ""
-	seasonPieGeoParam = ""
-	seasonPieColorsParam: dict | None = None
-	seasonPieTextColorParam = ""
+	eventIconSize: Property | None = None
+	eventTotalSizeRatio: Property | None = None
+
+	seasonPieEnable: Property | None = None
+	seasonPieGeo: Property | None = None
+	seasonPieColors: dict[Property] | None = None
+	seasonPieTextColor: Property | None = None
 
 	myKeys = CalBase.myKeys + (
 		"up",
@@ -113,12 +116,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 	)
 
 	def getBackgroundColor(self):
-		if self.backgroundColorParam:
-			return getattr(conf, self.backgroundColorParam)
-		return conf.bgColor
+		if self.backgroundColor:
+			return self.backgroundColor.v
+		return conf.bgColor.v
 
-	def getDayParams(self, allCalTypes=False):
-		params = getattr(conf, self.dayParamsParam)
+	def getDayParams(self, allCalTypes=False) -> list[dict]:
+		if not self.dayParams:
+			return []
+		params = self.dayParams.v
 		if allCalTypes:
 			n = len(calTypes.active)
 			while len(params) < n:
@@ -127,13 +132,15 @@ class DayCal(gtk.DrawingArea, CalBase):
 						"enable": False,
 						"pos": (0, 0),
 						"font": ui.getFont(3.0),
-						"color": conf.textColor,
+						"color": conf.textColor.v,
 					},
 				)
 		return params
 
-	def getMonthParams(self, allCalTypes=False):
-		params = getattr(conf, self.monthParamsParam)
+	def getMonthParams(self, allCalTypes=False) -> list[dict]:
+		if not self.monthParams:
+			return []
+		params = self.monthParams.v
 		if allCalTypes:
 			n = len(calTypes.active)
 			while len(params) < n:
@@ -142,29 +149,21 @@ class DayCal(gtk.DrawingArea, CalBase):
 						"enable": False,
 						"pos": (0, 0),
 						"font": ui.getFont(2.0),
-						"color": conf.textColor,
+						"color": conf.textColor.v,
 					},
 				)
 		return params
 
 	def getWeekDayParams(self):
-		return getattr(conf, self.weekdayParamsParam)
+		return self.weekdayParams.v
 
 	def getWidgetButtons(self):
-		if not self.widgetButtonsEnableParam:
+		if not self.widgetButtonsEnable:
 			return []
-		if not getattr(conf, self.widgetButtonsEnableParam):
+		if not self.widgetButtonsEnable.v:
 			return []
-		iconSize = (
-			getattr(conf, self.widgetButtonsSizeParam)
-			if self.widgetButtonsSizeParam
-			else 16
-		)
-		opacity = (
-			getattr(conf, self.widgetButtonsOpacityParam)
-			if self.widgetButtonsOpacityParam
-			else 1.0
-		)
+		iconSize = self.widgetButtonsSize.v if self.widgetButtonsSize else 16
+		opacity = self.widgetButtonsOpacity.v if self.widgetButtonsOpacity else 1.0
 		return [
 			Button(
 				imageName=d.get("imageName", ""),
@@ -174,12 +173,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 				autoDir=d["autoDir"],
 				iconName=d.get("iconName", ""),
 				iconSize=iconSize,
-				# d.get("iconSize", getattr(conf, self.widgetButtonsSizeParam)),
+				# d.get("iconSize", self.widgetButtonsSize.v),
 				xalign=d.get("xalign", "left"),
 				yalign=d.get("yalign", "top"),
 				opacity=opacity,
 			)
-			for d in getattr(conf, self.widgetButtonsParam)
+			for d in self.widgetButtons.v
 		]
 
 	navButtonsRaw = [
@@ -216,21 +215,21 @@ class DayCal(gtk.DrawingArea, CalBase):
 	]
 
 	def getNavButtons(self):
-		if not self.navButtonsEnableParam:
+		if not self.navButtonsEnable:
 			return []
 
-		if not getattr(conf, self.navButtonsEnableParam):
+		if not self.navButtonsEnable.v:
 			return []
 
-		if not self.navButtonsGeoParam:
+		if not self.navButtonsGeo:
 			return []
 
 		buttonsRaw = self.navButtonsRaw
-		geo = getattr(conf, self.navButtonsGeoParam)
+		geo = self.navButtonsGeo.v
 		if rtl and geo["auto_rtl"]:
 			buttonsRaw = self.navButtonsRTLRaw
 
-		opacity = getattr(conf, self.navButtonsOpacityParam)
+		opacity = self.navButtonsOpacity.v
 		iconSize = geo["size"]
 		spacing = geo["spacing"]
 		xc, y = geo["pos"]
@@ -242,7 +241,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		x_start = xc - totalWidth / 2
 		x_delta = iconSize + spacing
 
-		rectangleColor = list(conf.textColor[:3]) + [opacity * 0.7]
+		rectangleColor = list(conf.textColor.v[:3]) + [opacity * 0.7]
 
 		return [
 			SVGButton(
@@ -322,7 +321,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pageWidget = VBox(spacing=5)
 			# ---
 			dayWidget = CalTypeParamWidget(
-				self.dayParamsParam,
+				self.dayParams,
 				self,
 				dayParams[index],
 				sgroupLabel=sgroupLabel,
@@ -336,7 +335,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(pageWidget, dayWidget)
 			# ---
 			monthWidget = CalTypeParamWidget(
-				self.monthParamsParam,
+				self.monthParams,
 				self,
 				monthParams[index],
 				sgroupLabel=sgroupLabel,
@@ -416,10 +415,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		buttons1 = self.buttons1 = []
 		buttons2 = []
 		# ----
-		if self.backgroundColorParam:
+		if self.backgroundColor:
 			prefItem = ColorPrefItem(
-				conf,
-				self.backgroundColorParam,
+				prop=self.backgroundColor,
 				live=True,
 				onChangeFunc=self.queue_draw,
 			)
@@ -443,21 +441,18 @@ class DayCal(gtk.DrawingArea, CalBase):
 		subPages.append(page)
 		buttons2.append(newSubPageButton(self, page))
 		# ---
-		if self.widgetButtonsEnableParam:
+		if self.widgetButtonsEnable:
 			prefItem = CheckPrefItem(
-				conf,
-				self.widgetButtonsEnableParam,
+				prop=self.widgetButtonsEnable,
 				label=_("Widget Buttons"),
 				live=True,
 				onChangeFunc=self.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
-		if self.widgetButtonsSizeParam:
+		if self.widgetButtonsSize:
 			prefItem = SpinPrefItem(
-				conf,
-				self.widgetButtonsSizeParam,
-				_min=0,
-				_max=99,
+				prop=self.widgetButtonsSize,
+				bounds=(0, 99),
 				digits=1,
 				step=1,
 				label=_("Widget Buttons Size"),
@@ -465,12 +460,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 				onChangeFunc=self.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
-		if self.widgetButtonsOpacityParam:
+		if self.widgetButtonsOpacity:
 			prefItem = SpinPrefItem(
-				conf,
-				self.widgetButtonsOpacityParam,
-				_min=0,
-				_max=1,
+				prop=self.widgetButtonsOpacity,
+				bounds=(0, 1),
 				digits=2,
 				step=0.1,
 				label=_("Widget Buttons Opacity"),
@@ -478,10 +471,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 				onChangeFunc=self.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
-		if self.navButtonsEnableParam:
+		if self.navButtonsEnable:
 			prefItem = CheckPrefItem(
-				conf,
-				self.navButtonsEnableParam,
+				prop=self.navButtonsEnable,
 				label=_("Navigation buttons"),
 				live=True,
 				onChangeFunc=self.queue_draw,
@@ -489,12 +481,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(pageWidget, prefItem.getWidget())
 		pageWidget.show_all()
 		# -----
-		if self.weekdayParamsParam:
+		if self.weekdayParams:
 			params = self.getWeekDayParams()
 			pageWidget = VBox(spacing=5)
 			# ---
 			weekdayWidget = TextParamWidget(
-				self.weekdayParamsParam,
+				self.weekdayParams,
 				self,
 				params,
 				# sgroupLabel=None,
@@ -504,28 +496,25 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, weekdayWidget)
 			# ---
-			if self.weekdayLocalizeParam and langSh != "en":
+			if self.weekdayLocalize and langSh != "en":
 				prefItem = CheckPrefItem(
-					conf,
-					self.weekdayLocalizeParam,
+					prop=self.weekdayLocalize,
 					label=_("Localize"),
 					live=True,
 					onChangeFunc=self.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
-			if self.weekdayAbbreviateParam:
+			if self.weekdayAbbreviate:
 				prefItem = CheckPrefItem(
-					conf,
-					self.weekdayAbbreviateParam,
+					prop=self.weekdayAbbreviate,
 					label=_("Abbreviate"),
 					live=True,
 					onChangeFunc=self.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
-			if langHasUppercase and self.weekdayUppercaseParam:
+			if langHasUppercase and self.weekdayUppercase:
 				prefItem = CheckPrefItem(
-					conf,
-					self.weekdayUppercaseParam,
+					prop=self.weekdayUppercase,
 					label=_("Uppercase"),
 					live=True,
 					onChangeFunc=self.queue_draw,
@@ -561,33 +550,31 @@ class DayCal(gtk.DrawingArea, CalBase):
 		subPages.append(page)
 		buttons2.append(newSubPageButton(self, page))
 		# ---
-		prefItem = SpinPrefItem(
-			conf,
-			self.eventIconSizeParam,
-			5,
-			999,
-			digits=1,
-			step=1,
-			label=_("Icon Size"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		)
-		pack(vbox, prefItem.getWidget())
+		if self.eventIconSize:
+			prefItem = SpinPrefItem(
+				prop=self.eventIconSize,
+				bounds=(5, 999),
+				digits=1,
+				step=1,
+				label=_("Icon Size"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(vbox, prefItem.getWidget())
 		# ---
-		prefItem = SpinPrefItem(
-			conf,
-			self.eventTotalSizeRatioParam,
-			0,
-			1,
-			digits=3,
-			step=0.01,
-			label=_("Total Size Ratio"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		)
-		pack(vbox, prefItem.getWidget())
+		if self.eventTotalSizeRatio:
+			prefItem = SpinPrefItem(
+				prop=self.eventTotalSizeRatio,
+				bounds=(0, 1),
+				digits=3,
+				step=0.01,
+				label=_("Total Size Ratio"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(vbox, prefItem.getWidget())
 		# ----
-		if self.seasonPieEnableParam:
+		if self.seasonPieEnable:
 			pageWidget = VBox(spacing=5)
 			page = StackPage()
 			page.pageWidget = pageWidget
@@ -599,8 +586,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			buttons2.append(newSubPageButton(self, page))
 			# ---
 			prefItem = CheckPrefItem(
-				conf,
-				self.seasonPieEnableParam,
+				prop=self.seasonPieEnable,
 				label=_("Season Pie"),
 				live=True,
 				onChangeFunc=self.queue_draw,
@@ -622,8 +608,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				label = gtk.Label(label=_(season))
 				label.set_xalign(0)
 				prefItem = ColorPrefItem(
-					conf,
-					self.seasonPieColorsParam[season],
+					prop=self.seasonPieColors[season],
 					useAlpha=True,
 					live=True,
 					onChangeFunc=self.queue_draw,
@@ -740,15 +725,18 @@ class DayCal(gtk.DrawingArea, CalBase):
 		x0: int,
 		y0: int,
 	):
+		if not self.eventTotalSizeRatio:
+			return
+		assert self.eventIconSize
 		iconList = c.getDayEventIcons()
 		if not iconList:
 			return
 		iconsN = len(iconList)
 
-		maxTotalSize = getattr(conf, self.eventTotalSizeRatioParam) * min(w, h)
+		maxTotalSize = self.eventTotalSizeRatio.v * min(w, h)
 		sideCount = isqrt(iconsN - 1) + 1
 		iconSize = min(
-			getattr(conf, self.eventIconSizeParam),
+			self.eventIconSize.v,
 			maxTotalSize / sideCount,
 		)
 		totalSize = sideCount * iconSize
@@ -792,35 +780,35 @@ class DayCal(gtk.DrawingArea, CalBase):
 			yield calType, params
 
 	def getWeekdayLocalize(self) -> bool:
-		if self.weekdayLocalizeParam:
-			return getattr(conf, self.weekdayLocalizeParam)
+		if self.weekdayLocalize:
+			return self.weekdayLocalize.v
 		return True
 
 	def getWeekdayAbbreviate(self) -> bool:
-		if self.weekdayAbbreviateParam:
-			return getattr(conf, self.weekdayAbbreviateParam)
+		if self.weekdayAbbreviate:
+			return self.weekdayAbbreviate.v
 		return False
 
 	def drawSeasonPie(self, cr, w, h):
-		if not self.seasonPieEnableParam:
+		if not self.seasonPieEnable:
 			return
 
-		if not getattr(conf, self.seasonPieEnableParam):
+		if not self.seasonPieEnable.v:
 			return
 
-		assert self.seasonPieGeoParam
-		assert self.seasonPieColorsParam
+		assert self.seasonPieGeo
+		assert self.seasonPieColors
 
 		seasonName, seasonFrac = getSeasonNamePercentFromJd(
 			self.getCell().jd,
-			conf.seasonPBar_southernHemisphere,
+			conf.seasonPBar_southernHemisphere.v,
 		)
 
-		geo = getattr(conf, self.seasonPieGeoParam)
-		color = getattr(conf, self.seasonPieColorsParam[seasonName])
-		textColor = getattr(conf, self.seasonPieTextColorParam)
+		geo = self.seasonPieGeo.v
+		color = self.seasonPieColors[seasonName].v
+		textColor = self.seasonPieTextColor.v
 		if not textColor:
-			textColor = conf.textColor
+			textColor = conf.textColor.v
 
 		size = geo["size"]
 		radius = size / 2
@@ -901,7 +889,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			fontw, fonth = layout.get_pixel_size()
 			if calType == calTypes.primary and c.holiday:
-				setColor(cr, conf.holidayColor)
+				setColor(cr, conf.holidayColor.v)
 			else:
 				setColor(cr, params["color"])
 			font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
@@ -921,7 +909,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
-		if self.weekdayParamsParam:
+		if self.weekdayParams:
 			params = self.getWeekDayParams()
 			if params.get("enable", True):
 				text = core.getWeekDayAuto(
@@ -932,11 +920,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 				)
 				if (
 					langHasUppercase
-					and self.weekdayUppercaseParam
-					and getattr(
-						conf,
-						self.weekdayUppercaseParam,
-					)
+					and self.weekdayUppercase
+					and self.weekdayUppercase.v
 				):
 					text = text.upper()
 				daynum = newTextLayout(
