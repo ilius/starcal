@@ -5,7 +5,7 @@ __all__ = ["MyProgressBar"]
 
 
 def MyProgressBar():
-	if conf.oldStyleProgressBar:
+	if conf.oldStyleProgressBar.v:
 		return OldStyleProgressBar()
 	return NewStyleProgressBar()
 

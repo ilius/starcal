@@ -20,7 +20,7 @@ from scal3.ui import conf
 
 log = logger.get()
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import core, event_lib, ui
 from scal3.event_lib import state as event_state
@@ -40,6 +40,9 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import toStr
 
+if TYPE_CHECKING:
+	from scal3.property import Property
+
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
 
@@ -51,10 +54,12 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def __init__(
 		self,
-		eventSepParam: str = "",
-		justificationParam: str = "",
-		fontParams: tuple[str, str] | None = None,
-		timeFontParams: tuple[str, str] | None = None,
+		eventSepParam: Property | None = None,
+		justificationParam: Property | None = None,
+		fontEnableParam: Property | None = None,
+		fontParam: Property | None = None,
+		timeFontEnableParam: Property | None = None,
+		timeFontParam: Property | None = None,
 		styleClass: str = "",
 		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
 	):
@@ -79,12 +84,14 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		self.eventSepParam = eventSepParam
 		self.justificationParam = justificationParam
-		self.fontParams = fontParams
-		self.timeFontParams = timeFontParams
+		self.fontEnableParam = fontEnableParam
+		self.fontParam = fontParam
+		self.timeFontEnableParam = timeFontEnableParam
+		self.timeFontParam = timeFontParam
 		# ---
-		if fontParams:
+		if fontParam:
 			if not styleClass:
-				raise ValueError(f"{fontParams=}, {styleClass=}")
+				raise ValueError(f"{fontParam=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
 		# ---
 		self.occurOffsets = []
@@ -97,21 +104,21 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def updateTimeFont(self):
 		font = ui.getFont(bold=True)  # bold by default
-		if self.timeFontParams:
-			enableParam, fontParam = self.timeFontParams
-			if getattr(conf, enableParam):
-				font = getattr(conf, fontParam)
+		if self.timeFontParam:
+			assert self.timeFontEnableParam
+			if self.timeFontEnableParam.v:
+				font = self.timeFontParam.v
 		self.timeTag.set_property("font", gfontEncode(font))
 
 	def getEventSep(self):
 		if self.eventSepParam:
-			return getattr(conf, self.eventSepParam)
+			return self.eventSepParam.v
 		return "\n\n"
 
 	def updateJustification(self):
 		if not self.justificationParam:
 			return
-		value = getattr(conf, self.justificationParam)
+		value = self.justificationParam.v
 		self.set_justification(ud.justificationByName[value])
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -129,27 +136,26 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		if self.justificationParam:
 			prefItem = JustificationPrefItem(
-				conf,
-				self.justificationParam,
+				prop=self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
 			)
 			pack(optionsWidget, prefItem.getWidget())
 		# ---
-		if self.fontParams:
-			enableParam, fontParam = self.fontParams
+		if self.fontParam:
+			assert self.fontEnableParam
 			prefItem = CheckFontPrefItem(
-				CheckPrefItem(conf, enableParam, label=_("Font")),
-				FontPrefItem(conf, fontParam),
+				CheckPrefItem(prop=self.fontEnableParam, label=_("Font")),
+				FontPrefItem(prop=self.fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
 			pack(optionsWidget, prefItem.getWidget())
-		if self.timeFontParams:
-			enableParam, fontParam = self.timeFontParams
+		if self.timeFontParam:
+			assert self.timeFontEnableParam
 			prefItem = CheckFontPrefItem(
-				CheckPrefItem(conf, enableParam, label=_("Time Font")),
-				FontPrefItem(conf, fontParam),
+				CheckPrefItem(self.timeFontEnableParam, label=_("Time Font")),
+				FontPrefItem(self.timeFontParam),
 				live=True,
 				onChangeFunc=self.updateTimeFont,
 			)
@@ -157,8 +163,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		if self.eventSepParam:
 			prefItem = TextPrefItem(
-				conf,
-				self.eventSepParam,
+				prop=self.eventSepParam,
 				label=_("Event Text Separator"),
 				live=True,
 				onChangeFunc=self.onEventSepChange,
@@ -172,10 +177,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def getCSS(self) -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
 
-		enableParam, fontParam = self.fontParams
-		if not getattr(conf, enableParam):
+		if not self.fontParam:
 			return ""
-		font = getattr(conf, fontParam)
+		if self.fontEnableParam and not self.fontEnableParam.v:
+			return ""
+		font = self.fontParam.v
 		if not font:
 			return ""
 		return "." + self.styleClass + " " + cssTextStyle(font=font)
@@ -299,7 +305,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
 			icon,
-			size=conf.rightPanelEventIconSize,
+			size=conf.rightPanelEventIconSize.v,
 		)
 		self.textbuff.insert_pixbuf(endIter, pixbuf)
 
@@ -539,7 +545,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		self.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
-		height = conf.eventViewMaxHeight
+		height = conf.eventViewMaxHeight.v
 		return height, height
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -550,10 +556,8 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		optionsWidget = self._item.getOptionsWidget()
 		# ---
 		prefItem = SpinPrefItem(
-			conf,
-			"eventViewMaxHeight",
-			1,
-			9999,
+			prop=conf.eventViewMaxHeight,
+			bounds=(1, 9999),
 			digits=1,
 			step=1,
 			label=_("Maximum Height"),
@@ -579,7 +583,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 	def __init__(self, abbreviateWeekDays=False):
 		self.initVars()
 		self.abbreviateWeekDays = abbreviateWeekDays
-		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cells.current.jd)  # FIXME
+		self.absWeekNumber = core.getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
 		gtk.TreeView.__init__(self)
 		self.set_headers_visible(False)
 		self.ls = gtk.ListStore(

@@ -275,7 +275,7 @@ class PlayerBox(gtk.Box):
 		self.playPauseBut.add(
 			imageFromFile(
 				"media-playback-start.svg",
-				size=conf.toolbarIconSize,
+				size=conf.toolbarIconSize.v,
 			),
 		)
 		self.playPauseBut.connect("clicked", self.playPause)
@@ -285,7 +285,7 @@ class PlayerBox(gtk.Box):
 		stopBut.add(
 			imageFromFile(
 				"media-playback-stop.svg",
-				size=conf.toolbarIconSize,
+				size=conf.toolbarIconSize.v,
 			),
 		)
 		stopBut.connect("clicked", self.stop)
@@ -360,7 +360,7 @@ class PlayerBox(gtk.Box):
 			self.seekAdj.value = 100
 			# self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
 			# 	"media-playback-start.svg",
-			# 	size=conf.toolbarIconSize,
+			# 	size=conf.toolbarIconSize.v,
 			# ))
 		else:
 			self.mplayer.seek(int(self.seekAdj.value), 1)
@@ -395,7 +395,7 @@ class PlayerBox(gtk.Box):
 		self.playPauseBut.get_child().set_from_pixbuf(
 			pixbufFromFile(
 				imageName,
-				size=conf.toolbarIconSize,
+				size=conf.toolbarIconSize.v,
 			),
 		)
 		playing = bool(self.mplayer.mplayerIn)
@@ -408,7 +408,7 @@ class PlayerBox(gtk.Box):
 		button.get_child().set_from_pixbuf(
 			pixbufFromFile(
 				"media-playback-start.svg",
-				size=conf.toolbarIconSize,
+				size=conf.toolbarIconSize.v,
 			),
 		)
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
@@ -437,7 +437,7 @@ class PlayerBox(gtk.Box):
 		# self.mplayer.play(path)
 		# self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
 		# 	"media-playback-pause.svg",
-		# 	size=conf.toolbarIconSize,
+		# 	size=conf.toolbarIconSize.v,
 		# ))
 		# self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		# self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)

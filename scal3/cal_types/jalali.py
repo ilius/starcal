@@ -21,6 +21,7 @@
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
 from scal3 import logger
+from scal3.property import Property
 
 __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 
@@ -31,7 +32,7 @@ name = "jalali"
 desc = "Persian"
 origLang = "fa"
 
-monthNameMode = 0
+monthNameMode = Property(0)
 options = (
 	(
 		"monthNameMode",
@@ -40,6 +41,9 @@ options = (
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 )
+confParams = {
+	"monthNameMode": monthNameMode,
+}
 
 
 monthNameVars = (
@@ -130,11 +134,11 @@ monthNameVars = (
 
 
 def getMonthName(m, y=None):  # noqa: ARG001
-	return monthNameVars[monthNameMode][0][m - 1]
+	return monthNameVars[monthNameMode.v][0][m - 1]
 
 
 def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
-	names = monthNameVars[monthNameMode]
+	names = monthNameVars[monthNameMode.v]
 	fullEn = names[0][m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -169,11 +173,11 @@ from scal3.path import confDir, sysConfDir
 
 # Here load user options from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(__name__, sysConfPath)
+loadSingleConfig(__name__, sysConfPath, confParams)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(__name__, confPath)
+loadSingleConfig(__name__, confPath, confParams)
 
 
 def save():
@@ -181,7 +185,7 @@ def save():
 	saveSingleConfig(
 		__name__,
 		confPath,
-		("monthNameMode",),
+		confParams,
 	)
 
 

@@ -156,7 +156,7 @@ class CalBase(CustomizableCalObj):
 		if dtype == "application/x-color":
 			# selection.get_text() is None
 			text = selection.data
-			conf.bgColor = (
+			conf.bgColor.v = (
 				ord(text[1]),
 				ord(text[3]),
 				ord(text[5]),

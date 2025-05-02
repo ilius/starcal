@@ -270,7 +270,7 @@ def labelIconButton(
 	size: gtk.IconSize = gtk.IconSize.BUTTON,
 ):
 	button = gtk.Button()
-	if conf.buttonIconEnable:
+	if conf.buttonIconEnable.v:
 		button.add(
 			newButtonImageBox(
 				label,
@@ -293,9 +293,9 @@ def labelImageButton(
 	spacing: int = 10,
 ):
 	button = gtk.Button()
-	if conf.buttonIconEnable or not label:
+	if conf.buttonIconEnable.v or not label:
 		if size == 0:
-			size = conf.buttonIconSize
+			size = int(conf.buttonIconSize.v)
 		button.add(
 			newButtonImageBox(
 				label,
@@ -400,11 +400,11 @@ def dialog_add_button(
 	b = dialog.add_button(label, res)
 	if label:
 		b.set_label(label)
-	if conf.buttonIconEnable:
+	if conf.buttonIconEnable.v:
 		b.set_always_show_image(True)
 		# FIXME: how to get rid of set_image calls?
 		useIconName = bool(iconName)
-		if conf.useSystemIcons and imageName and not iconName:
+		if conf.useSystemIcons.v and imageName and not iconName:
 			iconName = iconNameByImageName.get(imageName, "")
 			useIconName = bool(iconName)
 		if useIconName:
@@ -415,7 +415,7 @@ def dialog_add_button(
 			b.set_image(
 				imageFromFile(
 					imageName,
-					size=conf.buttonIconSize,
+					size=conf.buttonIconSize.v,
 				),
 			)
 	if onClick:
@@ -483,7 +483,7 @@ def showMsg(
 			hbox,
 			imageFromFile(
 				imageName,
-				size=conf.messageDialogIconSize,
+				size=conf.messageDialogIconSize.v,
 			),
 		)
 	label = gtk.Label(label=msg)
@@ -521,7 +521,7 @@ def showInfo(msg, **kwargs):
 
 
 def openWindow(win):
-	# win.set_keep_above(conf.winKeepAbove)
+	# win.set_keep_above(conf.winKeepAbove.v)
 	win.set_keep_above(True)
 	win.present()
 
@@ -554,7 +554,7 @@ def get_menu_width(menu):
 	items = menu.get_children()
 	if items:
 		mw = max(item.get_preferred_size()[1].width for item in items)
-		return mw + conf.cellMenuXOffset
+		return mw + conf.cellMenuXOffset.v
 	return 0
 
 

@@ -381,9 +381,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
-		fillColor(cr, conf.bgColor)
-		textColor = conf.textColor
-		gridColor = conf.mcalGridColor  # FIXME
+		fillColor(cr, conf.bgColor.v)
+		textColor = conf.textColor.v
+		gridColor = conf.mcalGridColor.v  # FIXME
 		# ---
 		# classBounds = self.term.classTimeBounds
 		titles, tmfactors = self.term.getClassBoundsFormatted()

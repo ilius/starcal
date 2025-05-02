@@ -70,7 +70,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 	def __init__(self, controller):
 		gtk.EventBox.__init__(self)
-		self.set_border_width(conf.winControllerBorder)
+		self.set_border_width(conf.winControllerBorder.v)
 		self.initVars()
 		# ---
 		self.controller = controller
@@ -89,10 +89,10 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			pixbufFromFile(
 				join(
 					"wm",
-					conf.winControllerTheme,
+					conf.winControllerTheme.v,
 					imName + ".svg",
 				),
-				conf.winControllerIconSize,
+				conf.winControllerIconSize.v,
 			),
 		)
 
@@ -107,7 +107,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	def setPressed(self):
 		self.setImage(
 			self.imageNamePress
-			if conf.winControllerPressState
+			if conf.winControllerPressState.v
 			else self.imageNameFocus,
 		)
 
@@ -246,16 +246,16 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		gtk.Box.__init__(
 			self,
 			orientation=gtk.Orientation.HORIZONTAL,
-			spacing=conf.winControllerSpacing,
+			spacing=conf.winControllerSpacing.v,
 		)
-		self.set_spacing(conf.winControllerSpacing)
+		self.set_spacing(conf.winControllerSpacing.v)
 		self.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
 		self.light = ud.hasLightTheme(win)
 		# -----------
-		for bname, enable in conf.winControllerButtons:
+		for bname, enable in conf.winControllerButtons.v:
 			button = self.buttonClassDict[bname](self)
 			button.enable = enable
 			self.appendItem(button)
@@ -281,7 +281,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
-		conf.winControllerButtons = self.getItemsData()
+		conf.winControllerButtons.v = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
@@ -295,8 +295,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		optionsWidget = VBox()
 		# ----
 		prefItem = ComboTextPrefItem(
-			conf,
-			"winControllerTheme",
+			prop=conf.winControllerTheme,
 			items=ui.winControllerThemeList,
 			label=_("Theme"),
 			live=True,
@@ -305,10 +304,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"winControllerIconSize",
-			5,
-			128,
+			prop=conf.winControllerIconSize,
+			bounds=(5, 128),
 			digits=1,
 			step=1,
 			label=_("Icon Size"),
@@ -318,10 +315,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"winControllerBorder",
-			0,
-			99,
+			prop=conf.winControllerBorder,
+			bounds=(0, 99),
 			digits=1,
 			step=1,
 			label=_("Buttons Border"),
@@ -331,10 +326,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"winControllerSpacing",
-			0,
-			99,
+			prop=conf.winControllerSpacing,
+			bounds=(0, 99),
 			digits=1,
 			step=1,
 			label=_("Space between buttons"),
@@ -344,8 +337,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		prefItem = CheckPrefItem(
-			conf,
-			"winControllerPressState",
+			prop=conf.winControllerPressState,
 			label=_("Change icon on button press"),
 			live=True,
 		)
@@ -356,7 +348,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		return optionsWidget
 
 	def updateTheme(self):  # noqa: PLR6301
-		name = conf.winControllerTheme
+		name = conf.winControllerTheme.v
 		dirPath = join(svgDir, "wm", name)
 		fileSet = set(os.listdir(dirPath))
 		if fileSet == themeFileSet:
@@ -375,9 +367,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 
 	def onButtonBorderChange(self) -> None:
 		for item in self.items:
-			item.set_border_width(conf.winControllerBorder)
+			item.set_border_width(conf.winControllerBorder.v)
 		self.updateButtons()
 
 	def onButtonPaddingChange(self) -> None:
-		self.set_spacing(conf.winControllerSpacing)
+		self.set_spacing(conf.winControllerSpacing.v)
 		self.updateButtons()

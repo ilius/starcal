@@ -20,7 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-import typing
 from datetime import datetime
 from time import time as now
 
@@ -61,7 +60,7 @@ __all__ = [
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
 
-TZ: typing.TypeAlias = "mytz.TimeZone | None"
+type TZ = mytz.TimeZone | None
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone

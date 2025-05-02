@@ -68,13 +68,13 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 	pluginsTextSep = " <B>–</B> "
 	pluginsTextPerLine = True  # description of each day in one line
 	# ---------------------
-	bgColor = rgbToHtml(*conf.bgColor)
-	inactiveColor = rgbToHtml(*colorComposite(conf.inactiveColor, conf.bgColor))
-	borderColor = rgbToHtml(*colorComposite(conf.borderColor, conf.bgColor))
-	borderTextColor = rgbToHtml(*conf.borderTextColor)
-	textColor = rgbToHtml(*conf.textColor)
-	holidayColor = rgbToHtml(*conf.holidayColor)
-	colors = [rgbToHtml(*x["color"]) for x in conf.mcalTypeParams]
+	bgColor = rgbToHtml(*conf.bgColor.v)
+	inactiveColor = rgbToHtml(*colorComposite(conf.inactiveColor.v, conf.bgColor.v))
+	borderColor = rgbToHtml(*colorComposite(conf.borderColor.v, conf.bgColor.v))
+	borderTextColor = rgbToHtml(*conf.borderTextColor.v)
+	textColor = rgbToHtml(*conf.textColor.v)
+	holidayColor = rgbToHtml(*conf.holidayColor.v)
+	colors = [rgbToHtml(*x["color"]) for x in conf.mcalTypeParams.v]
 	if locale_man.rtl:
 		DIR = "RTL"
 	else:
@@ -100,7 +100,7 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 		text += "\n".join(
 			[
 				f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
-				f'BORDER={int(conf.mcalGrid)} BORDERCOLOR="#000000"',
+				f'BORDER={int(conf.mcalGrid.v)} BORDERCOLOR="#000000"',
 				"\t\tCELLPADDING=4 CELLSPACING=0>",
 				"\t\t<TR VALIGN=TOP>\n",
 			],
@@ -137,7 +137,7 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
 					except IndexError:
 						continue
 					try:
-						params = conf.mcalTypeParams[calTypeIndex]
+						params = conf.mcalTypeParams.v[calTypeIndex]
 					except IndexError:
 						continue
 					day = _(cell.dates[calType][2], calType)

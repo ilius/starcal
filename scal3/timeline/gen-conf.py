@@ -11,27 +11,35 @@ sys.path.insert(0, rootDir)
 
 from scal3.timeline import params
 
-all_names = sorted([p.v3Name for p in params.confParamsData])
 
+def genParamDict(names: list[str]) -> str:
+	return "{" + "\n".join([f"\t{name!r}: {name}," for name in names]) + "\n}\n"
+
+
+confParams = sorted([p.v3Name for p in params.confParamsData])
+all_names = sorted(confParams + ["confParams"])
 
 output = io.StringIO()
 
 output.write("from __future__ import annotations\n\n")
 output.write("from os.path import join\n")
 output.write("from scal3.path import sourceDir\n\n")
+output.write("from scal3.property import Property\n\n")
 output.write(f"__all__ = {all_names!r}\n\n")
 
 for p in params.confParamsData:
 	assert p.default is not params.NOT_SET
 	value = p.default
 	if p.type.startswith("Color"):
-		output.write(f"{p.v3Name} = {value!r}" + "\n")
+		output.write(f"{p.v3Name} = Property({value!r})" + "\n")
 		continue
-	output.write(f"{p.v3Name}: {p.type} = {value!r}" + "\n")
+	output.write(f"{p.v3Name}: Property[{p.type}] = Property({value!r})" + "\n")
 
+output.write("\n\n")
+
+output.write("confParams = " + genParamDict(confParams))
 
 output.write("\n")
-# output.write("statusIconImageDefault = statusIconImage\n")
 
 with open(join(rootDir, "scal3/timeline/conf.py"), "w", encoding="utf-8") as file:
 	file.write(output.getvalue())

@@ -33,7 +33,6 @@ from scal3.path import (
 	confDir,
 )
 from scal3.ui import conf
-from scal3.ui.params import DAYCAL_WIN_LIVE, getParamNamesWithFlag
 from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
@@ -48,16 +47,17 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.cell import Cell
+	from scal3.property import Property
 
 __all__ = ["DayCalWindow"]
 
 confPathLive = join(confDir, "ui-daycal-live.json")
 
-confParamsLive = getParamNamesWithFlag(DAYCAL_WIN_LIVE)
+confParamsLive = conf.dayCalWinParamsLive
 
 lastLiveConfChangeTime = 0
 
-loadSingleConfig(conf, confPathLive)
+loadSingleConfig(conf, confPathLive, confParamsLive)
 
 
 def saveLiveConf():  # FIXME: rename to saveConfLive
@@ -101,7 +101,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# --
 		self.stack = MyStack(
 			headerSpacing=10,
-			iconSize=conf.stackIconSize,
+			iconSize=conf.stackIconSize.v,
 		)
 		pack(self.vbox, self.stack, 1, 1)
 		pageName = "dayCalWin"
@@ -142,29 +142,30 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 class DayCalWindowWidget(DayCal):
 	dragAndDropEnable = False
 	doubleClickEnable = False
-	backgroundColorParam = "dcalWinBackgroundColor"
-	dayParamsParam = "dcalWinDayParams"
-	monthParamsParam = "dcalWinMonthParams"
-	weekdayParamsParam = "dcalWinWeekdayParams"
-	widgetButtonsEnableParam = "dcalWinWidgetButtonsEnable"
-	widgetButtonsSizeParam = "dcalWinWidgetButtonsSize"
-	widgetButtonsOpacityParam = "dcalWinWidgetButtonsOpacity"
-	widgetButtonsParam = "dcalWinWidgetButtons"
-	eventIconSizeParam = "dcalWinEventIconSize"
-	eventTotalSizeRatioParam = "dcalWinEventTotalSizeRatio"
-	weekdayLocalizeParam = "dcalWinWeekdayLocalize"
-	weekdayAbbreviateParam = "dcalWinWeekdayAbbreviate"
-	weekdayUppercaseParam = "dcalWinWeekdayUppercase"
 
-	seasonPieEnableParam = "dcalWinSeasonPieEnable"
-	seasonPieGeoParam = "dcalWinSeasonPieGeo"
-	seasonPieColorsParam = {
-		"Spring": "dcalWinSeasonPieSpringColor",
-		"Summer": "dcalWinSeasonPieSummerColor",
-		"Autumn": "dcalWinSeasonPieAutumnColor",
-		"Winter": "dcalWinSeasonPieWinterColor",
+	backgroundColor = conf.dcalWinBackgroundColor
+	dayParams = conf.dcalWinDayParams
+	monthParams = conf.dcalWinMonthParams
+	weekdayParams = conf.dcalWinWeekdayParams
+	widgetButtonsEnable = conf.dcalWinWidgetButtonsEnable
+	widgetButtonsSize = conf.dcalWinWidgetButtonsSize
+	widgetButtonsOpacity = conf.dcalWinWidgetButtonsOpacity
+	widgetButtons = conf.dcalWinWidgetButtons
+	eventIconSize = conf.dcalWinEventIconSize
+	eventTotalSizeRatio = conf.dcalWinEventTotalSizeRatio
+	weekdayLocalize = conf.dcalWinWeekdayLocalize
+	weekdayAbbreviate = conf.dcalWinWeekdayAbbreviate
+	weekdayUppercase = conf.dcalWinWeekdayUppercase
+
+	seasonPieEnable = conf.dcalWinSeasonPieEnable
+	seasonPieGeo = conf.dcalWinSeasonPieGeo
+	seasonPieColors: dict[str, Property] = {
+		"Spring": conf.dcalWinSeasonPieSpringColor,
+		"Summer": conf.dcalWinSeasonPieSummerColor,
+		"Autumn": conf.dcalWinSeasonPieAutumnColor,
+		"Winter": conf.dcalWinSeasonPieWinterColor,
 	}
-	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
+	seasonPieTextColor = conf.dcalWinSeasonPieTextColor
 
 	@classmethod
 	def getCell(cls) -> Cell:
@@ -289,8 +290,8 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		self.resize(conf.dcalWinWidth, conf.dcalWinHeight)
-		self.move(conf.dcalWinX, conf.dcalWinY)
+		self.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
+		self.move(conf.dcalWinX.v, conf.dcalWinY.v)
 		self.set_skip_taskbar_hint(True)
 		self.set_decorated(False)
 		self.set_keep_below(True)
@@ -364,8 +365,8 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 			return
 		wx, wy = self.get_position()
 		ww, wh = self.get_size()
-		conf.dcalWinX, conf.dcalWinY = (wx, wy)
-		conf.dcalWinWidth = ww
-		conf.dcalWinHeight = wh
+		conf.dcalWinX.v, conf.dcalWinY.v = (wx, wy)
+		conf.dcalWinWidth.v = ww
+		conf.dcalWinHeight.v = wh
 		liveConfChanged()
 		return False

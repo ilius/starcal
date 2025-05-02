@@ -43,7 +43,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 				False,
 			],
 		)
-		for tz_name in conf.localTzHist:
+		for tz_name in conf.localTzHist.v:
 			model.append(recentIter, [tz_name, True])
 		# ---
 		self.appendOrderedDict(

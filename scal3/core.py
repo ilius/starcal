@@ -46,6 +46,7 @@ from scal3.path import (
 	sysConfDir,
 )
 from scal3.plugin_man import loadPlugin
+from scal3.property import Property
 
 try:
 	__file__  # noqa: B018
@@ -125,18 +126,33 @@ sysConfPath = join(sysConfDir, "core.json")
 
 confPath = join(confDir, "core.json")
 
-confParams = (
-	"version",
-	"allPlugList",
-	"plugIndex",
-	"activeCalTypes",
-	"inactiveCalTypes",
-	"holidayWeekDays",
-	"firstWeekDayAuto",
-	"firstWeekDay",
-	"weekNumberModeAuto",
-	"weekNumberMode",
-)
+# __________________________ Default Configuration __________________________ #
+
+# just for loading from config, not used after loadConf
+version = Property("")
+activeCalTypes: Property[list[str]] = Property([])
+inactiveCalTypes: Property[list[str]] = Property([])
+
+allPlugList = Property([])
+plugIndex = Property([])
+holidayWeekDays = Property([0])
+firstWeekDayAuto = Property(False)
+firstWeekDay = Property(0)
+weekNumberModeAuto = Property(False)
+weekNumberMode = Property(7)
+
+confParams = {
+	"version": version,
+	"allPlugList": allPlugList,
+	"plugIndex": plugIndex,
+	"activeCalTypes": activeCalTypes,
+	"inactiveCalTypes": inactiveCalTypes,
+	"holidayWeekDays": holidayWeekDays,
+	"firstWeekDayAuto": firstWeekDayAuto,
+	"firstWeekDay": firstWeekDay,
+	"weekNumberModeAuto": weekNumberModeAuto,
+	"weekNumberMode": weekNumberMode,
+}
 
 confDecoders = {
 	"allPlugList": lambda pdataList: [loadPlugin(**pdata) for pdata in pdataList],
@@ -150,23 +166,21 @@ confEncoders = {
 
 
 def loadConf() -> None:
-	global version, prefVersion, activeCalTypes, inactiveCalTypes  # noqa: PLW0602
+	global prefVersion  # noqa: PLW0602
 	# -----------
 	loadModuleConfig(__name__)
 	# -----------
 	if "version" in globals():
-		prefVersion = version
-		del version
+		prefVersion = version.v
 	else:
 		prefVersion = ""
 	# -----------
 	with suppress(NameError):
 		# activeCalTypes and inactiveCalType might be
 		# loaded from json config file
-		calTypes.activeNames = activeCalTypes
-		calTypes.inactiveNames = inactiveCalTypes
+		calTypes.activeNames = activeCalTypes.v
+		calTypes.inactiveNames = inactiveCalTypes.v
 
-	activeCalTypes = inactiveCalTypes = None
 	calTypes.update()
 
 
@@ -273,12 +287,12 @@ def getMonthWeekNth(jd: int, calType: int) -> tuple[int, int, int]:
 
 
 def getWeekDay(y: int, m: int, d: int) -> int:
-	return jwday(primary_to_jd(y, m, d) - firstWeekDay)
+	return jwday(primary_to_jd(y, m, d) - firstWeekDay.v)
 
 
-def getWeekDayN(i: int) -> int:
+def getWeekDayN(i: int) -> str:
 	# 0 <= i < 7	(0 = first day)
-	return weekDayName[(i + firstWeekDay) % 7]
+	return weekDayName[(i + firstWeekDay.v) % 7]
 
 
 def getWeekDayAuto(
@@ -288,7 +302,7 @@ def getWeekDayAuto(
 	relative: bool = True,
 ) -> str:
 	if relative:
-		number = (number + firstWeekDay) % 7
+		number = (number + firstWeekDay.v) % 7
 
 	if not localize:
 		if abbreviate:
@@ -316,7 +330,7 @@ def getWeekNumberByJdAndYear(jd: int, year: int) -> int:
 	) = getWeekDateFromJd(primary_to_jd(year, 1, 1))
 	weekNum = absWeekNum - ystartAbsWeekNum + 1
 	# ---
-	if weekNumberMode < 7 and ystartWeekDay > (weekNumberMode - firstWeekDay) % 7:
+	if weekNumberMode.v < 7 and ystartWeekDay > (weekNumberMode.v - firstWeekDay.v) % 7:
 		weekNum -= 1
 		if weekNum == 0:
 			weekNum = getWeekNumber(*jd_to_primary(jd - 7)) + 1
@@ -349,7 +363,7 @@ def getWeekNumberByJd(jd: int) -> int:
 
 def getWeekDateFromJd(jd: int) -> tuple[int, int]:
 	"""Return (absWeekNumber, weekDay)."""
-	return divmod(jd - firstWeekDay + 1, 7)
+	return divmod(jd - firstWeekDay.v + 1, 7)
 
 
 def getAbsWeekNumberFromJd(jd: int) -> int:
@@ -357,7 +371,7 @@ def getAbsWeekNumberFromJd(jd: int) -> int:
 
 
 def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
-	return absWeekNumber * 7 + firstWeekDay - 1
+	return absWeekNumber * 7 + firstWeekDay.v - 1
 
 
 # def getLocaleWeekNumberMode():
@@ -375,25 +389,27 @@ def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
 
 
 def validatePlugList() -> None:
-	n = len(allPlugList)
+	lst = allPlugList.v
+	index = plugIndex.v
+	n = len(lst)
 	i = 0
 	while i < n:
-		if allPlugList[i] is None:
-			allPlugList.pop(i)
+		if lst[i] is None:
+			lst.pop(i)
 			n -= 1
 			with suppress(NameError):
-				plugIndex.remove(i)
+				index.remove(i)
 		else:
 			i += 1
 	# -----
-	n = len(allPlugList)
-	m = len(plugIndex)
+	n = len(lst)
+	m = len(index)
 	i = 0
 	while i < m:
-		if plugIndex[i] < n:
+		if index[i] < n:
 			i += 1
 		else:
-			plugIndex.pop(i)
+			index.pop(i)
 			m -= 1
 
 
@@ -402,7 +418,7 @@ def initPlugins(fs: FileSystem) -> None:
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
 	# ------------------------
-	names = [os.path.split(plug.file)[1] for plug in allPlugList]
+	names = [os.path.split(plug.file)[1] for plug in allPlugList.v]
 	# newPlugs = []#????????
 	for direc in (plugDir, plugDirUser):
 		if not fs.isdir(direc):
@@ -437,8 +453,8 @@ def initPlugins(fs: FileSystem) -> None:
 
 
 def updatePlugins() -> None:
-	for i in plugIndex:
-		plug = allPlugList[i]
+	for i in plugIndex.v:
+		plug = allPlugList.v[i]
 		if plug is None:
 			continue
 		if plug.enable:
@@ -457,8 +473,8 @@ class PluginTuple(NamedTuple):
 def getPluginsTable() -> list[list]:
 	# returns a list of [i, enable, show_date, description]
 	table = []
-	for index in plugIndex:
-		plug = allPlugList[index]
+	for index in plugIndex.v:
+		plug = allPlugList.v[index]
 		table.append(
 			PluginTuple(
 				index=index,
@@ -473,9 +489,9 @@ def getPluginsTable() -> list[list]:
 def getDeletedPluginsTable() -> list[list]:
 	"""Returns a list of (index description)."""
 	table = []
-	for i, plug in enumerate(allPlugList):
+	for i, plug in enumerate(allPlugList.v):
 		try:
-			plugIndex.index(i)
+			plugIndex.v.index(i)
 		except ValueError:  # noqa: PERF203
 			table.append((i, plug.title))
 	return table
@@ -580,20 +596,18 @@ if isdir(libDir):
 	del pyVersion, pyLibDir
 
 
-# ___________________________________________________________________________ #
-# __________________________ Default Configuration __________________________ #
+# ________________________ Configuration Comments_____________________________#
 
-allPlugList = []
-plugIndex = []
-
-holidayWeekDays = [0]  # 0 means Sunday (5 means Friday)
+# holidayWeekDays:
+# 0 means Sunday (5 means Friday)
 # [5] or [4,5] in Iran
 # [0] in most of contries
-firstWeekDayAuto = True
-firstWeekDay = 0  # 0 means Sunday (6 means Saturday)
-weekNumberModeAuto = False  # not used yet
-weekNumberMode = 7
 
+# firstWeekDay: 0 means Sunday (6 means Saturday)
+
+# weekNumberModeAuto: not used yet
+
+# weekNumberMode:
 # 0: First week contains first Sunday of year
 # 4: First week contains first Thursday of year (ISO 8601, Gnome Clock)
 # 6: First week contains first Saturday of year

@@ -2,6 +2,7 @@ import logging
 from os.path import join
 
 from scal3.path import confDir
+from scal3.property import Property
 
 __all__ = ["get", "logLevel"]
 
@@ -9,11 +10,11 @@ __all__ = ["get", "logLevel"]
 confPath = join(confDir, "log.json")
 
 log = None
-logLevel = logging.INFO
+logLevel = Property(logging.INFO)
 
 
 def init():
-	global log, logLevel
+	global log
 	import json
 	import os
 	import warnings
@@ -32,14 +33,14 @@ def init():
 
 	envValue = os.getenv("LOG_LEVEL")
 	if envValue:
-		logLevel = int(envValue)
+		logLevel.v = int(envValue)
 	elif isfile(confPath):
 		with open(confPath, encoding="utf-8") as file:
 			logJson = file.read().strip()
 			if logJson:
 				logData = json.loads(logJson)
 				if "logLevel" in logData:
-					logLevel = logData["logLevel"]
+					logLevel.v = logData["logLevel"]
 
 	makeDir(join(confDir, "log"))
 
@@ -61,7 +62,7 @@ def init():
 
 		log = FallbackLogger()
 
-	log.setLevel(logLevel)
+	log.setLevel(logLevel.v)
 
 	# can set env var WARNINGS to: "error", "ignore", "always",
 	# "default", "module", "once"

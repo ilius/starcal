@@ -1,4 +1,3 @@
-#
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,20 +13,29 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.timeline import conf
+from __future__ import annotations
 
-__all__ = ["Tick"]
+__all__ = ["Property"]
 
 
-class Tick:
-	def __init__(self, epoch, pos, unitSize, label, color=None):
-		self.epoch = epoch
-		self.pos = pos  # pixel position
-		self.height = unitSize**0.5 * conf.baseTickHeight.v
-		self.width = min(unitSize**0.2 * conf.baseTickWidth.v, conf.maxTickWidth.v)
-		self.fontSize = unitSize**0.1 * conf.baseFontSize.v
-		self.maxLabelWidth = min(unitSize * 0.5, conf.maxLabelWidth.v)  # FIXME
-		self.label = label
-		if color is None:
-			color = conf.fgColor.v
-		self.color = color
+class Property[T]:
+	__slots__ = ["_default", "_v"]
+
+	def __init__(self, default: T) -> None:
+		self._default = default
+		if hasattr(default, "copy"):
+			self._v = default.copy()
+		else:
+			self._v = default
+
+	@property
+	def v(self) -> T:
+		return self._v
+
+	@v.setter
+	def v(self, value: T) -> None:
+		self._v = value
+
+	@property
+	def default(self) -> T:
+		return self._default

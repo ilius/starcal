@@ -40,6 +40,8 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.property import Property
+
 __all__ = [
 	"AICalsPrefItem",
 	"AICalsPrefItemToolbar",
@@ -70,8 +72,7 @@ def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 class FixedSizeOrRatioPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		ratioEnableVarName: str = "",
+		ratioEnableProp: Property[bool] | None,
 		fixedLabel: str = "",
 		fixedItem: SpinPrefItem | None = None,
 		ratioLabel: str = "",
@@ -81,7 +82,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		borderWidth: int = 2,
 		onChangeFunc: Callable | None = None,
 	) -> None:
-		if not ratioEnableVarName:
+		if not ratioEnableProp:
 			raise ValueError("ratioEnableVarName is not given")
 		if not fixedLabel:
 			raise ValueError("fixedLabel is not given")
@@ -91,8 +92,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 			raise ValueError("ratioLanel is not given")
 		if ratioItem is None:
 			raise ValueError("ratioItem is not given")
-		self.obj = obj
-		self.ratioEnableVarName = ratioEnableVarName
+		self.ratioEnableProp = ratioEnableProp
 		self.fixedItem = fixedItem
 		self.ratioItem = ratioItem
 		self.fixedRadio = gtk.RadioButton(label=fixedLabel)
@@ -125,12 +125,12 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self.ratioRadio.connect("clicked", self.onChange)
 
 	def updateVar(self) -> None:
-		setattr(self.obj, self.ratioEnableVarName, self.ratioRadio.get_active())
+		self.ratioEnableProp.v = self.ratioRadio.get_active()
 		self.fixedItem.updateVar()
 		self.ratioItem.updateVar()
 
 	def updateWidget(self) -> None:
-		self.ratioRadio.set_active(getattr(self.obj, self.ratioEnableVarName))
+		self.ratioRadio.set_active(self.ratioEnableProp.v)
 		self.fixedItem.updateWidget()
 		self.ratioItem.updateWidget()
 
@@ -143,19 +143,17 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 class WeekDayCheckListPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[list[int]],
 		vertical: bool = False,
 		homogeneous: bool = True,
 		abbreviateNames: bool = True,
 		twoRows: bool = False,
 	) -> None:
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self.vertical = vertical
 		self.homogeneous = homogeneous
 		self.twoRows = twoRows
-		self.start = core.firstWeekDay
+		self.start = core.firstWeekDay.v
 		self.buttons = [
 			gtk.ToggleButton(label=name)
 			for name in (core.weekDayNameAb if abbreviateNames else core.weekDayName)
@@ -207,9 +205,8 @@ class WeekDayCheckListPrefItem(PrefItem):
 
 """
 class ToolbarIconSizePrefItem(PrefItem):
-	def __init__(self, obj, attrName):
-		self.obj = obj
-		self.attrName = attrName
+	def __init__(self, prop: Property):
+		self.prop = prop
 		# ----
 		self._widget = gtk.ComboBoxText()
 		for item in ud.iconSizeList:
@@ -231,15 +228,13 @@ class ToolbarIconSizePrefItem(PrefItem):
 class CalTypePrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[int],
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = gtk.HBox()
@@ -267,10 +262,10 @@ class CalTypePrefItem(PrefItem):
 			self._onChangeFunc()
 
 
+# FIXME: switch to: prop: Property,
 class LangPrefItem(PrefItem):
 	def __init__(self) -> None:
-		self.obj = locale_man
-		self.attrName = "lang"
+		self.prop = locale_man.lang
 		# ---
 		ls = gtk.ListStore(str)
 		combo = gtk.ComboBox()
@@ -727,14 +722,12 @@ class AICalsPrefItem(PrefItem):
 class KeyBindingPrefItem(PrefItem):
 	def __init__(
 		self,
-		obj: Any,
-		attrName: str,
+		prop: Property[dict[str, str]],
 		actions: list[str],
 		# live: bool = False,
 		# onChangeFunc: "Callable] | None" = None,
 	) -> None:
-		self.obj = obj
-		self.attrName = attrName
+		self.prop = prop
 		self.actions = actions
 		# ------
 		treev = gtk.TreeView()

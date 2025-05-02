@@ -150,8 +150,8 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 
 	def drawWithContext(self, cr: cairo.Context):
 		text = self.text
-		fillColor(cr, conf.bgColor)
-		setColor(cr, conf.textColor)
+		fillColor(cr, conf.bgColor.v)
+		setColor(cr, conf.textColor.v)
 		lay = self.create_pango_layout(text)
 		show_layout(cr, lay)
 		w, h = lay.get_pixel_size()

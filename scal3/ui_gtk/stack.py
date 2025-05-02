@@ -139,7 +139,7 @@ class MyStack(gtk.Stack):
 		backHbox = HBox(spacing=3)
 		backHbox.set_border_width(5)
 		backText = _("Back")
-		if conf.buttonIconEnable:
+		if conf.buttonIconEnable.v:
 			pack(
 				backHbox,
 				imageFromFile(

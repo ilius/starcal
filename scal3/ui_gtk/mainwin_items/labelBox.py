@@ -69,13 +69,13 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
 
-		if conf.labelBoxMonthColorEnable:
+		if conf.labelBoxMonthColorEnable.v:
 			return (
 				"."
 				+ MonthLabel.styleClass
 				+ " "
 				+ cssTextStyle(
-					fgColor=conf.labelBoxMonthColor,
+					fgColor=conf.labelBoxMonthColor.v,
 				)
 			)
 		return ""
@@ -86,7 +86,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 
 	@classmethod
 	def getActiveStr(cls, s):
-		return colorizeSpan(s, conf.labelBoxMenuActiveColor)
+		return colorizeSpan(s, conf.labelBoxMenuActiveColor.v)
 		# return f"<b>{s}</b>"
 
 	def __init__(self, calType, active=0):
@@ -208,7 +208,7 @@ class IntLabel(BaseLabel):
 
 	@classmethod
 	def getActiveStr(cls, s):
-		return colorizeSpan(s, conf.labelBoxMenuActiveColor)
+		return colorizeSpan(s, conf.labelBoxMenuActiveColor.v)
 
 	def __init__(self, height=9, active=0):
 		BaseLabel.__init__(self)
@@ -370,13 +370,13 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
 
-		if conf.labelBoxYearColorEnable:
+		if conf.labelBoxYearColorEnable.v:
 			return (
 				"."
 				+ YearLabel.styleClass
 				+ " "
 				+ cssTextStyle(
-					fgColor=conf.labelBoxYearColor,
+					fgColor=conf.labelBoxYearColor.v,
 				)
 			)
 		return ""
@@ -430,7 +430,7 @@ class SmallNoFocusButton(ConButton):
 		self._image.set_from_pixbuf(
 			pixbufFromFile(
 				self._imageName,
-				size=conf.labelBoxIconSize,
+				size=conf.labelBoxIconSize.v,
 			),
 		)
 
@@ -521,11 +521,11 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	@staticmethod
 	def getFont():
-		if conf.labelBoxFontEnable and conf.labelBoxFont:
-			font = conf.labelBoxFont.copy()  # make a copy to be safe to modify
+		if conf.labelBoxFontEnable.v and conf.labelBoxFont.v:
+			font = conf.labelBoxFont.v.copy()  # make a copy to be safe to modify
 		else:
 			font = ui.getFont()
-		if conf.boldYmLabel:
+		if conf.boldYmLabel.v:
 			font.bold = True
 		return font
 
@@ -548,7 +548,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def updateIconSize(self):
 		alphabet = locale_man.getAlphabet()
 		height = calcTextPixelSize(self.win, alphabet, font=self.getFont())[1]
-		conf.labelBoxIconSize = height * 0.6
+		conf.labelBoxIconSize.v = height * 0.6
 
 	def updateTextWidth(self):
 		font = self.getFont()
@@ -636,9 +636,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 				font=font,
 			)
 		)
-		if conf.labelBoxPrimaryFontEnable and conf.labelBoxPrimaryFont:
-			font = conf.labelBoxPrimaryFont
-			if conf.boldYmLabel:
+		if conf.labelBoxPrimaryFontEnable.v and conf.labelBoxPrimaryFont.v:
+			font = conf.labelBoxPrimaryFont.v
+			if conf.boldYmLabel.v:
 				font = font.copy()
 				font.bold = True
 			css += (
@@ -663,7 +663,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.updateTextWidth()
 
 	def onBorderWidthChange(self):
-		self.set_border_width(conf.labelBoxBorderWidth)
+		self.set_border_width(conf.labelBoxBorderWidth.v)
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
@@ -681,10 +681,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		optionsWidget = VBox(spacing=5)
 		# ----
 		prefItem = SpinPrefItem(
-			conf,
-			"labelBoxBorderWidth",
-			0,
-			99,
+			prop=conf.labelBoxBorderWidth,
+			bounds=(0, 99),
 			digits=1,
 			step=1,
 			unitLabel=_("pixels"),
@@ -697,8 +695,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
 		prefItem = ColorPrefItem(
-			conf,
-			"labelBoxMenuActiveColor",
+			prop=conf.labelBoxMenuActiveColor,
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)
@@ -708,8 +705,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		checkSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(conf, "labelBoxYearColorEnable", _("Year Color")),
-			ColorPrefItem(conf, "labelBoxYearColor", True),
+			CheckPrefItem(prop=conf.labelBoxYearColorEnable, label=_("Year Color")),
+			ColorPrefItem(prop=conf.labelBoxYearColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
@@ -717,8 +714,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
 		prefItem = CheckColorPrefItem(
-			CheckPrefItem(conf, "labelBoxMonthColorEnable", _("Month Color")),
-			ColorPrefItem(conf, "labelBoxMonthColor", True),
+			CheckPrefItem(prop=conf.labelBoxMonthColorEnable, label=_("Month Color")),
+			ColorPrefItem(prop=conf.labelBoxMonthColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
@@ -727,8 +724,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# ---
 		previewText = self.getFontPreviewTextFull()
 		prefItem = CheckFontPrefItem(
-			CheckPrefItem(conf, "labelBoxFontEnable", label=_("Font")),
-			FontPrefItem(conf, "labelBoxFont", previewText=previewText),
+			CheckPrefItem(prop=conf.labelBoxFontEnable, label=_("Font")),
+			FontPrefItem(prop=conf.labelBoxFont, previewText=previewText),
 			live=True,
 			onChangeFunc=self.onFontConfigChange,
 		)
@@ -737,11 +734,10 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		previewText = self.getFontPreviewText(calTypes.primary)
 		prefItem = CheckFontPrefItem(
 			CheckPrefItem(
-				conf,
-				"labelBoxPrimaryFontEnable",
+				prop=conf.labelBoxPrimaryFontEnable,
 				label=_("Primary Calendar Font"),
 			),
-			FontPrefItem(conf, "labelBoxPrimaryFont", previewText=previewText),
+			FontPrefItem(prop=conf.labelBoxPrimaryFont, previewText=previewText),
 			vertical=True,
 			spacing=0,
 			live=True,
@@ -750,8 +746,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
 		prefItem = CheckPrefItem(
-			conf,
-			"boldYmLabel",
+			prop=conf.boldYmLabel,
 			label=_("Bold Font"),
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,

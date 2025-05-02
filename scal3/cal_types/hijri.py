@@ -20,6 +20,7 @@
 import json
 
 from scal3 import logger
+from scal3.property import Property
 
 __all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
 
@@ -77,7 +78,7 @@ minMonthLen = 29
 maxMonthLen = 30
 avgYearLen = 354.3666  # FIXME
 
-hijriUseDB = True
+hijriUseDB = Property(True)
 
 
 options = (
@@ -112,13 +113,15 @@ if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
+confParams = {"hijriUseDB": hijriUseDB}
+
 # Here load user options (hijriUseDB) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(__name__, sysConfPath)
+loadSingleConfig(__name__, sysConfPath, confParams)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(__name__, confPath)
+loadSingleConfig(__name__, confPath, confParams)
 
 
 def ifloor(x: float) -> int:
@@ -134,7 +137,7 @@ def save():
 	saveSingleConfig(
 		__name__,
 		confPath,
-		("hijriUseDB",),
+		confParams,
 	)
 
 
@@ -290,7 +293,7 @@ def to_jd_c(year, month, day):
 
 
 def to_jd(year, month, day):
-	if hijriUseDB:
+	if hijriUseDB.v:
 		jd = monthDb.getJdFromDate(year, month, day)
 		if jd is not None:
 			return jd
@@ -298,7 +301,7 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd):
-	if hijriUseDB:
+	if hijriUseDB.v:
 		# jd = ifloor(jd)
 		date = monthDb.getDateFromJd(jd)
 		if date:
@@ -315,7 +318,7 @@ def jd_to(jd):
 
 
 def getMonthLen(y, m):
-	# if hijriUseDB:
+	# if `hijriUseDB.v`:
 	# 	try:
 	# 		return monthDb.monthLenByYm[y*12+m]
 	# 	except KeyError:
