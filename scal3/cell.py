@@ -69,7 +69,7 @@ class Cell(CellType):
 		self.weekNumNeg = self.weekNum - int(
 			calTypes.primaryModule().avgYearLen / 7,
 		)
-		self.holiday = self.weekDay in core.holidayWeekDays
+		self.holiday = self.weekDay in core.holidayWeekDays.v
 		# -------------------
 		self.dates = [
 			date if calType == calTypes.primary else jd_to(jd, calType)
@@ -84,8 +84,8 @@ class Cell(CellType):
 		])
 		"""
 		# -------------------
-		for k in core.plugIndex:
-			plug = core.allPlugList[k]
+		for k in core.plugIndex.v:
+			plug = core.allPlugList.v[k]
 			if plug:
 				try:
 					plug.updateCell(self)
@@ -124,7 +124,7 @@ class Cell(CellType):
 		self._eventsData = event_lib.getDayOccurrenceData(
 			self.jd,
 			ui.eventGroups,
-			tfmt=conf.eventDayViewTimeFormat,
+			tfmt=conf.eventDayViewTimeFormat.v,
 		)
 		return self._eventsData
 		# dt = perf_counter() - t0
@@ -200,13 +200,13 @@ class CellCache:
 		self.current = self.today
 
 	def resetCache(self):
-		log.debug(f"resetCache: {conf.maxDayCacheSize=}, {conf.maxWeekCacheSize=}")
+		log.debug(f"resetCache: {conf.maxDayCacheSize.v=}, {conf.maxWeekCacheSize.v=}")
 
 		# key: jd(int), value: CellType
-		self.jdCells = LRUCache(maxsize=conf.maxDayCacheSize)
+		self.jdCells = LRUCache(maxsize=conf.maxDayCacheSize.v)
 
 		# key: absWeekNumber(int), value: list[dict]
-		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize)
+		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize.v)
 
 	def clear(self) -> None:
 		self.resetCache()
@@ -218,7 +218,7 @@ class CellCache:
 			tmpCell.clearEventsData()
 		self.current.clearEventsData()
 		self.today.clearEventsData()
-		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize)
+		self.weekEvents = LRUCache(maxsize=conf.maxWeekCacheSize.v)
 
 	def registerPlugin(
 		self,
@@ -282,7 +282,7 @@ class CellCache:
 			wEventData = event_lib.getWeekOccurrenceData(
 				absWeekNumber,
 				eventGroups,
-				tfmt=conf.eventWeekViewTimeFormat,
+				tfmt=conf.eventWeekViewTimeFormat.v,
 			)
 			self.weekEvents[absWeekNumber] = wEventData
 			# log.info(f"weekEvents cache: {len(self.weekEvents)}")

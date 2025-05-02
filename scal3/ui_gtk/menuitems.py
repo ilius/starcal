@@ -66,14 +66,14 @@ class ImageMenuItem(gtk.MenuItem):
 		if imageName:
 			iconName = ""
 			try:
-				if conf.useSystemIcons:
+				if conf.useSystemIcons.v:
 					iconName = iconNameByImageName.get(imageName, "")
 				if iconName:
 					image = imageFromIconName(iconName, gtk.IconSize.MENU)
 				else:
 					image = imageFromFile(
 						imageName,
-						size=conf.menuIconSize,
+						size=conf.menuIconSize.v,
 					)
 			except Exception:
 				log.exception("")
@@ -83,10 +83,10 @@ class ImageMenuItem(gtk.MenuItem):
 		if image is None:
 			# just an empty image, to occupy the space
 			image = gtk.Image()
-			image.set_pixel_size(conf.menuIconSize)
+			image.set_pixel_size(conf.menuIconSize.v)
 
 		hbox = HBox(spacing=0)
-		pack(hbox, image, padding=conf.menuIconEdgePadding)
+		pack(hbox, image, padding=conf.menuIconEdgePadding.v)
 		labelWidget = gtk.Label(label=label)
 		labelWidget.set_xalign(0)
 		labelWidget.set_use_underline(True)
@@ -95,7 +95,7 @@ class ImageMenuItem(gtk.MenuItem):
 			labelWidget,
 			expand=True,
 			fill=True,
-			padding=conf.menuIconPadding,
+			padding=conf.menuIconPadding.v,
 		)
 		self.add(hbox)
 		self._image = image
@@ -119,11 +119,12 @@ class CheckMenuItem(gtk.MenuItem):
 		gtk.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
 		self._check.set_use_underline(True)
-		# self._check.set_border_width((conf.menuCheckSize - conf.menuIconSize) // 2)
+		# self._check.set_border_width(
+		# (conf.menuCheckSize.v - conf.menuIconSize.v) // 2)
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = 0
-		# edgePadding = conf.menuIconEdgePadding
-		#   - conf.menuCheckSize + conf.menuIconSize
+		# edgePadding = conf.menuIconEdgePadding.v
+		#   - conf.menuCheckSize.v + conf.menuIconSize.v
 		# print(f"CheckMenuItem: {edgePadding=}")
 		# edgePadding += 2  # FIXME: why is this needed?
 		# edgePadding = max(0, edgePadding)
@@ -162,7 +163,9 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
-		edgePadding = conf.menuIconEdgePadding - conf.menuCheckSize + conf.menuIconSize
+		edgePadding = (
+			conf.menuIconEdgePadding.v - conf.menuCheckSize.v + conf.menuIconSize.v
+		)
 		# print(f"CheckMenuItem: {edgePadding=}")
 		edgePadding += 2  # FIXME: why is this needed?
 		edgePadding = max(0, edgePadding)
@@ -175,7 +178,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 			labelWidget,
 			expand=True,
 			fill=True,
-			padding=conf.menuIconPadding,
+			padding=conf.menuIconPadding.v,
 		)
 		self._box.show_all()
 		self.add(self._box)
@@ -198,7 +201,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self._image.set_from_pixbuf(
 			pixbufFromFile(
 				imageName,
-				conf.menuCheckSize,
+				conf.menuCheckSize.v,
 			),
 		)
 
