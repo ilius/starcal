@@ -63,7 +63,7 @@ __all__ = [
 def getTreeGroupPixbuf(group):
 	return newColorCheckPixbuf(
 		group.color,
-		conf.eventTreeGroupIconSize,
+		conf.eventTreeGroupIconSize.v,
 		group.enable,
 	)
 

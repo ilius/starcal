@@ -128,7 +128,7 @@ class IconSelectButton(gtk.Button):
 		self.image.set_from_pixbuf(
 			pixbufFromFile(
 				filename,
-				conf.imageInputIconSize,
+				conf.imageInputIconSize.v,
 			),
 		)
 
