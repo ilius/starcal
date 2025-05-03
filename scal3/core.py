@@ -413,7 +413,7 @@ def validatePlugList() -> None:
 			m -= 1
 
 
-def initPlugins(fs: FileSystem) -> None:
+def initPlugins() -> None:
 	# log.debug("----------------------- initPlugins")
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
@@ -421,9 +421,9 @@ def initPlugins(fs: FileSystem) -> None:
 	names = [os.path.split(plug.file)[1] for plug in allPlugList.v]
 	# newPlugs = []#????????
 	for direc in (plugDir, plugDirUser):
-		if not fs.isdir(direc):
+		if not isdir(direc):
 			continue
-		for fname in fs.listdir(direc):
+		for fname in os.listdir(direc):
 			if fname in names + [
 				"__init__.py",
 				"README.md",
@@ -563,7 +563,7 @@ def init() -> None:
 
 	fs = DefaultFileSystem(confDir)
 	loadConf()
-	initPlugins(fs)
+	initPlugins()
 
 
 # ___________________________________________________________________________ #
