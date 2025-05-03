@@ -374,7 +374,7 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 	########################
 	names = [os.path.split(plug.file)[1] for plug in allPlugList]
 	# newPlugs = []#????????
-	for direc in (plugDir, plugDirName):
+	for direc in (plugDir, plugDirUser):
 		if not fs.isdir(direc):
 			continue
 		for fname in fs.listdir(direc):
