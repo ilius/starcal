@@ -195,12 +195,9 @@ class CustomizeWindow(gtk.Dialog):
 		col.set_property("expand", False)
 		treev.append_column(col)
 		# -----
-		anyItemHasOptions = False
 		for item in parentItem.items:
 			if not item.customizable:
 				continue
-			if item.hasOptions:
-				anyItemHasOptions = True
 			if not item.objName:
 				raise ValueError(f"{item.objName = }")
 			model.append(
@@ -231,7 +228,7 @@ class CustomizeWindow(gtk.Dialog):
 		pack(hbox, toolbar)
 		# ---
 		vbox = VBox(spacing=10)
-		if anyItemHasOptions:
+		if parentItem.itemHaveOptions:
 			label = gtk.Label(
 				label=(
 					'<span font_size="xx-small">'
