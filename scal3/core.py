@@ -397,7 +397,7 @@ def validatePlugList() -> None:
 		if lst[i] is None:
 			lst.pop(i)
 			n -= 1
-			with suppress(NameError):
+			with suppress(ValueError):
 				index.remove(i)
 		else:
 			i += 1
