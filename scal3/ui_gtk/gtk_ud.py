@@ -485,7 +485,7 @@ def setDefault_adjustTimeCmd():
 
 	for sudo in ("/usr/bin/sudo", "/usr/local/bin/sudo"):
 		if isfile(sudo):
-			print(f"Found sudo: {sudo}")
+			log.debug(f"Found sudo: {sudo}")
 			askpass = findAskpass()
 			if askpass:
 				adjustTimeCmd = [
@@ -554,8 +554,6 @@ del tmpValue
 
 
 loadConf()
-
-setDefault_adjustTimeCmd()  # FIXME
 
 # ------------------------------------------------------------
 
