@@ -39,7 +39,7 @@ class EventUpdateQueue(Queue):
 		self._paused = False
 
 	def registerConsumer(self, consumer) -> None:
-		log.info(f"registerConsumer: {consumer.__class__.__name__}")
+		log.debug(f"registerConsumer: {consumer.__class__.__name__}")
 		if not hasattr(consumer, "onEventUpdate"):
 			raise TypeError(
 				f"type {consumer.__class__.__name__} has no method onEventUpdate",
