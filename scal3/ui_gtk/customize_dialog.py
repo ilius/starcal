@@ -125,10 +125,8 @@ class CustomizeWindow(gtk.Dialog):
 		self.stack.addPage(rootPage)
 
 		for page in item.getSubPages():
-			if page.pageItem is None:
-				raise ValueError(f"pageItem=None, {page.pagePath=}")
-			if not page.pageName:
-				raise ValueError(f"pageName empty, {page=}")
+			assert page.pageItem is not None, f"{page=}"
+			assert page.pageName, f"{page=}"
 			page.pageParent = rootPagePath
 			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
@@ -198,8 +196,7 @@ class CustomizeWindow(gtk.Dialog):
 		for item in parentItem.items:
 			if not item.customizable:
 				continue
-			if not item.objName:
-				raise ValueError(f"{item.objName = }")
+			assert item.objName, f"{item = }"
 			model.append(
 				[
 					item.enable,
@@ -220,10 +217,7 @@ class CustomizeWindow(gtk.Dialog):
 			pack(vbox_l, treev, 1, 1)
 		pack(hbox, vbox_l, 1, 1)
 		# ---
-		toolbar = CustomizeWindowItemsToolbar(
-			self,
-			(treev,),
-		)
+		toolbar = CustomizeWindowItemsToolbar(parent=self, onClickArgs=(treev,))
 		# ---
 		pack(hbox, toolbar)
 		# ---
@@ -253,8 +247,7 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		i = cur[-1]
 
-		if len(cur) != 1:
-			raise RuntimeError(f"unexpected {cur = }")
+		assert len(cur) == 1, f"unexpected {cur = }"
 
 		if i <= 0 or i >= len(model):
 			gdk.beep()
@@ -273,8 +266,7 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		i = cur[-1]
 
-		if len(cur) != 1:
-			raise RuntimeError(f"unexpected {cur = }")
+		assert len(cur) == 1, f"unexpected {cur = }"
 
 		if i <= 0 or i >= len(model):
 			gdk.beep()
@@ -292,8 +284,7 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		i = cur[-1]
 
-		if len(cur) != 1:
-			raise RuntimeError(f"unexpected {cur = }")
+		assert len(cur) == 1, f"unexpected {cur = }"
 
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
@@ -311,8 +302,7 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		i = cur[-1]
 
-		if len(cur) != 1:
-			raise RuntimeError(f"unexpected {cur = }")
+		assert len(cur) == 1, f"unexpected {cur = }"
 
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
@@ -382,8 +372,7 @@ class CustomizeWindow(gtk.Dialog):
 
 		if item.hasOptions:
 			optionsWidget = item.getOptionsWidget()
-			if optionsWidget is None:
-				raise ValueError(f"{item.hasOptions=} but {optionsWidget=}")
+			assert optionsWidget is not None, f"{item.hasOptions=} but {optionsWidget=}"
 			pack(page.pageWidget, optionsWidget, 0, 0)
 
 		log.debug(
@@ -394,8 +383,7 @@ class CustomizeWindow(gtk.Dialog):
 
 		for page2 in item.getSubPages():
 			if not (page2.pagePath and page2.pageParent):
-				if not page2.pageName:
-					raise ValueError(f"pageName empty, {page2=}")
+				assert page2.pageName, f"{page2=}"
 				page2.pagePath = pagePath + "." + page2.pageName
 				page2.pageParent = ".".join(
 					[pagePath] + page2.pageName.split(".")[:-1],
