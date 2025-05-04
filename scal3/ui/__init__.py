@@ -302,12 +302,7 @@ def initFonts(fontDefaultNew: Font) -> None:
 
 
 def checkNeedRestart() -> bool:
-	print(f"{needRestartPref=}")
-	for prop, value in needRestartPref:
-		print(prop, prop.v, value)
-		if prop.v != value:
-			return True
-	return False
+	return any(prop.v != value for prop, value in needRestartList)
 
 
 def checkMainWinItems() -> None:
@@ -499,7 +494,7 @@ if updateLocalTimezoneHistory():
 	saveConf()
 
 
-needRestartPref: list[tuple[Property, Any]] = [
+needRestartList: list[tuple[Property, Any]] = [
 	(prop, prop.v) for prop in conf.needRestartList + locale_man.getNeedRestartParams()
 ]
 
