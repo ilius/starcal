@@ -1084,7 +1084,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageParent = ""
 		page.pageWidget = pageVBox
 		page.pageName = "statusIcon"
-		page.pageTitle = _("Status Icon") + " - " + _("Appearance")
+		page.pageTitle = _("Status Icon")
 		page.pageLabel = _("Status Icon")
 		page.pageIcon = "status-icon-example.svg"
 		self.prefPages.append(page)
