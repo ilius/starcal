@@ -2467,6 +2467,12 @@ msgid "Show Plugins Text in Status Icon (for today)"
 msgstr ""
 "نمایش متن رویدادها در نماد وضعیت (برای امروز)"
 
+msgid ""
+"To enable/disables events in status icon:\n"
+"Event Manager → Group → Edit → Show in"
+msgstr ""
+"برای فعال/غیرفعال کردن نمایش رویدادها در نماد وضعیت:\n"
+"مدیریت رویدادها ← گروه ← ویرایش ← نمایش در"
 
 msgid "Show in applet (for today)"
 msgstr ""

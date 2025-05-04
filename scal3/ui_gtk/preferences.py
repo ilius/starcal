@@ -1067,6 +1067,19 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# --------
+		hbox = HBox()
+		label = gtk.Label(
+			label='<span font_size="small">'
+			+ _(
+				"To enable/disables events in status icon:\n"
+				"Event Manager → Group → Edit → Show in",
+			)
+			+ "</span>",
+		)
+		label.set_use_markup(True)
+		pack(hbox, label)
+		pack(pageVBox, hbox)
+		# --------
 		page = StackPage()
 		page.pageParent = ""
 		page.pageWidget = pageVBox
