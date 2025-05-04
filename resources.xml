@@ -270,6 +270,16 @@
 		<license>Public Domain</license>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
+	<resource path="status-icons/white-minimal.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
+	<resource path="status-icons/yellow-minimal.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
 	<resource path="svg/application-exit.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
