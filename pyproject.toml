@@ -4,6 +4,7 @@ line-length = 88
 
 # see https://docs.astral.sh/ruff/rules/
 lint.select = [
+	# "ANN", # flake8-annotationsq, still gives errors for `self`
 	"F", # Pyflakes
 	"E", # pycodestyle Error
 	"W", # pycodestyle Warning
@@ -13,7 +14,6 @@ lint.select = [
 	"B",   # flake8-bugbear
 	"UP",  # pyupgrade
 	"YTT", # flake8-2020
-	# "ANN", # flake8-annotationsq, still gives errors for `self`
 	# "ASYNC", # flake8-async
 	"ASYNC1", # flake8-trio
 	# "S", # flake8-bandit
@@ -22,7 +22,7 @@ lint.select = [
 	"B", # flake8-bugbear
 	"A", # flake8-builtins
 	"COM", # flake8-commas
-	# "CPY", # flake8-copyright   --preview
+	# "CPY", # flake8-copyright
 	"C4",  # flake8-comprehensions
 	"DTZ", # flake8-datetimez
 	"T10", # flake8-debugger
@@ -122,34 +122,6 @@ lint.ignore = [
 	"W191",   # Indentation contains tabs
 ]
 
-# UP033: (Since Python 3.9) Use `@functools.cache`
-# instead of `@functools.lru_cache(maxsize=None)`
-
-# since which Python is comma after **kwargs allowd?
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-# lint.fixable = [
-# 	"TRY",   # tryceratops
-#     "ANN",
-#     "C408", # Unnecessary `dict` call (rewrite as a literal)
-#     "COM",
-#     "D",
-#     "E",
-#     "F",
-#     "W",
-#     "F401",
-#     "I",
-#     "Q",
-#     "PIE790",
-#     "RET",
-#     "RUF",
-#     # "SIM",
-#     "SIM108", # Use ternary operator {contents} instead of if-else-block
-#     "TCH",
-#     "UP",
-# ]
-lint.unfixable = []
-
 # Exclude a variety of commonly ignored directories.
 exclude = [
 	"scal3/account/google.py",
@@ -162,6 +134,7 @@ exclude = [
 lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
+"mytz/*.py" = ["ANN"]
 "scal3/event_lib_import_all.py" = [
 	"F401", # imported but unused
 	"F811", # Redefinition of unused ...
