@@ -5,7 +5,7 @@ __all__ = ["ResizeButton"]
 
 
 class ResizeButton(gtk.EventBox):
-	def __init__(self, win, size=20, edge=gdk.WindowEdge.SOUTH_EAST):
+	def __init__(self, win, size=20, edge=gdk.WindowEdge.SOUTH_EAST) -> None:
 		gtk.EventBox.__init__(self)
 		self.win = win
 		self.edge = edge
@@ -14,7 +14,7 @@ class ResizeButton(gtk.EventBox):
 		self.add(self.image)
 		self.connect("button-press-event", self.onButtonPress)
 
-	def onButtonPress(self, _obj, gevent):
+	def onButtonPress(self, _obj, gevent) -> bool:
 		self.win.begin_resize_drag(
 			self.edge,
 			gevent.button,

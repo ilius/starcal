@@ -6,7 +6,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NormalWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ---
 		hbox = HBox()
@@ -19,10 +19,10 @@ class WidgetClass(NormalWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 
-	def updateWidget(self):  # FIXME
+	def updateWidget(self) -> None:  # FIXME
 		NormalWidgetClass.updateWidget(self)
 		self.showDateCheck.set_active(self.group.showDate)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		NormalWidgetClass.updateVars(self)
 		self.group.showDate = self.showDateCheck.get_active()

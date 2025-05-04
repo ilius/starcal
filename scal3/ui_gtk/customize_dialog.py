@@ -43,7 +43,7 @@ __all__ = ["CustomizeWindow"]
 
 
 class CustomizeWindowItemsToolbar(StaticToolBox):
-	def __init__(self, parent, onClickArgs):
+	def __init__(self, parent, onClickArgs) -> None:
 		StaticToolBox.__init__(
 			self,
 			parent,
@@ -90,7 +90,7 @@ class CustomizeWindowItemsToolbar(StaticToolBox):
 
 
 class CustomizeWindow(gtk.Dialog):
-	def __init__(self, item: CustomizableCalObj, scrolled=True, **kwargs):
+	def __init__(self, item: CustomizableCalObj, scrolled=True, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
 		# --
@@ -236,10 +236,10 @@ class CustomizeWindow(gtk.Dialog):
 		# ---
 		return treev, vbox
 
-	def vboxSizeRequest(self, _widget=None, _req=None):
+	def vboxSizeRequest(self, _widget=None, _req=None) -> None:
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, _button, treev):
+	def onTopClick(self, _button, treev) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -258,7 +258,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i + 1))
 		treev.set_cursor(0)
 
-	def onUpClick(self, _button, treev):
+	def onUpClick(self, _button, treev) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -276,7 +276,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i - 1), model.get_iter(i))
 		treev.set_cursor(i - 1)
 
-	def onDownClick(self, _button, treev):
+	def onDownClick(self, _button, treev) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -294,7 +294,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i), model.get_iter(i + 1))
 		treev.set_cursor(i + 1)
 
-	def onBottomClick(self, _button, treev):
+	def onBottomClick(self, _button, treev) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -313,7 +313,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i))
 		treev.set_cursor(len(model) - 1)
 
-	def _addPageItemsTree(self, page):
+	def _addPageItemsTree(self, page) -> None:
 		pagePath = page.pagePath
 		item = page.pageItem
 
@@ -346,7 +346,7 @@ class CustomizeWindow(gtk.Dialog):
 			),
 		)
 
-	def addPageObj(self, page):
+	def addPageObj(self, page) -> None:
 		pagePath = page.pagePath
 		title = page.pageTitle
 		item = page.pageItem
@@ -420,10 +420,10 @@ class CustomizeWindow(gtk.Dialog):
 
 		return page
 
-	def gotoPageCallback(self, _item, pagePath):
+	def gotoPageCallback(self, _item, pagePath) -> None:
 		self.stack.gotoPage(pagePath)
 
-	def onTreeviewButtonPress(self, treev, gevent):
+	def onTreeviewButtonPress(self, treev, gevent) -> bool:
 		if gevent.button != 1:
 			return False
 		pos_t = treev.get_path_at_pos(int(gevent.x), int(gevent.y))
@@ -442,7 +442,7 @@ class CustomizeWindow(gtk.Dialog):
 		treev: gtk.TreeView,
 		path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
-	):
+	) -> None:
 		parentPagePath = treev.pagePath
 		parentItem = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
@@ -484,11 +484,16 @@ class CustomizeWindow(gtk.Dialog):
 		item.onDateChange()
 		return item
 
-	def onEnableCellToggle(self, cell, path, treev):
+	def onEnableCellToggle(self, cell, path, treev) -> None:
 		itemIndex = tree_path_split(path)[0]
 		self.enableCellToggle(treev, cell.get_active(), itemIndex)
 
-	def enableCellToggle(self, treev: gtk.TreeView, active: bool, itemIndex: int):
+	def enableCellToggle(
+		self,
+		treev: gtk.TreeView,
+		active: bool,
+		itemIndex: int,
+	) -> None:
 		active = not active
 		path = (itemIndex,)
 		model = treev.get_model()
@@ -507,7 +512,7 @@ class CustomizeWindow(gtk.Dialog):
 		item.showHide()
 		# calling item.onConfigChange() causes labelBox not to hide when unchecked
 
-	def updateMainPanelTreeEnableChecks(self):
+	def updateMainPanelTreeEnableChecks(self) -> None:
 		pass
 		# FIXME: called from MainWin
 		# treev = self.treev_root
@@ -519,7 +524,7 @@ class CustomizeWindow(gtk.Dialog):
 		# 		item.enable,
 		# 	)
 
-	def save(self):
+	def save(self) -> None:
 		item = self.rootItem
 		item.updateVars()
 		conf.ud__wcalToolbarData.v = ud.wcalToolbarData
@@ -528,7 +533,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.saveConfCustomize()
 		# data = item.getData()-- remove? FIXME
 
-	def onSaveClick(self, _button=None, _event=None):
+	def onSaveClick(self, _button=None, _event=None) -> bool:
 		self.save()
 		self.hide()
 		return True

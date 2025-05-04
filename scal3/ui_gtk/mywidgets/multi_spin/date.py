@@ -8,7 +8,7 @@ __all__ = ["DateButton"]
 
 
 class DateButton(MultiSpinButton):
-	def __init__(self, date=None, **kwargs):
+	def __init__(self, date=None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep="/",
@@ -27,7 +27,7 @@ class DateButton(MultiSpinButton):
 		y, m, d = self.get_value()
 		return to_jd(y, m, d, calType)
 
-	def changeCalType(self, fromMode, toMode):
+	def changeCalType(self, fromMode, toMode) -> None:
 		self.set_value(
 			jd_to(
 				self.get_jd(fromMode),
@@ -35,6 +35,6 @@ class DateButton(MultiSpinButton):
 			),
 		)
 
-	def setMaxDay(self, maxDay):
+	def setMaxDay(self, maxDay) -> None:
 		self.field.children[2].setMax(maxDay)
 		self.update()

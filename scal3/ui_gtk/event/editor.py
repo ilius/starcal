@@ -17,7 +17,7 @@ class EventEditorDialog(gtk.Dialog):
 		isNew=False,
 		useSelectedDate=False,
 		**kwargs,
-	):
+	) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
@@ -90,7 +90,7 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
 
-	def replaceExistingEvent(self, eventType):
+	def replaceExistingEvent(self, eventType) -> None:
 		oldEvent = self.event
 		newEvent = self._group.create(eventType)
 		# ---
@@ -101,7 +101,7 @@ class EventEditorDialog(gtk.Dialog):
 		oldEvent.invalidate()
 		self.event = newEvent
 
-	def replaceEventWithType(self, eventType):
+	def replaceEventWithType(self, eventType) -> None:
 		if not self.isNew:
 			self.replaceExistingEvent(eventType)
 			return
@@ -116,7 +116,7 @@ class EventEditorDialog(gtk.Dialog):
 		for attr, value in restoreDict.items():
 			setattr(self.event, attr, value)
 
-	def typeChanged(self, combo):
+	def typeChanged(self, combo) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()

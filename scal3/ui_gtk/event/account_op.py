@@ -9,7 +9,7 @@ __all__ = ["AccountEditorDialog"]
 
 
 class AccountEditorDialog(gtk.Dialog):
-	def __init__(self, account=None, **kwargs):
+	def __init__(self, account=None, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Account") if account else _("Add New Account"))
 		# ---
@@ -58,10 +58,10 @@ class AccountEditorDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo):
+	def dateModeChanged(self, combo) -> None:
 		pass
 
-	def typeChanged(self, _combo=None):
+	def typeChanged(self, _combo=None) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
@@ -93,6 +93,6 @@ class AccountEditorDialog(gtk.Dialog):
 
 
 class FetchRemoteGroupsDialog(gtk.Dialog):
-	def __init__(self, account, **kwargs):
+	def __init__(self, account, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.account = account

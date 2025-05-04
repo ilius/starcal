@@ -195,7 +195,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 			index for index, button in enumerate(self.buttons) if button.get_active()
 		]
 
-	def set(self, value: list[int]):
+	def set(self, value: list[int]) -> None:
 		buttons = self.buttons
 		for button in buttons:
 			button.set_active(False)
@@ -256,7 +256,7 @@ class CalTypePrefItem(PrefItem):
 	def set(self, value: int) -> None:
 		self._combo.set_active(value)
 
-	def onClick(self, _w):
+	def onClick(self, _w) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -457,7 +457,7 @@ class InactiveCalsTreeView(AICalsTreeview):
 
 
 class AICalsPrefItemToolbar(StaticToolBox):
-	def __init__(self, parent):
+	def __init__(self, parent) -> None:
 		StaticToolBox.__init__(
 			self,
 			parent,
@@ -513,7 +513,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 		tb.show_all()
 
 
-def treeviewSelect(treev, index):
+def treeviewSelect(treev, index) -> None:
 	path = gtk.TreePath.new_from_indices((index,))
 	selection = treev.get_selection()
 	# selection.unselect_all()
@@ -690,7 +690,7 @@ class AICalsPrefItem(PrefItem):
 		_treev: gtk.TreeView,
 		path: list[int],
 		_col: gtk.TreeViewColumn,
-	):
+	) -> None:
 		self.activateIndex(path[0])
 
 	def get(self) -> Any:
@@ -764,7 +764,7 @@ class KeyBindingPrefItem(PrefItem):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		self._widget = swin
 
-	def onMenuModifyKeyClick(self, _menu: gtk.Menu, rowI: int):
+	def onMenuModifyKeyClick(self, _menu: gtk.Menu, rowI: int) -> None:
 		trees = self.treev.get_model()
 		row = trees[rowI]
 		print(f"Modify Key: {row=}")  # noqa: T201
@@ -774,11 +774,11 @@ class KeyBindingPrefItem(PrefItem):
 	# 	row = trees[rowI]
 	# 	print(f"Default Key: {row=}")
 
-	def onMenuDeleteClick(self, _menu: gtk.Menu, rowI: int):
+	def onMenuDeleteClick(self, _menu: gtk.Menu, rowI: int) -> None:
 		trees = self.treev.get_model()
 		trees.remove(trees.get_iter(rowI))
 
-	def onTreeviewButtonPress(self, _widget, gevent):
+	def onTreeviewButtonPress(self, _widget, gevent) -> bool | None:
 		from scal3.ui_gtk.menuitems import ImageMenuItem
 
 		b = gevent.button
@@ -827,7 +827,7 @@ class KeyBindingPrefItem(PrefItem):
 
 		return False
 
-	def set(self, keys: dict[str, str]):
+	def set(self, keys: dict[str, str]) -> None:
 		trees = self.treev.get_model()
 		trees.clear()
 		for key, action in keys.items():

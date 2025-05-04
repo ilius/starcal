@@ -9,7 +9,7 @@ __all__ = ["VcsBaseWidgetClass"]
 class VcsBaseWidgetClass(NormalWidgetClass):
 	userCanAddEvents = False
 
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ------
 		hbox = HBox()
@@ -47,13 +47,13 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		hbox.show_all()
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		NormalWidgetClass.updateWidget(self)
 		self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
 		self.dirEntry.set_text(self.group.vcsDir)
 		self.branchEntry.set_text(self.group.vcsBranch)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		NormalWidgetClass.updateVars(self)
 		self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
 		self.group.vcsDir = self.dirEntry.get_text()

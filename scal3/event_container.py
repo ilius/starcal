@@ -23,10 +23,10 @@ __all__ = ["DummyEventContainer"]
 
 
 class DummyEventContainer:
-	def __init__(self, idsDict: dict[int, list[int]]):
+	def __init__(self, idsDict: dict[int, list[int]]) -> None:
 		self.idsDict = idsDict
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return sum(len(eventIds) for eventIds in self.idsDict.values())
 
 	def __iter__(self):

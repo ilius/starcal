@@ -35,7 +35,7 @@ __all__ = ["StarCalendarRegisterDialog"]
 
 
 class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		# ---
 		self.set_title(_("Register at StarCalendar.net"))
@@ -110,7 +110,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		# ---
 
-	def canSubmit(self):
+	def canSubmit(self) -> bool:
 		if not self.emailEntry.get_text():
 			return False
 
@@ -126,7 +126,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 
 		return True
 
-	def updateOkSensitive(self, *_args):
+	def updateOkSensitive(self, *_args) -> None:
 		ok = self.canSubmit()
 		self.okButton.set_sensitive(ok)
 		if ok:
@@ -188,17 +188,17 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		account.save()
 		return None
 
-	def onOkClick(self, _widget):
+	def onOkClick(self, _widget) -> bool:
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
 		return True
 
-	def onCancelClick(self, _widget):
+	def onCancelClick(self, _widget) -> bool:
 		self.destroy()
 		return True
 
-	def onDeleteEvent(self, _widget, _event):
+	def onDeleteEvent(self, _widget, _event) -> bool:
 		self.destroy()
 		return True
 

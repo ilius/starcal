@@ -5,7 +5,7 @@ __all__ = ["YearSpinButton"]
 
 
 class YearSpinButton(SingleSpinButton):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		SingleSpinButton.__init__(
 			self,
 			YearField(),

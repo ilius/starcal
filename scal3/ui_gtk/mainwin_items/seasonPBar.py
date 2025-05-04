@@ -16,7 +16,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	desc = _("Season Progress Bar")
 	itemListCustomizable = False
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		self.win = win
 		gtk.Frame.__init__(self)
 		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
@@ -26,7 +26,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		self.pbar.show()
 		self.initVars()
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		from scal3.season import getSeasonNamePercentFromJd
 
 		CustomizableCalObj.onDateChange(self, *a, **kw)

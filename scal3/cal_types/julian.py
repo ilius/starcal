@@ -98,7 +98,7 @@ monthLenSum = (
 )
 
 
-def save():
+def save() -> None:
 	pass
 
 

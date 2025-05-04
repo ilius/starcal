@@ -42,7 +42,7 @@ def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
 	raise NotImplementedError
 
 
-def prepareObj(obj):
+def prepareObj(obj) -> None:
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
 	# ---
 	obj.est = EventSearchTree()
@@ -51,7 +51,7 @@ def prepareObj(obj):
 		obj.est.add(epoch, epoch, rev_id)
 
 
-def clearObj(obj):
+def clearObj(obj) -> None:
 	obj.repo = None
 	obj.est = EventSearchTree()
 

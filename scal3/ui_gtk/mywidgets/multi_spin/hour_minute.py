@@ -7,7 +7,7 @@ __all__ = ["HourMinuteButton"]
 
 
 class HourMinuteButton(MultiSpinButton):
-	def __init__(self, hm=None, **kwargs):
+	def __init__(self, hm=None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep=":",
@@ -24,7 +24,7 @@ class HourMinuteButton(MultiSpinButton):
 	def get_value(self):
 		return MultiSpinButton.get_value(self) + [0]
 
-	def set_value(self, value):
+	def set_value(self, value) -> None:
 		if isinstance(value, int):
 			value = [value, 0]
 		else:

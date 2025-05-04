@@ -48,7 +48,7 @@ class WinLayoutBase(CustomizableCalObj):
 		enableParam: Property | None = None,
 		vertical: bool | None = None,
 		expand: bool | None = None,
-	):
+	) -> None:
 		if not name:
 			raise ValueError("name= argument is missing")
 		if vertical is None:
@@ -82,7 +82,7 @@ class WinLayoutObj(WinLayoutBase):
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
 		initializer: Callable[[], CustomizableCalObj] | None = None,
-	):
+	) -> None:
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")
 		# ---
@@ -101,7 +101,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.initializer = initializer
 		self._item: CustomizableCalObj | None = None
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
 		if self._item is None:
 			return
 		self._item.onKeyPress(arg, gevent)
@@ -119,7 +119,7 @@ class WinLayoutObj(WinLayoutBase):
 		self._item = item
 		return item
 
-	def showHide(self):
+	def showHide(self) -> None:
 		WinLayoutBase.showHide(self)
 		button = self.optionsButtonBox
 		if not button:
@@ -185,7 +185,7 @@ class WinLayoutBox(WinLayoutBase):
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,
-	):
+	) -> None:
 		if items is None:
 			raise ValueError("items= argument is missing")
 		if itemsMovable and not vertical:
@@ -211,12 +211,12 @@ class WinLayoutBox(WinLayoutBase):
 		# ---
 		self._box = None  # type: gtk.Box
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
 		for item in self.items:
 			if item.enable and item.onKeyPress(arg, gevent):
 				break
 
-	def showHide(self):
+	def showHide(self) -> None:
 		if self.enable:
 			self._box.show()
 		else:
@@ -235,7 +235,7 @@ class WinLayoutBox(WinLayoutBase):
 		self._box = box
 		return box
 
-	def onConfigChange(self, *args, **kwargs):
+	def onConfigChange(self, *args, **kwargs) -> None:
 		WinLayoutBase.onConfigChange(self, *args, **kwargs)
 		if self._box is None:
 			return
@@ -251,7 +251,7 @@ class WinLayoutBox(WinLayoutBase):
 		if self.itemsParam:
 			self.itemsParam.v = itemNames
 
-	def setItemsOrder(self, itemNames):
+	def setItemsOrder(self, itemNames) -> None:
 		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in itemNames]
 
@@ -301,7 +301,7 @@ class WinLayoutBox(WinLayoutBase):
 		self,
 		_button: gtk.Button,
 		item: WinLayoutBox | WinLayoutObj,
-	):
+	) -> None:
 		index = self.items.index(item)
 		if index == 0:
 			newIndex = index + 1

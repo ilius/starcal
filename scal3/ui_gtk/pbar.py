@@ -11,13 +11,13 @@ def MyProgressBar():
 
 
 class NewStyleProgressBar(gtk.ProgressBar):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.ProgressBar.__init__(self)
 		self.set_show_text(True)
 
 
 class OldStyleProgressBar(gtk.Overlay):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Overlay.__init__(self)
 		self.pbar = gtk.ProgressBar()
 		self.pbar.set_show_text(False)

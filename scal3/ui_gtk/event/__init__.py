@@ -44,7 +44,7 @@ def makeWidget(obj):
 	return widget
 
 
-def setActionFuncs(obj):
+def setActionFuncs(obj) -> None:
 	"""Obj is an instance of EventGroup."""
 	cls = obj.__class__
 	try:

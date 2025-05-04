@@ -39,7 +39,7 @@ def HBox(**kwargs):
 	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
 
 
-def pack(box, child, expand=False, fill=False, padding=0):
+def pack(box, child, expand=False, fill=False, padding=0) -> None:
 	if isinstance(box, gtk.Box):
 		box.pack_start(child, expand=expand, fill=fill, padding=padding)
 	elif isinstance(box, gtk.CellLayout):
@@ -119,7 +119,7 @@ def showMsg(
 	title="",
 	borderWidth=10,
 	selectable=False,
-):
+) -> None:
 	win = gtk.Dialog(
 		parent=parent,
 		transient_for=transient_for,
@@ -160,11 +160,11 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg, **kwargs):
+def showError(msg, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-error.svg", **kwargs)
 
 
-def error_exit(resCode, text, **kwargs):
+def error_exit(resCode, text, **kwargs) -> None:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,

@@ -40,7 +40,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 _ = str  # FIXME
 
 
-def error_exit(resCode, text, **kwargs):
+def error_exit(resCode, text, **kwargs) -> None:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,
@@ -56,7 +56,7 @@ def error_exit(resCode, text, **kwargs):
 class AdjusterDialog(gtk.Dialog):
 	xpad = 15
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
@@ -149,7 +149,7 @@ class AdjusterDialog(gtk.Dialog):
 		self.updateTimes()
 		self.vbox.show_all()
 
-	def onRadioManClick(self, _radio=None):
+	def onRadioManClick(self, _radio=None) -> None:
 		if self.radioMan.get_active():
 			self.vboxMan.set_sensitive(True)
 			self.hboxNtp.set_sensitive(False)
@@ -158,7 +158,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(True)
 		self.updateSetButtonSensitive()
 
-	def onRadioNtpClick(self, _radio=None):
+	def onRadioNtpClick(self, _radio=None) -> None:
 		if self.radioNtp.get_active():
 			self.vboxMan.set_sensitive(False)
 			self.hboxNtp.set_sensitive(True)
@@ -167,17 +167,17 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(False)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditTimeClick(self, _checkb=None):
+	def onCkeckbEditTimeClick(self, _checkb=None) -> None:
 		self.editTime = self.ckeckbEditTime.get_active()
 		self.timeInput.set_sensitive(self.editTime)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditDateClick(self, _checkb=None):
+	def onCkeckbEditDateClick(self, _checkb=None) -> None:
 		self.editDate = self.ckeckbEditDate.get_active()
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
 
-	def runCommand(self, cmd):
+	def runCommand(self, cmd) -> None:
 		proc = subprocess.Popen(
 			cmd,
 			stderr=subprocess.PIPE,
@@ -200,7 +200,7 @@ class AdjusterDialog(gtk.Dialog):
 		# else:
 		# 	sys.exit(0)
 
-	def setSystemTimeUnix(self, timeStr: str):
+	def setSystemTimeUnix(self, timeStr: str) -> None:
 		dateCmd = shutil.which("date")  # "/bin/date"
 		if not dateCmd:
 			error_exit(1, "Could not find command 'date'", transient_for=self)
@@ -219,7 +219,7 @@ class AdjusterDialog(gtk.Dialog):
 
 		raise OSError("unknown or unsupported operating system")
 
-	def updateTimes(self):
+	def updateTimes(self) -> bool:
 		# dt = now() % 1
 		timeout_add(clockWaitMilliseconds(), self.updateTimes)
 		# log.debug("updateTimes", dt)
@@ -233,7 +233,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.dateInput.set_value((y, m, d))
 		return False
 
-	def updateSetButtonSensitive(self, _widget=None):
+	def updateSetButtonSensitive(self, _widget=None) -> None:
 		if self.radioMan.get_active():
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
@@ -241,7 +241,7 @@ class AdjusterDialog(gtk.Dialog):
 				bool(self.ntpServerEntry.get_text()),
 			)
 
-	def onSetSysTimeClick(self, _widget=None):
+	def onSetSysTimeClick(self, _widget=None) -> None:
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()

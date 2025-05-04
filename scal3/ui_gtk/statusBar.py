@@ -21,7 +21,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	hasOptions = True
 	optionsPageSpacing = 15
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		self.win = win
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
@@ -36,7 +36,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			self.set_direction(gtk.TextDirection.LTR)
 			self.labelBox.set_direction(gtk.TextDirection.LTR)
 
-	def onConfigChange(self, *a, **kw):
+	def onConfigChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		# ---
 		for label in self.labelBox.get_children():
@@ -54,7 +54,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# ---
 		self.onDateChange()
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
 		for label in labels:

@@ -209,7 +209,7 @@ class LangData(SObjTextModel):
 		# --
 		self.timeZoneList: list[str] = []
 
-	def setData(self, data: dict):
+	def setData(self, data: dict) -> None:
 		SObjTextModel.setData(self, data)
 		# -----
 		for param in (

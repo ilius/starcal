@@ -50,7 +50,7 @@ class CourseListEditor(gtk.Box):
 		defaultCourseName="New Course",
 		defaultCourseUnits=3,
 		enableScrollbars=False,
-	):
+	) -> None:
 		self.term = term  # UniversityTerm obj
 		self.defaultCourseName = _(defaultCourseName)
 		self.defaultCourseUnits = defaultCourseUnits
@@ -126,7 +126,7 @@ class CourseListEditor(gtk.Box):
 		except (ValueError, IndexError):
 			return None
 
-	def onAddClick(self, _button):
+	def onAddClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		lastCourseId = max(
 			[1] + [row[0] for row in self.treeModel],
@@ -145,13 +145,13 @@ class CourseListEditor(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
 
-	def onDeleteClick(self, _button):
+	def onDeleteClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, _button):
+	def onMoveUpClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -165,7 +165,7 @@ class CourseListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, _button):
+	def onMoveDownClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -179,17 +179,17 @@ class CourseListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(index + 1)
 
-	def courseNameEdited(self, _cell, path, newText):
+	def courseNameEdited(self, _cell, path, newText) -> None:
 		# log.debug("courseNameEdited", newText)
 		index = int(path)
 		self.treeModel[index][1] = newText
 
-	def courseUnitsEdited(self, _cell, path, newText):
+	def courseUnitsEdited(self, _cell, path, newText) -> None:
 		index = int(path)
 		units = numDecode(newText)
 		self.treeModel[index][2] = units
 
-	def setData(self, rows):
+	def setData(self, rows) -> None:
 		self.treeModel.clear()
 		for row in rows:
 			self.treeModel.append(row)
@@ -199,7 +199,7 @@ class CourseListEditor(gtk.Box):
 
 
 class ClassTimeBoundsEditor(gtk.Box):
-	def __init__(self, term):
+	def __init__(self, term) -> None:
 		self.term = term
 		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -246,7 +246,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		except (ValueError, IndexError):
 			return None
 
-	def onAddClick(self, _button):
+	def onAddClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		row = ["00:00"]
 		if index is None:
@@ -255,13 +255,13 @@ class ClassTimeBoundsEditor(gtk.Box):
 			newIter = self.treeModel.insert(index + 1, row)
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
 
-	def onDeleteClick(self, _button):
+	def onDeleteClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, _button):
+	def onMoveUpClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -275,7 +275,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, _button):
+	def onMoveDownClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -289,7 +289,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		)
 		self.treev.set_cursor(index + 1)
 
-	def timeEdited(self, _cell, path, newText):
+	def timeEdited(self, _cell, path, newText) -> None:
 		index = int(path)
 		parts = newText.split(":")
 		h = numDecode(parts[0])
@@ -298,7 +298,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		self.treeModel[index][0] = hm
 		# self.treeModel.sort()-- FIXME
 
-	def setData(self, hmList):
+	def setData(self, hmList) -> None:
 		self.treeModel.clear()
 		for hm in hmList:
 			self.treeModel.append([hmEncode(hm)])
@@ -308,7 +308,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 
 
 class WidgetClass(NormalWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# -----
 		totalFrame = gtk.Frame()
@@ -337,12 +337,12 @@ class WidgetClass(NormalWidgetClass):
 		totalFrame.add(totalVbox)
 		pack(self, totalFrame, 1, 1)  # expand? FIXME
 
-	def updateWidget(self):  # FIXME
+	def updateWidget(self) -> None:  # FIXME
 		NormalWidgetClass.updateWidget(self)
 		self.courseListEditor.setData(self.group.courses)
 		self.classTimeBoundsEditor.setData(self.group.classTimeBounds)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		NormalWidgetClass.updateVars(self)
 		# --
 		self.group.setCourses(self.courseListEditor.getData())
@@ -351,7 +351,7 @@ class WidgetClass(NormalWidgetClass):
 
 @registerType
 class WeeklyScheduleWidget(gtk.DrawingArea):
-	def __init__(self, term):
+	def __init__(self, term) -> None:
 		self.term = term
 		self.data = []
 		# ----
@@ -360,7 +360,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.connect("draw", self.onExposeEvent)
 		# self.connect("event", show_event)
 
-	def onExposeEvent(self, _widget=None, _event=None):
+	def onExposeEvent(self, _widget=None, _event=None) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -374,7 +374,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawCairo(self, cr):
+	def drawCairo(self, cr) -> None:
 		if not self.data:
 			return
 		# t0 = now()
@@ -490,7 +490,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 
 
 class WeeklyScheduleWindow(gtk.Dialog):
-	def __init__(self, term, **kwargs):
+	def __init__(self, term, **kwargs) -> None:
 		self.term = term
 		gtk.Dialog.__init__(self, **kwargs)
 		self.resize(800, 500)
@@ -516,17 +516,17 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		self.vbox.show_all()
 		self.updateWidget()
 
-	def onDeleteEvent(self, _win, _gevent):
+	def onDeleteEvent(self, _win, _gevent) -> bool:
 		self.destroy()
 		return True
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self._widget.data = self.term.getWeeklyScheduleData(
 			self.currentWOnlyCheck.get_active(),
 		)
 		self._widget.queue_draw()
 
-	def exportToSvg(self, fpath):
+	def exportToSvg(self, fpath) -> None:
 		import cairo
 
 		aloc = self._widget.get_allocation()
@@ -536,7 +536,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		surface.flush()
 		surface.finish()
 
-	def onExportToSvgClick(self, _obj=None):
+	def onExportToSvgClick(self, _obj=None) -> None:
 		fcd = gtk.FileChooserDialog(
 			transient_for=self,
 			action=gtk.FileChooserAction.SAVE,
@@ -560,5 +560,5 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		fcd.destroy()
 
 
-def viewWeeklySchedule(group, parentWin=None):
+def viewWeeklySchedule(group, parentWin=None) -> None:
 	WeeklyScheduleWindow(group, transient_for=parentWin).show()

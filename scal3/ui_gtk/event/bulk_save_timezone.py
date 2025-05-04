@@ -22,7 +22,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 
 
 class BulkSaveTimeZoneDialog(gtk.Dialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		gtk.Dialog.__init__(self, **kwargs)
@@ -80,7 +80,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		# ----
 		self.vbox.show_all()
 
-	def onResponse(self, _dialog, responseId):
+	def onResponse(self, _dialog, responseId) -> None:
 		if responseId == gtk.ResponseType.OK:
 			timeZone = self.timeZoneInput.get_text()
 			try:

@@ -44,7 +44,7 @@ screenWidth = rootWin.get_width()
 
 @registerType
 class FloatingMsg(gtk.DrawingArea):
-	def on_realize(self, _widget):
+	def on_realize(self, _widget) -> None:
 		self.animateStart()
 
 	def __init__(
@@ -57,7 +57,7 @@ class FloatingMsg(gtk.DrawingArea):
 		finishFunc=None,
 		finishOnClick=True,
 		createWindow=True,
-	):
+	) -> None:
 		gtk.DrawingArea.__init__(self)
 		# speed: pixels per second
 		self.speed = speed
@@ -105,7 +105,7 @@ class FloatingMsg(gtk.DrawingArea):
 				return y < 0
 		return False
 
-	def updateLine(self):
+	def updateLine(self) -> None:
 		self.layout = self.layoutList[self.index]
 		self.rtl = self.rtlList[self.index]
 		self.rtlSign = 1 if self.rtl else -1
@@ -118,14 +118,14 @@ class FloatingMsg(gtk.DrawingArea):
 		self.startXpos = -self.textWidth if self.rtl else screenWidth
 		self.xpos = self.startXpos
 
-	def finish(self, _w=None, _e=None):
+	def finish(self, _w=None, _e=None) -> None:
 		self.isFinished = True
 		self.win.destroy()
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
 
-	def onExposeEvent(self, _widget, _gevent):
+	def onExposeEvent(self, _widget, _gevent) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -139,7 +139,7 @@ class FloatingMsg(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context):
+	def drawWithContext(self, cr: cairo.Context) -> None:
 		cr.rectangle(0, 0, screenWidth, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -148,12 +148,12 @@ class FloatingMsg(gtk.DrawingArea):
 		setColor(cr, self.textColor)
 		show_layout(cr, self.layout)
 
-	def animateStart(self):
+	def animateStart(self) -> None:
 		self.updateLine()
 		self.startTime = perf_counter()
 		self.animateUpdate()
 
-	def animateUpdate(self):
+	def animateUpdate(self) -> None:
 		if self.isFinished:
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
@@ -168,20 +168,20 @@ class FloatingMsg(gtk.DrawingArea):
 			self.updateLine()
 		self.queue_draw()
 
-	def show(self):
+	def show(self) -> None:
 		gtk.DrawingArea.show(self)
 		self.win.show()
 
 
 @registerType
 class MyLabel(gtk.DrawingArea):
-	def __init__(self, bgColor, textColor):
+	def __init__(self, bgColor, textColor) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
 		self.textColor = textColor
 		self.connect("draw", self.onExposeEvent)
 
-	def set_label(self, text):
+	def set_label(self, text) -> None:
 		self.text = text
 		self.layout = newTextLayout(self, text)
 		size = self.layout.get_pixel_size()
@@ -191,7 +191,7 @@ class MyLabel(gtk.DrawingArea):
 		self.rtl = self.isRtl()
 		self.rtlSign = 1 if self.rtl else -1
 
-	def onExposeEvent(self, _widget, _gevent):
+	def onExposeEvent(self, _widget, _gevent) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -205,7 +205,7 @@ class MyLabel(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context):
+	def drawWithContext(self, cr: cairo.Context) -> None:
 		cr.rectangle(0, 0, self.width, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -233,7 +233,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		refreshTime=10,
 		finishFunc=None,
 		finishOnClick=True,
-	):
+	) -> None:
 		gtk.Window.__init__(self)
 		self.set_type_hint(gtk.WindowType.POPUP)
 		# ^ OR gtk.WindowType.POPUP ?
@@ -265,22 +265,22 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		# --------
 		self.connect("realize", lambda _w: self.animateStart())
 
-	def updateLine(self):
+	def updateLine(self) -> None:
 		self.label.set_label(self.lines[self.index])
 		self.startXpos = -self.label.width if self.label.rtl else screenWidth
 		self.startTime = perf_counter()
 
-	def finish(self, _w=None, _e=None):
+	def finish(self, _w=None, _e=None) -> None:
 		self.isFinished = True
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
 
-	def animateStart(self):
+	def animateStart(self) -> None:
 		self.updateLine()
 		self.animateUpdate()
 
-	def animateUpdate(self):
+	def animateUpdate(self) -> None:
 		if self.isFinished:
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)

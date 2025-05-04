@@ -4,11 +4,11 @@ from scal3.date_utils import parseDroppedDate
 
 
 class TestParseDroppedDate(unittest.TestCase):
-	def case(self, text, date):
+	def case(self, text, date) -> None:
 		actualDate = parseDroppedDate(text)
 		self.assertEqual(actualDate, date)
 
-	def test_parseDroppedDate(self):
+	def test_parseDroppedDate(self) -> None:
 		self.case("", None)
 		self.case("2020", None)
 		self.case("2020/1", None)

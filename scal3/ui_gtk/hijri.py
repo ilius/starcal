@@ -48,7 +48,7 @@ def getCurrentYm():
 
 
 class EditDbDialog(gtk.Dialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tune Hijri Monthes"))
 		self.connect("delete-event", self.onDeleteEvent)
@@ -161,14 +161,14 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		self.vbox.show_all()
 
-	def resetToDefaults(self, _widget):
+	def resetToDefaults(self, _widget) -> bool:
 		if isfile(hijri.monthDb.userDbPath):
 			os.remove(hijri.monthDb.userDbPath)
 		hijri.monthDb.load()
 		self.updateWidget()
 		return True
 
-	def onAddClick(self, _widget=None):
+	def onAddClick(self, _widget=None) -> None:
 		last = self.treeModel[-1]
 		# 0 ym
 		# 1 yearLocale
@@ -190,17 +190,17 @@ class EditDbDialog(gtk.Dialog):
 		self.updateEndDates()
 		self.selectLastRow()
 
-	def selectLastRow(self):
+	def selectLastRow(self) -> None:
 		lastPath = (len(self.treeModel) - 1,)
 		self.treev.scroll_to_cell(lastPath)
 		self.treev.set_cursor(lastPath)
 
-	def onDeleteClick(self, _widget=None):
+	def onDeleteClick(self, _widget=None) -> None:
 		if len(self.treeModel) > 1:
 			del self.treeModel[-1]
 		self.selectLastRow()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		# for index, module in calTypes.iterIndexModule():
 		# 	if module.name != "hijri":
 		for calType in calTypes.active:
@@ -245,7 +245,7 @@ class EditDbDialog(gtk.Dialog):
 			self.treev.scroll_to_cell(str(selectIndex))
 			self.treev.set_cursor(str(selectIndex))
 
-	def updateEndDates(self):
+	def updateEndDates(self) -> None:
 		y, m, d = self.startDateInput.get_value()
 		jd0 = to_jd(y, m, d, self.altMode) - 1
 		for row in self.treeModel:
@@ -253,7 +253,7 @@ class EditDbDialog(gtk.Dialog):
 			jd0 += mLen
 			row[4] = dateLocale(*jd_to(jd0, self.altMode))
 
-	def monthLenCellEdited(self, _combo, path_string, new_text):
+	def monthLenCellEdited(self, _combo, path_string, new_text) -> None:
 		editIndex = int(path_string)
 		mLen = int(new_text)
 		if mLen not in {29, 30}:
@@ -276,7 +276,7 @@ class EditDbDialog(gtk.Dialog):
 					break
 		self.updateEndDates()
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		y, m, d = self.startDateInput.get_value()
 		hijri.monthDb.endJd = hijri.monthDb.startJd = to_jd(y, m, d, self.altMode)
 		hijri.monthDb.monthLenByYm = {}
@@ -289,13 +289,13 @@ class EditDbDialog(gtk.Dialog):
 		hijri.monthDb.expJd = hijri.monthDb.endJd
 		hijri.monthDb.save()
 
-	def run(self):
+	def run(self) -> None:
 		hijri.monthDb.load()
 		self.updateWidget()
 		self.treev.grab_focus()
 		gtk.Dialog.run(self)
 
-	def onResponse(self, _dialog, response_id):
+	def onResponse(self, _dialog, response_id) -> bool:
 		if response_id == gtk.ResponseType.OK:
 			self.updateVars()
 			self.destroy()
@@ -303,12 +303,12 @@ class EditDbDialog(gtk.Dialog):
 			self.destroy()
 		return True
 
-	def onDeleteEvent(self, _dialog, _gevent):
+	def onDeleteEvent(self, _dialog, _gevent) -> bool:
 		self.destroy()
 		return True
 
 
-def tuneHijriMonthes(_widget=None):
+def tuneHijriMonthes(_widget=None) -> None:
 	dialog = EditDbDialog(transient_for=ui.prefWindow)
 	dialog.resize(400, 400)
 	dialog.run()
@@ -331,7 +331,7 @@ Please update StarCalendar.
 Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 	)
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Hijri months expired"))
 		self.connect("response", self.onResponse)
@@ -353,7 +353,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		# ---
 		self.vbox.show_all()
 
-	def onResponse(self, _dialog, _response_id):
+	def onResponse(self, _dialog, _response_id) -> bool:
 		if self.noShowCheckb.get_active():
 			with open(hijri.monthDbExpiredIgnoreFile, "w", encoding="utf-8") as _file:
 				_file.write("")
@@ -361,7 +361,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		return True
 
 
-def checkHijriMonthsExpiration():
+def checkHijriMonthsExpiration() -> None:
 	if not dbIsExpired():
 		# not expired
 		return
@@ -373,7 +373,7 @@ def checkHijriMonthsExpiration():
 
 
 class HijriMonthsExpirationListener:
-	def onCurrentDateChange(self, _gdate):  # noqa: PLR6301
+	def onCurrentDateChange(self, _gdate) -> None:  # noqa: PLR6301
 		checkHijriMonthsExpiration()
 
 

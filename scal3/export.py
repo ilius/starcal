@@ -22,7 +22,7 @@ from scal3.ui import conf
 __all__ = ["exportToHtml"]
 
 
-def rgbToHtml(r, g, b, a=None):  # noqa: ARG001
+def rgbToHtml(r, g, b, a=None) -> str:  # noqa: ARG001
 	return f"#{r:02x}{g:02x}{b:02x}"
 	# What to do with alpha?
 
@@ -54,7 +54,7 @@ def colorComposite(front, back):
 	# and don't multiply others by `a0`
 
 
-def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0):
+def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0) -> None:
 	def sizeMap(size):
 		return fontSizeScale * (size * 0.25 - 0.5)
 

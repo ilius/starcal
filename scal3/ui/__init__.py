@@ -481,7 +481,7 @@ timeout_initial = 200
 timeout_repeat = 50
 
 
-def updateFocusTime(*_args):
+def updateFocusTime(*_args) -> None:
 	global focusTime
 	focusTime = perf_counter()
 

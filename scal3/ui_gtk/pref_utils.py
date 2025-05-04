@@ -252,7 +252,7 @@ class FontFamilyPrefItem(PrefItem):
 		hasAuto: bool = False,
 		label: str = "",
 		onChangeFunc: Callable | None = None,
-	):
+	) -> None:
 		self.prop = prop
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
@@ -310,7 +310,7 @@ class FontFamilyPrefItem(PrefItem):
 		if self._onChangeFunc:
 			self._onChangeFunc()
 
-	def setPreviewText(self, text):
+	def setPreviewText(self, text) -> None:
 		self.fontButton.set_property("preview-text", text)
 
 
@@ -339,7 +339,7 @@ class ComboEntryTextPrefItem(PrefItem):
 		self,
 		prop: Property[str],
 		items: list[str] | None = None,
-	):
+	) -> None:
 		"""Items is a list of strings."""
 		self.prop = prop
 		w = gtk.ComboBoxText.new_with_entry()
@@ -354,7 +354,7 @@ class ComboEntryTextPrefItem(PrefItem):
 	def set(self, value: str) -> None:
 		self._widget.get_child().set_text(value)
 
-	def addDescriptionColumn(self, descByValue: dict):
+	def addDescriptionColumn(self, descByValue: dict) -> None:
 		w = self._widget
 		cell = gtk.CellRendererText()
 		pack(w, cell, True)
@@ -369,7 +369,7 @@ class ComboImageTextPrefItem(PrefItem):
 		self,
 		prop: Property[int],
 		items: list[tuple[str, str]] | None = None,
-	):
+	) -> None:
 		"""Items is a list of (imagePath, text) tuples."""
 		self.prop = prop
 		# ---
@@ -434,7 +434,7 @@ class FontPrefItem(PrefItem):
 			return
 		self._widget.set_font(value)
 
-	def setPreviewText(self, text):
+	def setPreviewText(self, text) -> None:
 		self._widget.set_preview_text(text)
 		# self._widget.set_property("preview-text", text)
 
@@ -465,7 +465,7 @@ class CheckPrefItem(PrefItem):
 	def get(self) -> bool:
 		return self._widget.get_active()
 
-	def set(self, value: bool):
+	def set(self, value: bool) -> None:
 		self._widget.set_active(value)
 
 	def onClick(self, _w: gtk.Widget) -> None:
@@ -531,7 +531,7 @@ class ColorPrefItem(PrefItem):
 			return
 		self._widget.set_rgba(color)
 
-	def onColorSet(self, _w: gtk.Widget):
+	def onColorSet(self, _w: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -656,7 +656,7 @@ class SpinPrefItem(PrefItem):
 		unitLabel: str = "",
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
-	):
+	) -> None:
 		minim, maxim = bounds
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
@@ -707,7 +707,7 @@ class TextPrefItem(PrefItem):
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable | None = None,
-	):
+	) -> None:
 		from scal3.ui_gtk.mywidgets import TextFrame
 
 		self.prop = prop
@@ -747,7 +747,7 @@ class WidthHeightPrefItem(PrefItem):
 		self,
 		prop: Property[tuple[int, int]],
 		maxim: float,
-	):
+	) -> None:
 		minim = 0
 		self.prop = prop
 		# ---
@@ -767,7 +767,7 @@ class WidthHeightPrefItem(PrefItem):
 			int(self.heightItem.get_value()),
 		)
 
-	def set(self, value: tuple[int, int]):
+	def set(self, value: tuple[int, int]) -> None:
 		w, h = value
 		self.widthItem.set_value(w)
 		self.heightItem.set_value(h)
@@ -779,7 +779,7 @@ class FileChooserPrefItem(PrefItem):
 		prop: Property[str],
 		title: str = "Select File",
 		currentFolder: str = "",
-	):
+	) -> None:
 		self.prop = prop
 		# ---
 		dialog = gtk.FileChooserDialog(
@@ -953,7 +953,7 @@ class ListPrefItem(PrefItem):
 	def get(self) -> list[Any]:
 		return [item.get() for item in self.items]
 
-	def set(self, valueL: list[Any]):
+	def set(self, valueL: list[Any]) -> None:
 		for i in range(self.num):
 			self.items[i].set(valueL[i])
 

@@ -79,7 +79,7 @@ if TYPE_CHECKING:
 __all__ = ["TimeLineWindow"]
 
 
-def show_event(widget, gevent):
+def show_event(widget, gevent) -> None:
 	log.info(
 		type(widget),
 		gevent.type.value_name,
@@ -92,26 +92,26 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	objName = "timeLine"
 	desc = _("Time Line")
 
-	def centerToNow(self):
+	def centerToNow(self) -> None:
 		self.stopMovingAnim()
 		self.timeStart = now() - self.timeWidth / 2.0
 
-	def showDayInWeek(self, jd):
+	def showDayInWeek(self, jd) -> None:
 		timeCenter = getEpochFromJd(jd) + dayLen / 2
 		timeWidth = 7 * dayLen
 		self.timeStart = timeCenter - timeWidth / 2
 		self.timeWidth = timeWidth
 		self.queue_draw()
 
-	def onCenterToNowClick(self, _arg=None):
+	def onCenterToNowClick(self, _arg=None) -> None:
 		self.centerToNow()
 		self.queue_draw()
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		ud.BaseCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
-	def __init__(self, closeFunc):
+	def __init__(self, closeFunc) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
@@ -162,7 +162,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.timeUpdateSourceId = None
 		self.animTimerSource = None
 
-	def updateBasicButtons(self):
+	def updateBasicButtons(self) -> None:
 		size = conf.basicButtonsSize.v
 		space = size + conf.basicButtonsSpacing.v
 		self.basicButtons = [
@@ -224,7 +224,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			),
 		]
 
-	def updateMovementButtons(self):
+	def updateMovementButtons(self) -> None:
 		if not conf.movementButtonsEnable.v:
 			self.movementButtons = []
 			return
@@ -271,30 +271,30 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def getButtons(self):
 		return self.basicButtons + self.movementButtons
 
-	def onMoveLeftClick(self, _button: gdk.EventButton):
+	def onMoveLeftClick(self, _button: gdk.EventButton) -> None:
 		self.startAnimConstantAccel(-1, conf.movingHandForceButton.v)
 		# FIXME: what if animation is disabled?
 
-	def onMoveRightClick(self, _button: gdk.EventButton):
+	def onMoveRightClick(self, _button: gdk.EventButton) -> None:
 		self.startAnimConstantAccel(1, conf.movingHandForceButton.v)
 		# FIXME: what if animation is disabled?
 
-	def onMoveStopClick(self, _button: gdk.EventButton):
+	def onMoveStopClick(self, _button: gdk.EventButton) -> None:
 		self.stopMovingAnim()
 
-	def arrowButtonReleased(self):
+	def arrowButtonReleased(self) -> None:
 		self.movingF = 0
 		# ^ this will only make it stop slowly (by friction force)
 		# if you want it to stop movement, set: self.movingV = 0
 		# just like self.stopMovingAnim
 
-	def onZoomMenuItemClick(self, _item, timeWidth):
+	def onZoomMenuItemClick(self, _item, timeWidth) -> None:
 		timeCenter = self.timeStart + self.timeWidth / 2
 		self.timeStart = timeCenter - timeWidth / 2
 		self.timeWidth = timeWidth
 		self.queue_draw()
 
-	def zoomMenuOpen(self, _button: gdk.EventButton):
+	def zoomMenuOpen(self, _button: gdk.EventButton) -> None:
 		avgYearLen = dayLen * calTypes.primaryModule().avgYearLen
 		etime = gtk.get_current_event_time()
 		menu = Menu()
@@ -324,14 +324,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			etime,
 		)
 
-	def openPreferences(self, _arg=None):
+	def openPreferences(self, _arg=None) -> None:
 		from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
 		if self.prefWindow is None:
 			self.prefWindow = TimeLinePreferencesWindow(self)
 		openWindow(self.prefWindow)
 
-	def currentTimeUpdate(self, restart=False, draw=True):
+	def currentTimeUpdate(self, restart=False, draw=True) -> None:
 		if restart and self.timeUpdateSourceId is not None:
 			source_remove(self.timeUpdateSourceId)
 			self.timeUpdateSourceId = None
@@ -358,7 +358,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
 			self.queue_draw()
 
-	def updateData(self):
+	def updateData(self) -> None:
 		width = self.get_allocation().width
 		self.pixelPerSec = width / self.timeWidth  # pixel/second
 		self.borderTm = conf.boxEditBorderWidth.v / self.pixelPerSec  # second
@@ -369,7 +369,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.borderTm,
 		)
 
-	def drawTick(self, cr, tick, maxTickHeight):
+	def drawTick(self, cr, tick, maxTickHeight) -> None:
 		tickH = tick.height
 		tickW = tick.width
 		tickH = min(tickH, maxTickHeight)
@@ -406,7 +406,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			# cr.move_to never seems to raise exception anymore
 			show_layout(cr, layout)  # with the same tick.color
 
-	def drawBox(self, cr, box):
+	def drawBox(self, cr, box) -> None:
 		x = box.x
 		w = box.w
 		y = box.y
@@ -416,7 +416,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		drawBoxBorder(cr, box, x, y, w, h)
 		drawBoxText(cr, box, x, y, w, h, self)
 
-	def drawBoxEditingHelperLines(self, cr):
+	def drawBoxEditingHelperLines(self, cr) -> None:
 		if not self.boxEditing:
 			return
 		_editType, _event, box, _x0, _t0 = self.boxEditing
@@ -437,7 +437,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)
 		cr.fill()
 
-	def drawAll(self, cr):
+	def drawAll(self, cr) -> None:
 		timeStart = self.timeStart
 		timeWidth = self.timeWidth
 		timeEnd = timeStart + timeWidth
@@ -505,7 +505,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		for button in self.getButtons():
 			button.draw(cr, width, height)
 
-	def onExposeEvent(self, _widget=None, _event=None):
+	def onExposeEvent(self, _widget=None, _event=None) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -519,7 +519,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context):
+	def drawWithContext(self, cr: cairo.Context) -> None:
 		# t0 = perf_counter()
 		if not self.boxEditing:
 			self.updateData()
@@ -541,7 +541,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			return ""
 		return None
 
-	def onScroll(self, _widget, gevent):
+	def onScroll(self, _widget, gevent) -> bool | None:
 		smallForce = False
 		if gevent.is_scroll_stop_event():  # or gevent.is_stop == 1
 			smallForce = True
@@ -568,7 +568,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, _obj, gevent):
+	def onButtonPress(self, _obj, gevent) -> bool:
 		if self.pressingButton is not None:
 			self.pressingButton.onRelease()
 			self.pressingButton = None
@@ -679,7 +679,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				menu.popup(None, None, None, None, 3, gevent.time)
 		return False
 
-	def motionNotify(self, _obj, gevent):
+	def motionNotify(self, _obj, gevent) -> None:
 		if self.boxEditing:
 			editType, event, box, x0, t0 = self.boxEditing
 			t1 = t0 + (gevent.x - x0) / self.pixelPerSec
@@ -701,7 +701,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			)
 			self.queue_draw()
 
-	def buttonRelease(self, _obj, _gevent):
+	def buttonRelease(self, _obj, _gevent) -> None:
 		if self.boxEditing:
 			_editType, event, _box, _x0, _t0 = self.boxEditing
 			event.afterModify()
@@ -713,11 +713,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 		self.queue_draw()
 
-	def onConfigChange(self, *a, **kw):
+	def onConfigChange(self, *a, **kw) -> None:
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
 		self.queue_draw()
 
-	def onEditEventClick(self, _menu, winTitle, event, _gid):
+	def onEditEventClick(self, _menu, winTitle, event, _gid) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		event = EventEditorDialog(
@@ -730,7 +730,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
-	def onEditGroupClick(self, _menu, _winTitle, group):
+	def onEditGroupClick(self, _menu, _winTitle, group) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
 		group = GroupEditorDialog(
@@ -744,7 +744,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.onConfigChange()
 			self.queue_draw()
 
-	def moveEventToTrash(self, _menu, group, event):
+	def moveEventToTrash(self, _menu, group, event) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
 		if not confirmEventTrash(event):
@@ -752,7 +752,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		ui.moveEventToTrash(group, event, self)
 		self.onConfigChange()
 
-	def startResize(self, gevent):
+	def startResize(self, gevent) -> None:
 		self.get_parent().begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
@@ -761,44 +761,44 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			gevent.time,
 		)
 
-	def zoom(self, zoomIn, stepFact, posFact):
+	def zoom(self, zoomIn, stepFact, posFact) -> None:
 		zoomValue = 1.0 / stepFact if zoomIn else stepFact
 		self.timeStart += self.timeWidth * (1 - zoomValue) * posFact
 		self.timeWidth *= zoomValue
 
-	def keyboardZoom(self, zoomIn):
+	def keyboardZoom(self, zoomIn) -> None:
 		self.zoom(zoomIn, conf.keyboardZoomStep.v, 0.5)
 
-	def onKeyMoveToNow(self, _gevent: gdk.EventKey):
+	def onKeyMoveToNow(self, _gevent: gdk.EventKey) -> None:
 		self.centerToNow()
 
-	def onKeyMoveRight(self, gevent: gdk.EventKey):
+	def onKeyMoveRight(self, gevent: gdk.EventKey) -> None:
 		self.movingUserEvent(
 			direction=1,
 			source="keyboard",
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
-	def onKeyMoveLeft(self, gevent: gdk.EventKey):
+	def onKeyMoveLeft(self, gevent: gdk.EventKey) -> None:
 		self.movingUserEvent(
 			direction=-1,
 			source="keyboard",
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
-	def onKeyMoveStop(self, _gevent: gdk.EventKey):
+	def onKeyMoveStop(self, _gevent: gdk.EventKey) -> None:
 		self.stopMovingAnim()
 
-	def onKeyClose(self, _gevent: gdk.EventKey):
+	def onKeyClose(self, _gevent: gdk.EventKey) -> None:
 		self.closeFunc()
 
-	def onKeyZoomIn(self, _gevent: gdk.EventKey):
+	def onKeyZoomIn(self, _gevent: gdk.EventKey) -> None:
 		self.keyboardZoom(True)
 
-	def onKeyZoomOut(self, _gevent: gdk.EventKey):
+	def onKeyZoomOut(self, _gevent: gdk.EventKey) -> None:
 		self.keyboardZoom(False)
 
-	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		k = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(f"{now():.3f}")
 		action = conf.keys.v.get(k)
@@ -824,7 +824,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# 		self.emit("popup-main-menu", *self.getMainMenuPos())
 		return False
 
-	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):
+	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard") -> None:
 		"""Source in ("keyboard", "scroll", "button")."""
 		if conf.enableAnimation.v:
 			tm = perf_counter()
@@ -875,7 +875,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				/ self.get_allocation().width
 			)
 
-	def stopAnimTimers(self):
+	def stopAnimTimers(self) -> None:
 		if self.animTimerSource is None:
 			return
 		if not self.animTimerSource.is_destroyed():
@@ -884,7 +884,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# .is_destroyed() is checked to get rid of this warning:
 		# Warning: Source ID {id} was not found when attempting to remove it
 
-	def startAnimConstantAccel(self, direction, force):
+	def startAnimConstantAccel(self, direction, force) -> None:
 		if self.movingV != 0:
 			self.stopAnimTimers()
 		self.movingF = direction * force
@@ -967,7 +967,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return None
 
-	def stopMovingAnim(self):
+	def stopMovingAnim(self) -> None:
 		# stop moving immudiatly
 		self.movingF = 0
 		self.movingV = 0
@@ -978,7 +978,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 	objName = "timeLineWin"
 	desc = _("Time Line")
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Window.__init__(self)
 		self.initVars()
 		ud.windowList.appendItem(self)
@@ -995,17 +995,17 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		self.tline.show()
 		self.appendItem(self.tline)
 
-	def showDayInWeek(self, jd):
+	def showDayInWeek(self, jd) -> None:
 		self.tline.showDayInWeek(jd)
 
-	def onCloseClick(self, _arg=None, _event=None):
+	def onCloseClick(self, _arg=None, _event=None) -> bool:
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()  # FIXME
 		return True
 
-	def onButtonPress(self, _obj, gevent):
+	def onButtonPress(self, _obj, gevent) -> bool:
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

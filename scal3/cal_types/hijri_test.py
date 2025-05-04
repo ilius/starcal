@@ -475,7 +475,7 @@ class TestHijri(unittest.TestCase):
 		2459996: (1444, 7, 29),
 	}
 
-	def test_to_jd(self):
+	def test_to_jd(self) -> None:
 		for date, jd in self.dateToJdDict.items():
 			jdActual = hijri.to_jd(*date)
 			self.assertEqual(
@@ -484,7 +484,7 @@ class TestHijri(unittest.TestCase):
 				f"{date=}, {jd=}, {jdActual=}",
 			)
 
-	def test_jd_to(self):
+	def test_jd_to(self) -> None:
 		for jd, date in self.jdToDateDict.items():
 			dateActual = hijri.jd_to(jd)
 			self.assertEqual(
@@ -494,14 +494,14 @@ class TestHijri(unittest.TestCase):
 			)
 
 
-def print_to_jd_diff():
+def print_to_jd_diff() -> None:
 	for ym in hijri.monthDb.monthLenByYm:
 		y, m = divmod(ym, 12)
 		m += 1
 		print(hijri.to_jd(y, m, 1) - hijri.to_jd_c(y, m, 1))
 
 
-def gen_test_date_to_jd(golang=False):
+def gen_test_date_to_jd(golang=False) -> None:
 	for year in range(1426, 1444):
 		for month in range(1, 13):
 			day = 1
@@ -512,7 +512,7 @@ def gen_test_date_to_jd(golang=False):
 			print(f"\t\t({year}, {month}, {day}): {jd},")
 
 
-def gen_test_jd_to_date(golang=False):
+def gen_test_jd_to_date(golang=False) -> None:
 	for jd in range(2453442, 2459660 + 30, 27):
 		year, month, day = hijri.jd_to(jd)
 		if golang:

@@ -95,19 +95,19 @@ def versionLessThan(v0: str, v1: str) -> bool:
 
 
 class FallbackLogger:
-	def __init__(self):
+	def __init__(self) -> None:
 		pass
 
-	def error(self, text):  # noqa: PLR6301
+	def error(self, text) -> None:  # noqa: PLR6301
 		sys.stderr.write("ERROR: " + text + "\n")
 
-	def warning(self, text):  # noqa: PLR6301
+	def warning(self, text) -> None:  # noqa: PLR6301
 		log.info("WARNING: " + text)
 
-	def debug(self, text):  # noqa: PLR6301
+	def debug(self, text) -> None:  # noqa: PLR6301
 		log.info(text)
 
-	def exception(self, prefix):  # noqa: PLR6301
+	def exception(self, prefix) -> None:  # noqa: PLR6301
 		typ, value, tback = sys.exc_info()
 		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
 		log.error(prefix + "\n" + text)

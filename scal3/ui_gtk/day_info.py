@@ -35,11 +35,11 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 	objName = "allDateLabels"
 	desc = _("Dates")
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=5)
 		self.initVars()
 
-	def onDateChange(self, *a, **ka):
+	def onDateChange(self, *a, **ka) -> None:
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		for child in self.get_children():
 			child.destroy()
@@ -68,7 +68,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 	objName = "pluginsText"
 	desc = _("Plugins Text")
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.TextView.__init__(self)
 		self.initVars()
 		# ---
@@ -77,7 +77,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 		self.set_cursor_visible(False)
 		self.set_justification(gtk.Justification.CENTER)
 
-	def onDateChange(self, *a, **ka):
+	def onDateChange(self, *a, **ka) -> None:
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		self.get_buffer().set_text(ui.cells.current.getPluginsText())
 
@@ -87,7 +87,7 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 	objName = "jd"
 	desc = _("Julian Day Number")
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ---
@@ -99,7 +99,7 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 		# ---
 		self.show_all()
 
-	def onDateChange(self, *a, **ka):
+	def onDateChange(self, *a, **ka) -> None:
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		self.jdLabel.set_label(str(ui.cells.current.jd))
 
@@ -109,7 +109,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 	objName = "dayInfo"
 	desc = _("Day Info")
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
@@ -154,7 +154,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		# ---
 		self.vbox.show_all()
 
-	def appendDayInfoItem(self, item, expander=True):
+	def appendDayInfoItem(self, item, expander=True) -> None:
 		self.appendItem(item)
 		# ---
 		widget = item
@@ -167,18 +167,18 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 			widget = exp
 		pack(self.vbox, widget)
 
-	def onClose(self, _obj=None, _gevent=None):
+	def onClose(self, _obj=None, _gevent=None) -> bool:
 		self.hide()
 		return True
 
-	def goBack(self, _obj=None):
+	def goBack(self, _obj=None) -> None:
 		ui.cells.jdPlus(-1)
 		self.onDateChange()
 
-	def goToday(self, _obj=None):
+	def goToday(self, _obj=None) -> None:
 		ui.cells.gotoJd(core.getCurrentJd())
 		self.onDateChange()
 
-	def goNext(self, _obj=None):
+	def goNext(self, _obj=None) -> None:
 		ui.cells.jdPlus(1)
 		self.onDateChange()

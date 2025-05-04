@@ -90,12 +90,12 @@ confParams = {
 }
 
 
-def loadConf():
+def loadConf() -> None:
 	loadModuleConfig(__name__)
 	updateFormatsBin()
 
 
-def saveConf():
+def saveConf() -> None:
 	saveModuleConfig(__name__)
 
 
@@ -119,11 +119,11 @@ class BaseCalObj(CalObjType):
 		("goto-page", [str]),
 	]
 
-	def initVars(self):
+	def initVars(self) -> None:
 		self.items = []
 		self.enable = True
 
-	def onConfigChange(self, sender=None, toParent=True):
+	def onConfigChange(self, sender=None, toParent=True) -> None:
 		if sender is self:
 			return
 		if sender is None:
@@ -138,7 +138,7 @@ class BaseCalObj(CalObjType):
 			if item.enable and item is not sender:
 				item.onConfigChange(sender=sender, toParent=False)
 
-	def onDateChange(self, sender=None, toParent=True):
+	def onDateChange(self, sender=None, toParent=True) -> None:
 		if sender is self:
 			return
 		if sender is None:
@@ -153,7 +153,7 @@ class BaseCalObj(CalObjType):
 			if item.enable and item is not sender:
 				item.onDateChange(sender=sender, toParent=False)
 
-	def onEnableCheckClick(self):
+	def onEnableCheckClick(self) -> None:
 		enable = getattr(conf, self.enableParam)
 		self.enable = enable
 		self.onConfigChange()
@@ -165,7 +165,7 @@ class BaseCalObj(CalObjType):
 				return item
 		return None
 
-	def connectItem(self, item):
+	def connectItem(self, item) -> None:
 		item.connect("config-change", self.onConfigChange)
 		item.connect("date-change", self.onDateChange)
 
@@ -173,21 +173,21 @@ class BaseCalObj(CalObjType):
 	# 	self.items.insert(index, item)
 	# 	self.connectItem(item)
 
-	def appendItem(self, item):
+	def appendItem(self, item) -> None:
 		self.items.append(item)
 		self.connectItem(item)
 
-	def replaceItem(self, itemIndex, item):
+	def replaceItem(self, itemIndex, item) -> None:
 		self.items[itemIndex] = item
 		self.connectItem(item)
 
-	def moveItem(self, i, j):
+	def moveItem(self, i, j) -> None:
 		self.items.insert(j, self.items.pop(i))
 
-	def addItemWidget(self, i):
+	def addItemWidget(self, i) -> None:
 		pass
 
-	def showHide(self):
+	def showHide(self) -> None:
 		if hasattr(self, "set_visible"):
 			self.set_visible(self.enable)
 		else:
@@ -205,7 +205,7 @@ class IntegatedWindowList(BaseCalObj):
 	objName = "windowList"
 	desc = "Window List"
 
-	def __init__(self):
+	def __init__(self) -> None:
 		Object.__init__(self)
 		self.initVars()
 		ui.eventUpdateQueue.registerConsumer(self)
@@ -224,7 +224,7 @@ class IntegatedWindowList(BaseCalObj):
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
 		self.cssFuncList.append(func)
 
-	def updateIconSizes(self):
+	def updateIconSizes(self) -> None:
 		from scal3.ui_gtk import pixcache
 
 		alphabet = locale_man.getAlphabet()
@@ -260,7 +260,7 @@ class IntegatedWindowList(BaseCalObj):
 		ui.cells.clearEventsData()
 		self.onDateChange()
 
-	def onConfigChange(self, *a, **ka):
+	def onConfigChange(self, *a, **ka) -> None:
 		ui.cells.clear()
 		settings.set_property(
 			"gtk-font-name",
@@ -283,7 +283,7 @@ class IntegatedWindowList(BaseCalObj):
 	# should use a custom CSS style, through an application-specific
 	# Gtk.StyleProvider and a CSS style class.
 
-	def updateCSS(self):
+	def updateCSS(self) -> None:
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		from scal3.ui_gtk.utils import cssTextStyle
 
@@ -446,7 +446,7 @@ dateFormatBin = None
 clockFormatBin = None
 
 
-def updateFormatsBin():
+def updateFormatsBin() -> None:
 	global dateFormatBin, clockFormatBin
 	dateFormatBin = compileTmFormat(dateFormat.v)
 	clockFormatBin = compileTmFormat(clockFormat.v)
@@ -479,7 +479,7 @@ def findAskpass():
 	return None
 
 
-def setDefault_adjustTimeCmd():
+def setDefault_adjustTimeCmd() -> None:
 	global adjustTimeCmd
 	from os.path import isfile
 
@@ -627,7 +627,7 @@ else:
 # rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
 
 
-def screenSizeChanged(_screen):
+def screenSizeChanged(_screen) -> None:
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return

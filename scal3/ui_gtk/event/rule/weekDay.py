@@ -5,7 +5,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -17,7 +17,7 @@ class WidgetClass(gtk.Box):
 		self.cbList = ls
 		self.start = s
 
-	def setStart(self, s):
+	def setStart(self, s) -> None:
 		# not used, FIXME
 		b = self
 		ls = self.cbList
@@ -25,11 +25,11 @@ class WidgetClass(gtk.Box):
 			b.reorder_child(ls[(s + j) % 7], j)
 		self.start = s
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		cbl = self.cbList
 		self.rule.weekDayList = tuple(j for j in range(7) if cbl[j].get_active())
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		cbl = self.cbList
 		for cb in cbl:
 			cb.set_active(False)

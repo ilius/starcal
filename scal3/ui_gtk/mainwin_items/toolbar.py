@@ -11,7 +11,7 @@ __all__ = ["CalObj"]
 
 
 class MainMenuToolBoxItem(ToolBoxItem):
-	def __init__(self):
+	def __init__(self) -> None:
 		ToolBoxItem.__init__(
 			self,
 			name="mainMenu",
@@ -35,7 +35,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			y0 + h // 2,
 		)
 
-	def onButtonPress(self, _widget=None, gevent=None):
+	def onButtonPress(self, _widget=None, gevent=None) -> None:
 		toolbar = self.get_parent()
 		x, y = self.translate_coordinates(
 			toolbar.get_parent(),
@@ -137,7 +137,7 @@ class CalObj(CustomizableToolBox):
 	]
 	defaultItemsDict = {item.objName: item for item in defaultItems}
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		self.win = win
 		CustomizableToolBox.__init__(
 			self,
@@ -160,6 +160,6 @@ class CalObj(CustomizableToolBox):
 			self.connect("button-press-event", win.childButtonPress)
 			self.connect("popup-main-menu", win.menuMainPopup)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		CustomizableToolBox.updateVars(self)
 		ud.mainToolbarData = self.getData()

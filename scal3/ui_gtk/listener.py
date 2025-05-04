@@ -13,16 +13,16 @@ dayLen = 24 * 3600
 
 
 class DateChangeListener:
-	def __init__(self, timeout=1):
+	def __init__(self, timeout=1) -> None:
 		self.timeout = timeout  # seconds
 		self.receivers = []
 		self.gdate = localtime()[:3]
 		self.check()
 
-	def add(self, receiver):
+	def add(self, receiver) -> None:
 		self.receivers.append(receiver)
 
-	def check(self):
+	def check(self) -> None:
 		tm = now()
 		gdate = localtime(tm)[:3]
 		if gdate != self.gdate:
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 	from gi.repository import GLib as glib
 
 	class TestRec:
-		def onCurrentDateChange(self, gdate):  # noqa: PLR6301
+		def onCurrentDateChange(self, gdate) -> None:  # noqa: PLR6301
 			log.info(f"current date changed to {gdate!r}")
 
 	dateChange.add(TestRec())

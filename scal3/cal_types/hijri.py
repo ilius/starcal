@@ -132,7 +132,7 @@ def iceil(x: float) -> int:
 	return ceil(x)
 
 
-def save():
+def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
 		__name__,
@@ -142,7 +142,7 @@ def save():
 
 
 class MonthDbHolder:
-	def __init__(self):
+	def __init__(self) -> None:
 		self.startDate = (1426, 2, 1)  # hijriDbInitH
 		self.startJd = 2453441  # hijriDbInitJD
 		self.endJd = self.startJd  # hijriDbEndJD
@@ -151,7 +151,7 @@ class MonthDbHolder:
 		self.userDbPath = join(confDir, "hijri-monthes.json")
 		self.sysDbPath = f"{modDir}/hijri-monthes.json"
 
-	def setMonthLenByYear(self, monthLenByYear):
+	def setMonthLenByYear(self, monthLenByYear) -> None:
 		self.endJd = self.startJd
 		self.monthLenByYm = {}
 		for y in monthLenByYear:
@@ -166,7 +166,7 @@ class MonthDbHolder:
 		if self.expJd is None:
 			self.expJd = self.endJd
 
-	def setData(self, data):
+	def setData(self, data) -> None:
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
 		self.expJd = data.get("expJd", None)
@@ -176,7 +176,7 @@ class MonthDbHolder:
 			monthLenByYear[row[0]] = row[1:]
 		self.setMonthLenByYear(monthLenByYear)
 
-	def load(self):
+	def load(self) -> None:
 		with open(self.sysDbPath, encoding="utf-8") as fp:
 			data = json.loads(fp.read())
 		self.origVersion = data["version"]
@@ -199,7 +199,7 @@ class MonthDbHolder:
 			monthLenByYear[year].append(mLen)
 		return monthLenByYear
 
-	def save(self):
+	def save(self) -> None:
 		mLenData = [
 			[year] + mLenList for year, mLenList in self.getMonthLenByYear().items()
 		]

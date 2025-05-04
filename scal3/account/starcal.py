@@ -46,7 +46,7 @@ __all__ = ["StarCalendarAccount"]
 # 	}
 
 
-def formatJd(remoteEvent, attrName):
+def formatJd(remoteEvent, attrName) -> str:
 	jd = remoteEvent[attrName]
 	y, m, d = calTypes[remoteEvent["calType"]].jd_to(jd)
 	return f"{y:04}/{m:02}/{d:02}"
@@ -213,7 +213,7 @@ class StarCalendarAccount(Account):
 				error = data.pop("error")
 		return data, error
 
-	def __init__(self, aid=None):
+	def __init__(self, aid=None) -> None:
 		Account.__init__(self, aid)
 		self.email = ""
 		self.password = ""
@@ -288,10 +288,10 @@ class StarCalendarAccount(Account):
 		log.info(f"fetchGroups successful, {len(self.remoteGroups)} groups")
 		return None
 
-	def addNewGroup(self, title):
+	def addNewGroup(self, title) -> None:
 		pass
 
-	def deleteGroup(self, remoteGroupId):
+	def deleteGroup(self, remoteGroupId) -> None:
 		pass
 
 	def sync(self, group, remoteGroupId):  # noqa: ARG002

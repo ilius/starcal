@@ -16,7 +16,7 @@ __all__ = [
 
 
 class BaseWidgetClass(gtk.Box):
-	def __init__(self, account):
+	def __init__(self, account) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.account = account
 		# --------
@@ -31,15 +31,15 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.account.title)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.account.title = self.titleEntry.get_text()
 
 
 class AccountCombo(IdComboBox):
-	def __init__(self):
+	def __init__(self) -> None:
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -61,14 +61,14 @@ class AccountCombo(IdComboBox):
 			active = None
 		return active
 
-	def set_active(self, active):
+	def set_active(self, active) -> None:
 		if active is None:
 			active = -1
 		IdComboBox.set_active(self, active)
 
 
 class AccountGroupCombo(IdComboBox):
-	def __init__(self):
+	def __init__(self) -> None:
 		self.account = None
 		# ---
 		ls = gtk.ListStore(str, str)
@@ -79,11 +79,11 @@ class AccountGroupCombo(IdComboBox):
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 1)
 
-	def setAccount(self, account):
+	def setAccount(self, account) -> None:
 		self.account = account
 		self.updateList()
 
-	def updateList(self):
+	def updateList(self) -> None:
 		ls = self.get_model()
 		ls.clear()
 		if self.account:
@@ -97,7 +97,7 @@ class AccountGroupCombo(IdComboBox):
 
 
 class AccountGroupBox(gtk.Box):
-	def __init__(self, accountCombo=None):
+	def __init__(self, accountCombo=None) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.combo = AccountGroupCombo()
 		pack(self, self.combo)
@@ -118,13 +118,13 @@ class AccountGroupBox(gtk.Box):
 		if accountCombo:
 			accountCombo.connect("changed", self.accountComboChanged)
 
-	def accountComboChanged(self, combo):
+	def accountComboChanged(self, combo) -> None:
 		aid = combo.get_active()
 		if aid:
 			account = ui.eventAccounts[aid]
 			self.combo.setAccount(account)
 
-	def onFetchClick(self, _obj=None):
+	def onFetchClick(self, _obj=None) -> None:
 		combo = self.combo
 		account = combo.account
 		if not account:

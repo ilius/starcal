@@ -78,7 +78,7 @@ class Method:
 		isha=15,
 		maghrib="0 min",
 		midnight=MIDNIGHT_STANDARD,
-	):
+	) -> None:
 		self.name = name
 		self.desc = desc
 		self.fajr = fajr
@@ -86,7 +86,7 @@ class Method:
 		self.maghrib = maghrib
 		self.midnight = midnight
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return (
 			f"Method(name={self.name!r}, desc={self.desc!r}, "
 			f"fajr={self.fajr!r}, isha={self.isha!r}, "
@@ -156,7 +156,7 @@ def minEval(tm):
 	return float(tm.split(" ")[0]) if isinstance(tm, str) else tm
 
 
-def dirSign(direction):
+def dirSign(direction) -> int:
 	return -1 if direction == "ccw" else 1
 
 
@@ -237,7 +237,7 @@ class PrayTimes:
 		asrMode=ASR_STANDARD,
 		highLats="NightMiddle",
 		timeFormat="24h",
-	):
+	) -> None:
 		"""
 		TimeFormat possible values:
 			"24h"

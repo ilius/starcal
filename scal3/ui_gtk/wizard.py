@@ -13,7 +13,7 @@ __all__ = ["WizardWindow"]
 class WizardWindow(gtk.Window, MyDialog):
 	stepClasses = []
 
-	def __init__(self, title):
+	def __init__(self, title) -> None:
 		gtk.Window.__init__(self)
 		self.set_title(title)
 		self.connect("delete-event", lambda _w, _e: self.destroy())
@@ -51,13 +51,13 @@ class WizardWindow(gtk.Window, MyDialog):
 		self.show_all()
 		# log.debug(id(self.get_action_area()))
 
-	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "escape":
 			self.destroy()
 		return True
 
-	def showStep(self, stepIndex, *args):
+	def showStep(self, stepIndex, *args) -> None:
 		backward = stepIndex < self.stepIndex
 		self.stack.gotoPage(str(stepIndex), backward=backward)
 		step = self.steps[stepIndex]

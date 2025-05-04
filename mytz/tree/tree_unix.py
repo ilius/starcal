@@ -34,7 +34,7 @@ infoDir = findZoneInfoDir()
 infoDirL = list(os.path.split(infoDir))
 
 
-def _addZoneNode(parentDict, zone, zoneNamesLevel):
+def _addZoneNode(parentDict, zone, zoneNamesLevel) -> None:
 	path = os.path.join(*tuple(infoDirL + zone))
 	name = zone[-1]
 	zoneNamesLevel[len(zone)].append(name)

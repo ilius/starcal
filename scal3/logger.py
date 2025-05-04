@@ -13,7 +13,7 @@ log = None
 logLevel = Property(logging.INFO)
 
 
-def init():
+def init() -> None:
 	global log
 	import json
 	import os

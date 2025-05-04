@@ -125,7 +125,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 			if item.customizable:
 				item.updateVars()
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
 			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
@@ -142,13 +142,13 @@ class CustomizableCalBox(CustomizableCalObj):
 
 	"""for GtkBox (HBox and VBox)."""
 
-	def appendItem(self, item):
+	def appendItem(self, item) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		if item.loaded:
 			pack(self, item, item.expand, item.expand)
 			item.showHide()
 
-	def repackAll(self):
+	def repackAll(self) -> None:
 		for item in self.items:
 			if item.loaded:
 				self.remove(item)
@@ -160,11 +160,11 @@ class CustomizableCalBox(CustomizableCalObj):
 	# very buggy with Gtk3. Removing all (active) items from gtk.Box and
 	# re-packing them all apears to be fast enough, so doing that instead
 
-	def moveItem(self, i, j):
+	def moveItem(self, i, j) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
-	def insertItemWidget(self, _i):
+	def insertItemWidget(self, _i) -> None:
 		self.repackAll()
 
 
@@ -193,7 +193,7 @@ def newSubPageButton(
 	button = gtk.Button()
 	button.add(hbox)
 
-	def onClick(_button, page):
+	def onClick(_button, page) -> None:
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
 		item.emit("goto-page", page.pagePath)

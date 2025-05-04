@@ -7,7 +7,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -20,16 +20,16 @@ class WidgetClass(gtk.Box):
 			pack(self, b)
 			self.buttons.append(b)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		monthList = self.rule.getValuesPlain()
 		for i in range(12):
 			self.buttons[i].set_active((i + 1) in monthList)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		monthList = [i + 1 for i in range(12) if self.buttons[i].get_active()]
 		self.rule.setValuesPlain(monthList)
 
-	def changeCalType(self, calType):
+	def changeCalType(self, calType) -> None:
 		if calType == self.rule.getCalType():
 			return
 		for i in range(12):

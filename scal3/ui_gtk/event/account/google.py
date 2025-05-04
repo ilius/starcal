@@ -4,7 +4,7 @@ from scal3.ui_gtk.event.account import BaseWidgetClass
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, account):
+	def __init__(self, account) -> None:
 		BaseWidgetClass.__init__(self, account)
 		# -----
 		hbox = HBox()
@@ -16,10 +16,10 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.emailEntry, 1, 1)
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
 		self.emailEntry.set_text(self.account.email)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)
 		self.account.email = self.emailEntry.get_text()

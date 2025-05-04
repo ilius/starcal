@@ -53,7 +53,7 @@ def isRed(x):
 
 
 class Node:
-	def __init__(self, mt, red=True):
+	def __init__(self, mt, red=True) -> None:
 		self.mt = mt
 		self.red = red
 		self.min_t = mt
@@ -63,16 +63,16 @@ class Node:
 		self.right = None
 		self.count = 0
 
-	def add(self, t0, t1, dt, eid):
+	def add(self, t0, t1, dt, eid) -> None:
 		self.events.push(dt, eid)
 		self.min_t = min(t0, self.min_t)
 		self.max_t = max(t1, self.max_t)
 
-	def updateMinMax(self):
+	def updateMinMax(self) -> None:
 		self.updateMinMaxChild(self.left)
 		self.updateMinMaxChild(self.right)
 
-	def updateMinMaxChild(self, child):
+	def updateMinMaxChild(self, child) -> None:
 		if child:
 			self.min_t = min(child.min_t, self.min_t)
 			self.max_t = max(child.max_t, self.max_t)
@@ -103,7 +103,7 @@ def rotateRight(h):
 	return x
 
 
-def flipColors(h):
+def flipColors(h) -> None:
 	# if isRed(h):
 	# 	raise RuntimeError("flipColors: h is red")
 	# if not isRed(h.left):
@@ -116,10 +116,10 @@ def flipColors(h):
 
 
 class EventSearchTree:
-	def __init__(self):
+	def __init__(self) -> None:
 		self.clear()
 
-	def clear(self):
+	def clear(self) -> None:
 		self.root = None
 		self.byId = {}
 
@@ -193,7 +193,7 @@ class EventSearchTree:
 		node.updateMinMax()
 		return node
 
-	def add(self, t0, t1, eid, debug=False):
+	def add(self, t0, t1, eid, debug=False) -> None:
 		if debug:
 			from time import localtime, strftime
 

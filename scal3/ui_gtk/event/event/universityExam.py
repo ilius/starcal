@@ -32,7 +32,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, event):  # FIXME
+	def __init__(self, event) -> None:  # FIXME
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		assert event.parent.name == "universityTerm"  # FIXME
@@ -124,7 +124,7 @@ class WidgetClass(gtk.Box):
 		self.courseCombo.set_active(0)
 		# self.updateSummary()
 
-	def focusSummary(self):
+	def focusSummary(self) -> None:
 		pass
 
 	# def updateSummary(self, widget=None):
@@ -135,7 +135,7 @@ class WidgetClass(gtk.Box):
 	# 	self.summaryEntry.set_text(summary)
 	# 	self.event.summary = summary
 
-	def updateWidget(self):  # FIXME
+	def updateWidget(self) -> None:  # FIXME
 		if self.event.courseId is None:
 			pass
 		else:
@@ -157,7 +157,7 @@ class WidgetClass(gtk.Box):
 		# ----
 		# self.filesBox.updateWidget()
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
@@ -181,7 +181,7 @@ class WidgetClass(gtk.Box):
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.dateInput.changeCalType(self.event.calType, newCalType)

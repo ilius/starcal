@@ -11,7 +11,7 @@ def lastMonthLenByConvert(year: int) -> int:
 
 
 class TestJalali(unittest.TestCase):
-	def notest_isLeap_negativeYear(self):
+	def notest_isLeap_negativeYear(self) -> None:
 		print()
 		# mismatch between 2 algs in leap years for
 		# year <= 780
@@ -233,7 +233,7 @@ class TestJalali(unittest.TestCase):
 		(1396, 12, 1): (2458170, 2458170),
 	}
 
-	def test_isLeap(self):
+	def test_isLeap(self) -> None:
 		for year, isLeapByAlg in self.isLeapDict.items():
 			isLeap = isLeapByAlg[0] == "L"
 			lastMonthLen = lastMonthLenByConvert(year)
@@ -252,7 +252,7 @@ class TestJalali(unittest.TestCase):
 				f"{year=}, {isLeap=}",
 			)
 
-	def test_to_jd(self):
+	def test_to_jd(self) -> None:
 		for date, jdByAlg in self.dateToJdDict.items():
 			jd = jdByAlg[0]
 			jdActual = jalali.to_jd(*date)
@@ -262,7 +262,7 @@ class TestJalali(unittest.TestCase):
 				f"{date=}, {jd=}, {jdActual=}",
 			)
 
-	def test_convert(self):
+	def test_convert(self) -> None:
 		startYear = 1360
 		endYear = 1450
 		for year in range(startYear, endYear):

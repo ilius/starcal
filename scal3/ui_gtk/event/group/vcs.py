@@ -8,7 +8,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()
@@ -33,13 +33,13 @@ class WidgetClass(BaseWidgetClass):
 		hbox.show_all()
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
 		self.authorCheck.set_active(self.group.showAuthor)
 		self.shortHashCheck.set_active(self.group.showShortHash)
 		self.statCheck.set_active(self.group.showStat)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)
 		self.group.showAuthor = self.authorCheck.get_active()
 		self.group.showShortHash = self.shortHashCheck.get_active()

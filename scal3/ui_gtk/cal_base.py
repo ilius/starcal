@@ -23,6 +23,8 @@ from scal3 import logger
 log = logger.get()
 
 
+from typing import Never
+
 from scal3 import core, ui
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
@@ -49,13 +51,13 @@ class CalBase(CustomizableCalObj):
 		"i",
 	)
 
-	def connect(self, sigName, *a, **ka):
+	def connect(self, sigName, *a, **ka) -> None:
 		try:
 			CustomizableCalObj.connect(self, sigName, *a, **ka)
 		except Exception:
 			log.exception(f"{sigName=}")
 
-	def initCal(self):
+	def initCal(self) -> None:
 		self.initVars()
 		listener.dateChange.add(self)
 		# ----
@@ -71,28 +73,28 @@ class CalBase(CustomizableCalObj):
 		# ---
 		self.subPages = None
 
-	def gotoJd(self, jd):
+	def gotoJd(self, jd) -> None:
 		ui.cells.gotoJd(jd)
 		self.onDateChange()
 
 	def goToday(self, _obj=None):
 		return self.gotoJd(core.getCurrentJd())
 
-	def jdPlus(self, p):
+	def jdPlus(self, p) -> None:
 		ui.cells.jdPlus(p)
 		self.onDateChange()
 
-	def changeDate(self, year, month, day, calType=None):
+	def changeDate(self, year, month, day, calType=None) -> None:
 		ui.cells.changeDate(year, month, day, calType)
 		self.onDateChange()
 
-	def onCurrentDateChange(self, gdate):  # noqa: ARG002
+	def onCurrentDateChange(self, gdate) -> None:  # noqa: ARG002
 		self.queue_draw()
 
-	def getCellPagePlus(self, jd, plus):  # use for sliding
+	def getCellPagePlus(self, jd, plus) -> Never:  # use for sliding
 		raise NotImplementedError
 
-	def defineDragAndDrop(self):
+	def defineDragAndDrop(self) -> None:
 		self.drag_source_set(
 			gdk.ModifierType.MODIFIER_MASK,
 			[],
@@ -128,7 +130,7 @@ class CalBase(CustomizableCalObj):
 		selection,
 		_target_id,
 		_etime,
-	):
+	) -> bool:
 		# context is instance of gi.repository.Gdk.DragContext
 		y, m, d = ui.cells.current.dates[ui.dragGetCalType]
 		text = f"{y:04d}/{m:02d}/{d:02d}"
@@ -137,11 +139,20 @@ class CalBase(CustomizableCalObj):
 		# selection.set_pixbuf(pbuf)
 		return True
 
-	def dragLeave(self, _obj, context, etime):  # noqa: PLR6301
+	def dragLeave(self, _obj, context, etime) -> bool:  # noqa: PLR6301
 		context.drop_reply(False, etime)
 		return True
 
-	def dragDataRec(self, _obj, _context, _x, _y, selection, _target_id, _etime):
+	def dragDataRec(
+		self,
+		_obj,
+		_context,
+		_x,
+		_y,
+		selection,
+		_target_id,
+		_etime,
+	) -> bool:
 		from scal3.ui_gtk.dnd import processDroppedDate
 
 		dtypeAtom = selection.get_data_type()
@@ -169,7 +180,7 @@ class CalBase(CustomizableCalObj):
 		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
 		return True
 
-	def dragBegin(self, _obj, context):  # noqa: PLR6301
+	def dragBegin(self, _obj, context) -> bool:  # noqa: PLR6301
 		# context is instance of gi.repository.Gdk.DragContext
 		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())
@@ -184,10 +195,10 @@ class CalBase(CustomizableCalObj):
 		)
 		return True
 
-	def getCellPos(self):
+	def getCellPos(self) -> Never:
 		raise NotImplementedError
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		CustomizableCalObj.onKeyPress(self, arg, gevent)
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname in {"space", "home", "t"}:

@@ -7,7 +7,7 @@ __all__ = ["TimeZoneComboBoxEntry"]
 
 
 class TimeZoneComboBoxEntry(gtk.Box):
-	def __init__(self):
+	def __init__(self) -> None:
 		from mytz.tree import getZoneInfoTree
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -51,7 +51,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			getZoneInfoTree(),
 		)
 
-	def appendOrderedDict(self, parentIter, dct):
+	def appendOrderedDict(self, parentIter, dct) -> None:
 		model = self.c.get_model()
 		for key, value in dct.items():
 			if isinstance(value, dict):
@@ -60,7 +60,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			else:
 				itr = model.append(parentIter, [key, True])
 
-	def onChanged(self, _widget):
+	def onChanged(self, _widget) -> None:
 		model = self.c.get_model()
 		itr = self.c.get_active_iter()
 		if itr is None:

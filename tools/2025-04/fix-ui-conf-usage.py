@@ -34,7 +34,7 @@ def fixFile(fpath: str) -> bool:
 	return True
 
 
-def scanDirAndfix():
+def scanDirAndfix() -> None:
 	for root, _, files in os.walk(rootDir + "/scal3"):
 		for fname in files:
 			if not fname.endswith(".py"):
