@@ -79,7 +79,7 @@ def getGroupRow(group):
 class WidgetClass(gtk.Box):
 	expandDescription = True
 
-	def __init__(self, event):
+	def __init__(self, event) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
@@ -144,11 +144,11 @@ class WidgetClass(gtk.Box):
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
 
-	def focusSummary(self):
+	def focusSummary(self) -> None:
 		self.summaryEntry.select_region(0, -1)
 		self.summaryEntry.grab_focus()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		# log.debug("updateWidget", self.event.files)
 		self.calTypeCombo.set_active(self.event.calType)
 		if self.tzCheck:
@@ -171,7 +171,7 @@ class WidgetClass(gtk.Box):
 		# -----
 		self.calTypeComboChanged()
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.event.calType = self.calTypeCombo.get_active()
 		if self.tzCheck:
 			self.event.timeZoneEnable = self.tzCheck.get_active()
@@ -188,12 +188,12 @@ class WidgetClass(gtk.Box):
 				box.updateVars()
 		# -----
 
-	def calTypeComboChanged(self, obj=None):  # FIXME
+	def calTypeComboChanged(self, obj=None) -> None:  # FIXME
 		pass
 
 
 class FilesBox(gtk.Box):
-	def __init__(self, event):
+	def __init__(self, event) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		self.vbox = VBox()
@@ -210,7 +210,7 @@ class FilesBox(gtk.Box):
 		self.show_all()
 		self.newFiles = []
 
-	def showFile(self, fname):
+	def showFile(self, fname) -> None:
 		hbox = HBox()
 		link = gtk.LinkButton(
 			self.event.getUrlForFile(fname),
@@ -229,7 +229,7 @@ class FilesBox(gtk.Box):
 		pack(self.vbox, hbox)
 		hbox.show_all()
 
-	def onAddClick(self, _button):
+	def onAddClick(self, _button) -> None:
 		fcd = gtk.FileChooserDialog(
 			title=_("Add File"),
 		)
@@ -260,29 +260,29 @@ class FilesBox(gtk.Box):
 			self.newFiles.append(fname)
 			self.showFile(fname)
 
-	def onDelClick(self, button):
+	def onDelClick(self, button) -> None:
 		os.remove(join(self.event.filesDir, button.fname))
 		with suppress(ValueError):
 			self.event.files.remove(button.fname)
 		button.hbox.destroy()
 
-	def removeNewFiles(self):
+	def removeNewFiles(self) -> None:
 		for fname in self.newFiles:
 			os.remove(join(self.event.filesDir, fname))
 		self.newFiles = []
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		for hbox in self.vbox.get_children():
 			hbox.destroy()
 		for fname in self.event.files:
 			self.showFile(fname)
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		pass
 
 
 class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
-	def __init__(self, event):
+	def __init__(self, event) -> None:
 		ExpanderFrame.__init__(self, label=_("Notification"))
 		self.event = event
 		self.hboxDict = {}
@@ -321,7 +321,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 			pack(totalVbox, hbox)
 		self.add(totalVbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.notifyBeforeInput.setDuration(*self.event.notifyBefore)
 		for hbox in self.hboxDict.values():
 			hbox.cb.set_active(False)
@@ -334,7 +334,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 			hbox.inputWidget.updateWidget()
 		self.set_expanded(bool(self.event.notifiers))
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.event.notifyBefore = self.notifyBeforeInput.getDuration()
 		# ---
 		notifiers = []
@@ -346,7 +346,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 
 
 class DurationInputBox(gtk.Box):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		self.valueSpin = FloatSpinButton(0, 999, 1)
@@ -369,13 +369,13 @@ class DurationInputBox(gtk.Box):
 			durationUnitValues[self.unitCombo.get_active()],
 		)
 
-	def setDuration(self, value, unit):
+	def setDuration(self, value, unit) -> None:
 		self.valueSpin.set_value(value)
 		self.unitCombo.set_active(durationUnitValues.index(unit))
 
 
 class StrListEditor(gtk.Box):
-	def __init__(self, defaultValue=""):
+	def __init__(self, defaultValue="") -> None:
 		self.defaultValue = defaultValue
 		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -420,14 +420,14 @@ class StrListEditor(gtk.Box):
 		# -------
 		pack(self, toolbar)
 
-	def onAddClick(self, _button):
+	def onAddClick(self, _button) -> None:
 		cur = self.treev.get_cursor()
 		if cur:
 			self.treeModel.insert(cur[0], [self.defaultValue])
 		else:
 			self.treeModel.append([self.defaultValue])
 
-	def onMoveUpClick(self, _button):
+	def onMoveUpClick(self, _button) -> None:
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
@@ -442,7 +442,7 @@ class StrListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(i - 1)
 
-	def onMoveDownClick(self, _button):
+	def onMoveDownClick(self, _button) -> None:
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
@@ -457,7 +457,7 @@ class StrListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(i + 1)
 
-	def setData(self, strList):
+	def setData(self, strList) -> None:
 		self.treeModel.clear()
 		for st in strList:
 			self.treeModel.append([st])
@@ -467,7 +467,7 @@ class StrListEditor(gtk.Box):
 
 
 class Scale10PowerComboBox(gtk.ComboBox):
-	def __init__(self):
+	def __init__(self) -> None:
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -487,7 +487,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 	def get_value(self):
 		return self.get_model()[self.get_active()][0]
 
-	def set_value(self, value):
+	def set_value(self, value) -> None:
 		ls = self.get_model()
 		for i, row in enumerate(ls):
 			if row[0] == value:
@@ -503,7 +503,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 
 
 class GroupsTreeCheckList(gtk.TreeView):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.TreeView.__init__(self)
 		self.treeModel = gtk.ListStore(
 			int,
@@ -530,7 +530,7 @@ class GroupsTreeCheckList(gtk.TreeView):
 		for group in ui.eventGroups:
 			self.treeModel.append([group.id, True, group.title])
 
-	def enableCellToggled(self, cell, path):
+	def enableCellToggled(self, cell, path) -> None:
 		i = int(path)
 		active = not cell.get_active()
 		self.treeModel[i][1] = active
@@ -539,23 +539,23 @@ class GroupsTreeCheckList(gtk.TreeView):
 	def getValue(self):
 		return [row[0] for row in self.treeModel if row[1]]
 
-	def setValue(self, gids):
+	def setValue(self, gids) -> None:
 		for row in self.treeModel:
 			row[1] = row[0] in gids
 
-	def disableAll(self):
+	def disableAll(self) -> None:
 		model = self.get_model()
 		for i in range(len(model)):
 			model.set_value(model.get_iter((i,)), 1, False)
 
-	def enableAll(self):
+	def enableAll(self) -> None:
 		model = self.get_model()
 		for i in range(len(model)):
 			model.set_value(model.get_iter((i,)), 1, True)
 
 
 class SingleGroupComboBox(gtk.ComboBox):
-	def __init__(self):
+	def __init__(self) -> None:
 		ls = gtk.ListStore(int, GdkPixbuf.Pixbuf, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -570,7 +570,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		# -----
 		self.updateItems()
 
-	def updateItems(self):
+	def updateItems(self) -> None:
 		ls = self.get_model()
 		activeGid = self.get_active()
 		ls.clear()
@@ -594,7 +594,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 			return
 		return self.get_model()[index][0]
 
-	def set_active(self, gid):
+	def set_active(self, gid) -> None:
 		ls = self.get_model()
 		for i, row in enumerate(ls):
 			if row[0] == gid:

@@ -118,7 +118,7 @@ def saveConf() -> None:
 
 
 class EventManagerToolbar(StaticToolBox):
-	def __init__(self, parent):
+	def __init__(self, parent) -> None:
 		StaticToolBox.__init__(
 			self,
 			parent,
@@ -632,7 +632,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		model,
 		_iter,
 		_userData,
-	):
+	) -> None:
 		if not self.multiSelect:
 			return
 
@@ -672,7 +672,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		button.get_style_context().add_class("smaller")
 		return button
 
-	def multiSelectSetEnable(self, enable: bool):
+	def multiSelectSetEnable(self, enable: bool) -> None:
 		self.multiSelectHBox.set_visible(enable)
 		self.multiSelectColumn.set_visible(enable)
 		self.editItem.set_sensitive(not enable)
@@ -682,11 +682,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			item.set_sensitive(enable)
 		self.multiSelect = enable
 
-	def multiSelectToggle(self, menuItem: gtk.MenuItem):
+	def multiSelectToggle(self, menuItem: gtk.MenuItem) -> None:
 		enable = menuItem.get_active()
 		self.multiSelectSetEnable(enable)
 
-	def multiSelectShiftUpDownPress(self, isDown: bool):
+	def multiSelectShiftUpDownPress(self, isDown: bool) -> None:
 		path = self.getSelectedPath()
 		if len(path) == 1:
 			return  # TODO
@@ -738,7 +738,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			self.multiSelectCBSetEvent(groupIndex, evIndex, True)
 		return True
 
-	def multiSelectLabelUpdate(self):
+	def multiSelectLabelUpdate(self) -> None:
 		self.multiSelectLabel.set_label(
 			_("{count} events selected").format(
 				count=_(
@@ -750,7 +750,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			),
 		)
 
-	def multiSelectTreeviewToggleSelected(self):
+	def multiSelectTreeviewToggleSelected(self) -> None:
 		path = self.getSelectedPath()
 		self.multiSelectTreeviewTogglePath(path)
 
@@ -758,16 +758,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self,
 		_cell: gtk.CellRendererToggle,
 		pathStr: str,
-	):
+	) -> None:
 		path = gtk.TreePath.new_from_string(pathStr).get_indices()
 		self.multiSelectTreeviewTogglePath(path)
 
-	def multiSelectCBActivate(self, groupIndex, eventIndex):
+	def multiSelectCBActivate(self, groupIndex, eventIndex) -> None:
 		if groupIndex not in self.multiSelectPathDict:
 			self.multiSelectPathDict[groupIndex] = odict()
 		self.multiSelectPathDict[groupIndex][eventIndex] = None
 
-	def multiSelectCBSetEvent(self, groupIndex, eventIndex, active):
+	def multiSelectCBSetEvent(self, groupIndex, eventIndex, active) -> None:
 		model = self.treeModel
 		itr = model.get_iter((groupIndex, eventIndex))
 		model.set_value(itr, 0, active)
@@ -802,7 +802,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return None
 		return None
 
-	def multiSelectTreeviewTogglePath(self, path: list[int]):
+	def multiSelectTreeviewTogglePath(self, path: list[int]) -> None:
 		model = self.treeModel
 		if len(path) not in {1, 2}:
 			raise RuntimeError(f"invalid path depth={len(path)}, {path=}")
@@ -828,17 +828,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		self.multiSelectCBSetEvent(pathTuple[0], pathTuple[1], active)
 
-	def multiSelectCopy(self, _obj=None):
+	def multiSelectCopy(self, _obj=None) -> None:
 		iterList = list(self.multiSelectIters())
 		self.multiSelectToPaste = (False, iterList)
 		self.multiSelectPasteButton.set_sensitive(True)
 
-	def multiSelectCut(self, _obj=None):
+	def multiSelectCut(self, _obj=None) -> None:
 		iterList = list(self.multiSelectIters())
 		self.multiSelectToPaste = (True, iterList)
 		self.multiSelectPasteButton.set_sensitive(True)
 
-	def multiSelectPaste(self, _obj=None):
+	def multiSelectPaste(self, _obj=None) -> None:
 		toPaste = self.multiSelectToPaste
 		if toPaste is None:
 			log.error("nothing to paste")
@@ -882,7 +882,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if newEventIter:
 			self.treev.set_cursor(self.treeModel.get_path(newEventIter))
 
-	def _do_multiSelectDelete(self, iterList):
+	def _do_multiSelectDelete(self, iterList) -> None:
 		model = self.treeModel
 
 		saveGroupSet = set()
@@ -909,7 +909,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		ui.eventUpdateQueue.resumeLoop()
 
-	def multiSelectOperationFinished(self):
+	def multiSelectOperationFinished(self) -> None:
 		model = self.treeModel
 		for groupIndex in self.multiSelectPathDict:
 			with suppress(ValueError):
@@ -919,7 +919,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectLabelUpdate()
 		self.multiSelectPasteButton.set_sensitive(False)
 
-	def multiSelectDelete(self, _obj=None):
+	def multiSelectDelete(self, _obj=None) -> None:
 		model = self.treeModel
 		if not self.multiSelectPathDict:
 			return
@@ -963,7 +963,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			for eventIndex in eventIndexes:
 				yield model.get_iter((groupIndex, eventIndex))
 
-	def multiSelectCancel(self, _obj=None):
+	def multiSelectCancel(self, _obj=None) -> None:
 		model = self.treeModel
 		self.multiSelectSetEnable(False)
 		self.multiSelectItem.set_active(False)
@@ -996,7 +996,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			]
 		return idsList
 
-	def multiSelectBulkEdit(self, _widget=None):
+	def multiSelectBulkEdit(self, _widget=None) -> None:
 		from scal3.event_container import DummyEventContainer
 		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
 
@@ -1020,7 +1020,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		self.multiSelectOperationFinished()
 
-	def multiSelectExport(self, _widget=None):
+	def multiSelectExport(self, _widget=None) -> None:
 		from scal3.ui_gtk.event.export import EventListExportDialog
 
 		idsList = self.multiSelectEventIdsList()
@@ -1216,7 +1216,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		_group, event = self.getObjsByPath(path)
 		EventHistoryDialog(event, transient_for=self).run()
 
-	def trashAddRightClickMenuItems(self, menu, path, group):
+	def trashAddRightClickMenuItems(self, menu, path, group) -> None:
 		# log.debug("right click on trash", group.title)
 		menu.add(
 			eventWriteMenuItem(
@@ -1252,7 +1252,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# 	func=self.addGroupBeforeSelection,
 		# ))  # FIXME
 
-	def groupAddRightClickMenuItems(self, menu, path, group):
+	def groupAddRightClickMenuItems(self, menu, path, group) -> None:
 		# log.debug("right click on group", group.title)
 		menu.add(
 			eventWriteMenuItem(
@@ -1447,7 +1447,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				),
 			)
 
-	def eventAddRightClickMenuItems(self, menu, path, group, event):
+	def eventAddRightClickMenuItems(self, menu, path, group, event) -> None:
 		# log.debug("right click on event", event.summary)
 		menu.add(
 			eventWriteMenuItem(
@@ -1607,7 +1607,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return False
 		# return self.onTreeviewKeyPress(self.treev, gevent)
 
-	def menuKeyPressOnPath(self, path: list[str], gevent: gdk.EventKey):
+	def menuKeyPressOnPath(self, path: list[str], gevent: gdk.EventKey) -> None:
 		treev = self.treev
 		menu = self.genRightClickMenu(path)
 		if not menu:
@@ -1672,7 +1672,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		return False
 
-	def onEscape(self):
+	def onEscape(self) -> bool:
 		if self.multiSelect:
 			self.multiSelectCancel()
 			return True

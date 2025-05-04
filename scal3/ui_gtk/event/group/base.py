@@ -27,7 +27,7 @@ __all__ = ["BaseWidgetClass"]
 class BaseWidgetClass(gtk.Box):
 	userCanAddEvents = True
 
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
@@ -179,10 +179,10 @@ class BaseWidgetClass(gtk.Box):
 			pack(hbox, self.addEventsToBeginningCheck)
 			pack(self, hbox)
 
-	def addStartEndWidgets(self):
+	def addStartEndWidgets(self) -> None:
 		pass
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.group.title)
 		self.colorButton.set_rgba(self.group.color)
 		self.iconSelect.set_filename(self.group.icon)
@@ -205,7 +205,7 @@ class BaseWidgetClass(gtk.Box):
 		if self.userCanAddEvents:
 			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.group.title = self.titleEntry.get_text()
 		self.group.color = self.colorButton.get_rgba()
 		self.group.icon = self.iconSelect.get_filename()
@@ -229,5 +229,5 @@ class BaseWidgetClass(gtk.Box):
 				self.addEventsToBeginningCheck.get_active()
 			)
 
-	def calTypeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None) -> None:
 		pass

@@ -57,7 +57,7 @@ def buffer_select_all(b):
 	)
 
 
-def showDisclaimer(plug):  # noqa: ARG001
+def showDisclaimer(plug) -> None:  # noqa: ARG001
 	showMsg(
 		"\n".join(
 			[
@@ -84,7 +84,14 @@ def showDisclaimer(plug):  # noqa: ARG001
 
 
 class LocationDialog(gtk.Dialog):
-	def __init__(self, cityData, maxResults=200, width=600, height=600, **kwargs):
+	def __init__(
+		self,
+		cityData,
+		maxResults=200,
+		width=600,
+		height=600,
+		**kwargs,
+	) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Location"))
 		self.maxResults = maxResults
@@ -194,7 +201,7 @@ class LocationDialog(gtk.Dialog):
 		self.cityData = cityData
 		self.update_list()
 
-	def calc_clicked(self, _button=None):
+	def calc_clicked(self, _button=None) -> None:
 		lat = self.spin_lat.get_value()
 		lng = self.spin_lng.get_value()
 		md = earthR * 2 * math.pi
@@ -212,7 +219,7 @@ class LocationDialog(gtk.Dialog):
 			),
 		)
 
-	def treev_cursor_changed(self, treev):
+	def treev_cursor_changed(self, treev) -> None:
 		c = treev.get_cursor()[0]
 		if c is not None:
 			i = c[0]
@@ -228,7 +235,7 @@ class LocationDialog(gtk.Dialog):
 			)
 		self.okB.set_sensitive(True)
 
-	def edit_checkb_clicked(self, checkb):
+	def edit_checkb_clicked(self, checkb) -> None:
 		active = checkb.get_active()
 		self.vbox_edit.set_sensitive(active)
 		if not active:
@@ -251,7 +258,7 @@ class LocationDialog(gtk.Dialog):
 			bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active()),
 		)
 
-	def update_list(self, s=""):
+	def update_list(self, s="") -> None:
 		s = s.lower()
 		t = self.trees
 		t.clear()
@@ -274,7 +281,7 @@ class LocationDialog(gtk.Dialog):
 		self.treev.scroll_to_cell((0, 0))
 		self.okB.set_sensitive(self.checkbEdit.get_active())
 
-	def entry_changed(self, entry):
+	def entry_changed(self, entry) -> None:
 		self.update_list(entry.get_text())
 
 	def run(self):
@@ -293,7 +300,7 @@ class LocationDialog(gtk.Dialog):
 
 
 class LocationButton(gtk.Button):
-	def __init__(self, plugin, locName, lat, lng, window=None):
+	def __init__(self, plugin, locName, lat, lng, window=None) -> None:
 		gtk.Button.__init__(self)
 		self.setLocation(locName, lat, lng)
 		self.plugin = plugin
@@ -302,13 +309,13 @@ class LocationButton(gtk.Button):
 		# ----
 		self.connect("clicked", self.onClick)
 
-	def setLocation(self, locName, lat, lng):
+	def setLocation(self, locName, lat, lng) -> None:
 		self.locName = locName
 		self.lat = lat
 		self.lng = lng
 		self.set_label(self.locName)
 
-	def onClick(self, _widget=None):
+	def onClick(self, _widget=None) -> None:
 		if self.dialog is None:
 			self.dialog = LocationDialog(
 				self.plugin.getCityData(),
@@ -321,7 +328,7 @@ class LocationButton(gtk.Button):
 
 
 class TextPluginUI:
-	def makeWidget(self):
+	def makeWidget(self) -> None:
 		self.confDialog = gtk.Dialog()
 		self.confDialog.set_title(_("Pray Times") + " - " + _("Configuration"))
 		self.confDialog.connect("delete-event", self.confDialogCancel)
@@ -479,13 +486,13 @@ class TextPluginUI:
 		"""
 		self.dialog = None
 
-	def updateAzanSensitiveWidgets(self, _widget=None):
+	def updateAzanSensitiveWidgets(self, _widget=None) -> None:
 		for cb in (self.preAzanEnableCheck, self.azanEnableCheck):
 			active = cb.get_active()
 			for widget in cb.sensitiveWidgets:
 				widget.set_sensitive(active)
 
-	def updateConfWidget(self):
+	def updateConfWidget(self) -> None:
 		self.locButton.setLocation(
 			self.locName,
 			self.backend.lat,
@@ -511,7 +518,7 @@ class TextPluginUI:
 		# --
 		self.updateAzanSensitiveWidgets()
 
-	def updateConfVars(self):
+	def updateConfVars(self) -> None:
 		self.locName = self.locButton.locName
 		self.backend.lat = self.locButton.lat
 		self.backend.lng = self.locButton.lng
@@ -530,22 +537,22 @@ class TextPluginUI:
 		self.azanEnable = self.azanEnableCheck.get_active()
 		self.azanFile = self.azanFileButton.get_filename()
 
-	def confDialogCancel(self, _widget=None, _gevent=None):
+	def confDialogCancel(self, _widget=None, _gevent=None) -> None:
 		self.confDialog.hide()
 		self.updateConfWidget()
 
-	def confDialogOk(self, _widget=None):
+	def confDialogOk(self, _widget=None) -> None:
 		self.confDialog.hide()
 		self.updateConfVars()
 		self.saveConfig()
 
-	def set_dialog(self, dialog):
+	def set_dialog(self, dialog) -> None:
 		self.dialog = dialog
 
-	def open_configure(self):
+	def open_configure(self) -> None:
 		self.confDialog.run()
 
-	def open_about(self):
+	def open_about(self) -> None:
 		about = AboutDialog(
 			name=self.title,
 			title=_("About") + " " + self.title,

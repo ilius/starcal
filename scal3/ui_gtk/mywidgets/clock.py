@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 
 class ClockLabel(gtk.Label):
-	def __init__(self, bold=False, seconds=True, selectable=False):
+	def __init__(self, bold=False, seconds=True, selectable=False) -> None:
 		gtk.Label.__init__(self)
 		self.set_use_markup(True)
 		self.set_selectable(selectable)
@@ -44,11 +44,11 @@ class ClockLabel(gtk.Label):
 		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
-	def start(self):
+	def start(self) -> None:
 		self.running = True
 		self.update()
 
-	def update(self):
+	def update(self) -> None:
 		if self.running:
 			timeout_add(clockWaitMilliseconds(), self.update)
 			H, M, S = localtime()[3:6]
@@ -60,7 +60,7 @@ class ClockLabel(gtk.Label):
 				label = f"<b>{label}</b>"
 			self.set_label(label)
 
-	def stop(self):
+	def stop(self) -> None:
 		self.running = False
 
 	# def onButtonPress(self, obj, gevent):
@@ -68,7 +68,7 @@ class ClockLabel(gtk.Label):
 
 
 class FClockLabel(gtk.Label):
-	def __init__(self, clockFormat="%T", local=True, selectable=False):
+	def __init__(self, clockFormat="%T", local=True, selectable=False) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -85,11 +85,11 @@ class FClockLabel(gtk.Label):
 		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
-	def start(self):
+	def start(self) -> None:
 		self.running = True
 		self.update()
 
-	def update(self):
+	def update(self) -> None:
 		if self.running:
 			timeout_add(clockWaitMilliseconds(), self.update)
 			if self.local:
@@ -97,12 +97,12 @@ class FClockLabel(gtk.Label):
 			else:
 				self.set_label(strftime(self.format, time.gmtime()))
 
-	def stop(self):
+	def stop(self) -> None:
 		self.running = False
 
 
 class FClockWidget(gtk.DrawingArea):  # Time is in Local
-	def __init__(self, clockFormat="%T", _selectable=False):
+	def __init__(self, clockFormat="%T", _selectable=False) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -118,23 +118,23 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
-	def start(self):
+	def start(self) -> None:
 		self.running = True
 		self.update()
 
-	def update(self):
+	def update(self) -> None:
 		if self.running:
 			timeout_add(clockWaitMilliseconds(), self.update)
 			self.set_label(strftime(self.format))
 
-	def stop(self):
+	def stop(self) -> None:
 		self.running = False
 
-	def set_label(self, text):
+	def set_label(self, text) -> None:
 		self.text = text
 		self.queue_draw()
 
-	def onDraw(self, _widget=None, _event=None):
+	def onDraw(self, _widget=None, _event=None) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -148,7 +148,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context):
+	def drawWithContext(self, cr: cairo.Context) -> None:
 		text = self.text
 		fillColor(cr, conf.bgColor.v)
 		setColor(cr, conf.textColor.v)

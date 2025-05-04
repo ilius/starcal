@@ -14,7 +14,7 @@ __all__ = ["GroupEditorDialog"]
 
 
 class GroupEditorDialog(gtk.Dialog):
-	def __init__(self, group=None, **kwargs):
+	def __init__(self, group=None, **kwargs) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.isNew = group is None
@@ -60,7 +60,7 @@ class GroupEditorDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo):
+	def dateModeChanged(self, combo) -> None:
 		pass
 
 	@staticmethod
@@ -77,7 +77,7 @@ class GroupEditorDialog(gtk.Dialog):
 			num += 1
 		return makeTitle(num)
 
-	def typeChanged(self, _combo=None):
+	def typeChanged(self, _combo=None) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()

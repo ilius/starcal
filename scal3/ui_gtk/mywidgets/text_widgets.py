@@ -1,3 +1,5 @@
+from typing import Never
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, gtk
@@ -15,7 +17,7 @@ class ReadOnlyTextWidget:
 	def copyAll(self, _item):
 		return setClipboard(toStr(self.get_text()))
 
-	def has_selection():
+	def has_selection() -> Never:
 		raise NotImplementedError
 
 	# def cursorIsOnURL(self):
@@ -32,14 +34,14 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 	def has_selection(self):
 		return self.get_cursor_position() != self.get_selection_bound()
 
-	def copy(self, _item):
+	def copy(self, _item) -> None:
 		bound = self.get_selection_bound()
 		cursor = self.get_cursor_position()
 		start = min(bound, cursor)
 		end = max(bound, cursor)
 		setClipboard(toStr(self.get_text())[start:end])
 
-	def onPopup(self, _widget, menu):
+	def onPopup(self, _widget, menu) -> None:
 		# instead of creating a new menu, we should remove all the
 		# current items from current menu
 		for item in menu.get_children():
@@ -66,7 +68,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 		self.tmpMenu = menu
 		ui.updateFocusTime()
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Label.__init__(self, **kwargs)
 		self.set_selectable(True)  # to be selectable, with visible cursor
 		self.connect("populate-popup", self.onPopup)
@@ -79,7 +81,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	def get_cursor_position(self):
 		return self.get_buffer().get_property("cursor-position")
 
-	def has_selection(self):
+	def has_selection(self) -> bool:
 		buf = self.get_buffer()
 		try:
 			buf.get_selection_bounds()
@@ -88,7 +90,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		else:
 			return True
 
-	def copy(self, _item):
+	def copy(self, _item) -> None:
 		buf = self.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
@@ -103,10 +105,10 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	# 	setClipboard(word)
 
 	@classmethod
-	def copyText(cls, _item, text):
+	def copyText(cls, _item, text) -> None:
 		setClipboard(text)
 
-	def onButtonPress(self, _widget, gevent):
+	def onButtonPress(self, _widget, gevent) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
@@ -166,7 +168,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		ui.updateFocusTime()
 		return True
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		gtk.TextView.__init__(self, *args, **kwargs)
 		self.set_editable(False)
 		self.set_cursor_visible(False)

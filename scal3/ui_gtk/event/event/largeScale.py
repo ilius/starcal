@@ -13,7 +13,7 @@ maxDur = 99999
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):  # FIXME
+	def __init__(self, event) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -50,7 +50,7 @@ class WidgetClass(common.WidgetClass):
 		# ----
 		self.endRelComboChanged()
 
-	def endRelComboChanged(self, _combo=None):
+	def endRelComboChanged(self, _combo=None) -> None:
 		rel = self.endRelCombo.get_active()
 		start = self.startSpin.get_value()
 		end = self.endSpin.get_value()
@@ -61,21 +61,21 @@ class WidgetClass(common.WidgetClass):
 			self.endSpin.set_range(start + 1, maxStart)
 			self.endSpin.set_value(max(start + 1, start + end))
 
-	def startSpinChanged(self, _spin=None):
+	def startSpinChanged(self, _spin=None) -> None:
 		if self.endRelCombo.get_active() == 1:  # absolute(end)
 			self.endSpin.set_range(
 				self.startSpin.get_value() + 1,
 				maxStart,
 			)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
 		self.scaleCombo.set_value(self.event.scale)
 		self.startSpin.set_value(self.event.start)
 		self.endRelCombo.set_active(0 if self.event.endRel else 1)
 		self.endSpin.set_value(self.event.end)
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.scale = self.scaleCombo.get_value()
 		self.event.start = self.startSpin.get_value()

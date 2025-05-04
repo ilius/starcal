@@ -87,7 +87,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 	def do_get_preferred_height(self):  # noqa: PLR6301
 		return 0, conf.winHeight.v / 3
 
-	def updateTypeParamsWidget(self):
+	def updateTypeParamsWidget(self) -> None:
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
 
 		try:
@@ -145,17 +145,17 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.subPages = subPages
 
 	@staticmethod
-	def drawCursorOutline(cr, cx0, cy0, cw, ch):
+	def drawCursorOutline(cr, cx0, cy0, cw, ch) -> None:
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		cursorLineWidth = conf.mcalCursorLineWidthFactor.v * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
 	@staticmethod
-	def drawCursorBg(cr, cx0, cy0, cw, ch):
+	def drawCursorBg(cr, cx0, cy0, cw, ch) -> None:
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		self.win = win
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -285,7 +285,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.getOptionsWidget()
 		return self.subPages
 
-	def drawAll(self, _widget=None, cursor=True):
+	def drawAll(self, _widget=None, cursor=True) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -299,7 +299,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context, cursor: bool):
+	def drawWithContext(self, cr: cairo.Context, cursor: bool) -> bool:
 		# gevent = gtk.get_current_event()
 		# FIXME: must enhance (only draw few cells, not all cells)
 		self.calcCoord()
@@ -503,7 +503,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				cr.fill()
 		return False
 
-	def updateTextWidth(self):
+	def updateTextWidth(self) -> None:
 		# update width of week days names to be able to find out
 		# whether or not they should be shortened for the UI
 		lay = newTextLayout(self)
@@ -519,7 +519,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin.v
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
-	def onButtonPress(self, _obj, gevent):
+	def onButtonPress(self, _obj, gevent) -> bool:
 		# self.winActivate() #?????????
 		b = gevent.button
 		(
@@ -555,7 +555,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				self.emit("popup-cell-menu", gevent.x, gevent.y)
 		return True
 
-	def calcCoord(self):  # calculates coordidates (x and y of cells centers)
+	def calcCoord(self) -> None:  # calculates coordidates (x and y of cells centers)
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		# self.cx is centers x, self.cy is centers y
@@ -575,11 +575,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.dx = (w - conf.mcalLeftMargin.v) / 7  # delta x
 		self.dy = (h - conf.mcalTopMargin.v) / 6  # delta y
 
-	def monthPlus(self, p):
+	def monthPlus(self, p) -> None:
 		ui.cells.monthPlus(p)
 		self.onDateChange()
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
@@ -623,7 +623,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _widget, gevent):
+	def scroll(self, _widget, gevent) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
@@ -650,11 +650,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 			int(conf.mcalTopMargin.v / 2),
 		)
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
-	def onConfigChange(self, *a, **kw):
+	def onConfigChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		self.updateTextWidth()
 		self.updateTypeParamsWidget()
