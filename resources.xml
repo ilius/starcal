@@ -190,6 +190,16 @@
 		<license>Public Domain</license>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
+	<resource path="status-icons/black-minimal-green.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
+	<resource path="status-icons/black-minimal-cyan.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
 	<resource path="status-icons/black-minimal.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
