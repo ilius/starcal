@@ -168,11 +168,12 @@ def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
 		if offset is None:
 			y, m, d = jd_to_g(jd)
 			offset = tzDict[jd] = getUtcOffsetByGDate(y, m, d, tz)
+			assert isinstance(offset, int)
 	else:
 		y, m, d = jd_to_g(jd)
 		offset = getUtcOffsetByGDate(y, m, d, tz)
+		assert isinstance(offset, int)
 
-	assert isinstance(offset, int)
 	return offset
 
 
