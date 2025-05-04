@@ -6,7 +6,7 @@ __all__ = ["MonthComboBox"]
 
 
 class MonthComboBox(gtk.ComboBox):
-	def __init__(self, includeEvery=False):
+	def __init__(self, includeEvery=False) -> None:
 		self.includeEvery = includeEvery
 		# ---
 		ls = gtk.ListStore(str)
@@ -17,7 +17,7 @@ class MonthComboBox(gtk.ComboBox):
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 0)
 
-	def build(self, calType):
+	def build(self, calType) -> None:
 		active = self.get_active()
 		ls = self.get_model()
 		ls.clear()
@@ -34,7 +34,7 @@ class MonthComboBox(gtk.ComboBox):
 			return a
 		return a + 1
 
-	def setValue(self, value):
+	def setValue(self, value) -> None:
 		if self.includeEvery:
 			self.set_active(value)
 		else:

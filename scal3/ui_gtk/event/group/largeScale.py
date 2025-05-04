@@ -9,7 +9,7 @@ maxStartEnd = 999999
 
 
 class WidgetClass(BaseWidgetClass):
-	def addStartEndWidgets(self):
+	def addStartEndWidgets(self) -> None:
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
 		hbox = HBox()
@@ -45,13 +45,13 @@ class WidgetClass(BaseWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
 		self.scaleCombo.set_value(self.group.scale)
 		self.startSpin.set_value(self.group.getStartValue())
 		self.endSpin.set_value(self.group.getEndValue())
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)
 		self.group.scale = self.scaleCombo.get_value()
 		self.group.setStartValue(self.startSpin.get_value())

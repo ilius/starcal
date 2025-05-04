@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from os.path import join
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Never
 
 from scal3.drawing import getAbsPos
 from scal3.path import pixDir, svgDir
@@ -42,7 +42,7 @@ class BaseButton:
 		yalign="top",
 		autoDir=True,
 		opacity=1.0,
-	):
+	) -> None:
 		if x is None:
 			raise ValueError("x is not given")
 		if y is None:
@@ -69,7 +69,7 @@ class BaseButton:
 		self.width = None
 		self.height = None
 
-	def setSize(self, width, height):
+	def setSize(self, width, height) -> None:
 		self.width = width
 		self.height = height
 
@@ -90,7 +90,7 @@ class BaseButton:
 		x, y = self.getAbsPos(w, h)
 		return x <= px < x + self.width and y <= py < y + self.height
 
-	def draw(self, cr, w, h):
+	def draw(self, cr, w, h) -> Never:
 		raise NotImplementedError
 
 
@@ -101,7 +101,7 @@ class SVGButton(BaseButton):
 		iconSize=16,
 		rectangleColor=None,
 		**kwargs,
-	):
+	) -> None:
 		BaseButton.__init__(self, **kwargs)
 
 		if not imageName:
@@ -132,7 +132,7 @@ class SVGButton(BaseButton):
 		cr: cairo.Context,
 		w: float,
 		h: float,
-	):
+	) -> None:
 		x, y = self.getAbsPos(w, h)
 
 		if self.rectangleColor:
@@ -180,7 +180,7 @@ class SVGButton(BaseButton):
 		)
 		cr.paint_with_alpha(self.opacity)
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return (
 			f"SVGButton({self.imageName!r}, {self.onPress.__name__!r}, "
 			f"{self.x!r}, {self.y!r}, {self.autoDir!r})"
@@ -194,7 +194,7 @@ class Button(BaseButton):
 		iconName="",
 		iconSize=0,
 		**kwargs,
-	):
+	) -> None:
 		BaseButton.__init__(self, **kwargs)
 
 		shouldResize = True
@@ -238,7 +238,7 @@ class Button(BaseButton):
 		self.iconSize = iconSize
 		self.pixbuf = pixbuf
 
-	def draw(self, cr, w, h):
+	def draw(self, cr, w, h) -> None:
 		x, y = self.getAbsPos(w, h)
 		gdk.cairo_set_source_pixbuf(
 			cr,
@@ -248,7 +248,7 @@ class Button(BaseButton):
 		)
 		cr.paint_with_alpha(self.opacity)
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return (
 			f"Button({self.imageName!r}, {self.onPress.__name__!r}, "
 			f"{self.x!r}, {self.y!r}, {self.autoDir!r})"

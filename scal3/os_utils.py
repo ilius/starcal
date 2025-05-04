@@ -36,7 +36,7 @@ __all__ = [
 log = logging.getLogger("starcal3")
 
 
-def getOsName():
+def getOsName() -> str:
 	"""returns: "linux", "win", "mac", "unix"."""
 	# psys = platform.system().lower()-- "linux", "windows", "darwin", ...
 	plat = sys.platform  # "linux2", "win32", "darwin"
@@ -60,7 +60,7 @@ def getOsName():
 osName = getOsName()
 
 
-def makeDir(direc):
+def makeDir(direc) -> None:
 	if not isdir(direc):
 		os.makedirs(direc)
 
@@ -138,7 +138,7 @@ def dead(pid):
 # def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
-def goodkill(pid, interval=1, hung=20):
+def goodkill(pid, interval=1, hung=20) -> None:
 	"""Let process die gracefully, gradually send harsher signals if necessary."""
 	from signal import SIGHUP, SIGINT, SIGKILL, SIGTERM
 	from time import sleep

@@ -19,7 +19,7 @@ class SLabel(gtk.Label):
 	for right-click, with only 2 menu items: Copy All, Copy.
 	"""
 
-	def __init__(self, label=None):
+	def __init__(self, label=None) -> None:
 		gtk.Label.__init__(self, label=label)
 		self.set_selectable(True)
 		# self.set_cursor_visible(False)-- FIXME
@@ -27,7 +27,7 @@ class SLabel(gtk.Label):
 		self.set_use_markup(True)
 		self.connect("populate-popup", self.popupPopulate)
 
-	def popupPopulate(self, _label, menu):
+	def popupPopulate(self, _label, menu) -> None:
 		itemCopyAll = ImageMenuItem(
 			_("Copy _All"),
 			imageName="edit-copy.svg",
@@ -52,10 +52,10 @@ class SLabel(gtk.Label):
 		# --
 		ui.updateFocusTime()
 
-	def copy(self, _item):
+	def copy(self, _item) -> None:
 		start = self.get_property("selection-bound")
 		end = self.get_property("cursor-position")
 		setClipboard(toStr(self.get_text())[start:end])
 
-	def copyAll(self, _label):
+	def copyAll(self, _label) -> None:
 		setClipboard(self.get_text())

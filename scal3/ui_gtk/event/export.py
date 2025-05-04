@@ -16,7 +16,7 @@ __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExport
 
 
 class SingleGroupExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, group, **kwargs):
+	def __init__(self, group, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
@@ -71,7 +71,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget=None):
+	def formatRadioChanged(self, _widget=None) -> None:
 		from scal3.os_utils import fixStrForFileName
 
 		fpath = self.fcw.get_filename()
@@ -88,7 +88,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 			ext = ".json"
 		self.fcw.set_current_name(fname_nox + ext)
 
-	def save(self):
+	def save(self) -> None:
 		fpath = self.fcw.get_filename()
 		if self.radioJsonCompact.get_active():
 			text = dataToCompactJson(
@@ -108,14 +108,14 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 				[self._group.id],
 			)
 
-	def run(self):
+	def run(self) -> None:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
 
 
 class MultiGroupExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export", ctx="window title"))
 		self.vbox.set_spacing(10)
@@ -202,13 +202,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.formatRadioChanged()
 		self.resize(600, 600)
 
-	def disableAllClicked(self, _widget=None):
+	def disableAllClicked(self, _widget=None) -> None:
 		self.groupSelect.disableAll()
 
-	def enableAllClicked(self, _widget=None):
+	def enableAllClicked(self, _widget=None) -> None:
 		self.groupSelect.enableAll()
 
-	def formatRadioChanged(self, _widget=None):
+	def formatRadioChanged(self, _widget=None) -> None:
 		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
 		# ---
 		fpath = self.fpathEntry.get_text()
@@ -222,7 +222,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 					ext = ".json"
 				self.fpathEntry.set_text(fpath_nox + ext)
 
-	def save(self):
+	def save(self) -> None:
 		fpath = self.fpathEntry.get_text()
 		activeGroupIds = self.groupSelect.getValue()
 		if self.radioIcs.get_active():
@@ -239,14 +239,14 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 
-	def run(self):
+	def run(self) -> None:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
 
 
 class EventListExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, idsList, defaultFileName="", groupTitle="", **kwargs):
+	def __init__(self, idsList, defaultFileName="", groupTitle="", **kwargs) -> None:
 		self._idsList = idsList
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
@@ -302,7 +302,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget=None):
+	def formatRadioChanged(self, _widget=None) -> None:
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])
@@ -318,7 +318,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			ext = ".json"
 		self.fcw.set_current_name(fname_nox + ext)
 
-	def save(self):
+	def save(self) -> None:
 		fpath = self.fcw.get_filename()
 		# if self.radioIcs.get_active():
 		# 	pass
@@ -342,7 +342,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		with open(fpath, "w", encoding="utf-8") as _file:
 			_file.write(text)
 
-	def run(self):
+	def run(self) -> None:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()

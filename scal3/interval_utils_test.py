@@ -30,7 +30,7 @@ def parseIntervalList(st, doShuffle=False):
 	return ls
 
 
-def testnormalizeIntervalList():
+def testnormalizeIntervalList() -> None:
 	testDict = {
 		"10-20 20": "10-20 20",
 		"10-20 20 20": "10-20 20",
@@ -52,7 +52,7 @@ def testnormalizeIntervalList():
 			log.error(f"Failed: {resList!r} != {ansList!r}")
 
 
-def testIntersection():
+def testIntersection() -> None:
 	testDict = {
 		(
 			"0-20",
@@ -103,7 +103,7 @@ def testIntersection():
 			log.info()
 
 
-def testJdRanges():
+def testJdRanges() -> None:
 	from pprint import pprint
 
 	pprint(
@@ -126,7 +126,7 @@ def testJdRanges():
 	)
 
 
-def testSimplifyNumList():
+def testSimplifyNumList() -> None:
 	from pprint import pprint
 
 	pprint(
@@ -154,7 +154,7 @@ def testSimplifyNumList():
 	)
 
 
-def testOverlapsSpeed():
+def testOverlapsSpeed() -> None:
 	from random import normalvariate
 	from time import perf_counter
 

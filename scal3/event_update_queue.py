@@ -25,14 +25,14 @@ class EventUpdateRecord:
 		action: str,
 		obj: event_lib.Event | event_lib.EventGroup,
 		sender,  # CalObjType based on gtk_ud.BaseCalObj
-	):
+	) -> None:
 		self.action = action
 		self.obj = obj
 		self.sender = sender
 
 
 class EventUpdateQueue(Queue):
-	def __init__(self):
+	def __init__(self) -> None:
 		Queue.__init__(self)
 		self._consumers = []
 		self._thread = None
@@ -46,7 +46,7 @@ class EventUpdateQueue(Queue):
 			)
 		self._consumers.append(consumer)
 
-	def put(self, action, obj, sender):
+	def put(self, action, obj, sender) -> None:
 		if action not in {
 			"+",  # add/create event
 			"-",  # delete/remove event
@@ -74,7 +74,7 @@ class EventUpdateQueue(Queue):
 		record = EventUpdateRecord(action, obj, sender)
 		Queue.put(self, record)
 
-	def startLoop(self):
+	def startLoop(self) -> None:
 		if self._thread is not None:
 			raise RuntimeError("startLoop: self._thread is not None")
 		self._thread = Thread(
@@ -82,7 +82,7 @@ class EventUpdateQueue(Queue):
 		)
 		self._thread.start()
 
-	def stopLoop(self):
+	def stopLoop(self) -> None:
 		Queue.put(self, None)
 		if self._thread is None:
 			return
@@ -90,13 +90,13 @@ class EventUpdateQueue(Queue):
 		self._thread.join()
 		self._thread = None
 
-	def pauseLoop(self):
+	def pauseLoop(self) -> None:
 		self._paused = True
 
-	def resumeLoop(self):
+	def resumeLoop(self) -> None:
 		self._paused = False
 
-	def runLoop(self):
+	def runLoop(self) -> None:
 		while True:  # OK
 			if self._paused:
 				sleep(0.2)
@@ -112,14 +112,14 @@ class EventUpdateQueue(Queue):
 				consumer.onEventUpdate(record)
 
 
-def testEventUpdateQueue():
+def testEventUpdateQueue() -> None:
 	import time
 
 	class MockGroup:
 		pass
 
 	class MockEvent:
-		def __init__(self, ident, parent):
+		def __init__(self, ident, parent) -> None:
 			self.id = ident
 			self.parent = parent
 

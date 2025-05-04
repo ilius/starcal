@@ -36,7 +36,7 @@ from scal3.ui_gtk.utils import (
 
 
 class EventTagsAndIconSelect(gtk.Box):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# ---------
 		hbox = HBox()
@@ -101,10 +101,10 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
-	def scrollEvent(self, _widget, gevent):
+	def scrollEvent(self, _widget, gevent) -> None:
 		self.swin.get_hscrollbar().emit("scroll-event", gevent)
 
-	def typeComboChanged(self, combo):
+	def typeComboChanged(self, combo) -> None:
 		i = combo.get_active()
 		if i is None:
 			return
@@ -145,7 +145,7 @@ class TagsListBox(gtk.Box):
 	Most used for this event type (first)
 	"""
 
-	def __init__(self, eventType=""):  # "" == "custom"
+	def __init__(self, eventType="") -> None:  # "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		# ----
 		self.eventType = eventType
@@ -213,7 +213,7 @@ class TagsListBox(gtk.Box):
 		self.optionsChanged()
 		self.show_all()
 
-	def optionsChanged(self, _widget=None, tags=None):
+	def optionsChanged(self, _widget=None, tags=None) -> None:
 		if not tags:
 			tags = self.getData()
 		tagObjList = ui.eventTags
@@ -231,7 +231,7 @@ class TagsListBox(gtk.Box):
 				),
 			)
 
-	def enableCellToggled(self, cell, path):
+	def enableCellToggled(self, cell, path) -> None:
 		i = int(path)
 		active = not cell.get_active()
 		self.treeModel[i][1] = active
@@ -240,12 +240,12 @@ class TagsListBox(gtk.Box):
 	def getData(self):
 		return [row[0] for row in self.treeModel if row[1]]
 
-	def setData(self, tags):
+	def setData(self, tags) -> None:
 		self.optionsChanged(tags=tags)
 
 
 class TagEditorDialog(gtk.Dialog):
-	def __init__(self, eventType="", **kwargs):
+	def __init__(self, eventType="", **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tags"))
 		self.set_transient_for(None)
@@ -272,7 +272,7 @@ class TagEditorDialog(gtk.Dialog):
 
 
 class ViewEditTagsHbox(gtk.Box):
-	def __init__(self, eventType=""):
+	def __init__(self, eventType="") -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.tags = []
 		pack(self, gtk.Label(label=_("Tags") + ":  "))
@@ -288,16 +288,16 @@ class ViewEditTagsHbox(gtk.Box):
 		pack(self, self.editButton)
 		self.show_all()
 
-	def onEditButtonClick(self, _widget):
+	def onEditButtonClick(self, _widget) -> None:
 		openWindow(self.dialog)
 
-	def dialogResponse(self, dialog, resp):
+	def dialogResponse(self, dialog, resp) -> None:
 		# log.debug("dialogResponse", dialog, resp)
 		if resp == gtk.ResponseType.OK:
 			self.setData(dialog.getData())
 		dialog.hide()
 
-	def setData(self, tags):
+	def setData(self, tags) -> None:
 		self.tags = tags
 		self.dialog.setData(tags)
 		sep = _(",") + " "

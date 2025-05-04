@@ -19,7 +19,7 @@ class AboutDialog(gtk.AboutDialog):
 		website: str = "",
 		logo: GdkPixbuf.Pixbuf = None,
 		**kwargs,
-	):
+	) -> None:
 		gtk.AboutDialog.__init__(self, **kwargs)
 		self.set_name(name)
 		self.set_program_name(name)

@@ -12,13 +12,13 @@ class MaxHeap(list):
 	def copy(self):
 		return MaxHeap(self[:])
 
-	def exch(self, i, j):
+	def exch(self, i, j) -> None:
 		self[i], self[j] = self[j], self[i]
 
 	def less(self, i, j):
 		return self[i][0] > self[j][0]
 
-	def swim(self, k):
+	def swim(self, k) -> None:
 		while k > 0:
 			j = (k - 1) // 2
 			if self.less(k, j):
@@ -26,7 +26,7 @@ class MaxHeap(list):
 			self.exch(k, j)
 			k = j
 
-	def sink(self, k):
+	def sink(self, k) -> None:
 		N = len(self)
 		while 2 * k < N - 1:
 			j = 2 * k + 1
@@ -37,7 +37,7 @@ class MaxHeap(list):
 			self.exch(k, j)
 			k = j
 
-	def push(self, key, value):
+	def push(self, key, value) -> None:
 		heappush(self, (-key, value))
 
 	def pop(self, index=None):
@@ -73,10 +73,10 @@ class MaxHeap(list):
 		for k, v in self.moreThanStep(key, 2 * index + 2):
 			yield k, v
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return " ".join([str(-k) for k, v in self])
 
-	def delete(self, key, value):
+	def delete(self, key, value) -> None:
 		try:
 			index = self.index((-key, value))  # not optimal FIXME
 		except ValueError:
@@ -146,7 +146,7 @@ class MaxHeap(list):
 	"""
 
 
-def testGetMin(N):
+def testGetMin(N) -> None:
 	from random import randint
 
 	h = MaxHeap()
@@ -163,7 +163,7 @@ def testGetMin(N):
 	# log.debug(f"min key = {k1}")
 
 
-def testDeleteStep(N, maxKey):
+def testDeleteStep(N, maxKey) -> bool:
 	from random import randint
 
 	# ---
@@ -184,7 +184,7 @@ def testDeleteStep(N, maxKey):
 	return True
 
 
-def testDelete():
+def testDelete() -> None:
 	for N in range(10, 30):
 		for _ in range(10000):
 			if not testDeleteStep(N, 10000):
