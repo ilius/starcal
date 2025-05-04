@@ -4,12 +4,12 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NumRangesEntry):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		NumRangesEntry.__init__(self, 1, 31, 10)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.setValues(self.rule.values)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.values = self.getValues()

@@ -45,7 +45,7 @@ saveThread = None
 makeDir(cacheDir)
 
 
-def cacheSaveLoop():
+def cacheSaveLoop() -> None:
 	# Queue.get: Remove and return an item from the queue.
 	# If queue is empty, wait until an item is available.
 	while (qitem := saveQueue.get()) is not None:
@@ -62,7 +62,7 @@ def cacheSaveLoop():
 		log.debug(f"saved: {fpath}")
 
 
-def cacheSaveStart():
+def cacheSaveStart() -> None:
 	global saveThread
 	saveThread = Thread(
 		target=cacheSaveLoop,
@@ -70,7 +70,7 @@ def cacheSaveStart():
 	saveThread.start()
 
 
-def cacheSaveStop():
+def cacheSaveStop() -> None:
 	global saveThread
 	if saveThread is None:
 		return
@@ -80,11 +80,11 @@ def cacheSaveStop():
 	saveThread = None
 
 
-def clear():
+def clear() -> None:
 	pixbufCache.clear()
 
 
-def clearFiles():
+def clearFiles() -> None:
 	for fname in os.listdir(cacheDir):
 		if not fname.endswith(".png"):
 			continue

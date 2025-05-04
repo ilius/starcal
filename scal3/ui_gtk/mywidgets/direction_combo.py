@@ -12,7 +12,7 @@ class DirectionComboBox(gtk.ComboBox):
 		_("Auto"),
 	]
 
-	def __init__(self):
+	def __init__(self) -> None:
 		ls = gtk.ListStore(str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -28,5 +28,5 @@ class DirectionComboBox(gtk.ComboBox):
 	def getValue(self):
 		return self.keys[self.get_active()]
 
-	def setValue(self, value):
+	def setValue(self, value) -> None:
 		self.set_active(self.keys.index(value))

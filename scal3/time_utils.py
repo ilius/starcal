@@ -93,7 +93,7 @@ class HMS:
 		"hM": "{h}:{m:02d}",
 	}
 
-	def __init__(self, h=0, m=0, s=0):
+	def __init__(self, h=0, m=0, s=0) -> None:
 		self.h = h
 		self.m = m
 		self.s = s
@@ -104,7 +104,7 @@ class HMS:
 	def __str__(self) -> str:
 		return f"{self.h:02d}:{self.m:02d}:{self.s:02d}"
 
-	def __format__(self, fmt=""):
+	def __format__(self, fmt="") -> str:
 		if fmt in {"", "HM$"}:
 			# optimization for default format
 			return (

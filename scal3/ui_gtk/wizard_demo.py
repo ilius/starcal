@@ -10,7 +10,7 @@ from scal3.ui_gtk.wizard import WizardWindow
 
 
 class DemoWizardWindow(WizardWindow):
-	def __init__(self):
+	def __init__(self) -> None:
 		WizardWindow.__init__(self, _("Demo for WizardWindow"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
 		# self.set_property("skip-taskbar-hint", True)
@@ -22,7 +22,7 @@ class DemoWizardWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win):
+		def __init__(self, win) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -63,13 +63,13 @@ class DemoWizardWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self):
+		def run(self) -> None:
 			pass
 
-		def onCancelClick(self, _obj):
+		def onCancelClick(self, _obj) -> None:
 			self.win.destroy()
 
-		def onNextClick(self, _obj):
+		def onNextClick(self, _obj) -> None:
 			fpath = self.fcb.get_filename()
 			format_ = None
 			if self.radioJson.get_active():
@@ -79,7 +79,7 @@ class DemoWizardWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win):
+		def __init__(self, win) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -93,22 +93,22 @@ class DemoWizardWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self, format_, fpath):
+		def run(self, format_, fpath) -> None:
 			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format_, fpath):
+		def _runAndCleanup(self, format_, fpath) -> None:
 			if format_ == "json":
 				self._runJson(fpath)
 			else:
 				raise ValueError(f"invalid format {format_!r}")
 
-		def _runJson(self, fpath):  # noqa: PLR6301
+		def _runJson(self, fpath) -> None:  # noqa: PLR6301
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
-		def onBackClick(self, _obj):
+		def onBackClick(self, _obj) -> None:
 			self.win.showStep(0)
 
-		def onCloseClick(self, _obj):
+		def onCloseClick(self, _obj) -> None:
 			self.win.destroy()
 
 	stepClasses = [

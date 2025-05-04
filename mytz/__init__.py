@@ -20,7 +20,7 @@ tzErrCount = 0
 
 
 class TimeZone(datetime.tzinfo):
-	def __init__(self, tz):
+	def __init__(self, tz) -> None:
 		self._tz = tz
 		if os.sep == "\\":
 			self._name = tz.tzname(datetime.datetime.now())
@@ -28,7 +28,7 @@ class TimeZone(datetime.tzinfo):
 			parts = tz._filename.split("/")  # noqa: SLF001
 			self._name = "/".join(parts[-2:])
 
-	def __str__(self):
+	def __str__(self) -> str:
 		# This is the only function that we needed to override on dateutil.tz.tzfile
 		return self._name
 

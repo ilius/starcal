@@ -22,7 +22,7 @@ def formatTime(
 	return pyFmt % tuple(f(cell, calType, tm) for f in funcs)
 
 
-def testSpeed():
+def testSpeed() -> None:
 	from time import strftime
 
 	# fmt1 = "Date: %Y/%m/%d - Time: %H:%M:%S - %a %A %C %B %b %g %G %V"
@@ -49,7 +49,7 @@ def testSpeed():
 	log.info(f"My strftime:     {int(n / (t1 - t0)):7d} op/sec")
 
 
-def testOutput():
+def testOutput() -> None:
 	from time import strftime
 
 	compiledFmt = compileTmFormat("%Y/%m/%d")

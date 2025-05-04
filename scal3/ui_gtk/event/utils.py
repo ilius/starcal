@@ -51,7 +51,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	)
 
 
-def checkEventsReadOnly(doException=True):
+def checkEventsReadOnly(doException=True) -> bool:
 	if event_state.allReadOnly:
 		error = (
 			"Events are Read-Only because they are locked by "

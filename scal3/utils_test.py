@@ -15,7 +15,7 @@ from scal3.utils import (
 
 
 class TestVersionCompare(unittest.TestCase):
-	def test_versionLessThan(self):
+	def test_versionLessThan(self) -> None:
 		self.assertVLessThan("3.1.0", "3.1.1")
 		self.assertVLessThan("3.1.9", "3.2.0")
 		self.assertVLessThan("3.2.0", "3.11.0")
@@ -27,12 +27,12 @@ class TestVersionCompare(unittest.TestCase):
 		self.assertVLessThan("3.1.0", "3.2rc1")
 		self.assertVLessThan("3.1.9", "3.2rc1")
 
-	def assertVLessThan(self, v1, v2):
+	def assertVLessThan(self, v1, v2) -> None:
 		self.assertTrue(versionLessThan(v1, v2))
 
 
 class TestFindWordByPos(unittest.TestCase):
-	def test_findWordByPos(self):
+	def test_findWordByPos(self) -> None:
 		# 	 012345678901234567890123456789012345678901234567890123456789
 		# 	|      |   |       |           |  |   |      | |  |   |     |
 		s1 = "Return the integer represented by the string s in the given"
@@ -103,7 +103,7 @@ class TestFindWordByPos(unittest.TestCase):
 
 
 class TestFindNearestNum(unittest.TestCase):
-	def test1(self):
+	def test1(self) -> None:
 		self.assertEqual(findNearestNum([1, 2, 4, 6, 3, 7], 3.6), 4)
 
 

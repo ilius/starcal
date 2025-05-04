@@ -35,7 +35,7 @@ from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
 
 class ExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="HTML"))
 		# parent=None FIXME
@@ -94,7 +94,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.connect("delete-event", self.onDelete)
 		self.fcw.set_current_folder(homeDir)
 
-	def comboChanged(self, _widget=None, ym=None):
+	def comboChanged(self, _widget=None, ym=None) -> None:
 		i = self.combo.get_active()
 		if ym is None:
 			ym = (ui.cells.current.year, ui.cells.current.month)
@@ -109,12 +109,12 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			self.hbox2.show()
 		# select_region(0, -4) # FIXME
 
-	def onDelete(self, _widget=None, _event=None):
+	def onDelete(self, _widget=None, _event=None) -> bool:
 		# hide(close) File Chooser Dialog
 		self.hide()
 		return True
 
-	def _save(self, path):
+	def _save(self, path) -> None:
 		comboItem = self.combo.get_active()
 		months = []
 		fontSizeScale = self.fontScaleSpin.get_value()
@@ -150,7 +150,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		)
 		self.hide()
 
-	def save(self, _widget=None):
+	def save(self, _widget=None) -> None:
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
@@ -162,7 +162,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			path,
 		)
 
-	def showDialog(self, year, month):
+	def showDialog(self, year, month) -> None:
 		self.comboChanged(ym=(year, month))
 		self.ymBox0.set_value((year, month))
 		self.ymBox1.set_value((year, month))
@@ -197,7 +197,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 
 
 class ExportToIcsDialog(gtk.Dialog, MyDialog):
-	def __init__(self, saveIcsFunc, defaultFileName, **kwargs):
+	def __init__(self, saveIcsFunc, defaultFileName, **kwargs) -> None:
 		self.saveIcsFunc = saveIcsFunc
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="iCalendar"))
@@ -245,15 +245,20 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 			defaultFileName += ".ics"
 		self.fcw.set_current_name(defaultFileName)
 
-	def onDelete(self, _widget=None, _event=None):  # hide(close) File Chooser Dialog
+	def onDelete(
+		self,
+		_widget=None,
+		_event=None,
+	) -> bool:
+		# hide(close) File Chooser Dialog
 		self.destroy()
 		return True
 
-	def _save(self, path, startJd, endJd):
+	def _save(self, path, startJd, endJd) -> None:
 		self.saveIcsFunc(path, startJd, endJd)
 		self.destroy()
 
-	def save(self, _widget=None):
+	def save(self, _widget=None) -> None:
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
