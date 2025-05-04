@@ -8,7 +8,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()
@@ -23,10 +23,10 @@ class WidgetClass(BaseWidgetClass):
 		hbox.show_all()
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
 		self.statCheck.set_active(self.group.showStat)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)
 		self.group.showStat = self.statCheck.get_active()

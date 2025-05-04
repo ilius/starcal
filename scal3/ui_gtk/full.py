@@ -39,12 +39,12 @@ doFullImport(mainWin)
 mainWin.present()
 
 
-def tick():
+def tick() -> None:
 	while gtk.events_pending():
 		gtk.main_iteration_do(False)
 
 
-def openAllWindows():
+def openAllWindows() -> None:
 	mainWin.dayInfoShow()
 	while mainWin.dayInfoDialog.is_visible():
 		tick()
@@ -91,7 +91,7 @@ def openAllWindows():
 		tick()
 
 
-def onSigInt(*args):
+def onSigInt(*args) -> None:
 	# args: (status: int, frame)
 	print(f"SIGINT recieved: {args}")
 	sys.exit(1)

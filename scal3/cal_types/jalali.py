@@ -180,7 +180,7 @@ confPath = f"{confDir}/{name}.json"
 loadSingleConfig(__name__, confPath, confParams)
 
 
-def save():
+def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
 		__name__,

@@ -66,10 +66,10 @@ class CalTypesHolder:
 	names = [mod.name for mod in modules]
 	# calOrigLang = [m.origLang for m in modules]
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self.names)
 
-	def __init__(self):
+	def __init__(self) -> None:
 		self.activeNames = ["gregorian"]
 		self.inactiveNames = []
 		self.update()
@@ -81,7 +81,7 @@ class CalTypesHolder:
 	def primaryModule(self):
 		return modules[self.primary]
 
-	def update(self):
+	def update(self) -> None:
 		self.active = []
 		self.inactive = []  # range(len(modules))
 		remainingNames = self.names.copy()
