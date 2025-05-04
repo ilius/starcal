@@ -258,7 +258,7 @@ class EventGroup(EventContainer):
 		self.showInDCal = True
 		self.showInWCal = True
 		self.showInMCal = True
-		self.showInStatusIcon = False
+		self.showInStatusIcon = True
 		self.showInTimeLine = True
 		self.uuid = None
 		self.idByUuid = {}
