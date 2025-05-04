@@ -27,7 +27,7 @@ __all__ = ["MyStack", "StackPage"]
 
 
 class StackPage:
-	def __init__(self):
+	def __init__(self) -> None:
 		self.pageWidget = None
 		self.pageParent = ""
 		self.pageName = ""
@@ -38,7 +38,7 @@ class StackPage:
 		self.pageExpand = True
 		self.pageItem = None
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return (
 			f"StackPage(name={self.pageName!r}, path={self.pagePath!r}, "
 			f"parent={self.pageParent!r})"
@@ -52,7 +52,7 @@ class MyStack(gtk.Stack):
 		header: bool = True,
 		headerSpacing: int = 5,
 		verticalSlide: bool = False,
-	):
+	) -> None:
 		gtk.Stack.__init__(self)
 		self.set_transition_duration(300)  # milliseconds
 		# ---
@@ -82,7 +82,7 @@ class MyStack(gtk.Stack):
 	def currentPagePath(self) -> str:
 		return self._currentPagePath
 
-	def setTitleFontSize(self, fontSize: str):
+	def setTitleFontSize(self, fontSize: str) -> None:
 		"""
 		Font size in 1024ths of a point, or one of the absolute sizes
 		'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large',
@@ -94,7 +94,7 @@ class MyStack(gtk.Stack):
 		"""
 		self._titleFontSize = fontSize
 
-	def setTitleCentered(self, centered: bool):
+	def setTitleCentered(self, centered: bool) -> None:
 		self._titleCentered = centered
 
 	def setupWindowTitle(
@@ -102,13 +102,13 @@ class MyStack(gtk.Stack):
 		window: gtk.Window,
 		mainTitle: str,
 		mainTitleFirst: bool,
-	):
+	) -> None:
 		self._windowTitleEnable = True
 		self._window = window
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, _arg, gevent):
+	def onKeyPress(self, _arg, gevent) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -117,14 +117,14 @@ class MyStack(gtk.Stack):
 					return True
 		return False
 
-	def _setSlideForward(self):
+	def _setSlideForward(self) -> None:
 		self.set_transition_type(
 			gtk.RevealerTransitionType.SLIDE_DOWN
 			if self._verticalSlide
 			else gtk.RevealerTransitionType.SLIDE_LEFT,
 		)
 
-	def _setSlideBackward(self):
+	def _setSlideBackward(self) -> None:
 		self.set_transition_type(
 			gtk.RevealerTransitionType.SLIDE_UP
 			if self._verticalSlide
@@ -180,7 +180,7 @@ class MyStack(gtk.Stack):
 		hbox.show_all()
 		return hbox
 
-	def addPage(self, page: StackPage):
+	def addPage(self, page: StackPage) -> None:
 		pagePath = page.pagePath
 		log.debug(f"MyStack: {pagePath=}")
 		parentName = page.pageParent
@@ -217,7 +217,7 @@ class MyStack(gtk.Stack):
 	def hasPage(self, pagePath: str):
 		return self.get_child_by_name(name=pagePath) is not None
 
-	def _setPageWindowTitle(self, pagePath: str):
+	def _setPageWindowTitle(self, pagePath: str) -> None:
 		if not self._windowTitleEnable:
 			return
 		title = self._titles[pagePath]
@@ -231,7 +231,7 @@ class MyStack(gtk.Stack):
 				title = title + " - " + self._windowTitleMain
 		self._window.set_title(title)
 
-	def tryToGotoPage(self, pagePath: str):
+	def tryToGotoPage(self, pagePath: str) -> None:
 		while pagePath and not self.gotoPage(pagePath):
 			dot = pagePath.rfind(".")
 			if dot < 1:

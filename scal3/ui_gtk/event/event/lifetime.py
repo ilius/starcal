@@ -24,7 +24,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):  # FIXME
+	def __init__(self, event) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -59,7 +59,7 @@ class WidgetClass(common.WidgetClass):
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
 		start, ok = self.event["start"]
 		if not ok:
@@ -70,7 +70,7 @@ class WidgetClass(common.WidgetClass):
 		self.startDateInput.set_value(start.date)
 		self.endDateInput.set_value(end.date)
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		start, ok = self.event["start"]
 		if not ok:
@@ -81,7 +81,7 @@ class WidgetClass(common.WidgetClass):
 		start.setDate(self.startDateInput.get_value())
 		end.setDate(self.endDateInput.get_value())
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.event.calType, newCalType)

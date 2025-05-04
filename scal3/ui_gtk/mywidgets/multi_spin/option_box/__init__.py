@@ -12,7 +12,7 @@ class MultiSpinOptionBox(gtk.Box):
 		("activate", []),
 	]
 
-	def _entry_activate(self, _widget):
+	def _entry_activate(self, _widget) -> bool:
 		# self.spin.update() #?????
 		# self.add_history()
 		self.emit("activate")
@@ -26,7 +26,7 @@ class MultiSpinOptionBox(gtk.Box):
 		is_hbox=False,
 		hist_size=10,
 		**kwargs,
-	):
+	) -> None:
 		if not is_hbox:
 			gtk.Box.__init__(
 				self,
@@ -52,7 +52,7 @@ class MultiSpinOptionBox(gtk.Box):
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
-	def option_pressed(self, _widget, gevent):
+	def option_pressed(self, _widget, gevent) -> None:
 		# x, y, w, h = self.option.
 		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
 
@@ -62,7 +62,7 @@ class MultiSpinOptionBox(gtk.Box):
 				return index
 		return -1
 
-	def add_history(self):
+	def add_history(self) -> None:
 		self.spin.update()
 		text = self.spin.get_text()
 		index = self.find_text(text)
@@ -82,6 +82,6 @@ class MultiSpinOptionBox(gtk.Box):
 		self.menu.show_all()
 		# self.option.set_sensitive(True) #???????
 
-	def clear_history(self):
+	def clear_history(self) -> None:
 		for item in self.menu.get_children():
 			self.menu.remove(item)

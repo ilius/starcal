@@ -14,7 +14,7 @@ from gi.repository import Gtk as gtk
 localeGen = "/etc/locale.gen"
 
 
-def error(text, parent=None):
+def error(text, parent=None) -> None:
 	d = gtk.MessageDialog(
 		parent,
 		gtk.DialogFlags.DESTROY_WITH_PARENT,
@@ -26,7 +26,7 @@ def error(text, parent=None):
 	d.run()
 
 
-def errorExit(text, parent=None):
+def errorExit(text, parent=None) -> None:
 	error(text, parent)
 	sys.exit(1)
 

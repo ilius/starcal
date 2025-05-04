@@ -45,7 +45,7 @@ class Cell(CellType):
 	# ocTimeMax = 0
 	# ocTimeCount = 0
 	# ocTimeSum = 0
-	def __init__(self, jd: int):
+	def __init__(self, jd: int) -> None:
 		self._eventsData: list[dict] | None = None
 		# each item in self._eventsData has these keys and type:
 		# 	time: str (time descriptive string)
@@ -98,7 +98,7 @@ class Cell(CellType):
 	def date(self) -> tuple[int, int, int]:
 		return (self.year, self.month, self.day)
 
-	def addPluginText(self, plug, text):
+	def addPluginText(self, plug, text) -> None:
 		self._pluginsText.append(text.split("\n"))
 		self._pluginsData.append((plug, text))
 
@@ -114,7 +114,7 @@ class Cell(CellType):
 	def getPluginsText(self, firstLineOnly=False) -> str:
 		return "\n".join(text for (plug, text) in self.getPluginsData(firstLineOnly))
 
-	def clearEventsData(self):
+	def clearEventsData(self) -> None:
 		self._eventsData = None
 
 	def getEventsData(self) -> list[dict]:
@@ -199,7 +199,7 @@ class CellCache:
 		self.today = self.getTodayCell()
 		self.current = self.today
 
-	def resetCache(self):
+	def resetCache(self) -> None:
 		log.debug(f"resetCache: {conf.maxDayCacheSize.v=}, {conf.maxWeekCacheSize.v=}")
 
 		# key: jd(int), value: CellType
@@ -213,7 +213,7 @@ class CellCache:
 		self.current = self.getCell(self.current.jd)
 		self.today = self.getCell(self.today.jd)
 
-	def clearEventsData(self):
+	def clearEventsData(self) -> None:
 		for tmpCell in self.jdCells.values():
 			tmpCell.clearEventsData()
 		self.current.clearEventsData()
@@ -227,7 +227,7 @@ class CellCache:
 		getCellGroupCallable: Callable[[CellCache, ...], list[CellType]],
 		# ^ FIXME: ...
 		# `...` is `absWeekNumber` for weekCal, and `year, month` for monthCal
-	):
+	) -> None:
 		# print("----------- registerPlugin", name, "jdCells", len(self.jdCells))
 		"""
 		setParamsCallable(cell): cell.attr1 = value1 ....
@@ -323,5 +323,5 @@ class CellCache:
 		self.current = self.getCellByDate(year, month, day)
 
 
-def init():
+def init() -> None:
 	ui.cells = CellCache()

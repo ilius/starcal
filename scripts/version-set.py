@@ -7,7 +7,7 @@ from os.path import abspath, dirname, join
 from packaging.version import parse
 
 
-def main():
+def main() -> None:
 	version = sys.argv[1]
 	parse(version)
 	versionQuoted = f'"{version}"'
