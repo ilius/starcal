@@ -62,7 +62,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		timeFontParam: Property | None = None,
 		styleClass: str = "",
 		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
-	):
+	) -> None:
 		gtk.TextView.__init__(self)
 		self.set_editable(False)
 		self.set_cursor_visible(False)
@@ -102,7 +102,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self.textbuff.get_tag_table().add(self.timeTag)
 		self.updateTimeFont()
 
-	def updateTimeFont(self):
+	def updateTimeFont(self) -> None:
 		font = ui.getFont(bold=True)  # bold by default
 		if self.timeFontParam:
 			assert self.timeFontEnableParam
@@ -115,7 +115,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			return self.eventSepParam.v
 		return "\n\n"
 
-	def updateJustification(self):
+	def updateJustification(self) -> None:
 		if not self.justificationParam:
 			return
 		value = self.justificationParam.v
@@ -186,13 +186,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			return ""
 		return "." + self.styleClass + " " + cssTextStyle(font=font)
 
-	def onEventSepChange(self):
+	def onEventSepChange(self) -> None:
 		self.onDateChange(toParent=False)
 
 	def get_cursor_position(self):
 		return self.get_property("cursor-position")
 
-	def has_selection(self):
+	def has_selection(self) -> bool:
 		buf = self.get_buffer()
 		try:
 			buf.get_selection_bounds()
@@ -204,7 +204,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def get_text(self):
 		return buffer_get_text(self.get_buffer())
 
-	def copy(self, _item):
+	def copy(self, _item) -> None:
 		buf = self.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
@@ -230,7 +230,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			s = s[: maxLen - 3].rstrip(" ") + "..."
 		return s
 
-	def onButtonPress(self, _widget, gevent):
+	def onButtonPress(self, _widget, gevent) -> bool:
 		# log.debug(f"DayOccurrenceView: onButtonPress: {gevent.button=}")
 		if gevent.button != 3:
 			return False
@@ -272,7 +272,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		ui.updateFocusTime()
 		return True
 
-	def addText(self, text):
+	def addText(self, text) -> None:
 		endIter = self.textbuff.get_bounds()[1]
 
 		text = text.replace("&", "&amp;")
@@ -286,7 +286,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		b_text = text.encode("utf-8")
 		self.textbuff.insert_markup(endIter, text, len(b_text))
 
-	def addIcon(self, icon):
+	def addIcon(self, icon) -> None:
 		"""
 		insert_pixbuf is replaced with insert_texture in gtk 3.93.0.
 
@@ -309,11 +309,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		)
 		self.textbuff.insert_pixbuf(endIter, pixbuf)
 
-	def addTime(self, timeStr):
+	def addTime(self, timeStr) -> None:
 		endIter = self.textbuff.get_bounds()[1]
 		self.textbuff.insert_with_tags(endIter, timeStr, self.timeTag)
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		cell = ui.cells.current
 		self.textbuff.set_text("")
@@ -338,7 +338,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				self.addText(line + "\n")
 		self.occurOffsets = occurOffsets
 
-	def moveEventToGroupFromMenu(self, _item, event, prev_group, newGroup):
+	def moveEventToGroupFromMenu(self, _item, event, prev_group, newGroup) -> None:
 		prev_group.remove(event)
 		prev_group.save()
 		ui.eventUpdateQueue.put("r", prev_group, self)
@@ -357,7 +357,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		newEventType,
 		event,
 		occurData,
-	):
+	) -> None:
 		newEvent = newGroup.create(newEventType)
 		newEvent.copyFrom(event)
 		startEpoch, endEpoch = occurData.time_epoch
@@ -373,7 +373,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self.onConfigChange()
 
 	@staticmethod
-	def copyEventText(_item, event):
+	def copyEventText(_item, event) -> None:
 		setClipboard(event.getText())
 
 	def addWriteEventMenuItems(
@@ -382,7 +382,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		occurData: dict[str, Any],
 		event: event_lib.Event,
 		group: event_lib.EventGroup,
-	):
+	) -> None:
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
 
 		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.summary)
@@ -471,7 +471,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			),
 		)
 
-	def addEventMenuItems(self, menu, occurData: dict[str, Any]):
+	def addEventMenuItems(self, menu, occurData: dict[str, Any]) -> None:
 		if event_state.allReadOnly:
 			return
 		# ----
@@ -493,7 +493,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			self.addWriteEventMenuItems(menu, occurData, event, group)
 			menu.add(gtk.SeparatorMenuItem())
 
-	def onEditEventClick(self, _item, winTitle, event, _groupId):
+	def onEditEventClick(self, _item, winTitle, event, _groupId) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		event = EventEditorDialog(
@@ -506,7 +506,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
-	def moveEventToTrash(self, _item, event, groupId):
+	def moveEventToTrash(self, _item, event, groupId) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
 		if not confirmEventTrash(event, transient_for=ui.mainWin):
@@ -514,7 +514,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		ui.moveEventToTrash(ui.eventGroups[groupId], event, self)
 		self.onConfigChange()
 
-	def addExtraMenuItems(self, menu):
+	def addExtraMenuItems(self, menu) -> None:
 		pass
 
 
@@ -525,7 +525,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 	objName = DayOccurrenceView.objName
 	desc = DayOccurrenceView.desc
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.ScrolledWindow.__init__(self)
 		self.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
 		# ---
@@ -537,11 +537,11 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		self.add(item)
 		self.appendItem(item)
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.showHide()
 
-	def showHide(self):
+	def showHide(self) -> None:
 		self.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
 
 	def do_get_preferred_height(self):  # noqa: PLR6301
@@ -570,7 +570,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
-	def onMaximumHeightChange(self):
+	def onMaximumHeightChange(self) -> None:
 		self.queue_resize()
 		ui.mainWin.autoResize()
 
@@ -580,7 +580,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 	def updateData(self):
 		return self.updateDataByGroups(ui.eventGroups)
 
-	def __init__(self, abbreviateWeekDays=False):
+	def __init__(self, abbreviateWeekDays=False) -> None:
 		self.initVars()
 		self.abbreviateWeekDays = abbreviateWeekDays
 		self.absWeekNumber = core.getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
@@ -626,7 +626,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		col.set_resizable(True)
 		self.append_column(col)
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.absWeekNumber = ui.cells.current.absWeekNumber
 		_cells, wEventData = ui.cells.getWeekData(self.absWeekNumber)

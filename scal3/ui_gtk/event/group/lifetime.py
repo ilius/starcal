@@ -6,7 +6,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NormalWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()
@@ -20,12 +20,12 @@ class WidgetClass(NormalWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		NormalWidgetClass.updateWidget(self)
 		self.showSeparateYmdInputsCheck.set_active(
 			self.group.showSeparateYmdInputs,
 		)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		NormalWidgetClass.updateVars(self)
 		self.group.showSeparateYmdInputs = self.showSeparateYmdInputsCheck.get_active()

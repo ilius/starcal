@@ -7,7 +7,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -20,10 +20,10 @@ class WidgetClass(gtk.Box):
 		pack(self, tbox)
 		self.tbox = tbox
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.spin.set_value(self.rule.days)
 		self.tbox.set_value(self.rule.extraTime)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.days = self.spin.get_value()
 		self.rule.extraTime = self.tbox.get_value()

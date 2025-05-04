@@ -20,7 +20,7 @@ from scal3 import core
 
 
 class GioNotificationWrapper(gio.Notification):
-	def __init__(self, mainWin):
+	def __init__(self, mainWin) -> None:
 		self.mainWin = mainWin
 		self.app = mainWin.app
 		# --
@@ -33,14 +33,14 @@ class GioNotificationWrapper(gio.Notification):
 		self.app.add_action(action)
 		self.set_default_action("onStatusIconClick")
 
-	def set_from_pixbuf(self, pixbuf):
+	def set_from_pixbuf(self, pixbuf) -> None:
 		# GdkPixbuf is subclass of gio.Icon
 		self.set_icon(pixbuf)
 
-	def set_from_file(self, fpath):
+	def set_from_file(self, fpath) -> None:
 		self.set_icon(gio.FileIcon.new(gio.File.new_for_path(fpath)))
 
-	def set_tooltip_text(self, text):
+	def set_tooltip_text(self, text) -> None:
 		# FIXME
 		pass
 
@@ -49,10 +49,10 @@ class GioNotificationWrapper(gio.Notification):
 
 	# def connect(
 
-	def is_embedded(self):  # noqa: PLR6301
+	def is_embedded(self) -> bool:  # noqa: PLR6301
 		# FIXME
 		return True
 
-	def set_visible(self, visible: bool):
+	def set_visible(self, visible: bool) -> None:
 		# FIXME
 		pass

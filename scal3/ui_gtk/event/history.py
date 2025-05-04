@@ -30,7 +30,7 @@ addSymbol = "⊕"
 removeSymbol = "⊖"
 
 
-def _unnestStep(dst, src, path):
+def _unnestStep(dst, src, path) -> None:
 	if not isinstance(src, dict):
 		dst[path] = src
 		return
@@ -61,7 +61,7 @@ class EventHistoryDialog(gtk.Dialog):
 		"Change (JSON Diff)",
 	]
 
-	def onResponse(self, _w, _e):
+	def onResponse(self, _w, _e) -> None:
 		self.hide()
 		ud.windowList.onConfigChange()
 
@@ -69,7 +69,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self,
 		event,
 		**kwargs,
-	):
+	) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("History") + ": " + event.summary)
@@ -228,22 +228,22 @@ class EventHistoryDialog(gtk.Dialog):
 		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
 
 	@staticmethod
-	def setColumnWidth(col, _widthParam, cell):
+	def setColumnWidth(col, _widthParam, cell) -> None:
 		width = col.get_width()
 		cell.set_property("wrap_width", width)
 
-	def treeviewCursorChanged(self, _treev, _gevent=None):
+	def treeviewCursorChanged(self, _treev, _gevent=None) -> None:
 		self.updateViewType()
 
-	def viewTypeComboChanged(self, _combo):
+	def viewTypeComboChanged(self, _combo) -> None:
 		self.updateViewType()
 
-	def setButtonsSensitive(self, sensitive: bool):
+	def setButtonsSensitive(self, sensitive: bool) -> None:
 		# self.revertButton.set_sensitive(sensitive)
 		self.checkoutAfterButton.set_sensitive(sensitive)
 		self.checkoutBeforeButton.set_sensitive(sensitive)
 
-	def updateViewType(self):
+	def updateViewType(self) -> None:
 		path = self.treev.get_cursor()[0]
 		if not path:
 			self.setButtonsSensitive(False)
@@ -265,7 +265,7 @@ class EventHistoryDialog(gtk.Dialog):
 		else:
 			self.updateTextViewType(viewType, hashBefore, hashAfter)
 
-	def updateTableViewType(self, viewType, hashBefore, hashAfter):
+	def updateTableViewType(self, viewType, hashBefore, hashAfter) -> None:
 		treeModel = self.cmpTrees
 		treeModel.clear()
 
@@ -285,7 +285,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 		self.setScrolledWinChild(self.cmpTreev)
 
-	def updateTextViewType(self, viewType, hashBefore, hashAfter):
+	def updateTextViewType(self, viewType, hashBefore, hashAfter) -> None:
 		event = self.event
 		text = ""
 		if viewType == "After change (Text)":
@@ -316,7 +316,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self.textbuff.set_text(text)
 		self.setScrolledWinChild(self.textview)
 
-	def setScrolledWinChild(self, new_child):
+	def setScrolledWinChild(self, new_child) -> None:
 		old_child = self.leftSwin.get_child()
 		if old_child != new_child:
 			if old_child is not None:
@@ -326,7 +326,7 @@ class EventHistoryDialog(gtk.Dialog):
 			self.leftSwin.add(new_child)
 			new_child.show()
 
-	def switchToRevision(self, revHash):
+	def switchToRevision(self, revHash) -> None:
 		newEvent = self.event.getRevision(revHash)
 		self.event.parent.removeFromCache(self.event.id)
 		# newEvent.id is set
@@ -336,7 +336,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self.load()
 		ui.eventUpdateQueue.put("e", newEvent, self)
 
-	def onCheckoutAfterClick(self, _button):
+	def onCheckoutAfterClick(self, _button) -> None:
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -346,7 +346,7 @@ class EventHistoryDialog(gtk.Dialog):
 		hashAfter = row[1]
 		self.switchToRevision(hashAfter)
 
-	def onCheckoutBeforeClick(self, _button):
+	def onCheckoutBeforeClick(self, _button) -> None:
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -450,7 +450,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 		return _("{count} parameters").format(count=_(len(diff)))
 
-	def load(self):
+	def load(self) -> None:
 		treeModel = self.treeModel
 		treeModel.clear()
 		hist = self.event.loadHistory()

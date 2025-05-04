@@ -77,7 +77,7 @@ def pack(
 	expand: bool | int = False,
 	fill: bool | int = False,
 	padding: int = 0,
-):
+) -> None:
 	if isinstance(box, gtk.Box):
 		box.pack_start(child, expand=expand, fill=fill, padding=padding)
 	elif isinstance(box, gtk.CellLayout):
@@ -105,7 +105,7 @@ def HBox(**kwargs):
 
 
 class Menu(gtk.Menu):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Menu.__init__(self, **kwargs)
 		self.set_reserve_toggle_size(0)
 		# self.imageSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -146,6 +146,6 @@ def getOrientation(vertical: bool) -> gtk.Orientation:
 
 
 class MenuItem(gtk.MenuItem):
-	def __init__(self, label: str = ""):
+	def __init__(self, label: str = "") -> None:
 		gtk.MenuItem.__init__(self, label=label)
 		self.set_use_underline(True)

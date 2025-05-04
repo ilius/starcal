@@ -40,7 +40,7 @@ class SelectDateDialog(gtk.Dialog):
 		("response-date", [int, int, int]),
 	]
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Select Date..."))
 		# self.set_has_separator(False)
@@ -128,7 +128,16 @@ class SelectDateDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.resize(1, 1)
 
-	def dragRec(self, _obj, _context, _x, _y, selection, _target_id, _etime):
+	def dragRec(
+		self,
+		_obj,
+		_context,
+		_x,
+		_y,
+		selection,
+		_target_id,
+		_etime,
+	) -> bool | None:
 		text = selection.get_text()
 		if text is None:
 			return
@@ -150,7 +159,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.dateInput.add_history()
 		return True
 
-	def show(self):
+	def show(self) -> None:
 		# Show a window that ask the date and set on the calendar
 		calType = calTypes.primary
 		y, m, d = ui.cells.current.dates[calType]
@@ -159,22 +168,22 @@ class SelectDateDialog(gtk.Dialog):
 		self.jdInput.set_value(ui.cells.current.jd)
 		openWindow(self)
 
-	def onResponse(self):
+	def onResponse(self) -> None:
 		self.hide()
 		parentWin = self.get_transient_for()
 		if parentWin is not None:
 			parentWin.present()
 
-	def onCancel(self, _widget, _event=None):
+	def onCancel(self, _widget, _event=None) -> bool:
 		self.onResponse()
 		return True
 
-	def set(self, y, m, d):
+	def set(self, y, m, d) -> None:
 		self.ymdBox.set_value((y, m, d))
 		self.dateInput.set_value((y, m, d))
 		self.dateInput.add_history()
 
-	def setCalType(self, calType):
+	def setCalType(self, calType) -> None:
 		self.calType = calType
 		module, ok = calTypes[calType]
 		if not ok:
@@ -183,7 +192,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.ymdBox.setCalType(calType)
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
-	def calTypeComboChanged(self, _widget=None):
+	def calTypeComboChanged(self, _widget=None) -> None:
 		prevCalType = self.calType
 		prevDate = self.get()
 		calType = self.calTypeCombo.get_active()
@@ -211,7 +220,7 @@ class SelectDateDialog(gtk.Dialog):
 			y0, m0, d0 = jd_to(jd, calType)
 		return (y0, m0, d0)
 
-	def ok(self, _widget):
+	def ok(self, _widget) -> None:
 		calType = self.calTypeCombo.get_active()
 		if calType is None:
 			return
@@ -231,7 +240,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.dateInput.set_value((y0, m0, d0))
 		self.dateInput.add_history()
 
-	def radioChanged(self, _widget=None):
+	def radioChanged(self, _widget=None) -> None:
 		if self.radio1.get_active():
 			self.ymdBox.set_sensitive(True)
 			self.hbox2.set_sensitive(False)

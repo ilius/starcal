@@ -151,7 +151,7 @@ def parseDroppedDate(text) -> tuple[int, int, int] | None:
 	)
 	# "format" must be list because we use method "index"
 
-	def formatIsValid(fmt: list[int]):
+	def formatIsValid(fmt: list[int]) -> bool:
 		for i in range(3):
 			f = fmt[i]
 			if not (minMax[f][0] <= part[i] <= minMax[f][1]):

@@ -5,13 +5,13 @@ __all__ = ["DaySpinButton"]
 
 
 class DaySpinButton(SingleSpinButton):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		SingleSpinButton.__init__(
 			self,
 			field=DayField(pad=0),
 			**kwargs,
 		)
 
-	def set_range(self, minim: int, maxim: int):
+	def set_range(self, minim: int, maxim: int) -> None:
 		self.field.children[0].setRange(minim, maxim)
 		self.set_text(self.field.getText())

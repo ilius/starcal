@@ -11,32 +11,32 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Entry):
-	def __init__(self, notifier):
+	def __init__(self, notifier) -> None:
 		self.notifier = notifier
 		gtk.Entry.__init__(self)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.set_text(self.notifier.extraMessage)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.notifier.extraMessage = self.get_text()
 
 
-def hideWindow(_widget, dialog):
+def hideWindow(_widget, dialog) -> bool:
 	dialog.hide()
 	return True
 
 
-def response(dialog, _e):
+def response(dialog, _e) -> None:
 	dialog.destroy()
 
 
-def notify(notifier, _finishFunc):
+def notify(notifier, _finishFunc) -> None:
 	print("------------ windowsMsg.notify")
 	glib.idle_add(_notify, notifier)
 
 
-def _notify(notifier):
+def _notify(notifier) -> None:
 	event = notifier.event
 	dialog = gtk.Dialog()
 	# ----

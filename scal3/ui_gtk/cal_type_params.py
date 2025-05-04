@@ -28,7 +28,7 @@ __all__ = ["CalTypeParamWidget", "TextParamWidget"]
 
 
 class XAlignComboBox(gtk.ComboBoxText):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.ComboBoxText.__init__(self)
 		# ---
 		self.append_text(_("Left"))
@@ -36,7 +36,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 		self.append_text(_("Right"))
 		self.set_active(1)
 
-	def get(self):
+	def get(self) -> str | None:
 		index = self.get_active()
 		if index == 0:
 			return "left"
@@ -47,7 +47,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 		log.info(f"XAlignComboBox: unexpected {index = }")
 		return None
 
-	def set(self, value):
+	def set(self, value) -> None:
 		if value == "left":
 			self.set_active(0)
 		elif value == "center":
@@ -59,7 +59,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 
 
 class YAlignComboBox(gtk.ComboBoxText):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.ComboBoxText.__init__(self)
 		# ---
 		self.append_text(_("Top"))
@@ -67,7 +67,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 		self.append_text(_("Buttom"))
 		self.set_active(1)
 
-	def get(self):
+	def get(self) -> str | None:
 		index = self.get_active()
 		if index == 0:
 			return "top"
@@ -78,7 +78,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 		log.info(f"YAlignComboBox: unexpected {index = }")
 		return None
 
-	def set(self, value):
+	def set(self, value) -> None:
 		if value == "top":
 			self.set_active(0)
 		elif value == "center":
@@ -103,7 +103,7 @@ class TextParamWidget(gtk.Box):
 		hasUppercase=False,
 		enableTitleLabel="",
 		useFrame=False,
-	):
+	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton, MyFontButton
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 
@@ -232,7 +232,7 @@ class TextParamWidget(gtk.Box):
 			params["uppercase"] = self.uppercaseCheck.get_active()
 		return params
 
-	def set(self, params):
+	def set(self, params) -> None:
 		self.spinX.set_value(params["pos"][0])
 		self.spinY.set_value(params["pos"][1])
 		self.fontb.set_font(getParamsFont(params))
@@ -247,16 +247,16 @@ class TextParamWidget(gtk.Box):
 		if self.hasUppercase:
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
-	def onChange(self, _obj=None, _event=None):
+	def onChange(self, _obj=None, _event=None) -> None:
 		setattr(conf, self.paramName, self.get())
 		self.cal.queue_draw()
 
-	def setFontPreviewText(self, text):
+	def setFontPreviewText(self, text) -> None:
 		self.fontb.set_property("preview-text", text)
 
 
 class CalTypeParamWidget(TextParamWidget):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		index = kwargs.get("index")
 		if index is None:
 			raise ValueError("index is None")
@@ -274,7 +274,7 @@ class CalTypeParamWidget(TextParamWidget):
 		# ----
 		TextParamWidget.__init__(self, *args, **kwargs)
 
-	def onChange(self, _obj=None, _event=None):
+	def onChange(self, _obj=None, _event=None) -> None:
 		typeParams = getattr(conf, self.paramName)
 		typeParams[self.index] = self.get()
 		self.cal.queue_draw()

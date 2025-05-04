@@ -262,7 +262,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def getAllButtons(self):
 		return self.getWidgetButtons() + self.getNavButtons()
 
-	def startMove(self, gevent, button=1):
+	def startMove(self, gevent, button=1) -> None:
 		win = self.getWindow()
 		if not win:
 			return
@@ -273,7 +273,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			gevent.time,
 		)
 
-	def startResize(self, gevent):
+	def startResize(self, gevent) -> None:
 		win = self.getWindow()
 		if not win:
 			return
@@ -285,14 +285,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 			gevent.time,
 		)
 
-	def openCustomize(self, _gevent=None):
+	def openCustomize(self, _gevent=None) -> None:
 		if self.win:
 			self.win.customizeShow()
 
-	def prevDayClicked(self, _gevent=None):
+	def prevDayClicked(self, _gevent=None) -> None:
 		self.jdPlus(-1)
 
-	def nextDayClicked(self, _gevent=None):
+	def nextDayClicked(self, _gevent=None) -> None:
 		self.jdPlus(1)
 
 	def updateTypeParamsWidget(self):
@@ -380,7 +380,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		return subPages
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.win = win
 		self._window = None
@@ -702,7 +702,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def getCell(cls) -> ui.Cell:
 		return ui.cells.current
 
-	def drawAll(self, _widget=None, cr=None, cursor=True):
+	def drawAll(self, _widget=None, cr=None, cursor=True) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -724,7 +724,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		h: int,
 		x0: int,
 		y0: int,
-	):
+	) -> None:
 		if not self.eventTotalSizeRatio:
 			return
 		assert self.eventIconSize
@@ -789,7 +789,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return self.weekdayAbbreviate.v
 		return False
 
-	def drawSeasonPie(self, cr, w, h):
+	def drawSeasonPie(self, cr, w, h) -> None:
 		if not self.seasonPieEnable:
 			return
 
@@ -855,7 +855,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		cr.move_to(xc - font_w / 2, yc - font_h / 2)
 		show_layout(cr, layout)
 
-	def drawWithContext(self, cr: cairo.Context, _cursor: bool):
+	def drawWithContext(self, cr: cairo.Context, _cursor: bool) -> None:
 		# gevent = gtk.get_current_event()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
@@ -941,7 +941,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		for button in self._allButtons:
 			button.draw(cr, w, h)
 
-	def onButtonPress(self, _obj, gevent):
+	def onButtonPress(self, _obj, gevent) -> bool:
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
@@ -966,11 +966,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 		return True
 
-	def jdPlus(self, p):
+	def jdPlus(self, p) -> None:
 		ui.cells.jdPlus(p)
 		self.onDateChange()
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
@@ -1004,7 +1004,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _widget, gevent):
+	def scroll(self, _widget, gevent) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)
@@ -1021,11 +1021,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			int(alloc.height / 2),
 		)
 
-	def onDateChange(self, *a, **kw):
+	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
-	def onConfigChange(self, *a, **kw):
+	def onConfigChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		# TODO: if active cal types are changed, we should re-order buttons
 		# hide extra buttons, and possibly add new buttons with their pages

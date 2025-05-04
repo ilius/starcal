@@ -85,7 +85,7 @@ def parseAllFiles(direc):
 	return data
 
 
-def writeToTabfile(data, fpath):
+def writeToTabfile(data, fpath) -> None:
 	lines = []
 	for event in data:
 		y, m, d = event["date"]

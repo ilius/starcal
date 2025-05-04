@@ -68,7 +68,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	imageNameInactive = ""
 	imageNamePress = ""
 
-	def __init__(self, controller):
+	def __init__(self, controller) -> None:
 		gtk.EventBox.__init__(self)
 		self.set_border_width(conf.winControllerBorder.v)
 		self.initVars()
@@ -82,7 +82,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		# ---
 		self.show_all()
 
-	def setImage(self, imName):
+	def setImage(self, imName) -> None:
 		if self.controller.light:
 			imName += "-light"
 		self.im.set_from_pixbuf(
@@ -96,22 +96,22 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			),
 		)
 
-	def setFocus(self, focus):
+	def setFocus(self, focus) -> None:
 		self.setImage(self.imageNameFocus if focus else self.imageName)
 
-	def setInactive(self):
+	def setInactive(self) -> None:
 		if not self.imageNameInactive:
 			return
 		self.setImage(self.imageNameInactive)
 
-	def setPressed(self):
+	def setPressed(self) -> None:
 		self.setImage(
 			self.imageNamePress
 			if conf.winControllerPressState.v
 			else self.imageNameFocus,
 		)
 
-	def build(self):
+	def build(self) -> None:
 		self.im = gtk.Image()
 		self.setFocus(False)
 		self.add(self.im)
@@ -121,27 +121,27 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("button-release-event", self.onButtonRelease)
 		set_tooltip(self, self.desc)  # FIXME
 
-	def enterNotify(self, _widget, _gevent):
+	def enterNotify(self, _widget, _gevent) -> None:
 		self.setFocus(True)
 
-	def leaveNotify(self, _widget, _gevent):
+	def leaveNotify(self, _widget, _gevent) -> bool:
 		if self.controller.winFocused:
 			self.setFocus(False)
 		else:
 			self.setInactive()
 		return False
 
-	def onButtonPress(self, _widget, _gevent):
+	def onButtonPress(self, _widget, _gevent) -> bool:
 		self.setPressed()
 		return True
 
-	def onClick(self, gWin, gevent):
+	def onClick(self, gWin, gevent) -> None:
 		pass
 
-	def onRightClick(self, gWin, gevent):
+	def onRightClick(self, gWin, gevent) -> None:
 		pass
 
-	def onButtonRelease(self, _button, gevent):
+	def onButtonRelease(self, _button, gevent) -> bool:
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
@@ -159,7 +159,7 @@ class WinConButtonMin(WinConButton):
 	imageNameInactive = "minimize-inactive"
 	imageNamePress = "minimize-press"
 
-	def onClick(self, gWin, gevent):  # noqa: PLR6301
+	def onClick(self, gWin, gevent) -> None:  # noqa: PLR6301
 		gWin.toggleMinimized(gevent)
 
 
@@ -171,10 +171,10 @@ class WinConButtonMax(WinConButton):
 	imageNameInactive = "maximize-inactive"
 	imageNamePress = "maximize-press"
 
-	def onClick(self, gWin, gevent):  # noqa: PLR6301
+	def onClick(self, gWin, gevent) -> None:  # noqa: PLR6301
 		gWin.toggleMaximized(gevent)
 
-	def onRightClick(self, gWin, gevent):  # noqa: PLR6301
+	def onRightClick(self, gWin, gevent) -> None:  # noqa: PLR6301
 		gWin.toggleWidthMaximized(gevent)
 
 
@@ -186,7 +186,7 @@ class WinConButtonClose(WinConButton):
 	imageNameInactive = "close-inactive"
 	imageNamePress = "close-press"
 
-	def onClick(self, gWin, _gevent):  # noqa: PLR6301
+	def onClick(self, gWin, _gevent) -> None:  # noqa: PLR6301
 		gWin.emit("delete-event", gdk.Event())
 
 
@@ -194,7 +194,7 @@ class WinConButtonRightPanel(WinConButton):
 	objName = "rightPanel"
 	desc = _("Show Right Panel")
 
-	def __init__(self, controller):
+	def __init__(self, controller) -> None:
 		direc = "left" if rtl else "right"
 		self.imageName = direc
 		self.imageNameFocus = f"{direc}-focus"
@@ -202,7 +202,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNamePress = f"{direc}-press"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin, _gevent):  # noqa: PLR6301
+	def onClick(self, gWin, _gevent) -> None:  # noqa: PLR6301
 		gWin.emit("toggle-right-panel")
 
 
@@ -211,13 +211,13 @@ class WinConButtonSep(WinConButton):
 	desc = _("Separator")
 	expand = True
 
-	def build(self):
+	def build(self) -> None:
 		pass
 
-	def setFocus(self, focus):
+	def setFocus(self, focus) -> None:
 		pass
 
-	def setInactive(self):
+	def setInactive(self) -> None:
 		pass
 
 
@@ -241,7 +241,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 	)
 	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		self.win = win
 		gtk.Box.__init__(
 			self,
@@ -267,19 +267,19 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
 
-	def windowFocusIn(self, _widget=None, _event=None):
+	def windowFocusIn(self, _widget=None, _event=None) -> bool:
 		for b in self.items:
 			b.setFocus(False)
 		self.winFocused = True
 		return False
 
-	def windowFocusOut(self, _widget=None, _event=None):
+	def windowFocusOut(self, _widget=None, _event=None) -> bool:
 		for b in self.items:
 			b.setInactive()
 		self.winFocused = False
 		return False
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		CustomizableCalBox.updateVars(self)
 		conf.winControllerButtons.v = self.getItemsData()
 
@@ -347,7 +347,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
-	def updateTheme(self):  # noqa: PLR6301
+	def updateTheme(self) -> None:  # noqa: PLR6301
 		name = conf.winControllerTheme.v
 		dirPath = join(svgDir, "wm", name)
 		fileSet = set(os.listdir(dirPath))
@@ -361,7 +361,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		if extraFiles:
 			print(f"Extra svg files: {extraFiles}")
 
-	def updateButtons(self):
+	def updateButtons(self) -> None:
 		for item in self.items:
 			item.setFocus(False)
 

@@ -27,7 +27,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):  # FIXME
+	def __init__(self, event) -> None:  # FIXME
 		event.setJd(ui.cells.current.jd)
 		common.WidgetClass.__init__(self, event)
 		# ------
@@ -86,7 +86,7 @@ class WidgetClass(common.WidgetClass):
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
-	def updateWidget(self):  # FIXME
+	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
 		# ---
@@ -101,7 +101,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		# --
 		start, ok = self.event["start"]
@@ -124,7 +124,7 @@ class WidgetClass(common.WidgetClass):
 			self.dayTimeEndInput.get_value(),
 		)
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.event.calType, newCalType)

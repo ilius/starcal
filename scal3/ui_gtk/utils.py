@@ -93,17 +93,17 @@ __all__ = [
 ]
 
 
-def hideList(widgets):
+def hideList(widgets) -> None:
 	for w in widgets:
 		w.hide()
 
 
-def showList(widgets):
+def showList(widgets) -> None:
 	for w in widgets:
 		w.show()
 
 
-def set_tooltip(widget, text):
+def set_tooltip(widget, text) -> None:
 	widget.set_tooltip_text(text)
 
 
@@ -115,7 +115,7 @@ def buffer_get_text(b):
 	)
 
 
-def show_event(widget, gevent):
+def show_event(widget, gevent) -> None:
 	try:
 		value = gevent.get_value()
 	except AttributeError:
@@ -127,7 +127,7 @@ def show_event(widget, gevent):
 	# gevent.send_event
 
 
-def setClipboard(text, clipboard=None):
+def setClipboard(text, clipboard=None) -> None:
 	if not clipboard:
 		clipboard = gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD)
 	clipboard.set_text(
@@ -355,7 +355,7 @@ def getStyleColor(widget, state=gtk.StateType.NORMAL):
 	return widget.get_style_context().get_color(state)
 
 
-def modify_bg_all(widget, state, gcolor):
+def modify_bg_all(widget, state, gcolor) -> None:
 	log.info(widget.__class__.__name__)
 	widget.modify_bg(state, gcolor)
 	try:
@@ -467,7 +467,7 @@ def showMsg(
 	title="",
 	borderWidth=10,
 	selectable=False,
-):
+) -> None:
 	win = gtk.Dialog(
 		parent=parent,
 		transient_for=transient_for,
@@ -508,19 +508,19 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg, **kwargs):
+def showError(msg, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-error.svg", **kwargs)
 
 
-def showWarning(msg, **kwargs):
+def showWarning(msg, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-warning.svg", **kwargs)
 
 
-def showInfo(msg, **kwargs):
+def showInfo(msg, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-information.svg", **kwargs)
 
 
-def openWindow(win):
+def openWindow(win) -> None:
 	# win.set_keep_above(conf.winKeepAbove.v)
 	win.set_keep_above(True)
 	win.present()
@@ -579,7 +579,7 @@ def get_pixbuf_hash(pbuf):
 
 	md5 = hashlib.md5()
 
-	def save_func(chunkBytes, _size, _unknown):
+	def save_func(chunkBytes, _size, _unknown) -> bool:
 		# len(chunkBytes) == size
 		md5.update(chunkBytes)
 		return True
@@ -594,7 +594,7 @@ def get_pixbuf_hash(pbuf):
 	return md5.hexdigest()
 
 
-def window_set_size_aspect(win, min_aspect, max_aspect=None):
+def window_set_size_aspect(win, min_aspect, max_aspect=None) -> None:
 	if max_aspect is None:
 		max_aspect = min_aspect
 	geom = gdk.Geometry()
@@ -620,7 +620,7 @@ def newAlignLabel(sgroup=None, label=""):
 
 
 class IdComboBox(gtk.ComboBox):
-	def set_active(self, ident):
+	def set_active(self, ident) -> None:
 		ls = self.get_model()
 		for i in range(len(ls)):
 			if ls[i][0] == ident:
@@ -641,12 +641,12 @@ class IdComboBox(gtk.ComboBox):
 
 
 class CopyLabelMenuItem(MenuItem):
-	def __init__(self, label):
+	def __init__(self, label) -> None:
 		MenuItem.__init__(self)
 		self.set_label(label)
 		self.connect("activate", self.on_activate)
 
-	def on_activate(self, _item):
+	def on_activate(self, _item) -> None:
 		setClipboard(self.get_property("label"))
 
 

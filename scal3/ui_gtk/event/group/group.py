@@ -11,7 +11,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(BaseWidgetClass):
-	def addStartEndWidgets(self):
+	def addStartEndWidgets(self) -> None:
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -30,7 +30,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
 
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ------
 		exp = ExpanderFrame(
@@ -75,7 +75,7 @@ class WidgetClass(BaseWidgetClass):
 		# --
 		pack(self, exp)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
 		self.startDateInput.set_value(
 			jd_to(
@@ -104,7 +104,7 @@ class WidgetClass(BaseWidgetClass):
 
 		self.onlineServiceExpander.set_expanded(False)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)
 		self.group.startJd = self.startDateInput.get_jd(self.group.calType)
 		self.group.endJd = self.endDateInput.get_jd(self.group.calType)
@@ -118,7 +118,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
 		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.group.calType, newCalType)
 		self.endDateInput.changeCalType(self.group.calType, newCalType)

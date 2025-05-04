@@ -13,7 +13,7 @@ __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 
 
 class GroupSortDialog(gtk.Dialog):
-	def __init__(self, group, **kwargs):
+	def __init__(self, group, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Sort Events"))
@@ -64,7 +64,7 @@ class GroupSortDialog(gtk.Dialog):
 		# ----
 		self.vbox.show_all()
 
-	def run(self):
+	def run(self) -> bool | None:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self._group.sort(
 				self.sortByNames[self.sortByCombo.get_active()],
@@ -77,7 +77,7 @@ class GroupSortDialog(gtk.Dialog):
 
 
 class GroupConvertCalTypeDialog(gtk.Dialog):
-	def __init__(self, group, **kwargs):
+	def __init__(self, group, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
 		self._group = group

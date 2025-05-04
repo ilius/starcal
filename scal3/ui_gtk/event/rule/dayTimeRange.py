@@ -6,7 +6,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -17,10 +17,10 @@ class WidgetClass(gtk.Box):
 		pack(self, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(self, self.endTbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.startTbox.set_value(self.rule.dayTimeStart)
 		self.endTbox.set_value(self.rule.dayTimeEnd)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.dayTimeStart = self.startTbox.get_value()
 		self.rule.dayTimeEnd = self.endTbox.get_value()

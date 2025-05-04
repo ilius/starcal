@@ -246,7 +246,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	hasMonthName = timeWidth < 5 * dayLen
 	minDayUnit = minStep / dayLen  # days
 
-	def addDayOfMonthTick(jd, month, day, dayUnit):
+	def addDayOfMonthTick(jd, month, day, dayUnit) -> None:
 		tmEpoch = getEpochFromJd(jd)
 		unitSize = dayPixel * dayUnit
 		if unitSize < conf.majorStepMin.v:

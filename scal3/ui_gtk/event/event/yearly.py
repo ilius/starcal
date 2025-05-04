@@ -26,7 +26,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):  # FIXME
+	def __init__(self, event) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		hbox = HBox()
@@ -64,7 +64,7 @@ class WidgetClass(common.WidgetClass):
 			self.startYearCheck.get_active(),
 		)
 
-	def updateWidget(self):  # FIXME
+	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
 		self.monthCombo.setValue(self.event.getMonth())
 		self.daySpin.set_value(self.event.getDay())
@@ -77,7 +77,7 @@ class WidgetClass(common.WidgetClass):
 			self.startYearSpin.set_value(self.event.getSuggestedStartYear())
 		self.onStartYearCheckClick()
 
-	def updateVars(self):  # FIXME
+	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.setMonth(self.monthCombo.getValue())
 		self.event.setDay(int(self.daySpin.get_value()))
@@ -87,7 +87,7 @@ class WidgetClass(common.WidgetClass):
 		elif "start" in self.event:
 			del self.event["start"]
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		_module, ok = calTypes[newCalType]

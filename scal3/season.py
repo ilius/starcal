@@ -84,7 +84,7 @@ def getSeasonNamePercentFromJd(jd, southernHemisphere=False):
 	return name, m
 
 
-def test():
+def test() -> None:
 	from scal3.cal_types.jalali import to_jd as jalali_to_jd
 
 	for year in range(1390, 1400):

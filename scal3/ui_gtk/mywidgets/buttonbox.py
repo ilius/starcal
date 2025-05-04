@@ -25,17 +25,17 @@ __all__ = ["MyHButtonBox"]
 
 
 class MyHButtonBox(gtk.Box):
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.set_spacing(15)
 		self.set_border_width(15)
 		self._homogeneous = True
 		self._sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
-	def set_homogeneous(self, homogeneous: bool):
+	def set_homogeneous(self, homogeneous: bool) -> None:
 		self._homogeneous = homogeneous
 
-	def add(self, child):
+	def add(self, child) -> None:
 		self.pack_start(child, expand=False, fill=False, padding=0)
 		if self._homogeneous:
 			self._sizeGroup.add_widget(child)

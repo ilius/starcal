@@ -108,5 +108,5 @@ def rgbToCSS(color: ColorType) -> str:
 	raise ValueError(f"invalid {color=}")
 
 
-def colorizeSpan(text, color):
+def colorizeSpan(text, color) -> str:
 	return f'<span color="{rgbToHtmlColor(color)}">{text}</span>'

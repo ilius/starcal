@@ -7,7 +7,7 @@ __all__ = ["CalTypeCombo"]
 
 
 class CalTypeCombo(IdComboBox):
-	def __init__(self, hasDefault=False):  # , showInactive=True FIXME
+	def __init__(self, hasDefault=False) -> None:  # , showInactive=True FIXME
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)

@@ -131,7 +131,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		# ------
 		self.enable = enable
 
-	def build(self):
+	def build(self) -> None:
 		"""
 		Call this after creating instance and calling one/many of these methods:
 		- setIconName
@@ -242,7 +242,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		if enableTooltip:
 			set_tooltip(self, desc)
 
-	def build(self):
+	def build(self) -> None:
 		pass
 
 	# the following methods (do_get_*) are overridden to avoid changing size
@@ -445,7 +445,7 @@ class CustomizableToolBox(StaticToolBox):
 		for item in self.items:
 			item.build()
 
-	def repackAll(self):
+	def repackAll(self) -> None:
 		for item in self.items:
 			if item.loaded:
 				self.box.remove(item)
@@ -453,7 +453,7 @@ class CustomizableToolBox(StaticToolBox):
 			if item.loaded:
 				pack(self.box, item, item.expand, item.expand)
 
-	def moveItem(self, i, j):
+	def moveItem(self, i, j) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
@@ -463,7 +463,7 @@ class CustomizableToolBox(StaticToolBox):
 		if item.enable:
 			item.show()
 
-	def updateItems(self):
+	def updateItems(self) -> None:
 		"""
 		Must be called after creating the instance and calling setData()
 		Also after one of the properties (preferIconName, iconSize,

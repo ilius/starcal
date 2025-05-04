@@ -35,7 +35,7 @@ __all__ = ["TimeLinePreferencesWindow"]
 
 
 class TimeLinePreferencesWindow(gtk.Window):
-	def __init__(self, timeLine, **kwargs):
+	def __init__(self, timeLine, **kwargs) -> None:
 		self._timeLine = timeLine
 		gtk.Window.__init__(self, **kwargs)
 		self.set_title(_("Time Line Preferences"))
@@ -151,7 +151,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 
-		def updateBasicButtons():
+		def updateBasicButtons() -> None:
 			timeLine.updateBasicButtons()
 			timeLine.queue_draw()
 
@@ -185,7 +185,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		# ----
 
-		def updateMovementButtons():
+		def updateMovementButtons() -> None:
 			timeLine.updateMovementButtons()
 			timeLine.queue_draw()
 
@@ -591,7 +591,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		noAnimVBox.set_sensitive(not animation)
 		animVBox.set_sensitive(animation)
 
-		def enableAnimationChanged():
+		def enableAnimationChanged() -> None:
 			noAnimVBox.set_sensitive(not animation)
 			animVBox.set_sensitive(animation)
 			timeLine.queue_draw()
@@ -893,7 +893,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ----
 		self.vbox.show_all()
 
-	def gotoPageClicked(self, _button, page):
+	def gotoPageClicked(self, _button, page) -> None:
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
@@ -911,16 +911,16 @@ class TimeLinePreferencesWindow(gtk.Window):
 		button.connect("clicked", self.gotoPageClicked, page)
 		return button
 
-	def onDelete(self, _obj=None, _data=None):
+	def onDelete(self, _obj=None, _data=None) -> bool:
 		self.hide()
 		return True
 
-	def onSaveClick(self, _obj=None):
+	def onSaveClick(self, _obj=None) -> bool:
 		self.hide()
 		timeline.saveConf()
 		return True
 
-	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "Escape":
 			self.hide()
 			return True

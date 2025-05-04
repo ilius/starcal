@@ -39,24 +39,24 @@ DISABLE = False
 
 
 class EventNotificationManager:
-	def __init__(self, eventGroups):
+	def __init__(self, eventGroups) -> None:
 		self.byGroup: dict[int, EventGroupNotificationThread] = {}
 		if DISABLE:
 			return
 		for group in eventGroups:
 			self.checkGroup(group)
 
-	def stop(self):
+	def stop(self) -> None:
 		for thread in self.byGroup.values():
 			thread.cancel()
 
-	def _startGroup(self, group: event_lib.EventGroup):
+	def _startGroup(self, group: event_lib.EventGroup) -> None:
 		log.info(f"EventNotificationManager: {group=}: creating thread")
 		thread = EventGroupNotificationThread(group)
 		self.byGroup[group.id] = thread
 		thread.start()
 
-	def checkGroup(self, group: event_lib.EventGroup):
+	def checkGroup(self, group: event_lib.EventGroup) -> None:
 		# log.debug(f"EventNotificationManager.checkGroup: {group=}")
 		if not (group.enable and group.notificationEnabled):
 			return
@@ -69,7 +69,7 @@ class EventNotificationManager:
 
 		self._startGroup(group)
 
-	def checkEvent(self, group: event_lib.EventGroup, event: event_lib.Event):
+	def checkEvent(self, group: event_lib.EventGroup, event: event_lib.Event) -> None:
 		if not (group.enable and group.notificationEnabled):
 			log.info("EventNotificationManager.checkEvent: not enabled")
 			return
@@ -90,7 +90,7 @@ class EventGroupNotificationThread(Thread):
 	# ^ seconds
 	# TODO: get from group.notificationCheckInterval
 
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		self.group = group
 
 		self.sent = set()
@@ -110,23 +110,23 @@ class EventGroupNotificationThread(Thread):
 			target=self.mainLoop,
 		)
 
-	def cancel(self):
+	def cancel(self) -> None:
 		log.debug("EventGroupNotificationThread.cancel")
 		self._stop_event.set()
 
 	def stopped(self):
 		return self._stop_event.is_set()
 
-	def checkEvent(self, event: event_lib.Event):
+	def checkEvent(self, event: event_lib.Event) -> None:
 		self._new_events.put_nowait(event)
 
-	def sleep(self, seconds: float):
+	def sleep(self, seconds: float) -> None:
 		step = self.sleepSeconds
 		sleepUntil = perf_counter() + seconds
 		while not self.stopped() and perf_counter() < sleepUntil:
 			sleep(step)
 
-	def mainLoop(self):
+	def mainLoop(self) -> None:
 		log.info("EventGroupNotificationThread.mainLoop ---------------")
 		# time.perf_counter() is resistant to change of system time
 		interval = self.interval
@@ -144,10 +144,10 @@ class EventGroupNotificationThread(Thread):
 				else:
 					event.checkNotify(self.finishFunc)
 
-	def finishFunc(self):
+	def finishFunc(self) -> None:
 		pass  # FIXME: what to do here?
 
-	def notify(self, eid: int):
+	def notify(self, eid: int) -> None:
 		log.info(f"EventGroupNotificationThread: notify: {eid=}")
 		for _ in range(10):
 			try:
@@ -159,7 +159,7 @@ class EventGroupNotificationThread(Thread):
 			event.checkNotify(self.finishFunc)
 			break
 
-	def _runStep(self):
+	def _runStep(self) -> None:
 		log.info("EventGroupNotificationThread: _runStep")
 		if not self.group.enable:
 			return

@@ -28,7 +28,7 @@ pluginName = "WeekCal"
 
 class WeekStatus(list):
 	# list (of 7 cells)
-	def __init__(self, cells, absWeekNumber):
+	def __init__(self, cells, absWeekNumber) -> None:
 		self.absWeekNumber = absWeekNumber
 		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
 		endJd = startJd + 7
@@ -45,7 +45,7 @@ class WeekStatus(list):
 			self.append(cells.getCell(jd))
 
 
-def setParamsFunc(cell):
+def setParamsFunc(cell) -> None:
 	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 

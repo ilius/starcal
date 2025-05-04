@@ -82,7 +82,7 @@ def saveSingleConfig(
 		return
 
 
-def loadModuleConfig(module):
+def loadModuleConfig(module) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
@@ -109,7 +109,7 @@ def loadModuleConfig(module):
 	# FIXME: should use module.confParams to restrict json keys?
 
 
-def saveModuleConfig(module):
+def saveModuleConfig(module) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---

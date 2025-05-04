@@ -5,24 +5,24 @@ from scal3.cal_types import calTypes
 
 
 class Test_getMonthDesc(unittest.TestCase):
-	def __init__(self, *args):
+	def __init__(self, *args) -> None:
 		unittest.TestCase.__init__(self, *args)
 		locale_man.lang = "en_US.UTF-8"
 		locale_man.prepareLanguage()
 		locale_man.loadTranslator()
 
-	def assertCase(self, year: int, month: int, desc: str):
+	def assertCase(self, year: int, month: int, desc: str) -> None:
 		from scal3.monthcal import getMonthDesc, getMonthStatus
 
 		self.assertEqual(desc, getMonthDesc(getMonthStatus(year, month)))
 
-	def test_gregorian(self):
+	def test_gregorian(self) -> None:
 		calTypes.activeNames = ["gregorian"]
 		calTypes.update()
 		self.assertCase(2019, 7, "July 2019")
 		self.assertCase(2019, 1, "January 2019")
 
-	def test_gregorian_jalali(self):
+	def test_gregorian_jalali(self) -> None:
 		calTypes.activeNames = ["gregorian", "jalali"]
 		calTypes.update()
 		self.assertCase(2019, 1, "January 2019\nDey and Bahman 1397")

@@ -16,7 +16,7 @@ __all__ = ["EventsBulkEditDialog"]
 
 
 class EventsBulkEditDialog(gtk.Dialog):
-	def __init__(self, container, **kwargs):
+	def __init__(self, container, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		self._container = container
@@ -150,7 +150,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		# ----
 		window_set_size_aspect(self, 1.6)
 
-	def firstRadioChanged(self, _widget=None):
+	def firstRadioChanged(self, _widget=None) -> None:
 		if self.iconRadio.get_active():
 			self.iconHbox.show()
 			self.textVbox.hide()
@@ -164,7 +164,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()
 
-	def textChangeComboChanged(self, _widget=None):
+	def textChangeComboChanged(self, _widget=None) -> None:
 		self.textVbox.show_all()
 		chType = self.textChangeCombo.get_active()
 		if chType == 0:
@@ -175,7 +175,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.withHbox.hide()
 			self.textInput2.hide()
 
-	def doAction(self):
+	def doAction(self) -> None:
 		container = self._container
 		if self.iconRadio.get_active():
 			chType = self.iconChangeCombo.get_active()

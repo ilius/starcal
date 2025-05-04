@@ -23,12 +23,12 @@ __all__ = ["MainWinRightPanel"]
 
 
 class RightPanelDayOccurrenceView(DayOccurrenceView):
-	def __init__(self, rightPanel=None, **kwargs):
+	def __init__(self, rightPanel=None, **kwargs) -> None:
 		DayOccurrenceView.__init__(self, **kwargs)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 
-	def addExtraMenuItems(self, menu):
+	def addExtraMenuItems(self, menu) -> None:
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			ImageMenuItem(
@@ -38,18 +38,18 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 			),
 		)
 
-	def onSwapClick(self, _widget):
+	def onSwapClick(self, _widget) -> None:
 		self.rightPanel.swapItems()
 
 
 class RightPanelPluginsTextBox(PluginsTextBox):
-	def __init__(self, rightPanel=None, **kwargs):
+	def __init__(self, rightPanel=None, **kwargs) -> None:
 		PluginsTextBox.__init__(self, **kwargs)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 		self.textview.addExtraMenuItems = self.addExtraMenuItems
 
-	def addExtraMenuItems(self, menu):
+	def addExtraMenuItems(self, menu) -> None:
 		if self.rightPanel:
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(
@@ -60,7 +60,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 				),
 			)
 
-	def onSwapClick(self, _widget):
+	def onSwapClick(self, _widget) -> None:
 		self.rightPanel.swapItems()
 
 
@@ -71,7 +71,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	itemListCustomizable = False
 	optionsPageSpacing = 5
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		# ---
 		self.initVars()
@@ -108,12 +108,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.show_all()
 		self.onBorderWidthChange()
 
-	def onToggleFromMainWin(self):
+	def onToggleFromMainWin(self) -> None:
 		if self.enablePrefItem is None:
 			return
 		self.enablePrefItem.set(not self.enablePrefItem.get())
 
-	def appendItem(self, item):
+	def appendItem(self, item) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
@@ -124,7 +124,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.add(frame)
 		item.show_all()
 
-	def addItems(self):
+	def addItems(self) -> None:
 		items = [
 			self.eventItem,
 			self.plugItem,
@@ -134,7 +134,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		for item in items:
 			self.appendItem(item)
 
-	def resetItems(self):
+	def resetItems(self) -> None:
 		for item in self.items:
 			item.get_parent().remove(item)
 		for child in self.get_children():
@@ -143,7 +143,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.items = []
 		self.addItems()
 
-	def swapItems(self):
+	def swapItems(self) -> None:
 		conf.mainWinRightPanelSwap.v = not conf.mainWinRightPanelSwap.v
 		self.resetItems()
 		self.show_all()
@@ -155,13 +155,13 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.getOptionsWidget()
 		return self.subPages
 
-	def onEventIconSizeChange(self):
+	def onEventIconSizeChange(self) -> None:
 		self.eventItem.onDateChange(toParent=False)
 
-	def onBorderWidthChange(self):
+	def onBorderWidthChange(self) -> None:
 		self.set_border_width(conf.mainWinRightPanelBorderWidth.v)
 
-	def updatePosition(self, height: int):
+	def updatePosition(self, height: int) -> None:
 		log.debug(
 			f"updatePosition: {height=}, {self.setPosAtHeight=}, "
 			f"pos={self.get_position()}",
@@ -177,10 +177,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		conf.mainWinRightPanelRatio.v = self.get_position() / height
 		ui.saveLiveConf()
 
-	def onSizeAllocate(self, _widget, requisition):
+	def onSizeAllocate(self, _widget, requisition) -> None:
 		self.updatePosition(requisition.height)
 
-	def onWindowSizeChange(self, *_a, **_kw):
+	def onWindowSizeChange(self, *_a, **_kw) -> None:
 		self.queue_resize()
 
 	"""
@@ -201,7 +201,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		reposition its contents.
 	"""
 
-	def onMinimumHeightChange(self):
+	def onMinimumHeightChange(self) -> None:
 		self.queue_resize()
 
 	def do_get_preferred_width(self):  # noqa: PLR6301

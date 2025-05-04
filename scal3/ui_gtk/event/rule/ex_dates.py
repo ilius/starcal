@@ -48,7 +48,7 @@ def validate(s):
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# ---
@@ -65,12 +65,12 @@ class WidgetClass(gtk.Box):
 		self.editButton.connect("clicked", self.showDialog)
 		pack(self, self.editButton)
 
-	def updateCountLabel(self):
+	def updateCountLabel(self) -> None:
 		self.countLabel.set_label(
 			" " * 2 + _("{count} items").format(count=_(len(self.treeModel))) + " " * 2,
 		)
 
-	def createDialog(self):
+	def createDialog(self) -> None:
 		if self.dialog:
 			return
 		# log.debug(f"----- toplevel: {self.get_toplevel()}")
@@ -140,12 +140,12 @@ class WidgetClass(gtk.Box):
 			res=gtk.ResponseType.OK,
 		)
 
-	def showDialog(self, _w=None):
+	def showDialog(self, _w=None) -> None:
 		self.createDialog()
 		self.dialog.run()
 		self.updateCountLabel()
 
-	def dateCellEdited(self, _cell, path, newText):
+	def dateCellEdited(self, _cell, path, newText) -> None:
 		index = int(path)
 		self.treeModel[index][0] = validate(newText)
 
@@ -157,7 +157,7 @@ class WidgetClass(gtk.Box):
 			return None
 		return path[0]
 
-	def onAddClick(self, _button):
+	def onAddClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
@@ -170,13 +170,13 @@ class WidgetClass(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
 
-	def onDeleteClick(self, _button):
+	def onDeleteClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, _button):
+	def onMoveUpClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -190,7 +190,7 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, _button):
+	def onMoveDownClick(self, _button) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -204,10 +204,10 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index + 1)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		for date in self.rule.dates:
 			self.treeModel.append([encode(date)])
 		self.updateCountLabel()
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.setDates([decode(row[0]) for row in self.treeModel])

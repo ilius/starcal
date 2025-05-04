@@ -7,7 +7,7 @@ from scal3.cal_types import gregorian
 
 
 class Testgregorian(unittest.TestCase):
-	def notest_isLeap_negativeYear(self):
+	def notest_isLeap_negativeYear(self) -> None:
 		print()
 		isLeapFunc = gregorian.isLeap
 		for year in range(10, -101, -1):
@@ -298,7 +298,7 @@ class Testgregorian(unittest.TestCase):
 		(2017, 12, 1): 2458089,
 	}
 
-	def test_isLeap(self):
+	def test_isLeap(self) -> None:
 		import calendar
 
 		for year, isLeapStr in self.isLeapDict.items():
@@ -311,7 +311,7 @@ class Testgregorian(unittest.TestCase):
 				f"{year=}, {isLeap=}, {isLeapActual=}",
 			)
 
-	def test_to_jd(self):
+	def test_to_jd(self) -> None:
 		for date, jd in self.dateToJdDict.items():
 			jdActual = gregorian.to_jd(*date)
 			self.assertEqual(
@@ -320,7 +320,7 @@ class Testgregorian(unittest.TestCase):
 				f"{date=}, {jd=}, {jdActual=}",
 			)
 
-	def test_convert(self):
+	def test_convert(self) -> None:
 		startYear = 1950
 		endYear = 2050
 		for year in range(startYear, endYear):

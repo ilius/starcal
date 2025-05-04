@@ -64,7 +64,7 @@ avgYearLen = 365.25
 options = ()
 
 
-def save():
+def save() -> None:
 	pass
 
 

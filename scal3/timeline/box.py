@@ -52,7 +52,7 @@ class Box:
 		color=None,
 		ids=None,
 		lineW=2,
-	):
+	) -> None:
 		self.t0 = t0
 		self.t1 = t1
 		self.odt = odt  # original delta t
@@ -79,7 +79,7 @@ class Box:
 
 	# ---------
 
-	def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
+	def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH) -> None:
 		self.x = (self.t0 - timeStart) * pixelPerSec
 		self.w = (self.t1 - self.t0) * pixelPerSec
 		self.y = beforeBoxH + maxBoxH * self.u0
@@ -118,7 +118,7 @@ def makeIntervalGraph(boxes):
 	return g
 
 
-def renderBoxesByGraph(boxes, graph, minColor, minU):
+def renderBoxesByGraph(boxes, graph, minColor, minU) -> None:
 	colorCount = max(graph.vs["color"]) - minColor + 1
 	if colorCount < 1:
 		return

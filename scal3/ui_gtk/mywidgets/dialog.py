@@ -15,14 +15,14 @@ def newCursor(cursor_type: gdk.CursorType) -> gdk.Cursor:
 
 
 class MyDialog:
-	def startWaiting(self):
+	def startWaiting(self) -> None:
 		self.queue_draw()
 		self.vbox.set_sensitive(False)
 		self.get_window().set_cursor(newCursor(gdk.CursorType.WATCH))
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 
-	def endWaiting(self):
+	def endWaiting(self) -> None:
 		gdkWin = self.get_window()
 		if gdkWin:
 			gdkWin.set_cursor(newCursor(gdk.CursorType.LEFT_PTR))

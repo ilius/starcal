@@ -20,7 +20,7 @@ __all__ = ["Tick"]
 
 
 class Tick:
-	def __init__(self, epoch, pos, unitSize, label, color=None):
+	def __init__(self, epoch, pos, unitSize, label, color=None) -> None:
 		self.epoch = epoch
 		self.pos = pos  # pixel position
 		self.height = unitSize**0.5 * conf.baseTickHeight.v

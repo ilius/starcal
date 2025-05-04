@@ -5,7 +5,7 @@ __all__ = ["WeekDayComboBox"]
 
 
 class WeekDayComboBox(gtk.ComboBox):
-	def __init__(self):
+	def __init__(self) -> None:
 		ls = gtk.ListStore(str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -22,5 +22,5 @@ class WeekDayComboBox(gtk.ComboBox):
 	def getValue(self):
 		return (self.firstWeekDay + self.get_active()) % 7
 
-	def setValue(self, value):
+	def setValue(self, value) -> None:
 		self.set_active((value - self.firstWeekDay) % 7)

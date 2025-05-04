@@ -69,7 +69,7 @@ colorCheckSvgTextUnchecked = re.sub(
 )
 
 
-def setColor(cr, color):
+def setColor(cr, color) -> None:
 	# arguments to set_source_rgb and set_source_rgba must be between 0 and 1
 	if len(color) == 3:
 		cr.set_source_rgb(
@@ -88,7 +88,7 @@ def setColor(cr, color):
 		raise ValueError(f"bad color {color}")
 
 
-def fillColor(cr, color):
+def fillColor(cr, color) -> None:
 	setColor(cr, color)
 	cr.fill()
 
@@ -271,7 +271,7 @@ def newDndFontNamePixbuf(name):
 	return loader.get_pixbuf()
 
 
-def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
+def drawRoundedRect(cr, cx0, cy0, cw, ch, ro) -> None:
 	ro = min(ro, cw / 2.0, ch / 2.0)
 	cr.move_to(
 		cx0 + ro,
@@ -333,7 +333,7 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
 	cr.close_path()
 
 
-def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
+def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d) -> None:
 	ro = min(ro, cw / 2.0, ch / 2.0)
 	# a = min(cw, ch); ri = ro*(a-2*d)/a
 	ri = max(0, ro - d)
@@ -469,18 +469,18 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 	cr.close_path()
 
 
-def drawCircle(cr, cx, cy, r):
+def drawCircle(cr, cx, cy, r) -> None:
 	cr.arc(cx, cy, r, 0, 2 * pi)
 
 
-def drawCircleOutline(cr, cx, cy, r, d):
+def drawCircleOutline(cr, cx, cy, r, d) -> None:
 	cr.arc(cx, cy, r, 0, 2 * pi)
 	cr.close_path()
 	cr.arc_negative(cx, cy, r - d, 2 * pi, 0)
 	cr.close_path()
 
 
-def drawPieOutline(cr, cx, cy, r, d, start, end):
+def drawPieOutline(cr, cx, cy, r, d, start, end) -> None:
 	# start and end are angles
 	# 0 <= start <= 1
 	# 0 <= end <= 1
@@ -508,7 +508,7 @@ def goAngle(x0, y0, angle, length):
 	return x0 + cos(angle) * length, y0 + sin(angle) * length
 
 
-def drawLineLengthAngle(cr, xs, ys, length, angle, d):
+def drawLineLengthAngle(cr, xs, ys, length, angle, d) -> None:
 	xe, ye = goAngle(xs, ys, angle, length)
 	# --
 	x1, y1 = goAngle(xs, ys, angle - pi / 2.0, d / 2.0)
@@ -523,7 +523,7 @@ def drawLineLengthAngle(cr, xs, ys, length, angle, d):
 	cr.close_path()
 
 
-def drawArcOutline(cr, xc, yc, r, d, a0, a1):
+def drawArcOutline(cr, xc, yc, r, d, a0, a1) -> None:
 	"""
 	cr: cairo context
 	xc, yc: coordinates of center

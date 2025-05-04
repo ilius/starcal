@@ -34,7 +34,7 @@ class WidgetClass(common.WidgetClass):
 	]
 	expandDescription = False
 
-	def __init__(self, event, autoCheck=True):
+	def __init__(self, event, autoCheck=True) -> None:
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		self.autoCheck = autoCheck
@@ -113,7 +113,7 @@ class WidgetClass(common.WidgetClass):
 		hbox.removeButton = removeButton
 		return hbox
 
-	def updateRulesWidget(self):
+	def updateRulesWidget(self) -> None:
 		for hbox in self.rulesBox.get_children():
 			hbox.destroy()
 		comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
@@ -134,24 +134,24 @@ class WidgetClass(common.WidgetClass):
 			)
 		self.onRuleAddComboChanged()
 
-	def updateRules(self):
+	def updateRules(self) -> None:
 		self.event.clearRules()
 		for hbox in self.rulesBox.get_children():
 			hbox.inputWidget.updateVars()
 			self.event.addRule(hbox.inputWidget.rule)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
 		self.addRuleModel.clear()
 		self.updateRulesWidget()
 		self.notificationBox.updateWidget()
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		common.WidgetClass.updateVars(self)
 		self.updateRules()
 		self.notificationBox.updateVars()
 
-	def calTypeComboChanged(self, _obj=None):
+	def calTypeComboChanged(self, _obj=None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		for hbox in self.rulesBox.get_children():
@@ -160,7 +160,7 @@ class WidgetClass(common.WidgetClass):
 				widget.changeCalType(newCalType)
 		self.event.calType = newCalType
 
-	def onRemoveButtonClick(self, _button, hbox):
+	def onRemoveButtonClick(self, _button, hbox) -> None:
 		rule = hbox.inputWidget.rule
 		ok, msg = self.event.checkRulesDependencies(disabledRule=rule)
 		self.warnLabel.set_label(msg)
@@ -174,7 +174,7 @@ class WidgetClass(common.WidgetClass):
 		# self.rulesBox.remove(hbox)
 		self.onRuleAddComboChanged()
 
-	def onRuleAddComboChanged(self, _combo=None):
+	def onRuleAddComboChanged(self, _combo=None) -> None:
 		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return
@@ -183,7 +183,7 @@ class WidgetClass(common.WidgetClass):
 		_ok, msg = self.event.checkRulesDependencies(newRule=newRule)
 		self.warnLabel.set_label(msg)
 
-	def onRuleAddButtonClick(self, _button):
+	def onRuleAddButtonClick(self, _button) -> None:
 		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return

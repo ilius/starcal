@@ -18,7 +18,7 @@ comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
 # kdeDesk = f"{homeDir}/.kde/Autostart/{APP_NAME}.desktop"
 
 
-def addStartup():
+def addStartup() -> bool:
 	if osName == "win":
 		from scal3.windows import winMakeShortcut, winStartupDir, winStartupFile
 
@@ -57,7 +57,7 @@ Exec={core.COMMAND}"""
 	return False
 
 
-def removeStartup():
+def removeStartup() -> None:
 	if osName == "win":  # FIXME
 		from scal3.windows import winStartupFile
 

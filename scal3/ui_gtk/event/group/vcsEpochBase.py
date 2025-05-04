@@ -6,7 +6,7 @@ __all__ = ["VcsEpochBaseWidgetClass"]
 
 
 class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
-	def __init__(self, group):
+	def __init__(self, group) -> None:
 		VcsBaseWidgetClass.__init__(self, group)
 		# ------
 		hbox = HBox()
@@ -20,10 +20,10 @@ class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
 		hbox.show_all()
 		pack(self, hbox)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		VcsBaseWidgetClass.updateWidget(self)
 		self.showSecondsCheck.set_active(self.group.showSeconds)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		VcsBaseWidgetClass.updateVars(self)
 		self.group.showSeconds = self.showSecondsCheck.get_active()

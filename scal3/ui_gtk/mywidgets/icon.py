@@ -32,7 +32,7 @@ class IconSelectButton(gtk.Button):
 		("changed", [str]),
 	]
 
-	def __init__(self, filename=""):
+	def __init__(self, filename="") -> None:
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
@@ -100,7 +100,7 @@ class IconSelectButton(gtk.Button):
 
 		return dialog
 
-	def onButtonPressEvent(self, _widget, gevent):
+	def onButtonPressEvent(self, _widget, gevent) -> None:
 		b = gevent.button
 		if b == 1:
 			dialog = self.createDialog()
@@ -109,11 +109,11 @@ class IconSelectButton(gtk.Button):
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
-	def menuItemActivate(self, _widget, icon):
+	def menuItemActivate(self, _widget, icon) -> None:
 		self.set_filename(icon)
 		self.emit("changed", icon)
 
-	def dialogResponse(self, dialog, response=0):
+	def dialogResponse(self, dialog, response=0) -> None:
 		dialog.hide()
 		if response == gtk.ResponseType.OK:
 			fname = dialog.get_filename()
@@ -124,7 +124,7 @@ class IconSelectButton(gtk.Button):
 		self.set_filename(fname)
 		self.emit("changed", fname)
 
-	def _setImage(self, filename):
+	def _setImage(self, filename) -> None:
 		self.image.set_from_pixbuf(
 			pixbufFromFile(
 				filename,
@@ -132,7 +132,7 @@ class IconSelectButton(gtk.Button):
 			),
 		)
 
-	def fileActivated(self, dialog):
+	def fileActivated(self, dialog) -> None:
 		fname = dialog.get_filename()
 		self.filename = fname
 		self._setImage(self.filename)
@@ -142,7 +142,7 @@ class IconSelectButton(gtk.Button):
 	def get_filename(self):
 		return self.filename
 
-	def set_filename(self, filename):
+	def set_filename(self, filename) -> None:
 		if filename is None:
 			filename = ""
 		if filename:

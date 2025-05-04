@@ -36,7 +36,7 @@ __all__ = ["MultiSpinButton", "SingleSpinButton"]
 class AutoSizeEntry(gtk.Entry):
 	extra_width = 10  # optimal value depends on theme
 
-	def __init__(self, *args, maxChars=0, **kwargs):
+	def __init__(self, *args, maxChars=0, **kwargs) -> None:
 		gtk.Entry.__init__(self, *args, **kwargs)
 		self.set_width_chars(maxChars)
 		# ---
@@ -57,7 +57,7 @@ class AutoSizeEntry(gtk.Entry):
 			self.maxPixelWidth = pixelWidth
 		return pixelWidth, pixelWidth
 
-	def onChange(self, _entry):
+	def onChange(self, _entry) -> None:
 		self.queue_resize()
 
 
@@ -81,7 +81,7 @@ class MultiSpinButton(gtk.Box):
 
 	buttonSize = gtk.IconSize.MENU  # FIXME
 
-	def set_width_chars(self, w: int):
+	def set_width_chars(self, w: int) -> None:
 		self.entry.set_width_chars(w)
 
 	def get_text(self) -> str:
@@ -110,7 +110,7 @@ class MultiSpinButton(gtk.Box):
 		arrow_select=True,
 		step_inc=1,
 		page_inc=10,
-	):
+	) -> None:
 		if sep is None:
 			raise ValueError("MultiSpinButton: sep is None")
 		if fields is None:
@@ -196,10 +196,10 @@ class MultiSpinButton(gtk.Box):
 		# ----
 		# self.select_region(0, 0)
 
-	def _entry_changed(self, _widget):
+	def _entry_changed(self, _widget) -> None:
 		self.emit("changed")
 
-	def _entry_activate(self, _widget):
+	def _entry_activate(self, _widget) -> bool:
 		# log.debug("_entry_activate", self.entry.get_text())
 		self.update()
 		# log.debug(self.entry.get_text())
@@ -210,19 +210,19 @@ class MultiSpinButton(gtk.Box):
 		self.field.setText(self.entry.get_text())
 		return self.field.getValue()
 
-	def set_value(self, value):
+	def set_value(self, value) -> None:
 		pos = self.entry.get_position()
 		self.field.setValue(value)
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def update(self):
+	def update(self) -> None:
 		pos = self.entry.get_position()
 		self.field.setText(toStr(self.entry.get_text()))
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def insertText(self, s, clearSeceltion=True):
+	def insertText(self, s, clearSeceltion=True) -> None:
 		selection = self.get_selection_bounds()
 		if selection and clearSeceltion:
 			start, end = selection
@@ -235,7 +235,7 @@ class MultiSpinButton(gtk.Box):
 			self.entry.insert_text(s, pos)
 			self.entry.set_position(pos + len(s))
 
-	def entry_plus(self, p):
+	def entry_plus(self, p) -> None:
 		self.update()
 		pos = self.entry.get_position()
 		self.field.getFieldAt(
@@ -245,7 +245,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def onKeyPress(self, _widget, gevent):
+	def onKeyPress(self, _widget, gevent) -> bool:
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		step_inc = self.step_inc
@@ -310,13 +310,13 @@ class MultiSpinButton(gtk.Box):
 		# log.debug(kname, kval)
 		return False
 
-	def onDownButtonPress(self, _button, _gevent):
+	def onDownButtonPress(self, _button, _gevent) -> None:
 		self._arrow_press(-self.step_inc)
 
-	def onUpButtonPress(self, _button, _gevent):
+	def onUpButtonPress(self, _button, _gevent) -> None:
 		self._arrow_press(self.step_inc)
 
-	def _scroll(self, _widget, gevent):
+	def _scroll(self, _widget, gevent) -> bool:
 		d = getScrollValue(gevent)
 		if d in {"up", "down"}:
 			if not self.entry.has_focus():
@@ -332,13 +332,13 @@ class MultiSpinButton(gtk.Box):
 	# 	# force_select
 	# 	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
 
-	def _arrow_press(self, plus):
+	def _arrow_press(self, plus) -> None:
 		self.pressTm = perf_counter()
 		self._remain = True
 		timeout_add(ui.timeout_initial, self._arrow_remain, plus)
 		self.entry_plus(plus)
 
-	def _arrow_remain(self, plus):
+	def _arrow_remain(self, plus) -> None:
 		if (
 			self.entry.get_editable()
 			and self._remain
@@ -351,7 +351,7 @@ class MultiSpinButton(gtk.Box):
 				plus,
 			)
 
-	def onButtonRelease(self, _widget, _gevent):
+	def onButtonRelease(self, _widget, _gevent) -> None:
 		self._remain = False
 
 	"""-- ????????????????????????????????
@@ -368,7 +368,7 @@ class MultiSpinButton(gtk.Box):
 
 
 class SingleSpinButton(MultiSpinButton):
-	def __init__(self, field=None, **kwargs):
+	def __init__(self, field=None, **kwargs) -> None:
 		if field is None:
 			raise ValueError("SingleSpinButton: field is None")
 		MultiSpinButton.__init__(

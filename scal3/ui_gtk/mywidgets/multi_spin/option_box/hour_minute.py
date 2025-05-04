@@ -7,7 +7,7 @@ __all__ = ["HourMinuteButtonOption"]
 
 
 class HourMinuteButtonOption(MultiSpinOptionBox):
-	def __init__(self, hm=None, **kwargs):
+	def __init__(self, hm=None, **kwargs) -> None:
 		MultiSpinOptionBox.__init__(
 			self,
 			":",
@@ -24,7 +24,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 	def get_value(self):
 		return MultiSpinOptionBox.get_value(self) + [0]
 
-	def set_value(self, value):
+	def set_value(self, value) -> None:
 		if isinstance(value, int):
 			value = [value, 0]
 		else:

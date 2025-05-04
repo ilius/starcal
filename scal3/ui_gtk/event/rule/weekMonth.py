@@ -7,7 +7,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -29,17 +29,17 @@ class WidgetClass(gtk.Box):
 		pack(self, combo)
 		self.monthCombo = combo
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.wmIndex = self.nthCombo.get_active()
 		self.rule.weekDay = self.weekDayCombo.getValue()
 		self.rule.month = self.monthCombo.getValue()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.nthCombo.set_active(self.rule.wmIndex)
 		self.weekDayCombo.setValue(self.rule.weekDay)
 		self.monthCombo.setValue(self.rule.month)
 
-	def changeCalType(self, calType):
+	def changeCalType(self, calType) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.monthCombo.build(calType)

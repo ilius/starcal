@@ -5,7 +5,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.ComboBoxText):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.ComboBoxText.__init__(self)
@@ -15,8 +15,8 @@ class WidgetClass(gtk.ComboBoxText):
 		self.append_text(_("Even Weeks"))
 		self.set_active(0)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.set_active(self.rule.weekNumMode)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.weekNumMode = self.get_active()

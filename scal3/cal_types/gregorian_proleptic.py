@@ -81,7 +81,7 @@ avgYearLen = 365.2425  # FIXME
 options = ()
 
 
-def save():
+def save() -> None:
 	pass
 
 
@@ -91,7 +91,7 @@ def isLeap(y):
 	return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
 
 
-def getMonthLen(y, m):
+def getMonthLen(y, m) -> int:
 	if m == 2:
 		if isLeap(y):
 			return 29

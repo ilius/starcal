@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Never
 
 __all__ = ["CellType", "CompiledTimeFormat"]
 
 
 class CellType:
-	def __init__(self, jd: int):
+	def __init__(self, jd: int) -> None:
 		raise NotImplementedError
 
 	def format(
@@ -14,7 +15,7 @@ class CellType:
 		compiledFmt: CompiledTimeFormat,
 		calType: int | None = None,
 		tm: tuple[int, int, int] | None = None,
-	):
+	) -> Never:
 		raise NotImplementedError
 
 	def getDate(self, calType: int) -> tuple[int, int, int]:

@@ -18,7 +18,7 @@ eventIconDir = join(svgDir, "event")
 
 
 class TagIconItem:
-	def __init__(self, name, desc="", icon="", eventTypes=()):
+	def __init__(self, name, desc="", icon="", eventTypes=()) -> None:
 		self.name = name
 		if not desc:
 			desc = name.capitalize()
@@ -42,7 +42,7 @@ class TagIconItem:
 			return icon[len(svgDir) + 1 :]
 		return icon
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return (
 			f"TagIconItem({self.name!r}, desc={self.desc!r}, "
 			f"icon={self.icon!r}, eventTypes={self.eventTypes!r})"

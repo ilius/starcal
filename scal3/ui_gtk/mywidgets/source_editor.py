@@ -10,7 +10,7 @@ __all__ = ["SourceEditorWithFrame"]
 
 
 class SourceEditor(GtkSource.View):
-	def __init__(self, onTextChange=None):
+	def __init__(self, onTextChange=None) -> None:
 		self.textbuffer = GtkSource.Buffer()
 		GtkSource.View.__init__(self, buffer=self.textbuffer)
 		self.set_editable(True)
@@ -22,7 +22,7 @@ class SourceEditor(GtkSource.View):
 		if onTextChange is not None:
 			self.textbuffer.connect("changed", onTextChange)
 
-	def _key_press_event(self, _widget, event):
+	def _key_press_event(self, _widget, event) -> None:
 		keyvalobjName = gdk.keyval_name(event.keyval)
 		ctrl = event.state & gdk.ModifierType.CONTROL_MASK
 		if ctrl and keyvalobjName == "y":  # noqa: SIM102
@@ -31,7 +31,7 @@ class SourceEditor(GtkSource.View):
 
 
 class SourceEditorWithFrame(gtk.Frame):
-	def __init__(self, onTextChange=None):
+	def __init__(self, onTextChange=None) -> None:
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
 		# ----
@@ -40,7 +40,7 @@ class SourceEditorWithFrame(gtk.Frame):
 		)
 		self.add(self.editor)
 
-	def set_text(self, text):
+	def set_text(self, text) -> None:
 		self.editor.textbuffer.set_text(text)
 
 	def get_text(self):

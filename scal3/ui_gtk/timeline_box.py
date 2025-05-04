@@ -30,7 +30,7 @@ from scal3.ui_gtk.font_utils import pfontEncode
 __all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
 
 
-def drawBoxBG(cr, box, x, y, w, h):
+def drawBoxBG(cr, box, x, y, w, h) -> None:
 	d = box.lineW
 	cr.rectangle(x, y, w, h)
 	if d == 0:
@@ -65,7 +65,7 @@ def drawBoxBG(cr, box, x, y, w, h):
 	fillColor(cr, box.color)
 
 
-def drawBoxBorder(cr, box, x, y, w, h):
+def drawBoxBorder(cr, box, x, y, w, h) -> None:
 	if box.hasBorder:
 		if w > 2 * conf.boxEditBorderWidth.v and h > conf.boxEditBorderWidth.v:
 			b = conf.boxEditBorderWidth.v
@@ -102,7 +102,7 @@ def drawBoxBorder(cr, box, x, y, w, h):
 			box.hasBorder = False
 
 
-def drawBoxText(cr, box, x, y, w, h, widget):
+def drawBoxText(cr, box, x, y, w, h, widget) -> None:
 	# FIXME how to find the best font size based on the box's width,
 	# height, and font family?
 	# possibly write in many lines? or just in one line and wrap if needed?

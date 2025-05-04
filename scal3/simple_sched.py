@@ -60,7 +60,7 @@ class scheduler:
 		timefunc=_time,
 		delayfunc=time.sleep,
 		stopped=stopped,
-	):
+	) -> None:
 		"""
 		Initialize a new instance, passing the time and delay
 		functions.
@@ -93,7 +93,7 @@ class scheduler:
 		heapq.heappush(self._queue, event)
 		return event  # The ID
 
-	def run(self):
+	def run(self) -> None:
 		"""
 		Execute events until the queue is empty.
 

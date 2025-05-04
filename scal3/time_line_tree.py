@@ -32,7 +32,7 @@ from scal3.interval_utils import ab_overlaps
 
 
 class Node:
-	def __init__(self, base, level, offset, rightOri):
+	def __init__(self, base, level, offset, rightOri) -> None:
 		# global maxLevel, minLevel
 		self.base = base  # 8 or 16 is better
 		self.level = level
@@ -55,7 +55,7 @@ class Node:
 		# ---
 		self.clear()
 
-	def clear(self):
+	def clear(self) -> None:
 		self.children = {}
 		# possible keys of `self.children` are 0 to `base-1` for right node,
 		# and `-(base-1)` to 0 for left node
@@ -118,13 +118,13 @@ class Node:
 
 
 class TimeLineTree:
-	def __init__(self, offset=0, base=4):
+	def __init__(self, offset=0, base=4) -> None:
 		# base 4 and 8 are the best (about speed of both add and search)
 		self.base = base
 		self.offset = offset
 		self.clear()
 
-	def clear(self):
+	def clear(self) -> None:
 		self.right = Node(self.base, 1, self.offset, True)
 		self.left = Node(self.base, 1, self.offset, False)
 		self.byEvent = {}
@@ -137,7 +137,7 @@ class TimeLineTree:
 			for item in self.left.search(t0, t1):
 				yield item
 
-	def add(self, t0, t1, eid, debug=False):
+	def add(self, t0, t1, eid, debug=False) -> None:
 		if debug:
 			from time import localtime, strftime
 

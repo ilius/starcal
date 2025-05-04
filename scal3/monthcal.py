@@ -33,7 +33,7 @@ pluginName = "MonthCal"
 class MonthStatus(list):  # FIXME
 	# self[sy<6][sx<7] of cells
 	# list (of 6 lists, each list containing 7 cells)
-	def __init__(self, cells, year, month):
+	def __init__(self, cells, year, month) -> None:
 		self.year = year
 		self.month = month
 		self.offset = getWeekDay(year, month, 1)  # month start offset
@@ -62,7 +62,7 @@ class MonthStatus(list):  # FIXME
 	# 	return self[yPos][xPos]
 
 
-def setParamsFunc(cell):
+def setParamsFunc(cell) -> None:
 	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
 	yPos, xPos = divmod(offset + cell.day - 1, 7)
 	cell.monthPos = (xPos, yPos)

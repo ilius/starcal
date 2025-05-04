@@ -7,7 +7,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule):
+	def __init__(self, rule) -> None:
 		self.rule = rule
 		# ---
 		gtk.ComboBox.__init__(self)
@@ -19,15 +19,15 @@ class WidgetClass(gtk.Box):
 		self.timeInput = TimeButton()
 		pack(self, self.timeInput)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.dateInput.set_value(self.rule.date)
 		self.timeInput.set_value(self.rule.time)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.rule.date = self.dateInput.get_value()
 		self.rule.time = self.timeInput.get_value()
 
-	def changeCalType(self, calType):
+	def changeCalType(self, calType) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.updateVars()

@@ -94,13 +94,13 @@ class BasePlugin(SObj):
 			"show_date": self.show_date,
 		}
 
-	def __bool__(self):
+	def __bool__(self) -> bool:
 		return self.enable  # FIXME
 
 	def __init__(
 		self,
 		_file,
-	):
+	) -> None:
 		self.file = _file
 		# ------
 		self.calType = GREGORIAN
@@ -123,7 +123,7 @@ class BasePlugin(SObj):
 		data["calType"] = calTypes.names[self.calType]
 		return data
 
-	def setData(self, data):
+	def setData(self, data) -> None:
 		if "enable" not in data:
 			data["enable"] = data.get("default_enable", self.default_enable)
 		# ---
@@ -157,16 +157,16 @@ class BasePlugin(SObj):
 		# -----
 		SObjTextModel.setData(self, data)
 
-	def clear(self):
+	def clear(self) -> None:
 		pass
 
-	def load(self):
+	def load(self) -> None:
 		pass
 
-	def getText(self, _year, _month, _day):  # noqa: PLR6301
+	def getText(self, _year, _month, _day) -> str:  # noqa: PLR6301
 		return ""
 
-	def updateCell(self, c):
+	def updateCell(self, c) -> None:
 		module, ok = calTypes[self.calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
@@ -186,10 +186,10 @@ class BasePlugin(SObj):
 		if text:
 			c.addPluginText(self, text)
 
-	def onCurrentDateChange(self, gdate):
+	def onCurrentDateChange(self, gdate) -> None:
 		pass
 
-	def exportToIcs(self, fileName, startJd, endJd):
+	def exportToIcs(self, fileName, startJd, endJd) -> None:
 		currentTimeStamp = strftime(icsTmFormat)
 		self.load()  # FIXME
 		calType = self.calType
@@ -218,7 +218,7 @@ class BasePlugin(SObj):
 
 
 class BaseJsonPlugin(BasePlugin, SObjTextModel):
-	def save(self):  # json file self.file is read-only
+	def save(self) -> None:  # json file self.file is read-only
 		pass
 
 
@@ -231,10 +231,10 @@ class DummyExternalPlugin(BasePlugin):
 	about = ""
 	authors = []
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return f"loadPlugin({self.file!r}, enable=False, show_date=False)"
 
-	def __init__(self, _file, title):
+	def __init__(self, _file, title) -> None:
 		self.file = _file
 		self.title = title
 		self.hasConfig = False
@@ -325,7 +325,7 @@ def loadExternalPlugin(file, **data):
 class HolidayPlugin(BaseJsonPlugin):
 	name = "holiday"
 
-	def __init__(self, _file):
+	def __init__(self, _file) -> None:
 		BaseJsonPlugin.__init__(
 			self,
 			_file,
@@ -333,7 +333,7 @@ class HolidayPlugin(BaseJsonPlugin):
 		self.lastDayMerge = True  # FIXME
 		self.holidays = {}
 
-	def setData(self, data):
+	def setData(self, data) -> None:
 		if "holidays" in data:
 			for calTypeName in data["holidays"]:
 				try:
@@ -358,7 +358,7 @@ class HolidayPlugin(BaseJsonPlugin):
 		# ---
 		BaseJsonPlugin.setData(self, data)
 
-	def dateIsHoliday(self, calType, y, m, d, jd):
+	def dateIsHoliday(self, calType, y, m, d, jd) -> bool:
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
@@ -394,7 +394,7 @@ class HolidayPlugin(BaseJsonPlugin):
 
 		return False
 
-	def updateCell(self, c):
+	def updateCell(self, c) -> None:
 		if not c.holiday:
 			for calType in self.holidays:
 				y, m, d = c.dates[calType]
@@ -402,7 +402,7 @@ class HolidayPlugin(BaseJsonPlugin):
 					c.holiday = True
 					return
 
-	def exportToIcs(self, fileName, startJd, endJd):
+	def exportToIcs(self, fileName, startJd, endJd) -> None:
 		currentTimeStamp = strftime(icsTmFormat)
 		icsText = icsHeader
 
@@ -448,14 +448,14 @@ class YearlyTextPlugin(BaseJsonPlugin):
 	name = "yearlyText"
 	params = BaseJsonPlugin.params + ("dataFile",)
 
-	def __init__(self, _file):
+	def __init__(self, _file) -> None:
 		BaseJsonPlugin.__init__(
 			self,
 			_file,
 		)
 		self.dataFile = ""
 
-	def setData(self, data):
+	def setData(self, data) -> None:
 		if "dataFile" in data:
 			self.dataFile = getPlugPath(data["dataFile"])
 			del data["dataFile"]
@@ -466,12 +466,12 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		# ----
 		BaseJsonPlugin.setData(self, data)
 
-	def clear(self):
+	def clear(self) -> None:
 		# yearlyData is a list of size 13 or 0, each item being a list
 		# except for last item (index 12) which is a dict
 		self.yearlyData = []
 
-	def load(self):
+	def load(self) -> None:
 		# log.debug(f"YearlyTextPlugin({self._file}).load()")
 		module, ok = calTypes[self.calType]
 		if not ok:
@@ -552,7 +552,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 class IcsTextPlugin(BasePlugin):
 	name = "ics"
 
-	def __init__(self, _file, enable=True, show_date=False, all_years=False):
+	def __init__(self, _file, enable=True, show_date=False, all_years=False) -> None:
 		title = splitext(_file)[0]
 		self.ymd = None
 		self.md = None
@@ -566,7 +566,7 @@ class IcsTextPlugin(BasePlugin):
 		self.enable = enable
 		self.show_date = show_date
 
-	def clear(self):
+	def clear(self) -> None:
 		self.ymd = None
 		self.md = None
 
@@ -577,7 +577,7 @@ class IcsTextPlugin(BasePlugin):
 				return i
 		return -1
 
-	def load(self):
+	def load(self) -> None:
 		with open(self.file, encoding="utf-8") as fp:
 			lines = fp.read().replace("\r", "").split("\n")
 		i = self._findVeventBegin(lines)
@@ -731,10 +731,10 @@ class IcsTextPlugin(BasePlugin):
 			return self.md[m, d]
 		return ""
 
-	def open_configure(self):
+	def open_configure(self) -> None:
 		pass
 
-	def open_about(self):
+	def open_about(self) -> None:
 		pass
 
 

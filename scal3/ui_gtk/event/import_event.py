@@ -15,7 +15,7 @@ __all__ = ["EventsImportWindow"]
 
 
 class EventsImportWindow(WizardWindow):
-	def __init__(self, manager):
+	def __init__(self, manager) -> None:
 		self.manager = manager
 		WizardWindow.__init__(self, _("Import Events", ctx="window title"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
@@ -28,7 +28,7 @@ class EventsImportWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win):
+		def __init__(self, win) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -69,13 +69,13 @@ class EventsImportWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self):
+		def run(self) -> None:
 			pass
 
-		def onCancelClick(self, _obj):
+		def onCancelClick(self, _obj) -> None:
 			self.win.destroy()
 
-		def onNextClick(self, _obj):
+		def onNextClick(self, _obj) -> None:
 			fpath = self.fcb.get_filename()
 			if not fpath:
 				return
@@ -90,7 +90,7 @@ class EventsImportWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win):
+		def __init__(self, win) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -104,7 +104,7 @@ class EventsImportWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def redirectStdOutErr(self):
+		def redirectStdOutErr(self) -> None:
 			from scal3.ui_gtk.buffer import GtkBufferFile
 
 			t_table = gtk.TextTagTable()
@@ -119,15 +119,15 @@ class EventsImportWindow(WizardWindow):
 			sys.stderr = self.err_fp
 
 		@staticmethod
-		def restoreStdOutErr():
+		def restoreStdOutErr() -> None:
 			sys.stdout = sys.__stdout__
 			sys.stderr = sys.__stderr__
 
-		def run(self, format_, fpath):
+		def run(self, format_, fpath) -> None:
 			self.redirectStdOutErr()
 			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format_, fpath):
+		def _runAndCleanup(self, format_, fpath) -> None:
 			try:
 				if format_ == "json":
 					self._runJson(fpath)
@@ -137,7 +137,7 @@ class EventsImportWindow(WizardWindow):
 				self.restoreStdOutErr()
 
 		@staticmethod
-		def _runJson(fpath):
+		def _runJson(fpath) -> None:
 			try:
 				with open(fpath, encoding="utf-8") as fp:
 					text = fp.read()
@@ -174,10 +174,10 @@ class EventsImportWindow(WizardWindow):
 						),
 					)
 
-		def onBackClick(self, _obj):
+		def onBackClick(self, _obj) -> None:
 			self.win.showStep(0)
 
-		def onCloseClick(self, _obj):
+		def onCloseClick(self, _obj) -> None:
 			self.win.destroy()
 
 	stepClasses = [
