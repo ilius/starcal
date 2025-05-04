@@ -67,6 +67,7 @@ __all__ = [
 	"getDigits",
 	"getLocaleFirstWeekDay",
 	"getMonthName",
+	"getNeedRestartParams",
 	"lang",
 	"langDict",
 	"langHasUppercase",
