@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -x
 
-cd "$(dirname \"$0\")"
+myDir=$(dirname "$0")
+cd "$myDir"
 
 #chmod -R 755 .
 
