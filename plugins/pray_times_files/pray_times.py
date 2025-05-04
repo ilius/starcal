@@ -84,7 +84,7 @@ def readLocationData():
 	locationsDir = join(sourceDir, "data", "locations")
 	placeTransDict = {}
 
-	def readTransFile(transPath):
+	def readTransFile(transPath) -> None:
 		if not isfile(transPath):
 			return
 		log.info(f"------------- reading {transPath}")
@@ -196,7 +196,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		"isha",
 	)
 
-	def __init__(self, _file):
+	def __init__(self, _file) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
 		# log.debug("From plugin: core.aaa=%s" + api.get("core", "aaa"))
@@ -278,7 +278,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	def guessLocation(self):
 		return guessLocation(self.getCityData())
 
-	def checkShowDisclaimer(self):
+	def checkShowDisclaimer(self) -> None:
 		if not self.shouldShowDisclaimer():
 			return
 		showDisclaimer(self)
@@ -298,7 +298,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# is it Ramadan?
 		return hmonth == 9 and dt > hday * 24 * 3600
 
-	def saveConfig(self):
+	def saveConfig(self) -> None:
 		self.lat = self.backend.lat
 		self.lng = self.backend.lng
 		self.method = self.backend.method.name
@@ -336,12 +336,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			],
 		)
 
-	def updateCell(self, c):
+	def updateCell(self, c) -> None:
 		text = self.getTextByJd(c.jd)
 		if text:
 			c.addPluginText(self, text)
 
-	def killPrevSound(self):
+	def killPrevSound(self) -> None:
 		try:
 			p = self.proc
 		except AttributeError:
@@ -354,7 +354,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# kill(p.pid, 15)
 		# p.terminate()
 
-	def doPlayAzan(self):
+	def doPlayAzan(self) -> None:
 		# pass tm as argument?
 		if not self.azanEnable:
 			return
@@ -370,7 +370,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.killPrevSound()
 		self.proc = popenFile(self.azanFile)
 
-	def doPlayPreAzan(self):
+	def doPlayPreAzan(self) -> None:
 		# pass tm as argument?
 		if not self.preAzanEnable:
 			return
@@ -386,7 +386,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.killPrevSound()
 		self.proc = popenFile(self.preAzanFile)
 
-	def onCurrentDateChange(self, gdate):
+	def onCurrentDateChange(self, gdate) -> None:
 		log.debug(f"pray_times: onCurrentDateChange: {gdate}")
 		if not self.enable:
 			return

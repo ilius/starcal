@@ -41,7 +41,7 @@ __all__ = ["NumRangesEntry"]
 
 @registerType
 class NumRangesEntry(gtk.Entry):
-	def __init__(self, minim, maxim, page_inc=10):
+	def __init__(self, minim, maxim, page_inc=10) -> None:
 		self.minim = minim
 		self.maxim = maxim
 		self.digs = locale_man.digits[locale_man.langSh]
@@ -52,7 +52,7 @@ class NumRangesEntry(gtk.Entry):
 		self.set_direction(gtk.TextDirection.LTR)
 		self.set_alignment(0.5)
 
-	def insertText(self, s, clearSeceltion=True):
+	def insertText(self, s, clearSeceltion=True) -> None:
 		selection = self.get_selection_bounds()
 		if selection and clearSeceltion:
 			start, end = selection
@@ -65,7 +65,7 @@ class NumRangesEntry(gtk.Entry):
 			self.insert_text(s, pos)
 			self.set_position(pos + len(s))
 
-	def numPlus(self, plus):
+	def numPlus(self, plus) -> None:
 		pos = self.get_position()
 		text = toStr(self.get_text())
 		n = len(text)
@@ -109,7 +109,7 @@ class NumRangesEntry(gtk.Entry):
 			endI - len(thisNumStr) + len(newNumStr),
 		)
 
-	def onKeyPress(self, _obj: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _obj: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kval = gevent.keyval
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(kval, kname)

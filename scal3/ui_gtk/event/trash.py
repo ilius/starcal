@@ -12,7 +12,7 @@ __all__ = ["TrashEditorDialog"]
 
 
 class TrashEditorDialog(gtk.Dialog):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Trash"))
@@ -71,17 +71,17 @@ class TrashEditorDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.updateWidget()
 
-	def run(self):
+	def run(self) -> None:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self.updateVars()
 		self.destroy()
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.trash.title)
 		self.iconSelect.set_filename(self.trash.icon)
 		self.addEventsToBeginningCheck.set_active(self.trash.addEventsToBeginning)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.trash.title = self.titleEntry.get_text()
 		self.trash.icon = self.iconSelect.filename
 		self.trash.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()

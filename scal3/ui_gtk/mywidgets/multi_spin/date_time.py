@@ -15,7 +15,7 @@ __all__ = ["DateTimeButton"]
 
 
 class DateTimeButton(MultiSpinButton):
-	def __init__(self, date_time=None, **kwargs):
+	def __init__(self, date_time=None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep=" ",
@@ -49,7 +49,7 @@ class DateTimeButton(MultiSpinButton):
 			*hms,
 		)
 
-	def changeCalType(self, fromType, toType):
+	def changeCalType(self, fromType, toType) -> None:
 		date, hms = self.get_value()
 		newDate = convert(date[0], date[1], date[2], fromType, toType)
 		self.set_value((newDate, hms))

@@ -60,11 +60,11 @@ lastLiveConfChangeTime = 0
 loadSingleConfig(conf, confPathLive, confParamsLive)
 
 
-def saveLiveConf():  # FIXME: rename to saveConfLive
+def saveLiveConf() -> None:  # FIXME: rename to saveConfLive
 	saveSingleConfig(conf, confPathLive, confParamsLive)
 
 
-def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
+def saveLiveConfLoop() -> bool:  # FIXME: rename to saveConfLiveLoop
 	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		saveLiveConf()
@@ -72,7 +72,7 @@ def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
 	return True  # Continue loop
 
 
-def liveConfChanged():
+def liveConfChanged() -> None:
 	global lastLiveConfChangeTime
 	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
@@ -84,7 +84,7 @@ def liveConfChanged():
 
 
 class DayCalWindowCustomizeWindow(gtk.Dialog):
-	def __init__(self, dayCal: DayCal, **kwargs):
+	def __init__(self, dayCal: DayCal, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self._widget = dayCal
 		# --
@@ -122,17 +122,17 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
-	def gotoPageCallback(self, _item, pagePath):
+	def gotoPageCallback(self, _item, pagePath) -> None:
 		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
 	# 	self.resize(self.get_size()[0], 1)
 
-	def save(self):
+	def save(self) -> None:
 		self._widget.updateVars()
 		ui.saveConfCustomize()
 
-	def onSaveClick(self, _button=None, _gevent=None):
+	def onSaveClick(self, _button=None, _gevent=None) -> bool:
 		self.save()
 		self.hide()
 		return True
@@ -171,20 +171,20 @@ class DayCalWindowWidget(DayCal):
 	def getCell(cls) -> Cell:
 		return ui.cells.today
 
-	def __init__(self, win):
+	def __init__(self, win) -> None:
 		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
 		self.menu = None
 		self.customizeWindow = None
 
-	def customizeWindowCreate(self):
+	def customizeWindowCreate(self) -> None:
 		if not self.customizeWindow:
 			self.customizeWindow = DayCalWindowCustomizeWindow(
 				self,
 				transient_for=self._window,
 			)
 
-	def openCustomize(self, _gevent):
+	def openCustomize(self, _gevent) -> None:
 		self.customizeWindowCreate()
 		x, y = self._window.get_position()
 		w, h = self._window.get_size()
@@ -199,7 +199,7 @@ class DayCalWindowWidget(DayCal):
 		self.customizeWindow.move(cx, cy)
 		# should move() after present()
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, obj, gevent) -> bool:
 		b = gevent.button
 		if b == 1:
 			buttons = self._allButtons
@@ -266,7 +266,7 @@ class DayCalWindowWidget(DayCal):
 		menu.show_all()
 		return menu
 
-	def popupMenuOnButtonPress(self, _obj, gevent):
+	def popupMenuOnButtonPress(self, _obj, gevent) -> None:
 		reverse = gevent.y_root > ud.screenH / 2.0
 		menu = self.getMenu(reverse)
 		menu.popup(
@@ -285,7 +285,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 	objName = "dayCalWin"
 	desc = _("Day Calendar Window")
 
-	def __init__(self):
+	def __init__(self) -> None:
 		gtk.Window.__init__(self)
 		self.initVars()
 		ud.windowList.appendItem(self)
@@ -308,7 +308,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self._widget.show()
 		self.appendItem(self._widget)
 
-	def menuCellPopup(self, widget, etime, x, y):
+	def menuCellPopup(self, widget, etime, x, y) -> None:
 		reverse = False
 		menu = self._widget.getMenu(reverse)
 		coord = widget.translate_coordinates(self, x, y)
@@ -343,24 +343,24 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		etime: int,
 		x: int,
 		y: int,
-	):
+	) -> None:
 		pass
 
-	def prefUpdateBgColor(self, cal):
+	def prefUpdateBgColor(self, cal) -> None:
 		pass
 
 	@staticmethod
-	def dayInfoShow(widget=None):
+	def dayInfoShow(widget=None) -> None:
 		ui.mainWin.dayInfoShow(widget)
 
-	def onDeleteEvent(self, _arg=None, _event=None):
+	def onDeleteEvent(self, _arg=None, _event=None) -> bool:
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, _widget, _gevent):
+	def configureEvent(self, _widget, _gevent) -> bool | None:
 		if not self.get_property("visible"):
 			return
 		wx, wy = self.get_position()

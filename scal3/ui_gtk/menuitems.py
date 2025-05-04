@@ -58,7 +58,7 @@ class ImageMenuItem(gtk.MenuItem):
 		func: Callable | None = None,
 		signalName="activate",
 		args: tuple | None = None,
-	):
+	) -> None:
 		gtk.MenuItem.__init__(self)
 		if args is not None and not isinstance(args, tuple):
 			raise TypeError("args must be None or tuple")
@@ -115,7 +115,7 @@ class CheckMenuItem(gtk.MenuItem):
 		active=False,
 		func=None,
 		args=None,
-	):
+	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
 		self._check.set_use_underline(True)
@@ -140,7 +140,7 @@ class CheckMenuItem(gtk.MenuItem):
 		self._args = args
 		self.connect("activate", self._onActivate)
 
-	def _onActivate(self, menuItem):
+	def _onActivate(self, menuItem) -> None:
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 
@@ -159,7 +159,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		active=False,
 		func=None,
 		args=None,
-	):
+	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
@@ -191,7 +191,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self._args = args
 		self.connect("activate", self._onActivate)
 
-	def _onActivate(self, menuItem):
+	def _onActivate(self, menuItem) -> None:
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 
