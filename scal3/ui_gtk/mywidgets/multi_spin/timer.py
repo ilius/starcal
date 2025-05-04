@@ -15,7 +15,7 @@ class TimerButton(TimeButton):
 		("time-elapse", []),
 	]
 
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		TimeButton.__init__(self, **kwargs)
 		# self.timer = False
 		# self.clock = False
@@ -23,7 +23,7 @@ class TimerButton(TimeButton):
 		self.tPlus = -1  # timer plus (step)
 		self.elapse = 0
 
-	def timer_start(self):
+	def timer_start(self) -> None:
 		self.clock = False
 		self.timer = True
 		# self.delay = 1.0 # timer delay
@@ -34,11 +34,11 @@ class TimerButton(TimeButton):
 		self.set_editable(False)
 		self.timer_update()
 
-	def timer_stop(self):
+	def timer_stop(self) -> None:
 		self.timer = False
 		self.set_editable(True)
 
-	def timer_update(self):
+	def timer_update(self) -> None:
 		if not self.timer:
 			return
 		sec = int(now() * self.tPlus - self.tOff)
@@ -52,17 +52,17 @@ class TimerButton(TimeButton):
 				self.timer_update,
 			)
 
-	def clock_start(self):
+	def clock_start(self) -> None:
 		self.timer = False
 		self.clock = True
 		self.set_editable(False)
 		self.clock_update()
 
-	def clock_stop(self):
+	def clock_stop(self) -> None:
 		self.clock = False
 		self.set_editable(True)
 
-	def clock_update(self):
+	def clock_update(self) -> None:
 		if self.clock:
 			timeout_add(
 				clockWaitMilliseconds(),

@@ -44,7 +44,7 @@ def getAttr(moduleName, attr, default=None, absolute=False):
 	return getattr(module, attr, default)
 
 
-def setAttr(moduleName, attr, value, absolute=False):
+def setAttr(moduleName, attr, value, absolute=False) -> None:
 	if not absolute:
 		moduleName = "scal3." + moduleName
 	# module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])

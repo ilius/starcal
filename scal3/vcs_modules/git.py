@@ -46,11 +46,11 @@ __all__ = [
 ]
 
 
-def prepareObj(obj):  # noqa: ARG001
+def prepareObj(obj) -> None:  # noqa: ARG001
 	pass
 
 
-def clearObj(obj):  # noqa: ARG001
+def clearObj(obj) -> None:  # noqa: ARG001
 	pass
 
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
 	from dateutil.parser import parse
 
 	class DummyObj:
-		def __init__(self, vcsDir):
+		def __init__(self, vcsDir) -> None:
 			self.vcsDir = vcsDir
 
 	vcsDir = os.getcwd()

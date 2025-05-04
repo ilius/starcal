@@ -26,7 +26,7 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, notifier):
+	def __init__(self, notifier) -> None:
 		self.notifier = notifier
 		# --
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -51,24 +51,24 @@ class WidgetClass(gtk.Box):
 		pack(self, self.textColorButton)
 		pack(self, gtk.Label(), 1, 1)
 
-	def updateWidget(self):
+	def updateWidget(self) -> None:
 		self.fillWidthCb.set_active(self.notifier.fillWidth)
 		self.speedSpin.set_value(self.notifier.speed)
 		self.bgColorButton.set_rgba(self.notifier.bgColor)
 		self.textColorButton.set_rgba(self.notifier.textColor)
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		self.notifier.fillWidth = self.fillWidthCb.get_active()
 		self.notifier.speed = self.speedSpin.get_value()
 		self.notifier.bgColor = self.bgColorButton.get_rgba()
 		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
-def notify(notifier, finishFunc):
+def notify(notifier, finishFunc) -> None:
 	glib.idle_add(_notify, notifier, finishFunc)
 
 
-def _notify(notifier, finishFunc):  # FIXME
+def _notify(notifier, finishFunc) -> None:  # FIXME
 	cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
 	text = notifier.event.getText()
 	msg = cls(

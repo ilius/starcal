@@ -14,7 +14,7 @@ __all__ = ["ConButton", "ConButtonBase"]
 
 
 class ConButtonBase:
-	def __init__(self, button: int | None = None):
+	def __init__(self, button: int | None = None) -> None:
 		self.pressTm = 0
 		self.counter = 0
 		self._button = button
@@ -25,7 +25,7 @@ class ConButtonBase:
 	def doTrigger(self):
 		return self.emit("con-clicked")
 
-	def onPress(self, _widget, event):
+	def onPress(self, _widget, event) -> bool | None:
 		if self._button is not None and event.button != self._button:
 			return
 		self.pressTm = now()
@@ -39,11 +39,11 @@ class ConButtonBase:
 		)
 		return True
 
-	def onRelease(self, _widget, _event):
+	def onRelease(self, _widget, _event) -> bool:
 		self.counter += 1
 		return True
 
-	def onPressRemain(self, func, counter):
+	def onPressRemain(self, func, counter) -> None:
 		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
 			func()
 			timeout_add(
@@ -60,7 +60,7 @@ class ConButton(gtk.Button, ConButtonBase):
 		("con-clicked", []),
 	]
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		gtk.Button.__init__(self, *args, **kwargs)
 		ConButtonBase.__init__(self)
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 	win = gtk.Dialog()
 	button = ConButton("Press")
 
-	def con_clicked(_arg):
+	def con_clicked(_arg) -> None:
 		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)

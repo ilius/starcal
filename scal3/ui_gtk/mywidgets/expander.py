@@ -47,7 +47,7 @@ class ExpanderFrameTitle(gtk.Button):
 		# --
 		self.set_expanded(expanded)
 
-	def _updateImage(self):
+	def _updateImage(self) -> None:
 		if self.get_expanded():
 			iconName = "pan-down-symbolic"
 		else:
@@ -98,7 +98,7 @@ class ExpanderFrame(gtk.Frame):
 	def add(self, child: gtk.Widget) -> None:
 		pack(self._box, child, 1, 1)
 
-	def _onTitleClick(self, _button):
+	def _onTitleClick(self, _button) -> None:
 		self.set_expanded(not self.get_expanded())
 		self.emit("activate")
 

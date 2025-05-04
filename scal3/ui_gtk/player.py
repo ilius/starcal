@@ -52,11 +52,11 @@ class MPlayer:
 	mplayerOptions = None
 	playTime = None
 
-	def __init__(self, pbox):
+	def __init__(self, pbox) -> None:
 		self.pbox = pbox
 
 	# Play the specified file
-	def play(self, path):
+	def play(self, path) -> None:
 		log.debug(f"File path: {path}")
 		mplayerOptions = self.pbox.mplayerOptions.split(" ")
 
@@ -85,7 +85,7 @@ class MPlayer:
 		# 	self.pbox.fcb.set_sensitive(False)
 
 	# Get the length of file, format it and place it in playtime
-	def getLength(self):
+	def getLength(self) -> bool | None:
 		self.cmd("get_time_length")
 		sleep(0.1)
 
@@ -110,7 +110,7 @@ class MPlayer:
 		return None
 
 	# Toggle between play and pause
-	def pause(self):
+	def pause(self) -> None:
 		if not self.mplayerIn:
 			return
 		if self.cmd("pause"):
@@ -124,7 +124,7 @@ class MPlayer:
 			self.paused = False
 
 	# Seek by the amount specified (in seconds)
-	def seek(self, amount, mode=0):
+	def seek(self, amount, mode=0) -> bool | None:
 		if not self.mplayerIn:
 			return False
 		self.cmd(f"seek {amount} {mode}")
@@ -132,7 +132,7 @@ class MPlayer:
 		return None
 
 	# Set volume    using aumix
-	def setVolume(self, value):
+	def setVolume(self, value) -> None:
 		if self.pbox.adjustvol:
 			command = ["aumix", "-v", str(value)]
 		else:
@@ -146,7 +146,7 @@ class MPlayer:
 	# Change volume by the amount specified
 	# Changing the adjustment automatically updates
 	# the range widget and increases the vol
-	def stepVolume(self, increase):
+	def stepVolume(self, increase) -> None:
 		if increase:
 			self.pbox.volAdj.value += VOLUME_STEP
 			self.pbox.volAdj.value = min(self.pbox.volAdj.value, 100)
@@ -157,7 +157,7 @@ class MPlayer:
 			self.pbox.volAdj.value -= VOLUME_STEP
 
 	# Close mplayer
-	def close(self):
+	def close(self) -> None:
 		if self.paused:
 			self.pause()
 		if not self.mplayerIn:
@@ -174,7 +174,7 @@ class MPlayer:
 		# self.pbox.seekBar.set_sensitive(False)
 		# self.pbox.fcb.set_sensitive(True)
 
-	def cmd(self, command):
+	def cmd(self, command) -> bool:
 		if not self.mplayerIn:
 			return False
 		try:
@@ -185,7 +185,7 @@ class MPlayer:
 		return True
 
 	# Get current playing position in song
-	def queryStatus(self):
+	def queryStatus(self) -> bool:
 		if not self.playTime:
 			self.getLength()
 		self.cmd("get_percent_pos")
@@ -206,13 +206,13 @@ class MPlayer:
 		return True
 
 	# Handle EOF in mplayerOut
-	def handleEof(self, _source, _condition):
+	def handleEof(self, _source, _condition) -> None:
 		self.stopStatusQuery()
 		self.mplayerIn, self.mplayerOut = None, None
 		self.pbox.seekAdj.value = 0
 
 	# Handle EOF (basically, a connection Hung Up in mplayerOut)
-	def startHandleEof(self):
+	def startHandleEof(self) -> None:
 		pass
 		# FIXME
 		# self.eofHandle = gobject.io_add_watch(
@@ -222,11 +222,11 @@ class MPlayer:
 		# )
 
 	# Stop looking for IO_HUP in mplayerOut
-	def stopEofHandler(self):
+	def stopEofHandler(self) -> None:
 		source_remove(self.eofHandle)
 
 	# Call a function periodically to fetch status
-	def startStatusQuery(self):
+	def startStatusQuery(self) -> None:
 		log.info("start")
 		self.statusQuery = timeout_add(
 			STATUS_UPDATE_TIMEOUT,
@@ -234,7 +234,7 @@ class MPlayer:
 		)
 
 	# Stop calling the function that fetches status periodically
-	def stopStatusQuery(self):
+	def stopStatusQuery(self) -> None:
 		source_remove(self.statusQuery)
 
 
@@ -257,7 +257,7 @@ class PlayerBox(gtk.Box):
 	# ---------------
 	forbid = [102, 100]
 
-	def __init__(self, hasVol=False):
+	def __init__(self, hasVol=False) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.fcb = gtk.FileChooserButton(title="Select Sound")
 		self.fcb.set_local_only(True)
@@ -320,7 +320,7 @@ class PlayerBox(gtk.Box):
 			scale.connect("key-press-event", self.divert)
 			pack(self, scale, False, False, 5)
 
-	def divert(self, _widget, gevent):
+	def divert(self, _widget, gevent) -> bool | None:
 		key = gevent.hardware_keycode
 		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
@@ -352,7 +352,7 @@ class PlayerBox(gtk.Box):
 			# + self.playlist.getCurrentSongTime()  # FIXME
 		return str(int(value)) + "%"
 
-	def seek(self, _widget, _gevent):  # Seek on changing the seekBar
+	def seek(self, _widget, _gevent) -> None:  # Seek on changing the seekBar
 		# log.debug("seek", self.seekAdj.value, self.mplayer.mplayerIn)
 		if not self.mplayer.mplayerIn:
 			log.info("abc")
@@ -370,7 +370,8 @@ class PlayerBox(gtk.Box):
 	def displayVolString(_scale, value):
 		return "Volume: " + str(int(value)) + "%"
 
-	def setVolume(self, adj):  # Set volume when the volume range widget is changed
+	def setVolume(self, adj) -> None:
+		# Set volume when the volume range widget is changed
 		self.mplayer.setVolume(int(adj.value))
 		if self.adjustvol:
 			self.vollevel1 = int(adj.value)
@@ -379,7 +380,7 @@ class PlayerBox(gtk.Box):
 			self.vollevel0 = int(adj.value)
 			self.mplayer.setVolume(self.vollevel0)
 
-	def playPause(self, _button=None):
+	def playPause(self, _button=None) -> None:
 		imageName = "media-playback-start.svg"
 		if self.mplayer.mplayerIn:
 			if not self.mplayer.paused:
@@ -402,7 +403,7 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_sensitive(not playing)
 		self.seekBar.set_sensitive(playing)
 
-	def stop(self, button):  # Stop mplayer if it's running
+	def stop(self, button) -> None:  # Stop mplayer if it's running
 		self.mplayer.close()
 		button = self.playPauseBut
 		button.get_child().set_from_pixbuf(
@@ -414,10 +415,10 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
 
-	def decVol(self, _widget):
+	def decVol(self, _widget) -> None:
 		self.mplayer.stepVolume(False)
 
-	def incVol(self, _widget):
+	def incVol(self, _widget) -> None:
 		self.mplayer.stepVolume(True)
 
 	@staticmethod
@@ -426,11 +427,11 @@ class PlayerBox(gtk.Box):
 		keycode = gevent.hardware_keycode
 		return keycode in {98, 104}
 
-	def quit(self, _event=None):
+	def quit(self, _event=None) -> None:
 		self.mplayer.close()
 		gtk.main_quit()
 
-	def openFile(self, path, startPlaying=True):
+	def openFile(self, path, startPlaying=True) -> None:
 		self.fcb.set_filename(path)
 		if startPlaying:
 			self.playPause()

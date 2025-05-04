@@ -48,7 +48,7 @@ __all__ = ["IndicatorStatusIconWrapper"]
 class IndicatorStatusIconWrapper:
 	imNamePrefix = f"{APP_NAME}-indicator-{os.getuid()}-"
 
-	def __init__(self, mainWin):
+	def __init__(self, mainWin) -> None:
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
 			APP_NAME,  # app id
@@ -78,7 +78,7 @@ class IndicatorStatusIconWrapper:
 		self.c.set_menu(menu)
 	"""
 
-	def create_menu(self):
+	def create_menu(self) -> None:
 		menu = Menu()
 		self.menuItems = []
 		# ^ just to prevent GC from removing custom objects for items
@@ -112,12 +112,12 @@ class IndicatorStatusIconWrapper:
 			menu.set_direction(gtk.TextDirection.RTL)  # not working
 		self.c.set_menu(menu)
 
-	def set_from_file(self, fpath):
+	def set_from_file(self, fpath) -> None:
 		self.c.set_icon("")
 		self.c.set_icon(fpath)
 		self.create_menu()
 
-	def set_from_pixbuf(self, pbuf):
+	def set_from_pixbuf(self, pbuf) -> None:
 		# https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
 		# pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
 		fname = self.imNamePrefix + get_pixbuf_hash(pbuf)
@@ -127,7 +127,7 @@ class IndicatorStatusIconWrapper:
 		pbuf.savev(fpath, "png", [], [])
 		self.set_from_file(fpath)
 
-	def cleanup(self):
+	def cleanup(self) -> None:
 		for fname in os.listdir(tmpDir):
 			if not fname.startswith(self.imNamePrefix):
 				continue
@@ -136,12 +136,12 @@ class IndicatorStatusIconWrapper:
 			except Exception:
 				log.exception("")
 
-	def is_embedded(self):  # noqa: PLR6301
+	def is_embedded(self) -> bool:  # noqa: PLR6301
 		return True  # FIXME
 
-	def set_visible(self, visible):  # FIXME
+	def set_visible(self, visible) -> None:  # FIXME
 		pass
 
-	def set_tooltip_text(self, text):
+	def set_tooltip_text(self, text) -> None:
 		# self.c.set_label_guide(text)
 		pass
