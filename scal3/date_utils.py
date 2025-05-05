@@ -117,7 +117,7 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 	)
 
 
-def parseDroppedDate(text) -> tuple[int, int, int] | None:
+def parseDroppedDate(text: str) -> tuple[int, int, int] | None:
 	part = text.split("/")
 	if len(part) != 3:
 		return None

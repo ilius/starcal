@@ -51,6 +51,7 @@ from scal3.ui.params import (
 	LIVE,
 	MAIN_CONF,
 	NEED_RESTART,
+	ColorType,
 	confParamsData,
 	getParamNamesWithFlag,
 )
@@ -58,8 +59,12 @@ from scal3.ui.params import (
 from . import conf
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Iterable
+
+	from scal3.event_lib.event_base import Event
 	from scal3.filesystem import FileSystem
 	from scal3.s_object import SObj
+	from scal3.ui_gtk import gtk_ud
 
 
 __all__ = [
@@ -67,6 +72,7 @@ __all__ = [
 	"LIVE",
 	"MAIN_CONF",
 	"NEED_RESTART",
+	"ColorType",
 	"Font",
 	"Property",
 	"cells",
@@ -236,9 +242,9 @@ def updateLocalTimezoneHistory() -> bool:
 
 
 def getFont(
-	scale=1.0,
-	family=True,
-	bold=False,
+	scale: float = 1.0,
+	family: bool = True,
+	bold: bool = False,
 ) -> Font:
 	f = (conf.fontCustom.v if conf.fontCustomEnable.v else None) or fontDefaultInit
 	# assert isinstance(f.family, str)
@@ -327,7 +333,7 @@ def checkWinControllerButtons() -> None:
 def moveEventToTrash(
 	group: event_lib.EventGroup,
 	event: event_lib.Event,
-	sender,  # write BaseCalType based on BaseCalObj
+	sender: gtk_ud.CalObjType,
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
@@ -388,7 +394,7 @@ def withFS(obj: SObj) -> SObj:
 # ----------------------------------------------------------------------
 
 
-def getActiveMonthCalParams():
+def getActiveMonthCalParams() -> list[tuple[int, dict[str, Any]]]:
 	return list(
 		zip(
 			calTypes.active,
@@ -407,7 +413,8 @@ eventTrash: event_lib.EventTrash | None = None
 eventNotif: EventNotificationManager | None = None
 
 
-def iterAllEvents():  # dosen"t include orphan events
+def iterAllEvents() -> Iterable[Event]:
+	# dosen"t include orphan events
 	for group in eventGroups:
 		for event in group:
 			yield event

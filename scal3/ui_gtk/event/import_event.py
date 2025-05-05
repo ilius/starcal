@@ -5,6 +5,8 @@ log = logger.get()
 import json
 import sys
 
+from gi.repository import Gtk as gtk
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
@@ -112,7 +114,7 @@ class EventsImportWindow(WizardWindow):
 			t_table.add(tag_out)
 			tag_err = gtk.TextTag(name="error")
 			t_table.add(tag_err)
-			self.buffer = self.textview.get_buffer()
+			self.buffer: gtk.TextBuffer = self.textview.get_buffer()
 			self.out_fp = GtkBufferFile(self.buffer, tag_out)
 			sys.stdout = self.out_fp
 			self.err_fp = GtkBufferFile(self.buffer, tag_err)

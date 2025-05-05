@@ -86,7 +86,7 @@ def pack(
 		raise TypeError(f"pack: unkown type {type(box)}")
 
 
-def Box(vertical: bool | None = None, **kwargs):
+def Box(vertical: bool | None = None, **kwargs) -> gtk.Box:
 	if vertical is None:
 		raise ValueError("vertical argument is missing")
 	if vertical:
@@ -96,11 +96,11 @@ def Box(vertical: bool | None = None, **kwargs):
 	return gtk.Box(orientation=orientation, **kwargs)
 
 
-def VBox(**kwargs):
+def VBox(**kwargs) -> gtk.Box:
 	return gtk.Box(orientation=gtk.Orientation.VERTICAL, **kwargs)
 
 
-def HBox(**kwargs):
+def HBox(**kwargs) -> gtk.Box:
 	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
 
 

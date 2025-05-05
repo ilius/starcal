@@ -23,6 +23,7 @@ import sys
 import time
 from os.path import dirname, isdir, isfile, join
 from time import time as now
+from types import CellType
 
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):
@@ -80,11 +81,11 @@ def getCurrentJd() -> int:
 	return gregorian_to_jd(y, m, d)
 
 
-def readLocationData():
+def readLocationData() -> list[tuple[str, str, float, float]]:
 	locationsDir = join(sourceDir, "data", "locations")
 	placeTransDict = {}
 
-	def readTransFile(transPath) -> None:
+	def readTransFile(transPath: str) -> None:
 		if not isfile(transPath):
 			return
 		log.info(f"------------- reading {transPath}")
@@ -141,7 +142,9 @@ def readLocationData():
 	return cityData
 
 
-def guessLocation(cityData):  # noqa: ARG001
+def guessLocation(
+	cityData: list[tuple[str, str, float, float]],  # noqa: ARG001
+) -> tuple[str, float, float]:  # noqa: ARG001
 	# tzname = str(localTz)
 	# TODO
 	# for countryCity, countryCityLocale, lat, lng in cityData:
@@ -196,7 +199,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		"isha",
 	)
 
-	def __init__(self, _file) -> None:
+	def __init__(self, _file: str) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
 		# log.debug("From plugin: core.aaa=%s" + api.get("core", "aaa"))
@@ -269,13 +272,13 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# ---
 		self.checkShowDisclaimer()
 
-	def getCityData(self):
+	def getCityData(self) -> list[tuple[str, str, float, float]]:
 		if self._cityData is not None:
 			return self._cityData
 		self._cityData = readLocationData()
 		return self._cityData
 
-	def guessLocation(self):
+	def guessLocation(self) -> tuple[str, float, float]:
 		return guessLocation(self.getCityData())
 
 	def checkShowDisclaimer(self) -> None:
@@ -312,7 +315,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	# 	menu.remove(self.menuitem)
 	# 	menu.disconnect(self.menu_unmap_id)
 
-	def get_times_jd(self, jd):
+	def get_times_jd(self, jd: int) -> list[tuple[str, int]]:
 		times = self.backend.getTimesByJd(
 			jd,
 			getUtcOffsetByJd(jd, localTz) / 3600,
@@ -320,15 +323,16 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		return [(name, times[name]) for name in self.shownTimeNames]
 
 	@staticmethod
-	def getFormattedTime(tm):  # tm is float hour
+	def getFormattedTime(tm: float) -> str:  # tm is float hour
 		try:
 			h, m, _s = floatHourToTime(float(tm))
 		except ValueError:
-			return tm
+			log.exception(f"bad float hour {tm=}")
+			return str(tm)
 		else:
 			return f"{h:d}:{m:02d}"
 
-	def getTextByJd(self, jd):
+	def getTextByJd(self, jd: int) -> str:
 		return self.sep.join(
 			[
 				_(timeDescByName[name]) + ": " + self.getFormattedTime(tm)
@@ -336,7 +340,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			],
 		)
 
-	def updateCell(self, c) -> None:
+	def updateCell(self, c: CellType) -> None:
 		text = self.getTextByJd(c.jd)
 		if text:
 			c.addPluginText(self, text)

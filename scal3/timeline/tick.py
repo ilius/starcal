@@ -14,13 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from scal3 import ui
 from scal3.timeline import conf
 
 __all__ = ["Tick"]
 
 
 class Tick:
-	def __init__(self, epoch, pos, unitSize, label, color=None) -> None:
+	def __init__(
+		self,
+		epoch: int,
+		pos: float,
+		unitSize: int,
+		label: str,
+		color: ui.ColorType | None = None,
+	) -> None:
 		self.epoch = epoch
 		self.pos = pos  # pixel position
 		self.height = unitSize**0.5 * conf.baseTickHeight.v

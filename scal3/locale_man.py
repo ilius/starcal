@@ -178,7 +178,11 @@ loadConf()
 # ----------------------------------------------------------
 
 
-def tr(s: str | int, *a, **ka) -> str:
+def tr(
+	s: str | int,
+	*a,  # noqa: ANN002
+	**ka,  # noqa: ANN003
+) -> str:
 	"""String translator function."""
 	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
@@ -347,7 +351,14 @@ def loadTranslator() -> Callable:
 			log.exception("")
 	if transObj:
 
-		def tr(s, *a, nums=False, ctx=None, default=None, **ka):
+		def tr(
+			s: str | float,
+			*a,  # noqa: ANN002
+			nums: bool = False,
+			ctx: str | None = None,
+			default: str | None = None,
+			**ka,  # noqa: ANN003
+		) -> str:
 			orig = s
 			if isinstance(s, int | float):
 				s = numEncode(s, *a, **ka)
@@ -371,7 +382,11 @@ def loadTranslator() -> Callable:
 
 	else:
 
-		def tr(s, *_a, **_ka):
+		def tr(
+			s: str | float,
+			*_a,  # noqa: ANN002
+			**_ka,  # noqa: ANN003
+		) -> str:
 			return str(s)
 
 	return tr
@@ -514,7 +529,7 @@ def textNumEncode(
 def floatEncode(
 	st: str,
 	localeMode: str | int | None = None,
-):
+) -> str:
 	return textNumEncode(
 		st,
 		localeMode,
@@ -594,12 +609,15 @@ def addLRM(text: str) -> str:
 	return LRM + toStr(text)
 
 
-def popenDefaultLang(*args, **kwargs) -> subprocess.Popen:
+def popenDefaultLang(
+	*args,  # noqa: ANN002
+	**kwargs,  # noqa: ANN003
+) -> subprocess.Popen:
 	from subprocess import Popen
 
 	os.environ["LANG"] = sysLangDefault
 	p = Popen(*args, **kwargs)  # noqa: S603
-	os.environ["LANG"] = lang
+	os.environ["LANG"] = lang.v
 	return p
 
 
