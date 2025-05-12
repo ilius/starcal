@@ -48,7 +48,7 @@ from scal3.path import (
 	APP_NAME,
 	confDir,
 	plugDir,
-	plugDirName,
+	plugDirUser,
 	sourceDir,
 	sysConfDir,
 )
