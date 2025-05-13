@@ -185,13 +185,9 @@ def loadConf() -> None:
 
 
 def saveConf() -> None:
-	global activeCalTypes, inactiveCalTypes
-	activeCalTypes, inactiveCalTypes = (
-		calTypes.activeNames,
-		calTypes.inactiveNames,
-	)
+	activeCalTypes.v = calTypes.activeNames
+	inactiveCalTypes.v = calTypes.inactiveNames
 	saveModuleConfig(__name__)
-	activeCalTypes = inactiveCalTypes = None
 
 
 log = logger.get()
