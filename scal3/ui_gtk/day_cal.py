@@ -298,7 +298,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
 
-		dayParams = self.getDayParams(allCalTypes=True)
 		monthParams = self.getMonthParams(allCalTypes=True)
 		try:
 			vbox = self.dayMonthParamsVbox
@@ -310,6 +309,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		subPages = []
 		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		assert self.dayParams
+		assert self.monthParams
 		for index, calType in enumerate(calTypes.active):
 			module, ok = calTypes[calType]
 			if not ok:
@@ -321,12 +322,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pageWidget = VBox(spacing=5)
 			# ---
 			dayWidget = CalTypeParamWidget(
-				self.dayParams,
-				self,
-				dayParams[index],
-				sgroupLabel=sgroupLabel,
+				params=self.dayParams,
 				index=index,
 				calType=calType,
+				cal=self,
+				sgroupLabel=sgroupLabel,
 				hasEnable=True,
 				hasAlign=True,
 				enableTitleLabel=_("Day of Month"),
@@ -335,12 +335,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(pageWidget, dayWidget)
 			# ---
 			monthWidget = CalTypeParamWidget(
-				self.monthParams,
-				self,
-				monthParams[index],
-				sgroupLabel=sgroupLabel,
+				params=self.monthParams,
 				index=index,
 				calType=calType,
+				cal=self,
+				sgroupLabel=sgroupLabel,
 				hasEnable=True,
 				hasAlign=True,
 				hasAbbreviate=True,
@@ -482,13 +481,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 		pageWidget.show_all()
 		# -----
 		if self.weekdayParams:
-			params = self.getWeekDayParams()
 			pageWidget = VBox(spacing=5)
 			# ---
 			weekdayWidget = TextParamWidget(
-				self.weekdayParams,
-				self,
-				params,
+				params=self.weekdayParams,
+				cal=self,
 				# sgroupLabel=None,
 				desc=_("Week Day"),
 				hasEnable=True,

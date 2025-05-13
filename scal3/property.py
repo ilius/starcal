@@ -39,3 +39,23 @@ class Property[T]:
 	@property
 	def default(self) -> T:
 		return self._default
+
+
+class ItemProperty[T](Property[T]):
+	__slots__ = ["_index", "_parent"]
+
+	def __init__(self, parent: Property[list[T]], index: int):
+		self._parent = parent
+		self._index = index
+
+	@property
+	def v(self) -> T:
+		return self._parent.v[self._index]
+
+	@v.setter
+	def v(self, value: T) -> None:
+		self._parent.v[self._index] = value
+
+	@property
+	def default(self) -> T:
+		return self._parent.default[self._index]

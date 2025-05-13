@@ -14,13 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 from scal3 import logger
+from scal3.property import ItemProperty, Property
+from scal3.ui_gtk.cal_base import CalBase
 
 log = logger.get()
 
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.ui import conf
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
@@ -92,17 +95,16 @@ class YAlignComboBox(gtk.ComboBoxText):
 class TextParamWidget(gtk.Box):
 	def __init__(
 		self,
-		paramName,
-		cal,
-		params,
-		sgroupLabel=None,
-		desc=None,
-		hasEnable=False,
-		hasAlign=False,
-		hasAbbreviate=False,
-		hasUppercase=False,
-		enableTitleLabel="",
-		useFrame=False,
+		params: Property[dict[str, Any]],
+		cal: CalBase,
+		sgroupLabel: gtk.SizeGroup | None = None,
+		desc: str | None = None,
+		hasEnable: bool = False,
+		hasAlign: bool = False,
+		hasAbbreviate: bool = False,
+		hasUppercase: bool = False,
+		enableTitleLabel: str = "",
+		useFrame: bool = False,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton, MyFontButton
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -113,7 +115,7 @@ class TextParamWidget(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
 		# ---
 		self.set_border_width(5)
-		self.paramName = paramName
+		self.params = params
 		self.cal = cal
 		self.hasEnable = hasEnable
 		self.hasAlign = hasAlign
@@ -196,7 +198,7 @@ class TextParamWidget(gtk.Box):
 			self.uppercaseCheck = gtk.CheckButton(label=_("Uppercase"))
 			pack(vbox, self.uppercaseCheck)
 		# ----
-		self.set(params)
+		self.set(params.v)
 		# ----
 		self.spinX.connect("changed", self.onChange)
 		self.spinY.connect("changed", self.onChange)
@@ -247,8 +249,8 @@ class TextParamWidget(gtk.Box):
 		if self.hasUppercase:
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
-	def onChange(self, _obj=None, _event=None) -> None:
-		setattr(conf, self.paramName, self.get())
+	def onChange(self, _obj: gtk.Widget | None = None, _event: Any = None) -> None:
+		self.params.v = self.get()
 		self.cal.queue_draw()
 
 	def setFontPreviewText(self, text) -> None:
@@ -256,25 +258,35 @@ class TextParamWidget(gtk.Box):
 
 
 class CalTypeParamWidget(TextParamWidget):
-	def __init__(self, *args, **kwargs) -> None:
-		index = kwargs.get("index")
-		if index is None:
-			raise ValueError("index is None")
-		del kwargs["index"]
+	def __init__(
+		self,
+		params: Property[list[dict[str, Any]]],
+		index: int,
+		calType: int,
+		cal: CalBase,
+		sgroupLabel: gtk.SizeGroup | None = None,
+		hasEnable: bool = False,
+		hasAlign: bool = False,
+		hasAbbreviate: bool = False,
+		hasUppercase: bool = False,
+		enableTitleLabel: str = "",
+		useFrame: bool = False,
+	) -> None:
 		self.index = index
 		# ----
-		calType = kwargs.get("calType")
-		if calType is None:
-			raise ValueError("calType is None")
-		del kwargs["calType"]
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		kwargs["desc"] = _(module.desc, ctx="calendar")
-		# ----
-		TextParamWidget.__init__(self, *args, **kwargs)
-
-	def onChange(self, _obj=None, _event=None) -> None:
-		typeParams = getattr(conf, self.paramName)
-		typeParams[self.index] = self.get()
-		self.cal.queue_draw()
+		TextParamWidget.__init__(
+			self,
+			params=ItemProperty(params, index),
+			cal=cal,
+			sgroupLabel=sgroupLabel,
+			desc=_(module.desc, ctx="calendar"),
+			hasEnable=hasEnable,
+			hasAlign=hasAlign,
+			hasAbbreviate=hasAbbreviate,
+			hasUppercase=hasUppercase,
+			enableTitleLabel=enableTitleLabel,
+			useFrame=useFrame,
+		)
