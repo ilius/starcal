@@ -471,7 +471,7 @@ class WeekMonthEventRule(EventRule):
 		EventRule.__init__(self, parent)
 		self.month = 1
 		self.wmIndex = 4
-		self.weekDay = core.firstWeekDay
+		self.weekDay = core.firstWeekDay.v
 
 	# usefull? FIXME
 	# def setJd(self, jd) -> None:
