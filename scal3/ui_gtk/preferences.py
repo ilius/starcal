@@ -1291,7 +1291,7 @@ class PreferencesWindow(gtk.Window):
 		if f == 7:  # auto
 			with suppress(Exception):
 				f = getLocaleFirstWeekDay()
-		# core.firstWeekDay will be later = f
+		# core.firstWeekDay.v will be later = f
 		self.holiWDItem.setStart(f)
 
 	def onDelete(self, _obj=None, _data=None) -> bool:
