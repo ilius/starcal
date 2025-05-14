@@ -457,7 +457,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			# (cr, layout)
 
 		for j in range(7):
-			wd = (j + core.firstWeekDay) % 7
+			wd = (j + core.firstWeekDay.v) % 7
 			for i, dayData in enumerate(self.data[wd]):
 				textList = []
 				for classData in dayData:
