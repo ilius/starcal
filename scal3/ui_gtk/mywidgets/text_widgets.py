@@ -93,7 +93,10 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 
 	def copy(self, item):
 		buf = self.get_buffer()
-		start_iter, end_iter = buf.get_selection_bounds()
+		bounds = buf.get_selection_bounds()
+		if not bounds:
+			return
+		start_iter, end_iter = bounds
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
 	def copyWordByIter(self, item, _iter):
