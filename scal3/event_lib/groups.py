@@ -1006,7 +1006,7 @@ class UniversityTerm(EventGroup):
 					if not ok:
 						raise RuntimeError("no dayTimeRange rule")
 					return (
-						(wd - core.firstWeekDay) % 7,
+						(wd - core.firstWeekDay.v) % 7,
 						dayTimeRange.getHourRange(),
 					)
 				if event.name == "universityExam":
