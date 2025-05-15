@@ -112,17 +112,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			# ---
-			# try:
-			params = conf.mcalTypeParams.v[index]
-			# except IndexError:
-			# --
 			pageWidget = CalTypeParamWidget(
-				"mcalTypeParams",
-				self,
-				params,
-				sgroupLabel=sgroupLabel,
+				params=conf.mcalTypeParams,
 				index=index,
+				cal=self,
+				sgroupLabel=sgroupLabel,
 				calType=calType,
 				hasEnable=(index > 0),
 			)
