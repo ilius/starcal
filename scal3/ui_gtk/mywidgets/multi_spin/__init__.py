@@ -222,9 +222,9 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def insertText(self, s, clearSeceltion=True) -> None:
+	def insertText(self, s, clearSelection=True) -> None:
 		selection = self.get_selection_bounds()
-		if selection and clearSeceltion:
+		if selection and clearSelection:
 			start, end = selection
 			text = toStr(self.entry.get_text())
 			text = text[:start] + s + text[end:]
