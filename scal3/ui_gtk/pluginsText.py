@@ -192,7 +192,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			gevent.y,
 		)
 		if buf_x is not None and buf_y is not None:
-			# overText, _iter, trailing = ...
+			# overText, iter_, trailing = ...
 			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
 		# ----
 		text = self.get_text()
