@@ -16,25 +16,24 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-from collections.abc import Callable
+from __future__ import annotations
 
 from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pango
-from scal3.ui_gtk.color_utils import (
-	rgbaToGdkRGBA,
-)
+from scal3.ui_gtk.color_utils import rgbaToGdkRGBA
 from scal3.ui_gtk.drawing import newDndFontNamePixbuf
-from scal3.ui_gtk.font_utils import (
-	gfontDecode,
-	gfontEncode,
-)
+from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
 from scal3.ui_gtk.utils import buffer_get_text
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["MyColorButton", "MyFontButton", "TextFrame"]
 

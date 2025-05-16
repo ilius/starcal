@@ -6,25 +6,20 @@ from scal3.property import Property
 log = logger.get()
 
 import typing
-
-from scal3.ui import conf
-
-if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable, Sequence
-
 from typing import Any
 
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButtonBase
-from scal3.ui_gtk.utils import (
-	pixbufFromFile,
-	set_tooltip,
-)
+from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
+
+if typing.TYPE_CHECKING:
+	from collections.abc import Callable, Iterable, Sequence
 
 __all__ = ["CustomizableToolBox", "LabelToolBoxItem", "StaticToolBox", "ToolBoxItem"]
 

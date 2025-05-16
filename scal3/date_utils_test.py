@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 from scal3.date_utils import parseDroppedDate

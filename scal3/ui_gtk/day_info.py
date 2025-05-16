@@ -15,18 +15,24 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = ["DayInfoDialog"]
 

@@ -35,10 +35,7 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal3 import logger
 from scal3.cal_types import convert
 from scal3.cell import init as initCell
-from scal3.path import (
-	pixDir,
-	sourceDir,
-)
+from scal3.path import pixDir, sourceDir
 from scal3.ui import conf
 from scal3.ui.msgs import menuMainItemDefs
 
@@ -51,8 +48,6 @@ from scal3.cal_types import calTypes
 from scal3.color_utils import rgbToHtmlColor
 from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl  # import scal3.locale_man after core
-
-# _ = locale_man.loadTranslator()  # FIXME
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
 	GdkPixbuf,
@@ -95,6 +90,8 @@ if typing.TYPE_CHECKING:
 
 __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
 
+
+# _ = locale_man.loadTranslator()  # FIXME
 
 ui.uiName = "gtk"
 

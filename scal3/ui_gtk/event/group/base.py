@@ -14,13 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.event_lib.groups import EventGroup
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.utils import set_tooltip
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["BaseWidgetClass"]
 

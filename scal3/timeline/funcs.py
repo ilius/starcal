@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from typing import Any
 
 from scal3 import logger
@@ -27,11 +29,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.core import jd_to_primary, primary_to_jd
 from scal3.date_utils import getEpochFromDate, jwday
-from scal3.locale_man import (
-	addLRM,
-	getMonthName,
-	textNumEncode,
-)
+from scal3.locale_man import addLRM, getMonthName, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
 	getEpochFromJd,
@@ -40,9 +38,7 @@ from scal3.time_utils import (
 	getUtcOffsetByJd,
 )
 from scal3.timeline import conf
-from scal3.timeline.box import (
-	calcEventBoxes,
-)
+from scal3.timeline.box import calcEventBoxes
 from scal3.timeline.tick import Tick
 from scal3.timeline.utils import (
 	avgMonthLen,

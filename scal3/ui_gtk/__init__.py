@@ -1,31 +1,8 @@
 from __future__ import annotations
 
-__all__ = [
-	"TWO_BUTTON_PRESS",
-	"Box",
-	"GLibError",
-	"GdkPixbuf",
-	"HBox",
-	"Menu",
-	"MenuItem",
-	"VBox",
-	"gdk",
-	"getOrientation",
-	"getScrollValue",
-	"gtk",
-	"main_context_default",
-	"pack",
-	"pango",
-	"source_remove",
-	"timeout_add",
-	"timeout_add_seconds",
-	# "rsvg",
-]
-
 from scal3 import logger
 
 log = logger.get()
-
 
 import gi
 
@@ -67,6 +44,28 @@ try:
 except ImportError:
 	from gi.repository.GObject import Error as GLibError
 
+
+__all__ = [
+	"TWO_BUTTON_PRESS",
+	"Box",
+	"GLibError",
+	"GdkPixbuf",
+	"HBox",
+	"Menu",
+	"MenuItem",
+	"VBox",
+	"gdk",
+	"getOrientation",
+	"getScrollValue",
+	"gtk",
+	"main_context_default",
+	"pack",
+	"pango",
+	"source_remove",
+	"timeout_add",
+	"timeout_add_seconds",
+	# "rsvg",
+]
 
 TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
 
