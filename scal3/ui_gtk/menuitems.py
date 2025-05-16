@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 	from gi.repository import GdkPixbuf
 
-__all__ = ["ImageMenuItem"]
+__all__ = ["CheckMenuItem", "ImageMenuItem"]
 
 """
 Documentation says:
