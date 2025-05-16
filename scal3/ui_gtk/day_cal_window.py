@@ -61,11 +61,11 @@ confParamsLive = conf.dayCalWinParamsLive
 
 lastLiveConfChangeTime = 0
 
-loadSingleConfig(conf, confPathLive, confParamsLive)
+loadSingleConfig(confPathLive, confParamsLive)
 
 
 def saveLiveConf() -> None:  # FIXME: rename to saveConfLive
-	saveSingleConfig(conf, confPathLive, confParamsLive)
+	saveSingleConfig(confPathLive, confParamsLive)
 
 
 def saveLiveConfLoop() -> bool:  # FIXME: rename to saveConfLiveLoop
