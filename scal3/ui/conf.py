@@ -123,6 +123,7 @@ __all__ = [
 	"menuIconSize",
 	"messageDialogIconSize",
 	"monthPBarCalType",
+	"needRestartList",
 	"oldStyleProgressBar",
 	"pluginsTextEnable",
 	"pluginsTextInsideExpander",
