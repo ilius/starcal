@@ -20,25 +20,41 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-	from collections.abc import Iterator
-	from typing import Any
-
 import json
 from time import time as now
+from typing import TYPE_CHECKING
 
+from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 
-# from scal3.interval_utils import
 from .event_base import Event
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
-__all__ = ["EventContainer"]
+if TYPE_CHECKING:
+	from collections.abc import Iterator
+	from typing import Any
+
+	from scal3.event_lib.groups import EventGroup
+
+
+__all__ = ["DummyEventContainer", "EventContainer"]
+
+
+class DummyEventContainer:
+	def __init__(self, idsDict: dict[int, list[int]]) -> None:
+		self.idsDict = idsDict
+
+	def __len__(self) -> int:
+		return sum(len(eventIds) for eventIds in self.idsDict.values())
+
+	def __iter__(self) -> Iterator[EventGroup]:
+		for groupId, eventIdList in self.idsDict.items():
+			group = ui.eventGroups[groupId]
+			for eventId in eventIdList:
+				yield group[eventId]
 
 
 class Smallest:
