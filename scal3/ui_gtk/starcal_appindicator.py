@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -30,10 +32,7 @@ from gi.repository import GdkPixbuf
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.path import (
-	APP_NAME,
-	tmpDir,
-)
+from scal3.path import APP_NAME, tmpDir
 from scal3.ui_gtk import Menu, MenuItem, gtk
 from scal3.ui_gtk.utils import (
 	CopyLabelMenuItem,

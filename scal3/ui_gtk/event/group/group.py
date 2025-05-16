@@ -1,5 +1,8 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.core import jd_to
-from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -7,6 +10,9 @@ from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["WidgetClass"]
 

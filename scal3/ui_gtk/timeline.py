@@ -78,9 +78,6 @@ if TYPE_CHECKING:
 	from scal3.timeline.box import Box
 	from scal3.timeline.tick import Tick
 
-# FIXME: rewove this
-
-
 __all__ = ["TimeLineWindow"]
 
 

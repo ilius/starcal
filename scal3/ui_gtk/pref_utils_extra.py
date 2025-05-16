@@ -29,13 +29,8 @@ from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.pref_utils import PrefItem, SpinPrefItem
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

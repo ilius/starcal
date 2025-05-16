@@ -25,32 +25,17 @@ import typing
 from collections import OrderedDict as odict
 from contextlib import suppress
 from os.path import join
-
-from scal3.property import Property
-
-if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable
-
-	from scal3.event_container import DummyEventContainer
-	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
-	from scal3.event_update_queue import EventUpdateRecord
-
 from typing import Any
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
-from scal3.config_utils import (
-	loadModuleConfig,
-	saveModuleConfig,
-)
+from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.datetime_utils import epochDateTimeEncode
 from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import (
-	confDir,
-)
+from scal3.path import confDir
+from scal3.property import Property
 from scal3.ui_gtk import GdkPixbuf, HBox, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
@@ -60,10 +45,7 @@ from scal3.ui_gtk.event.export import (
 	MultiGroupExportDialog,
 	SingleGroupExportDialog,
 )
-from scal3.ui_gtk.event.group_op import (
-	GroupConvertCalTypeDialog,
-	GroupSortDialog,
-)
+from scal3.ui_gtk.event.group_op import GroupConvertCalTypeDialog, GroupSortDialog
 from scal3.ui_gtk.event.history import EventHistoryDialog
 from scal3.ui_gtk.event.import_event import EventsImportWindow
 from scal3.ui_gtk.event.trash import TrashEditorDialog
@@ -79,10 +61,7 @@ from scal3.ui_gtk.event.utils import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
 from scal3.ui_gtk.utils import (
 	confirm,
 	dialog_add_button,
@@ -91,6 +70,14 @@ from scal3.ui_gtk.utils import (
 	rectangleContainsPoint,
 	showError,
 )
+
+if typing.TYPE_CHECKING:
+	from collections.abc import Callable, Iterable
+
+	from scal3.event_container import DummyEventContainer
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups import EventGroup
+	from scal3.event_update_queue import EventUpdateRecord
 
 __all__ = ["EventManagerDialog"]
 

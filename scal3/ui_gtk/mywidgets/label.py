@@ -1,12 +1,10 @@
+from __future__ import annotations
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-)
-from scal3.ui_gtk.utils import (
-	setClipboard,
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.utils import setClipboard
 from scal3.utils import toStr
 
 __all__ = ["SLabel"]
