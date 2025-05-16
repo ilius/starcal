@@ -17,15 +17,10 @@
 
 from __future__ import annotations
 
-import sys
-
-if sys.version_info[0] < 3:  # noqa: UP036
-	sys.stderr.write("Run this script with Python 3.x\n")
-	sys.exit(1)
-
 import os
 import os.path
 import signal
+import sys
 import typing
 from os.path import dirname, join
 from time import localtime, perf_counter
