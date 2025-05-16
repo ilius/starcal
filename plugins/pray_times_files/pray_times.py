@@ -24,6 +24,9 @@ import time
 from os.path import dirname, isdir, isfile, join
 from time import time as now
 
+from scal3.cell_type import CellType
+from scal3.property import Property
+
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):
 # 	_mypath = _mypath[:-1]
@@ -80,11 +83,11 @@ def getCurrentJd() -> int:
 	return gregorian_to_jd(y, m, d)
 
 
-def readLocationData():
+def readLocationData() -> list[tuple[str, str, float, float]]:
 	locationsDir = join(sourceDir, "data", "locations")
 	placeTransDict = {}
 
-	def readTransFile(transPath) -> None:
+	def readTransFile(transPath: str) -> None:
 		if not isfile(transPath):
 			return
 		log.info(f"------------- reading {transPath}")
@@ -141,7 +144,9 @@ def readLocationData():
 	return cityData
 
 
-def guessLocation(cityData):  # noqa: ARG001
+def guessLocation(
+	cityData: list[tuple[str, str, float, float]],  # noqa: ARG001
+) -> tuple[str, float, float]:  # noqa: ARG001
 	# tzname = str(localTz)
 	# TODO
 	# for countryCity, countryCityLocale, lat, lng in cityData:
@@ -173,21 +178,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	# all options (except for "enable" and "show_date") will be
 	# saved in file confPath
 	confPath = join(confDir, "pray_times.json")
-	confParams = (
-		"lat",
-		"lng",
-		"method",
-		"locName",
-		"shownTimeNames",
-		"imsak",
-		"sep",
-		"azanEnable",
-		"azanFile",
-		"preAzanEnable",
-		"preAzanFile",
-		"preAzanMinutes",
-		"disclaimerLastEpoch",
-	)
+
 	azanTimeNamesAll = (
 		"fajr",
 		"dhuhr",
@@ -196,7 +187,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		"isha",
 	)
 
-	def __init__(self, _file) -> None:
+	def __init__(self, _file: str) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
 		# log.debug("From plugin: core.aaa=%s" + api.get("core", "aaa"))
@@ -209,51 +200,70 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# --------------
 		confNeedsSave = False
 		# ------
-		self.locName, self.lat, self.lng = "", 0, 0
-		# method = ""
+		self.locName = Property("")
+		self.lat = Property(0)
+		self.lng = Property(0)
+		self.method = Property("")
 		# ------
-		self.imsak = 10  # minutes before Fajr (Morning Azan)
+		self.imsak = Property(10)  # minutes before Fajr (Morning Azan)
 		# self.asrMode = ASR_STANDARD
 		# self.highLats = "NightMiddle"
 		# self.timeFormat = "24h"
-		self.shownTimeNames = (
-			"fajr",
-			"sunrise",
-			"dhuhr",
-			"maghrib",
-			"midnight",
+		self.shownTimeNames = Property(
+			[
+				"fajr",
+				"sunrise",
+				"dhuhr",
+				"maghrib",
+				"midnight",
+			],
 		)
 		# FIXME rename shownTimeNames to activeTimeNames
 		# 		or add another list azanSoundTimeNames
-		self.sep = "     "
+		self.sep = Property("     ")
 		# --
-		self.azanEnable = False
-		self.azanFile = None
+		self.azanEnable = Property(False)
+		self.azanFile = Property("")
 		# --
-		self.preAzanEnable = False
-		self.preAzanFile = None
-		self.preAzanMinutes = 2.0
+		self.preAzanEnable = Property(False)
+		self.preAzanFile = Property("")
+		self.preAzanMinutes = Property(2.0)
 		# --
-		self.disclaimerLastEpoch = 0
+		self.disclaimerLastEpoch = Property(0)
+		# -------
+		self.confParams: dict[str, Property] = {
+			"lat": self.lat,
+			"lng": self.lng,
+			"method": self.method,
+			"locName": self.locName,
+			"shownTimeNames": self.shownTimeNames,
+			"imsak": self.imsak,
+			"sep": self.sep,
+			"azanEnable": self.azanEnable,
+			"azanFile": self.azanFile,
+			"preAzanEnable": self.preAzanEnable,
+			"preAzanFile": self.preAzanFile,
+			"preAzanMinutes": self.preAzanMinutes,
+			"disclaimerLastEpoch": self.disclaimerLastEpoch,
+		}
 		# ----
 		loadModuleConfig(self)
 		# ----
 		if not isfile(self.confPath):
 			confNeedsSave = True
 		# ----
-		if not self.locName:
+		if not self.locName.v:
 			confNeedsSave = True
-			self.locName, self.lat, self.lng = self.guessLocation()
-			self.method = "Tehran"
+			self.locName.v, self.lat.v, self.lng.v = self.guessLocation()
+			self.method.v = "Tehran"
 			# TODO: guess method from location
 		# -------
 		self.backend = PrayTimes(
-			self.lat,
-			self.lng,
-			methodName=self.method,
-			imsak=f"{self.imsak:d} min",
+			self.lat.v,
+			self.lng.v,
+			methodName=self.method.v,
+			imsak=f"{self.imsak.v:d} min",
 		)
-		# ----
 		# -------
 		# PrayTimeEventRule.plug = self
 		# -------
@@ -269,28 +279,28 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# ---
 		self.checkShowDisclaimer()
 
-	def getCityData(self):
+	def getCityData(self) -> list[tuple[str, str, float, float]]:
 		if self._cityData is not None:
 			return self._cityData
 		self._cityData = readLocationData()
 		return self._cityData
 
-	def guessLocation(self):
+	def guessLocation(self) -> tuple[str, float, float]:
 		return guessLocation(self.getCityData())
 
 	def checkShowDisclaimer(self) -> None:
 		if not self.shouldShowDisclaimer():
 			return
 		showDisclaimer(self)
-		self.disclaimerLastEpoch = int(now())
+		self.disclaimerLastEpoch.v = int(now())
 		self.saveConfig()
 
 	def shouldShowDisclaimer(self) -> bool:
-		if self.disclaimerLastEpoch <= 0:
+		if self.disclaimerLastEpoch.v <= 0:
 			return True
 
 		tm = now()
-		dt = tm - self.disclaimerLastEpoch
+		dt = tm - self.disclaimerLastEpoch.v
 		if dt > 256 * 24 * 3600:
 			return True
 
@@ -299,9 +309,9 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		return hmonth == 9 and dt > hday * 24 * 3600
 
 	def saveConfig(self) -> None:
-		self.lat = self.backend.lat
-		self.lng = self.backend.lng
-		self.method = self.backend.method.name
+		self.lat.v = self.backend.lat
+		self.lng.v = self.backend.lng
+		self.method.v = self.backend.method.name
 		saveModuleConfig(self)
 
 	# def date_change_after(self, widget, year, month, day):
@@ -312,31 +322,32 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	# 	menu.remove(self.menuitem)
 	# 	menu.disconnect(self.menu_unmap_id)
 
-	def get_times_jd(self, jd):
+	def get_times_jd(self, jd: int) -> list[tuple[str, int]]:
 		times = self.backend.getTimesByJd(
 			jd,
 			getUtcOffsetByJd(jd, localTz) / 3600,
 		)
-		return [(name, times[name]) for name in self.shownTimeNames]
+		return [(name, times[name]) for name in self.shownTimeNames.v]
 
 	@staticmethod
-	def getFormattedTime(tm):  # tm is float hour
+	def getFormattedTime(tm: float) -> str:  # tm is float hour
 		try:
 			h, m, _s = floatHourToTime(float(tm))
 		except ValueError:
-			return tm
+			log.exception(f"bad float hour {tm=}")
+			return str(tm)
 		else:
 			return f"{h:d}:{m:02d}"
 
-	def getTextByJd(self, jd):
-		return self.sep.join(
+	def getTextByJd(self, jd: int) -> str:
+		return self.sep.v.join(
 			[
 				_(timeDescByName[name]) + ": " + self.getFormattedTime(tm)
 				for name, tm in self.get_times_jd(jd)
 			],
 		)
 
-	def updateCell(self, c) -> None:
+	def updateCell(self, c: CellType) -> None:
 		text = self.getTextByJd(c.jd)
 		if text:
 			c.addPluginText(self, text)
@@ -356,7 +367,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 
 	def doPlayAzan(self) -> None:
 		# pass tm as argument?
-		if not self.azanEnable:
+		if not self.azanEnable.v:
 			return
 		# dt = tm - now()
 		# log.debug(f"---------------------------- doPlayAzan, {dt=:.1f}")
@@ -368,11 +379,11 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# 	).start()
 		# 	return
 		self.killPrevSound()
-		self.proc = popenFile(self.azanFile)
+		self.proc = popenFile(self.azanFile.v)
 
 	def doPlayPreAzan(self) -> None:
 		# pass tm as argument?
-		if not self.preAzanEnable:
+		if not self.preAzanEnable.v:
 			return
 		# dt = tm - now()
 		# log.debug(f"---------------------------- doPlayPreAzan, {dt=:.1f}")
@@ -384,13 +395,13 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# 	).start()
 		# 	return
 		self.killPrevSound()
-		self.proc = popenFile(self.preAzanFile)
+		self.proc = popenFile(self.preAzanFile.v)
 
-	def onCurrentDateChange(self, gdate) -> None:
+	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
 		log.debug(f"pray_times: onCurrentDateChange: {gdate}")
 		if not self.enable:
 			return
-		jd = gregorian_to_jd(*tuple(gdate))
+		jd = gregorian_to_jd(*gdate)
 		# log.debug(
 		# 	getUtcOffsetByJd(jd, localTz) / 3600,
 		# 	getUtcOffsetCurrent() / 3600,
@@ -408,13 +419,13 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		).items():
 			if timeName not in self.azanTimeNamesAll:
 				continue
-			if timeName not in self.shownTimeNames:
+			if timeName not in self.shownTimeNames.v:
 				continue
 			azanSec = azanHour * 3600.0
 			# -----
 			toAzanSecs = int(azanSec - secondsFromMidnight)
 			if toAzanSecs >= 0:
-				preAzanSec = azanSec - self.preAzanMinutes * 60
+				preAzanSec = azanSec - self.preAzanMinutes.v * 60
 				toPreAzanSec = max(0, int(preAzanSec - secondsFromMidnight))
 				log.debug(f"{toPreAzanSec=:.1f}")
 				Timer(
