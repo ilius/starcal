@@ -42,7 +42,8 @@ if TYPE_CHECKING:
 	from .event_base import Event
 	from .groups import EventGroup
 
-__all__ = ["getDayOccurrenceData", "getWeekOccurrenceData"]
+__all__ = ["DayOccurData", "getDayOccurrenceData", "getWeekOccurrenceData"]
+
 dayLen = 24 * 3600
 hms_zero = HMS()
 hms_24 = HMS(24)
