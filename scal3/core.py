@@ -30,7 +30,7 @@ from typing import Any, NamedTuple
 import scal3
 from scal3 import locale_man, logger
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
-from scal3.config_utils import loadModuleConfig, saveModuleConfig
+from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.date_utils import (
 	jwday,
 )
@@ -168,7 +168,12 @@ confEncoders = {
 def loadConf() -> None:
 	global prefVersion  # noqa: PLW0602
 	# -----------
-	loadModuleConfig(__name__)
+	loadModuleConfig(
+		confPath=confPath,
+		sysConfPath=sysConfPath,
+		params=confParams,
+		decoders=confDecoders,
+	)
 	# -----------
 	if "version" in globals():
 		prefVersion = version.v
@@ -187,7 +192,7 @@ def loadConf() -> None:
 def saveConf() -> None:
 	activeCalTypes.v = calTypes.activeNames
 	inactiveCalTypes.v = calTypes.inactiveNames
-	saveModuleConfig(__name__)
+	saveSingleConfig(confPath, confParams, confEncoders)
 
 
 log = logger.get()

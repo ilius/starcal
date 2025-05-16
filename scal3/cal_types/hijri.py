@@ -130,11 +130,11 @@ confParams = {"hijriUseDB": hijriUseDB}
 
 # Here load user options (hijriUseDB) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(__name__, sysConfPath, confParams)
+loadSingleConfig(sysConfPath, confParams)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(__name__, confPath, confParams)
+loadSingleConfig(confPath, confParams)
 
 
 def ifloor(x: float) -> int:
@@ -148,7 +148,6 @@ def iceil(x: float) -> int:
 def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
-		__name__,
 		confPath,
 		confParams,
 	)

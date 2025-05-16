@@ -140,25 +140,21 @@ def loadConf() -> None:
 	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
 		return
 	loadSingleConfig(
-		conf,
 		sysConfPath,
 		confParams,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
-		conf,
 		confPath,
 		confParams,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
-		conf,
 		confPathCustomize,
 		confParamsCustomize,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
-		conf,
 		confPathLive,
 		confParamsLive,
 		decoders=confDecoders,
@@ -179,7 +175,6 @@ def loadConf() -> None:
 
 def saveConf() -> None:
 	saveSingleConfig(
-		conf,
 		confPath,
 		confParams,
 		encoders=confEncoders,
@@ -188,7 +183,6 @@ def saveConf() -> None:
 
 def saveConfCustomize() -> None:
 	saveSingleConfig(
-		conf,
 		confPathCustomize,
 		confParamsCustomize,
 		encoders=confEncoders,
@@ -198,7 +192,6 @@ def saveConfCustomize() -> None:
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 	log.debug(f"saveLiveConf: {conf.winX.v=}, {conf.winY.v=}, {conf.winWidth.v=}")
 	saveSingleConfig(
-		conf,
 		confPathLive,
 		confParamsLive,
 		encoders=confEncoders,

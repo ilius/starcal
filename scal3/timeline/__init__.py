@@ -39,13 +39,11 @@ def loadConf() -> None:
 	if os.getenv("STARCAL_NO_LOAD_CONFIG"):
 		return
 	loadSingleConfig(
-		conf,
 		sysConfPath,
 		confParams,
 		# decoders=confDecoders,
 	)
 	loadSingleConfig(
-		conf,
 		confPath,
 		confParams,
 		# decoders=confDecoders,
@@ -56,7 +54,6 @@ def loadConf() -> None:
 
 def saveConf() -> None:
 	saveSingleConfig(
-		conf,
 		confPath,
 		confParams,
 		# encoders=confEncoders,
