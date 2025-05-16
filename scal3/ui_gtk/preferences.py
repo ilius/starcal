@@ -50,7 +50,7 @@ from scal3.ui_gtk.pref_utils import (
 	WidthHeightPrefItem,
 )
 from scal3.ui_gtk.pref_utils_extra import (
-	AICalsPrefItem,
+	ActiveInactiveCalsPrefItem,
 	CheckStartupPrefItem,
 	LangPrefItem,
 	WeekDayCheckListPrefItem,
@@ -227,7 +227,7 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox()
 		frame = gtk.Frame()
 		frame.set_label(_("Calendar Types"))
-		itemCals = AICalsPrefItem()
+		itemCals = ActiveInactiveCalsPrefItem()
 		self.corePrefItems.append(itemCals)
 		itemCalsWidget = itemCals.getWidget()
 		itemCalsWidget.set_border_width(10)
