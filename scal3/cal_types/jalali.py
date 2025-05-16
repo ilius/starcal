@@ -187,17 +187,16 @@ from scal3.path import confDir, sysConfDir
 
 # Here load user options from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(__name__, sysConfPath, confParams)
+loadSingleConfig(sysConfPath, confParams)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(__name__, confPath, confParams)
+loadSingleConfig(confPath, confParams)
 
 
 def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
-		__name__,
 		confPath,
 		confParams,
 	)
