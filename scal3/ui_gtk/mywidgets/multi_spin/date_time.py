@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from time import localtime
 
 from scal3.cal_types import convert, to_jd

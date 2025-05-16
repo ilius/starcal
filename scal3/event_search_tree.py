@@ -16,15 +16,19 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from __future__ import annotations
+
 from collections import namedtuple
-from collections.abc import Iterable
-from typing import Protocol, Self
+from typing import TYPE_CHECKING, Protocol, Self
 
 from scal3 import logger
 
 log = logger.get()
 
 from scal3.bin_heap import MaxHeap
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
 
 __all__ = ["EventSearchTree"]
 

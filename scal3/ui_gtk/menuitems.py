@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 	from gi.repository import GdkPixbuf
 
 __all__ = ["ImageMenuItem"]
+
 """
 Documentation says:
 	Gtk.ImageMenuItem has been deprecated since GTK+ 3.10. If you want to

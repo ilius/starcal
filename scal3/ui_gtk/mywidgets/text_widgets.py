@@ -1,13 +1,12 @@
+from __future__ import annotations
+
 from typing import Never
 
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, gdk, gtk
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.utils import (
-	buffer_get_text,
-	setClipboard,
-)
+from scal3.ui_gtk.utils import buffer_get_text, setClipboard
 from scal3.utils import findWordByPos, toStr
 
 __all__ = ["ReadOnlyTextView"]

@@ -14,22 +14,27 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-import cairo
+from __future__ import annotations
 
 from scal3 import logger
-from scal3.timeline.box import Box
 
 log = logger.get()
 
 from math import pi
+from typing import TYPE_CHECKING
 
-from gi.repository import Gtk as gtk
 from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
 from scal3.timeline import conf
 from scal3.ui_gtk.drawing import fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
+
+if TYPE_CHECKING:
+	import cairo
+	from gi.repository import Gtk as gtk
+
+	from scal3.timeline.box import Box
 
 __all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
 

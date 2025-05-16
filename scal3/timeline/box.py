@@ -14,21 +14,26 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 import logging
-from collections.abc import Sequence
 
 from scal3 import logger
 
 log = logger.get()
 
 from time import perf_counter
-
-from igraph import Graph
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.timeline import conf
 from scal3.ui import conf as uiconf
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+
+	from igraph import Graph
 
 __all__ = ["calcEventBoxes"]
 
@@ -258,7 +263,7 @@ def calcEventBoxes(
 		log.debug(f"makeIntervalGraph: {perf_counter() - t1:e}")
 	# -----
 
-	def boxSortKeyFunc(i: int) -> "tuple[int, int]":
+	def boxSortKeyFunc(i: int) -> tuple[int, int]:
 		# the last item should be i
 		# the first item should be -g.degree(i) to have less number of colors/levels,
 		# and give higher colors to more isolated vertices/boxes

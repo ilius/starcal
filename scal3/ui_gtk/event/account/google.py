@@ -1,7 +1,13 @@
-from scal3.event_lib.accounts import Account
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.account import BaseWidgetClass
+
+if TYPE_CHECKING:
+	from scal3.event_lib.accounts import Account
 
 
 class WidgetClass(BaseWidgetClass):

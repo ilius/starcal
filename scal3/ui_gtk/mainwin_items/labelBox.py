@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from collections.abc import Callable
+from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
@@ -21,6 +21,7 @@ from scal3.ui import conf
 log = logger.get()
 
 from time import time as now
+from typing import TYPE_CHECKING
 
 from scal3 import locale_man, ui
 from scal3.cal_types import calTypes
@@ -41,9 +42,7 @@ from scal3.ui_gtk import (
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.drawing import (
-	calcTextPixelSize,
-)
+from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.ui_gtk.mywidgets.button import ConButton
 from scal3.ui_gtk.utils import (
@@ -53,7 +52,11 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
 __all__ = ["CalObj"]
+
 primaryCalStyleClass = "primarycal"
 
 

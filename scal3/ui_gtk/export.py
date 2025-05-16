@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from collections.abc import Callable
+from __future__ import annotations
 
 from scal3 import logger
 
 log = logger.get()
 
-__all__ = ["ExportDialog", "ExportToIcsDialog"]
+from typing import TYPE_CHECKING
 
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
@@ -34,6 +34,11 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 from scal3.ui_gtk.utils import dialog_add_button, openWindow
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+__all__ = ["ExportDialog", "ExportToIcsDialog"]
 
 
 class ExportDialog(gtk.Dialog, MyDialog):

@@ -13,6 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+from __future__ import annotations
+
 import typing
 
 from scal3 import timeline
@@ -29,9 +31,7 @@ from scal3.ui_gtk.pref_utils import (
 )
 from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
-from scal3.ui_gtk.utils import (
-	imageFromFile,
-)
+from scal3.ui_gtk.utils import imageFromFile
 
 __all__ = ["TimeLinePreferencesWindow"]
 

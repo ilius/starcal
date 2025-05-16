@@ -20,7 +20,6 @@ from scal3.ui import conf
 
 log = logger.get()
 
-
 from math import sqrt
 from typing import TYPE_CHECKING
 

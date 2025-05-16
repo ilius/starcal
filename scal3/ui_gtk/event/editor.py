@@ -1,12 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import state as event_state
-from scal3.event_lib.event_base import Event
-from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button, showInfo
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["EventEditorDialog", "addNewEvent"]
 

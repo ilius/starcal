@@ -16,6 +16,8 @@
 
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
@@ -29,13 +31,8 @@ from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.utils import dialog_add_button
 
 __all__ = ["checkHijriMonthsExpiration"]
 

@@ -20,7 +20,6 @@ from scal3 import logger
 log = logger.get()
 
 import os
-import os.path
 import typing
 from contextlib import suppress
 from os.path import isabs, isdir, isfile, join
@@ -41,6 +40,7 @@ from scal3.font import Font
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.property import Property
+from scal3.ui import conf
 from scal3.ui.conf import (
 	confParams,
 	confParamsCustomize,
@@ -55,8 +55,6 @@ from scal3.ui.params import (
 	confParamsData,
 	getParamNamesWithFlag,
 )
-
-from . import conf
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Iterable

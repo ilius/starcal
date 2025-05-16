@@ -1,7 +1,10 @@
-from collections.abc import Callable, Sequence
-from typing import Never, Protocol
+from __future__ import annotations
 
-from scal3.plugin_type import PluginType
+from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING, Never, Protocol
+
+if TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
 
 __all__ = ["CellType", "CompiledTimeFormat"]
 

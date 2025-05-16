@@ -1,9 +1,15 @@
-from collections.abc import Callable
-from subprocess import PIPE, Popen
+from __future__ import annotations
 
-from scal3.event_lib.notifier_base import EventNotifier
+from subprocess import PIPE, Popen
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from scal3.event_lib.notifier_base import EventNotifier
 
 # from scal3.ui_gtk import player
 

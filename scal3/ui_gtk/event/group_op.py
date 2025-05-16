@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
-from scal3.event_lib.groups import EventGroup
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-	window_set_size_aspect,
-)
+from scal3.ui_gtk.utils import dialog_add_button, window_set_size_aspect
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 

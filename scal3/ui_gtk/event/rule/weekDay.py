@@ -1,6 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import core
-from scal3.event_lib.rules import EventRule
 from scal3.ui_gtk import gtk, pack
+
+if TYPE_CHECKING:
+	from scal3.event_lib.rules import EventRule
 
 __all__ = ["WidgetClass"]
 

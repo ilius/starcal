@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.ui_gtk import gtk
 
 __all__ = ["tree_path_split"]

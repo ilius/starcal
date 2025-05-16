@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import logging
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -8,6 +9,9 @@ log = logger.get()
 
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["MyDialog"]
 

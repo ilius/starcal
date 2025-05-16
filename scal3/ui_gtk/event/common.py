@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.event_lib.event_base import Event
 
 log = logger.get()
 
@@ -27,7 +28,6 @@ from os.path import join, split
 
 from scal3 import event_lib, ui
 from scal3.cal_types import calTypes
-from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
 from scal3.ui import conf
@@ -37,15 +37,16 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	labelImageButton,
 	set_tooltip,
 )
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups import EventGroup
 
 try:
 	from scal3.ui_gtk.mywidgets.source_editor import SourceEditorWithFrame

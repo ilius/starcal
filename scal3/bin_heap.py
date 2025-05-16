@@ -1,5 +1,6 @@
-from collections.abc import Iterable
-from typing import Self
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Self
 
 from scal3 import logger
 
@@ -7,6 +8,9 @@ log = logger.get()
 
 from heapq import heappop, heappush
 from math import log2 as math_log2
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
 
 __all__ = ["MaxHeap"]
 

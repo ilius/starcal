@@ -15,16 +15,19 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import core, ui
 from scal3.cal_types import calTypes
-from scal3.cell_type import CellCacheType, CellType
-from scal3.core import (
-	getWeekDay,
-	getWeekNumberByJd,
-)
+from scal3.core import getWeekDay, getWeekNumberByJd
 from scal3.date_utils import getJdRangeForMonth
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
+
+if TYPE_CHECKING:
+	from scal3.cell_type import CellCacheType, CellType
 
 __all__ = ["getCurrentMonthStatus", "getMonthDesc", "getMonthStatus"]
 

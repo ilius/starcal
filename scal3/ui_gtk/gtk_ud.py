@@ -33,18 +33,11 @@ from os.path import join
 from gi.overrides.GObject import Object
 
 from scal3 import locale_man, ui
-from scal3.config_utils import (
-	loadModuleConfig,
-	saveModuleConfig,
-)
+from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.format_time import compileTmFormat
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import (
-	confDir,
-	sourceDir,
-	sysConfDir,
-)
+from scal3.path import confDir, sourceDir, sysConfDir
 from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.decorators import registerSignals

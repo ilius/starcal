@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan

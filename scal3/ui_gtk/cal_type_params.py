@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 from scal3.property import ItemProperty, Property
-from scal3.ui_gtk.cal_base import CalBase
 
 log = logger.get()
 
@@ -26,6 +27,9 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.cal_base import CalBase
 
 __all__ = ["CalTypeParamWidget", "TextParamWidget"]
 

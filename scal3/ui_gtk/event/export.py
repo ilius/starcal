@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 from os.path import join, split, splitext
+from typing import TYPE_CHECKING
 
 from scal3 import cal_types, core, ui
-from scal3.event_lib.groups import EventGroup
-from scal3.json_utils import (
-	dataToCompactJson,
-	dataToPrettyJson,
-)
+from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExportDialog"]
 

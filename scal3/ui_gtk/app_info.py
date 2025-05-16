@@ -1,12 +1,16 @@
-import subprocess
+from __future__ import annotations
 
 from scal3 import logger
 
 log = logger.get()
 
 import sys
+from typing import TYPE_CHECKING
 
 from scal3.locale_man import popenDefaultLang
+
+if TYPE_CHECKING:
+	import subprocess
 
 __all__ = ["popenFile"]
 

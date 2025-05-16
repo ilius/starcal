@@ -21,16 +21,11 @@ from scal3.property import Property
 
 log = logger.get()
 
-import typing
-
-if typing.TYPE_CHECKING:
-	import subprocess
-	from collections.abc import Callable
-
 import gettext
 import json
 import os
 import string
+import typing
 from contextlib import suppress
 from operator import attrgetter
 from os.path import (
@@ -42,10 +37,7 @@ from os.path import (
 
 import mytz
 from scal3.cal_types import calTypes
-from scal3.config_utils import (
-	loadModuleConfig,
-	saveModuleConfig,
-)
+from scal3.config_utils import loadModuleConfig, saveModuleConfig
 from scal3.dict_utils import sortDict
 from scal3.path import (
 	APP_NAME,
@@ -56,6 +48,9 @@ from scal3.path import (
 from scal3.s_object import SObjTextModel
 from scal3.utils import toStr
 
+if typing.TYPE_CHECKING:
+	import subprocess
+	from collections.abc import Callable
 __all__ = [
 	"addLRM",
 	"cutText",

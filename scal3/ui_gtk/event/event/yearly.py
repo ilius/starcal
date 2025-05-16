@@ -15,14 +15,20 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.cal_types import calTypes, convert
-from scal3.event_lib.event_base import Event
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
 
 __all__ = ["WidgetClass"]
 

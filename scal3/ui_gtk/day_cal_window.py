@@ -29,9 +29,7 @@ from scal3 import ui
 from scal3.config_utils import loadSingleConfig, saveSingleConfig
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import (
-	confDir,
-)
+from scal3.path import confDir
 from scal3.ui import conf
 from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud

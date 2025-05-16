@@ -1,7 +1,11 @@
-from collections.abc import Callable
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3.time_utils import getEpochFromJd
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["encodeShortStat", "getCommitListFromEst", "vcsModuleNames"]
 
