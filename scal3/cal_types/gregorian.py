@@ -25,7 +25,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from scal3.cal_types.types import TranslateFunc
+	from scal3.cal_types.pytypes import TranslateFunc
 
 __all__ = ["J1970", "J0001_epoch", "getMonthLen", "isLeap", "jd_to", "to_jd"]
 

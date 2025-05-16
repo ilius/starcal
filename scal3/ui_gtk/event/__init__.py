@@ -7,7 +7,7 @@ from scal3 import logger
 if TYPE_CHECKING:
 	from gi.repository import Gtk as gtk
 
-	from scal3.event_lib.types import BaseClassType
+	from scal3.event_lib.pytypes import BaseClassType
 
 __all__ = [
 	"makeWidget",
