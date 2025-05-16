@@ -19,7 +19,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	itemListCustomizable = False
 	hasOptions = True
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		gtk.Frame.__init__(self)
 		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)

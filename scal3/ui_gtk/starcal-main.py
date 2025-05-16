@@ -35,11 +35,17 @@ pixDir = join(sourceDir, "pixmaps")
 svgDir = join(sourceDir, "svg")
 
 
-def HBox(**kwargs):
+def HBox(**kwargs) -> gtk.Box:
 	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
 
 
-def pack(box, child, expand=False, fill=False, padding=0) -> None:
+def pack(
+	box: gtk.Box | gtk.CellLayout,
+	child: gtk.Widget,
+	expand: bool | int = False,
+	fill: bool | int = False,
+	padding: int = 0,
+) -> None:
 	if isinstance(box, gtk.Box):
 		box.pack_start(child, expand=expand, fill=fill, padding=padding)
 	elif isinstance(box, gtk.CellLayout):
@@ -62,13 +68,13 @@ def imageFromIconName(
 
 
 def dialog_add_button(
-	dialog,
+	dialog: gtk.Dialog,
 	imageName: str = "",
 	label: str = "",
 	res: gtk.ResponseType | None = None,
 	onClick: Callable | None = None,
 	tooltip: str = "",
-):
+) -> gtk.Button:
 	b = dialog.add_button(label, res)
 	if label:
 		b.set_label(label)
@@ -82,7 +88,7 @@ def dialog_add_button(
 	return b
 
 
-def imageFromFile(path, size=0):
+def imageFromFile(path: str, size: float = 0) -> gtk.Image:
 	if not isabs(path):
 		if path.endswith(".svg"):
 			path = join(svgDir, path)
@@ -95,7 +101,7 @@ def imageFromFile(path, size=0):
 	return gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(path))
 
 
-def pixbufFromSvgFile(path: str, size: int):
+def pixbufFromSvgFile(path: str, size: int) -> GdkPixbuf.Pixbuf:
 	if size <= 0:
 		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
@@ -112,13 +118,13 @@ def pixbufFromSvgFile(path: str, size: int):
 
 
 def showMsg(
-	msg,
-	imageName="",
-	parent=None,
-	transient_for=None,
-	title="",
-	borderWidth=10,
-	selectable=False,
+	msg: str,
+	imageName: str = "",
+	parent: gtk.Window | None = None,
+	transient_for: gtk.Window | None = None,
+	title: str = "",
+	borderWidth: int = 10,
+	selectable: bool = False,
 ) -> None:
 	win = gtk.Dialog(
 		parent=parent,
@@ -160,11 +166,11 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg, **kwargs) -> None:
+def showError(msg: str, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-error.svg", **kwargs)
 
 
-def error_exit(resCode, text, **kwargs) -> None:
+def error_exit(resCode: int, text: str, **kwargs) -> None:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,

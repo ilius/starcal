@@ -5,6 +5,8 @@ from scal3 import logger
 log = logger.get()
 
 
+from typing import TYPE_CHECKING
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui import conf
@@ -19,16 +21,19 @@ from scal3.ui_gtk.event.occurrence_view import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
 
+if TYPE_CHECKING:
+	from scal3.ui_gtk.stack import StackPage
+
 __all__ = ["MainWinRightPanel"]
 
 
 class RightPanelDayOccurrenceView(DayOccurrenceView):
-	def __init__(self, rightPanel=None, **kwargs) -> None:
+	def __init__(self, rightPanel: MainWinRightPanel | None = None, **kwargs) -> None:
 		DayOccurrenceView.__init__(self, **kwargs)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 
-	def addExtraMenuItems(self, menu) -> None:
+	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			ImageMenuItem(
@@ -38,18 +43,18 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 			),
 		)
 
-	def onSwapClick(self, _widget) -> None:
+	def onSwapClick(self, _widget: gtk.Widget) -> None:
 		self.rightPanel.swapItems()
 
 
 class RightPanelPluginsTextBox(PluginsTextBox):
-	def __init__(self, rightPanel=None, **kwargs) -> None:
+	def __init__(self, rightPanel: MainWinRightPanel | None = None, **kwargs) -> None:
 		PluginsTextBox.__init__(self, **kwargs)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 		self.textview.addExtraMenuItems = self.addExtraMenuItems
 
-	def addExtraMenuItems(self, menu) -> None:
+	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
 		if self.rightPanel:
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(
@@ -60,7 +65,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 				),
 			)
 
-	def onSwapClick(self, _widget) -> None:
+	def onSwapClick(self, _widget: gtk.Widget) -> None:
 		self.rightPanel.swapItems()
 
 
@@ -113,7 +118,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			return
 		self.enablePrefItem.set(not self.enablePrefItem.get())
 
-	def appendItem(self, item) -> None:
+	def appendItem(self, item: gtk.MenuItem) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
@@ -149,7 +154,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.show_all()
 		ui.saveConfCustomize()
 
-	def getSubPages(self):
+	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
@@ -177,7 +182,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		conf.mainWinRightPanelRatio.v = self.get_position() / height
 		ui.saveLiveConf()
 
-	def onSizeAllocate(self, _widget, requisition) -> None:
+	def onSizeAllocate(self, _widget: gtk.Widget, requisition: gtk.Requisition) -> None:
 		self.updatePosition(requisition.height)
 
 	def onWindowSizeChange(self, *_a, **_kw) -> None:
@@ -204,7 +209,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def onMinimumHeightChange(self) -> None:
 		self.queue_resize()
 
-	def do_get_preferred_width(self):  # noqa: PLR6301
+	def do_get_preferred_width(self) -> tuple[float, float]:  # noqa: PLR6301
 		# must return minimum_size, natural_size
 		if conf.mainWinRightPanelWidthRatioEnable.v:
 			if ui.mainWin and ui.mainWin.is_maximized():
@@ -219,7 +224,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
 		return self.do_get_preferred_width()
 
-	def getOptionsWidget(self):
+	def getOptionsWidget(self) -> gtk.Box:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			SpinPrefItem,

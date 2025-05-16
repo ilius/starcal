@@ -18,12 +18,17 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import logger
 
 log = logger.get()
 
 
 from scal3.interval_utils import ab_overlaps
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
 
 # from scal3.time_utils import
 
@@ -32,7 +37,13 @@ from scal3.interval_utils import ab_overlaps
 
 
 class Node:
-	def __init__(self, base, level, offset, rightOri) -> None:
+	def __init__(
+		self,
+		base: int,
+		level: int,
+		offset: int,
+		rightOri: bool,
+	) -> None:
 		# global maxLevel, minLevel
 		self.base = base  # 8 or 16 is better
 		self.level = level
@@ -56,16 +67,19 @@ class Node:
 		self.clear()
 
 	def clear(self) -> None:
-		self.children = {}
+		self.children: dict[int, Node] = {}
 		# possible keys of `self.children` are 0 to `base-1` for right node,
 		# and `-(base-1)` to 0 for left node
 		self.events = []  # list of tuples (rel_start, rel_end, event_id)
 
-	def sOverlaps(self, t0, t1):
+	def sOverlaps(self, t0: int, t1: int) -> bool:
 		return ab_overlaps(t0, t1, self.s0, self.s1)
 
-	def search(self, t0, t1):  # t0 < t1
-		"""Returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s."""
+	def search(self, t0: int, t1: int) -> Iterable[tuple[int, int, int, int]]:
+		"""
+		Returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s.
+		t0 < t1.
+		"""
 		# t0 and t1 are absolute. not relative to the self.offset
 		if not self.sOverlaps(t0, t1):
 			return
@@ -82,7 +96,7 @@ class Node:
 		for child in self.children.values():
 			yield from child.search(t0, t1)
 
-	def getChild(self, tm):
+	def getChild(self, tm: int) -> Node:
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
 				f"Node.getChild: Out of scope: level={self.level}, "
@@ -101,7 +115,7 @@ class Node:
 		)
 		return child
 
-	def newParent(self):
+	def newParent(self) -> Node:
 		parent = self.__class__(
 			self.base,
 			self.level + 1,
@@ -111,14 +125,14 @@ class Node:
 		parent.children[0] = self
 		return parent
 
-	def getDepth(self):
+	def getDepth(self) -> int:
 		if not self.children:
 			return 0
 		return 1 + max(c.getDepth() for c in self.children.values())
 
 
 class TimeLineTree:
-	def __init__(self, offset=0, base=4) -> None:
+	def __init__(self, offset: int = 0, base: int = 4) -> None:
 		# base 4 and 8 are the best (about speed of both add and search)
 		self.base = base
 		self.offset = offset
@@ -129,7 +143,7 @@ class TimeLineTree:
 		self.left = Node(self.base, 1, self.offset, False)
 		self.byEvent = {}
 
-	def search(self, t0, t1):
+	def search(self, t0: int, t1: int) -> Iterable[tuple[int, int, int, int]]:
 		if self.offset < t1:
 			for item in self.right.search(t0, t1):
 				yield item
@@ -137,7 +151,7 @@ class TimeLineTree:
 			for item in self.left.search(t0, t1):
 				yield item
 
-	def add(self, t0, t1, eid, debug=False) -> None:
+	def add(self, t0: int, t1: int, eid: int, debug: bool = False) -> None:
 		if debug:
 			from time import localtime, strftime
 
@@ -184,7 +198,7 @@ class TimeLineTree:
 		else:
 			toAppend.append((node, ev_tuple))
 
-	def delete(self, eid):
+	def delete(self, eid: int) -> int:
 		try:
 			refList = self.byEvent.pop(eid)
 		except KeyError:
@@ -199,7 +213,7 @@ class TimeLineTree:
 			# 	node.parent.removeChild(node)
 		return n
 
-	def getLastOfEvent(self, eid):
+	def getLastOfEvent(self, eid: int) -> tuple[int, int] | None:
 		refList = self.byEvent.get(eid)
 		if not refList:  # None or []
 			return None
@@ -207,14 +221,14 @@ class TimeLineTree:
 		# self.byEvent is sorted by time? FIXME
 		return ev_tuple[0], ev_tuple[1]
 
-	def getFirstOfEvent(self, eid):
+	def getFirstOfEvent(self, eid: int) -> tuple[int, int] | None:
 		refList = self.byEvent.get(eid)
 		if not refList:  # None or []
 			return None
 		_node, ev_tuple = refList[0]
 		return ev_tuple[0], ev_tuple[1]
 
-	def getDepth(self):
+	def getDepth(self) -> int:
 		return 1 + max(
 			self.left.getDepth(),
 			self.right.getDepth(),

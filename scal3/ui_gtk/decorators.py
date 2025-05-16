@@ -10,12 +10,12 @@ __all__ = [
 ]
 
 
-def registerType(cls):
+def registerType[T: type[GObject]](cls: T) -> T:
 	GObject.type_register(cls)
 	return cls
 
 
-def registerSignals(cls):
+def registerSignals[T: type[GObject]](cls: T) -> T:
 	GObject.type_register(cls)
 	for name, args in cls.signals:
 		try:

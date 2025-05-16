@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+
 from scal3.cal_types import calTypes, convert
+from scal3.event_lib.event_base import Event
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -26,7 +28,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event) -> None:  # FIXME
+	def __init__(self, event: Event) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		hbox = HBox()
@@ -59,8 +61,8 @@ class WidgetClass(common.WidgetClass):
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
-	def onStartYearCheckClick(self, _obj=None):
-		return self.startYearSpin.set_sensitive(
+	def onStartYearCheckClick(self, _widget: gtk.Widget | None = None) -> None:
+		self.startYearSpin.set_sensitive(
 			self.startYearCheck.get_active(),
 		)
 
@@ -87,7 +89,7 @@ class WidgetClass(common.WidgetClass):
 		elif "start" in self.event:
 			del self.event["start"]
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		_module, ok = calTypes[newCalType]

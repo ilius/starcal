@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from scal3.ui import conf
+from scal3.ui_gtk import gtk
 from scal3.ui_gtk.day_cal import DayCal
 from scal3.ui_gtk.decorators import registerSignals
 
@@ -41,8 +42,8 @@ class CalObj(DayCal):
 	weekdayAbbreviate = conf.dcalWeekdayAbbreviate
 	weekdayUppercase = conf.dcalWeekdayUppercase
 
-	def do_get_preferred_height(self):  # noqa: PLR6301
-		return 0, conf.winHeight.v / 3
+	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
+		return 0, int(conf.winHeight.v // 3)
 
-	def getWindow(self):
+	def getWindow(self) -> gtk.Window:
 		return self.win

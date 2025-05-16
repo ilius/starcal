@@ -1,4 +1,5 @@
 from scal3.core import jd_to
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -30,7 +31,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
 
-	def __init__(self, group) -> None:
+	def __init__(self, group: EventGroup) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ------
 		exp = ExpanderFrame(
@@ -118,7 +119,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
 		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _obj: gtk.ComboBox | None = None) -> None:
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.group.calType, newCalType)
 		self.endDateInput.changeCalType(self.group.calType, newCalType)

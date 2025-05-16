@@ -12,7 +12,7 @@ from scal3.interval_utils import (
 )
 
 
-def parseIntervalList(st, doShuffle=False):
+def parseIntervalList(st: str, doShuffle: bool = False) -> list[tuple[int, int]]:
 	ls = []
 	for part in st.split(" "):
 		pp = part.split("-")
@@ -163,8 +163,10 @@ def testOverlapsSpeed() -> None:
 	b_mean = 0
 	b_sigma = 2
 
-	def getRandomPair():
-		return sorted(normalvariate(b_mean, b_sigma) for i in (0, 1))
+	def getRandomPair() -> tuple[float, float]:
+		a = normalvariate(b_mean, b_sigma)
+		b = normalvariate(b_mean, b_sigma)
+		return min(a, b), max(a, b)
 
 	# ---
 	data = []
