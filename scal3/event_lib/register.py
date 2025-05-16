@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from scal3.event_lib.types import BaseClassType
+from scal3.event_lib.pytypes import BaseClassType
 
 __all__ = ["classes"]
 

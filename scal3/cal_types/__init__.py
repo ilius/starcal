@@ -14,7 +14,7 @@ from scal3.path import modDir
 if TYPE_CHECKING:
 	from collections.abc import Iterator
 
-	from scal3.cal_types.types import CalTypeModule
+	from scal3.cal_types.pytypes import CalTypeModule
 
 __all__ = [
 	"GREGORIAN",

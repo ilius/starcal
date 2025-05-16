@@ -28,7 +28,7 @@ from scal3 import logger
 from scal3.property import Property
 
 if TYPE_CHECKING:
-	from scal3.cal_types.types import TranslateFunc
+	from scal3.cal_types.pytypes import TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 
