@@ -51,7 +51,7 @@ from scal3.cal_types import hijri
 from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
 
 # DO NOT IMPORT core IN PLUGINS
-from scal3.config_utils import loadModuleConfig, saveModuleConfig
+from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.locale_man import langSh
 from scal3.locale_man import tr as _
 from scal3.os_utils import goodkill
@@ -247,7 +247,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			"disclaimerLastEpoch": self.disclaimerLastEpoch,
 		}
 		# ----
-		loadModuleConfig(self)
+		loadModuleConfig(
+			confPath=self.confPath,
+			sysConfPath=None,
+			params=self.confParams,
+			decoders={},
+		)
 		# ----
 		if not isfile(self.confPath):
 			confNeedsSave = True
@@ -312,7 +317,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.lat.v = self.backend.lat
 		self.lng.v = self.backend.lng
 		self.method.v = self.backend.method.name
-		saveModuleConfig(self)
+		saveSingleConfig(self.confPath, self.confParams, {})
 
 	# def date_change_after(self, widget, year, month, day):
 	# 	self.dialog.menuCell.add(self.menuitem)

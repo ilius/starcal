@@ -29,7 +29,7 @@ from typing import Any
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
-from scal3.config_utils import loadModuleConfig, saveModuleConfig
+from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.datetime_utils import epochDateTimeEncode
 from scal3.event_lib import state as event_state
 from scal3.locale_man import rtl
@@ -101,11 +101,16 @@ confParams = {
 
 
 def loadConf() -> None:
-	loadModuleConfig(__name__)
+	loadModuleConfig(
+		confPath=confPath,
+		sysConfPath=None,
+		params=confParams,
+		decoders={},
+	)
 
 
 def saveConf() -> None:
-	saveModuleConfig(__name__)
+	saveSingleConfig(confPath, confParams, {})
 
 
 class EventManagerToolbar(StaticToolBox):

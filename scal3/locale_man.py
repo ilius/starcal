@@ -37,7 +37,7 @@ from os.path import (
 
 import mytz
 from scal3.cal_types import calTypes
-from scal3.config_utils import loadModuleConfig, saveModuleConfig
+from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.dict_utils import sortDict
 from scal3.path import (
 	APP_NAME,
@@ -104,11 +104,16 @@ confParams = {
 
 
 def loadConf() -> None:
-	loadModuleConfig(__name__)
+	loadModuleConfig(
+		confPath=confPath,
+		sysConfPath=None,
+		params=confParams,
+		decoders={},
+	)
 
 
 def saveConf() -> None:
-	saveModuleConfig(__name__)
+	saveSingleConfig(confPath, confParams, {})
 
 
 # ----------------------------------------------------------
