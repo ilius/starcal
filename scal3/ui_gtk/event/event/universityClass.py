@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+from scal3.event_lib.event_base import Event
 
 log = logger.get()
 
@@ -35,7 +36,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, event) -> None:  # FIXME
+	def __init__(self, event: Event) -> None:  # FIXME
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		assert event.parent.name == "universityTerm"  # FIXME

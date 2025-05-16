@@ -14,6 +14,8 @@ log = logging.getLogger(APP_NAME)
 # https://www.w3schools.com/colors/colors_converter.asp
 # except we don't round H, S or L (rgbToHsl returns 3 floats)
 
+type HSL = tuple[float | None, float, float]
+
 
 class TestColorUtils(unittest.TestCase):
 	def test_rgbToInt(self) -> None:
@@ -24,7 +26,7 @@ class TestColorUtils(unittest.TestCase):
 		self.assertEqual(rgbToInt(0, 255, 0), 0x00FF00)
 		self.assertEqual(rgbToInt(0, 0, 255), 0x0000FF)
 
-	def assertEqualHSL(self, first, second) -> None:
+	def assertEqualHSL(self, first: HSL, second: HSL) -> None:
 		self.assertEqual(len(first), 3)
 		self.assertEqual(len(second), 3)
 		self.assertAlmostEqual(first[0], second[0], places=1)  # hue

@@ -29,7 +29,12 @@ from scal3.ui_gtk.drawing import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	import cairo
+	from gi.repository import Pango as pango
+
+	from scal3.color_utils import ColorType
 
 __all__ = [
 	"FloatingMsg",
@@ -44,19 +49,19 @@ screenWidth = rootWin.get_width()
 
 @registerType
 class FloatingMsg(gtk.DrawingArea):
-	def on_realize(self, _widget) -> None:
+	def on_realize(self, _widget: gtk.Widget) -> None:
 		self.animateStart()
 
 	def __init__(
 		self,
-		text,
-		speed=100,
-		bgColor=(255, 255, 0),
-		textColor=(0, 0, 0),
-		refreshTime=10,
-		finishFunc=None,
-		finishOnClick=True,
-		createWindow=True,
+		text: str,
+		speed: float = 100,
+		bgColor: ColorType = (255, 255, 0),
+		textColor: ColorType = (0, 0, 0),
+		refreshTime: float = 10,
+		finishFunc: Callable | None = None,
+		finishOnClick: bool = True,
+		createWindow: bool = True,
 	) -> None:
 		gtk.DrawingArea.__init__(self)
 		# speed: pixels per second
@@ -98,7 +103,7 @@ class FloatingMsg(gtk.DrawingArea):
 			self.win = False
 
 	@staticmethod
-	def isRtl(line, layout):
+	def isRtl(line: str, layout: pango.Layout) -> bool:
 		for i in range(len(line)):
 			y = layout.index_to_pos(i).y
 			if y != 0:
@@ -118,14 +123,18 @@ class FloatingMsg(gtk.DrawingArea):
 		self.startXpos = -self.textWidth if self.rtl else screenWidth
 		self.xpos = self.startXpos
 
-	def finish(self, _w=None, _e=None) -> None:
+	def finish(
+		self,
+		_widget: gtk.Widget | None = None,
+		_genvent: gdk.Event | None = None,
+	) -> None:
 		self.isFinished = True
 		self.win.destroy()
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
 
-	def onExposeEvent(self, _widget, _gevent) -> None:
+	def onExposeEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -175,13 +184,13 @@ class FloatingMsg(gtk.DrawingArea):
 
 @registerType
 class MyLabel(gtk.DrawingArea):
-	def __init__(self, bgColor, textColor) -> None:
+	def __init__(self, bgColor: ColorType, textColor: ColorType) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
 		self.textColor = textColor
 		self.connect("draw", self.onExposeEvent)
 
-	def set_label(self, text) -> None:
+	def set_label(self, text: str) -> None:
 		self.text = text
 		self.layout = newTextLayout(self, text)
 		size = self.layout.get_pixel_size()
@@ -191,7 +200,7 @@ class MyLabel(gtk.DrawingArea):
 		self.rtl = self.isRtl()
 		self.rtlSign = 1 if self.rtl else -1
 
-	def onExposeEvent(self, _widget, _gevent) -> None:
+	def onExposeEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -214,7 +223,7 @@ class MyLabel(gtk.DrawingArea):
 		setColor(cr, self.textColor)
 		show_layout(cr, self.layout)
 
-	def isRtl(self):
+	def isRtl(self) -> bool:
 		for i in range(len(self.text)):
 			y = self.layout.index_to_pos(i).y
 			if y != 0:
@@ -226,13 +235,13 @@ class MyLabel(gtk.DrawingArea):
 class NoFillFloatingMsgWindow(gtk.Window):
 	def __init__(
 		self,
-		text,
-		speed=100,
-		bgColor=(255, 255, 0),
-		textColor=(0, 0, 0),
-		refreshTime=10,
-		finishFunc=None,
-		finishOnClick=True,
+		text: str,
+		speed: float = 100,
+		bgColor: ColorType = (255, 255, 0),
+		textColor: ColorType = (0, 0, 0),
+		refreshTime: float = 10,
+		finishFunc: Callable | None = None,
+		finishOnClick: bool = True,
 	) -> None:
 		gtk.Window.__init__(self)
 		self.set_type_hint(gtk.WindowType.POPUP)
@@ -270,7 +279,11 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.startXpos = -self.label.width if self.label.rtl else screenWidth
 		self.startTime = perf_counter()
 
-	def finish(self, _w=None, _e=None) -> None:
+	def finish(
+		self,
+		_widget: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> None:
 		self.isFinished = True
 		self.destroy()
 		if self.finishFunc:

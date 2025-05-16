@@ -1,3 +1,4 @@
+from scal3.event_lib.rules import EventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
@@ -7,7 +8,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.ComboBox.__init__(self)
@@ -27,7 +28,7 @@ class WidgetClass(gtk.Box):
 		self.rule.date = self.dateInput.get_value()
 		self.rule.time = self.timeInput.get_value()
 
-	def changeCalType(self, calType) -> None:
+	def changeCalType(self, calType: str) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.updateVars()

@@ -26,9 +26,6 @@ CUSTOMIZE = 4
 NEED_RESTART = 8
 DAYCAL_WIN_LIVE = 16
 
-# TODO: switch to NamedTuple
-ColorType = tuple[int, int, int, int]
-
 __all__ = [
 	"CUSTOMIZE",
 	"DAYCAL_WIN_LIVE",

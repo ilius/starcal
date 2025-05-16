@@ -1,4 +1,5 @@
-from scal3.ui_gtk import Menu, MenuItem, gtk, pack
+from scal3.mywidgets.multi_spin import Field
+from scal3.ui_gtk import Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 from scal3.ui_gtk.utils import imageClassButton
@@ -12,7 +13,7 @@ class MultiSpinOptionBox(gtk.Box):
 		("activate", []),
 	]
 
-	def _entry_activate(self, _widget) -> bool:
+	def _entry_activate(self, _widget: gtk.Widget) -> bool:
 		# self.spin.update() #?????
 		# self.add_history()
 		self.emit("activate")
@@ -20,11 +21,11 @@ class MultiSpinOptionBox(gtk.Box):
 
 	def __init__(
 		self,
-		sep,
-		fields,
-		spacing=0,
-		is_hbox=False,
-		hist_size=10,
+		sep: str,
+		fields: list[Field],
+		spacing: int = 0,
+		is_hbox: bool = False,
+		hist_size: int = 10,
 		**kwargs,
 	) -> None:
 		if not is_hbox:
@@ -52,11 +53,11 @@ class MultiSpinOptionBox(gtk.Box):
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
-	def option_pressed(self, _widget, gevent) -> None:
+	def option_pressed(self, _widget: gtk.Widget, gevent: gdk.Event) -> None:
 		# x, y, w, h = self.option.
 		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
 
-	def find_text(self, text):
+	def find_text(self, text: str) -> int:
 		for index, item in enumerate(self.menuItems):
 			if item.text == text:
 				return index

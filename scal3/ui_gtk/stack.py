@@ -108,7 +108,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, _arg, gevent) -> bool:
+	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -131,7 +131,12 @@ class MyStack(gtk.Stack):
 			else gtk.RevealerTransitionType.SLIDE_RIGHT,
 		)
 
-	def _newHeaderBox(self, parentName: str, title: str = "", icon: str = ""):
+	def _newHeaderBox(
+		self,
+		parentName: str,
+		title: str = "",
+		icon: str = "",
+	) -> gtk.Box:
 		spacing = 10
 		hbox = HBox(spacing=spacing)
 		# hbox.set_direction(gtk.TextDirection.LTR)
@@ -214,7 +219,7 @@ class MyStack(gtk.Stack):
 		if not self._currentPagePath:
 			self.gotoPage(pagePath)
 
-	def hasPage(self, pagePath: str):
+	def hasPage(self, pagePath: str) -> bool:
 		return self.get_child_by_name(name=pagePath) is not None
 
 	def _setPageWindowTitle(self, pagePath: str) -> None:

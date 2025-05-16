@@ -18,7 +18,7 @@ from scal3.json_utils import dataToPrettyJson
 __all__ = ["checkAndSaveJsonLockFile"]
 
 
-def get_cmdline(proc):
+def get_cmdline(proc: psutil.Process) -> list[str]:
 	# log.debug(psutil.version_info, proc.cmdline)
 	if isinstance(proc.cmdline, list):  # psutil < 2.0
 		return proc.cmdline
@@ -26,7 +26,7 @@ def get_cmdline(proc):
 	return proc.cmdline()
 
 
-def checkAndSaveJsonLockFile(fpath):
+def checkAndSaveJsonLockFile(fpath: str) -> bool:
 	locked = False
 	my_pid = os.getpid()
 	if isfile(fpath):

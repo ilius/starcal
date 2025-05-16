@@ -14,12 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
 
 from scal3 import cal_types
 from scal3.date_utils import dateDecode, dateEncode
+from scal3.event_lib.rules import EventRule
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
@@ -35,20 +38,20 @@ from scal3.ui_gtk.utils import (
 __all__ = ["WidgetClass"]
 
 
-def encode(d):
+def encode(d: tuple[int, int, int]) -> str:
 	return textNumEncode(dateEncode(d))
 
 
-def decode(s):
+def decode(s: str) -> tuple[int, int, int]:
 	return dateDecode(textNumDecode(s))
 
 
-def validate(s):
+def validate(s: str) -> str:
 	return encode(decode(s))
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# ---
@@ -140,16 +143,21 @@ class WidgetClass(gtk.Box):
 			res=gtk.ResponseType.OK,
 		)
 
-	def showDialog(self, _w=None) -> None:
+	def showDialog(self, _w: Any = None) -> None:
 		self.createDialog()
 		self.dialog.run()
 		self.updateCountLabel()
 
-	def dateCellEdited(self, _cell, path, newText) -> None:
+	def dateCellEdited(
+		self,
+		_cell: Any,
+		path: str,
+		newText: str,
+	) -> None:
 		index = int(path)
 		self.treeModel[index][0] = validate(newText)
 
-	def getSelectedIndex(self):
+	def getSelectedIndex(self) -> int | None:
 		path = self.treev.get_cursor()[0]
 		if path is None:
 			return None
@@ -157,7 +165,7 @@ class WidgetClass(gtk.Box):
 			return None
 		return path[0]
 
-	def onAddClick(self, _button) -> None:
+	def onAddClick(self, _button: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
@@ -170,13 +178,13 @@ class WidgetClass(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
 
-	def onDeleteClick(self, _button) -> None:
+	def onDeleteClick(self, _button: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, _button) -> None:
+	def onMoveUpClick(self, _button: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -190,7 +198,7 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, _button) -> None:
+	def onMoveDownClick(self, _button: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return

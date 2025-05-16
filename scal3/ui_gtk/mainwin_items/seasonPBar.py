@@ -16,7 +16,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 	desc = _("Season Progress Bar")
 	itemListCustomizable = False
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		gtk.Frame.__init__(self)
 		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)

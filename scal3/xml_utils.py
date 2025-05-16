@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["escape"]
 
 
-def escape(data, entities: dict | None = None):  # noqa: ARG001
+def escape(data: str, entities: dict | None = None) -> str:  # noqa: ARG001
 	"""
 	Escape &, <, and > in a string of data.
 
@@ -22,7 +22,7 @@ def escape(data, entities: dict | None = None):  # noqa: ARG001
 	# 	data = __dict_replace(data, entities) # FIXME
 
 
-def unescape(data, entities: dict | None = None):  # noqa: ARG001
+def unescape(data: str, entities: dict | None = None) -> str:  # noqa: ARG001
 	"""
 	Unescape &amp;, &lt;, and &gt; in a string of data.
 
