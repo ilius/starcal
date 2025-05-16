@@ -183,9 +183,6 @@ def error_exit(resCode: int, text: str, **kwargs) -> None:
 	sys.exit(resCode)
 
 
-if sys.version_info[0] < 3:  # noqa: UP036
-	error_exit(1, "Run this script with Python 3.x")
-
 try:
 	from scal3.ui_gtk.starcal import main
 
