@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import gi
 
 from scal3.ui_gtk import gdk, gtk
@@ -10,7 +12,7 @@ __all__ = ["SourceEditorWithFrame"]
 
 
 class SourceEditor(GtkSource.View):
-	def __init__(self, onTextChange=None) -> None:
+	def __init__(self, onTextChange: Callable | None = None) -> None:
 		self.textbuffer = GtkSource.Buffer()
 		GtkSource.View.__init__(self, buffer=self.textbuffer)
 		self.set_editable(True)
@@ -22,16 +24,16 @@ class SourceEditor(GtkSource.View):
 		if onTextChange is not None:
 			self.textbuffer.connect("changed", onTextChange)
 
-	def _key_press_event(self, _widget, event) -> None:
-		keyvalobjName = gdk.keyval_name(event.keyval)
-		ctrl = event.state & gdk.ModifierType.CONTROL_MASK
+	def _key_press_event(self, _widget: gtk.Widget, gevent: gdk.Event) -> None:
+		keyvalobjName = gdk.keyval_name(gevent.keyval)
+		ctrl = gevent.state & gdk.ModifierType.CONTROL_MASK
 		if ctrl and keyvalobjName == "y":  # noqa: SIM102
 			if self.textbuffer.can_redo():
 				self.textbuffer.do_redo(self.textbuffer)
 
 
 class SourceEditorWithFrame(gtk.Frame):
-	def __init__(self, onTextChange=None) -> None:
+	def __init__(self, onTextChange: Callable | None = None) -> None:
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
 		# ----
@@ -40,8 +42,8 @@ class SourceEditorWithFrame(gtk.Frame):
 		)
 		self.add(self.editor)
 
-	def set_text(self, text) -> None:
+	def set_text(self, text: str) -> None:
 		self.editor.textbuffer.set_text(text)
 
-	def get_text(self):
+	def get_text(self) -> str:
 		return buffer_get_text(self.editor.textbuffer)

@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from collections.abc import Callable
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
 from scal3.ui_gtk.utils import (
@@ -35,18 +37,18 @@ class MyHButtonBox(gtk.Box):
 	def set_homogeneous(self, homogeneous: bool) -> None:
 		self._homogeneous = homogeneous
 
-	def add(self, child) -> None:
+	def add(self, child: gtk.Widget) -> None:
 		self.pack_start(child, expand=False, fill=False, padding=0)
 		if self._homogeneous:
 			self._sizeGroup.add_widget(child)
 
 	def add_button(
 		self,
-		imageName="",
-		label="",
-		onClick=None,
-		tooltip="",
-	):
+		imageName: str = "",
+		label: str = "",
+		onClick: Callable | None = None,
+		tooltip: str = "",
+	) -> gtk.Button:
 		if imageName:
 			b = labelImageButton(
 				label=label,
@@ -62,14 +64,14 @@ class MyHButtonBox(gtk.Box):
 		self.add(b)
 		return b
 
-	def add_ok(self, onClick=None):
+	def add_ok(self, onClick: Callable | None = None) -> gtk.Button:
 		return self.add_button(
 			imageName="dialog-ok.svg",
 			label=_("_Confirm"),
 			onClick=onClick,
 		)
 
-	def add_cancel(self, onClick=None):
+	def add_cancel(self, onClick: Callable | None = None) -> gtk.Button:
 		return self.add_button(
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),

@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from os.path import join
-from typing import TYPE_CHECKING, Never
+from typing import TYPE_CHECKING
 
 from scal3.drawing import getAbsPos
 from scal3.path import pixDir, svgDir
@@ -26,7 +26,11 @@ from scal3.ui_gtk.drawing import drawOutlineRoundedRect
 from scal3.ui_gtk.utils import pixbufFromFile
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	import cairo
+
+	from scal3.color_utils import ColorType
 
 __all__ = ["Button", "SVGButton"]
 
@@ -34,14 +38,14 @@ __all__ = ["Button", "SVGButton"]
 class BaseButton:
 	def __init__(
 		self,
-		onPress=None,
-		onRelease=None,
-		x=None,
-		y=None,
-		xalign="left",
-		yalign="top",
-		autoDir=True,
-		opacity=1.0,
+		onPress: Callable | None = None,
+		onRelease: Callable | None = None,
+		x: float | None = None,
+		y: float | None = None,
+		xalign: str = "left",
+		yalign: str = "top",
+		autoDir: bool = True,
+		opacity: float = 1.0,
 	) -> None:
 		if x is None:
 			raise ValueError("x is not given")
@@ -66,14 +70,14 @@ class BaseButton:
 		self.autoDir = autoDir
 		self.opacity = opacity
 
-		self.width = None
-		self.height = None
+		self.width = 0.0
+		self.height = 0.0
 
-	def setSize(self, width, height) -> None:
+	def setSize(self, width: float, height: float) -> None:
 		self.width = width
 		self.height = height
 
-	def getAbsPos(self, w, h):
+	def getAbsPos(self, w: float, h: float) -> tuple[float, float]:
 		return getAbsPos(
 			self.width,
 			self.height,
@@ -86,20 +90,20 @@ class BaseButton:
 			autoDir=self.autoDir,
 		)
 
-	def contains(self, px, py, w, h):
+	def contains(self, px: float, py: float, w: float, h: float) -> bool:
 		x, y = self.getAbsPos(w, h)
 		return x <= px < x + self.width and y <= py < y + self.height
 
-	def draw(self, cr, w, h) -> Never:
+	def draw(self, cr: cairo.Context, w: float, h: float) -> None:
 		raise NotImplementedError
 
 
 class SVGButton(BaseButton):
 	def __init__(
 		self,
-		imageName="",
-		iconSize=16,
-		rectangleColor=None,
+		imageName: str = "",
+		iconSize: float = 16,
+		rectangleColor: ColorType | None = None,
 		**kwargs,
 	) -> None:
 		BaseButton.__init__(self, **kwargs)
@@ -190,9 +194,9 @@ class SVGButton(BaseButton):
 class Button(BaseButton):
 	def __init__(
 		self,
-		imageName="",
-		iconName="",
-		iconSize=0,
+		imageName: str = "",
+		iconName: str = "",
+		iconSize: float = 0,
 		**kwargs,
 	) -> None:
 		BaseButton.__init__(self, **kwargs)
@@ -238,7 +242,7 @@ class Button(BaseButton):
 		self.iconSize = iconSize
 		self.pixbuf = pixbuf
 
-	def draw(self, cr, w, h) -> None:
+	def draw(self, cr: cairo.Context, w: float, h: float) -> None:
 		x, y = self.getAbsPos(w, h)
 		gdk.cairo_set_source_pixbuf(
 			cr,

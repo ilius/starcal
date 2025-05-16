@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from collections.abc import Callable
+
 from scal3 import logger
 
 log = logger.get()
@@ -26,7 +28,7 @@ from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus, getMonthStatus
 from scal3.path import homeDir
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -94,7 +96,11 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.connect("delete-event", self.onDelete)
 		self.fcw.set_current_folder(homeDir)
 
-	def comboChanged(self, _widget=None, ym=None) -> None:
+	def comboChanged(
+		self,
+		_widget: gtk.Widget | None = None,
+		ym: tuple[int, int] | None = None,
+	) -> None:
 		i = self.combo.get_active()
 		if ym is None:
 			ym = (ui.cells.current.year, ui.cells.current.month)
@@ -109,12 +115,16 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			self.hbox2.show()
 		# select_region(0, -4) # FIXME
 
-	def onDelete(self, _widget=None, _event=None) -> bool:
+	def onDelete(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> bool:
 		# hide(close) File Chooser Dialog
 		self.hide()
 		return True
 
-	def _save(self, path) -> None:
+	def _save(self, path: str) -> None:
 		comboItem = self.combo.get_active()
 		months = []
 		fontSizeScale = self.fontScaleSpin.get_value()
@@ -150,7 +160,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		)
 		self.hide()
 
-	def save(self, _widget=None) -> None:
+	def save(self, _widget: gtk.Widget | None = None) -> None:
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()
@@ -162,7 +172,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			path,
 		)
 
-	def showDialog(self, year, month) -> None:
+	def showDialog(self, year: int, month: int) -> None:
 		self.comboChanged(ym=(year, month))
 		self.ymBox0.set_value((year, month))
 		self.ymBox1.set_value((year, month))
@@ -197,7 +207,12 @@ class ExportDialog(gtk.Dialog, MyDialog):
 
 
 class ExportToIcsDialog(gtk.Dialog, MyDialog):
-	def __init__(self, saveIcsFunc, defaultFileName, **kwargs) -> None:
+	def __init__(
+		self,
+		saveIcsFunc: Callable[[str, int, int], None],
+		defaultFileName: str,
+		**kwargs,
+	) -> None:
 		self.saveIcsFunc = saveIcsFunc
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="iCalendar"))
@@ -247,18 +262,18 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 
 	def onDelete(
 		self,
-		_widget=None,
-		_event=None,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
 	) -> bool:
 		# hide(close) File Chooser Dialog
 		self.destroy()
 		return True
 
-	def _save(self, path, startJd, endJd) -> None:
+	def _save(self, path: str, startJd: int, endJd: int) -> None:
 		self.saveIcsFunc(path, startJd, endJd)
 		self.destroy()
 
-	def save(self, _widget=None) -> None:
+	def save(self, _widget: gtk.Widget | None = None) -> None:
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		path = self.fcw.get_filename()

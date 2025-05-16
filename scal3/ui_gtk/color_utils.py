@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 
-def rgbToGdkColor(r, g, b, a=None):  # noqa: ARG001
+def rgbToGdkColor(r: int, g: int, b: int, a: int = 255) -> gdk.Color:  # noqa: ARG001
 	"""r, g, b are in range(256)."""
 	return gdk.Color(
 		int(r * 257),
@@ -16,7 +16,7 @@ def rgbToGdkColor(r, g, b, a=None):  # noqa: ARG001
 	)
 
 
-def rgbaToGdkRGBA(r, g, b, a=255):
+def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 	return gdk.RGBA(
 		red=r / 255,
 		green=g / 255,
@@ -25,7 +25,7 @@ def rgbaToGdkRGBA(r, g, b, a=255):
 	)
 
 
-def gdkColorToRgb(gc):
+def gdkColorToRgb(gc: gdk.RGBA) -> tuple[int, int, int]:
 	assert isinstance(gc, gdk.RGBA)
 	return (
 		int(gc.red * 257),

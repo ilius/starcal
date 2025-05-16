@@ -7,9 +7,13 @@ log = logger.get()
 import os
 import os.path
 from os.path import isabs, isfile, join
+from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = ["eventTags", "eventTagsDesc"]
 
@@ -18,7 +22,13 @@ eventIconDir = join(svgDir, "event")
 
 
 class TagIconItem:
-	def __init__(self, name, desc="", icon="", eventTypes=()) -> None:
+	def __init__(
+		self,
+		name: str,
+		desc: str = "",
+		icon: str = "",
+		eventTypes: Sequence[str] = (),
+	) -> None:
 		self.name = name
 		if not desc:
 			desc = name.capitalize()
@@ -36,7 +46,7 @@ class TagIconItem:
 		self.eventTypes = eventTypes
 		self.usage = 0
 
-	def getIconRel(self):
+	def getIconRel(self) -> str:
 		icon = self.icon
 		if icon.startswith(svgDir + os.sep):
 			return icon[len(svgDir) + 1 :]

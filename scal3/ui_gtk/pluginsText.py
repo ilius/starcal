@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Menu, VBox, gtk, pack
+from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -24,6 +24,7 @@ from scal3.ui_gtk.utils import (
 from scal3.utils import findWordByPos, toStr
 
 if TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
 	from scal3.property import Property
 
 __all__ = ["PluginsTextBox"]
@@ -36,20 +37,17 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		self.set_editable(False)
 		self.set_cursor_visible(False)
 		self.connect("button-press-event", self.onButtonPress)
-		self.occurOffsets = []
+		self.occurOffsets: list[tuple[int, tuple[PluginType, str]]] = []
 		self.initVars()
 
-	def copyAll(self, _item):
-		return setClipboard(toStr(self.get_text()))
+	def copyAll(self, _item: gtk.Widget) -> None:
+		setClipboard(toStr(self.get_text()))
 
 	# def cursorIsOnURL(self):
 	# 	return False
 
-	def get_text(self):
+	def get_text(self) -> str:
 		return buffer_get_text(self.get_buffer())
-
-	def get_cursor_position(self):
-		return self.get_buffer().get_property("cursor-position")
 
 	def has_selection(self) -> bool:
 		buf = self.get_buffer()
@@ -60,7 +58,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		else:
 			return True
 
-	def copy(self, _item) -> None:
+	def copy(self, _item: gtk.MenuItem) -> None:
 		buf = self.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
@@ -69,7 +67,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
 	@classmethod
-	def copyText(cls, _item, text) -> None:
+	def copyText(cls, _item: gtk.MenuItem, text: str) -> None:
 		setClipboard(text)
 
 	def onDateChange(self, *a, **kw) -> None:
@@ -78,6 +76,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		textbuff.set_text("")
 		occurOffsets = []
 		eventSep = "\n"
+		text: str
 		for index, occurData in enumerate(ui.cells.current.getPluginsData()):
 			_plug, text = occurData
 			lastEndOffset = textbuff.get_end_iter().get_offset()
@@ -87,7 +86,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			self.addText(text)
 		self.occurOffsets = occurOffsets
 
-	def findPluginByY(self, y: int):
+	def findPluginByY(self, y: int) -> tuple[PluginType, str]:
 		lineIter, _lineTop = self.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
@@ -96,7 +95,11 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 				return occurData
 		return None
 
-	def addPluginMenuItems(self, menu, occurData) -> None:
+	def addPluginMenuItems(
+		self,
+		menu: gtk.Menu,
+		occurData: tuple[PluginType, str],
+	) -> None:
 		plug, text = occurData
 		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
 		# ----
@@ -129,21 +132,22 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		# ----
 		menu.add(gtk.SeparatorMenuItem())
 
-	def addExtraMenuItems(self, menu) -> None:
+	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
 		pass
 
 	@staticmethod
-	def onPlugConfClick(_item, plug) -> None:
+	def onPlugConfClick(_item: gtk.MenuItem, plug: PluginType) -> None:
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
 		ud.windowList.onConfigChange()
 
-	def onPlugAboutClick(self, _item, plug):
+	def onPlugAboutClick(self, _item: gtk.MenuItem, plug: PluginType) -> None:
 		from scal3.ui_gtk.about import AboutDialog
 
 		if hasattr(plug, "open_about"):
-			return plug.open_about()
+			plug.open_about()
+			return
 		if plug.about is None:
 			return
 		about = AboutDialog(
@@ -158,13 +162,12 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
-		return None
 
 	@staticmethod
-	def copyTextFromMenu(_item, text) -> None:
+	def copyTextFromMenu(_item: gtk.MenuItem, text: str) -> None:
 		setClipboard(text)
 
-	def addText(self, text) -> None:
+	def addText(self, text: str) -> None:
 		textbuff = self.get_buffer()
 		endIter = textbuff.get_bounds()[1]
 
@@ -179,7 +182,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		b_text = text.encode("utf-8")
 		textbuff.insert_markup(endIter, text, len(b_text))
 
-	def onButtonPress(self, _widget, gevent) -> bool:
+	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
@@ -255,8 +258,8 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 
 	def __init__(
 		self,
-		hideIfEmpty=True,
-		tabToNewline=False,
+		hideIfEmpty: bool = True,
+		tabToNewline: bool = False,
 		insideExpanderParam: Property | None = None,
 		justificationParam: Property | None = None,
 		fontEnableParam: Property | None = None,
@@ -329,7 +332,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		self.textview.set_justification(ud.justificationByName[value])
 
 	@staticmethod
-	def onButtonPress(_widget, _gevent) -> bool:
+	def onButtonPress(_widget: gtk.Widget, _gevent: gdk.Event) -> bool:
 		# log.debug("PluginsText: onButtonPress")
 		# without this, it will switch to begin_move_drag on button-press
 		return True
@@ -395,14 +398,14 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		self.onDateChange()
 
 	@staticmethod
-	def expanderExpanded(exp) -> None:
+	def expanderExpanded(exp: gtk.Expander) -> None:
 		conf.pluginsTextIsExpanded.v = not exp.get_expanded()
 		ui.saveLiveConf()
 
-	def getWidget(self):
+	def getWidget(self) -> gtk.Widget:
 		return self.expander if self.expanderEnable else self.textview
 
-	def setText(self, text) -> None:
+	def setText(self, text: str) -> None:
 		if self.tabToNewline:
 			text = text.replace("\t", "\n")
 		self.textbuff.set_text(text)
