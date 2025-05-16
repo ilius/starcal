@@ -20,9 +20,15 @@
 # Iranian (Jalali) calendar:
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import logger
-from scal3.cal_types.types import TranslateFunc
 from scal3.property import Property
+
+if TYPE_CHECKING:
+	from scal3.cal_types.types import TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 

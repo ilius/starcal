@@ -24,8 +24,6 @@ log = logger.get()
 import os
 import threading
 from queue import Empty, Queue
-
-# from sched import scheduler
 from threading import Thread
 from time import perf_counter, sleep
 from time import time as now

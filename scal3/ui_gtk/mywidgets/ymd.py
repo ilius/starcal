@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import cal_types
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _

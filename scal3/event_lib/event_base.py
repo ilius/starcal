@@ -30,10 +30,7 @@ from scal3.cal_types import calTypes
 from scal3.event_lib import state
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
-from scal3.s_object import (
-	SObj,
-	SObjBinaryModel,
-)
+from scal3.s_object import SObj, SObjBinaryModel
 from scal3.time_utils import durationDecode, durationEncode
 
 from .exceptions import BadEventFile

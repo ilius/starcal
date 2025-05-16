@@ -23,10 +23,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.ui_gtk import gdk, gtk, timeout_add
 from scal3.ui_gtk.decorators import registerType
-from scal3.ui_gtk.drawing import (
-	newTextLayout,
-	setColor,
-)
+from scal3.ui_gtk.drawing import newTextLayout, setColor
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

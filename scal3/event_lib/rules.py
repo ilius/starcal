@@ -38,18 +38,14 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.core import (
-	getAbsWeekNumberFromJd,
-)
+from scal3.core import getAbsWeekNumberFromJd
 from scal3.date_utils import (
 	checkDate,
 	dateDecode,
 	dateEncode,
 	jwday,
 )
-from scal3.interval_utils import (
-	simplifyNumList,
-)
+from scal3.interval_utils import simplifyNumList
 from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
 from scal3.s_object import SObj
@@ -62,10 +58,7 @@ from scal3.time_utils import (
 	timeEncode,
 	timeToFloatHour,
 )
-from scal3.utils import (
-	numRangesEncode,
-	s_join,
-)
+from scal3.utils import numRangesEncode, s_join
 
 from .exceptions import BadEventFile
 from .occur import IntervalOccurSet, JdOccurSet, OccurSet, TimeListOccurSet

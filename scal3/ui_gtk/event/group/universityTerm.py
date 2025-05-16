@@ -13,15 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.event_lib.groups import EventGroup, UniversityTerm
 from scal3.ui import conf
 
 log = logger.get()
-
-import cairo
 
 from scal3 import core
 from scal3.locale_man import numDecode, rtl
@@ -36,13 +35,13 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	import cairo
+
+	from scal3.event_lib.groups import EventGroup, UniversityTerm
 
 __all__ = ["WidgetClass"]
 

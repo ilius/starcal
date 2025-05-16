@@ -26,10 +26,7 @@ from typing import Any
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.path import (
-	pixDir,
-	svgDir,
-)
+from scal3.path import pixDir, svgDir
 from scal3.ui_gtk import Box, GdkPixbuf, HBox, VBox, gtk, pack
 from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton

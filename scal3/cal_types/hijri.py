@@ -17,12 +17,16 @@
 
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
+from __future__ import annotations
+
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.cal_types.types import TranslateFunc
 from scal3.property import Property
+
+if TYPE_CHECKING:
+	from scal3.cal_types.types import TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
 
