@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 	from scal3.color_utils import ColorType
 
-__all__ = ["Button", "SVGButton"]
+__all__ = ["BaseButton", "Button", "SVGButton"]
 
 
 class BaseButton:
