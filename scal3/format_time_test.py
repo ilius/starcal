@@ -7,8 +7,8 @@ from time import perf_counter
 
 from scal3 import core, ui
 from scal3.cal_types import to_jd
+from scal3.cell_type import CompiledTimeFormat
 from scal3.format_time import compileTmFormat
-from scal3.types_starcal import CompiledTimeFormat
 
 
 def formatTime(

@@ -1,3 +1,5 @@
+import subprocess
+
 from scal3 import logger
 
 log = logger.get()
@@ -9,7 +11,7 @@ from scal3.locale_man import popenDefaultLang
 __all__ = ["popenFile"]
 
 
-def getDefaultAppCommand(fpath):
+def getDefaultAppCommand(fpath: str) -> str | None:
 	from gi.repository import Gio as gio
 
 	mime_type = gio.content_type_guess(fpath)[0]
@@ -20,7 +22,7 @@ def getDefaultAppCommand(fpath):
 	return app.get_executable()
 
 
-def popenFile(fpath):
+def popenFile(fpath: str) -> subprocess.Popen | None:
 	command = getDefaultAppCommand(fpath)
 	if not command:
 		return

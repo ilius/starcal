@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Callable
+from typing import Any
 
 from scal3 import logger
 
@@ -29,7 +31,7 @@ class MyDialog:
 		if self.vbox:
 			self.vbox.set_sensitive(True)
 
-	def waitingDo(self, func, *args, **kwargs):
+	def waitingDo(self, func: Callable, *args, **kwargs) -> Any:
 		result = None
 		self.startWaiting()
 		if log.level >= logging.DEBUG:

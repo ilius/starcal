@@ -1,3 +1,5 @@
+from typing import Any
+
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
@@ -7,7 +9,7 @@ __all__ = ["CalTypeCombo"]
 
 
 class CalTypeCombo(IdComboBox):
-	def __init__(self, hasDefault=False) -> None:  # , showInactive=True FIXME
+	def __init__(self, hasDefault: bool = False) -> None:  # , showInactive=True FIXME
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -30,5 +32,5 @@ class CalTypeCombo(IdComboBox):
 			ls.append([i, _(mod.desc, ctx="calendar")])
 
 	@staticmethod
-	def _is_separator(model, rowIter, _data):
+	def _is_separator(model: gtk.TreeModel, rowIter: gtk.TreeIter, _data: Any) -> bool:
 		return model.get_value(rowIter, 1) is None

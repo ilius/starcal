@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
@@ -27,7 +28,7 @@ __all__ = ["BaseWidgetClass"]
 class BaseWidgetClass(gtk.Box):
 	userCanAddEvents = True
 
-	def __init__(self, group) -> None:
+	def __init__(self, group: EventGroup) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
@@ -229,5 +230,5 @@ class BaseWidgetClass(gtk.Box):
 				self.addEventsToBeginningCheck.get_active()
 			)
 
-	def calTypeComboChanged(self, obj=None) -> None:
+	def calTypeComboChanged(self, obj: gtk.Widget | None = None) -> None:
 		pass

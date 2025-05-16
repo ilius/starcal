@@ -20,7 +20,7 @@ from scal3.ui import conf
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
@@ -31,7 +31,7 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
-	from collections.abc import Callable
+	from collections.abc import Callable, Sequence
 
 	from gi.repository import GdkPixbuf
 
@@ -56,7 +56,7 @@ class ImageMenuItem(gtk.MenuItem):
 		imageName: str = "",
 		pixbuf: GdkPixbuf.Pixbuf | None = None,
 		func: Callable | None = None,
-		signalName="activate",
+		signalName: str = "activate",
 		args: tuple | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
@@ -104,17 +104,17 @@ class ImageMenuItem(gtk.MenuItem):
 				args = ()
 			self.connect(signalName, func, *args)
 
-	def get_image(self):
+	def get_image(self) -> gtk.Image:
 		return self._image
 
 
 class CheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
-		label="",
-		active=False,
-		func=None,
-		args=None,
+		label: str = "",
+		active: bool = False,
+		func: Callable | None = None,
+		args: Sequence[Any] | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
@@ -140,7 +140,7 @@ class CheckMenuItem(gtk.MenuItem):
 		self._args = args
 		self.connect("activate", self._onActivate)
 
-	def _onActivate(self, menuItem) -> None:
+	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 
@@ -155,10 +155,10 @@ class CheckMenuItem(gtk.MenuItem):
 class CustomCheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
-		label="",
-		active=False,
-		func=None,
-		args=None,
+		label: str = "",
+		active: bool = False,
+		func: Callable | None = None,
+		args: Sequence[Any] | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
@@ -191,7 +191,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self._args = args
 		self.connect("activate", self._onActivate)
 
-	def _onActivate(self, menuItem) -> None:
+	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 

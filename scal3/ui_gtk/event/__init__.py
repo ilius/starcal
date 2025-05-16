@@ -1,11 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from scal3 import logger
+
+if TYPE_CHECKING:
+	from gi.repository import Gtk as gtk
+
+	from scal3.event_lib.types import BaseClassType
+
 __all__ = [
 	"makeWidget",
 	"setActionFuncs",
 ]
 
-# --------------------------------------------
-
-from scal3 import logger
 
 log = logger.get()
 
@@ -13,7 +21,7 @@ log = logger.get()
 modPrefix = "scal3.ui_gtk.event"
 
 
-def getWidgetClass(obj):
+def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 	cls = obj.__class__
 
 	if hasattr(cls, "WidgetClass"):
@@ -30,7 +38,7 @@ def getWidgetClass(obj):
 	return WidgetClass
 
 
-def makeWidget(obj):
+def makeWidget(obj: BaseClassType) -> gtk.Widget | None:
 	"""Obj is an instance of Event, EventRule, EventNotifier or EventGroup."""
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
@@ -44,7 +52,7 @@ def makeWidget(obj):
 	return widget
 
 
-def setActionFuncs(obj) -> None:
+def setActionFuncs(obj: BaseClassType) -> None:
 	"""Obj is an instance of EventGroup."""
 	cls = obj.__class__
 	try:
