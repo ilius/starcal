@@ -5,7 +5,14 @@ __all__ = ["FloatSpinButton"]
 
 
 class FloatSpinButton(SingleSpinButton):
-	def __init__(self, minim, maxim, digits, step=0.0, **kwargs) -> None:
+	def __init__(
+		self,
+		minim: float,
+		maxim: float,
+		digits: int,
+		step: float = 0.0,
+		**kwargs,
+	) -> None:
 		if digits < 1:
 			raise ValueError(f"FloatSpinButton: invalid {digits=}")
 		if step == 0.0:

@@ -22,6 +22,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from scal3.cal_types.types import TranslateFunc
 
 __all__ = ["J1970", "J0001_epoch", "getMonthLen", "isLeap", "jd_to", "to_jd"]
 
@@ -65,7 +69,11 @@ def getMonthName(m: int, y: int | None = None) -> str:  # noqa: ARG001
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y: int | None = None) -> str:  # noqa: ARG001
+def getMonthNameAb(
+	tr: TranslateFunc,
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -78,7 +86,7 @@ minMonthLen = 29
 maxMonthLen = 31
 avgYearLen = 365.2425  # FIXME
 
-options = ()
+options = []
 
 
 def save() -> None:

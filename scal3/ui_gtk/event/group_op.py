@@ -2,6 +2,7 @@ from scal3 import logger
 
 log = logger.get()
 
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import (
@@ -13,7 +14,7 @@ __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 
 
 class GroupSortDialog(gtk.Dialog):
-	def __init__(self, group, **kwargs) -> None:
+	def __init__(self, group: EventGroup, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Sort Events"))
@@ -77,7 +78,7 @@ class GroupSortDialog(gtk.Dialog):
 
 
 class GroupConvertCalTypeDialog(gtk.Dialog):
-	def __init__(self, group, **kwargs) -> None:
+	def __init__(self, group: EventGroup, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
 		self._group = group

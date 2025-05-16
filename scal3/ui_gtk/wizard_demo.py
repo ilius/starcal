@@ -22,7 +22,7 @@ class DemoWizardWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win) -> None:
+		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -66,10 +66,10 @@ class DemoWizardWindow(WizardWindow):
 		def run(self) -> None:
 			pass
 
-		def onCancelClick(self, _obj) -> None:
+		def onCancelClick(self, _widget: gtk.Widget) -> None:
 			self.win.destroy()
 
-		def onNextClick(self, _obj) -> None:
+		def onNextClick(self, _widget: gtk.Widget) -> None:
 			fpath = self.fcb.get_filename()
 			format_ = None
 			if self.radioJson.get_active():
@@ -79,7 +79,7 @@ class DemoWizardWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win) -> None:
+		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -93,22 +93,22 @@ class DemoWizardWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self, format_, fpath) -> None:
+		def run(self, format_: str, fpath: str) -> None:
 			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format_, fpath) -> None:
+		def _runAndCleanup(self, format_: str, fpath: str) -> None:
 			if format_ == "json":
 				self._runJson(fpath)
 			else:
 				raise ValueError(f"invalid format {format_!r}")
 
-		def _runJson(self, fpath) -> None:  # noqa: PLR6301
+		def _runJson(self, fpath: str) -> None:  # noqa: PLR6301
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
-		def onBackClick(self, _obj) -> None:
+		def onBackClick(self, _widget: gtk.Widget) -> None:
 			self.win.showStep(0)
 
-		def onCloseClick(self, _obj) -> None:
+		def onCloseClick(self, _widget: gtk.Widget) -> None:
 			self.win.destroy()
 
 	stepClasses = [

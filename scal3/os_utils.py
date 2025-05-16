@@ -60,12 +60,12 @@ def getOsName() -> str:
 osName = getOsName()
 
 
-def makeDir(direc) -> None:
+def makeDir(direc: str) -> None:
 	if not isdir(direc):
 		os.makedirs(direc)
 
 
-def getUsersData():
+def getUsersData() -> list[dict[str, str]]:
 	data = []
 	with open("/etc/passwd", encoding="utf-8") as fp:
 		for line in fp:
@@ -85,7 +85,7 @@ def getUsersData():
 	return data
 
 
-def getUserDisplayName():
+def getUserDisplayName() -> str | None:
 	if os.sep == "/":
 		username = os.getenv("USER")
 		if isfile("/etc/passwd"):
@@ -99,7 +99,7 @@ def getUserDisplayName():
 	return os.getenv("USERNAME")
 
 
-def kill(pid, signal=0):
+def kill(pid: int, signal: int = 0) -> bool:
 	"""
 	Sends a signal to a process
 	returns True if the pid is dead
@@ -107,18 +107,17 @@ def kill(pid, signal=0):
 	"""
 	# if "ps --no-headers" returns no lines, the pid is dead
 	try:
-		return os.kill(pid, signal)
+		os.kill(pid, signal)
 	except OSError as e:
-		# process is dead
-		if e.errno == 3:
+		if e.errno == 3:  # process is dead
 			return True
-		# no permissions
-		if e.errno == 1:
+		if e.errno == 1:  # no permissions
 			return False
 		raise
+	return True
 
 
-def dead(pid):
+def dead(pid: int) -> bool:
 	if kill(pid):
 		return True
 
@@ -138,7 +137,7 @@ def dead(pid):
 # def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
-def goodkill(pid, interval=1, hung=20) -> None:
+def goodkill(pid: int, interval: int = 1, hung: int = 20) -> None:
 	"""Let process die gracefully, gradually send harsher signals if necessary."""
 	from signal import SIGHUP, SIGINT, SIGKILL, SIGTERM
 	from time import sleep

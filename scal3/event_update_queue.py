@@ -8,7 +8,13 @@ from scal3 import logger
 
 log = logger.get()
 
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Protocol
+
 from scal3 import event_lib
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.gtk_ud import CalObjType
 
 __all__ = ["EventUpdateQueue", "EventUpdateRecord"]
 
@@ -19,26 +25,25 @@ Usage:
 """
 
 
+@dataclass
 class EventUpdateRecord:
-	def __init__(
-		self,
-		action: str,
-		obj: event_lib.Event | event_lib.EventGroup,
-		sender,  # CalObjType based on gtk_ud.BaseCalObj
-	) -> None:
-		self.action = action
-		self.obj = obj
-		self.sender = sender
+	action: str
+	obj: event_lib.Event | event_lib.EventGroup | event_lib.EventTrash
+	sender: CalObjType  # gtk_ud.BaseCalObj
+
+
+class ConsumerType(Protocol):
+	def onEventUpdate(self, record: EventUpdateRecord) -> None: ...
 
 
 class EventUpdateQueue(Queue):
 	def __init__(self) -> None:
 		Queue.__init__(self)
-		self._consumers = []
-		self._thread = None
-		self._paused = False
+		self._consumers: list[ConsumerType] = []
+		self._thread: Thread | None = None
+		self._paused: bool = False
 
-	def registerConsumer(self, consumer) -> None:
+	def registerConsumer(self, consumer: ConsumerType) -> None:
 		log.debug(f"registerConsumer: {consumer.__class__.__name__}")
 		if not hasattr(consumer, "onEventUpdate"):
 			raise TypeError(
@@ -46,7 +51,12 @@ class EventUpdateQueue(Queue):
 			)
 		self._consumers.append(consumer)
 
-	def put(self, action, obj, sender) -> None:
+	def put(
+		self,
+		action: str,
+		obj: event_lib.Event | event_lib.EventGroup | event_lib.EventTrash,
+		sender: CalObjType,
+	) -> None:
 		if action not in {
 			"+",  # add/create event
 			"-",  # delete/remove event
@@ -119,11 +129,15 @@ def testEventUpdateQueue() -> None:
 		pass
 
 	class MockEvent:
-		def __init__(self, ident, parent) -> None:
+		def __init__(
+			self,
+			ident: int,
+			parent: Any,  # FIXME
+		) -> None:
 			self.id = ident
 			self.parent = parent
 
-		def getPath(self):
+		def getPath(self) -> tuple[int, int]:
 			return (0, self.id)
 
 	class MockConsumer:

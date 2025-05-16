@@ -55,8 +55,7 @@ def checkDate(date: tuple[int, int, int]) -> None:
 		raise ValueError(f"bad date '{date}': invalid day")
 
 
-# FIXME: should return tuple[int, int, int] ?
-def dateDecode(st: str) -> list[int]:
+def dateDecode(st: str) -> tuple[int, int, int]:
 	neg = False
 	if st.startswith("-"):
 		neg = True
@@ -71,14 +70,15 @@ def dateDecode(st: str) -> list[int]:
 		raise ValueError(
 			f"bad date '{st}': invalid numbers count {len(parts)}",
 		)
+	ys, ms, ds = parts
 	try:
-		date = [int(p) for p in parts]
+		y, m, d = (int(ys), int(ms), int(ds))
 	except ValueError:
 		raise ValueError(f"bad date '{st}': omitting non-numeric") from None
 	if neg:
-		date[0] *= -1
-	checkDate(date)
-	return date
+		y *= -1
+	checkDate((y, m, d))
+	return y, m, d
 
 
 # TODO: move to cal_types/
@@ -117,7 +117,7 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 	)
 
 
-def parseDroppedDate(text) -> tuple[int, int, int] | None:
+def parseDroppedDate(text: str) -> tuple[int, int, int] | None:
 	part = text.split("/")
 	if len(part) != 3:
 		return None

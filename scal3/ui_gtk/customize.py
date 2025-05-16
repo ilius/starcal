@@ -142,7 +142,7 @@ class CustomizableCalBox(CustomizableCalObj):
 
 	"""for GtkBox (HBox and VBox)."""
 
-	def appendItem(self, item) -> None:
+	def appendItem(self, item: CustomizableCalObj) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		if item.loaded:
 			pack(self, item, item.expand, item.expand)
@@ -160,11 +160,11 @@ class CustomizableCalBox(CustomizableCalObj):
 	# very buggy with Gtk3. Removing all (active) items from gtk.Box and
 	# re-packing them all apears to be fast enough, so doing that instead
 
-	def moveItem(self, i, j) -> None:
+	def moveItem(self, i: int, j: int) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
-	def insertItemWidget(self, _i) -> None:
+	def insertItemWidget(self, _i: int) -> None:
 		self.repackAll()
 
 
@@ -193,7 +193,7 @@ def newSubPageButton(
 	button = gtk.Button()
 	button.add(hbox)
 
-	def onClick(_button, page) -> None:
+	def onClick(_button: gtk.Button, page: StackPage) -> None:
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
 		item.emit("goto-page", page.pagePath)

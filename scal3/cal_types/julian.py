@@ -20,15 +20,11 @@
 
 __all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
+from scal3.cal_types.types import TranslateFunc
+
 name = "julian"
 desc = "Julian"
 origLang = "en"
-
-from math import floor
-
-
-def ifloor(x):
-	return floor(x)
 
 
 monthName = (
@@ -62,11 +58,18 @@ monthNameAb = (
 )
 
 
-def getMonthName(m, y=None):  # noqa: ARG001
+def getMonthName(
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
+def getMonthNameAb(
+	tr: TranslateFunc,
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -79,7 +82,7 @@ minMonthLen = 28
 maxMonthLen = 32
 avgYearLen = 365.25
 
-options = ()
+options = []
 
 monthLenSum = (
 	0,
@@ -102,11 +105,11 @@ def save() -> None:
 	pass
 
 
-def isLeap(year):
+def isLeap(year: int) -> bool:
 	return year % 4 == 0
 
 
-def getYearDays(month, leap):
+def getYearDays(month: int, leap: bool) -> int:
 	"""
 	month: int, 1..13
 	leap: bool.
@@ -117,7 +120,7 @@ def getYearDays(month, leap):
 	return ydays
 
 
-def getMonthDayFromYdays(yDays, leap):
+def getMonthDayFromYdays(yDays: int, leap: bool) -> tuple[int, int]:
 	"""
 	yDays: int, number of days in year
 	leap: bool.
@@ -129,12 +132,12 @@ def getMonthDayFromYdays(yDays, leap):
 	return month, day
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	quadCount, yMode = divmod(year, 4)
 	return epoch + 1461 * quadCount + 365 * yMode + getYearDays(month, yMode == 0) + day
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> tuple[int, int, int]:
 	"""
 	quad: 4 years
 	quadCount (p1): quad count
@@ -142,7 +145,7 @@ def jd_to(jd):
 	yMode (p2): year % 4
 	yDays (q2+1): year remaining days count.
 	"""
-	# wjd = ifloor(jd - 0.5) + 1
+	# wjd = floor(jd - 0.5) + 1
 	quadCount, quadDays = divmod(jd - epoch, 1461)
 
 	if quadDays == 0:  # first day of quad (and year)
@@ -156,7 +159,7 @@ def jd_to(jd):
 	return (year, month, day)
 
 
-def getMonthLen(year, month):
+def getMonthLen(year: int, month: int) -> int:
 	if month == 12:
 		return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
 

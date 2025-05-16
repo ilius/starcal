@@ -30,14 +30,6 @@ import sys
 import typing
 from os.path import join
 
-from scal3.ui import conf
-
-if typing.TYPE_CHECKING:
-	from collections.abc import Callable
-
-	from scal3.event_update_queue import EventUpdateRecord
-
-
 from gi.overrides.GObject import Object
 
 from scal3 import locale_man, ui
@@ -53,10 +45,17 @@ from scal3.path import (
 	sourceDir,
 	sysConfDir,
 )
+from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
+
+if typing.TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from scal3.event_update_queue import EventUpdateRecord
+	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = [
 	"BaseCalObj",
@@ -123,7 +122,11 @@ class BaseCalObj(CalObjType):
 		self.items = []
 		self.enable = True
 
-	def onConfigChange(self, sender=None, toParent=True) -> None:
+	def onConfigChange(
+		self,
+		sender: CustomizableCalObj | None = None,
+		toParent: bool = True,
+	) -> None:
 		if sender is self:
 			return
 		if sender is None:
@@ -138,7 +141,11 @@ class BaseCalObj(CalObjType):
 			if item.enable and item is not sender:
 				item.onConfigChange(sender=sender, toParent=False)
 
-	def onDateChange(self, sender=None, toParent=True) -> None:
+	def onDateChange(
+		self,
+		sender: CustomizableCalObj | None = None,
+		toParent: bool = True,
+	) -> None:
 		if sender is self:
 			return
 		if sender is None:
@@ -159,13 +166,13 @@ class BaseCalObj(CalObjType):
 		self.onConfigChange()
 		self.showHide()
 
-	def __getitem__(self, key):
+	def __getitem__(self, key: str) -> CustomizableCalObj | None:
 		for item in self.items:
 			if item.objName == key:
 				return item
 		return None
 
-	def connectItem(self, item) -> None:
+	def connectItem(self, item: CustomizableCalObj) -> None:
 		item.connect("config-change", self.onConfigChange)
 		item.connect("date-change", self.onDateChange)
 
@@ -173,18 +180,18 @@ class BaseCalObj(CalObjType):
 	# 	self.items.insert(index, item)
 	# 	self.connectItem(item)
 
-	def appendItem(self, item) -> None:
+	def appendItem(self, item: CustomizableCalObj) -> None:
 		self.items.append(item)
 		self.connectItem(item)
 
-	def replaceItem(self, itemIndex, item) -> None:
+	def replaceItem(self, itemIndex: int, item: CustomizableCalObj) -> None:
 		self.items[itemIndex] = item
 		self.connectItem(item)
 
-	def moveItem(self, i, j) -> None:
+	def moveItem(self, i: int, j: int) -> None:
 		self.items.insert(j, self.items.pop(i))
 
-	def addItemWidget(self, i) -> None:
+	def addItemWidget(self, i: int) -> None:
 		pass
 
 	def showHide(self) -> None:
@@ -327,14 +334,14 @@ class IntegatedWindowList(BaseCalObj):
 		self.styleProvider.load_from_data(css.encode("utf-8"))
 
 
-def getGtkDefaultFont():
+def getGtkDefaultFont() -> ui.Font:
 	fontName = settings.get_property("gtk-font-name")
 	font = gfontDecode(fontName)
 	font.size = max(font.size, 5)
 	return font
 
 
-def _getLightness(c: gdk.Color):
+def _getLightness(c: gdk.Color) -> float:
 	maxValue = max(c.red, c.green, c.blue)
 	if maxValue > 255:
 		log.warning(f"_getLightness: bad color {c}")
@@ -342,7 +349,7 @@ def _getLightness(c: gdk.Color):
 	return (maxValue + min(c.red, c.green, c.blue)) / 2.0
 
 
-def hasLightTheme(widget):
+def hasLightTheme(widget: gtk.Widget) -> bool:
 	styleCtx = widget.get_style_context()
 	fg = styleCtx.get_color(gtk.StateFlags.NORMAL)
 	bg = styleCtx.get_property("background-color", gtk.StateFlags.NORMAL)
@@ -455,7 +462,7 @@ def updateFormatsBin() -> None:
 # ------------------------------
 
 
-def findAskpass():
+def findAskpass() -> str | None:
 	from os.path import isfile
 
 	for askpass in (
@@ -558,7 +565,7 @@ loadConf()
 # ------------------------------------------------------------
 
 
-def getMonitor():
+def getMonitor() -> gdk.Monitor:
 	display = gdk.Display.get_default()
 
 	monitor = display.get_monitor_at_point(1, 1)
@@ -579,7 +586,7 @@ def getMonitor():
 	return None
 
 
-def getScreenSize():
+def getScreenSize() -> tuple[int, int]:
 	# includes panels/docks
 	monitor = getMonitor()
 	if monitor is None:
@@ -627,7 +634,7 @@ else:
 # rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
 
 
-def screenSizeChanged(_screen) -> None:
+def screenSizeChanged(_screen: gdk.Screen) -> None:
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return

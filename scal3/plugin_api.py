@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -29,7 +31,12 @@ class PluginError(Exception):
 	pass
 
 
-def getAttr(moduleName, attr, default=None, absolute=False):
+def getAttr(
+	moduleName: str,
+	attr: str,
+	default: Any = None,
+	absolute: bool = False,
+) -> Any:
 	if not absolute:
 		moduleName = "scal3." + moduleName
 	# module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
@@ -44,7 +51,12 @@ def getAttr(moduleName, attr, default=None, absolute=False):
 	return getattr(module, attr, default)
 
 
-def setAttr(moduleName, attr, value, absolute=False) -> None:
+def setAttr(
+	moduleName: str,
+	attr: str,
+	value: Any,
+	absolute: bool = False,
+) -> None:
 	if not absolute:
 		moduleName = "scal3." + moduleName
 	# module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])

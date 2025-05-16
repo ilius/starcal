@@ -2,6 +2,7 @@ from scal3 import logger
 
 log = logger.get()
 
+from scal3.event_lib.event_base import Event
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -13,7 +14,7 @@ maxDur = 99999
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event) -> None:  # FIXME
+	def __init__(self, event: Event) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -50,7 +51,7 @@ class WidgetClass(common.WidgetClass):
 		# ----
 		self.endRelComboChanged()
 
-	def endRelComboChanged(self, _combo=None) -> None:
+	def endRelComboChanged(self, _combo: gtk.ComboBox | None = None) -> None:
 		rel = self.endRelCombo.get_active()
 		start = self.startSpin.get_value()
 		end = self.endSpin.get_value()
@@ -61,7 +62,7 @@ class WidgetClass(common.WidgetClass):
 			self.endSpin.set_range(start + 1, maxStart)
 			self.endSpin.set_value(max(start + 1, start + end))
 
-	def startSpinChanged(self, _spin=None) -> None:
+	def startSpinChanged(self, _spin: gtk.SpinButton | None = None) -> None:
 		if self.endRelCombo.get_active() == 1:  # absolute(end)
 			self.endSpin.set_range(
 				self.startSpin.get_value() + 1,

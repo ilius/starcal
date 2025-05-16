@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -10,7 +12,7 @@ from json import JSONEncoder
 __all__ = ["dataToCompactJson", "dataToPrettyJson"]
 
 
-def _default(_self, obj):
+def _default(_self: Any, obj: Any) -> Any:
 	return getattr(obj.__class__, "to_json", _default.default)(obj)
 
 

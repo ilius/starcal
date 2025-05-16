@@ -15,12 +15,15 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 import logging
+from collections.abc import Sequence
 
 from scal3 import logger
 
 log = logger.get()
 
 from time import perf_counter
+
+from igraph import Graph
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -40,18 +43,19 @@ movableEventTypes = (
 # -----------------------------------------
 
 
+# FIXME: what is u0 and dt?
 class Box:
 	def __init__(
 		self,
-		t0,
-		t1,
-		odt,
-		u0,
-		du,
-		text="",
-		color=None,
-		ids=None,
-		lineW=2,
+		t0: int,
+		t1: int,
+		odt: int,
+		u0: float,
+		du: float,
+		text: str = "",
+		color: ui.ColorType | None = None,
+		ids: tuple[int, int] | None = None,
+		lineW: float = 2,
 	) -> None:
 		self.t0 = t0
 		self.t1 = t1
@@ -63,10 +67,10 @@ class Box:
 		self.u0 = u0
 		self.du = du
 		# ----
-		self.x = None
-		self.w = None
-		self.y = None
-		self.h = None
+		self.x = 0.0
+		self.w = 0.0
+		self.y = 0.0
+		self.h = 0.0
 		# ----
 		self.text = text
 		if color is None:
@@ -79,17 +83,23 @@ class Box:
 
 	# ---------
 
-	def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH) -> None:
+	def setPixelValues(
+		self,
+		timeStart: float,
+		pixelPerSec: float,
+		beforeBoxH: float,
+		maxBoxH: float,
+	) -> None:
 		self.x = (self.t0 - timeStart) * pixelPerSec
 		self.w = (self.t1 - self.t0) * pixelPerSec
 		self.y = beforeBoxH + maxBoxH * self.u0
 		self.h = maxBoxH * self.du
 
-	def contains(self, px, py):
+	def contains(self, px: float, py: float) -> bool:
 		return 0 <= px - self.x < self.w and 0 <= py - self.y < self.h
 
 
-def makeIntervalGraph(boxes):
+def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 	try:
 		from igraph import Graph
 	except ImportError:
@@ -118,7 +128,12 @@ def makeIntervalGraph(boxes):
 	return g
 
 
-def renderBoxesByGraph(boxes, graph, minColor, minU) -> None:
+def renderBoxesByGraph(
+	boxes: Sequence[Box],
+	graph: Graph,
+	minColor: ui.ColorType,
+	minU: float,
+) -> None:
 	colorCount = max(graph.vs["color"]) - minColor + 1
 	if colorCount < 1:
 		return
@@ -140,11 +155,11 @@ def renderBoxesByGraph(boxes, graph, minColor, minU) -> None:
 
 
 def calcEventBoxes(
-	timeStart,
-	timeEnd,
-	pixelPerSec,
-	borderTm,
-):
+	timeStart: int,
+	timeEnd: int,
+	pixelPerSec: float,
+	borderTm: int,
+) -> list[Box]:
 	try:
 		from scal3.graph_utils import (
 			addBoxHeightToColoredGraph,

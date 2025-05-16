@@ -25,8 +25,8 @@ class DirectionComboBox(gtk.ComboBox):
 			ls.append([d])
 		self.set_active(0)
 
-	def getValue(self):
+	def getValue(self) -> str:
 		return self.keys[self.get_active()]
 
-	def setValue(self, value) -> None:
+	def setValue(self, value: str) -> None:
 		self.set_active(self.keys.index(value))

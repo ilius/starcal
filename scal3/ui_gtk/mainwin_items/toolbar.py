@@ -1,5 +1,6 @@
 from scal3 import core
 from scal3.locale_man import tr as _
+from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.toolbox import (
@@ -25,7 +26,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		)
 		# self.setIconFile("starcal.svg")
 
-	def getMenuPos(self):
+	def getMenuPos(self) -> tuple[int, int]:
 		wcal = self.get_parent().get_parent()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
@@ -35,7 +36,11 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			y0 + h // 2,
 		)
 
-	def onButtonPress(self, _widget=None, gevent=None) -> None:
+	def onButtonPress(
+		self,
+		_widget: gtk.Widget | None = None,
+		gevent: gdk.Event | None = None,
+	) -> None:
 		toolbar = self.get_parent()
 		x, y = self.translate_coordinates(
 			toolbar.get_parent(),
@@ -137,7 +142,7 @@ class CalObj(CustomizableToolBox):
 	]
 	defaultItemsDict = {item.objName: item for item in defaultItems}
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		CustomizableToolBox.__init__(
 			self,

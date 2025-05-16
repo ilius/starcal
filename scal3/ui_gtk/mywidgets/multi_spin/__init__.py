@@ -16,6 +16,9 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from collections.abc import Sequence
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -23,7 +26,7 @@ log = logger.get()
 from time import perf_counter
 
 from scal3 import locale_man, ui
-from scal3.mywidgets.multi_spin import ContainerField
+from scal3.mywidgets.multi_spin import ContainerField, Field
 from scal3.ui_gtk import gdk, getScrollValue, gtk, pack, timeout_add
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelWidth
@@ -36,7 +39,7 @@ __all__ = ["MultiSpinButton", "SingleSpinButton"]
 class AutoSizeEntry(gtk.Entry):
 	extra_width = 10  # optimal value depends on theme
 
-	def __init__(self, *args, maxChars=0, **kwargs) -> None:
+	def __init__(self, *args, maxChars: bool = 0, **kwargs) -> None:
 		gtk.Entry.__init__(self, *args, **kwargs)
 		self.set_width_chars(maxChars)
 		# ---
@@ -45,7 +48,7 @@ class AutoSizeEntry(gtk.Entry):
 		# ---
 		self.connect("changed", self.onChange)
 
-	def do_get_preferred_width(self):
+	def do_get_preferred_width(self) -> tuple[float, float]:
 		# must return minimum_size, natural_size
 		text = self.get_text()
 		text = " " + text + " "
@@ -57,7 +60,7 @@ class AutoSizeEntry(gtk.Entry):
 			self.maxPixelWidth = pixelWidth
 		return pixelWidth, pixelWidth
 
-	def onChange(self, _entry) -> None:
+	def onChange(self, _entry: gtk.Widget) -> None:
 		self.queue_resize()
 
 
@@ -93,7 +96,7 @@ class MultiSpinButton(gtk.Box):
 	def set_editable(self, editable: bool) -> None:
 		self.entry.set_editable(editable)
 
-	def get_selection_bounds(self):
+	def get_selection_bounds(self) -> tuple[int, int]:
 		return self.entry.get_selection_bounds()
 
 	def get_increments(self) -> "tuple[int, int]":
@@ -105,11 +108,11 @@ class MultiSpinButton(gtk.Box):
 
 	def __init__(
 		self,
-		sep=None,
-		fields=None,
-		arrow_select=True,
-		step_inc=1,
-		page_inc=10,
+		sep: str | None = None,
+		fields: list[Field] | None = None,
+		arrow_select: bool = True,
+		step_inc: float = 1,
+		page_inc: float = 10,
 	) -> None:
 		if sep is None:
 			raise ValueError("MultiSpinButton: sep is None")
@@ -196,21 +199,21 @@ class MultiSpinButton(gtk.Box):
 		# ----
 		# self.select_region(0, 0)
 
-	def _entry_changed(self, _widget) -> None:
+	def _entry_changed(self, _widget: gtk.Widget) -> None:
 		self.emit("changed")
 
-	def _entry_activate(self, _widget) -> bool:
+	def _entry_activate(self, _widget: gtk.Widget) -> bool:
 		# log.debug("_entry_activate", self.entry.get_text())
 		self.update()
 		# log.debug(self.entry.get_text())
 		self.emit("activate")
 		return True
 
-	def get_value(self):
+	def get_value(self) -> Any:
 		self.field.setText(self.entry.get_text())
 		return self.field.getValue()
 
-	def set_value(self, value) -> None:
+	def set_value(self, value: Sequence) -> None:
 		pos = self.entry.get_position()
 		self.field.setValue(value)
 		self.entry.set_text(self.field.getText())
@@ -222,7 +225,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def insertText(self, s, clearSelection=True) -> None:
+	def insertText(self, s: str, clearSelection: bool = True) -> None:
 		selection = self.get_selection_bounds()
 		if selection and clearSelection:
 			start, end = selection
@@ -235,7 +238,7 @@ class MultiSpinButton(gtk.Box):
 			self.entry.insert_text(s, pos)
 			self.entry.set_position(pos + len(s))
 
-	def entry_plus(self, p) -> None:
+	def entry_plus(self, p: int) -> None:
 		self.update()
 		pos = self.entry.get_position()
 		self.field.getFieldAt(
@@ -245,7 +248,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def onKeyPress(self, _widget, gevent) -> bool:
+	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		step_inc = self.step_inc
@@ -310,13 +313,13 @@ class MultiSpinButton(gtk.Box):
 		# log.debug(kname, kval)
 		return False
 
-	def onDownButtonPress(self, _button, _gevent) -> None:
+	def onDownButtonPress(self, _button: gtk.Widget, _gevent: gdk.Event) -> None:
 		self._arrow_press(-self.step_inc)
 
-	def onUpButtonPress(self, _button, _gevent) -> None:
+	def onUpButtonPress(self, _button: gtk.Widget, _gevent: gdk.Event) -> None:
 		self._arrow_press(self.step_inc)
 
-	def _scroll(self, _widget, gevent) -> bool:
+	def _scroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		d = getScrollValue(gevent)
 		if d in {"up", "down"}:
 			if not self.entry.has_focus():
@@ -332,13 +335,13 @@ class MultiSpinButton(gtk.Box):
 	# 	# force_select
 	# 	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
 
-	def _arrow_press(self, plus) -> None:
+	def _arrow_press(self, plus: int) -> None:
 		self.pressTm = perf_counter()
 		self._remain = True
 		timeout_add(ui.timeout_initial, self._arrow_remain, plus)
 		self.entry_plus(plus)
 
-	def _arrow_remain(self, plus) -> None:
+	def _arrow_remain(self, plus: int) -> None:
 		if (
 			self.entry.get_editable()
 			and self._remain
@@ -351,7 +354,7 @@ class MultiSpinButton(gtk.Box):
 				plus,
 			)
 
-	def onButtonRelease(self, _widget, _gevent) -> None:
+	def onButtonRelease(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
 		self._remain = False
 
 	"""-- ????????????????????????????????
@@ -368,7 +371,7 @@ class MultiSpinButton(gtk.Box):
 
 
 class SingleSpinButton(MultiSpinButton):
-	def __init__(self, field=None, **kwargs) -> None:
+	def __init__(self, field: Field | None = None, **kwargs) -> None:
 		if field is None:
 			raise ValueError("SingleSpinButton: field is None")
 		MultiSpinButton.__init__(
@@ -383,5 +386,5 @@ class SingleSpinButton(MultiSpinButton):
 	# def set_range(self, minim, maxim): FIXME
 	# 	gtk.SpinButton.set_range(self, minim, maxim)
 
-	def get_value(self):
+	def get_value(self) -> Any:
 		return MultiSpinButton.get_value(self)[0]

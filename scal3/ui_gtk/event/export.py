@@ -1,6 +1,7 @@
 from os.path import join, split, splitext
 
 from scal3 import cal_types, core, ui
+from scal3.event_lib.groups import EventGroup
 from scal3.json_utils import (
 	dataToCompactJson,
 	dataToPrettyJson,
@@ -16,7 +17,7 @@ __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExport
 
 
 class SingleGroupExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, group, **kwargs) -> None:
+	def __init__(self, group: EventGroup, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
@@ -71,7 +72,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget=None) -> None:
+	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
 		from scal3.os_utils import fixStrForFileName
 
 		fpath = self.fcw.get_filename()
@@ -202,13 +203,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.formatRadioChanged()
 		self.resize(600, 600)
 
-	def disableAllClicked(self, _widget=None) -> None:
+	def disableAllClicked(self, _widget: gtk.Widget | None = None) -> None:
 		self.groupSelect.disableAll()
 
-	def enableAllClicked(self, _widget=None) -> None:
+	def enableAllClicked(self, _widget: gtk.Widget | None = None) -> None:
 		self.groupSelect.enableAll()
 
-	def formatRadioChanged(self, _widget=None) -> None:
+	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
 		# ---
 		fpath = self.fpathEntry.get_text()
@@ -246,7 +247,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 
 
 class EventListExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, idsList, defaultFileName="", groupTitle="", **kwargs) -> None:
+	def __init__(
+		self,
+		idsList: list[tuple[int, int]],
+		defaultFileName: str = "",
+		groupTitle: str = "",
+		**kwargs,
+	) -> None:
 		self._idsList = idsList
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
@@ -302,7 +309,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget=None) -> None:
+	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])

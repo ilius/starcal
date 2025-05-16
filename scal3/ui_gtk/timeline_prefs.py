@@ -13,6 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+import typing
+
 from scal3 import timeline
 from scal3.locale_man import tr as _
 from scal3.timeline import conf
@@ -34,9 +36,16 @@ from scal3.ui_gtk.utils import (
 __all__ = ["TimeLinePreferencesWindow"]
 
 
+class TimeLineType(typing.Protocol):
+	def queue_draw(self) -> None: ...
+
+	def updateBasicButtons(self) -> None: ...
+
+	def updateMovementButtons(self) -> None: ...
+
+
 class TimeLinePreferencesWindow(gtk.Window):
-	def __init__(self, timeLine, **kwargs) -> None:
-		self._timeLine = timeLine
+	def __init__(self, timeLine: TimeLineType, **kwargs) -> None:
 		gtk.Window.__init__(self, **kwargs)
 		self.set_title(_("Time Line Preferences"))
 		self.set_position(gtk.WindowPosition.CENTER)
@@ -893,10 +902,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ----
 		self.vbox.show_all()
 
-	def gotoPageClicked(self, _button, page) -> None:
+	def gotoPageClicked(self, _button: gtk.Widget, page: StackPage) -> None:
 		self.stack.gotoPage(page.pagePath)
 
-	def newWideButton(self, page: StackPage):
+	def newWideButton(self, page: StackPage) -> gtk.Widget:
 		hbox = HBox(spacing=10)
 		hbox.set_border_width(10)
 		label = gtk.Label(label=page.pageLabel)
@@ -911,11 +920,15 @@ class TimeLinePreferencesWindow(gtk.Window):
 		button.connect("clicked", self.gotoPageClicked, page)
 		return button
 
-	def onDelete(self, _obj=None, _data=None) -> bool:
+	def onDelete(
+		self,
+		_widget: gtk.Widget | None = None,
+		_data: typing.Any = None,
+	) -> bool:
 		self.hide()
 		return True
 
-	def onSaveClick(self, _obj=None) -> bool:
+	def onSaveClick(self, _widget: gtk.Widget | None = None) -> bool:
 		self.hide()
 		timeline.saveConf()
 		return True
@@ -925,5 +938,3 @@ class TimeLinePreferencesWindow(gtk.Window):
 			self.hide()
 			return True
 		return False
-
-	# self._timeLine.queue_draw()

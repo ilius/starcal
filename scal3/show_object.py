@@ -1,12 +1,13 @@
 import json
 import sys
+from typing import Any
 
 from scal3.filesystem import DefaultFileSystem
 from scal3.path import confDir
 from scal3.s_object import SObjBinaryModel, getObjectPath
 
 
-def dataToPrettyJson(data):
+def dataToPrettyJson(data: dict[str, Any]) -> str:
 	return json.dumps(
 		data,
 		sort_keys=True,

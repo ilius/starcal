@@ -4,7 +4,7 @@ line-length = 88
 
 # see https://docs.astral.sh/ruff/rules/
 lint.select = [
-	# "ANN", # flake8-annotationsq, still gives errors for `self`
+	"ANN", # annotations
 	"F", # Pyflakes
 	"E", # pycodestyle Error
 	"W", # pycodestyle Warning
@@ -65,6 +65,10 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
+	"ANN003",  # Missing type annotation for `**kwargs`
+	"ANN002",  # Missing type annotation for `*_args`
+	"ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
+
 	"FURB189", # Subclassing `list` can be error prone, use `collections.UserList` instead
 	"FURB103", # `open` and `write` should be replaced by `Path(...)....`
 	"PYI024",  # Use `typing.NamedTuple` instead of `collections.namedtuple`
@@ -135,6 +139,7 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "mytz/*.py" = ["ANN"]
+"plugins/*/*.py" = ["ANN"]
 "scal3/event_lib_import_all.py" = [
 	"F401", # imported but unused
 	"F811", # Redefinition of unused ...
@@ -152,10 +157,12 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"F811", # Redefinition of unused ...
 ]
 "scripts/*.py" = [
+	"ANN",
 	"T201", # `print` found
 	"SIM",
 ]
 "tools/*.py" = [
+	"ANN",
 	"T201",   # `print` found
 	"INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
 ]
@@ -173,7 +180,11 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "scal3/bin_heap.py" = [
 	"S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
 ]
+"tests.py" = [
+	"ANN",     # annotations
+]
 "*_test.py" = [
+	"ANN",     # annotations
 	"T201",    # `print` found
 	"T203",    # `pprint` found
 	"S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes
@@ -189,6 +200,7 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "scal3/event_search_tree.py" = [
 	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple`
 ]
+"scal3/ui_gtk/player.py" = ["ANN"]
 
 "tools/afghanistan-events.py" = ["FLY"]
 

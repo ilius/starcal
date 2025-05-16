@@ -70,7 +70,7 @@ def init() -> None:
 		warnings.filterwarnings(os.getenv("WARNINGS"))
 
 
-def get():
+def get() -> logging.Logger:
 	if log is None:
 		init()
 	return log

@@ -14,15 +14,15 @@ __all__ = [
 type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
 
 
-def rgbToInt(r, g, b):
+def rgbToInt(r: int, g: int, b: int) -> int:
 	"""For example (170, 85, 52) or "#aa5534" becomes 0xaa5534."""
 	return b + g * 256 + r * 256**2
 
 
-def rgbToHsl(r, g, b):
-	r /= 255.0
-	g /= 255.0
-	b /= 255.0
+def rgbToHsl(red: int, green: int, blue: int) -> tuple[float | None, float, float]:
+	r = red / 255.0
+	g = green / 255.0
+	b = blue / 255.0
 	# ---
 	mx = max(r, g, b)
 	mn = min(r, g, b)
@@ -51,7 +51,7 @@ def rgbToHsl(r, g, b):
 	return (h, s, ln)
 
 
-def hslToRgb(h, s, ln):
+def hslToRgb(h: float, s: float, ln: float) -> tuple[int, int, int]:
 	# 0.0 <= h <= 360.0
 	# 0.0 <= s <= 1.0
 	# 0.0 <= ln <= 1.0
@@ -85,7 +85,7 @@ def hslToRgb(h, s, ln):
 # 	return hslToRgb(h, s, l)
 
 
-def htmlColorToRgb(hc):
+def htmlColorToRgb(hc: str) -> tuple[int, int, int]:
 	return (
 		int(hc[1:3], 16),
 		int(hc[3:5], 16),
@@ -93,20 +93,19 @@ def htmlColorToRgb(hc):
 	)
 
 
-def rgbToHtmlColor(color: ColorType):
+def rgbToHtmlColor(color: ColorType) -> str:
 	for x in color:
 		assert isinstance(x, int)
 	return "#" + "".join([f"{x:02x}" for x in color])
 
 
 def rgbToCSS(color: ColorType) -> str:
-	color = tuple(color)
 	if len(color) == 3:
-		return f"rgb{color}"
+		return f"rgb{tuple(color)}"
 	if len(color) == 4:
-		return f"rgba{color}"
+		return f"rgba{tuple(color)}"
 	raise ValueError(f"invalid {color=}")
 
 
-def colorizeSpan(text, color) -> str:
+def colorizeSpan(text: str, color: ColorType) -> str:
 	return f'<span color="{rgbToHtmlColor(color)}">{text}</span>'

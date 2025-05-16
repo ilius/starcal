@@ -23,7 +23,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import Never
+from typing import TYPE_CHECKING, Self
 
 from scal3 import locale_man
 from scal3.locale_man import (
@@ -31,6 +31,9 @@ from scal3.locale_man import (
 	numEncode,
 	textNumDecode,
 )
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = [
 	"ContainerField",
@@ -41,43 +44,43 @@ __all__ = [
 	"IntField",
 	"MonthField",
 	"NumField",
-	"SingleCharField",
 	"StrConField",
 	"YearField",
 	"Z60Field",
 ]
 
 
-class Field:
+class Field[T]:
 	myKeys = set()
 
 	def setDefault(self) -> None:
-		pass
-
-	def setValue(self, v) -> None:
-		pass
-
-	def getValue(self) -> None:  # noqa: PLR6301
-		return None
-
-	def plus(self, p) -> None:
-		"""P is usually 1, -1, 10, -10."""
-
-	def setText(self) -> None:
-		pass
-
-	def getText(self) -> None:
-		pass
-
-	def getMaxWidth(self) -> Never:
 		raise NotImplementedError
 
-	def getFieldAt(self, text, pos):  # noqa: ARG002
+	def setValue(self, value: T) -> None:
+		raise NotImplementedError
+
+	def getValue(self) -> T:  # noqa: PLR6301
+		raise NotImplementedError
+
+	def plus(self, p: T) -> None:
+		"""P is usually 1, -1, 10, -10."""
+		raise NotImplementedError
+
+	def setText(self, text: str) -> None:
+		raise NotImplementedError
+
+	def getText(self) -> str:
+		raise NotImplementedError
+
+	def getMaxWidth(self) -> int:
+		raise NotImplementedError
+
+	def getFieldAt(self, text: str, pos: int) -> Self:  # noqa: ARG002
 		return self
 
 
-class NumField(Field):
-	def setRange(self, minim, maxim) -> None:
+class NumField[T: int | float](Field[T]):
+	def setRange(self, minim: T, maxim: T) -> None:
 		self.minim = minim
 		self.maxim = maxim
 		self.setValue(self.value)
@@ -85,26 +88,26 @@ class NumField(Field):
 	def setDefault(self) -> None:
 		self.value = self.minim
 
-	def setValue(self, v) -> None:
+	def setValue(self, v: T) -> None:
 		if v < self.minim:
 			v = self.minim
 		elif v > self.maxim:
 			v = self.maxim
 		self.value = v
 
-	def getValue(self):
+	def getValue(self) -> T:
 		return self.value
 
 
-class IntField(NumField):
-	def __init__(self, minim, maxim, fill=0) -> None:
+class IntField(NumField[int]):
+	def __init__(self, minim: int, maxim: int, fill: int = 0) -> None:
 		self.minim = minim
 		self.maxim = maxim
 		self.fill = fill
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
 
-	def setText(self, text) -> None:
+	def setText(self, text: str) -> None:
 		if not text:
 			self.setDefault()
 			return
@@ -117,31 +120,31 @@ class IntField(NumField):
 		else:
 			self.setValue(num)
 
-	def setValue(self, v):
-		return NumField.setValue(self, int(v))
+	def setValue(self, v: int) -> None:
+		NumField.setValue(self, int(v))
 
-	def getText(self):
+	def getText(self) -> str:
 		return numEncode(self.value, fillZero=self.fill)
 
-	def getMaxWidth(self):
+	def getMaxWidth(self) -> int:
 		return max(
 			len(str(self.minim)),
 			len(str(self.maxim)),
 		)
 
-	def plus(self, p):
-		return self.setValue(self.value + p)
+	def plus(self, p: int) -> None:
+		self.setValue(self.value + p)
 
 
-class FloatField(NumField):
-	def __init__(self, minim, maxim, digits) -> None:
+class FloatField(NumField[float]):
+	def __init__(self, minim: float, maxim: float, digits: int) -> None:
 		self.minim = minim
 		self.maxim = maxim
 		self.digits = digits
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
 
-	def setText(self, text) -> None:
+	def setText(self, text: str) -> None:
 		if not text:
 			self.setDefault()
 			return
@@ -153,17 +156,17 @@ class FloatField(NumField):
 		else:
 			self.setValue(num)
 
-	def getText(self):
+	def getText(self) -> str:
 		return floatEncode(f"{self.value:.{self.digits}f}")
 
-	def getMaxWidth(self):
+	def getMaxWidth(self) -> int:
 		return max(
 			len(f"{self.minim:.{self.digits}f}"),
 			len(f"{self.maxim:.{self.digits}f}"),
 		)
 
-	def plus(self, p: float):
-		return self.setValue(
+	def plus(self, p: float) -> None:
+		self.setValue(
 			self.value + p,
 		)
 
@@ -179,10 +182,10 @@ class MonthField(IntField):
 
 
 class DayField(IntField):
-	def __init__(self, pad=2) -> None:
+	def __init__(self, pad: int = 2) -> None:
 		IntField.__init__(self, 1, 31, pad)
 
-	def setMax(self, maxim) -> None:
+	def setMax(self, maxim: int) -> None:
 		self.maxim = maxim
 		# if self.value > maxim:
 		# 	self.value = maxim
@@ -198,54 +201,29 @@ class Z60Field(IntField):
 		IntField.__init__(self, 0, 59, 2)
 
 
-class SingleCharField(Field):
-	def __init__(self, *values) -> None:
-		self.values = values
-		self.myKeys = set(values)
-		self.setDefault()
-
-	def setDefault(self) -> None:
-		self.value = 0
-
-	def setValue(self, v) -> None:
-		if v not in self.values:
-			raise ValueError(
-				f"SingleCharField.setValue: {v!r} is not a valid value",
-			)
-		self.value = v
-
-	def getValue(self):
-		return self.value
-
-	def setText(self, text: str) -> None:
-		self.setValue(text)
-
-	def getText(self):
-		return self.value
-
-	def getMaxWidth(self) -> int:  # noqa: PLR6301
-		return 1
-
-
-class StrConField(Field):
-	def __init__(self, text) -> None:
+class StrConField(Field[str]):
+	def __init__(self, text: str) -> None:
 		self._text = text
 
-	def getValue(self):
+	def getValue(self) -> str:
 		return self._text
 
-	def getText(self):
+	def getText(self) -> str:
 		return self._text
 
-	def getMaxWidth(self):
+	def getMaxWidth(self) -> int:
 		return len(self._text)
 
 
-class ContainerField(Field):
+class ContainerField[T](Field):
 	def __len__(self) -> int:
 		return len(self.children)
 
-	def __init__(self, sep, *children) -> None:
+	def __init__(
+		self,
+		sep: str,
+		*children: Field[T],
+	) -> None:
 		self.sep = sep
 		self.children = children
 		for child in children:
@@ -255,17 +233,17 @@ class ContainerField(Field):
 		for child in self.children:
 			child.setDefault()
 
-	def setValue(self, value) -> None:
+	def setValue(self, value: Sequence[T]) -> None:
 		if not isinstance(value, tuple | list):
 			value = (value,)
 		n = min(len(value), len(self))
 		for i in range(n):
 			self.children[i].setValue(value[i])
 
-	def getValue(self):
+	def getValue(self) -> list[T]:
 		return [child.getValue() for child in self.children]
 
-	def setText(self, text) -> None:
+	def setText(self, text: str) -> None:
 		parts = text.split(self.sep)
 		n = len(self)
 		pn = min(n, len(parts))
@@ -275,15 +253,15 @@ class ContainerField(Field):
 		for i in range(pn, n):
 			self.children[i].setDefault()
 
-	def getText(self):
+	def getText(self) -> str:
 		return self.sep.join([child.getText() for child in self.children])
 
-	def getMaxWidth(self):
+	def getMaxWidth(self) -> int:
 		return len(self.sep) * (len(self) - 1) + sum(
 			child.getMaxWidth() for child in self.children
 		)
 
-	def getFieldAt(self, text, pos):
+	def getFieldAt(self, text: str, pos: int) -> Field[T]:
 		if not self.children:
 			return self
 		fieldIndex = 0

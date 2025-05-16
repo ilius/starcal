@@ -14,28 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3 import ui
-from scal3.timeline import conf
+from __future__ import annotations
 
-__all__ = ["Tick"]
+from scal3 import logger
+
+log = logger.get()
+
+from typing import TYPE_CHECKING
+
+from scal3.s_object import SObj
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from .event_base import Event
 
 
-class Tick:
-	def __init__(
-		self,
-		epoch: int,
-		pos: float,
-		unitSize: int,
-		label: str,
-		color: ui.ColorType | None = None,
-	) -> None:
-		self.epoch = epoch
-		self.pos = pos  # pixel position
-		self.height = unitSize**0.5 * conf.baseTickHeight.v
-		self.width = min(unitSize**0.2 * conf.baseTickWidth.v, conf.maxTickWidth.v)
-		self.fontSize = unitSize**0.1 * conf.baseFontSize.v
-		self.maxLabelWidth = min(unitSize * 0.5, conf.maxLabelWidth.v)  # FIXME
-		self.label = label
-		if color is None:
-			color = conf.fgColor.v
-		self.color = color
+# Should not be registered, or instantiate directly
+class EventNotifier(SObj):
+	name = ""
+	tname = ""
+	nameAlias = ""
+	desc = ""
+	params = ()
+
+	def __init__(self, event: Event) -> None:
+		self.event = event
+
+	def getCalType(self) -> str:
+		return self.event.calType
+
+	def notify(self, finishFunc: Callable) -> None:
+		pass

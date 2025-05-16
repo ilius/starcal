@@ -1,10 +1,11 @@
+from scal3.event_lib.rules import EventRule
 from scal3.ui_gtk.event import common
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.DurationInputBox):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		common.DurationInputBox.__init__(self)
 

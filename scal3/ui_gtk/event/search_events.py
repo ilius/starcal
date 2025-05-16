@@ -30,9 +30,7 @@ from scal3.cal_types import calTypes
 from scal3.core import jd_to_primary
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import (
-	deskDir,
-)
+from scal3.path import deskDir
 from scal3.ui_gtk import GdkPixbuf, HBox, Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
@@ -65,12 +63,15 @@ from scal3.utils import cmp
 if typing.TYPE_CHECKING:
 	from typing import Any
 
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups import EventGroup
+
 __all__ = ["EventSearchWindow"]
 
 
 @registerSignals
 class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
-	def __init__(self, showDesc=False) -> None:
+	def __init__(self, showDesc: bool = False) -> None:
 		gtk.Window.__init__(self)
 		self.maximize()
 		self.initVars()
@@ -394,31 +395,36 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.currentCalType = calTypes.primary
 
 	@staticmethod
-	def sort_func_group(model, iter1, iter2, _user_data=None):
+	def sort_func_group(
+		model: gtk.TreeModel,
+		iter1: gtk.TreeIter,
+		iter2: gtk.TreeIter,
+		_user_data: Any = None,
+	) -> int:
 		return cmp(
 			ui.eventGroups.index(model.get(iter1, 0)[0]),
 			ui.eventGroups.index(model.get(iter2, 0)[0]),
 		)
 
-	def updateTimeFromSensitive(self, _obj=None) -> None:
+	def updateTimeFromSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.timeFromInput.set_sensitive(self.timeFromCheck.get_active())
 
-	def updateTimeToSensitive(self, _obj=None) -> None:
+	def updateTimeToSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.timeToInput.set_sensitive(self.timeToCheck.get_active())
 
-	def updateModifiedFromSensitive(self, _obj=None) -> None:
+	def updateModifiedFromSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.modifiedFromInput.set_sensitive(self.modifiedFromCheck.get_active())
 
-	def updateTypeSensitive(self, _obj=None) -> None:
+	def updateTypeSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.typeCombo.set_sensitive(self.typeCheck.get_active())
 
-	def updateGroupSensitive(self, _obj=None) -> None:
+	def updateGroupSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.groupCombo.set_sensitive(self.groupCheck.get_active())
 
-	def updateTimezoneSensitive(self, _obj=None) -> None:
+	def updateTimezoneSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		self.timezoneCombo.set_sensitive(self.timezoneCheck.get_active())
 
-	def _collectConds(self):
+	def _collectConds(self) -> tuple[list[int], dict[str, Any]]:
 		if self.groupCheck.get_active():
 			groupIds = [
 				self.groupCombo.get_active(),
@@ -508,10 +514,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					eventCount += 1
 			_file.write("]}]}")
 
-	def onSearchClick(self, _obj=None) -> None:
+	def onSearchClick(self, _widget: gtk.Widget | None = None) -> None:
 		self.waitingDo(self._do_search)
 
-	def onExportClick(self, _obj=None) -> None:
+	def onExportClick(self, _widget: gtk.Widget | None = None) -> None:
 		idsList = []
 		for row in self.treeModel:
 			gid = row[0]
@@ -549,17 +555,17 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 				selectable=True,
 			)
 
-	def onDirectExportClick(self, _obj=None) -> None:
+	def onDirectExportClick(self, _widget: gtk.Widget | None = None) -> None:
 		self.waitingDo(self._do_directExport)
 
-	def onHideShowFiltersClick(self, _obj=None) -> None:
+	def onHideShowFiltersClick(self, _widget: gtk.Widget | None = None) -> None:
 		visible = not self.vboxFilters.get_visible()
 		self.vboxFilters.set_visible(visible)
 		self.hideShowFiltersButton.set_label(
 			_("Hide Filters") if visible else _("Show Filters"),
 		)
 
-	def editEventByPath(self, path) -> None:
+	def editEventByPath(self, path: str) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		try:
@@ -586,19 +592,24 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.treeModel.set_value(eventIter, 4, event.summary)
 		self.treeModel.set_value(eventIter, 5, event.getShownDescription())
 
-	def rowActivated(self, _treev, path, _col) -> None:
+	def rowActivated(
+		self,
+		_treev: gtk.Widget | None,
+		path: str,
+		_col: gtk.CellRenderer,
+	) -> None:
 		self.editEventByPath(path)
 
-	def editEventFromMenu(self, _menu, path) -> None:
+	def editEventFromMenu(self, _menu: gtk.Widget | None, path: str) -> None:
 		self.editEventByPath(path)
 
 	def moveEventToGroupFromMenu(
 		self,
-		_menu,
-		eventPath,
-		event,
-		old_group,
-		new_group,
+		_menu: gtk.Widget | None,
+		eventPath: str,
+		event: Event,
+		old_group: EventGroup,
+		new_group: EventGroup,
 	) -> None:
 		old_group.remove(event)
 		old_group.save()
@@ -612,7 +623,13 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.treeModel.set_value(eventIter, 0, new_group.id)
 		self.treeModel.set_value(eventIter, 2, new_group.title)
 
-	def copyEventToGroupFromMenu(self, _menu, _eventPath, event, new_group) -> None:
+	def copyEventToGroupFromMenu(
+		self,
+		_menu: gtk.Widget,
+		_eventPath: str,
+		event: Event,
+		new_group: EventGroup,
+	) -> None:
 		new_event = event.copy()
 		new_event.save()
 		new_group.append(new_event)
@@ -623,7 +640,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# ---
 		# eventIter = self.treeModel.get_iter(eventPath)
 
-	def moveEventToTrash(self, path) -> None:
+	def moveEventToTrash(self, path: str) -> None:
 		try:
 			gid = self.treeModel[path][0]
 			eid = self.treeModel[path][1]
@@ -636,8 +653,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		ui.moveEventToTrash(group, event, self)
 		self.treeModel.remove(self.treeModel.get_iter(path))
 
-	def moveEventToTrashFromMenu(self, _menu, path):
-		return self.moveEventToTrash(path)
+	def moveEventToTrashFromMenu(self, _menu: gtk.Widget, path: str) -> None:
+		self.moveEventToTrash(path)
 
 	def moveSelectionToTrash(self) -> None:
 		path = self.treev.get_cursor()[0]
@@ -645,7 +662,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			return
 		self.moveEventToTrash(path)
 
-	def getMoveToGroupSubMenu(self, path, group, event):
+	def getMoveToGroupSubMenu(
+		self,
+		path: str,
+		group: EventGroup,
+		event: Event,
+	) -> gtk.Menu:
 		# returns a MenuItem instance
 		item = ImageMenuItem(
 			_("Move to {title}").format(title="..."),
@@ -675,7 +697,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		item.set_submenu(subMenu)
 		return item
 
-	def getCopyToGroupSubMenu(self, path, event):
+	def getCopyToGroupSubMenu(self, path: str, event: Event) -> gtk.Menu:
 		# returns a MenuItem instance
 		item = ImageMenuItem(
 			_("Copy to {title}").format(title="..."),
@@ -702,7 +724,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		item.set_submenu(subMenu)
 		return item
 
-	def historyOfEventFromMenu(self, _menu, path) -> None:
+	def historyOfEventFromMenu(self, _menu: gtk.Widget, path: str) -> None:
 		from scal3.ui_gtk.event.history import EventHistoryDialog
 
 		gid = self.treeModel[path][0]
@@ -711,7 +733,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		event = group[eid]
 		EventHistoryDialog(event, transient_for=self).run()
 
-	def genRightClickMenu(self, path):
+	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]
 		eid = self.treeModel[path][1]
 		group = ui.eventGroups[gid]
@@ -754,7 +776,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		menu.show_all()
 		return menu
 
-	def openRightClickMenu(self, path, etime=None) -> None:
+	def openRightClickMenu(self, path: str, etime: int | None = None) -> None:
 		menu = self.genRightClickMenu(path)
 		if not menu:
 			return
@@ -763,7 +785,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.tmpMenu = menu
 		menu.popup(None, None, None, None, 3, etime)
 
-	def onTreeviewButtonPress(self, _widget, gevent) -> bool | None:
+	def onTreeviewButtonPress(
+		self,
+		_widget: gtk.Widget,
+		gevent: gdk.ButtonEvent,
+	) -> bool | None:
 		pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
 			return
@@ -775,7 +801,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			self.openRightClickMenu(path, gevent.time)
 		return False
 
-	def onTreeviewKeyPress(self, treev, gevent) -> bool | None:
+	def onTreeviewKeyPress(
+		self,
+		treev: gtk.TreeView,
+		gevent: gdk.KeyEvent,
+	) -> bool | None:
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
 		# gdk.CURRENT_TIME == 0
 		# gevent.time == gtk.get_current_event_time() # OK
@@ -823,7 +853,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.treeModel.clear()
 		self.resultLabel.set_label("")
 
-	def closed(self, _obj=None, _gevent=None) -> bool:
+	def closed(
+		self,
+		_obj: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> bool:
 		self.hide()
 		self.clearResults()
 		self.onConfigChange()

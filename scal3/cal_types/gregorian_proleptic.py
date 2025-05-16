@@ -19,9 +19,18 @@
 
 __all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
+from scal3.cal_types.types import TranslateFunc
+
 name = "gregorian_proleptic"
 desc = "Gregorian Proleptic"
 origLang = "en"
+
+epoch = 1721426
+minMonthLen = 29
+maxMonthLen = 31
+avgYearLen = 365.2425  # FIXME
+
+options = []
 
 monthName = (
 	"January",
@@ -54,11 +63,15 @@ monthNameAb = (
 )
 
 
-def getMonthName(m, y=None):  # noqa: ARG001
+def getMonthName(m: int, y: int | None = None) -> str:  # noqa: ARG001
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
+def getMonthNameAb(
+	tr: TranslateFunc,
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -66,32 +79,17 @@ def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	return monthNameAb[m - 1]
 
 
-from math import floor
-
-
-def ifloor(x):
-	return floor(x)
-
-
-epoch = 1721426
-minMonthLen = 29
-maxMonthLen = 31
-avgYearLen = 365.2425  # FIXME
-
-options = ()
-
-
 def save() -> None:
 	pass
 
 
-def isLeap(y):
+def isLeap(y: int) -> bool:
 	if y < 1:
 		y += 1
 	return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
 
 
-def getMonthLen(y, m) -> int:
+def getMonthLen(y: int, m: int) -> int:
 	if m == 2:
 		if isLeap(y):
 			return 29
@@ -101,7 +99,7 @@ def getMonthLen(y, m) -> int:
 	return 31
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	# Formula from The Calendar FAQ by Claus Tondering
 	# http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
 	# NOTE: Coded from scratch from mathematical formulas, not copied from
@@ -121,7 +119,7 @@ def to_jd(year, month, day):
 	return 365 * y + y // 4 - y // 100 + y // 400 - 32045 + (153 * m + 2) // 5 + day
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> tuple[int, int, int]:
 	# Formula from The Calendar FAQ by Claus Tondering
 	# http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
 	# NOTE: Coded from scratch from mathematical formulas, not copied from

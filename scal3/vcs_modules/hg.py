@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 import mercurial.ui
 from mercurial.localrepo import localrepository
 from mercurial.patch import diff, diffstatdata, diffstatsum
@@ -37,12 +39,14 @@ __all__ = [
 	"prepareObj",
 ]
 
+# TODO: obj: VcsEpochBaseEventGroup
 
-def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
+
+def getLatestParentBefore(obj: Any, commitId: str, beforeEpoch: float) -> str:
 	raise NotImplementedError
 
 
-def prepareObj(obj) -> None:
+def prepareObj(obj: Any) -> None:
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
 	# ---
 	obj.est = EventSearchTree()
@@ -51,22 +55,22 @@ def prepareObj(obj) -> None:
 		obj.est.add(epoch, epoch, rev_id)
 
 
-def clearObj(obj) -> None:
+def clearObj(obj: Any) -> None:
 	obj.repo = None
 	obj.est = EventSearchTree()
 
 
-def getCommitList(obj, startJd, endJd):
+def getCommitList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, int | str]]:
 	"""Return a list of (epoch, commit_id) tuples."""
 	return getCommitListFromEst(
 		obj,
 		startJd,
 		endJd,
-		lambda repo, rev_id: str(repo[rev_id]),
+		format_rev_id=lambda repo, rev_id: str(repo[rev_id]),
 	)
 
 
-def getCommitInfo(obj, commid_id):
+def getCommitInfo(obj: Any, commid_id: int) -> dict[str, Any]:
 	ctx = obj.repo[commid_id]
 	lines = ctx.description().split("\n")
 	return {
@@ -79,7 +83,7 @@ def getCommitInfo(obj, commid_id):
 
 
 # FIXME: SLOW
-def getShortStat(obj, node1, node2):
+def getShortStat(obj: Any, node1: str, node2: str) -> tuple[int, int, int]:
 	repo = obj.repo
 	# if not node1 # FIXME
 	stats = diffstatdata(
@@ -101,7 +105,7 @@ def getShortStat(obj, node1, node2):
 	return len(stats), insertions, deletions
 
 
-def getCommitShortStat(obj, commit_id):
+def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	ctx = obj.repo[commit_id]
 	return getShortStat(
@@ -111,12 +115,12 @@ def getCommitShortStat(obj, commit_id):
 	)
 
 
-def getCommitShortStatLine(obj, commit_id):
+def getCommitShortStatLine(obj: Any, commit_id: str) -> tuple[int, int, int]:
 	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
-def getTagList(obj, startJd, endJd):
+def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
 	"""Returns a list of (epoch, tag_name) tuples."""
 	if not obj.repo:
 		return []
@@ -139,7 +143,7 @@ def getTagList(obj, startJd, endJd):
 	return data
 
 
-def getTagShortStat(obj, prevTag, tag):
+def getTagShortStat(obj: Any, prevTag: str, tag: str) -> tuple[int, int, int]:
 	repo = obj.repo
 	return getShortStat(
 		obj,
@@ -148,14 +152,14 @@ def getTagShortStat(obj, prevTag, tag):
 	)
 
 
-def getTagShortStatLine(obj, prevTag, tag):
+def getTagShortStatLine(obj: Any, prevTag: str, tag: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 
-def getFirstCommitEpoch(obj):
+def getFirstCommitEpoch(obj: Any) -> int:
 	return obj.repo[0].date()[0]
 
 
-def getLastCommitEpoch(obj):
+def getLastCommitEpoch(obj: Any) -> int:
 	return obj.repo[len(obj.repo) - 1].date()[0]

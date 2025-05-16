@@ -1,5 +1,7 @@
 from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import state as event_state
+from scal3.event_lib.event_base import Event
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -12,10 +14,10 @@ __all__ = ["EventEditorDialog", "addNewEvent"]
 class EventEditorDialog(gtk.Dialog):
 	def __init__(
 		self,
-		event,
-		typeChangable=True,
-		isNew=False,
-		useSelectedDate=False,
+		event: Event,
+		typeChangable: bool = True,
+		isNew: bool = False,
+		useSelectedDate: bool = False,
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
@@ -90,7 +92,7 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
 
-	def replaceExistingEvent(self, eventType) -> None:
+	def replaceExistingEvent(self, eventType: str) -> None:
 		oldEvent = self.event
 		newEvent = self._group.create(eventType)
 		# ---
@@ -101,7 +103,7 @@ class EventEditorDialog(gtk.Dialog):
 		oldEvent.invalidate()
 		self.event = newEvent
 
-	def replaceEventWithType(self, eventType) -> None:
+	def replaceEventWithType(self, eventType: str) -> None:
 		if not self.isNew:
 			self.replaceExistingEvent(eventType)
 			return
@@ -116,7 +118,7 @@ class EventEditorDialog(gtk.Dialog):
 		for attr, value in restoreDict.items():
 			setattr(self.event, attr, value)
 
-	def typeChanged(self, combo) -> None:
+	def typeChanged(self, combo: gtk.ComboBox) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
@@ -129,7 +131,7 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget, 1, 1)
 		# self.activeWidget.calTypeComboChanged()-- apearantly not needed
 
-	def run(self):
+	def run(self) -> Event | None:
 		# if not self.activeWidget:
 		# 	return None
 		parentWin = self.get_transient_for()
@@ -177,7 +179,12 @@ class EventEditorDialog(gtk.Dialog):
 		return self.event
 
 
-def addNewEvent(group, eventType, typeChangable=False, **kwargs):
+def addNewEvent(
+	group: EventGroup,
+	eventType: str,
+	typeChangable: bool = False,
+	**kwargs,
+) -> Event | None:
 	event = group.create(eventType)
 	if eventType == "custom":  # FIXME
 		typeChangable = True

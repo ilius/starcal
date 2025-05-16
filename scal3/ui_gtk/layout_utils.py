@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 __all__ = ["moduleObjectInitializer"]
 
 
-def keeperCallable(obj: Any) -> Callable[[], Any]:
-	def res():
+def keeperCallable[T](obj: T) -> Callable[[], T]:
+	def res() -> T:
 		return obj
 
 	return res
@@ -21,7 +21,7 @@ def moduleObjectInitializer(
 	*args,
 	**kwargs,
 ) -> Callable[[], Any]:
-	def res():
+	def res() -> Any:
 		module = __import__(
 			modulePath,
 			fromlist=[className],

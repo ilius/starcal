@@ -13,21 +13,32 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+from collections.abc import Iterable
+
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.monthcal import getMonthDesc
+from scal3.monthcal import MonthStatus, getMonthDesc
 from scal3.ui import conf
 
 __all__ = ["exportToHtml"]
 
+type RGB = tuple[int, int, int]
+type RGBA = tuple[int, int, int, int]
+type ColorType = RGB | RGBA
 
-def rgbToHtml(r, g, b, a=None) -> str:  # noqa: ARG001
+
+def rgbToHtml(
+	r: int,
+	g: int,
+	b: int,
+	a: int | None = None,  # noqa: ARG001
+) -> str:
 	return f"#{r:02x}{g:02x}{b:02x}"
 	# What to do with alpha?
 
 
-def colorComposite(front, back):
+def colorComposite(front: ColorType, back: ColorType) -> RGB:
 	if len(back) == 3:
 		r0, g0, b0 = back
 		a0 = 1.0
@@ -54,8 +65,13 @@ def colorComposite(front, back):
 	# and don't multiply others by `a0`
 
 
-def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0) -> None:
-	def sizeMap(size):
+def exportToHtml(
+	fpath: str,
+	monthsStatus: Iterable[MonthStatus],
+	title: str = "",
+	fontSizeScale: float = 1.0,
+) -> None:
+	def sizeMap(size: float) -> float:
 		return fontSizeScale * (size * 0.25 - 0.5)
 
 	# ------------------- Options:
@@ -141,7 +157,7 @@ def exportToHtml(fpath, monthsStatus, title="", fontSizeScale=1.0) -> None:
 					except IndexError:
 						continue
 					day = _(cell.dates[calType][2], calType)
-					font = ui.Font(*tuple(params["font"]))
+					font = ui.Font(*params["font"])
 					face = font.family
 					if font.bold:
 						face += " Bold"

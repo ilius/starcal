@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from os.path import join
 
@@ -68,7 +70,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	imageNameInactive = ""
 	imageNamePress = ""
 
-	def __init__(self, controller) -> None:
+	def __init__(self, controller: CalObj) -> None:
 		gtk.EventBox.__init__(self)
 		self.set_border_width(conf.winControllerBorder.v)
 		self.initVars()
@@ -82,7 +84,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		# ---
 		self.show_all()
 
-	def setImage(self, imName) -> None:
+	def setImage(self, imName: str) -> None:
 		if self.controller.light:
 			imName += "-light"
 		self.im.set_from_pixbuf(
@@ -96,7 +98,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			),
 		)
 
-	def setFocus(self, focus) -> None:
+	def setFocus(self, focus: bool) -> None:
 		self.setImage(self.imageNameFocus if focus else self.imageName)
 
 	def setInactive(self) -> None:
@@ -121,27 +123,27 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("button-release-event", self.onButtonRelease)
 		set_tooltip(self, self.desc)  # FIXME
 
-	def enterNotify(self, _widget, _gevent) -> None:
+	def enterNotify(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
 		self.setFocus(True)
 
-	def leaveNotify(self, _widget, _gevent) -> bool:
+	def leaveNotify(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
 		if self.controller.winFocused:
 			self.setFocus(False)
 		else:
 			self.setInactive()
 		return False
 
-	def onButtonPress(self, _widget, _gevent) -> bool:
+	def onButtonPress(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
 		self.setPressed()
 		return True
 
-	def onClick(self, gWin, gevent) -> None:
+	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:
 		pass
 
-	def onRightClick(self, gWin, gevent) -> None:
+	def onRightClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:
 		pass
 
-	def onButtonRelease(self, _button, gevent) -> bool:
+	def onButtonRelease(self, _button: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
@@ -159,7 +161,7 @@ class WinConButtonMin(WinConButton):
 	imageNameInactive = "minimize-inactive"
 	imageNamePress = "minimize-press"
 
-	def onClick(self, gWin, gevent) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.toggleMinimized(gevent)
 
 
@@ -171,10 +173,10 @@ class WinConButtonMax(WinConButton):
 	imageNameInactive = "maximize-inactive"
 	imageNamePress = "maximize-press"
 
-	def onClick(self, gWin, gevent) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.toggleMaximized(gevent)
 
-	def onRightClick(self, gWin, gevent) -> None:  # noqa: PLR6301
+	def onRightClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.toggleWidthMaximized(gevent)
 
 
@@ -186,7 +188,7 @@ class WinConButtonClose(WinConButton):
 	imageNameInactive = "close-inactive"
 	imageNamePress = "close-press"
 
-	def onClick(self, gWin, _gevent) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, _gevent: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.emit("delete-event", gdk.Event())
 
 
@@ -194,7 +196,7 @@ class WinConButtonRightPanel(WinConButton):
 	objName = "rightPanel"
 	desc = _("Show Right Panel")
 
-	def __init__(self, controller) -> None:
+	def __init__(self, controller: CalObj) -> None:
 		direc = "left" if rtl else "right"
 		self.imageName = direc
 		self.imageNameFocus = f"{direc}-focus"
@@ -202,7 +204,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNamePress = f"{direc}-press"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin, _gevent) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, _gevent: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.emit("toggle-right-panel")
 
 
@@ -214,7 +216,7 @@ class WinConButtonSep(WinConButton):
 	def build(self) -> None:
 		pass
 
-	def setFocus(self, focus) -> None:
+	def setFocus(self, focus: bool) -> None:
 		pass
 
 	def setInactive(self) -> None:
@@ -241,7 +243,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 	)
 	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		gtk.Box.__init__(
 			self,
@@ -267,13 +269,21 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
 
-	def windowFocusIn(self, _widget=None, _event=None) -> bool:
+	def windowFocusIn(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> bool:
 		for b in self.items:
 			b.setFocus(False)
 		self.winFocused = True
 		return False
 
-	def windowFocusOut(self, _widget=None, _event=None) -> bool:
+	def windowFocusOut(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> bool:
 		for b in self.items:
 			b.setInactive()
 		self.winFocused = False

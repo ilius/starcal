@@ -30,7 +30,7 @@ from contextlib import suppress
 from time import sleep
 
 from scal3.ui import conf
-from scal3.ui_gtk import VBox, gtk, pack, source_remove, timeout_add
+from scal3.ui_gtk import VBox, gdk, gtk, pack, source_remove, timeout_add
 from scal3.ui_gtk.utils import (
 	imageFromFile,
 	pixbufFromFile,
@@ -45,18 +45,19 @@ VOLUME_STEP = 5
 
 
 class MPlayer:
-	pbox, mplayerIn, mplayerOut = None, None, None
-	eofHandle, statusQuery = 0, 0
-	paused = False
-	isVidOnTop = False
-	mplayerOptions = None
-	playTime = None
-
-	def __init__(self, pbox) -> None:
+	def __init__(self, pbox: PlayerBox) -> None:
 		self.pbox = pbox
+		self.mplayerIn = None
+		self.mplayerOut = None
+		self.eofHandle = 0
+		self.statusQuery = 0
+		self.paused = False
+		self.isVidOnTop = False
+		self.mplayerOptions = None
+		self.playTime = None
 
 	# Play the specified file
-	def play(self, path) -> None:
+	def play(self, path: str) -> None:
 		log.debug(f"File path: {path}")
 		mplayerOptions = self.pbox.mplayerOptions.split(" ")
 
@@ -124,7 +125,7 @@ class MPlayer:
 			self.paused = False
 
 	# Seek by the amount specified (in seconds)
-	def seek(self, amount, mode=0) -> bool | None:
+	def seek(self, amount: int, mode: int = 0) -> bool | None:
 		if not self.mplayerIn:
 			return False
 		self.cmd(f"seek {amount} {mode}")
@@ -132,7 +133,7 @@ class MPlayer:
 		return None
 
 	# Set volume    using aumix
-	def setVolume(self, value) -> None:
+	def setVolume(self, value: int) -> None:
 		if self.pbox.adjustvol:
 			command = ["aumix", "-v", str(value)]
 		else:
@@ -146,7 +147,7 @@ class MPlayer:
 	# Change volume by the amount specified
 	# Changing the adjustment automatically updates
 	# the range widget and increases the vol
-	def stepVolume(self, increase) -> None:
+	def stepVolume(self, increase: int) -> None:
 		if increase:
 			self.pbox.volAdj.value += VOLUME_STEP
 			self.pbox.volAdj.value = min(self.pbox.volAdj.value, 100)
@@ -174,7 +175,7 @@ class MPlayer:
 		# self.pbox.seekBar.set_sensitive(False)
 		# self.pbox.fcb.set_sensitive(True)
 
-	def cmd(self, command) -> bool:
+	def cmd(self, command: str) -> bool:
 		if not self.mplayerIn:
 			return False
 		try:
@@ -320,7 +321,7 @@ class PlayerBox(gtk.Box):
 			scale.connect("key-press-event", self.divert)
 			pack(self, scale, False, False, 5)
 
-	def divert(self, _widget, gevent) -> bool | None:
+	def divert(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
 		key = gevent.hardware_keycode
 		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
@@ -352,7 +353,11 @@ class PlayerBox(gtk.Box):
 			# + self.playlist.getCurrentSongTime()  # FIXME
 		return str(int(value)) + "%"
 
-	def seek(self, _widget, _gevent) -> None:  # Seek on changing the seekBar
+	def seek(
+		self,
+		_widget: gtk.Widget,
+		_gevent: gdk.Event,
+	) -> None:  # Seek on changing the seekBar
 		# log.debug("seek", self.seekAdj.value, self.mplayer.mplayerIn)
 		if not self.mplayer.mplayerIn:
 			log.info("abc")
@@ -415,19 +420,19 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
 
-	def decVol(self, _widget) -> None:
+	def decVol(self, _widget: gtk.Widget) -> None:
 		self.mplayer.stepVolume(False)
 
-	def incVol(self, _widget) -> None:
+	def incVol(self, _widget: gtk.Widget) -> None:
 		self.mplayer.stepVolume(True)
 
 	@staticmethod
-	def toolbarKey(_widget, gevent):
+	def toolbarKey(_widget: gtk.Widget, gevent: gdk.Event):
 		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
 		return keycode in {98, 104}
 
-	def quit(self, _event=None) -> None:
+	def quit(self, _event: gdk.Event | None = None) -> None:
 		self.mplayer.close()
 		gtk.main_quit()
 

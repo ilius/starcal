@@ -1,5 +1,7 @@
+from collections.abc import Callable
 from subprocess import PIPE, Popen
 
+from scal3.event_lib.notifier_base import EventNotifier
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
 
@@ -20,7 +22,7 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.FileChooserButton):
-	def __init__(self, notifier) -> None:
+	def __init__(self, notifier: EventNotifier) -> None:
 		self.notifier = notifier
 		gtk.FileChooserButton.__init__(self)
 		self.set_title(_("Select Sound"))
@@ -47,7 +49,7 @@ class WidgetClass(gtk.FileChooserButton):
 # 	# finishFunc()
 
 
-def notify(notifier, finishFunc) -> None:
+def notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:
 	# import thread
 	# thread.start_new_thread(notifyWait, (notifier, finishFunc))
 	finishFunc()

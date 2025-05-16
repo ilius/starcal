@@ -13,7 +13,7 @@ __all__ = ["WizardWindow"]
 class WizardWindow(gtk.Window, MyDialog):
 	stepClasses = []
 
-	def __init__(self, title) -> None:
+	def __init__(self, title: str) -> None:
 		gtk.Window.__init__(self)
 		self.set_title(title)
 		self.connect("delete-event", lambda _w, _e: self.destroy())
@@ -57,7 +57,7 @@ class WizardWindow(gtk.Window, MyDialog):
 			self.destroy()
 		return True
 
-	def showStep(self, stepIndex, *args) -> None:
+	def showStep(self, stepIndex: int, *args) -> None:
 		backward = stepIndex < self.stepIndex
 		self.stack.gotoPage(str(stepIndex), backward=backward)
 		step = self.steps[stepIndex]

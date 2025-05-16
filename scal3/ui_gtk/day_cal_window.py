@@ -23,7 +23,7 @@ log = logger.get()
 import os
 from os.path import join
 from time import perf_counter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.config_utils import loadSingleConfig, saveSingleConfig
@@ -46,8 +46,14 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from gi.repository import Gdk as gdk
+
 	from scal3.cell import Cell
 	from scal3.property import Property
+	from scal3.ui_gtk.cal_base import CalBase
+	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = ["DayCalWindow"]
 
@@ -122,7 +128,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
-	def gotoPageCallback(self, _item, pagePath) -> None:
+	def gotoPageCallback(self, _item: CustomizableCalObj, pagePath: str) -> None:
 		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
@@ -132,7 +138,11 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		self._widget.updateVars()
 		ui.saveConfCustomize()
 
-	def onSaveClick(self, _button=None, _gevent=None) -> bool:
+	def onSaveClick(
+		self,
+		_button: gtk.Button | None = None,
+		_gevent: Any = None,
+	) -> bool:
 		self.save()
 		self.hide()
 		return True
@@ -171,7 +181,7 @@ class DayCalWindowWidget(DayCal):
 	def getCell(cls) -> Cell:
 		return ui.cells.today
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
 		self.menu = None
@@ -184,7 +194,7 @@ class DayCalWindowWidget(DayCal):
 				transient_for=self._window,
 			)
 
-	def openCustomize(self, _gevent) -> None:
+	def openCustomize(self, _gevent: Any) -> None:
 		self.customizeWindowCreate()
 		x, y = self._window.get_position()
 		w, h = self._window.get_size()
@@ -199,7 +209,7 @@ class DayCalWindowWidget(DayCal):
 		self.customizeWindow.move(cx, cy)
 		# should move() after present()
 
-	def onButtonPress(self, obj, gevent) -> bool:
+	def onButtonPress(self, obj: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		b = gevent.button
 		if b == 1:
 			buttons = self._allButtons
@@ -221,7 +231,12 @@ class DayCalWindowWidget(DayCal):
 		return True
 
 	@staticmethod
-	def getMenuPosFunc(menu, gevent, above: bool):
+	def getMenuPosFunc(
+		menu: gtk.Menu,
+		gevent: gdk.Event,
+		above: bool,
+	) -> Callable[[], tuple[int, int, bool]] | None:
+		# FIXME: ^^^ *args
 		# looks like gevent.x_root and gevent.y_root are wrong on Wayland
 		# (tested on Fedora + Gnome3)
 		# we should probably just pass func=None in Wayland for now
@@ -241,7 +256,7 @@ class DayCalWindowWidget(DayCal):
 
 		return lambda *_args: (mx, my, False)
 
-	def getMenu(self, reverse: bool):
+	def getMenu(self, reverse: bool) -> gtk.Menu:
 		menu = self.menu
 		if menu is None:
 			menu = Menu()
@@ -266,7 +281,7 @@ class DayCalWindowWidget(DayCal):
 		menu.show_all()
 		return menu
 
-	def popupMenuOnButtonPress(self, _obj, gevent) -> None:
+	def popupMenuOnButtonPress(self, _obj: gtk.Widget, gevent: gdk.ButtonEvent) -> None:
 		reverse = gevent.y_root > ud.screenH / 2.0
 		menu = self.getMenu(reverse)
 		menu.popup(
@@ -308,7 +323,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self._widget.show()
 		self.appendItem(self._widget)
 
-	def menuCellPopup(self, widget, etime, x, y) -> None:
+	def menuCellPopup(self, widget: gtk.Widget, etime: int, x: int, y: int) -> None:
 		reverse = False
 		menu = self._widget.getMenu(reverse)
 		coord = widget.translate_coordinates(self, x, y)
@@ -346,21 +361,21 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 	) -> None:
 		pass
 
-	def prefUpdateBgColor(self, cal) -> None:
+	def prefUpdateBgColor(self, cal: CalBase) -> None:
 		pass
 
 	@staticmethod
-	def dayInfoShow(widget=None) -> None:
+	def dayInfoShow(widget: gtk.Widget | None = None) -> None:
 		ui.mainWin.dayInfoShow(widget)
 
-	def onDeleteEvent(self, _arg=None, _event=None) -> bool:
+	def onDeleteEvent(self, _arg: Any = None, _event: Any = None) -> bool:
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, _widget, _gevent) -> bool | None:
+	def configureEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool | None:
 		if not self.get_property("visible"):
 			return
 		wx, wy = self.get_position()

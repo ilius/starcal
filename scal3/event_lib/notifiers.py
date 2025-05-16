@@ -17,10 +17,15 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.notifier_base import EventNotifier
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
+
+from scal3.locale_man import tr as _
+
+from .register import classes
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -28,29 +33,7 @@ if TYPE_CHECKING:
 	from .event_base import Event
 
 
-from scal3.locale_man import tr as _
-
-# from scal3.interval_utils import
-from scal3.s_object import SObj
-
-from .register import classes
-
-
-# Should not be registered, or instantiate directly
-@classes.notifier.setMain
-class EventNotifier(SObj):
-	name = ""
-	desc = ""
-	params = ()
-
-	def __init__(self, event: Event) -> None:
-		self.event = event
-
-	def getCalType(self) -> str:
-		return self.event.calType
-
-	def notify(self, finishFunc: Callable) -> None:
-		pass
+classes.notifier.setMain(EventNotifier)
 
 
 @classes.notifier.register

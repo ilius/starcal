@@ -64,6 +64,8 @@ eventsDir = join("event", "events")
 @classes.event.setMain
 class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	name = "custom"  # or "event" or "" FIXME
+	tname = ""
+	nameAlias = ""
 	desc = _("Custom Event")
 	iconName = ""
 	# requiredNotifiers = ()  # FIXME: needed?

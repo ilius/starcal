@@ -20,7 +20,7 @@ __all__ = ["getAbsPos"]
 
 
 # TODO: make private
-def oppositeAlign(align):
+def oppositeAlign(align: str) -> str:
 	if align == "left":
 		return "right"
 	if align == "right":
@@ -33,16 +33,16 @@ def oppositeAlign(align):
 
 
 def getAbsPos(
-	width,
-	height,
-	areaWidth,
-	areaHeight,
-	x,
-	y,
-	xalign,
-	yalign,
-	autoDir=False,
-):
+	width: float,
+	height: float,
+	areaWidth: float,
+	areaHeight: float,
+	x: float,
+	y: float,
+	xalign: str,
+	yalign: str,
+	autoDir: bool = False,
+) -> tuple[float, float]:
 	if autoDir and rtl:
 		xalign = oppositeAlign(xalign)
 	if xalign == "right":

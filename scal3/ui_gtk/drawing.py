@@ -23,19 +23,22 @@ log = logger.get()
 import re
 from math import cos, pi, sin
 from os.path import join
+from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.color_utils import rgbToHtmlColor
+from scal3.color_utils import ColorType, rgbToHtmlColor
 from scal3.locale_man import cutText
-from scal3.path import (
-	sourceDir,
-)
+from scal3.path import sourceDir
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, gtk
-from scal3.ui_gtk.font_utils import (
-	pfontEncode,
-)
+from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.utils import toBytes
+
+if TYPE_CHECKING:
+	import cairo
+	from gi.repository import Pango as pango
+
+	from scal3.font import Font
 
 __all__ = [
 	"calcTextPixelSize",
@@ -69,7 +72,7 @@ colorCheckSvgTextUnchecked = re.sub(
 )
 
 
-def setColor(cr, color) -> None:
+def setColor(cr: cairo.Context, color: ColorType) -> None:
 	# arguments to set_source_rgb and set_source_rgba must be between 0 and 1
 	if len(color) == 3:
 		cr.set_source_rgb(
@@ -88,19 +91,19 @@ def setColor(cr, color) -> None:
 		raise ValueError(f"bad color {color}")
 
 
-def fillColor(cr, color) -> None:
+def fillColor(cr: cairo.Context, color: ColorType) -> None:
 	setColor(cr, color)
 	cr.fill()
 
 
 def newTextLayout(
-	widget,
-	text="",
-	font=None,
-	maxSize=None,
-	maximizeScale=0.6,
-	truncate=False,
-):
+	widget: gtk.Widget,
+	text: str = "",
+	font: Font | None = None,
+	maxSize: tuple[float, float] | None = None,
+	maximizeScale: float = 0.6,
+	truncate: bool = False,
+) -> pango.Layout:
 	"""None return value should be expected and handled, only if maxSize is given."""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
@@ -116,8 +119,6 @@ def newTextLayout(
 			layoutW, layoutH = layout.get_pixel_size()
 			# --
 			maxW, maxH = maxSize
-			maxW = float(maxW)
-			maxH = float(maxH)
 			if maxW <= 0:
 				return
 			if maxH <= 0:
@@ -222,7 +223,11 @@ def calcTextPixelWidth(
 	return width
 
 
-def newColorCheckPixbuf(color, size, checked):
+def newColorCheckPixbuf(
+	color: ColorType,
+	size: float,
+	checked: bool,
+) -> GdkPixbuf.Pixbuf:
 	if checked:
 		data = colorCheckSvgTextChecked
 	else:
@@ -241,7 +246,7 @@ def newColorCheckPixbuf(color, size, checked):
 	return loader.get_pixbuf()
 
 
-def newDndDatePixbuf(ymd):
+def newDndDatePixbuf(ymd: tuple[int, int, int]) -> GdkPixbuf.Pixbuf:
 	imagePath = join(sourceDir, "svg", "special", "dnd-date.svg")
 	with open(imagePath, encoding="utf-8") as fp:
 		data = fp.read()
@@ -257,7 +262,7 @@ def newDndDatePixbuf(ymd):
 	return loader.get_pixbuf()
 
 
-def newDndFontNamePixbuf(name):
+def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
 	imagePath = join(sourceDir, "svg", "special", "dnd-font.svg")
 	with open(imagePath, encoding="utf-8") as fp:
 		data = fp.read()
@@ -271,7 +276,14 @@ def newDndFontNamePixbuf(name):
 	return loader.get_pixbuf()
 
 
-def drawRoundedRect(cr, cx0, cy0, cw, ch, ro) -> None:
+def drawRoundedRect(
+	cr: cairo.Context,
+	cx0: float,
+	cy0: float,
+	cw: float,
+	ch: float,
+	ro: float,
+) -> None:
 	ro = min(ro, cw / 2.0, ch / 2.0)
 	cr.move_to(
 		cx0 + ro,
@@ -333,7 +345,15 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro) -> None:
 	cr.close_path()
 
 
-def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d) -> None:
+def drawOutlineRoundedRect(
+	cr: cairo.Context,
+	cx0: float,
+	cy0: float,
+	cw: float,
+	ch: float,
+	ro: float,
+	d: float,
+) -> None:
 	ro = min(ro, cw / 2.0, ch / 2.0)
 	# a = min(cw, ch); ri = ro*(a-2*d)/a
 	ri = max(0, ro - d)
@@ -469,18 +489,32 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d) -> None:
 	cr.close_path()
 
 
-def drawCircle(cr, cx, cy, r) -> None:
-	cr.arc(cx, cy, r, 0, 2 * pi)
+def drawCircle(cr: cairo.Context, cx: float, cy: float, radius: float) -> None:
+	cr.arc(cx, cy, radius, 0, 2 * pi)
 
 
-def drawCircleOutline(cr, cx, cy, r, d) -> None:
+def drawCircleOutline(
+	cr: cairo.Context,
+	cx: float,
+	cy: float,
+	r: float,
+	d: float,
+) -> None:
 	cr.arc(cx, cy, r, 0, 2 * pi)
 	cr.close_path()
 	cr.arc_negative(cx, cy, r - d, 2 * pi, 0)
 	cr.close_path()
 
 
-def drawPieOutline(cr, cx, cy, r, d, start, end) -> None:
+def drawPieOutline(
+	cr: cairo.Context,
+	cx: float,
+	cy: float,
+	r: float,
+	d: float,
+	start: float,
+	end: float,
+) -> None:
 	# start and end are angles
 	# 0 <= start <= 1
 	# 0 <= end <= 1
@@ -504,11 +538,18 @@ def drawPieOutline(cr, cx, cy, r, d, start, end) -> None:
 	cr.close_path()
 
 
-def goAngle(x0, y0, angle, length):
+def goAngle(x0: float, y0: float, angle: float, length: float) -> tuple[float, float]:
 	return x0 + cos(angle) * length, y0 + sin(angle) * length
 
 
-def drawLineLengthAngle(cr, xs, ys, length, angle, d) -> None:
+def drawLineLengthAngle(
+	cr: cairo.Context,
+	xs: float,
+	ys: float,
+	length: float,
+	angle: float,
+	d: float,
+) -> None:
 	xe, ye = goAngle(xs, ys, angle, length)
 	# --
 	x1, y1 = goAngle(xs, ys, angle - pi / 2.0, d / 2.0)
@@ -523,7 +564,15 @@ def drawLineLengthAngle(cr, xs, ys, length, angle, d) -> None:
 	cr.close_path()
 
 
-def drawArcOutline(cr, xc, yc, r, d, a0, a1) -> None:
+def drawArcOutline(
+	cr: cairo.Context,
+	xc: float,
+	yc: float,
+	r: float,
+	d: float,
+	a0: float,
+	a1: float,
+) -> None:
 	"""
 	cr: cairo context
 	xc, yc: coordinates of center

@@ -40,7 +40,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 _ = str  # FIXME
 
 
-def error_exit(resCode, text, **kwargs) -> None:
+def error_exit(resCode: int, text: str, **kwargs) -> None:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,
@@ -149,7 +149,7 @@ class AdjusterDialog(gtk.Dialog):
 		self.updateTimes()
 		self.vbox.show_all()
 
-	def onRadioManClick(self, _radio=None) -> None:
+	def onRadioManClick(self, _radio: gtk.Widget | None = None) -> None:
 		if self.radioMan.get_active():
 			self.vboxMan.set_sensitive(True)
 			self.hboxNtp.set_sensitive(False)
@@ -158,7 +158,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(True)
 		self.updateSetButtonSensitive()
 
-	def onRadioNtpClick(self, _radio=None) -> None:
+	def onRadioNtpClick(self, _radio: gtk.Widget | None = None) -> None:
 		if self.radioNtp.get_active():
 			self.vboxMan.set_sensitive(False)
 			self.hboxNtp.set_sensitive(True)
@@ -167,17 +167,17 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(False)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditTimeClick(self, _checkb=None) -> None:
+	def onCkeckbEditTimeClick(self, _checkb: gtk.Widget | None = None) -> None:
 		self.editTime = self.ckeckbEditTime.get_active()
 		self.timeInput.set_sensitive(self.editTime)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditDateClick(self, _checkb=None) -> None:
+	def onCkeckbEditDateClick(self, _checkb: gtk.Widget | None = None) -> None:
 		self.editDate = self.ckeckbEditDate.get_active()
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
 
-	def runCommand(self, cmd) -> None:
+	def runCommand(self, cmd: list[str]) -> None:
 		proc = subprocess.Popen(
 			cmd,
 			stderr=subprocess.PIPE,
@@ -206,7 +206,7 @@ class AdjusterDialog(gtk.Dialog):
 			error_exit(1, "Could not find command 'date'", transient_for=self)
 		self.runCommand([dateCmd, "-s", timeStr])
 
-	def setSystemTime(self, timeStr: str):
+	def setSystemTime(self, timeStr: str) -> None:
 		if os.sep == "/":
 			return self.setSystemTimeUnix(timeStr)
 
@@ -233,7 +233,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.dateInput.set_value((y, m, d))
 		return False
 
-	def updateSetButtonSensitive(self, _widget=None) -> None:
+	def updateSetButtonSensitive(self, _widget: gtk.Widget | None = None) -> None:
 		if self.radioMan.get_active():
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
@@ -241,7 +241,7 @@ class AdjusterDialog(gtk.Dialog):
 				bool(self.ntpServerEntry.get_text()),
 			)
 
-	def onSetSysTimeClick(self, _widget=None) -> None:
+	def onSetSysTimeClick(self, _widget: gtk.Widget | None = None) -> None:
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()

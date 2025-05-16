@@ -130,13 +130,13 @@ class SelectDateDialog(gtk.Dialog):
 
 	def dragRec(
 		self,
-		_obj,
-		_context,
-		_x,
-		_y,
-		selection,
-		_target_id,
-		_etime,
+		_obj: gtk.Widget,
+		_context: gdk.DragContext,
+		_x: int,
+		_y: int,
+		selection: gtk.SelectionData,
+		_target_id: int,
+		_etime: int,
 	) -> bool | None:
 		text = selection.get_text()
 		if text is None:
@@ -174,16 +174,16 @@ class SelectDateDialog(gtk.Dialog):
 		if parentWin is not None:
 			parentWin.present()
 
-	def onCancel(self, _widget, _event=None) -> bool:
+	def onCancel(self, _widget: gtk.Widget, _event: gdk.Event | None = None) -> bool:
 		self.onResponse()
 		return True
 
-	def set(self, y, m, d) -> None:
+	def set(self, y: int, m: int, d: int) -> None:
 		self.ymdBox.set_value((y, m, d))
 		self.dateInput.set_value((y, m, d))
 		self.dateInput.add_history()
 
-	def setCalType(self, calType) -> None:
+	def setCalType(self, calType: int) -> None:
 		self.calType = calType
 		module, ok = calTypes[calType]
 		if not ok:
@@ -192,7 +192,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.ymdBox.setCalType(calType)
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
-	def calTypeComboChanged(self, _widget=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		prevCalType = self.calType
 		prevDate = self.get()
 		calType = self.calTypeCombo.get_active()
@@ -209,7 +209,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.set(y, m, d)
 		self.calType = calType
 
-	def get(self):
+	def get(self) -> tuple[int, int, int]:
 		calType = self.calTypeCombo.get_active()
 		if self.radio1.get_active():
 			y0, m0, d0 = self.ymdBox.get_value()
@@ -220,7 +220,7 @@ class SelectDateDialog(gtk.Dialog):
 			y0, m0, d0 = jd_to(jd, calType)
 		return (y0, m0, d0)
 
-	def ok(self, _widget) -> None:
+	def ok(self, _widget: gtk.Widget) -> None:
 		calType = self.calTypeCombo.get_active()
 		if calType is None:
 			return
@@ -240,7 +240,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.dateInput.set_value((y0, m0, d0))
 		self.dateInput.add_history()
 
-	def radioChanged(self, _widget=None) -> None:
+	def radioChanged(self, _widget: gtk.Widget | None = None) -> None:
 		if self.radio1.get_active():
 			self.ymdBox.set_sensitive(True)
 			self.hbox2.set_sensitive(False)

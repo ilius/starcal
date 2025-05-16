@@ -16,7 +16,12 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import logger
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = [
 	"ab_overlaps",
@@ -34,7 +39,7 @@ log = logger.get()
 CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
 
-def ab_overlaps(a0: float, b0: float, a1: float, b1: float) -> None:
+def ab_overlaps(a0: float, b0: float, a1: float, b1: float) -> bool:
 	return b0 - a0 + b1 - a1 - abs(a0 + b0 - a1 - b1) > 0.01
 
 
@@ -134,13 +139,15 @@ def getIntervalListByPoints(
 	return lst
 
 
-def normalizeIntervalList(lst):
+def normalizeIntervalList(
+	lst: list[tuple[int, int] | tuple[int, int, bool]],
+) -> list[tuple[int, int, bool]]:
 	points = getIntervalPoints(lst)
 	points.sort()
 	return getIntervalListByPoints(points)
 
 
-def humanizeIntervalList(lst):
+def humanizeIntervalList(lst: list[tuple[int, int, bool]]) -> list[tuple[int, int]]:
 	"""
 	Replace Closed End intervals with 2 new intervals
 	in math terms: [a, b] ==> [a, b) + [b, b].
@@ -160,7 +167,9 @@ def humanizeIntervalList(lst):
 	return newList
 
 
-def intersectionOfTwoIntervalList(*lists):
+def intersectionOfTwoIntervalList(
+	*lists: Sequence[list[tuple[int, int, bool]]],
+) -> list[tuple[int, int]]:
 	listsN = len(lists)
 	assert listsN == 2
 	points = []

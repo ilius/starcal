@@ -17,7 +17,14 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import ui
+
+if TYPE_CHECKING:
+	from collections.abc import Iterator
+
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["DummyEventContainer"]
 
@@ -29,7 +36,7 @@ class DummyEventContainer:
 	def __len__(self) -> int:
 		return sum(len(eventIds) for eventIds in self.idsDict.values())
 
-	def __iter__(self):
+	def __iter__(self) -> Iterator[EventGroup]:
 		for groupId, eventIdList in self.idsDict.items():
 			group = ui.eventGroups[groupId]
 			for eventId in eventIdList:

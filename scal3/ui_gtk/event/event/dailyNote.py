@@ -1,3 +1,4 @@
+from scal3.event_lib.event_base import Event
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -7,7 +8,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event) -> None:
+	def __init__(self, event: Event) -> None:
 		common.WidgetClass.__init__(self, event)
 		# ---
 		hbox = HBox()
@@ -27,7 +28,7 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateVars(self)
 		self.event.setDate(*self.dateInput.get_value())
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.dateInput.changeCalType(self.event.calType, newCalType)

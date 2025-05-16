@@ -1,10 +1,11 @@
+from scal3.event_lib.rules import EventRule
 from scal3.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NumRangesEntry):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		NumRangesEntry.__init__(self, 1, 31, 10)
 

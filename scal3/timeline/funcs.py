@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -67,39 +69,44 @@ __all__ = ["calcTimeLineData"]
 # 		return cmp(self.dt(), other.dt())
 
 
-def getNum10FactPow(n):
+def getNum10FactPow(n: int) -> tuple[int, int]:
+	assert isinstance(n, int)
 	if n == 0:
 		return 0, 1
-	n = str(int(n))
-	nozero = n.rstrip("0")
-	return int(nozero), len(n) - len(nozero)
+	ns = str(n)
+	nozero = ns.rstrip("0")
+	return int(nozero), len(ns) - len(nozero)
 
 
-def getNum10Pow(n):
+def getNum10Pow(n: int) -> int:
 	return getNum10FactPow(n)[1]
 
 
-def getYearRangeTickValues(u0, y1, minStepYear):
-	data = {}
-	step = 10 ** max(0, ifloor(log10(y1 - u0)) - 1)
-	u0 = step * (u0 // step)
-	for y in range(u0, y1, step):
+def getYearRangeTickValues(
+	start: int,
+	end: int,
+	minStepYear: int,
+) -> list[tuple[int, int]]:
+	data: dict[int, int] = {}
+	step = 10 ** max(0, ifloor(log10(end - start)) - 1)
+	start = step * (start // step)
+	for y in range(start, end, step):
 		n = 10 ** getNum10Pow(y)
 		if n >= minStepYear:
 			data[y] = n
-	if u0 <= 0 <= y1:
+	if start <= 0 <= end:
 		data[0] = max(data.values())
 	return sorted(data.items())
 
 
-def formatYear(y, prettyPower=False):
-	if abs(y) < 10**4:  # FIXME
-		y_st = _(y)
+def formatYear(year: int, prettyPower: bool = False) -> str:
+	if abs(year) < 10**4:  # FIXME
+		y_st = _(year)
 	else:
 		# y_st = textNumEncode("%.0E"%y, changeDot=True)-- FIXME
-		fac, pw = getNum10FactPow(y)
+		fac, pw = getNum10FactPow(year)
 		if not prettyPower or abs(fac) >= 100:  # FIXME
-			y_e = f"{y:E}"
+			y_e = f"{year:E}"
 			for _i in range(10):
 				y_e = y_e.replace("0E", "E")
 			y_e = y_e.replace(".E", "E")
@@ -129,7 +136,12 @@ def formatYear(y, prettyPower=False):
 # 		hue += dh
 
 
-def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
+def calcTimeLineData(
+	timeStart: int,
+	timeWidth: int,
+	pixelPerSec: float,
+	borderTm: int,
+) -> dict[str, Any]:
 	# from time import time as now
 	# funcTimeStart = now()
 	timeEnd = timeStart + timeWidth
@@ -139,10 +151,10 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	dayPixel = dayLen * pixelPerSec  # px
 	# log.debug(f"{dayPixel = } px")
 
-	def getEPos(epoch):
+	def getEPos(epoch: int) -> float:
 		return (epoch - timeStart) * pixelPerSec
 
-	def getJPos(jd):
+	def getJPos(jd: int) -> float:
 		return (getEpochFromJd(jd) - timeStart) * pixelPerSec
 
 	# ---------------------- Holidays
@@ -160,7 +172,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	year0, month0, day0 = jd_to_primary(jd0)
 	year1, month1, day1 = jd_to_primary(jd1)
 	# ---------- Year
-	minStepYear = minStep // minYearLenSec  # years # int or iceil?
+	minStepYear = int(minStep // minYearLenSec)  # years
 	yearPixel = minYearLenSec * pixelPerSec  # pixels
 	for year, size in getYearRangeTickValues(
 		year0,
@@ -246,7 +258,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	hasMonthName = timeWidth < 5 * dayLen
 	minDayUnit = minStep / dayLen  # days
 
-	def addDayOfMonthTick(jd, month, day, dayUnit) -> None:
+	def addDayOfMonthTick(jd: int, month: int, day: int, dayUnit: float) -> None:
 		tmEpoch = getEpochFromJd(jd)
 		unitSize = dayPixel * dayUnit
 		if unitSize < conf.majorStepMin.v:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -21,6 +23,9 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 )
 
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+
 __all__ = ["EventHistoryDialog"]
 
 historyTimeBinFmt = compileTmFormat("%Y/%m/%d    %H:%M:%S")
@@ -30,17 +35,18 @@ addSymbol = "⊕"
 removeSymbol = "⊖"
 
 
-def _unnestStep(dst, src, path) -> None:
-	if not isinstance(src, dict):
-		dst[path] = src
-		return
+def _unnestStep(dst: dict[str, Any], src: dict[str, Any], path: str) -> None:
+	assert isinstance(src, dict)
+	# if not isinstance(src, dict):
+	# 	dst[path] = src
+	# 	return
 	if path:
 		path += "."
 	for key, value in src.items():
 		_unnestStep(dst, value, path + key)
 
 
-def unnest(src):
+def unnest(src: Any) -> dict[str, Any]:
 	if not isinstance(src, dict):
 		return src
 	dst = OrderedDict()
@@ -61,13 +67,13 @@ class EventHistoryDialog(gtk.Dialog):
 		"Change (JSON Diff)",
 	]
 
-	def onResponse(self, _w, _e) -> None:
+	def onResponse(self, _w: Any, _e: Any) -> None:
 		self.hide()
 		ud.windowList.onConfigChange()
 
 	def __init__(
 		self,
-		event,
+		event: Event,
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
@@ -228,14 +234,18 @@ class EventHistoryDialog(gtk.Dialog):
 		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
 
 	@staticmethod
-	def setColumnWidth(col, _widthParam, cell) -> None:
+	def setColumnWidth(
+		col: gtk.TreeViewColumn,
+		_widthParam: Any,
+		cell: gtk.CellRenderer,
+	) -> None:
 		width = col.get_width()
 		cell.set_property("wrap_width", width)
 
-	def treeviewCursorChanged(self, _treev, _gevent=None) -> None:
+	def treeviewCursorChanged(self, _treev: Any, _gevent: Any = None) -> None:
 		self.updateViewType()
 
-	def viewTypeComboChanged(self, _combo) -> None:
+	def viewTypeComboChanged(self, _combo: Any) -> None:
 		self.updateViewType()
 
 	def setButtonsSensitive(self, sensitive: bool) -> None:
@@ -265,7 +275,12 @@ class EventHistoryDialog(gtk.Dialog):
 		else:
 			self.updateTextViewType(viewType, hashBefore, hashAfter)
 
-	def updateTableViewType(self, viewType, hashBefore, hashAfter) -> None:
+	def updateTableViewType(
+		self,
+		viewType: str,
+		hashBefore: str,
+		hashAfter: str,
+	) -> None:
 		treeModel = self.cmpTrees
 		treeModel.clear()
 
@@ -285,7 +300,12 @@ class EventHistoryDialog(gtk.Dialog):
 
 		self.setScrolledWinChild(self.cmpTreev)
 
-	def updateTextViewType(self, viewType, hashBefore, hashAfter) -> None:
+	def updateTextViewType(
+		self,
+		viewType: str,
+		hashBefore: str,
+		hashAfter: str,
+	) -> None:
 		event = self.event
 		text = ""
 		if viewType == "After change (Text)":
@@ -316,7 +336,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self.textbuff.set_text(text)
 		self.setScrolledWinChild(self.textview)
 
-	def setScrolledWinChild(self, new_child) -> None:
+	def setScrolledWinChild(self, new_child: gtk.Widget) -> None:
 		old_child = self.leftSwin.get_child()
 		if old_child != new_child:
 			if old_child is not None:
@@ -326,7 +346,7 @@ class EventHistoryDialog(gtk.Dialog):
 			self.leftSwin.add(new_child)
 			new_child.show()
 
-	def switchToRevision(self, revHash) -> None:
+	def switchToRevision(self, revHash: str) -> None:
 		newEvent = self.event.getRevision(revHash)
 		self.event.parent.removeFromCache(self.event.id)
 		# newEvent.id is set
@@ -336,7 +356,7 @@ class EventHistoryDialog(gtk.Dialog):
 		self.load()
 		ui.eventUpdateQueue.put("e", newEvent, self)
 
-	def onCheckoutAfterClick(self, _button) -> None:
+	def onCheckoutAfterClick(self, _button: Any) -> None:
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -346,7 +366,7 @@ class EventHistoryDialog(gtk.Dialog):
 		hashAfter = row[1]
 		self.switchToRevision(hashAfter)
 
-	def onCheckoutBeforeClick(self, _button) -> None:
+	def onCheckoutBeforeClick(self, _button: Any) -> None:
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -368,13 +388,13 @@ class EventHistoryDialog(gtk.Dialog):
 	# 	# TODO
 
 	@staticmethod
-	def formatEpoch(epoch):
+	def formatEpoch(epoch: int) -> str:
 		jd, hms = getJhmsFromEpoch(epoch)
 		cell = ui.cells.getCell(jd)
 		return cell.format(historyTimeBinFmt, tm=hms.tuple())
 
 	@staticmethod
-	def normalizeObjectData(data):
+	def normalizeObjectData(data: dict[str, Any]) -> dict[str, Any]:
 		if "rules" in data:
 			rulesOd = OrderedDict()
 			for name, value in data["rules"]:
@@ -383,19 +403,23 @@ class EventHistoryDialog(gtk.Dialog):
 		return unnest(data)
 
 	# returns normalized data ("rules.RULE_NAME" keys)
-	def getObjectData(self, _hash):
-		if not _hash:
+	def getObjectData(self, hashStr: str) -> dict[str, Any]:
+		if not hashStr:
 			return {}
-		if _hash in self.objectCache:
-			return self.objectCache[_hash]
-		data = SObjBinaryModel.loadData(_hash, ui.fs)
+		if hashStr in self.objectCache:
+			return self.objectCache[hashStr]
+		data = SObjBinaryModel.loadData(hashStr, ui.fs)
 		data = self.normalizeObjectData(data)
 		if len(self.objectCache) > 100:
 			self.objectCache.popitem()
-		self.objectCache[_hash] = data
+		self.objectCache[hashStr] = data
 		return data
 
-	def extractChangeDiff(self, hashBefore, hashAfter):
+	def extractChangeDiff(
+		self,
+		hashBefore: str,
+		hashAfter: str,
+	) -> dict[str, tuple[Any, Any]]:
 		"""returns: dict: param -> (valueBefore, valueAfter)."""
 		dataBefore = self.getObjectData(hashBefore)
 		dataAfter = self.getObjectData(hashAfter)
@@ -415,7 +439,11 @@ class EventHistoryDialog(gtk.Dialog):
 
 		return diff
 
-	def extractFullTable(self, hashBefore, hashAfter):
+	def extractFullTable(
+		self,
+		hashBefore: str,
+		hashAfter: str,
+	) -> list[tuple[str, str, str, str]]:
 		dataBefore = self.getObjectData(hashBefore)
 		dataAfter = self.getObjectData(hashAfter)
 		dataFull = []  # (symbol, key, valueBefore, valueAfter)
@@ -433,17 +461,17 @@ class EventHistoryDialog(gtk.Dialog):
 			else:
 				symbol = modifySymbol
 			dataFull.append(
-				[
+				(
 					symbol,
 					key,
 					str(valueBefore),
 					str(valueAfter),
-				],
+				),
 			)
 		return dataFull
 
 	@staticmethod
-	def extractChangeSummary(diff):
+	def extractChangeSummary(diff: list) -> str:
 		"""diff: dict: param -> (valueBefore, valueAfter)."""
 		if len(diff) < 3:
 			return ", ".join(diff)

@@ -93,7 +93,7 @@ class HMS:
 		"hM": "{h}:{m:02d}",
 	}
 
-	def __init__(self, h=0, m=0, s=0) -> None:
+	def __init__(self, h: int = 0, m: int = 0, s: int = 0) -> None:
 		self.h = h
 		self.m = m
 		self.s = s
@@ -104,7 +104,7 @@ class HMS:
 	def __str__(self) -> str:
 		return f"{self.h:02d}:{self.m:02d}:{self.s:02d}"
 
-	def __format__(self, fmt="") -> str:
+	def __format__(self, fmt: str = "") -> str:
 		if fmt in {"", "HM$"}:
 			# optimization for default format
 			return (
@@ -181,11 +181,11 @@ def getUtcOffsetCurrent(tz: TZ = None) -> int:
 	return getUtcOffsetByEpoch(now(), tz)
 
 
-def getFloatJdFromEpoch(epoch, tz: TZ = None) -> float:
+def getFloatJdFromEpoch(epoch: int, tz: TZ = None) -> float:
 	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0 * 3600) + J1970
 
 
-def getJdFromEpoch(epoch, tz: TZ = None) -> int:
+def getJdFromEpoch(epoch: int, tz: TZ = None) -> int:
 	return ifloor(getFloatJdFromEpoch(epoch, tz))
 
 

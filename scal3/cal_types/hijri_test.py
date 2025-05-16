@@ -501,7 +501,7 @@ def print_to_jd_diff() -> None:
 		print(hijri.to_jd(y, m, 1) - hijri.to_jd_c(y, m, 1))
 
 
-def gen_test_date_to_jd(golang=False) -> None:
+def gen_test_date_to_jd(golang: bool = False) -> None:
 	for year in range(1426, 1444):
 		for month in range(1, 13):
 			day = 1
@@ -512,7 +512,7 @@ def gen_test_date_to_jd(golang=False) -> None:
 			print(f"\t\t({year}, {month}, {day}): {jd},")
 
 
-def gen_test_jd_to_date(golang=False) -> None:
+def gen_test_jd_to_date(golang: bool = False) -> None:
 	for jd in range(2453442, 2459660 + 30, 27):
 		year, month, day = hijri.jd_to(jd)
 		if golang:

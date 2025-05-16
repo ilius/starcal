@@ -15,7 +15,11 @@ __all__ = ["DateTimeButton"]
 
 
 class DateTimeButton(MultiSpinButton):
-	def __init__(self, date_time=None, **kwargs) -> None:
+	def __init__(
+		self,
+		date_time: tuple[int, int, int, int, int, int] | None = None,
+		**kwargs,
+	) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep=" ",
@@ -40,7 +44,7 @@ class DateTimeButton(MultiSpinButton):
 			date_time = localtime()[:6]
 		self.set_value(date_time)
 
-	def get_epoch(self, calType):
+	def get_epoch(self, calType: int) -> int:
 		from scal3.time_utils import getEpochFromJhms
 
 		date, hms = self.get_value()
@@ -49,7 +53,7 @@ class DateTimeButton(MultiSpinButton):
 			*hms,
 		)
 
-	def changeCalType(self, fromType, toType) -> None:
+	def changeCalType(self, fromType: int, toType: int) -> None:
 		date, hms = self.get_value()
 		newDate = convert(date[0], date[1], date[2], fromType, toType)
 		self.set_value((newDate, hms))

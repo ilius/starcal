@@ -6,7 +6,7 @@ from scal3.path import (
 	pixDir,
 )
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, gtk
+from scal3.ui_gtk import Menu, gdk, gtk
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
@@ -32,7 +32,7 @@ class IconSelectButton(gtk.Button):
 		("changed", [str]),
 	]
 
-	def __init__(self, filename="") -> None:
+	def __init__(self, filename: str = "") -> None:
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
@@ -66,7 +66,7 @@ class IconSelectButton(gtk.Button):
 		# ---
 		self.set_filename(filename)
 
-	def createDialog(self):
+	def createDialog(self) -> gtk.Dialog:
 		if self._dialog:
 			return self._dialog
 
@@ -100,7 +100,7 @@ class IconSelectButton(gtk.Button):
 
 		return dialog
 
-	def onButtonPressEvent(self, _widget, gevent) -> None:
+	def onButtonPressEvent(self, _widget: gtk.Widget, gevent: gdk.Event) -> None:
 		b = gevent.button
 		if b == 1:
 			dialog = self.createDialog()
@@ -109,11 +109,15 @@ class IconSelectButton(gtk.Button):
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
-	def menuItemActivate(self, _widget, icon) -> None:
+	def menuItemActivate(self, _widget: gtk.Widget, icon: str) -> None:
 		self.set_filename(icon)
 		self.emit("changed", icon)
 
-	def dialogResponse(self, dialog, response=0) -> None:
+	def dialogResponse(
+		self,
+		dialog: gtk.Dialog,
+		response: gtk.ResponseType = gtk.ResponseType.OK,
+	) -> None:
 		dialog.hide()
 		if response == gtk.ResponseType.OK:
 			fname = dialog.get_filename()
@@ -124,7 +128,7 @@ class IconSelectButton(gtk.Button):
 		self.set_filename(fname)
 		self.emit("changed", fname)
 
-	def _setImage(self, filename) -> None:
+	def _setImage(self, filename: str) -> None:
 		self.image.set_from_pixbuf(
 			pixbufFromFile(
 				filename,
@@ -132,17 +136,17 @@ class IconSelectButton(gtk.Button):
 			),
 		)
 
-	def fileActivated(self, dialog) -> None:
+	def fileActivated(self, dialog: gtk.Dialog) -> None:
 		fname = dialog.get_filename()
 		self.filename = fname
 		self._setImage(self.filename)
 		self.emit("changed", fname)
 		dialog.hide()
 
-	def get_filename(self):
+	def get_filename(self) -> str:
 		return self.filename
 
-	def set_filename(self, filename) -> None:
+	def set_filename(self, filename: str) -> None:
 		if filename is None:
 			filename = ""
 		if filename:

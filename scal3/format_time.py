@@ -31,19 +31,19 @@ from scal3.locale_man import tr as _
 from scal3.time_utils import getUtcOffsetByGDate
 
 if TYPE_CHECKING:
-	from scal3.types_starcal import CompiledTimeFormat
+	from scal3.cell_type import CellType, CompiledTimeFormat
 
 __all__ = ["compileTmFormat"]
 
 
-def iso_to_jd(year, week, day):
+def iso_to_jd(year: int, week: int, day: int) -> int:
 	"""Return Julian day of given ISO year, week, and day."""
 	# assert week > 0 and day > 0 and day <= 7
 	jd0 = gregorian.to_jd(year - 1, 12, 28)
 	return day + 7 * week + jd0 - jd0 % 7 - 1
 
 
-def isow_year(jd):
+def isow_year(jd: int) -> int:
 	"""Iso week year."""
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
@@ -51,7 +51,7 @@ def isow_year(jd):
 	return year
 
 
-def isow(jd):
+def isow(jd: int) -> int:
 	"""Iso week number."""
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
@@ -59,7 +59,7 @@ def isow(jd):
 	return (jd - iso_to_jd(year, 1, 1)) // 7 + 1
 
 
-def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
+def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 	# fmt:		"Today: %Y/%m/%d"
 	# pyFmt:	"Today: %s/%s/%s"
 	# funcs:	(get_y, get_m, get_d)
@@ -146,7 +146,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			continue
 		if c1 in {"b", "h"}:  # FIXME
 
-			def f(cell, calType, _tm):
+			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
 				module, ok = calTypes[calType]
 				if not ok:
 					raise RuntimeError(f"cal type '{calType}' not found")
@@ -158,7 +158,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			continue
 		if c1 == "B":
 
-			def f(cell, calType, _tm):
+			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
 				module, ok = calTypes[calType]
 				if not ok:
 					raise RuntimeError(f"cal type '{calType}' not found")
@@ -278,7 +278,11 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			continue
 		if c1 == "W":
 
-			def weekNumberMonday(cell, calType, _tm):
+			def weekNumberMonday(
+				cell: CellType,
+				calType: int,
+				_tm: tuple[int, int, int],
+			) -> str:
 				jd0 = to_jd(cell.dates[calType][0], 1, 1, calType)
 				return _(
 					(cell.jd - jd0 + jd0 % 7) // 7,
@@ -314,7 +318,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			continue
 		if c1 == "z":
 
-			def tz(cell, _calType, _tm):
+			def tz(cell: CellType, _calType: int, _tm: tuple[int, int, int]) -> str:
 				m = int(
 					getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60,
 				)
@@ -329,7 +333,7 @@ def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
 			c2 = fmt[i + 2]
 			if c2 == "z":  # %:z
 
-				def tz(cell, _calType, _tm):
+				def tz(cell: CellType, _calType: int, _tm: tuple[int, int, int]) -> str:
 					m = int(
 						getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60,
 					)

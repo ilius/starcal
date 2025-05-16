@@ -49,7 +49,7 @@ from scal3.ui_gtk import (
 	gtk,
 	pack,
 )
-from scal3.ui_gtk.button_drawing import Button, SVGButton
+from scal3.ui_gtk.button_drawing import BaseButton, Button, SVGButton
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.drawing import (
@@ -62,8 +62,12 @@ from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import pixbufFromFile
 
 if TYPE_CHECKING:
+	from collections.abc import Iterable
+	from types import CellType
+
 	import cairo
 
+	from scal3.color_utils import ColorType
 	from scal3.property import Property
 
 __all__ = ["DayCal"]
@@ -74,30 +78,30 @@ class DayCal(gtk.DrawingArea, CalBase):
 	desc = _("Day Calendar")
 	itemListCustomizable = False
 
-	backgroundColor: Property | None = None
-	dayParams: Property | None = None
-	monthParams: Property | None = None
-	weekdayParams: Property | None = None
-	weekdayLocalize: Property | None = None
-	weekdayAbbreviate: Property | None = None
-	weekdayUppercase: Property | None = None
+	backgroundColor: Property[ColorType] | None = None
+	dayParams: Property[list[dict[str, Any]]] | None = None
+	monthParams: Property[list[dict[str, Any]]] | None = None
+	weekdayParams: Property[dict[str, Any]] | None = None
+	weekdayLocalize: Property[bool] | None = None
+	weekdayAbbreviate: Property[bool] | None = None
+	weekdayUppercase: Property[bool] | None = None
 
-	widgetButtonsEnable: Property | None = None
-	widgetButtonsSize: Property | None = None
-	widgetButtonsOpacity: Property | None = None
-	widgetButtons: Property | None = None
+	widgetButtonsEnable: Property[bool] | None = None
+	widgetButtonsSize: Property[float] | None = None
+	widgetButtonsOpacity: Property[float] | None = None
+	widgetButtons: Property[list[dict[str, Any]]] | None = None
 
-	navButtonsEnable: Property | None = None
-	navButtonsGeo: Property | None = None
-	navButtonsOpacity: Property | None = None
+	navButtonsEnable: Property[bool] | None = None
+	navButtonsGeo: Property[dict[str, Any]] | None = None
+	navButtonsOpacity: Property[float] | None = None
 
-	eventIconSize: Property | None = None
-	eventTotalSizeRatio: Property | None = None
+	eventIconSize: Property[float] | None = None
+	eventTotalSizeRatio: Property[float] | None = None
 
-	seasonPieEnable: Property | None = None
-	seasonPieGeo: Property | None = None
-	seasonPieColors: dict[Property] | None = None
-	seasonPieTextColor: Property | None = None
+	seasonPieEnable: Property[bool] | None = None
+	seasonPieGeo: Property[dict[str, Any]] | None = None
+	seasonPieColors: dict[str, Property] | None = None
+	seasonPieTextColor: Property[ColorType] | None = None
 
 	myKeys = CalBase.myKeys + (
 		"up",
@@ -115,12 +119,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 		"m",
 	)
 
-	def getBackgroundColor(self):
+	def getBackgroundColor(self) -> ColorType:
 		if self.backgroundColor:
 			return self.backgroundColor.v
 		return conf.bgColor.v
 
-	def getDayParams(self, allCalTypes=False) -> list[dict]:
+	def getDayParams(self, allCalTypes: bool = False) -> list[dict]:
 		if not self.dayParams:
 			return []
 		params = self.dayParams.v
@@ -137,7 +141,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				)
 		return params
 
-	def getMonthParams(self, allCalTypes=False) -> list[dict]:
+	def getMonthParams(self, allCalTypes: bool = False) -> list[dict]:
 		if not self.monthParams:
 			return []
 		params = self.monthParams.v
@@ -154,10 +158,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 				)
 		return params
 
-	def getWeekDayParams(self):
+	def getWeekDayParams(self) -> dict[str, Any]:
 		return self.weekdayParams.v
 
-	def getWidgetButtons(self):
+	def getWidgetButtons(self) -> list[BaseButton]:
 		if not self.widgetButtonsEnable:
 			return []
 		if not self.widgetButtonsEnable.v:
@@ -214,7 +218,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		},
 	]
 
-	def getNavButtons(self):
+	def getNavButtons(self) -> list[BaseButton]:
 		if not self.navButtonsEnable:
 			return []
 
@@ -259,10 +263,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 			for index, d in enumerate(buttonsRaw)
 		]
 
-	def getAllButtons(self):
+	def getAllButtons(self) -> list[BaseButton]:
 		return self.getWidgetButtons() + self.getNavButtons()
 
-	def startMove(self, gevent, button=1) -> None:
+	def startMove(self, gevent: gdk.EventButton, button: int = 1) -> None:
+		print(gevent)
 		win = self.getWindow()
 		if not win:
 			return
@@ -273,7 +278,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			gevent.time,
 		)
 
-	def startResize(self, gevent) -> None:
+	def startResize(self, gevent: gdk.EventButton) -> None:
 		win = self.getWindow()
 		if not win:
 			return
@@ -285,17 +290,17 @@ class DayCal(gtk.DrawingArea, CalBase):
 			gevent.time,
 		)
 
-	def openCustomize(self, _gevent=None) -> None:
+	def openCustomize(self, _gevent: gdk.EventButton | None = None) -> None:
 		if self.win:
 			self.win.customizeShow()
 
-	def prevDayClicked(self, _gevent=None) -> None:
+	def prevDayClicked(self, _gevent: gdk.EventButton | None = None) -> None:
 		self.jdPlus(-1)
 
-	def nextDayClicked(self, _gevent=None) -> None:
+	def nextDayClicked(self, _gevent: gdk.EventButton | None = None) -> None:
 		self.jdPlus(1)
 
-	def updateTypeParamsWidget(self):
+	def updateTypeParamsWidget(self) -> list[StackPage]:
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
 
 		monthParams = self.getMonthParams(allCalTypes=True)
@@ -379,7 +384,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		return subPages
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.win = win
 		self._window = None
@@ -395,7 +400,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		# self.connect("screen-changed", self.screenChanged)
 		self.connect("scroll-event", self.scroll)
 
-	def getWindow(self):
+	def getWindow(self) -> gtk.Window:
 		return self._window
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -662,14 +667,22 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.optionsWidget.show_all()
 		return self.optionsWidget
 
-	def getSubPages(self):
+	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
 		return self.subPages
 
 	@staticmethod
-	def getRenderPos(params, x0, y0, w, h, fontw, fonth):
+	def getRenderPos(
+		params: dict[str, Any],
+		x0: float,
+		y0: float,
+		w: float,
+		h: float,
+		fontw: float,
+		fonth: float,
+	) -> tuple[float, float]:
 		xalign = params.get("xalign")
 		yalign = params.get("yalign")
 
@@ -696,10 +709,15 @@ class DayCal(gtk.DrawingArea, CalBase):
 		return (x, y)
 
 	@classmethod
-	def getCell(cls) -> ui.Cell:
+	def getCell(cls) -> CellType:
 		return ui.cells.current
 
-	def drawAll(self, _widget=None, cr=None, cursor=True) -> None:
+	def drawAll(
+		self,
+		_widget: gtk.Widget = None,
+		cr: cairo.Context | None = None,
+		cursor: bool = True,
+	) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -757,7 +775,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.fill()
 
 	@staticmethod
-	def getMonthName(c: ui.Cell, calType: int, params: dict[str, Any]):
+	def getMonthName(c: CellType, calType: int, params: dict[str, Any]) -> str:
 		month = c.dates[calType][1]  # type: int
 		abbreviate = params.get("abbreviate", False)
 		uppercase = params.get("uppercase", False)
@@ -766,15 +784,16 @@ class DayCal(gtk.DrawingArea, CalBase):
 			text = text.upper()
 		return text
 
-	def iterMonthParams(self):
-		for calType, params in zip(
-			calTypes.active,
-			self.getMonthParams(),
-			strict=False,
-		):
-			if not params.get("enable", True):
-				continue
-			yield calType, params
+	def iterMonthParams(self) -> Iterable[tuple[int, dict[str, Any]]]:
+		return (
+			(calType, params)
+			for calType, params in zip(
+				calTypes.active,
+				self.getMonthParams(),
+				strict=False,
+			)
+			if params.get("enable", True)
+		)
 
 	def getWeekdayLocalize(self) -> bool:
 		if self.weekdayLocalize:
@@ -786,7 +805,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return self.weekdayAbbreviate.v
 		return False
 
-	def drawSeasonPie(self, cr, w, h) -> None:
+	def drawSeasonPie(self, cr: cairo.Context, w: float, h: float) -> None:
 		if not self.seasonPieEnable:
 			return
 
@@ -938,7 +957,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		for button in self._allButtons:
 			button.draw(cr, w, h)
 
-	def onButtonPress(self, _obj, gevent) -> bool:
+	def onButtonPress(self, _obj: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
@@ -963,7 +982,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 		return True
 
-	def jdPlus(self, p) -> None:
+	def jdPlus(self, p: int) -> None:
 		ui.cells.jdPlus(p)
 		self.onDateChange()
 
@@ -1001,7 +1020,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _widget, gevent) -> bool | None:
+	def scroll(self, _widget: gtk.Widget, gevent: gdk.ScrollEvent) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)
@@ -1011,7 +1030,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *_args):
+	def getCellPos(self, *_args) -> tuple[int, int]:
 		alloc = self.get_allocation()
 		return (
 			int(alloc.width / 2),

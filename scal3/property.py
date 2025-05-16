@@ -15,7 +15,12 @@
 
 from __future__ import annotations
 
-__all__ = ["Property"]
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+
+__all__ = ["ItemProperty", "Property"]
 
 
 class Property[T]:
@@ -44,7 +49,7 @@ class Property[T]:
 class ItemProperty[T](Property[T]):
 	__slots__ = ["_index", "_parent"]
 
-	def __init__(self, parent: Property[list[T]], index: int):
+	def __init__(self, parent: Property[Sequence[T]], index: int) -> None:
 		self._parent = parent
 		self._index = index
 

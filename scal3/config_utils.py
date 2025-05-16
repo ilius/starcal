@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from scal3 import logger
 from scal3.property import Property
 
@@ -10,6 +12,9 @@ import sys
 
 from scal3.json_utils import dataToPrettyJson
 
+if TYPE_CHECKING:
+	from types import ModuleType
+
 __all__ = [
 	"loadModuleConfig",
 	"loadSingleConfig",
@@ -19,7 +24,7 @@ __all__ = [
 
 
 def loadSingleConfig(
-	module,
+	module: Any,
 	confPath: str,
 	params: dict[str, Property],
 	decoders: dict | None = None,
@@ -43,28 +48,26 @@ def loadSingleConfig(
 		log.error(f"invalid json file {confPath!r}: {e}")
 		return
 	# ---
-	if isinstance(module, str):
-		module = sys.modules[module]
+	if not isinstance(module, str):
+		module = str(module)
+	assert isinstance(params, dict), repr(params)
 	for param, value in data.items():
 		if param not in params:
-			log.warning(f"Ignoring config option {param} in {module.__name__}")
+			log.warning(f"Ignoring config option {param} in {module}")
 			continue
 		if decoders and param in decoders:
 			value = decoders[param](value)  # noqa: PLW2901
 		prop = params[param]
-		assert isinstance(prop, Property), f"{module.__name__}.{param}"
+		assert isinstance(prop, Property), f"{module}.{param}"
 		prop.v = value
 
 
 def saveSingleConfig(
-	module,
+	module: Any,  # noqa: ARG001
 	confPath: str,
 	params: dict[str, Property],
 	encoders: dict | None = None,
 ) -> None:
-	if isinstance(module, str):
-		module = sys.modules[module]
-	# ---
 	data = {}
 	for param, prop in params.items():
 		assert isinstance(prop, Property)
@@ -82,7 +85,7 @@ def saveSingleConfig(
 		return
 
 
-def loadModuleConfig(module) -> None:
+def loadModuleConfig(module: ModuleType | str) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---
@@ -106,10 +109,9 @@ def loadModuleConfig(module) -> None:
 		module.confParams,
 		decoders,
 	)
-	# FIXME: should use module.confParams to restrict json keys?
 
 
-def saveModuleConfig(module) -> None:
+def saveModuleConfig(module: ModuleType) -> None:
 	if isinstance(module, str):
 		module = sys.modules[module]
 	# ---

@@ -1,3 +1,6 @@
+from collections.abc import Iterable
+from typing import Self
+
 from scal3 import logger
 
 log = logger.get()
@@ -8,17 +11,17 @@ from math import log2 as math_log2
 __all__ = ["MaxHeap"]
 
 
-class MaxHeap(list):
-	def copy(self):
+class MaxHeap[T](list):
+	def copy(self) -> Self:
 		return MaxHeap(self[:])
 
-	def exch(self, i, j) -> None:
+	def exch(self, i: int, j: int) -> None:
 		self[i], self[j] = self[j], self[i]
 
-	def less(self, i, j):
+	def less(self, i: int, j: int) -> bool:
 		return self[i][0] > self[j][0]
 
-	def swim(self, k) -> None:
+	def swim(self, k: int) -> None:
 		while k > 0:
 			j = (k - 1) // 2
 			if self.less(k, j):
@@ -26,7 +29,7 @@ class MaxHeap(list):
 			self.exch(k, j)
 			k = j
 
-	def sink(self, k) -> None:
+	def sink(self, k: int) -> None:
 		N = len(self)
 		while 2 * k < N - 1:
 			j = 2 * k + 1
@@ -37,10 +40,10 @@ class MaxHeap(list):
 			self.exch(k, j)
 			k = j
 
-	def push(self, key, value) -> None:
+	def push(self, key: int, value: T) -> None:
 		heappush(self, (-key, value))
 
-	def pop(self, index=None):
+	def pop(self, index: int | None = None) -> tuple[int, T]:
 		if index is None:
 			mkey, value = heappop(self)
 		else:
@@ -55,10 +58,10 @@ class MaxHeap(list):
 			self.swim(index)
 		return -mkey, value
 
-	def moreThan(self, key):
+	def moreThan(self, key: int) -> Iterable[tuple[int, T]]:
 		return self.moreThanStep(key, 0)
 
-	def moreThanStep(self, key, index):
+	def moreThanStep(self, key: int, index: int) -> Iterable[tuple[int, T]]:
 		if index < 0:
 			return
 		try:
@@ -76,7 +79,7 @@ class MaxHeap(list):
 	def __str__(self) -> str:
 		return " ".join([str(-k) for k, v in self])
 
-	def delete(self, key, value) -> None:
+	def delete(self, key: int, value: T) -> None:
 		try:
 			index = self.index((-key, value))  # not optimal FIXME
 		except ValueError:
@@ -84,10 +87,10 @@ class MaxHeap(list):
 		else:
 			self.pop(index)
 
-	def verify(self):
+	def verify(self) -> bool:
 		return self.verifyIndex(0)
 
-	def verifyIndex(self, i):
+	def verifyIndex(self, i: int) -> bool:
 		assert i >= 0
 		try:
 			k = self[i]
@@ -107,17 +110,17 @@ class MaxHeap(list):
 			return True
 		return self.verifyIndex(2 * i + 1) and self.verifyIndex(2 * i + 2)
 
-	def getAll(self):
+	def getAll(self) -> Iterable[tuple[int, T]]:
 		for key, value in self:
 			yield -key, value
 
-	def getMax(self):
+	def getMax(self) -> tuple[int, T]:
 		if not self:
 			raise ValueError("heap empty")
 		k, v = self[0]
 		return -k, v
 
-	def getMin(self):
+	def getMin(self) -> tuple[int, T]:
 		# at least 2 times faster than max(self)
 		if not self:
 			raise ValueError("heap empty")
@@ -146,7 +149,7 @@ class MaxHeap(list):
 	"""
 
 
-def testGetMin(N) -> None:
+def testGetMin(N: int) -> None:
 	from random import randint
 
 	h = MaxHeap()
@@ -163,7 +166,7 @@ def testGetMin(N) -> None:
 	# log.debug(f"min key = {k1}")
 
 
-def testDeleteStep(N, maxKey) -> bool:
+def testDeleteStep(N: int, maxKey: int) -> bool:
 	from random import randint
 
 	# ---

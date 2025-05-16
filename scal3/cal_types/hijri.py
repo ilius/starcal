@@ -18,8 +18,10 @@
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
 import json
+from typing import Any
 
 from scal3 import logger
+from scal3.cal_types.types import TranslateFunc
 from scal3.property import Property
 
 __all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
@@ -61,11 +63,18 @@ monthNameAb = (
 )
 
 
-def getMonthName(m, y=None):  # noqa: ARG001
+def getMonthName(
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
+def getMonthNameAb(
+	tr: TranslateFunc,
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -81,7 +90,7 @@ avgYearLen = 354.3666  # FIXME
 hijriUseDB = Property(True)
 
 
-options = (
+options = [
 	(
 		"hijriUseDB",
 		bool,
@@ -93,7 +102,7 @@ options = (
 		"hijri",
 		"tuneHijriMonthes",
 	),
-)
+]
 
 
 import os
@@ -151,7 +160,7 @@ class MonthDbHolder:
 		self.userDbPath = join(confDir, "hijri-monthes.json")
 		self.sysDbPath = f"{modDir}/hijri-monthes.json"
 
-	def setMonthLenByYear(self, monthLenByYear) -> None:
+	def setMonthLenByYear(self, monthLenByYear: dict[int, int]) -> None:
 		self.endJd = self.startJd
 		self.monthLenByYm = {}
 		for y in monthLenByYear:
@@ -166,10 +175,10 @@ class MonthDbHolder:
 		if self.expJd is None:
 			self.expJd = self.endJd
 
-	def setData(self, data) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
-		self.expJd = data.get("expJd", None)
+		self.expJd = data.get("expJd")
 		# ---
 		monthLenByYear = {}
 		for row in data["monthLen"]:
@@ -190,7 +199,7 @@ class MonthDbHolder:
 				log.info(f"---- ignoring user's old db {self.userDbPath}")
 		self.setData(data)
 
-	def getMonthLenByYear(self):
+	def getMonthLenByYear(self) -> dict[int, int]:
 		monthLenByYear = {}
 		for ym, mLen in sorted(self.monthLenByYm.items()):
 			year, month0 = divmod(ym, 12)
@@ -217,8 +226,11 @@ class MonthDbHolder:
 		with open(self.userDbPath, "w", encoding="utf-8") as f:
 			f.write(text)
 
-	def getMonthLenList(self):
-		"""Returns a list of (index, ym, mLen)."""
+	def getMonthLenList(self) -> list[tuple[int, int, int]]:
+		"""
+		Returns a list of (index, ym, mLen).
+		where ym is year * 12 + month - 1.
+		"""
 		return [
 			(
 				index,
@@ -232,7 +244,7 @@ class MonthDbHolder:
 			)
 		]
 
-	def getDateFromJd(self, jd):
+	def getDateFromJd(self, jd: int) -> tuple[int, int, int] | None:
 		if not self.endJd >= jd >= self.startJd:
 			return
 		y, m, d = self.startDate
@@ -259,7 +271,7 @@ class MonthDbHolder:
 		return (year, mm + 1, d)
 
 	@staticmethod
-	def getJdFromDate(year, month, day):
+	def getJdFromDate(year: int, month: int, day: int) -> int | None:
 		ym = year * 12 + month - 1
 		y0, m0, _d0 = monthDb.startDate
 		if ym - 1 not in monthDb.monthLenByYm:
@@ -278,11 +290,11 @@ monthDb.load()
 # ---------------------------------------------------------------------
 
 
-def isLeap(year):
+def isLeap(year: int) -> bool:
 	return (((year * 11) + 14) % 30) < 11
 
 
-def to_jd_c(year, month, day):
+def to_jd_c(year: int, month: int, day: int) -> int:
 	return (
 		day
 		+ iceil(29.5 * (month - 1))
@@ -292,7 +304,7 @@ def to_jd_c(year, month, day):
 	)
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	if hijriUseDB.v:
 		jd = monthDb.getJdFromDate(year, month, day)
 		if jd is not None:
@@ -300,7 +312,7 @@ def to_jd(year, month, day):
 	return to_jd_c(year, month, day)
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> tuple[int, int, int]:
 	if hijriUseDB.v:
 		# jd = ifloor(jd)
 		date = monthDb.getDateFromJd(jd)
@@ -317,7 +329,7 @@ def jd_to(jd):
 	return year, month, day
 
 
-def getMonthLen(y, m):
+def getMonthLen(y: int, m: int) -> int:
 	# if `hijriUseDB.v`:
 	# 	try:
 	# 		return monthDb.monthLenByYm[y*12+m]
