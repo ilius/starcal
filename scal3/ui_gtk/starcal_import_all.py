@@ -1,4 +1,9 @@
-from gi.repository import Gtk as gtk
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from gi.repository import Gtk as gtk
 
 __all__ = ["doFullImport"]
 # to help with testing phase and also tell code analyzers these are imported

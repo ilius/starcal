@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import imageFromFile
 

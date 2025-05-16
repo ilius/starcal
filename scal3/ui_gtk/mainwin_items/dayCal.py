@@ -13,10 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.ui import conf
-from scal3.ui_gtk import gtk
 from scal3.ui_gtk.day_cal import DayCal
 from scal3.ui_gtk.decorators import registerSignals
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gtk
 
 __all__ = ["CalObj"]
 

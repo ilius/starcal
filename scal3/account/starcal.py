@@ -25,14 +25,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from scal3 import event_lib
-from scal3.cal_types import (
-	calTypes,
-)
+from scal3.cal_types import calTypes
 from scal3.event_lib import Account
 from scal3.locale_man import tr as _
-from scal3.time_utils import (
-	jsonTimeFromEpoch,
-)
+from scal3.time_utils import jsonTimeFromEpoch
 
 if TYPE_CHECKING:
 	import requests

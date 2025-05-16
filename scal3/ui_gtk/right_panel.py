@@ -11,8 +11,6 @@ from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import VBox, gtk, pack, timeout_add
-
-# WeekOccurrenceView,
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.occurrence_view import (

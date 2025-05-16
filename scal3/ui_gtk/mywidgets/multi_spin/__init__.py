@@ -16,8 +16,9 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-from collections.abc import Sequence
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -32,6 +33,9 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelWidth
 from scal3.ui_gtk.utils import imageClassButton
 from scal3.utils import toStr
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = ["MultiSpinButton", "SingleSpinButton"]
 
@@ -99,7 +103,7 @@ class MultiSpinButton(gtk.Box):
 	def get_selection_bounds(self) -> tuple[int, int]:
 		return self.entry.get_selection_bounds()
 
-	def get_increments(self) -> "tuple[int, int]":
+	def get_increments(self) -> tuple[int, int]:
 		return (self.step_inc, self.page_inc)
 
 	# def set_range(self, minim: int, maxim: int):

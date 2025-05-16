@@ -23,10 +23,6 @@ from scal3 import logger
 
 log = logger.get()
 
-import sys
-
-sys.path.append("/starcal")  # REMOVE FIXME
-
 from scal3 import core, locale_man, ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack

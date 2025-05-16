@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.ui import conf
 from scal3.ui_gtk import gtk
 

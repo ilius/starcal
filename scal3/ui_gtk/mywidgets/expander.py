@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
 
-__all__ = ["ExpanderFrame"]
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
+
+__all__ = ["ExpanderFrame"]
 
 
 class ExpanderFrameTitle(gtk.Button):

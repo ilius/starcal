@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.mywidgets.multi_spin import IntField
 from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 

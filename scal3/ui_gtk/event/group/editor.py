@@ -1,7 +1,8 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.event_lib.groups import EventGroup
 
 log = logger.get()
 
@@ -12,6 +13,9 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["GroupEditorDialog"]
 

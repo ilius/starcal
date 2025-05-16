@@ -1,15 +1,21 @@
+from __future__ import annotations
+
 from scal3 import logger
-from scal3.ui_gtk.customize import CustomizableCalObj
 
 log = logger.get()
 
 from time import localtime
 from time import time as now
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.ui_gtk import timeout_add_seconds
 
+if TYPE_CHECKING:
+	from scal3.ui_gtk.customize import CustomizableCalObj
+
 __all__ = ["dateChange"]
+
 dayLen = 24 * 3600
 
 

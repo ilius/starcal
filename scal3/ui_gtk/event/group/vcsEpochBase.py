@@ -1,7 +1,13 @@
-from scal3.event_lib.groups import EventGroup
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.vcsBase import VcsBaseWidgetClass
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["VcsEpochBaseWidgetClass"]
 

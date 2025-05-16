@@ -13,23 +13,22 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from scal3 import logger
-from scal3.ui import conf
-
-log = logger.get()
+from __future__ import annotations
 
 from scal3 import logger
 
 log = logger.get()
 
-
-from typing import Never
+from typing import TYPE_CHECKING, Never
 
 from scal3 import core, ui
-from scal3.cell_type import CellType
+from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
+
+if TYPE_CHECKING:
+	from scal3.cell_type import CellType
 
 __all__ = ["CalBase"]
 

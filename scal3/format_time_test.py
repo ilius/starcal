@@ -1,14 +1,19 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
 import time
 from time import perf_counter
+from typing import TYPE_CHECKING
 
 from scal3 import core, ui
 from scal3.cal_types import to_jd
-from scal3.cell_type import CompiledTimeFormat
 from scal3.format_time import compileTmFormat
+
+if TYPE_CHECKING:
+	from scal3.cell_type import CompiledTimeFormat
 
 
 def formatTime(

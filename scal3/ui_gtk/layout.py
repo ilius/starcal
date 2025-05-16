@@ -20,7 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-
 from typing import TYPE_CHECKING
 
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack

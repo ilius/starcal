@@ -30,9 +30,7 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.font_utils import gfontEncode
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import (
 	buffer_get_text,
 	pixbufFromFile,

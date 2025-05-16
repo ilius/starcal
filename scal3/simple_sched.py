@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 A generally useful event scheduler class.
 
@@ -27,10 +29,12 @@ has another way to reference private data (besides global variables).
 import heapq
 import time
 from collections import namedtuple
-from collections.abc import Callable, Sequence
 from itertools import count
 from time import time as _time
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+	from collections.abc import Callable, Sequence
 
 __all__ = ["scheduler"]
 

@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
-
 
 from scal3.locale_man import tr as _
 from scal3.path import deskDir

@@ -1,8 +1,14 @@
-from scal3.event_lib.groups import EventGroup
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
+
+if TYPE_CHECKING:
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["WidgetClass"]
 

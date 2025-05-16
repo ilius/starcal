@@ -1,10 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import event_lib, ui
 from scal3.event_lib import state as event_state
-from scal3.event_lib.accounts import Account
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.event_lib.accounts import Account
 
 __all__ = ["AccountEditorDialog"]
 

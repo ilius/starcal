@@ -18,9 +18,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
+from __future__ import annotations
 
-from scal3.cal_types.types import TranslateFunc
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from scal3.cal_types.types import TranslateFunc
+
+__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
 name = "julian"
 desc = "Julian"

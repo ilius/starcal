@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.ui_gtk import gdk, gtk, timeout_add
 
 __all__ = ["setupMenuHideOnLeave"]

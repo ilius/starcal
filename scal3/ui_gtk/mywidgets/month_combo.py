@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack

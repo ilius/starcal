@@ -22,7 +22,6 @@ from scal3 import logger
 
 log = logger.get()
 
-
 from pygit2 import (
 	GIT_SORT_REVERSE,
 	GIT_SORT_TIME,

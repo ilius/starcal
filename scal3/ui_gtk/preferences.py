@@ -20,7 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-
 import typing
 from contextlib import suppress
 from os.path import join
@@ -29,9 +28,7 @@ from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import getLocaleFirstWeekDay, langSh
 from scal3.locale_man import tr as _
-from scal3.path import (
-	sourceDir,
-)
+from scal3.path import sourceDir
 from scal3.ui import conf
 from scal3.ui_gtk import HBox, Menu, VBox, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
@@ -59,10 +56,7 @@ from scal3.ui_gtk.pref_utils_extra import (
 	WeekDayCheckListPrefItem,
 )
 from scal3.ui_gtk.stack import MyStack, StackPage
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
 from scal3.ui_gtk.utils import (
 	confirm,
 	dialog_add_button,

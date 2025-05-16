@@ -20,12 +20,6 @@ from typing import Any, NamedTuple
 
 from scal3.font import Font
 
-MAIN_CONF = 1
-LIVE = 2
-CUSTOMIZE = 4
-NEED_RESTART = 8
-DAYCAL_WIN_LIVE = 16
-
 __all__ = [
 	"CUSTOMIZE",
 	"DAYCAL_WIN_LIVE",
@@ -37,6 +31,12 @@ __all__ = [
 	"confParamsData",
 	"getParamNamesWithFlag",
 ]
+
+MAIN_CONF = 1
+LIVE = 2
+CUSTOMIZE = 4
+NEED_RESTART = 8
+DAYCAL_WIN_LIVE = 16
 
 
 class NOT_SET:

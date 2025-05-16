@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from __future__ import annotations
 
 import gi
 
@@ -6,7 +6,12 @@ from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import buffer_get_text
 
 gi.require_version("GtkSource", "4")
+from typing import TYPE_CHECKING
+
 from gi.repository import GtkSource
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["SourceEditorWithFrame"]
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gi.repository import Gtk as gtk
 from gi.repository import Pango as pango
 

@@ -14,8 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3 import ui
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.timeline import conf
+
+if TYPE_CHECKING:
+	from scal3 import ui
 
 __all__ = ["Tick"]
 

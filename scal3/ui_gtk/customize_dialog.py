@@ -22,7 +22,6 @@ from scal3.ui import conf
 
 log = logger.get()
 
-
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack

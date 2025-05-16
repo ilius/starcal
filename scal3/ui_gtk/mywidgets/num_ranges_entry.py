@@ -16,10 +16,11 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
-
 
 from scal3 import locale_man
 from scal3.locale_man import (

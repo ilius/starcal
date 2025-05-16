@@ -47,6 +47,7 @@ try:
 
 	log = logging.getLogger(APP_NAME)
 except Exception:
+	log.exception("Failed to setup logging")
 	from scal3.utils import FallbackLogger
 
 	log = FallbackLogger()

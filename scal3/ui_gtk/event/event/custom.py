@@ -14,17 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
-from scal3.event_lib.event_base import Event
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
 from scal3 import event_lib
-from scal3.event_lib.rules import EventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.rules import EventRule
 
 __all__ = ["WidgetClass"]
 

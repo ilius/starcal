@@ -20,7 +20,6 @@ from scal3.ui import conf
 
 log = logger.get()
 
-
 from typing import TYPE_CHECKING
 
 from scal3 import ui

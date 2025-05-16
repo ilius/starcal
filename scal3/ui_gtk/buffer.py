@@ -1,10 +1,15 @@
-"""Thanks to "Pier Carteri" <m3tr0@dei.unipd.it> for program Py_Shell.py."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
+
+	from gi.repository import Gtk as gtk
 
 __all__ = ["GtkBufferFile"]
 
-from collections.abc import Iterable
-
-from gi.repository import Gtk as gtk
+"""Thanks to "Pier Carteri" <m3tr0@dei.unipd.it> for program Py_Shell.py."""
 
 
 class GtkBufferFile:

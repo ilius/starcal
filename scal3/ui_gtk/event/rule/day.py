@@ -1,5 +1,11 @@
-from scal3.event_lib.rules import EventRule
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
+
+if TYPE_CHECKING:
+	from scal3.event_lib.rules import EventRule
 
 __all__ = ["WidgetClass"]
 
