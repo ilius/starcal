@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 
 	from .event_base import Event
 
+__all__ = ["EventNotifier"]
+
 
 # Should not be registered, or instantiate directly
 class EventNotifier(SObj):

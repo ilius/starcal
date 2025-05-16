@@ -27,6 +27,7 @@ all_names = sorted(
 		"confParamsCustomize",
 		"confParamsLive",
 		"dayCalWinParamsLive",
+		"needRestartList",
 	],
 )
 
