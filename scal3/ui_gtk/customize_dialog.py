@@ -15,6 +15,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from scal3 import logger
 from scal3.ui import conf
 
@@ -39,11 +41,20 @@ from scal3.ui_gtk.utils import (
 	showInfo,
 )
 
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+
+	from scal3.ui_gtk.layout import WinLayoutBox
+
 __all__ = ["CustomizeWindow"]
 
 
 class CustomizeWindowItemsToolbar(StaticToolBox):
-	def __init__(self, parent, onClickArgs) -> None:
+	def __init__(
+		self,
+		parent: gtk.Widget,
+		onClickArgs: Sequence[Any],
+	) -> None:
 		StaticToolBox.__init__(
 			self,
 			parent,
@@ -90,7 +101,12 @@ class CustomizeWindowItemsToolbar(StaticToolBox):
 
 
 class CustomizeWindow(gtk.Dialog):
-	def __init__(self, item: CustomizableCalObj, scrolled=True, **kwargs) -> None:
+	def __init__(
+		self,
+		item: WinLayoutBox,
+		scrolled: bool = True,
+		**kwargs,
+	) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
 		# --
@@ -142,7 +158,7 @@ class CustomizeWindow(gtk.Dialog):
 			self.vbox.set_size_request(300, 450)
 
 	@staticmethod
-	def itemPixbuf(item):
+	def itemPixbuf(item: CustomizableCalObj) -> gdk.Pixbuf | None:
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
@@ -153,7 +169,7 @@ class CustomizeWindow(gtk.Dialog):
 		self,
 		parentPagePath: str,
 		parentItem: CustomizableCalObj,
-		scrolled=False,
+		scrolled: bool = False,
 	) -> tuple[gtk.TreeView, gtk.Box]:
 		# column 0: bool: enable
 		# column 1: str: unique pagePath (dot separated)
@@ -236,10 +252,10 @@ class CustomizeWindow(gtk.Dialog):
 		# ---
 		return treev, vbox
 
-	def vboxSizeRequest(self, _widget=None, _req=None) -> None:
+	def vboxSizeRequest(self, _widget: gtk.Widget = None, _req: Any = None) -> None:
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, _button, treev) -> None:
+	def onTopClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -258,7 +274,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i + 1))
 		treev.set_cursor(0)
 
-	def onUpClick(self, _button, treev) -> None:
+	def onUpClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -276,7 +292,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i - 1), model.get_iter(i))
 		treev.set_cursor(i - 1)
 
-	def onDownClick(self, _button, treev) -> None:
+	def onDownClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -294,7 +310,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i), model.get_iter(i + 1))
 		treev.set_cursor(i + 1)
 
-	def onBottomClick(self, _button, treev) -> None:
+	def onBottomClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -313,7 +329,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i))
 		treev.set_cursor(len(model) - 1)
 
-	def _addPageItemsTree(self, page) -> None:
+	def _addPageItemsTree(self, page: StackPage) -> None:
 		pagePath = page.pagePath
 		item = page.pageItem
 
@@ -346,7 +362,7 @@ class CustomizeWindow(gtk.Dialog):
 			),
 		)
 
-	def addPageObj(self, page) -> None:
+	def addPageObj(self, page: StackPage) -> None:
 		pagePath = page.pagePath
 		title = page.pageTitle
 		item = page.pageItem
@@ -399,7 +415,7 @@ class CustomizeWindow(gtk.Dialog):
 		parentPagePath: str,
 		parentItem: CustomizableCalObj,
 		itemIndex: int,
-	):
+	) -> StackPage:
 		item = parentItem.items[itemIndex]
 
 		title = item.desc
@@ -420,10 +436,14 @@ class CustomizeWindow(gtk.Dialog):
 
 		return page
 
-	def gotoPageCallback(self, _item, pagePath) -> None:
+	def gotoPageCallback(self, _item: CustomizableCalObj, pagePath: str) -> None:
 		self.stack.gotoPage(pagePath)
 
-	def onTreeviewButtonPress(self, treev, gevent) -> bool:
+	def onTreeviewButtonPress(
+		self,
+		treev: gtk.TreeView,
+		gevent: gdk.ButtonEvent,
+	) -> bool:
 		if gevent.button != 1:
 			return False
 		pos_t = treev.get_path_at_pos(int(gevent.x), int(gevent.y))
@@ -472,7 +492,10 @@ class CustomizeWindow(gtk.Dialog):
 		self.stack.gotoPage(page.pagePath)
 
 	@staticmethod
-	def loadItem(parentItem, itemIndex):
+	def loadItem(
+		parentItem: CustomizableCalObj,
+		itemIndex: int,
+	) -> CustomizableCalObj | None:
 		item = parentItem.items[itemIndex]
 		if not item.loaded:
 			item = item.getLoadedObj()
@@ -484,7 +507,12 @@ class CustomizeWindow(gtk.Dialog):
 		item.onDateChange()
 		return item
 
-	def onEnableCellToggle(self, cell, path, treev) -> None:
+	def onEnableCellToggle(
+		self,
+		cell: gtk.CellRenderer,
+		path: str,
+		treev: gtk.TreeView,
+	) -> None:
 		itemIndex = tree_path_split(path)[0]
 		self.enableCellToggle(treev, cell.get_active(), itemIndex)
 
@@ -533,7 +561,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.saveConfCustomize()
 		# data = item.getData()-- remove? FIXME
 
-	def onSaveClick(self, _button=None, _event=None) -> bool:
+	def onSaveClick(self, _button: gtk.Button = None, _event: Any = None) -> bool:
 		self.save()
 		self.hide()
 		return True

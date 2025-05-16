@@ -7,7 +7,7 @@ __all__ = ["TimeButton"]
 
 
 class TimeButton(MultiSpinButton):
-	def __init__(self, hms=None, **kwargs) -> None:
+	def __init__(self, hms: tuple[int, int, int] | None = None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep=":",
@@ -22,11 +22,11 @@ class TimeButton(MultiSpinButton):
 			hms = localtime()[3:6]
 		self.set_value(hms)
 
-	def get_seconds(self):
+	def get_seconds(self) -> int:
 		h, m, s = self.get_value()
 		return h * 3600 + m * 60 + s
 
-	def set_seconds(self, seconds) -> None:
+	def set_seconds(self, seconds: int) -> None:
 		_day, s = divmod(seconds, 86400)
 		# do what with "day" ?
 		h, s = divmod(s, 3600)

@@ -19,8 +19,9 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
@@ -154,7 +155,11 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		# ---
 		self.vbox.show_all()
 
-	def appendDayInfoItem(self, item, expander=True) -> None:
+	def appendDayInfoItem(
+		self,
+		item: CustomizableCalObj,
+		expander: bool = True,
+	) -> None:
 		self.appendItem(item)
 		# ---
 		widget = item
@@ -167,18 +172,22 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 			widget = exp
 		pack(self.vbox, widget)
 
-	def onClose(self, _obj=None, _gevent=None) -> bool:
+	def onClose(
+		self,
+		_obj: gtk.Widget | None = None,
+		_gevent: gdk.Event = None,
+	) -> bool:
 		self.hide()
 		return True
 
-	def goBack(self, _obj=None) -> None:
+	def goBack(self, _widget: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(-1)
 		self.onDateChange()
 
-	def goToday(self, _obj=None) -> None:
+	def goToday(self, _widget: gtk.Widget | None = None) -> None:
 		ui.cells.gotoJd(core.getCurrentJd())
 		self.onDateChange()
 
-	def goNext(self, _obj=None) -> None:
+	def goNext(self, _widget: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(1)
 		self.onDateChange()

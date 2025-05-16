@@ -79,6 +79,8 @@ dayLen = 24 * 3600
 @classes.rule.setMain
 class EventRule(SObj):
 	name = ""
+	tname = ""
+	nameAlias = ""
 	desc = ""
 	provide = ()
 	need = ()

@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+from scal3.event_lib.event_base import Event
 
 log = logger.get()
 
@@ -32,7 +33,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, event) -> None:  # FIXME
+	def __init__(self, event: Event) -> None:  # FIXME
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		assert event.parent.name == "universityTerm"  # FIXME
@@ -164,7 +165,7 @@ class WidgetClass(gtk.Box):
 			raise RuntimeError("No courses is selected")
 		self.event.courseId = self.courseIds[courseIndex]
 		# --
-		self.event.setDate(*tuple(self.dateInput.get_value()))
+		self.event.setDate(*self.dateInput.get_value())
 		# --
 		timeRangeRule, ok = self.event["dayTimeRange"]
 		if not ok:
@@ -181,7 +182,7 @@ class WidgetClass(gtk.Box):
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.dateInput.changeCalType(self.event.calType, newCalType)

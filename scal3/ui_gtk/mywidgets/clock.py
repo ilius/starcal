@@ -26,7 +26,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui import conf
-from scal3.ui_gtk import gtk, pack, timeout_add
+from scal3.ui_gtk import gdk, gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import fillColor, setColor
 
 if TYPE_CHECKING:
@@ -34,7 +34,12 @@ if TYPE_CHECKING:
 
 
 class ClockLabel(gtk.Label):
-	def __init__(self, bold=False, seconds=True, selectable=False) -> None:
+	def __init__(
+		self,
+		bold: bool = False,
+		seconds: bool = True,
+		selectable: bool = False,
+	) -> None:
 		gtk.Label.__init__(self)
 		self.set_use_markup(True)
 		self.set_selectable(selectable)
@@ -68,7 +73,12 @@ class ClockLabel(gtk.Label):
 
 
 class FClockLabel(gtk.Label):
-	def __init__(self, clockFormat="%T", local=True, selectable=False) -> None:
+	def __init__(
+		self,
+		clockFormat: str = "%T",
+		local: bool = True,
+		selectable: bool = False,
+	) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -102,7 +112,11 @@ class FClockLabel(gtk.Label):
 
 
 class FClockWidget(gtk.DrawingArea):  # Time is in Local
-	def __init__(self, clockFormat="%T", _selectable=False) -> None:
+	def __init__(
+		self,
+		clockFormat: str = "%T",
+		selectable: bool = False,  # noqa: ARG002
+	) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -130,11 +144,15 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 	def stop(self) -> None:
 		self.running = False
 
-	def set_label(self, text) -> None:
+	def set_label(self, text: str) -> None:
 		self.text = text
 		self.queue_draw()
 
-	def onDraw(self, _widget=None, _event=None) -> None:
+	def onDraw(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.

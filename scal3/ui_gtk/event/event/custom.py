@@ -15,10 +15,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+from scal3.event_lib.event_base import Event
 
 log = logger.get()
 
 from scal3 import event_lib
+from scal3.event_lib.rules import EventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
@@ -34,7 +36,7 @@ class WidgetClass(common.WidgetClass):
 	]
 	expandDescription = False
 
-	def __init__(self, event, autoCheck=True) -> None:
+	def __init__(self, event: Event, autoCheck: bool = True) -> None:
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		self.autoCheck = autoCheck
@@ -84,7 +86,7 @@ class WidgetClass(common.WidgetClass):
 		self.ruleAddCombo.connect("changed", self.onRuleAddComboChanged)
 		self.ruleAddButton.connect("clicked", self.onRuleAddButtonClick)
 
-	def makeRuleHbox(self, rule):
+	def makeRuleHbox(self, rule: EventRule) -> gtk.Box:
 		hbox = HBox(spacing=5)
 		lab = gtk.Label(label=rule.desc)
 		lab.set_xalign(0)
@@ -151,7 +153,7 @@ class WidgetClass(common.WidgetClass):
 		self.updateRules()
 		self.notificationBox.updateVars()
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		for hbox in self.rulesBox.get_children():
@@ -160,7 +162,7 @@ class WidgetClass(common.WidgetClass):
 				widget.changeCalType(newCalType)
 		self.event.calType = newCalType
 
-	def onRemoveButtonClick(self, _button, hbox) -> None:
+	def onRemoveButtonClick(self, _button: gtk.Button, hbox: gtk.Box) -> None:
 		rule = hbox.inputWidget.rule
 		ok, msg = self.event.checkRulesDependencies(disabledRule=rule)
 		self.warnLabel.set_label(msg)
@@ -174,7 +176,7 @@ class WidgetClass(common.WidgetClass):
 		# self.rulesBox.remove(hbox)
 		self.onRuleAddComboChanged()
 
-	def onRuleAddComboChanged(self, _combo=None) -> None:
+	def onRuleAddComboChanged(self, _combo: gtk.ComboBox | None = None) -> None:
 		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return
@@ -183,7 +185,7 @@ class WidgetClass(common.WidgetClass):
 		_ok, msg = self.event.checkRulesDependencies(newRule=newRule)
 		self.warnLabel.set_label(msg)
 
-	def onRuleAddButtonClick(self, _button) -> None:
+	def onRuleAddButtonClick(self, _button: gtk.ComboBox) -> None:
 		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return
