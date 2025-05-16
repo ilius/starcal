@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 	from igraph import Graph
 
-__all__ = ["calcEventBoxes"]
+__all__ = ["Box", "calcEventBoxes"]
 
 
 debugMode = log.level <= logging.DEBUG

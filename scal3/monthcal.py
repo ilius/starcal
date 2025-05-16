@@ -29,7 +29,7 @@ from scal3.locale_man import tr as _
 if TYPE_CHECKING:
 	from scal3.cell_type import CellCacheType, CellType
 
-__all__ = ["getCurrentMonthStatus", "getMonthDesc", "getMonthStatus"]
+__all__ = ["MonthStatus", "getCurrentMonthStatus", "getMonthDesc", "getMonthStatus"]
 
 
 pluginName = "MonthCal"
