@@ -14,12 +14,18 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.event_lib.event_base import Event
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
 
 __all__ = ["WidgetClass"]
 

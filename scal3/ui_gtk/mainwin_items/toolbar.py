@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.toolbox import (
-	CustomizableToolBox,
-	ToolBoxItem,
-)
+from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
 
 __all__ = ["CalObj"]
 

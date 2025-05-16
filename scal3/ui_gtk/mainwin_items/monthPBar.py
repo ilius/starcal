@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import ui
 from scal3.cal_types import calTypes, to_jd
 from scal3.date_utils import monthPlus

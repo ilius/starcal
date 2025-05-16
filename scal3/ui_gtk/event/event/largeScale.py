@@ -1,14 +1,21 @@
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
 
-from scal3.event_lib.event_base import Event
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+
 __all__ = ["WidgetClass"]
+
 maxStart = 999999
 maxDur = 99999
 
