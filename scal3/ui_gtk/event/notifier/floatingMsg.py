@@ -14,16 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from collections.abc import Callable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from gi.repository import GLib as glib
 
-from scal3.event_lib.notifier_base import EventNotifier
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton
 from scal3.ui_gtk.mywidgets.floatingMsg import FloatingMsg, NoFillFloatingMsgWindow
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from scal3.event_lib.notifier_base import EventNotifier
 
 __all__ = ["WidgetClass", "notify"]
 

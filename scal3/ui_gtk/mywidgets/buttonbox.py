@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from collections.abc import Callable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
-from scal3.ui_gtk.utils import (
-	labelImageButton,
-	set_tooltip,
-)
+from scal3.ui_gtk.utils import labelImageButton, set_tooltip
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["MyHButtonBox"]
 

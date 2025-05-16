@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -22,18 +24,14 @@ log = logger.get()
 
 from scal3 import cal_types
 from scal3.date_utils import dateDecode, dateEncode
-from scal3.event_lib.rules import EventRule
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
-from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
-	ToolBoxItem,
-)
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-	labelImageButton,
-)
+from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.rules import EventRule
 
 __all__ = ["WidgetClass"]
 

@@ -18,9 +18,14 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
+from __future__ import annotations
 
-from scal3.cal_types.types import TranslateFunc
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from scal3.cal_types.types import TranslateFunc
+
+__all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
 name = "ethiopian"
 desc = "Ethiopian"

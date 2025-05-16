@@ -18,10 +18,7 @@ from scal3.ui_gtk import HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-	labelImageButton,
-)
+from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_base import Event

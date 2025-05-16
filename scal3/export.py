@@ -13,13 +13,18 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from collections.abc import Iterable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.monthcal import MonthStatus, getMonthDesc
 from scal3.ui import conf
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
 
 __all__ = ["exportToHtml"]
 

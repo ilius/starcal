@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from __future__ import annotations
+
 from scal3 import logger
 
 log = logger.get()
-
 
 from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
