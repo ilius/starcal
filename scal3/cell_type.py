@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Never, Protocol
 if TYPE_CHECKING:
 	from scal3.plugin_type import PluginType
 
-__all__ = ["CellType", "CompiledTimeFormat"]
+__all__ = ["CellCacheType", "CellType", "CompiledTimeFormat"]
 
 type CompiledTimeFormat = tuple[
 	str,

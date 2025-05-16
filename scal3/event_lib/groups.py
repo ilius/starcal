@@ -84,6 +84,7 @@ __all__ = [
 	"EventGroup",
 	"LargeScaleGroup",
 	"NoteBook",
+	"UniversityTerm",
 	"groupsDir",
 ]
 
