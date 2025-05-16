@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from scal3.cal_types.types import TranslateFunc
+	from scal3.cal_types.pytypes import TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
