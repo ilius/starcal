@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from collections.abc import Callable
+
 from gi.repository import GLib as glib
 
+from scal3.event_lib.notifier_base import EventNotifier
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton
@@ -26,7 +29,7 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, notifier) -> None:
+	def __init__(self, notifier: EventNotifier) -> None:
 		self.notifier = notifier
 		# --
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -64,11 +67,11 @@ class WidgetClass(gtk.Box):
 		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
-def notify(notifier, finishFunc) -> None:
+def notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:
 	glib.idle_add(_notify, notifier, finishFunc)
 
 
-def _notify(notifier, finishFunc) -> None:  # FIXME
+def _notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:  # FIXME
 	cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
 	text = notifier.event.getText()
 	msg = cls(

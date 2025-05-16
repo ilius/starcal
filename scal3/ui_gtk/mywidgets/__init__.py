@@ -16,6 +16,8 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from collections.abc import Callable
+
 from scal3 import logger
 
 log = logger.get()
@@ -36,14 +38,16 @@ from scal3.ui_gtk.utils import buffer_get_text
 
 __all__ = ["MyColorButton", "MyFontButton", "TextFrame"]
 
+type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
 
-def show_event(widget, gevent) -> None:
+
+def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
 	# , gevent.send_event
 
 
 class MyFontButton(gtk.FontButton):
-	def __init__(self, dragAndDrop=True) -> None:
+	def __init__(self, dragAndDrop: bool = True) -> None:
 		gtk.FontButton.__init__(self)
 		if dragAndDrop:
 			self.setupDragAndDrop()
@@ -70,7 +74,7 @@ class MyFontButton(gtk.FontButton):
 		fontb: gtk.FontButton,
 		_context: gdk.DragContext,
 		selection: gtk.SelectionData,
-		_info: int,
+		_info: int,  # or _target_id?
 		_etime: int,
 	) -> bool:
 		# log.debug("fontButtonDragDataGet")
@@ -81,13 +85,13 @@ class MyFontButton(gtk.FontButton):
 
 	def dragDataRec(
 		self,
-		fontb,
-		_context,
-		_x,
-		_y,
-		selection,
-		_target_id,
-		_etime,
+		fontb: gtk.FontButton,
+		_context: gdk.DragContext,
+		_x: int,
+		_y: int,
+		selection: gtk.SelectionData,
+		_target_id: int,
+		_etime: int,
 	) -> bool:
 		# dtype = selection.get_data_type()
 		# log.debug(dtype # UTF8_STRING)
@@ -100,7 +104,7 @@ class MyFontButton(gtk.FontButton):
 				self.emit("font-set")
 		return True
 
-	def dragBegin(self, _fontb, context) -> bool:
+	def dragBegin(self, _fontb: gtk.FontButton, context: gdk.DragContext) -> bool:
 		# log.debug("fontBottonDragBegin"-- caled before dragCalDataGet)
 		fontName = gtk.FontButton.get_font(self)
 		pbuf = newDndFontNamePixbuf(fontName)
@@ -128,7 +132,7 @@ class MyColorButton(gtk.ColorButton):
 		gtk.ColorChooser.set_use_alpha(self, True)
 		self.connect("color-set", self.update_tooltip)
 
-	def update_tooltip(self, _colorb=None) -> None:
+	def update_tooltip(self, _colorb: gtk.Widget | None = None) -> None:
 		r, g, b, a = self.get_rgba()
 		if gtk.ColorChooser.get_use_alpha(self):
 			text = (
@@ -144,11 +148,11 @@ class MyColorButton(gtk.ColorButton):
 		# self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)
-	def set_rgba(self, color) -> None:
+	def set_rgba(self, color: ColorType) -> None:
 		gtk.ColorButton.set_rgba(self, rgbaToGdkRGBA(*color))
 		self.update_tooltip()
 
-	def get_rgba(self):
+	def get_rgba(self) -> ColorType:
 		color = gtk.ColorButton.get_rgba(self)
 		return (
 			int(color.red * 255),
@@ -159,7 +163,7 @@ class MyColorButton(gtk.ColorButton):
 
 
 class TextFrame(gtk.Frame):
-	def __init__(self, onTextChange=None) -> None:
+	def __init__(self, onTextChange: Callable | None = None) -> None:
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
 		# ----
@@ -171,8 +175,8 @@ class TextFrame(gtk.Frame):
 		if onTextChange is not None:
 			self.buff.connect("changed", onTextChange)
 
-	def set_text(self, text) -> None:
+	def set_text(self, text: str) -> None:
 		self.buff.set_text(text)
 
-	def get_text(self):
+	def get_text(self) -> str:
 		return buffer_get_text(self.buff)

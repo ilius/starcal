@@ -25,11 +25,11 @@ avgYearLen = 365.24219
 springRefJd = 2456372.4597222223
 
 
-def getSeasonValueFromJd(jd):
+def getSeasonValueFromJd(jd: int) -> float:
 	return ((jd - springRefJd) % avgYearLen) / avgYearLen * 4.0
 
 
-def getSpringJdAfter(fromJd):
+def getSpringJdAfter(fromJd: int) -> int:
 	d = (fromJd - 1 - springRefJd) // avgYearLen
 	return int(fromJd + (d + 1) * avgYearLen)
 
@@ -71,7 +71,10 @@ Wikipedia:
 """
 
 
-def getSeasonNamePercentFromJd(jd, southernHemisphere=False):
+def getSeasonNamePercentFromJd(
+	jd: int,
+	southernHemisphere: bool = False,
+) -> tuple[str, int]:
 	d, m = divmod(getSeasonValueFromJd(jd), 1)
 	if southernHemisphere:
 		d = (d + 2) % 4

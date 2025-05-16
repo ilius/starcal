@@ -14,12 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+import cairo
+
 from scal3 import logger
+from scal3.timeline.box import Box
 
 log = logger.get()
 
 from math import pi
 
+from gi.repository import Gtk as gtk
 from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
@@ -30,7 +34,14 @@ from scal3.ui_gtk.font_utils import pfontEncode
 __all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
 
 
-def drawBoxBG(cr, box, x, y, w, h) -> None:
+def drawBoxBG(
+	cr: cairo.Context,
+	box: Box,
+	x: float,
+	y: float,
+	w: float,
+	h: float,
+) -> None:
 	d = box.lineW
 	cr.rectangle(x, y, w, h)
 	if d == 0:
@@ -65,7 +76,14 @@ def drawBoxBG(cr, box, x, y, w, h) -> None:
 	fillColor(cr, box.color)
 
 
-def drawBoxBorder(cr, box, x, y, w, h) -> None:
+def drawBoxBorder(
+	cr: cairo.Context,
+	box: Box,
+	x: float,
+	y: float,
+	w: float,
+	h: float,
+) -> None:
 	if box.hasBorder:
 		if w > 2 * conf.boxEditBorderWidth.v and h > conf.boxEditBorderWidth.v:
 			b = conf.boxEditBorderWidth.v
@@ -102,7 +120,15 @@ def drawBoxBorder(cr, box, x, y, w, h) -> None:
 			box.hasBorder = False
 
 
-def drawBoxText(cr, box, x, y, w, h, widget) -> None:
+def drawBoxText(
+	cr: cairo.Context,
+	box: Box,
+	x: float,
+	y: float,
+	w: float,
+	h: float,
+	widget: gtk.Widget,
+) -> None:
 	# FIXME how to find the best font size based on the box's width,
 	# height, and font family?
 	# possibly write in many lines? or just in one line and wrap if needed?

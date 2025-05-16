@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -46,19 +48,19 @@ __all__ = [
 ]
 
 
-def prepareObj(obj) -> None:  # noqa: ARG001
+def prepareObj(obj: Any) -> None:  # noqa: ARG001
 	pass
 
 
-def clearObj(obj) -> None:  # noqa: ARG001
+def clearObj(obj: Any) -> None:  # noqa: ARG001
 	pass
 
 
 def getCommitList(
-	obj,
-	startJd=None,
-	endJd=None,
-	branch="",
+	obj: Any,
+	startJd: int | None = None,
+	endJd: int | None = None,
+	branch: str = "",
 ) -> list[tuple[int, str]]:
 	"""
 	Returns a list of (epoch, commit_id) tuples.
@@ -94,7 +96,7 @@ def getCommitList(
 	return data
 
 
-def getCommitInfo(obj, commid_id):
+def getCommitInfo(obj: Any, commid_id: str) -> dict[str, Any]:
 	repo = Repository(obj.vcsDir)
 	commit = repo.revparse_single(commid_id)
 	msg = commit.message
@@ -107,12 +109,12 @@ def getCommitInfo(obj, commid_id):
 	}
 
 
-def getShortStatLine(obj, prevId, thisId):
+def getShortStatLine(obj: Any, prevId: str, thisId: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getShortStat(obj, prevId, thisId))
 
 
-def getShortStat(obj, prevId, thisId):
+def getShortStat(obj: Any, prevId: str, thisId: str) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	diff = repo.diff(
@@ -123,12 +125,12 @@ def getShortStat(obj, prevId, thisId):
 	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
-def getCommitShortStatLine(obj, commit_id):
+def getCommitShortStatLine(obj: Any, commit_id: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
-def getCommitShortStat(obj, commit_id):
+def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	commit = repo.revparse_single(commit_id)
@@ -140,7 +142,7 @@ def getCommitShortStat(obj, commit_id):
 	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
-def getTagList(obj, startJd, endJd):
+def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
 	"""Returns a list of (epoch, tag_name) tuples."""
 	repo = Repository(obj.vcsDir)
 	startEpoch = getEpochFromJd(startJd)
@@ -172,11 +174,11 @@ def getTagList(obj, startJd, endJd):
 	return data
 
 
-def getTagShortStatLine(obj, prevTag, tag):
+def getTagShortStatLine(obj: Any, prevTag: str, tag: str) -> str:
 	return getShortStatLine(obj, prevTag, tag)
 
 
-def getFirstCommitEpoch(obj):
+def getFirstCommitEpoch(obj: Any) -> str:
 	repo = Repository(obj.vcsDir)
 	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME | GIT_SORT_REVERSE)
@@ -184,7 +186,7 @@ def getFirstCommitEpoch(obj):
 	return commit.author.time
 
 
-def getLastCommitEpoch(obj):
+def getLastCommitEpoch(obj: Any) -> str:
 	repo = Repository(obj.vcsDir)
 	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME)
@@ -192,10 +194,10 @@ def getLastCommitEpoch(obj):
 	return commit.author.time
 
 
-def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
+def getLatestParentBefore(obj: Any, commitId: str, beforeEpoch: float) -> str:
 	repo = Repository(obj.vcsDir)
 
-	def find(commitIdArg):
+	def find(commitIdArg: str) -> str:
 		for commit in repo.walk(commitIdArg, GIT_SORT_TOPOLOGICAL):
 			if commit.author.time < beforeEpoch:
 				return commit.id.hex
@@ -212,12 +214,13 @@ def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
 if __name__ == "__main__":
 	import os
 	import sys
+	from dataclasses import dataclass
 
 	from dateutil.parser import parse
 
+	@dataclass
 	class DummyObj:
-		def __init__(self, vcsDir) -> None:
-			self.vcsDir = vcsDir
+		vcsDir: str
 
 	vcsDir = os.getcwd()
 	commitId = sys.argv[1]

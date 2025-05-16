@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -21,7 +23,7 @@ log = logger.get()
 from scal3 import ui
 from scal3.event_tags import eventTagsDesc
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -101,10 +103,10 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
-	def scrollEvent(self, _widget, gevent) -> None:
+	def scrollEvent(self, _widget: gtk.Widget, gevent: gdk.ScrollEvent) -> None:
 		self.swin.get_hscrollbar().emit("scroll-event", gevent)
 
-	def typeComboChanged(self, combo) -> None:
+	def typeComboChanged(self, combo: gtk.ComboBox) -> None:
 		i = combo.get_active()
 		if i is None:
 			return
@@ -113,7 +115,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		else:
 			hideList(self.customTypeWidgets)
 
-	def getData(self):
+	def getData(self) -> dict[str, Any]:
 		active = self.typeCombo.get_active()
 		if active in {-1, None}:
 			icon = ""
@@ -145,7 +147,7 @@ class TagsListBox(gtk.Box):
 	Most used for this event type (first)
 	"""
 
-	def __init__(self, eventType="") -> None:  # "" == "custom"
+	def __init__(self, eventType: str = "") -> None:  # "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		# ----
 		self.eventType = eventType
@@ -213,7 +215,11 @@ class TagsListBox(gtk.Box):
 		self.optionsChanged()
 		self.show_all()
 
-	def optionsChanged(self, _widget=None, tags=None) -> None:
+	def optionsChanged(
+		self,
+		_widget: gtk.Widget | None = None,
+		tags: list[str] | None = None,
+	) -> None:
 		if not tags:
 			tags = self.getData()
 		tagObjList = ui.eventTags
@@ -231,21 +237,21 @@ class TagsListBox(gtk.Box):
 				),
 			)
 
-	def enableCellToggled(self, cell, path) -> None:
+	def enableCellToggled(self, cell: gtk.CellRenderer, path: str) -> None:
 		i = int(path)
 		active = not cell.get_active()
 		self.treeModel[i][1] = active
 		cell.set_active(active)
 
-	def getData(self):
+	def getData(self) -> list[str]:
 		return [row[0] for row in self.treeModel if row[1]]
 
-	def setData(self, tags) -> None:
+	def setData(self, tags: list[str]) -> None:
 		self.optionsChanged(tags=tags)
 
 
 class TagEditorDialog(gtk.Dialog):
-	def __init__(self, eventType="", **kwargs) -> None:
+	def __init__(self, eventType: str = "", **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tags"))
 		self.set_transient_for(None)
@@ -272,7 +278,7 @@ class TagEditorDialog(gtk.Dialog):
 
 
 class ViewEditTagsHbox(gtk.Box):
-	def __init__(self, eventType="") -> None:
+	def __init__(self, eventType: str = "") -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.tags = []
 		pack(self, gtk.Label(label=_("Tags") + ":  "))
@@ -288,20 +294,20 @@ class ViewEditTagsHbox(gtk.Box):
 		pack(self, self.editButton)
 		self.show_all()
 
-	def onEditButtonClick(self, _widget) -> None:
+	def onEditButtonClick(self, _widget: gtk.Widget) -> None:
 		openWindow(self.dialog)
 
-	def dialogResponse(self, dialog, resp) -> None:
+	def dialogResponse(self, dialog: gtk.Window, resp: gtk.ResponseType) -> None:
 		# log.debug("dialogResponse", dialog, resp)
 		if resp == gtk.ResponseType.OK:
 			self.setData(dialog.getData())
 		dialog.hide()
 
-	def setData(self, tags) -> None:
+	def setData(self, tags: list[str]) -> None:
 		self.tags = tags
 		self.dialog.setData(tags)
 		sep = _(",") + " "
 		self.tagsLabel.set_label(sep.join([eventTagsDesc[tag] for tag in tags]))
 
-	def getData(self):
+	def getData(self) -> list[str]:
 		return self.tags

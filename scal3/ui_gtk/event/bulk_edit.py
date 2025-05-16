@@ -3,6 +3,7 @@ from scal3 import logger
 log = logger.get()
 
 import mytz
+from scal3.event_lib.event_container import EventContainer
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets import TextFrame
@@ -16,7 +17,7 @@ __all__ = ["EventsBulkEditDialog"]
 
 
 class EventsBulkEditDialog(gtk.Dialog):
-	def __init__(self, container, **kwargs) -> None:
+	def __init__(self, container: EventContainer, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		self._container = container
@@ -150,7 +151,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		# ----
 		window_set_size_aspect(self, 1.6)
 
-	def firstRadioChanged(self, _widget=None) -> None:
+	def firstRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
 		if self.iconRadio.get_active():
 			self.iconHbox.show()
 			self.textVbox.hide()
@@ -164,7 +165,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()
 
-	def textChangeComboChanged(self, _widget=None) -> None:
+	def textChangeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		self.textVbox.show_all()
 		chType = self.textChangeCombo.get_active()
 		if chType == 0:

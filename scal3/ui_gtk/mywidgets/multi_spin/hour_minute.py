@@ -7,7 +7,7 @@ __all__ = ["HourMinuteButton"]
 
 
 class HourMinuteButton(MultiSpinButton):
-	def __init__(self, hm=None, **kwargs) -> None:
+	def __init__(self, hm: tuple[int, int] | None = None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			sep=":",
@@ -21,10 +21,10 @@ class HourMinuteButton(MultiSpinButton):
 			hm = localtime()[3:5]
 		self.set_value(hm)
 
-	def get_value(self):
+	def get_value(self) -> tuple[int, int]:
 		return MultiSpinButton.get_value(self) + [0]
 
-	def set_value(self, value) -> None:
+	def set_value(self, value: tuple[int, int] | int) -> None:
 		if isinstance(value, int):
 			value = [value, 0]
 		else:

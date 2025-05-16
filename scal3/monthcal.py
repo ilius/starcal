@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+
 from scal3 import core, ui
 from scal3.cal_types import calTypes
+from scal3.cell_type import CellCacheType, CellType
 from scal3.core import (
 	getWeekDay,
 	getWeekNumberByJd,
@@ -33,7 +35,12 @@ pluginName = "MonthCal"
 class MonthStatus(list):  # FIXME
 	# self[sy<6][sx<7] of cells
 	# list (of 6 lists, each list containing 7 cells)
-	def __init__(self, cells, year, month) -> None:
+	def __init__(
+		self,
+		cells: CellCacheType,
+		year: int,
+		month: int,
+	) -> None:
 		self.year = year
 		self.month = month
 		self.offset = getWeekDay(year, month, 1)  # month start offset
@@ -62,7 +69,7 @@ class MonthStatus(list):  # FIXME
 	# 	return self[yPos][xPos]
 
 
-def setParamsFunc(cell) -> None:
+def setParamsFunc(cell: CellType) -> None:
 	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
 	yPos, xPos = divmod(offset + cell.day - 1, 7)
 	cell.monthPos = (xPos, yPos)
@@ -80,7 +87,7 @@ def setParamsFunc(cell) -> None:
 	"""
 
 
-def getMonthStatus(year, month):
+def getMonthStatus(year: int, month: int) -> MonthStatus:
 	return ui.cells.getCellGroup(
 		pluginName,
 		year,
@@ -88,7 +95,7 @@ def getMonthStatus(year, month):
 	)
 
 
-def getCurrentMonthStatus():
+def getCurrentMonthStatus() -> MonthStatus:
 	return ui.cells.getCellGroup(
 		pluginName,
 		ui.cells.current.year,
@@ -100,7 +107,7 @@ def getCurrentMonthStatus():
 
 
 # TODO: write test for it
-def getMonthDesc(status=None):
+def getMonthDesc(status: MonthStatus | None = None) -> str:
 	if not status:
 		status = getCurrentMonthStatus()
 	first = None

@@ -1,10 +1,11 @@
+from scal3.event_lib.accounts import Account
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.account import BaseWidgetClass
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, account) -> None:
+	def __init__(self, account: Account) -> None:
 		BaseWidgetClass.__init__(self, account)
 		# -----
 		hbox = HBox()

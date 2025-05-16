@@ -1,4 +1,7 @@
+from typing import Any
+
 from scal3 import logger
+from scal3.event_lib.groups import EventGroup
 
 log = logger.get()
 
@@ -14,7 +17,7 @@ __all__ = ["GroupEditorDialog"]
 
 
 class GroupEditorDialog(gtk.Dialog):
-	def __init__(self, group=None, **kwargs) -> None:
+	def __init__(self, group: EventGroup | None = None, **kwargs) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.isNew = group is None
@@ -60,11 +63,11 @@ class GroupEditorDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo) -> None:
+	def dateModeChanged(self, combo: gtk.ComboBox) -> None:
 		pass
 
 	@staticmethod
-	def getNewGroupTitle(baseTitle):
+	def getNewGroupTitle(baseTitle: str) -> str:
 		usedTitles = {group.title for group in ui.eventGroups}
 		if baseTitle not in usedTitles:
 			return baseTitle
@@ -77,7 +80,7 @@ class GroupEditorDialog(gtk.Dialog):
 			num += 1
 		return makeTitle(num)
 
-	def typeChanged(self, _combo=None) -> None:
+	def typeChanged(self, _combo: Any = None) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
@@ -100,7 +103,7 @@ class GroupEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget)
 		self.activeWidget.show()
 
-	def run(self):
+	def run(self) -> EventGroup | None:
 		if self.activeWidget is None:
 			return None
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:

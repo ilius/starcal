@@ -26,6 +26,7 @@ log = logger.get()
 from typing import Never
 
 from scal3 import core, ui
+from scal3.cell_type import CellType
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
@@ -51,7 +52,7 @@ class CalBase(CustomizableCalObj):
 		"i",
 	)
 
-	def connect(self, sigName, *a, **ka) -> None:
+	def connect(self, sigName: str, *a, **ka) -> None:
 		try:
 			CustomizableCalObj.connect(self, sigName, *a, **ka)
 		except Exception:
@@ -73,25 +74,31 @@ class CalBase(CustomizableCalObj):
 		# ---
 		self.subPages = None
 
-	def gotoJd(self, jd) -> None:
+	def gotoJd(self, jd: int) -> None:
 		ui.cells.gotoJd(jd)
 		self.onDateChange()
 
-	def goToday(self, _obj=None):
-		return self.gotoJd(core.getCurrentJd())
+	def goToday(self, _widget: gtk.Widget | None = None) -> None:
+		self.gotoJd(core.getCurrentJd())
 
-	def jdPlus(self, p) -> None:
+	def jdPlus(self, p: int) -> None:
 		ui.cells.jdPlus(p)
 		self.onDateChange()
 
-	def changeDate(self, year, month, day, calType=None) -> None:
+	def changeDate(
+		self,
+		year: int,
+		month: int,
+		day: int,
+		calType: int | None = None,
+	) -> None:
 		ui.cells.changeDate(year, month, day, calType)
 		self.onDateChange()
 
-	def onCurrentDateChange(self, gdate) -> None:  # noqa: ARG002
+	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: ARG002
 		self.queue_draw()
 
-	def getCellPagePlus(self, jd, plus) -> Never:  # use for sliding
+	def getCellPagePlus(self, jd: int, plus: int) -> CellType:  # use for sliding
 		raise NotImplementedError
 
 	def defineDragAndDrop(self) -> None:
@@ -125,11 +132,11 @@ class CalBase(CustomizableCalObj):
 
 	def dragDataGet(  # noqa: PLR6301
 		self,
-		_obj,
-		_context,
-		selection,
-		_target_id,
-		_etime,
+		_obj: gtk.Widget,
+		_context: gdk.DragContext,
+		selection: gtk.SelectionData,
+		_target_id: int,
+		_etime: int,
 	) -> bool:
 		# context is instance of gi.repository.Gdk.DragContext
 		y, m, d = ui.cells.current.dates[ui.dragGetCalType]
@@ -139,19 +146,24 @@ class CalBase(CustomizableCalObj):
 		# selection.set_pixbuf(pbuf)
 		return True
 
-	def dragLeave(self, _obj, context, etime) -> bool:  # noqa: PLR6301
+	def dragLeave(  # noqa: PLR6301
+		self,
+		_obj: gtk.Widget,
+		context: gdk.DragContext,
+		etime: int,
+	) -> bool:
 		context.drop_reply(False, etime)
 		return True
 
 	def dragDataRec(
 		self,
-		_obj,
-		_context,
-		_x,
-		_y,
-		selection,
-		_target_id,
-		_etime,
+		_obj: gtk.Widget,
+		_context: gdk.DragContext,
+		_x: int,
+		_y: int,
+		selection: gtk.SelectionData,
+		_target_id: int,
+		_etime: int,
 	) -> bool:
 		from scal3.ui_gtk.dnd import processDroppedDate
 
@@ -180,7 +192,7 @@ class CalBase(CustomizableCalObj):
 		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
 		return True
 
-	def dragBegin(self, _obj, context) -> bool:  # noqa: PLR6301
+	def dragBegin(self, _obj: gtk.Widget, context: gdk.DragContext) -> bool:  # noqa: PLR6301
 		# context is instance of gi.repository.Gdk.DragContext
 		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())

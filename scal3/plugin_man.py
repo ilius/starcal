@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -36,6 +38,9 @@ from scal3.locale_man import tr as _
 from scal3.path import APP_NAME, plugDir
 from scal3.s_object import SObj, SObjTextModel
 from scal3.time_utils import getJdListFromEpochRange
+
+if TYPE_CHECKING:
+	from scal3.cell_type import CellType
 
 try:
 	import logging
@@ -58,13 +63,13 @@ pluginsTitleByName = {
 pluginClassByName = {}
 
 
-def registerPlugin(cls):
+def registerPlugin(cls: BasePlugin) -> BasePlugin:
 	assert cls.name
 	pluginClassByName[cls.name] = cls
 	return cls
 
 
-def getPlugPath(_file):
+def getPlugPath(_file: str) -> str:
 	return _file if isabs(_file) else join(plugDir, _file)
 
 
@@ -87,7 +92,7 @@ class BasePlugin(SObj):
 	)
 	essentialParams = ("title",)  # FIXME
 
-	def getArgs(self):
+	def getArgs(self) -> dict[str, Any]:
 		return {
 			"_file": self.file,
 			"enable": self.enable,
@@ -99,7 +104,7 @@ class BasePlugin(SObj):
 
 	def __init__(
 		self,
-		_file,
+		_file: str,
 	) -> None:
 		self.file = _file
 		# ------
@@ -118,12 +123,12 @@ class BasePlugin(SObj):
 		self.hasImage = False
 		self.lastDayMerge = True
 
-	def getData(self):
+	def getData(self) -> dict[str, Any]:
 		data = SObjTextModel.getData(self)
 		data["calType"] = calTypes.names[self.calType]
 		return data
 
-	def setData(self, data) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		if "enable" not in data:
 			data["enable"] = data.get("default_enable", self.default_enable)
 		# ---
@@ -163,10 +168,10 @@ class BasePlugin(SObj):
 	def load(self) -> None:
 		pass
 
-	def getText(self, _year, _month, _day) -> str:  # noqa: PLR6301
+	def getText(self, _year: str, _month: str, _day: str) -> str:  # noqa: PLR6301
 		return ""
 
-	def updateCell(self, c) -> None:
+	def updateCell(self, c: CellType) -> None:
 		module, ok = calTypes[self.calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
@@ -186,10 +191,10 @@ class BasePlugin(SObj):
 		if text:
 			c.addPluginText(self, text)
 
-	def onCurrentDateChange(self, gdate) -> None:
+	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
 		pass
 
-	def exportToIcs(self, fileName, startJd, endJd) -> None:
+	def exportToIcs(self, fileName: str, startJd: int, endJd: int) -> None:
 		currentTimeStamp = strftime(icsTmFormat)
 		self.load()  # FIXME
 		calType = self.calType
@@ -234,15 +239,17 @@ class DummyExternalPlugin(BasePlugin):
 	def __repr__(self) -> str:
 		return f"loadPlugin({self.file!r}, enable=False, show_date=False)"
 
-	def __init__(self, _file, title) -> None:
+	def __init__(self, _file: str, title: str) -> None:
 		self.file = _file
 		self.title = title
 		self.hasConfig = False
 		self.hasImage = False
 
 
-# TODO: switch to fs
-def loadExternalPlugin(file, **data):
+def loadExternalPlugin(
+	file: str,
+	**data: Any,
+) -> BasePlugin | None:
 	file = getPlugPath(file)
 	fname = split(file)[-1]
 	if not isfile(file):
@@ -325,7 +332,7 @@ def loadExternalPlugin(file, **data):
 class HolidayPlugin(BaseJsonPlugin):
 	name = "holiday"
 
-	def __init__(self, _file) -> None:
+	def __init__(self, _file: str) -> None:
 		BaseJsonPlugin.__init__(
 			self,
 			_file,
@@ -333,7 +340,7 @@ class HolidayPlugin(BaseJsonPlugin):
 		self.lastDayMerge = True  # FIXME
 		self.holidays = {}
 
-	def setData(self, data) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		if "holidays" in data:
 			for calTypeName in data["holidays"]:
 				try:
@@ -358,7 +365,7 @@ class HolidayPlugin(BaseJsonPlugin):
 		# ---
 		BaseJsonPlugin.setData(self, data)
 
-	def dateIsHoliday(self, calType, y, m, d, jd) -> bool:
+	def dateIsHoliday(self, calType: int, y: int, m: int, d: int, jd: int) -> bool:
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
@@ -394,7 +401,7 @@ class HolidayPlugin(BaseJsonPlugin):
 
 		return False
 
-	def updateCell(self, c) -> None:
+	def updateCell(self, c: CellType) -> None:
 		if not c.holiday:
 			for calType in self.holidays:
 				y, m, d = c.dates[calType]
@@ -402,7 +409,7 @@ class HolidayPlugin(BaseJsonPlugin):
 					c.holiday = True
 					return
 
-	def exportToIcs(self, fileName, startJd, endJd) -> None:
+	def exportToIcs(self, fileName: str, startJd: int, endJd: int) -> None:
 		currentTimeStamp = strftime(icsTmFormat)
 		icsText = icsHeader
 
@@ -448,14 +455,14 @@ class YearlyTextPlugin(BaseJsonPlugin):
 	name = "yearlyText"
 	params = BaseJsonPlugin.params + ("dataFile",)
 
-	def __init__(self, _file) -> None:
+	def __init__(self, _file: str) -> None:
 		BaseJsonPlugin.__init__(
 			self,
 			_file,
 		)
 		self.dataFile = ""
 
-	def setData(self, data) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		if "dataFile" in data:
 			self.dataFile = getPlugPath(data["dataFile"])
 			del data["dataFile"]
@@ -515,7 +522,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 	# 	item = self.yearlyData[month - 1]
 	# 	return item
 
-	def getText(self, year, month, day):
+	def getText(self, year: int, month: int, day: int) -> str:
 		yearlyData = self.yearlyData
 		if not yearlyData:
 			return ""
@@ -552,7 +559,13 @@ class YearlyTextPlugin(BaseJsonPlugin):
 class IcsTextPlugin(BasePlugin):
 	name = "ics"
 
-	def __init__(self, _file, enable=True, show_date=False, all_years=False) -> None:
+	def __init__(
+		self,
+		_file: str,
+		enable: bool = True,
+		show_date: bool = False,
+		all_years: bool = False,
+	) -> None:
 		title = splitext(_file)[0]
 		self.ymd = None
 		self.md = None
@@ -571,7 +584,7 @@ class IcsTextPlugin(BasePlugin):
 		self.md = None
 
 	@staticmethod
-	def _findVeventBegin(lines) -> int:
+	def _findVeventBegin(lines: list[str]) -> int:
 		for i, line in enumerate(lines):
 			if line == "BEGIN:VEVENT":
 				return i
@@ -704,7 +717,7 @@ class IcsTextPlugin(BasePlugin):
 			self.ymd = ymd
 			self.md = None
 
-	def getText(self, y, m, d):
+	def getText(self, y: int, m: int, d: int) -> str:
 		if self.ymd and (y, m, d) in self.ymd:
 			if self.show_date:
 				return (
@@ -743,7 +756,7 @@ class IcsTextPlugin(BasePlugin):
 
 
 # must not rename _file argument
-def loadPlugin(_file=None, **kwargs):
+def loadPlugin(_file: str | None = None, **kwargs: Any) -> BasePlugin | None:
 	if not _file:
 		log.error(f"plugin file is empty! {kwargs=}")
 		return

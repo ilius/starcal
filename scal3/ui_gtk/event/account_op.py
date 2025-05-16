@@ -1,5 +1,6 @@
 from scal3 import event_lib, ui
 from scal3.event_lib import state as event_state
+from scal3.event_lib.accounts import Account
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -9,7 +10,7 @@ __all__ = ["AccountEditorDialog"]
 
 
 class AccountEditorDialog(gtk.Dialog):
-	def __init__(self, account=None, **kwargs) -> None:
+	def __init__(self, account: Account | None = None, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Account") if account else _("Add New Account"))
 		# ---
@@ -58,10 +59,10 @@ class AccountEditorDialog(gtk.Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo) -> None:
+	def dateModeChanged(self, combo: gtk.ComboBox) -> None:
 		pass
 
-	def typeChanged(self, _combo=None) -> None:
+	def typeChanged(self, _combo: gtk.ComboBox | None = None) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
@@ -77,7 +78,7 @@ class AccountEditorDialog(gtk.Dialog):
 		self.activeWidget = makeWidget(account)
 		pack(self.vbox, self.activeWidget)
 
-	def run(self):
+	def run(self) -> Account | None:
 		if self.activeWidget is None or self.account is None:
 			return None
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
@@ -93,6 +94,6 @@ class AccountEditorDialog(gtk.Dialog):
 
 
 class FetchRemoteGroupsDialog(gtk.Dialog):
-	def __init__(self, account, **kwargs) -> None:
+	def __init__(self, account: Account, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.account = account

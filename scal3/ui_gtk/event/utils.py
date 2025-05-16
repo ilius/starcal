@@ -1,12 +1,12 @@
 from scal3 import ui
 from scal3.event_lib import state as event_state
+from scal3.event_lib.event_base import Event
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import GdkPixbuf
+from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import (
 	confirm,
 	pixbufFromFile,
@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 
-def confirmEventTrash(event, **kwargs):
+def confirmEventTrash(event: Event, **kwargs) -> bool:
 	return confirm(
 		_(
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
@@ -36,7 +36,7 @@ def confirmEventTrash(event, **kwargs):
 	)
 
 
-def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
+def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 	return confirm(
 		_(
 			"Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
@@ -51,7 +51,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	)
 
 
-def checkEventsReadOnly(doException=True) -> bool:
+def checkEventsReadOnly(doException: bool = True) -> bool:
 	if event_state.allReadOnly:
 		error = (
 			"Events are Read-Only because they are locked by "
@@ -64,19 +64,19 @@ def checkEventsReadOnly(doException=True) -> bool:
 	return True
 
 
-def eventWriteMenuItem(*args, sensitive=True, **kwargs):
+def eventWriteMenuItem(*args, sensitive: bool = True, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
 	item.set_sensitive(sensitive and not event_state.allReadOnly)
 	return item
 
 
-def eventWriteImageMenuItem(*args, **kwargs):
+def eventWriteImageMenuItem(*args, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
 	item.set_sensitive(not event_state.allReadOnly)
 	return item
 
 
-def menuItemFromEventGroup(group, **kwargs):
+def menuItemFromEventGroup(group: EventGroup, **kwargs) -> gtk.MenuItem:
 	return ImageMenuItem(
 		group.title,
 		pixbuf=newColorCheckPixbuf(

@@ -22,7 +22,7 @@ log = logger.get()
 
 from contextlib import suppress
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import event_lib
 from scal3.cal_types import (
@@ -35,6 +35,8 @@ from scal3.time_utils import (
 )
 
 if TYPE_CHECKING:
+	import requests
+
 	from scal3.event_lib import Event, EventGroup
 
 
@@ -46,13 +48,13 @@ __all__ = ["StarCalendarAccount"]
 # 	}
 
 
-def formatJd(remoteEvent, attrName) -> str:
+def formatJd(remoteEvent: dict[str, Any], attrName: str) -> str:
 	jd = remoteEvent[attrName]
 	y, m, d = calTypes[remoteEvent["calType"]].jd_to(jd)
 	return f"{y:04}/{m:02}/{d:02}"
 
 
-def allDayTaskDecoder(remoteEvent):
+def allDayTaskDecoder(remoteEvent: dict[str, Any]) -> dict[str, Any]:
 	rules = [
 		[
 			"start",
@@ -82,7 +84,7 @@ def allDayTaskDecoder(remoteEvent):
 	return {"rules": rules}
 
 
-def _emptyDecoder(_ev):
+def _emptyDecoder(_ev: dict[str, Any]) -> dict[str, Any]:
 	return {}
 
 
@@ -169,7 +171,12 @@ class StarCalendarAccount(Account):
 
 	serverUrl = "http://127.0.0.1:9001/"
 
-	def callBase(self, method, path, **kwargs):
+	def callBase(
+		self,
+		method: str,
+		path: str,
+		**kwargs,  # noqa: ANN003
+	) -> requests.Response:
 		import requests
 
 		return getattr(requests, method)(
@@ -178,7 +185,12 @@ class StarCalendarAccount(Account):
 			json=kwargs,
 		)
 
-	def call(self, method, path, **kwargs):
+	def call(
+		self,
+		method: str,
+		path: str,
+		**kwargs,  # noqa: ANN003
+	) -> tuple[dict[str, Any], str]:
 		"""
 		Return (data, None) if successful
 		return (data, error) if failed
@@ -213,13 +225,13 @@ class StarCalendarAccount(Account):
 				error = data.pop("error")
 		return data, error
 
-	def __init__(self, aid=None) -> None:
+	def __init__(self, aid: int | None = None) -> None:
 		Account.__init__(self, aid)
 		self.email = ""
 		self.password = ""
 		self.lastToken = ""
 
-	def login(self):
+	def login(self) -> str | None:
 		"""
 		self.email and self.password must be set
 		this methods logs in by the server, gets the token
@@ -261,7 +273,7 @@ class StarCalendarAccount(Account):
 		log.info("login successful")
 		return None
 
-	def fetchGroups(self):
+	def fetchGroups(self) -> str | None:
 		"""Return None if successful, or error string if failed."""
 		log.info("fetchGroups started")
 		data, error = self.call("get", "event/groups/")
@@ -288,13 +300,17 @@ class StarCalendarAccount(Account):
 		log.info(f"fetchGroups successful, {len(self.remoteGroups)} groups")
 		return None
 
-	def addNewGroup(self, title) -> None:
+	def addNewGroup(self, title: str) -> None:
 		pass
 
-	def deleteGroup(self, remoteGroupId) -> None:
+	def deleteGroup(self, remoteGroupId: str) -> None:
 		pass
 
-	def sync(self, group, remoteGroupId):  # noqa: ARG002
+	def sync(
+		self,
+		group: EventGroup,
+		remoteGroupId: str,  # noqa: ARG002
+	) -> str | None:
 		# in progress TODO
 		"""Return None if successful, or error string if failed."""
 		log.info("sync started")

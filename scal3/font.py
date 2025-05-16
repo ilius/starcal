@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 __all__ = ["Font"]
 
@@ -10,13 +11,14 @@ class Font:
 	italic: bool = False
 	size: float = 0
 
-	def fromList(lst: list | None):
+	@classmethod
+	def fromList(cls, lst: list | None) -> Self | None:
 		if lst is None:
 			return
 		return Font(*lst)
 
-	def to_json(self):
-		return [self.family, self.bold, self.italic, self.size]
+	def to_json(self) -> tuple[str | None, bool, bool, float]:
+		return (self.family, self.bold, self.italic, self.size)
 
-	def copy(self):
+	def copy(self) -> Self:
 		return Font(*self.to_json())

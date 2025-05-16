@@ -1,7 +1,7 @@
 __all__ = ["getMoonPhase"]
 
 
-def getMoonPhase(jd, southernHemisphere=False):
+def getMoonPhase(jd: int, southernHemisphere: bool = False) -> float:
 	"""
 	Returns a float number that: 0 <= phase < 2
 	0.0 = no moon

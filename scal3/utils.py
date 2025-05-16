@@ -98,16 +98,16 @@ class FallbackLogger:
 	def __init__(self) -> None:
 		pass
 
-	def error(self, text) -> None:  # noqa: PLR6301
+	def error(self, text: str) -> None:  # noqa: PLR6301
 		sys.stderr.write("ERROR: " + text + "\n")
 
-	def warning(self, text) -> None:  # noqa: PLR6301
+	def warning(self, text: str) -> None:  # noqa: PLR6301
 		log.info("WARNING: " + text)
 
-	def debug(self, text) -> None:  # noqa: PLR6301
+	def debug(self, text: str) -> None:  # noqa: PLR6301
 		log.info(text)
 
-	def exception(self, prefix) -> None:  # noqa: PLR6301
+	def exception(self, prefix: str) -> None:  # noqa: PLR6301
 		typ, value, tback = sys.exc_info()
 		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
 		log.error(prefix + "\n" + text)
@@ -208,7 +208,7 @@ def findWordByPos(text: str, pos: int) -> tuple[str, int]:
 def numRangesEncode(
 	values: list[int | tuple[int, int] | list[int]],
 	sep: str,
-):
+) -> str:
 	parts = []
 	for value in values:
 		if isinstance(value, int):

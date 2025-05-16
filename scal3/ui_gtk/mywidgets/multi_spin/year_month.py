@@ -7,7 +7,7 @@ __all__ = ["YearMonthButton"]
 
 
 class YearMonthButton(MultiSpinButton):
-	def __init__(self, date=None, **kwargs) -> None:
+	def __init__(self, date: tuple[int, int, int] | None = None, **kwargs) -> None:
 		MultiSpinButton.__init__(
 			self,
 			"/",

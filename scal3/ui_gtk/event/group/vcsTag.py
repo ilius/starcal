@@ -1,3 +1,4 @@
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.vcsEpochBase import (
@@ -8,7 +9,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group) -> None:
+	def __init__(self, group: EventGroup) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()

@@ -14,13 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from gi.repository import GdkPixbuf
 from gi.repository import Gio as gio
+from gi.repository import Gtk as gtk
 
 from scal3 import core
 
+# from scal3.ui_gtk.starcal import MainWin as MainWinType
+
+type MainWinType = gtk.ApplicationWindow
+
 
 class GioNotificationWrapper(gio.Notification):
-	def __init__(self, mainWin) -> None:
+	def __init__(self, mainWin: MainWinType) -> None:
 		self.mainWin = mainWin
 		self.app = mainWin.app
 		# --
@@ -33,14 +39,14 @@ class GioNotificationWrapper(gio.Notification):
 		self.app.add_action(action)
 		self.set_default_action("onStatusIconClick")
 
-	def set_from_pixbuf(self, pixbuf) -> None:
+	def set_from_pixbuf(self, pixbuf: GdkPixbuf.Pixbuf) -> None:
 		# GdkPixbuf is subclass of gio.Icon
 		self.set_icon(pixbuf)
 
-	def set_from_file(self, fpath) -> None:
+	def set_from_file(self, fpath: str) -> None:
 		self.set_icon(gio.FileIcon.new(gio.File.new_for_path(fpath)))
 
-	def set_tooltip_text(self, text) -> None:
+	def set_tooltip_text(self, text: str) -> None:
 		# FIXME
 		pass
 

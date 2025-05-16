@@ -35,7 +35,7 @@ infoDirL = list(os.path.split(infoDir))
 
 
 def _addZoneNode(parentDict, zone, zoneNamesLevel) -> None:
-	path = os.path.join(*tuple(infoDirL + zone))
+	path = os.path.join(*infoDirL + zone)
 	name = zone[-1]
 	zoneNamesLevel[len(zone)].append(name)
 	if os.path.isfile(path):

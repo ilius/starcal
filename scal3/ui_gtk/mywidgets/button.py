@@ -5,10 +5,14 @@ from scal3 import logger
 log = logger.get()
 
 from time import time as now
+from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.ui_gtk import gtk, pack, timeout_add
+from scal3.ui_gtk import gdk, gtk, pack, timeout_add
 from scal3.ui_gtk.decorators import registerSignals
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["ConButton", "ConButtonBase"]
 
@@ -22,11 +26,11 @@ class ConButtonBase:
 		self.connect("button-press-event", self.onPress)
 		self.connect("button-release-event", self.onRelease)
 
-	def doTrigger(self):
-		return self.emit("con-clicked")
+	def doTrigger(self) -> None:
+		self.emit("con-clicked")
 
-	def onPress(self, _widget, event) -> bool | None:
-		if self._button is not None and event.button != self._button:
+	def onPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+		if self._button is not None and gevent.button != self._button:
 			return
 		self.pressTm = now()
 		self.doTrigger()
@@ -39,11 +43,11 @@ class ConButtonBase:
 		)
 		return True
 
-	def onRelease(self, _widget, _event) -> bool:
+	def onRelease(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
 		self.counter += 1
 		return True
 
-	def onPressRemain(self, func, counter) -> None:
+	def onPressRemain(self, func: Callable, counter: int) -> None:
 		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
 			func()
 			timeout_add(
@@ -69,7 +73,7 @@ if __name__ == "__main__":
 	win = gtk.Dialog()
 	button = ConButton("Press")
 
-	def con_clicked(_arg) -> None:
+	def con_clicked(_widget: gtk.Widget) -> None:
 		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)

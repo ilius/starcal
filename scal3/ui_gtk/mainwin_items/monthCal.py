@@ -84,8 +84,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"m",
 	)
 
-	def do_get_preferred_height(self):  # noqa: PLR6301
-		return 0, conf.winHeight.v / 3
+	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
+		return 0, int(conf.winHeight.v / 3)
 
 	def updateTypeParamsWidget(self) -> None:
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
@@ -139,17 +139,29 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.subPages = subPages
 
 	@staticmethod
-	def drawCursorOutline(cr, cx0, cy0, cw, ch) -> None:
+	def drawCursorOutline(
+		cr: cairo.Context,
+		cx0: float,
+		cy0: float,
+		cw: float,
+		ch: float,
+	) -> None:
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		cursorLineWidth = conf.mcalCursorLineWidthFactor.v * min(cw, ch) * 0.5
 		drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorLineWidth)
 
 	@staticmethod
-	def drawCursorBg(cr, cx0, cy0, cw, ch) -> None:
+	def drawCursorBg(
+		cr: cairo.Context,
+		cx0: float,
+		cy0: float,
+		cw: float,
+		ch: float,
+	) -> None:
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -273,13 +285,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.updateTypeParamsWidget()  # FIXME
 		return optionsWidget
 
-	def getSubPages(self):
+	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
 		return self.subPages
 
-	def drawAll(self, _widget=None, cursor=True) -> None:
+	def drawAll(self, _widget: gtk.Widget | None = None, cursor: bool = True) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -513,7 +525,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin.v
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
-	def onButtonPress(self, _obj, gevent) -> bool:
+	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		# self.winActivate() #?????????
 		b = gevent.button
 		(
@@ -569,8 +581,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.dx = (w - conf.mcalLeftMargin.v) / 7  # delta x
 		self.dy = (h - conf.mcalTopMargin.v) / 6  # delta y
 
-	def monthPlus(self, p) -> None:
-		ui.cells.monthPlus(p)
+	def monthPlus(self, plus: int) -> None:
+		ui.cells.monthPlus(plus)
 		self.onDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
@@ -617,7 +629,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _widget, gevent) -> bool | None:
+	def scroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
@@ -627,13 +639,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *_args):
+	def getCellPos(self, *_args) -> tuple[int, int]:
 		return (
 			int(self.cx[ui.cells.current.monthPos[0]]),
 			int(self.cy[ui.cells.current.monthPos[1]] + self.dy / 2),
 		)
 
-	def getMainMenuPos(self, *_args):  # FIXME
+	def getMainMenuPos(self, *_args) -> tuple[int, int]:  # FIXME
 		if rtl:
 			return (
 				int(self.get_allocation().width - conf.mcalLeftMargin.v / 2),

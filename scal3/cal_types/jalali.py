@@ -21,6 +21,7 @@
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
 from scal3 import logger
+from scal3.cal_types.types import TranslateFunc
 from scal3.property import Property
 
 __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
@@ -33,14 +34,14 @@ desc = "Persian"
 origLang = "fa"
 
 monthNameMode = Property(0)
-options = (
+options = [
 	(
 		"monthNameMode",
 		list,
 		"Month Names",
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
-)
+]
 confParams = {
 	"monthNameMode": monthNameMode,
 }
@@ -133,11 +134,18 @@ monthNameVars = (
 )
 
 
-def getMonthName(m, y=None):  # noqa: ARG001
+def getMonthName(
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	return monthNameVars[monthNameMode.v][0][m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
+def getMonthNameAb(
+	tr: TranslateFunc,
+	m: int,
+	y: int | None = None,  # noqa: ARG001
+) -> str:
 	names = monthNameVars[monthNameMode.v]
 	fullEn = names[0][m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
@@ -189,7 +197,7 @@ def save() -> None:
 	)
 
 
-def isLeap(year):
+def isLeap(year: int) -> bool:
 	"""isLeap: Is a given year a leap year in the Jalali calendar ?."""
 	jy = year - 979
 	jyd, jym = divmod(jy, 33)
@@ -197,13 +205,13 @@ def isLeap(year):
 	return ((jyd2 - jyd) * 8 + (jym2 + 3) // 4 - (jym + 3) // 4) == 1
 
 
-def getMonthDayFromYdays(yday):
+def getMonthDayFromYdays(yday: int) -> tuple[int, int]:
 	month = bisect_left(monthLenSum, yday)
 	day = yday - monthLenSum[month - 1]
 	return month, day
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	"""Calculate Julian day from Jalali date."""
 	jy = year - 979
 	jyd, jym = divmod(jy, 33)
@@ -219,7 +227,7 @@ def to_jd(year, month, day):
 	)
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> tuple[int, int, int]:
 	"""Calculate Jalali date from Julian day."""
 	jdays = int(jd - GREGORIAN_EPOCH - 584101)
 	# -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365-79+1 == -584101
@@ -241,7 +249,7 @@ def jd_to(jd):
 # Leap: esfand = 30 days
 
 
-def getMonthLen(year, month):
+def getMonthLen(year: int, month: int) -> int:
 	if month == 12:
 		return 29 + isLeap(year)
 

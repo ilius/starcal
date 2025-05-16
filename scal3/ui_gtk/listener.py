@@ -1,4 +1,5 @@
 from scal3 import logger
+from scal3.ui_gtk.customize import CustomizableCalObj
 
 log = logger.get()
 
@@ -13,13 +14,13 @@ dayLen = 24 * 3600
 
 
 class DateChangeListener:
-	def __init__(self, timeout=1) -> None:
+	def __init__(self, timeout: float = 1) -> None:
 		self.timeout = timeout  # seconds
 		self.receivers = []
 		self.gdate = localtime()[:3]
 		self.check()
 
-	def add(self, receiver) -> None:
+	def add(self, receiver: CustomizableCalObj) -> None:
 		self.receivers.append(receiver)
 
 	def check(self) -> None:
@@ -49,7 +50,7 @@ if __name__ == "__main__":
 	from gi.repository import GLib as glib
 
 	class TestRec:
-		def onCurrentDateChange(self, gdate) -> None:  # noqa: PLR6301
+		def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: PLR6301
 			log.info(f"current date changed to {gdate!r}")
 
 	dateChange.add(TestRec())

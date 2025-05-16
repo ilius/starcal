@@ -17,6 +17,8 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from collections import namedtuple
+from collections.abc import Iterable
+from typing import Protocol, Self
 
 from scal3 import logger
 
@@ -44,26 +46,55 @@ OccurItem = namedtuple(
 )
 
 
-def getCount(x):
-	return x.count if x else 0
+class NodeType(Protocol):
+	@property
+	def count(self) -> int: ...
 
+	@property
+	def red(self) -> bool: ...
 
-def isRed(x):
-	return x.red if x else False
+	@property
+	def min_t(self) -> int: ...
+
+	@property
+	def max_t(self) -> int: ...
+
+	@property
+	def right(self) -> Self | None: ...
+
+	@property
+	def left(self) -> Self | None: ...
+
+	@right.setter
+	def right(self, x: Self | None) -> None: ...
+
+	@left.setter
+	def left(self, x: Self | None) -> None: ...
+
+	@red.setter
+	def red(self, x: bool) -> None: ...
 
 
 class Node:
-	def __init__(self, mt, red=True) -> None:
+	@staticmethod
+	def getCount(x: NodeType | None) -> int:
+		return x.count if x else 0
+
+	@staticmethod
+	def isRed(x: NodeType | None) -> bool:
+		return x.red if x else False
+
+	def __init__(self, mt: int, red: bool = True) -> None:
 		self.mt = mt
 		self.red = red
 		self.min_t = mt
 		self.max_t = mt
 		self.events = MaxHeap()
-		self.left = None
-		self.right = None
+		self.left: NodeType | None = None
+		self.right: NodeType | None = None
 		self.count = 0
 
-	def add(self, t0, t1, dt, eid) -> None:
+	def add(self, t0: int, t1: int, dt: int, eid: int) -> None:
 		self.events.push(dt, eid)
 		self.min_t = min(t0, self.min_t)
 		self.max_t = max(t1, self.max_t)
@@ -72,19 +103,22 @@ class Node:
 		self.updateMinMaxChild(self.left)
 		self.updateMinMaxChild(self.right)
 
-	def updateMinMaxChild(self, child) -> None:
+	def updateMinMaxChild(self, child: NodeType | None) -> None:
 		if child:
 			self.min_t = min(child.min_t, self.min_t)
 			self.max_t = max(child.max_t, self.max_t)
 
 	# def updateCount(self):
-	# 	self.count = len(self.events) + getCount(self.left) + getCount(self.right)
+	# 	self.count = len(self.events) + Node.getCount(self.left) +
+	# 		Node.getCount(self.right)
 
 
-def rotateLeft(h):
-	# if not isRed(h.right):
+def rotateLeft(h: NodeType) -> NodeType | None:
+	# if not Node.isRed(h.right):
 	# 	raise RuntimeError("rotateLeft: h.right is not red")
 	x = h.right
+	if x is None:
+		return None
 	h.right = x.left
 	x.left = h
 	x.red = h.red
@@ -92,10 +126,12 @@ def rotateLeft(h):
 	return x
 
 
-def rotateRight(h):
-	# if not isRed(h.left):
+def rotateRight(h: NodeType) -> NodeType | None:
+	# if not Node.isRed(h.left):
 	# 	raise RuntimeError("rotateRight: h.left is not red")
 	x = h.left
+	if x is None:
+		return None
 	h.left = x.right
 	x.right = h
 	x.red = h.red
@@ -103,14 +139,16 @@ def rotateRight(h):
 	return x
 
 
-def flipColors(h) -> None:
-	# if isRed(h):
+def flipColors(h: NodeType) -> None:
+	# if Node.isRed(h):
 	# 	raise RuntimeError("flipColors: h is red")
-	# if not isRed(h.left):
+	# if not Node.isRed(h.left):
 	# 	raise RuntimeError("flipColors: h.left is not red")
-	# if not isRed(h.right):
+	# if not Node.isRed(h.right):
 	# 	raise RuntimeError("flipColors: h.right is not red")
 	h.red = True
+	assert h.left
+	assert h.right
 	h.left.red = False
 	h.right.red = False
 
@@ -124,11 +162,11 @@ class EventSearchTree:
 		self.byId = {}
 
 	@staticmethod
-	def doCountBalancing(node):
+	def doCountBalancing(node: NodeType) -> NodeType:
 		if (
 			node.left
 			and not node.left.right
-			and node.left.count - getCount(node.right) > len(node.events)
+			and node.left.count - Node.getCount(node.right) > len(node.events)
 		):
 			# log.debug("moving up from left")
 			# `mup` is the node that is moving up and taking place of `node`
@@ -138,7 +176,7 @@ class EventSearchTree:
 		if (
 			node.right
 			and not node.right.left
-			and node.right.count - getCount(node.left) > len(node.events)
+			and node.right.count - Node.getCount(node.left) > len(node.events)
 		):
 			# log.debug("moving up from right")
 			# `mup` is the node that is moving up and taking place of `node`
@@ -149,13 +187,13 @@ class EventSearchTree:
 
 	def _addStep(
 		self,
-		node,
-		t0,
-		t1,
-		mt,
-		dt,
-		eid,
-	):
+		node: NodeType | None,
+		t0: int,
+		t1: int,
+		mt: int,
+		dt: int,
+		eid: int,
+	) -> NodeType | None:
 		if t0 > t1:
 			return node
 		if not node:
@@ -183,17 +221,23 @@ class EventSearchTree:
 		else:  # mt == node.mt
 			node.add(t0, t1, dt, eid)
 		# node = self.doCountBalancing(node)
-		if isRed(node.right) and not isRed(node.left):
+		if Node.isRed(node.right) and not Node.isRed(node.left):
 			node = rotateLeft(node)
-		if isRed(node.left) and isRed(node.left.left):
+		if Node.isRed(node.left) and Node.isRed(node.left.left):
 			node = rotateRight(node)
-		if isRed(node.left) and isRed(node.right):
+		if Node.isRed(node.left) and Node.isRed(node.right):
 			flipColors(node)
 		# node.updateCount()
 		node.updateMinMax()
 		return node
 
-	def add(self, t0, t1, eid, debug=False) -> None:
+	def add(
+		self,
+		t0: int,
+		t1: int,
+		eid: int,
+		debug: bool = False,
+	) -> None:
 		if debug:
 			from time import localtime, strftime
 
@@ -224,7 +268,12 @@ class EventSearchTree:
 			hp = self.byId[eid] = MaxHeap()
 		hp.push(mt, dt)
 
-	def _searchStep(self, node, t0, t1):
+	def _searchStep(
+		self,
+		node: NodeType,
+		t0: int,
+		t1: int,
+	) -> Iterable[tuple[int, int, int]]:
 		if not node:
 			return
 		t0 = max(t0, node.min_t)
@@ -246,7 +295,7 @@ class EventSearchTree:
 		for item in self._searchStep(node.right, t0, t1):
 			yield item
 
-	def search(self, t0, t1):
+	def search(self, t0: int, t1: int) -> Iterable[OccurItem]:
 		for mt, dt, eid in self._searchStep(self.root, t0, t1):
 			yield OccurItem(
 				start=max(t0, mt - dt),
@@ -256,7 +305,7 @@ class EventSearchTree:
 				oid=(eid, mt - dt, mt + dt),
 			)
 
-	def getLastBefore(self, t1):
+	def getLastBefore(self, t1: int) -> tuple[int, int, int] | None:
 		res = self._getLastBeforeStep(self.root, t1)
 		if res:
 			mt, dt, eid = res
@@ -267,7 +316,11 @@ class EventSearchTree:
 			)
 		return None
 
-	def _getLastBeforeStep(self, node, t1):
+	def _getLastBeforeStep(
+		self,
+		node: NodeType,
+		t1: int,
+	) -> tuple[int, int, int] | None:
 		if not node:
 			return
 		t1 = min(t1, node.max_t)
@@ -289,20 +342,26 @@ class EventSearchTree:
 		return self._getLastBeforeStep(node.left, t1)
 
 	@staticmethod
-	def getMinNode(node):
+	def getMinNode(node: NodeType | None) -> NodeType | None:
 		if not node:
 			return
 		while node.left:
 			node = node.left
 		return node
 
-	def deleteMinNode(self, node):
+	def deleteMinNode(self, node: NodeType) -> NodeType | None:
 		if not node.left:
 			return node.right
 		node.left = self.deleteMinNode(node.left)
 		return node
 
-	def _deleteStep(self, node, mt, dt, eid):
+	def _deleteStep(
+		self,
+		node: NodeType | None,
+		mt: int,
+		dt: int,
+		eid: int,
+	) -> NodeType | None:
 		if not node:
 			return
 		if mt < node.mt:
@@ -323,7 +382,7 @@ class EventSearchTree:
 		# node.updateCount()
 		return node
 
-	def delete(self, eid):
+	def delete(self, eid: int) -> int:
 		hp = self.byId.get(eid)
 		if hp is None:
 			return 0
@@ -339,7 +398,7 @@ class EventSearchTree:
 		del self.byId[eid]
 		return n
 
-	def getLastOfEvent(self, eid):
+	def getLastOfEvent(self, eid: int) -> tuple[int, int] | None:
 		hp = self.byId.get(eid)
 		if hp is None:
 			return
@@ -352,7 +411,7 @@ class EventSearchTree:
 			mt + dt,
 		)
 
-	def getFirstOfEvent(self, eid):
+	def getFirstOfEvent(self, eid: int) -> tuple[int, int] | None:
 		hp = self.byId.get(eid)
 		if hp is None:
 			return
@@ -380,7 +439,7 @@ class EventSearchTree:
 	# def deleteMoreThan(self, t0):
 	# 	self.root = self.deleteMoreThanStep(self.root, t0)
 
-	def getDepthNode(self, node):
+	def getDepthNode(self, node: NodeType | None) -> int:
 		return (
 			1
 			+ max(
@@ -391,10 +450,10 @@ class EventSearchTree:
 			else 0
 		)
 
-	def getDepth(self):
+	def getDepth(self) -> int:
 		return self.getDepthNode(self.root)
 
-	def _calcAvgDepthStep(self, node, depth):
+	def _calcAvgDepthStep(self, node: NodeType | None, depth: int) -> tuple[int, int]:
 		if not node:
 			return 0, 0
 		left_s, left_n = self._calcAvgDepthStep(
@@ -410,7 +469,7 @@ class EventSearchTree:
 			len(node.events) + left_n + right_n,
 		)
 
-	def calcAvgDepth(self):
+	def calcAvgDepth(self) -> float | None:
 		s, n = self._calcAvgDepthStep(self.root, 0)
 		if n > 0:
 			return s / n

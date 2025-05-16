@@ -1,3 +1,5 @@
+from typing import Any
+
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.ui import conf
@@ -51,7 +53,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			getZoneInfoTree(),
 		)
 
-	def appendOrderedDict(self, parentIter, dct) -> None:
+	def appendOrderedDict(self, parentIter: gtk.TreeIter, dct: dict[str, Any]) -> None:
 		model = self.c.get_model()
 		for key, value in dct.items():
 			if isinstance(value, dict):
@@ -60,7 +62,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			else:
 				itr = model.append(parentIter, [key, True])
 
-	def onChanged(self, _widget) -> None:
+	def onChanged(self, _widget: gtk.Widget) -> None:
 		model = self.c.get_model()
 		itr = self.c.get_active_iter()
 		if itr is None:

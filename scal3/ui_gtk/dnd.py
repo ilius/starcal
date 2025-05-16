@@ -11,7 +11,8 @@ __all__ = ["processDroppedDate"]
 log = logger.get()
 
 
-def processDroppedDate(text, dtype):
+def processDroppedDate(text: str, dtype: str) -> tuple[int, int, int, int] | None:
+	"""Returns (year: int, month: int, day: int, calType: int) or None."""
 	# data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
 	if dtype == "UTF8_STRING":
 		if text.startswith("file://"):
@@ -46,7 +47,7 @@ def processDroppedDate(text, dtype):
 			t = os.stat(path).st_mtime  # modification time
 		except OSError:
 			log.error(f"Dropped invalid uri {path!r}")
-			return True
+			return None
 		else:
 			return localtime(t)[:3] + (core.GREGORIAN,)
 	return None

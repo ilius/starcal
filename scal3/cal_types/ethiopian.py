@@ -20,6 +20,8 @@
 
 __all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
+from scal3.cal_types.types import TranslateFunc
+
 name = "ethiopian"
 desc = "Ethiopian"
 origLang = "en"
@@ -44,11 +46,11 @@ monthNameAb = monthName  # FIXME
 monthLen = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35]
 
 
-def getMonthName(m, y=None):  # noqa: ARG001
+def getMonthName(m: int, y: int | None = None) -> str:  # noqa: ARG001
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
+def getMonthNameAb(tr: TranslateFunc, m: int, y: int | None = None) -> str:  # noqa: ARG001
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -61,22 +63,22 @@ minMonthLen = 30
 maxMonthLen = 36
 avgYearLen = 365.25
 
-options = ()
+options = []
 
 
 def save() -> None:
 	pass
 
 
-def isLeap(y):
+def isLeap(y: int) -> bool:
 	return (y + 1) % 4 == 0
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	return epoch + 365 * (year - 1) + year // 4 + (month - 1) * 30 + day - 15
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> tuple[int, int, int]:
 	quad, dquad = divmod(jd - epoch, 1461)
 	yindex = min(3, dquad // 365)
 	year = quad * 4 + yindex + 1
@@ -98,7 +100,7 @@ def jd_to(jd):
 	return year, month, day
 
 
-def getMonthLen(year, month):
+def getMonthLen(year: int, month: int) -> int:
 	if month == 12:
 		return 35 + isLeap(year)
 	return monthLen[month - 1]

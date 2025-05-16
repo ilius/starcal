@@ -27,7 +27,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, hijri, jd_to, to_jd
 from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,
@@ -42,7 +42,7 @@ __all__ = ["checkHijriMonthsExpiration"]
 hijriMode = calTypes.names.index("hijri")
 
 
-def getCurrentYm():
+def getCurrentYm() -> tuple[int, int]:
 	y, m, _d = ui.cells.today.dates[hijriMode]
 	return y * 12 + m - 1
 
@@ -161,14 +161,14 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		self.vbox.show_all()
 
-	def resetToDefaults(self, _widget) -> bool:
+	def resetToDefaults(self, _widget: gtk.Widget) -> bool:
 		if isfile(hijri.monthDb.userDbPath):
 			os.remove(hijri.monthDb.userDbPath)
 		hijri.monthDb.load()
 		self.updateWidget()
 		return True
 
-	def onAddClick(self, _widget=None) -> None:
+	def onAddClick(self, _widget: gtk.Widget | None = None) -> None:
 		last = self.treeModel[-1]
 		# 0 ym
 		# 1 yearLocale
@@ -195,7 +195,7 @@ class EditDbDialog(gtk.Dialog):
 		self.treev.scroll_to_cell(lastPath)
 		self.treev.set_cursor(lastPath)
 
-	def onDeleteClick(self, _widget=None) -> None:
+	def onDeleteClick(self, _widget: gtk.Widget | None = None) -> None:
 		if len(self.treeModel) > 1:
 			del self.treeModel[-1]
 		self.selectLastRow()
@@ -253,7 +253,12 @@ class EditDbDialog(gtk.Dialog):
 			jd0 += mLen
 			row[4] = dateLocale(*jd_to(jd0, self.altMode))
 
-	def monthLenCellEdited(self, _combo, path_string, new_text) -> None:
+	def monthLenCellEdited(
+		self,
+		_combo: gtk.Widget,
+		path_string: str,
+		new_text: str,
+	) -> None:
 		editIndex = int(path_string)
 		mLen = int(new_text)
 		if mLen not in {29, 30}:
@@ -295,7 +300,7 @@ class EditDbDialog(gtk.Dialog):
 		self.treev.grab_focus()
 		gtk.Dialog.run(self)
 
-	def onResponse(self, _dialog, response_id) -> bool:
+	def onResponse(self, _dialog: gtk.Widget, response_id: gtk.ResponseType) -> bool:
 		if response_id == gtk.ResponseType.OK:
 			self.updateVars()
 			self.destroy()
@@ -303,12 +308,12 @@ class EditDbDialog(gtk.Dialog):
 			self.destroy()
 		return True
 
-	def onDeleteEvent(self, _dialog, _gevent) -> bool:
+	def onDeleteEvent(self, _dialog: gtk.Widget, _gevent: gdk.Event) -> bool:
 		self.destroy()
 		return True
 
 
-def tuneHijriMonthes(_widget=None) -> None:
+def tuneHijriMonthes(_widget: gtk.Widget | None = None) -> None:
 	dialog = EditDbDialog(transient_for=ui.prefWindow)
 	dialog.resize(400, 400)
 	dialog.run()
@@ -353,7 +358,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		# ---
 		self.vbox.show_all()
 
-	def onResponse(self, _dialog, _response_id) -> bool:
+	def onResponse(self, _dialog: gtk.Widget, _response_id: gtk.ResponseType) -> bool:
 		if self.noShowCheckb.get_active():
 			with open(hijri.monthDbExpiredIgnoreFile, "w", encoding="utf-8") as _file:
 				_file.write("")
@@ -373,7 +378,7 @@ def checkHijriMonthsExpiration() -> None:
 
 
 class HijriMonthsExpirationListener:
-	def onCurrentDateChange(self, _gdate) -> None:  # noqa: PLR6301
+	def onCurrentDateChange(self, _gdate: tuple[int, int, int]) -> None:  # noqa: PLR6301
 		checkHijriMonthsExpiration()
 
 

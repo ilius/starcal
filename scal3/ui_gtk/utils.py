@@ -21,7 +21,7 @@ from scal3.ui import conf
 log = logger.get()
 
 from os.path import isabs, join
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.color_utils import ColorType, rgbToCSS
@@ -61,7 +61,6 @@ __all__ = [
 	"getBackgroundColor",
 	"getBackgroundColorCSS",
 	"getGtkWindow",
-	"getStyleColor",
 	"get_menu_height",
 	"get_menu_width",
 	"get_pixbuf_hash",
@@ -72,7 +71,6 @@ __all__ = [
 	"imageFromIconNameWithPixelSize",
 	"labelIconButton",
 	"labelImageButton",
-	"modify_bg_all",
 	"newAlignLabel",
 	"newButtonImageBox",
 	"newHSep",
@@ -93,21 +91,21 @@ __all__ = [
 ]
 
 
-def hideList(widgets) -> None:
+def hideList(widgets: list[gtk.Widget]) -> None:
 	for w in widgets:
 		w.hide()
 
 
-def showList(widgets) -> None:
+def showList(widgets: list[gtk.Widget]) -> None:
 	for w in widgets:
 		w.show()
 
 
-def set_tooltip(widget, text) -> None:
+def set_tooltip(widget: gtk.Widget, text: str) -> None:
 	widget.set_tooltip_text(text)
 
 
-def buffer_get_text(b):
+def buffer_get_text(b: gtk.TextBuffer) -> str:
 	return b.get_text(
 		b.get_start_iter(),
 		b.get_end_iter(),
@@ -115,7 +113,7 @@ def buffer_get_text(b):
 	)
 
 
-def show_event(widget, gevent) -> None:
+def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
 	try:
 		value = gevent.get_value()
 	except AttributeError:
@@ -127,7 +125,7 @@ def show_event(widget, gevent) -> None:
 	# gevent.send_event
 
 
-def setClipboard(text, clipboard=None) -> None:
+def setClipboard(text: str, clipboard: gtk.Clipboard | None = None) -> None:
 	if not clipboard:
 		clipboard = gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD)
 	clipboard.set_text(
@@ -184,7 +182,7 @@ def imageFromIconNameWithPixelSize(
 	return image
 
 
-def imageFromFile(path, size=0):
+def imageFromFile(path: str, size: float = 0) -> gtk.Image:
 	# the file must exist
 	im = gtk.Image()
 	pixbuf = pixbufFromFile(path, size=size)
@@ -192,7 +190,7 @@ def imageFromFile(path, size=0):
 	return im
 
 
-def resolveImagePath(path: str):
+def resolveImagePath(path: str) -> str:
 	if isabs(path):
 		return path
 	if path.endswith(".svg"):
@@ -252,7 +250,7 @@ Date:   Fri Oct 14 17:31:56 2016
 """
 
 
-def newButtonImageBox(label: str, image: gtk.Image, spacing=0) -> gtk.Box:
+def newButtonImageBox(label: str, image: gtk.Image, spacing: float = 0) -> gtk.Box:
 	hbox = HBox(spacing=spacing)
 	pack(hbox, image, 0, 0)
 	if label:
@@ -268,7 +266,7 @@ def labelIconButton(
 	label: str = "",
 	iconName: str = "",
 	size: gtk.IconSize = gtk.IconSize.BUTTON,
-):
+) -> gtk.Button:
 	button = gtk.Button()
 	if conf.buttonIconEnable.v:
 		button.add(
@@ -291,7 +289,7 @@ def labelImageButton(
 	func: Callable | None = None,
 	tooltip: str = "",
 	spacing: int = 10,
-):
+) -> gtk.Button:
 	button = gtk.Button()
 	if conf.buttonIconEnable.v or not label:
 		if size == 0:
@@ -316,7 +314,7 @@ def labelImageButton(
 	return button
 
 
-def imageClassButton(iconName: str, styleClass: str, size: int):
+def imageClassButton(iconName: str, styleClass: str, size: int) -> gtk.Button:
 	button = gtk.Button()
 	button.add(
 		imageFromIconName(
@@ -336,7 +334,7 @@ def setImageClassButton(
 	iconName: str,
 	styleClass: str,
 	size: int,
-):
+) -> gtk.Button:
 	button.remove(button.get_child())
 	image = imageFromIconName(
 		iconName,
@@ -351,23 +349,11 @@ def setImageClassButton(
 	return button
 
 
-def getStyleColor(widget, state=gtk.StateType.NORMAL):
-	return widget.get_style_context().get_color(state)
+# def getStyleColor(widget: gtk.Widget, state:gtk.StateType=gtk.StateType.NORMAL):
+# 	return widget.get_style_context().get_color(state)
 
 
-def modify_bg_all(widget, state, gcolor) -> None:
-	log.info(widget.__class__.__name__)
-	widget.modify_bg(state, gcolor)
-	try:
-		children = widget.get_children()
-	except AttributeError:
-		pass
-	else:
-		for child in children:
-			modify_bg_all(child, state, gcolor)
-
-
-def rectangleContainsPoint(r, x, y):
+def rectangleContainsPoint(r: float, x: float, y: float) -> bool:
 	return r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
 
@@ -389,14 +375,14 @@ def rectangleContainsPoint(r, x, y):
 
 
 def dialog_add_button(
-	dialog,
+	dialog: gtk.Dialog,
 	iconName: str = "",
 	label: str = "",
 	res: gtk.ResponseType | None = None,
 	onClick: Callable | None = None,
 	tooltip: str = "",
 	imageName: str = "",
-):
+) -> gtk.Button:
 	b = dialog.add_button(label, res)
 	if label:
 		b.set_label(label)
@@ -426,11 +412,11 @@ def dialog_add_button(
 
 
 def confirm(
-	msg,
-	title="Confirmation",
-	border_width=15,
+	msg: str,
+	title: str = "Confirmation",
+	border_width: int = 15,
 	**kwargs,
-):
+) -> bool:
 	win = gtk.MessageDialog(
 		message_type=gtk.MessageType.INFO,
 		buttons=gtk.ButtonsType.NONE,
@@ -460,13 +446,13 @@ def confirm(
 
 
 def showMsg(
-	msg,
-	imageName="",
-	parent=None,
-	transient_for=None,
-	title="",
-	borderWidth=10,
-	selectable=False,
+	msg: str,
+	imageName: str = "",
+	parent: gtk.Window | None = None,
+	transient_for: gtk.Window | None = None,
+	title: str = "",
+	borderWidth: int = 10,
+	selectable: bool = False,
 ) -> None:
 	win = gtk.Dialog(
 		parent=parent,
@@ -508,25 +494,25 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg, **kwargs) -> None:
+def showError(msg: str, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-error.svg", **kwargs)
 
 
-def showWarning(msg, **kwargs) -> None:
+def showWarning(msg: str, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-warning.svg", **kwargs)
 
 
-def showInfo(msg, **kwargs) -> None:
+def showInfo(msg: str, **kwargs) -> None:
 	showMsg(msg, imageName="dialog-information.svg", **kwargs)
 
 
-def openWindow(win) -> None:
+def openWindow(win: gtk.Window) -> None:
 	# win.set_keep_above(conf.winKeepAbove.v)
 	win.set_keep_above(True)
 	win.present()
 
 
-def get_menu_width(menu):
+def get_menu_width(menu: gtk.Menu) -> int:
 	"""
 	# log.debug(menu.has_screen())
 	#menu.show_all()
@@ -558,7 +544,7 @@ def get_menu_width(menu):
 	return 0
 
 
-def get_menu_height(menu):
+def get_menu_height(menu: gtk.Menu) -> int:
 	h = menu.get_allocation().height
 	if h > 1:
 		# log.debug("menu height from before:", h)
@@ -574,12 +560,12 @@ def get_menu_height(menu):
 	# log.debug([item.get_preferred_size()[1].height for item in items])
 
 
-def get_pixbuf_hash(pbuf):
+def get_pixbuf_hash(pbuf: GdkPixbuf.Pixbuf) -> str:
 	import hashlib
 
 	md5 = hashlib.md5()
 
-	def save_func(chunkBytes, _size, _unknown) -> bool:
+	def save_func(chunkBytes: bytes, _size: int, _unknown: Any) -> bool:
 		# len(chunkBytes) == size
 		md5.update(chunkBytes)
 		return True
@@ -594,7 +580,11 @@ def get_pixbuf_hash(pbuf):
 	return md5.hexdigest()
 
 
-def window_set_size_aspect(win, min_aspect, max_aspect=None) -> None:
+def window_set_size_aspect(
+	win: gtk.Window,
+	min_aspect: float,
+	max_aspect: float | None = None,
+) -> None:
 	if max_aspect is None:
 		max_aspect = min_aspect
 	geom = gdk.Geometry()
@@ -607,11 +597,11 @@ def window_set_size_aspect(win, min_aspect, max_aspect=None) -> None:
 	)
 
 
-def newHSep():
+def newHSep() -> gtk.Separator:
 	return gtk.Separator(orientation=gtk.Orientation.HORIZONTAL)
 
 
-def newAlignLabel(sgroup=None, label=""):
+def newAlignLabel(sgroup: gtk.SizeGroup | None = None, label: str = "") -> gtk.Label:
 	label = gtk.Label(label=label)
 	label.set_xalign(0)
 	if sgroup:
@@ -620,14 +610,14 @@ def newAlignLabel(sgroup=None, label=""):
 
 
 class IdComboBox(gtk.ComboBox):
-	def set_active(self, ident) -> None:
+	def set_active(self, ident: int) -> None:
 		ls = self.get_model()
 		for i in range(len(ls)):
 			if ls[i][0] == ident:
 				gtk.ComboBox.set_active(self, i)
 				return
 
-	def get_active(self):
+	def get_active(self) -> int | None:
 		i = gtk.ComboBox.get_active(self)
 		if i is None:
 			return
@@ -641,12 +631,12 @@ class IdComboBox(gtk.ComboBox):
 
 
 class CopyLabelMenuItem(MenuItem):
-	def __init__(self, label) -> None:
+	def __init__(self, label: gtk.Label) -> None:
 		MenuItem.__init__(self)
 		self.set_label(label)
 		self.connect("activate", self.on_activate)
 
-	def on_activate(self, _item) -> None:
+	def on_activate(self, _item: gtk.MenuItem) -> None:
 		setClipboard(self.get_property("label"))
 
 
@@ -676,13 +666,13 @@ def cssTextStyle(
 	return "{\n" + "\n".join(lines) + "\n}"
 
 
-def getBackgroundColor(widget: gtk.Widget):
+def getBackgroundColor(widget: gtk.Widget) -> ColorType:
 	return gdkColorToRgb(
 		widget.get_style_context().get_background_color(gtk.StateFlags.NORMAL),
 	)
 
 
-def getBackgroundColorCSS(widget: gtk.Widget):
+def getBackgroundColorCSS(widget: gtk.Widget) -> str:
 	from scal3.color_utils import rgbToCSS
 
 	return rgbToCSS(getBackgroundColor(widget))

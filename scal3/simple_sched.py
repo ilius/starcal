@@ -27,12 +27,26 @@ has another way to reference private data (besides global variables).
 import heapq
 import time
 from collections import namedtuple
+from collections.abc import Callable, Sequence
 from itertools import count
 from time import time as _time
+from typing import Any
 
 __all__ = ["scheduler"]
 
-Event = namedtuple("Event", "time, priority, sequence, action, argument, kwargs")
+# FIXME: priority and sequence are not used at all
+
+Event = namedtuple(
+	"Event",
+	[
+		"time",
+		"priority",
+		"sequence",
+		"action",
+		"argument",
+		"kwargs",
+	],
+)
 
 Event.time.__doc__ = """Numeric type compatible with the return value of the
 timefunc function passed to the constructor."""
@@ -47,8 +61,6 @@ arguments for the action."""
 Event.kwargs.__doc__ = """kwargs is a dictionary holding the keyword
 arguments for the action."""
 
-_sentinel = object()
-
 
 def stopped() -> bool:
 	return False
@@ -57,9 +69,9 @@ def stopped() -> bool:
 class scheduler:
 	def __init__(
 		self,
-		timefunc=_time,
-		delayfunc=time.sleep,
-		stopped=stopped,
+		timefunc: Callable[[], float] = _time,
+		delayfunc: Callable[[float], None] = time.sleep,
+		stopped: Callable[[], bool] = stopped,
 	) -> None:
 		"""
 		Initialize a new instance, passing the time and delay
@@ -71,15 +83,16 @@ class scheduler:
 		self.stopped = stopped
 		self._sequence_generator = count()
 
-	def enterabs(self, time, priority, action, argument=(), kwargs=_sentinel):
-		"""
-		Enter a new event in the queue at an absolute time.
-
-		Returns an ID for the event which can be used to remove it,
-		if necessary.
-
-		"""
-		if kwargs is _sentinel:
+	def enterabs(
+		self,
+		time: int,
+		priority: int,
+		action: Callable,
+		argument: Sequence[Any] = (),
+		kwargs: dict[str, Any] | None = None,
+	) -> Event:
+		"""Enter a new event in the queue at an absolute time."""
+		if kwargs is None:
 			kwargs = {}
 
 		event = Event(
@@ -91,7 +104,7 @@ class scheduler:
 			kwargs=kwargs,
 		)
 		heapq.heappush(self._queue, event)
-		return event  # The ID
+		return event
 
 	def run(self) -> None:
 		"""

@@ -29,8 +29,14 @@ from queue import Empty, Queue
 from threading import Thread
 from time import perf_counter, sleep
 from time import time as now
+from typing import TYPE_CHECKING
 
 from .simple_sched import scheduler
+
+if TYPE_CHECKING:
+	from collections.abc import Iterable
+
+	from scal3.event_lib.groups import EventGroup
 
 __all__ = ["EventNotificationManager"]
 
@@ -39,7 +45,7 @@ DISABLE = False
 
 
 class EventNotificationManager:
-	def __init__(self, eventGroups) -> None:
+	def __init__(self, eventGroups: Iterable[EventGroup]) -> None:
 		self.byGroup: dict[int, EventGroupNotificationThread] = {}
 		if DISABLE:
 			return
@@ -90,7 +96,7 @@ class EventGroupNotificationThread(Thread):
 	# ^ seconds
 	# TODO: get from group.notificationCheckInterval
 
-	def __init__(self, group) -> None:
+	def __init__(self, group: EventGroup) -> None:
 		self.group = group
 
 		self.sent = set()
@@ -114,7 +120,7 @@ class EventGroupNotificationThread(Thread):
 		log.debug("EventGroupNotificationThread.cancel")
 		self._stop_event.set()
 
-	def stopped(self):
+	def stopped(self) -> bool:
 		return self._stop_event.is_set()
 
 	def checkEvent(self, event: event_lib.Event) -> None:

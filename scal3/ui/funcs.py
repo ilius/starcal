@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import logger
+
+if TYPE_CHECKING:
+	from scal3.cell_type import CellCacheType
 
 __all__ = ["checkEnabledNamesItems", "getHolidaysJdList"]
 
@@ -30,7 +35,11 @@ def checkEnabledNamesItems(
 	return items
 
 
-def getHolidaysJdList(cells, startJd: int, endJd: int) -> list[int]:
+def getHolidaysJdList(
+	cells: CellCacheType,
+	startJd: int,
+	endJd: int,
+) -> list[int]:
 	jdList = []
 	for jd in range(startJd, endJd):
 		tmpCell = cells.getTmpCell(jd)

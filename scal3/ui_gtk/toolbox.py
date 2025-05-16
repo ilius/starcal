@@ -10,7 +10,7 @@ import typing
 from scal3.ui import conf
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable
+	from collections.abc import Callable, Iterable, Sequence
 
 from typing import Any
 
@@ -76,7 +76,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
 		onPress: str | Callable | None = None,
-		args: tuple[Any] | None = None,  # for onClick and onPress
+		args: Sequence[Any] | None = None,  # for onClick and onPress
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
@@ -453,7 +453,7 @@ class CustomizableToolBox(StaticToolBox):
 			if item.loaded:
 				pack(self.box, item, item.expand, item.expand)
 
-	def moveItem(self, i, j) -> None:
+	def moveItem(self, i: int, j: int) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 

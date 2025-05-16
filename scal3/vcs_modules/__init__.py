@@ -1,9 +1,12 @@
+from collections.abc import Callable
+from typing import Any
+
 from scal3.time_utils import getEpochFromJd
 
 __all__ = ["encodeShortStat", "getCommitListFromEst", "vcsModuleNames"]
 
 
-def encodeShortStat(files_changed, insertions, deletions):
+def encodeShortStat(files_changed: int, insertions: int, deletions: int) -> str:
 	parts = []
 	if files_changed == 1:
 		parts.append("1 file changed")
@@ -16,7 +19,12 @@ def encodeShortStat(files_changed, insertions, deletions):
 	return ", ".join(parts)
 
 
-def getCommitListFromEst(obj, startJd, endJd, format_rev_id=None):
+def getCommitListFromEst(
+	obj: Any,
+	startJd: int,
+	endJd: int,
+	format_rev_id: Callable | None = None,
+) -> list[tuple[int, int | str]]:
 	"""Returns a list of (epoch, rev_id) tuples."""
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)

@@ -50,7 +50,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 		log.info(f"XAlignComboBox: unexpected {index = }")
 		return None
 
-	def set(self, value) -> None:
+	def set(self, value: str) -> None:
 		if value == "left":
 			self.set_active(0)
 		elif value == "center":
@@ -81,7 +81,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 		log.info(f"YAlignComboBox: unexpected {index = }")
 		return None
 
-	def set(self, value) -> None:
+	def set(self, value: str) -> None:
 		if value == "top":
 			self.set_active(0)
 		elif value == "center":
@@ -214,7 +214,7 @@ class TextParamWidget(gtk.Box):
 		if hasUppercase:
 			self.uppercaseCheck.connect("clicked", self.onChange)
 
-	def get(self):
+	def get(self) -> dict[str, Any]:
 		params = {
 			"pos": (
 				self.spinX.get_value(),
@@ -234,7 +234,7 @@ class TextParamWidget(gtk.Box):
 			params["uppercase"] = self.uppercaseCheck.get_active()
 		return params
 
-	def set(self, params) -> None:
+	def set(self, params: dict[str, Any]) -> None:
 		self.spinX.set_value(params["pos"][0])
 		self.spinY.set_value(params["pos"][1])
 		self.fontb.set_font(getParamsFont(params))
@@ -249,11 +249,11 @@ class TextParamWidget(gtk.Box):
 		if self.hasUppercase:
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
-	def onChange(self, _obj: gtk.Widget | None = None, _event: Any = None) -> None:
+	def onChange(self, _widget: gtk.Widget | None = None, _event: Any = None) -> None:
 		self.params.v = self.get()
 		self.cal.queue_draw()
 
-	def setFontPreviewText(self, text) -> None:
+	def setFontPreviewText(self, text: str) -> None:
 		self.fontb.set_property("preview-text", text)
 
 

@@ -47,6 +47,8 @@ from scal3.ui_gtk.drawing import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	import cairo
 
 __all__ = ["YearWheelWindow"]
@@ -80,7 +82,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 	winterColor = (0, 0, 255, 15)
 	# ---
 
-	def __init__(self, closeFunc) -> None:
+	def __init__(self, closeFunc: Callable) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
@@ -131,11 +133,11 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			),
 		]
 
-	def onHomeClick(self, _arg=None) -> None:
+	def onHomeClick(self, _widget: gtk.Widget | None = None) -> None:
 		self.angleOffset = 0.0
 		self.queue_draw()
 
-	def startResize(self, gevent) -> None:
+	def startResize(self, gevent: gdk.Event) -> None:
 		self.get_parent().begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
@@ -144,7 +146,11 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			gevent.time,
 		)
 
-	def onDraw(self, _widget=None, _event=None) -> None:
+	def onDraw(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -345,15 +351,15 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
 	def drawYearStartLine(
 		self,
-		year,
-		direction,
-		cr,
-		cx,
-		cy,
-		angle,
-		centerAngle,
-		r,
-		deltaR,
+		year: int,
+		direction: int,
+		cr: cairo.Context,
+		cx: float,
+		cy: float,
+		angle: float,
+		centerAngle: float,
+		r: float,
+		deltaR: float,
 	) -> None:
 		layout = newTextLayout(
 			self,
@@ -385,7 +391,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		show_layout(cr, layout)
 		cr.rotate(-rotateAngle)
 
-	def onScroll(self, _widget, gevent) -> bool:
+	def onScroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		d = getScrollValue(gevent)
 		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
@@ -415,7 +421,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, _obj, gevent) -> bool:
+	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		x = gevent.x
 		y = gevent.y
 		w = self.get_allocation().width
@@ -464,7 +470,11 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self._widget.show()
 		self.appendItem(self._widget)
 
-	def onCloseClick(self, _arg=None, _event=None) -> bool:
+	def onCloseClick(
+		self,
+		_widget: gtk.Widget | None = None,
+		_event: gdk.Event | None = None,
+	) -> bool:
 		if ui.mainWin:
 			self.hide()
 		else:
@@ -473,7 +483,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 			gtk.main_quit()
 		return True
 
-	def onButtonPress(self, _obj, gevent) -> bool:
+	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

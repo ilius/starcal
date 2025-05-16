@@ -17,6 +17,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -132,7 +134,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		if ok:
 			self.errorLabel.set_text("")
 
-	def doRegister(self):
+	def doRegister(self) -> str | None:
 		"""Return None if successful, or error string if failed."""
 		import requests
 
@@ -184,21 +186,21 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		error = account.fetchGroups()
 		if error:
 			log.error(error)
-			return  # error? FIXME
+			return error
 		account.save()
 		return None
 
-	def onOkClick(self, _widget) -> bool:
+	def onOkClick(self, _widget: gtk.Widget) -> bool:
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
 		return True
 
-	def onCancelClick(self, _widget) -> bool:
+	def onCancelClick(self, _widget: gtk.Widget) -> bool:
 		self.destroy()
 		return True
 
-	def onDeleteEvent(self, _widget, _event) -> bool:
+	def onDeleteEvent(self, _widget: gtk.Widget, _event: Any) -> bool:
 		self.destroy()
 		return True
 

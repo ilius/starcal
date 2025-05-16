@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
@@ -6,6 +10,9 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 	showError,
 )
+
+if TYPE_CHECKING:
+	from scal3.event_lib.accounts import Account
 
 __all__ = [
 	"AccountCombo",
@@ -16,7 +23,7 @@ __all__ = [
 
 
 class BaseWidgetClass(gtk.Box):
-	def __init__(self, account) -> None:
+	def __init__(self, account: Account) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.account = account
 		# --------
@@ -55,13 +62,13 @@ class AccountCombo(IdComboBox):
 		# ---
 		gtk.ComboBox.set_active(self, 0)
 
-	def get_active(self):
+	def get_active(self) -> int | None:
 		active = IdComboBox.get_active(self)
 		if active == -1:
-			active = None
+			return None
 		return active
 
-	def set_active(self, active) -> None:
+	def set_active(self, active: int | None) -> None:
 		if active is None:
 			active = -1
 		IdComboBox.set_active(self, active)
@@ -79,7 +86,7 @@ class AccountGroupCombo(IdComboBox):
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 1)
 
-	def setAccount(self, account) -> None:
+	def setAccount(self, account: Account) -> None:
 		self.account = account
 		self.updateList()
 
@@ -97,7 +104,10 @@ class AccountGroupCombo(IdComboBox):
 
 
 class AccountGroupBox(gtk.Box):
-	def __init__(self, accountCombo=None) -> None:
+	def __init__(
+		self,
+		accountCombo: gtk.ComboBox | None = None,
+	) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.combo = AccountGroupCombo()
 		pack(self, self.combo)
@@ -118,13 +128,13 @@ class AccountGroupBox(gtk.Box):
 		if accountCombo:
 			accountCombo.connect("changed", self.accountComboChanged)
 
-	def accountComboChanged(self, combo) -> None:
+	def accountComboChanged(self, combo: gtk.ComboBox) -> None:
 		aid = combo.get_active()
 		if aid:
 			account = ui.eventAccounts[aid]
 			self.combo.setAccount(account)
 
-	def onFetchClick(self, _obj=None) -> None:
+	def onFetchClick(self, _widget: gtk.Widget | None = None) -> None:
 		combo = self.combo
 		account = combo.account
 		if not account:

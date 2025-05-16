@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+from scal3.cell_type import CellCacheType
 
 log = logger.get()
 
@@ -28,7 +29,7 @@ pluginName = "WeekCal"
 
 class WeekStatus(list):
 	# list (of 7 cells)
-	def __init__(self, cells, absWeekNumber) -> None:
+	def __init__(self, cells: CellCacheType, absWeekNumber: int) -> None:
 		self.absWeekNumber = absWeekNumber
 		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
 		endJd = startJd + 7
@@ -45,11 +46,11 @@ class WeekStatus(list):
 			self.append(cells.getCell(jd))
 
 
-def setParamsFunc(cell) -> None:
+def setParamsFunc(cell: CellCacheType) -> None:
 	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 
-def getCurrentWeekStatus():
+def getCurrentWeekStatus() -> WeekStatus:
 	return ui.cells.getCellGroup(
 		pluginName,
 		ui.cells.current.absWeekNumber,

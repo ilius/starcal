@@ -16,6 +16,7 @@
 
 from scal3 import ui
 from scal3.cal_types import jd_to
+from scal3.event_lib.event_base import Event
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -27,7 +28,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event) -> None:  # FIXME
+	def __init__(self, event: Event) -> None:  # FIXME
 		event.setJd(ui.cells.current.jd)
 		common.WidgetClass.__init__(self, event)
 		# ------
@@ -124,7 +125,7 @@ class WidgetClass(common.WidgetClass):
 			self.dayTimeEndInput.get_value(),
 		)
 
-	def calTypeComboChanged(self, _obj=None) -> None:
+	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.startDateInput.changeCalType(self.event.calType, newCalType)

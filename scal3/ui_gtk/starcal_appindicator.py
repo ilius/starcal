@@ -26,6 +26,7 @@ from os.path import dirname, join
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 import gi
+from gi.repository import GdkPixbuf
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
@@ -48,7 +49,7 @@ __all__ = ["IndicatorStatusIconWrapper"]
 class IndicatorStatusIconWrapper:
 	imNamePrefix = f"{APP_NAME}-indicator-{os.getuid()}-"
 
-	def __init__(self, mainWin) -> None:
+	def __init__(self, mainWin: gtk.ApplicationWindow) -> None:
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
 			APP_NAME,  # app id
@@ -112,12 +113,12 @@ class IndicatorStatusIconWrapper:
 			menu.set_direction(gtk.TextDirection.RTL)  # not working
 		self.c.set_menu(menu)
 
-	def set_from_file(self, fpath) -> None:
+	def set_from_file(self, fpath: str) -> None:
 		self.c.set_icon("")
 		self.c.set_icon(fpath)
 		self.create_menu()
 
-	def set_from_pixbuf(self, pbuf) -> None:
+	def set_from_pixbuf(self, pbuf: GdkPixbuf.Pixbuf) -> None:
 		# https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
 		# pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
 		fname = self.imNamePrefix + get_pixbuf_hash(pbuf)
@@ -139,9 +140,9 @@ class IndicatorStatusIconWrapper:
 	def is_embedded(self) -> bool:  # noqa: PLR6301
 		return True  # FIXME
 
-	def set_visible(self, visible) -> None:  # FIXME
+	def set_visible(self, visible: bool) -> None:  # FIXME
 		pass
 
-	def set_tooltip_text(self, text) -> None:
+	def set_tooltip_text(self, text: str) -> None:
 		# self.c.set_label_guide(text)
 		pass

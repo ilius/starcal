@@ -4,7 +4,7 @@ from scal3.date_utils import parseDroppedDate
 
 
 class TestParseDroppedDate(unittest.TestCase):
-	def case(self, text, date) -> None:
+	def case(self, text: str, date: tuple[int, int, int] | None) -> None:
 		actualDate = parseDroppedDate(text)
 		self.assertEqual(actualDate, date)
 

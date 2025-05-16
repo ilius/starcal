@@ -106,7 +106,7 @@ class WinLayoutObj(WinLayoutBase):
 			return
 		self._item.onKeyPress(arg, gevent)
 
-	def getWidget(self):
+	def getWidget(self) -> gtk.Widget:
 		if self._item is not None:
 			return self._item
 		item = self.initializer()
@@ -137,7 +137,7 @@ class WinLayoutObj(WinLayoutBase):
 		# a child, aka a memeber of self.items
 		pass
 
-	def getOptionsButtonBox(self):
+	def getOptionsButtonBox(self) -> gtk.Widget:
 		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
@@ -165,7 +165,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.optionsButtonBox = optionsButtonBox
 		return optionsButtonBox
 
-	def getSubPages(self):
+	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsButtonBox()
@@ -222,7 +222,7 @@ class WinLayoutBox(WinLayoutBase):
 		else:
 			self._box.hide()
 
-	def getWidget(self):
+	def getWidget(self) -> gtk.Widget:
 		if self._box is not None:
 			return self._box
 		box = gtk.Box(orientation=getOrientation(self.vertical))
@@ -251,11 +251,11 @@ class WinLayoutBox(WinLayoutBase):
 		if self.itemsParam:
 			self.itemsParam.v = itemNames
 
-	def setItemsOrder(self, itemNames) -> None:
+	def setItemsOrder(self, itemNames: list[str]) -> None:
 		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in itemNames]
 
-	def getOptionsButtonBox(self):
+	def getOptionsButtonBox(self) -> gtk.Widget:
 		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
@@ -325,7 +325,7 @@ class WinLayoutBox(WinLayoutBase):
 				tmpItem.upButton.action = action
 		self.onConfigChange()
 
-	def getSubPages(self):
+	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
 		subPages = []

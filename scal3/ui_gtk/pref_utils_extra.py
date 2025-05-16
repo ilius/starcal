@@ -256,7 +256,7 @@ class CalTypePrefItem(PrefItem):
 	def set(self, value: int) -> None:
 		self._combo.set_active(value)
 
-	def onClick(self, _w) -> None:
+	def onClick(self, _widegt: gtk.Widget) -> None:
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
@@ -457,7 +457,7 @@ class InactiveCalsTreeView(AICalsTreeview):
 
 
 class AICalsPrefItemToolbar(StaticToolBox):
-	def __init__(self, parent) -> None:
+	def __init__(self, parent: PrefItem) -> None:
 		StaticToolBox.__init__(
 			self,
 			parent,
@@ -496,7 +496,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 			],
 		)
 
-	def getLeftRightAction(self):
+	def getLeftRightAction(self) -> str:
 		return self._leftRightAction
 
 	def setLeftRight(self, isRight: bool | None) -> None:
@@ -513,7 +513,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 		tb.show_all()
 
 
-def treeviewSelect(treev, index) -> None:
+def treeviewSelect(treev: gtk.TreeView, index: int) -> None:
 	path = gtk.TreePath.new_from_indices((index,))
 	selection = treev.get_selection()
 	# selection.unselect_all()
@@ -778,7 +778,11 @@ class KeyBindingPrefItem(PrefItem):
 		trees = self.treev.get_model()
 		trees.remove(trees.get_iter(rowI))
 
-	def onTreeviewButtonPress(self, _widget, gevent) -> bool | None:
+	def onTreeviewButtonPress(
+		self,
+		_widget: gtk.Widget,
+		gevent: gdk.Event,
+	) -> bool | None:
 		from scal3.ui_gtk.menuitems import ImageMenuItem
 
 		b = gevent.button

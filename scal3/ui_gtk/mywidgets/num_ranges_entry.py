@@ -41,7 +41,7 @@ __all__ = ["NumRangesEntry"]
 
 @registerType
 class NumRangesEntry(gtk.Entry):
-	def __init__(self, minim, maxim, page_inc=10) -> None:
+	def __init__(self, minim: int, maxim: int, page_inc: int = 10) -> None:
 		self.minim = minim
 		self.maxim = maxim
 		self.digs = locale_man.digits[locale_man.langSh]
@@ -52,7 +52,7 @@ class NumRangesEntry(gtk.Entry):
 		self.set_direction(gtk.TextDirection.LTR)
 		self.set_alignment(0.5)
 
-	def insertText(self, s, clearSelection=True) -> None:
+	def insertText(self, s: str, clearSelection: bool = True) -> None:
 		selection = self.get_selection_bounds()
 		if selection and clearSelection:
 			start, end = selection
@@ -65,7 +65,7 @@ class NumRangesEntry(gtk.Entry):
 			self.insert_text(s, pos)
 			self.set_position(pos + len(s))
 
-	def numPlus(self, plus) -> None:
+	def numPlus(self, plus: int) -> None:
 		pos = self.get_position()
 		text = toStr(self.get_text())
 		n = len(text)
@@ -173,21 +173,21 @@ class NumRangesEntry(gtk.Entry):
 				log.info(kval, kname)
 		return True
 
-	def getValues(self):
+	def getValues(self) -> list[int | tuple[int, int]]:
 		return numRangesDecode(
 			textNumDecode(self.get_text()),
 		)
 
-	def setValues(self, values):
-		return self.set_text(
+	def setValues(self, values: list[int | tuple[int, int]]) -> None:
+		self.set_text(
 			textNumEncode(
 				numRangesEncode(values, ", "),
 				changeSpecialChars=False,
 			),
 		)
 
-	def validate(self):
-		return self.setValues(self.getValues())
+	def validate(self) -> None:
+		self.setValues(self.getValues())
 
 
 if __name__ == "__main__":

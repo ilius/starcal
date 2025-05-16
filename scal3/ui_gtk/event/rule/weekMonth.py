@@ -1,3 +1,4 @@
+from scal3.event_lib.rules import EventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
@@ -7,7 +8,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -39,7 +40,7 @@ class WidgetClass(gtk.Box):
 		self.weekDayCombo.setValue(self.rule.weekDay)
 		self.monthCombo.setValue(self.rule.month)
 
-	def changeCalType(self, calType) -> None:
+	def changeCalType(self, calType: str) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.monthCombo.build(calType)

@@ -90,7 +90,7 @@ class ModuleOptionItem:
 		self,
 		prop: Property,
 		opt: tuple,
-		spacing=0,
+		spacing: int = 0,
 	) -> None:
 		self.prop = prop
 		t = opt[1]
@@ -310,7 +310,7 @@ class FontFamilyPrefItem(PrefItem):
 		if self._onChangeFunc:
 			self._onChangeFunc()
 
-	def setPreviewText(self, text) -> None:
+	def setPreviewText(self, text: str) -> None:
 		self.fontButton.set_property("preview-text", text)
 
 
@@ -434,7 +434,7 @@ class FontPrefItem(PrefItem):
 			return
 		self._widget.set_font(value)
 
-	def setPreviewText(self, text) -> None:
+	def setPreviewText(self, text: str) -> None:
 		self._widget.set_preview_text(text)
 		# self._widget.set_property("preview-text", text)
 
