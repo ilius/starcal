@@ -24,7 +24,7 @@ from pray_times_utils import earthDistance
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.about import AboutDialog
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -313,9 +313,9 @@ class LocationButton(gtk.Button):
 		self.locName = locName
 		self.lat = lat
 		self.lng = lng
-		self.set_label(self.locName)
+		self.set_label(locName)
 
-	def onClick(self, _widget=None) -> None:
+	def onClick(self, _widget: gtk.Widget | None = None) -> None:
 		if self.dialog is None:
 			self.dialog = LocationDialog(
 				self.plugin.getCityData(),
@@ -339,7 +339,7 @@ class TextPluginUI:
 		pack(hbox, label)
 		self.locButton = LocationButton(
 			self,
-			self.locName,
+			self.locName.v,
 			self.backend.lat,
 			self.backend.lng,
 			window=self.confDialog,
@@ -486,7 +486,7 @@ class TextPluginUI:
 		"""
 		self.dialog = None
 
-	def updateAzanSensitiveWidgets(self, _widget=None) -> None:
+	def updateAzanSensitiveWidgets(self, _widget: gtk.Widget | None = None) -> None:
 		for cb in (self.preAzanEnableCheck, self.azanEnableCheck):
 			active = cb.get_active()
 			for widget in cb.sensitiveWidgets:
@@ -494,54 +494,58 @@ class TextPluginUI:
 
 	def updateConfWidget(self) -> None:
 		self.locButton.setLocation(
-			self.locName,
+			self.locName.v,
 			self.backend.lat,
 			self.backend.lng,
 		)
 		self.methodCombo.set_active(methodsList.index(self.backend.method))
 		# ---
 		for cb in self.timeNamesButtons:
-			cb.set_active(cb.name in self.shownTimeNames)
+			cb.set_active(cb.name in self.shownTimeNames.v)
 		# ---
-		self.imsakSpin.set_value(self.imsak)
-		self.sepBuff.set_text(self.sep)
+		self.imsakSpin.set_value(self.imsak.v)
+		self.sepBuff.set_text(self.sep.v)
 		buffer_select_all(self.sepBuff)
 		# ---
-		self.preAzanEnableCheck.set_active(self.preAzanEnable)
-		if self.preAzanFile:
-			self.preAzanFileButton.set_filename(self.preAzanFile)
-		self.preAzanMinutesSpin.set_value(self.preAzanMinutes)
+		self.preAzanEnableCheck.set_active(self.preAzanEnable.v)
+		if self.preAzanFile.v:
+			self.preAzanFileButton.set_filename(self.preAzanFile.v)
+		self.preAzanMinutesSpin.set_value(self.preAzanMinutes.v)
 		# --
-		self.azanEnableCheck.set_active(self.azanEnable)
-		if self.azanFile:
-			self.azanFileButton.set_filename(self.azanFile)
+		self.azanEnableCheck.set_active(self.azanEnable.v)
+		if self.azanFile.v:
+			self.azanFileButton.set_filename(self.azanFile.v)
 		# --
 		self.updateAzanSensitiveWidgets()
 
 	def updateConfVars(self) -> None:
-		self.locName = self.locButton.locName
+		self.locName.v = self.locButton.locName
 		self.backend.lat = self.locButton.lat
 		self.backend.lng = self.locButton.lng
 		self.backend.method = methodsList[self.methodCombo.get_active()]
-		self.shownTimeNames = [
+		self.shownTimeNames.v = [
 			cb.name for cb in self.timeNamesButtons if cb.get_active()
 		]
-		self.imsak = int(self.imsakSpin.get_value())
-		self.sep = buffer_get_text(self.sepBuff)
-		self.backend.imsak = str(self.imsak) + " min"
+		self.imsak.v = int(self.imsakSpin.get_value())
+		self.sep.v = buffer_get_text(self.sepBuff)
+		self.backend.imsak = str(self.imsak.v) + " min"
 		# ---
-		self.preAzanEnable = self.preAzanEnableCheck.get_active()
-		self.preAzanFile = self.preAzanFileButton.get_filename()
-		self.preAzanMinutes = self.preAzanMinutesSpin.get_value()
+		self.preAzanEnable.v = self.preAzanEnableCheck.get_active()
+		self.preAzanFile.v = self.preAzanFileButton.get_filename()
+		self.preAzanMinutes.v = self.preAzanMinutesSpin.get_value()
 		# --
-		self.azanEnable = self.azanEnableCheck.get_active()
-		self.azanFile = self.azanFileButton.get_filename()
+		self.azanEnable.v = self.azanEnableCheck.get_active()
+		self.azanFile.v = self.azanFileButton.get_filename()
 
-	def confDialogCancel(self, _widget=None, _gevent=None) -> None:
+	def confDialogCancel(
+		self,
+		_widget: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> None:
 		self.confDialog.hide()
 		self.updateConfWidget()
 
-	def confDialogOk(self, _widget=None) -> None:
+	def confDialogOk(self, _widget: gtk.Widget | None = None) -> None:
 		self.confDialog.hide()
 		self.updateConfVars()
 		self.saveConfig()
