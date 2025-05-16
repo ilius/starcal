@@ -97,9 +97,9 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		start_iter, end_iter = bounds
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
-	# def copyWordByIter(self, _item, _iter):
+	# def copyWordByIter(self, _item, gIter):
 	# 	text = self.get_text()
-	# 	pos = _iter.get_offset()
+	# 	pos = gIter.get_offset()
 	# 	word = findWordByPos(text, pos)[0]
 	# 	setClipboard(word)
 
@@ -118,7 +118,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 			gevent.y,
 		)
 		if buf_x is not None and buf_y is not None:
-			# overText, _iter, trailing = ...
+			# overText, iter_, trailing = ...
 			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
 		# ----
 		text = self.get_text()
