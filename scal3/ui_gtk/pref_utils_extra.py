@@ -38,10 +38,10 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 
 __all__ = [
-	"AICalsPrefItem",
-	"AICalsPrefItemToolbar",
 	"AICalsTreeview",
 	"ActiveCalsTreeView",
+	"ActiveInactiveCalsPrefItem",
+	"ActiveInactiveCalsPrefItemToolbar",
 	"CalTypePrefItem",
 	"CheckStartupPrefItem",
 	"FixedSizeOrRatioPrefItem",
@@ -451,7 +451,7 @@ class InactiveCalsTreeView(AICalsTreeview):
 	dragId = 101
 
 
-class AICalsPrefItemToolbar(StaticToolBox):
+class ActiveInactiveCalsPrefItemToolbar(StaticToolBox):
 	def __init__(self, parent: PrefItem) -> None:
 		StaticToolBox.__init__(
 			self,
@@ -520,7 +520,7 @@ def treeviewSelect(treev: gtk.TreeView, index: int) -> None:
 	# and calling set_cursor unselects it
 
 
-class AICalsPrefItem(PrefItem):
+class ActiveInactiveCalsPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self._widget = HBox()
 		# --------
@@ -538,7 +538,7 @@ class AICalsPrefItem(PrefItem):
 		self.activeTreev = treev
 		self.activeTrees = treev.get_model()
 		# --------
-		toolbar = AICalsPrefItemToolbar(self)
+		toolbar = ActiveInactiveCalsPrefItemToolbar(self)
 		toolbar.show_all()
 		self.toolbar = toolbar
 		pack(self._widget, toolbar)
