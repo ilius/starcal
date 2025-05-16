@@ -44,7 +44,7 @@ class YearMonthDayBox(gtk.Box):
 		)
 		self.spinY.connect("changed", self.comboMonthChanged)
 
-	def setCalType(self, calType) -> None:
+	def setCalType(self, calType: int) -> None:
 		self.comboMonth.disconnect(self.comboMonthConn)
 		self.calType = calType
 		module, ok = calTypes[calType]
@@ -60,23 +60,23 @@ class YearMonthDayBox(gtk.Box):
 			self.comboMonthChanged,
 		)
 
-	def changeCalType(self, _calType, newCalType) -> None:  # FIXME naming standard?
+	def changeCalType(self, _calType: int, newCalType: int) -> None:
 		self.setCalType(newCalType)
 
-	def set_value(self, date) -> None:
+	def set_value(self, date: tuple[int, int, int]) -> None:
 		y, m, d = date
 		self.spinY.set_value(y)
 		self.comboMonth.set_active(m - 1)
 		self.spinD.set_value(d)
 
-	def get_value(self):
+	def get_value(self) -> tuple[int, int, int]:
 		return (
 			self.spinY.get_value(),
 			self.comboMonth.get_active() + 1,
 			self.spinD.get_value(),
 		)
 
-	def comboMonthChanged(self, _widget=None) -> None:
+	def comboMonthChanged(self, _widget: gtk.Widget | None = None) -> None:
 		monthIndex = self.comboMonth.get_active()
 		if monthIndex == -1:
 			return

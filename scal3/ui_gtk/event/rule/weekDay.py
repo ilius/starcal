@@ -1,23 +1,24 @@
 from scal3 import core
+from scal3.event_lib.rules import EventRule
 from scal3.ui_gtk import gtk, pack
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule) -> None:
+	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.set_homogeneous(True)
 		ls = [gtk.ToggleButton(label=item) for item in core.weekDayNameAb]
-		s = core.firstWeekDay.v
+		start = core.firstWeekDay.v
 		for i in range(7):
-			pack(self, ls[(s + i) % 7], 1, 1)
+			pack(self, ls[(start + i) % 7], 1, 1)
 		self.cbList = ls
-		self.start = s
+		self.start = start
 
-	def setStart(self, s) -> None:
+	def setStart(self, s: int) -> None:
 		# not used, FIXME
 		b = self
 		ls = self.cbList

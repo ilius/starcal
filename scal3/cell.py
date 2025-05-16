@@ -27,18 +27,18 @@ from cachetools import LRUCache
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes, jd_to
 from scal3.date_utils import monthPlus as lowMonthPlus
-from scal3.types_starcal import CellType, CompiledTimeFormat
 from scal3.ui import conf
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.cell_type import CellType, CompiledTimeFormat
 	from scal3.plugin_type import PluginType
 
 __all__ = ["Cell", "init"]
 
 
-class Cell(CellType):
+class Cell:
 
 	"""status and information of a cell."""
 
@@ -58,7 +58,7 @@ class Cell(CellType):
 		# 	show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
 		# 	showInStatusIcon: bool
 		self._pluginsText: list[list[str]] = []
-		self._pluginsData: list[tuple[Any, str]] = []
+		self._pluginsData: list[tuple[PluginType, str]] = []
 		# ---
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -98,20 +98,20 @@ class Cell(CellType):
 	def date(self) -> tuple[int, int, int]:
 		return (self.year, self.month, self.day)
 
-	def addPluginText(self, plug, text) -> None:
+	def addPluginText(self, plug: PluginType, text: str) -> None:
 		self._pluginsText.append(text.split("\n"))
 		self._pluginsData.append((plug, text))
 
 	def getPluginsData(
 		self,
-		firstLineOnly=False,
+		firstLineOnly: bool = False,
 	) -> list[tuple[PluginType, str]]:
 		return [
 			(plug, text.split("\n")[0]) if firstLineOnly else (plug, text)
 			for (plug, text) in self._pluginsData
 		]
 
-	def getPluginsText(self, firstLineOnly=False) -> str:
+	def getPluginsText(self, firstLineOnly: bool = False) -> str:
 		return "\n".join(text for (plug, text) in self.getPluginsData(firstLineOnly))
 
 	def clearEventsData(self) -> None:
@@ -137,7 +137,7 @@ class Cell(CellType):
 		compiledFmt: CompiledTimeFormat,
 		calType: int | None = None,
 		tm: tuple[int, int, int] | None = None,
-	):
+	) -> str:
 		if calType is None:
 			calType = calTypes.primary
 		if tm is None:
@@ -168,7 +168,10 @@ class Cell(CellType):
 		return self.getEventIcons(2)
 
 	# How do this with KOrginizer? FIXME
-	def dayOpenEvolution(self, arg: Any = None) -> None:  # noqa: ARG002
+	def dayOpenEvolution(
+		self,
+		arg: Any = None,  # noqa: ARG002
+	) -> None:
 		from subprocess import Popen
 
 		# y, m, d = jd_to(self.jd-1, core.GREGORIAN)
@@ -267,7 +270,11 @@ class CellCache:
 		self.jdCells[jd] = localCell
 		return localCell
 
-	def getCellGroup(self, pluginName: int, *args) -> list[CellType]:
+	def getCellGroup(
+		self,
+		pluginName: int,
+		*args,  # noqa: ANN002
+	) -> list[CellType]:
 		return self.plugins[pluginName][1](self, *args)
 
 	def getWeekData(

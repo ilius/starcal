@@ -7,7 +7,7 @@ __all__ = ["DateButtonOption"]
 
 
 class DateButtonOption(MultiSpinOptionBox):
-	def __init__(self, date=None, **kwargs) -> None:
+	def __init__(self, date: tuple[int, int, int] | None = None, **kwargs) -> None:
 		MultiSpinOptionBox.__init__(
 			self,
 			"/",
@@ -22,6 +22,6 @@ class DateButtonOption(MultiSpinOptionBox):
 			date = localtime()[:3]
 		self.set_value(date)
 
-	def setMaxDay(self, maxDay) -> None:
+	def setMaxDay(self, maxDay: int) -> None:
 		self.spin.field.children[2].setMax(maxDay)
 		self.spin.update()

@@ -1,5 +1,9 @@
+from collections.abc import Callable
+from typing import Any
+
 from gi.repository import GLib as glib
 
+from scal3.event_lib.notifier_base import EventNotifier
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import (
@@ -11,7 +15,7 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Entry):
-	def __init__(self, notifier) -> None:
+	def __init__(self, notifier: EventNotifier) -> None:
 		self.notifier = notifier
 		gtk.Entry.__init__(self)
 
@@ -22,21 +26,21 @@ class WidgetClass(gtk.Entry):
 		self.notifier.extraMessage = self.get_text()
 
 
-def hideWindow(_widget, dialog) -> bool:
+def hideWindow(_widget: gtk.Widget, dialog: gtk.Window) -> bool:
 	dialog.hide()
 	return True
 
 
-def response(dialog, _e) -> None:
+def response(dialog: gtk.Window, _e: Any) -> None:
 	dialog.destroy()
 
 
-def notify(notifier, _finishFunc) -> None:
+def notify(notifier: EventNotifier, _finishFunc: Callable[[], None]) -> None:
 	print("------------ windowsMsg.notify")
 	glib.idle_add(_notify, notifier)
 
 
-def _notify(notifier) -> None:
+def _notify(notifier: EventNotifier) -> None:
 	event = notifier.event
 	dialog = gtk.Dialog()
 	# ----

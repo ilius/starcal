@@ -1,3 +1,5 @@
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -5,17 +7,21 @@ log = logger.get()
 import json
 import sys
 
+from gi.repository import Gtk as gtk
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import HBox, VBox, gdk, pack
 from scal3.ui_gtk.wizard import WizardWindow
 
 __all__ = ["EventsImportWindow"]
 
+type EventManagerType = gtk.Dialog
+
 
 class EventsImportWindow(WizardWindow):
-	def __init__(self, manager) -> None:
+	def __init__(self, manager: EventManagerType) -> None:
 		self.manager = manager
 		WizardWindow.__init__(self, _("Import Events", ctx="window title"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
@@ -28,7 +34,7 @@ class EventsImportWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win) -> None:
+		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -72,10 +78,10 @@ class EventsImportWindow(WizardWindow):
 		def run(self) -> None:
 			pass
 
-		def onCancelClick(self, _obj) -> None:
+		def onCancelClick(self, _obj: Any) -> None:
 			self.win.destroy()
 
-		def onNextClick(self, _obj) -> None:
+		def onNextClick(self, _obj: Any) -> None:
 			fpath = self.fcb.get_filename()
 			if not fpath:
 				return
@@ -90,7 +96,7 @@ class EventsImportWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def __init__(self, win) -> None:
+		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
@@ -112,7 +118,7 @@ class EventsImportWindow(WizardWindow):
 			t_table.add(tag_out)
 			tag_err = gtk.TextTag(name="error")
 			t_table.add(tag_err)
-			self.buffer = self.textview.get_buffer()
+			self.buffer: gtk.TextBuffer = self.textview.get_buffer()
 			self.out_fp = GtkBufferFile(self.buffer, tag_out)
 			sys.stdout = self.out_fp
 			self.err_fp = GtkBufferFile(self.buffer, tag_err)
@@ -123,11 +129,11 @@ class EventsImportWindow(WizardWindow):
 			sys.stdout = sys.__stdout__
 			sys.stderr = sys.__stderr__
 
-		def run(self, format_, fpath) -> None:
+		def run(self, format_: str, fpath: str) -> None:
 			self.redirectStdOutErr()
 			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format_, fpath) -> None:
+		def _runAndCleanup(self, format_: str, fpath: str) -> None:
 			try:
 				if format_ == "json":
 					self._runJson(fpath)
@@ -137,7 +143,7 @@ class EventsImportWindow(WizardWindow):
 				self.restoreStdOutErr()
 
 		@staticmethod
-		def _runJson(fpath) -> None:
+		def _runJson(fpath: str) -> None:
 			try:
 				with open(fpath, encoding="utf-8") as fp:
 					text = fp.read()
@@ -174,10 +180,10 @@ class EventsImportWindow(WizardWindow):
 						),
 					)
 
-		def onBackClick(self, _obj) -> None:
+		def onBackClick(self, _obj: Any) -> None:
 			self.win.showStep(0)
 
-		def onCloseClick(self, _obj) -> None:
+		def onCloseClick(self, _obj: Any) -> None:
 			self.win.destroy()
 
 	stepClasses = [

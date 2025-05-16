@@ -21,7 +21,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	hasOptions = True
 	optionsPageSpacing = 15
 
-	def __init__(self, win) -> None:
+	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 

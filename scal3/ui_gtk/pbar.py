@@ -4,7 +4,7 @@ from scal3.ui_gtk import gtk
 __all__ = ["MyProgressBar"]
 
 
-def MyProgressBar():
+def MyProgressBar() -> gtk.Widget:
 	if conf.oldStyleProgressBar.v:
 		return OldStyleProgressBar()
 	return NewStyleProgressBar()
