@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gi.repository import Gdk as gdk
 
 __all__ = [

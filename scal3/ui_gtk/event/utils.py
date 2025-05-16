@@ -1,17 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3 import ui
 from scal3.event_lib import state as event_state
-from scal3.event_lib.event_base import Event
-from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.utils import (
-	confirm,
-	pixbufFromFile,
-	showError,
-)
+from scal3.ui_gtk.utils import confirm, pixbufFromFile, showError
+
+if TYPE_CHECKING:
+	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups import EventGroup
+	from scal3.ui_gtk import GdkPixbuf, gtk
 
 __all__ = [
 	"checkEventsReadOnly",

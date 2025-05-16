@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3 import ui
 from scal3.locale_man import rtl, textNumEncode
 from scal3.locale_man import tr as _

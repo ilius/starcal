@@ -1,15 +1,17 @@
-from collections.abc import Callable
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from gi.repository import GLib as glib
 
-from scal3.event_lib.notifier_base import EventNotifier
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-	imageFromFile,
-)
+from scal3.ui_gtk.utils import dialog_add_button, imageFromFile
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+	from scal3.event_lib.notifier_base import EventNotifier
 
 __all__ = ["WidgetClass", "notify"]
 
