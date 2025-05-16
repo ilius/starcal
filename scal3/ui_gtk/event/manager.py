@@ -74,8 +74,8 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
-	from scal3.event_container import DummyEventContainer
 	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.event_container import DummyEventContainer
 	from scal3.event_lib.groups import EventGroup
 	from scal3.event_update_queue import EventUpdateRecord
 
