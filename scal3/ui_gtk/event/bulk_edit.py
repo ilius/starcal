@@ -182,52 +182,62 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.withHbox.hide()
 			self.textInput2.hide()
 
+	def _doActionIcon(self) -> None:
+		chType = self.iconChangeCombo.get_active()
+		if chType == 0:
+			return
+		icon = self.iconSelect.get_filename()
+		for event in self._container:
+			if not (chType == 2 and event.icon):
+				event.icon = icon
+				event.afterModify()
+				event.save()
+
+	def _doActionTimeZone(self) -> None:
+		chType = self.timeZoneChangeCombo.get_active()
+		timeZone = self.timeZoneInput.get_text()
+		if chType != 0:
+			# mytz.gettz does not raise exception, returns None if invalid
+			if mytz.gettz(timeZone):
+				for event in self._container:
+					if not (chType == 2 and event.timeZone):
+						event.timeZone = timeZone
+						event.afterModify()
+						event.save()
+			else:
+				log.error(f"Invalid Time Zone {timeZone!r}")
+
+	def _doActionText(self) -> None:
+		chType = self.textChangeCombo.get_active()
+		if chType == 0:
+			return
+		text1 = self.textInput1.get_text()
+		text2 = self.textInput2.get_text()
+		if self.summaryRadio.get_active():
+			for event in self._container:
+				if chType == 1:
+					event.summary = text1 + event.summary
+				elif chType == 2:
+					event.summary += text1
+				elif chType == 3:
+					event.summary = event.summary.replace(text1, text2)
+				event.afterModify()
+				event.save()
+		elif self.descriptionRadio.get_active():
+			for event in self._container:
+				if chType == 1:
+					event.description = text1 + event.description
+				elif chType == 2:
+					event.description += text1
+				elif chType == 3:
+					event.description = event.description.replace(text1, text2)
+				event.afterModify()
+				event.save()
+
 	def doAction(self) -> None:
-		container = self._container
 		if self.iconRadio.get_active():
-			chType = self.iconChangeCombo.get_active()
-			if chType != 0:
-				icon = self.iconSelect.get_filename()
-				for event in container:
-					if not (chType == 2 and event.icon):
-						event.icon = icon
-						event.afterModify()
-						event.save()
+			self._doActionIcon()
 		elif self.timeZoneRadio.get_active():
-			chType = self.timeZoneChangeCombo.get_active()
-			timeZone = self.timeZoneInput.get_text()
-			if chType != 0:
-				# mytz.gettz does not raise exception, returns None if invalid
-				if mytz.gettz(timeZone):
-					for event in container:
-						if not (chType == 2 and event.timeZone):
-							event.timeZone = timeZone
-							event.afterModify()
-							event.save()
-				else:
-					log.error(f"Invalid Time Zone {timeZone!r}")
+			self._doActionTimeZone()
 		else:
-			chType = self.textChangeCombo.get_active()
-			if chType != 0:
-				text1 = self.textInput1.get_text()
-				text2 = self.textInput2.get_text()
-				if self.summaryRadio.get_active():
-					for event in container:
-						if chType == 1:
-							event.summary = text1 + event.summary
-						elif chType == 2:
-							event.summary += text1
-						elif chType == 3:
-							event.summary = event.summary.replace(text1, text2)
-						event.afterModify()
-						event.save()
-				elif self.descriptionRadio.get_active():
-					for event in container:
-						if chType == 1:
-							event.description = text1 + event.description
-						elif chType == 2:
-							event.description += text1
-						elif chType == 3:
-							event.description = event.description.replace(text1, text2)
-						event.afterModify()
-						event.save()
+			self._doActionText()
