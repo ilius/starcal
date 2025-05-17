@@ -194,7 +194,6 @@ class EventGroupNotificationThread(Thread):
 			self.sent.add(item.oid)
 			sch.enterabs(
 				item.start,  # max(now(), item.start),
-				1,  # priority
 				self.notify,
 				argument=(item.eid,),
 			)
