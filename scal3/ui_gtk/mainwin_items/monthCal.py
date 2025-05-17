@@ -21,7 +21,7 @@ from scal3.ui import conf
 log = logger.get()
 
 from math import sqrt
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from gi.repository.PangoCairo import show_layout
 
@@ -29,7 +29,7 @@ from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3.monthcal import getCurrentMonthStatus
+from scal3.monthcal import MonthStatus, getCurrentMonthStatus
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
@@ -55,6 +55,8 @@ from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 
 if TYPE_CHECKING:
 	import cairo
+
+	from scal3.cell_type import CellType
 
 __all__ = ["CalObj"]
 
@@ -304,18 +306,15 @@ class CalObj(gtk.DrawingArea, CalBase):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context, cursor: bool) -> bool:
-		# gevent = gtk.get_current_event()
-		# FIXME: must enhance (only draw few cells, not all cells)
-		self.calcCoord()
-		w = self.get_allocation().width
-		h = self.get_allocation().height
-		cr.rectangle(0, 0, w, h)
-		fillColor(cr, conf.bgColor.v)
-		status = getCurrentMonthStatus()
-		# ---------------------------------- Drawing Border
+	def _drawBorder(
+		self,
+		cr: cairo.Context,
+		w: float,
+		h: float,
+		status: MonthStatus,
+	) -> None:
 		if conf.mcalTopMargin.v > 0:
-			# # Drawing border top background
+			# Drawing border top background
 			# mcalMenuCellBgColor == borderColor
 			cr.rectangle(0, 0, w, conf.mcalTopMargin.v)
 			fillColor(cr, conf.borderColor.v)
@@ -350,7 +349,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				)
 			show_layout(cr, text)
 		if conf.mcalLeftMargin.v > 0:
-			# # Drawing border left background
+			# Drawing border left background
 			if rtl:
 				cr.rectangle(
 					w - conf.mcalLeftMargin.v,
@@ -366,7 +365,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					h - conf.mcalTopMargin.v,
 				)
 			fillColor(cr, conf.borderColor.v)
-			# # Drawing week numbers
+			# Drawing week numbers
 			setColor(cr, conf.borderTextColor.v)
 			for i in range(6):
 				lay = newTextLayout(self, _(status.weekNum[i]))
@@ -382,24 +381,115 @@ class CalObj(gtk.DrawingArea, CalBase):
 						self.cy[i] - fonth / 2 + 2,
 					)
 				show_layout(cr, lay)
-		selectedCellPos = ui.cells.current.monthPos
-		# cell.getDate(calTypes.primary)[:2] == other.getDate(calTypes.primary)[:2]
-		if ui.cells.today.date[:2] == ui.cells.current.date[:2]:
-			tx, ty = ui.cells.today.monthPos  # today x and y
-			x0 = self.cx[tx] - self.dx / 2
-			y0 = self.cy[ty] - self.dy / 2
-			cr.rectangle(x0, y0, self.dx, self.dy)
-			fillColor(cr, conf.todayCellColor.v)
+
+	def _drawTodayMarker(self, cr: cairo.Context) -> None:
+		tx, ty = ui.cells.today.monthPos  # today x and y
+		x0 = self.cx[tx] - self.dx / 2
+		y0 = self.cy[ty] - self.dy / 2
+		cr.rectangle(x0, y0, self.dx, self.dy)
+		fillColor(cr, conf.todayCellColor.v)
+
+	def _drawEventIcons(
+		self,
+		cr: cairo.Context,
+		cell: CellType,
+		x0: float,
+		y0: float,
+	) -> None:
+		iconList = cell.getMonthEventIcons()
+		if not iconList:
+			return
 		iconSizeMax = conf.mcalEventIconSizeMax.v
+
+		iconsN = len(iconList)
+		scaleFact = 1 / sqrt(iconsN)
+		fromRight = 0
+		for icon in iconList:
+			# if len(iconList) > 1  # FIXME
+			try:
+				pix = pixbufFromFile(icon, size=iconSizeMax)
+			except Exception:
+				log.exception("")
+				continue
+			pix_w = pix.get_width()
+			pix_h = pix.get_height()
+			# right buttom corner ???
+			# right side:
+			x1 = (x0 + self.dx / 2) / scaleFact - fromRight - pix_w
+			# buttom side:
+			y1 = (y0 + self.dy / 2) / scaleFact - pix_h
+			cr.scale(scaleFact, scaleFact)
+			gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
+			cr.rectangle(x1, y1, pix_w, pix_h)
+			cr.fill()
+			cr.scale(1 / scaleFact, 1 / scaleFact)
+			fromRight += pix_w
+
+	def _drawCellSecondaryCalNumbers(
+		self,
+		cr: cairo.Context,
+		cell: CellType,
+		x0: float,
+		y0: float,
+		activeParams: list[tuple[int, dict[str, Any]]],
+		cellHasCursor: bool,
+	) -> None:
+		for calType, params in activeParams[1:]:
+			if not params.get("enable", True):
+				continue
+			daynum = newTextLayout(
+				self,
+				_(cell.dates[calType][2], calType),
+				getParamsFont(params),
+			)
+			fontw, fonth = daynum.get_pixel_size()
+			setColor(cr, params["color"])
+			cr.move_to(
+				x0 - fontw / 2 + params["pos"][0],
+				y0 - fonth / 2 + params["pos"][1],
+			)
+			show_layout(cr, daynum)
+		if cellHasCursor:
+			# Drawing Cursor Outline
+			cx0 = x0 - self.dx / 2 + 1
+			cy0 = y0 - self.dy / 2 + 1
+			cw = self.dx - 1
+			ch = self.dy - 1
+			# ------- Circular Rounded
+			self.drawCursorOutline(cr, cx0, cy0, cw, ch)
+			fillColor(cr, conf.cursorOutColor.v)
+			# end of Drawing Cursor Outline
+
+	def drawWithContext(self, cr: cairo.Context, cursor: bool) -> bool:
+		# gevent = gtk.get_current_event()
+		# FIXME: must enhance (only draw few cells, not all cells)
+		self.calcCoord()
+		w = self.get_allocation().width
+		h = self.get_allocation().height
+		cr.rectangle(0, 0, w, h)
+		fillColor(cr, conf.bgColor.v)
+		status = getCurrentMonthStatus()
+
+		# Drawing Border
+		self._drawBorder(cr=cr, w=w, h=h, status=status)
+
+		currentCell: CellType = ui.cells.current
+		selectedCellPos = currentCell.monthPos
+
+		if ui.cells.today.date[:2] == currentCell.date[:2]:
+			self._drawTodayMarker(cr)
+
+		activeParams = ui.getActiveMonthCalParams()
+
 		for yPos in range(6):
 			for xPos in range(7):
 				c = status[yPos][xPos]
 				x0 = self.cx[xPos]
 				y0 = self.cy[yPos]
-				cellInactive = c.month != ui.cells.current.month
+				cellInactive = c.month != currentCell.month
 				cellHasCursor = cursor and (xPos, yPos) == selectedCellPos
 				if cellHasCursor:
-					# # Drawing Cursor
+					# Drawing Cursor
 					cx0 = x0 - self.dx / 2 + 1
 					cy0 = y0 - self.dy / 2 + 1
 					cw = self.dx - 1
@@ -409,38 +499,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 					fillColor(cr, conf.cursorBgColor.v)
 				# ------ end of Drawing Cursor
 				if not cellInactive:
-					iconList = c.getMonthEventIcons()
-					if iconList:
-						iconsN = len(iconList)
-						scaleFact = 1 / sqrt(iconsN)
-						fromRight = 0
-						for icon in iconList:
-							# if len(iconList) > 1  # FIXME
-							try:
-								pix = pixbufFromFile(icon, size=iconSizeMax)
-							except Exception:
-								log.exception("")
-								continue
-							pix_w = pix.get_width()
-							pix_h = pix.get_height()
-							# right buttom corner ???
-							# right side:
-							x1 = (x0 + self.dx / 2) / scaleFact - fromRight - pix_w
-							# buttom side:
-							y1 = (y0 + self.dy / 2) / scaleFact - pix_h
-							cr.scale(scaleFact, scaleFact)
-							gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
-							cr.rectangle(x1, y1, pix_w, pix_h)
-							cr.fill()
-							cr.scale(1 / scaleFact, 1 / scaleFact)
-							fromRight += pix_w
-				# # Drawing numbers inside every cell
-				# cr.rectangle(
-				# 	x0 - self.dx / 2 + 1,
-				# 	y0 - self.dy / 2 + 1,
-				# 	self.dx - 1,
-				# 	self.dy - 1,
-				# )
+					self._drawEventIcons(cr=cr, cell=c, x0=x0, y0=y0)
+				# Drawing numbers inside every cell
 				calType = calTypes.primary
 				params = conf.mcalTypeParams.v[0]
 				daynum = newTextLayout(
@@ -461,33 +521,17 @@ class CalObj(gtk.DrawingArea, CalBase):
 				)
 				show_layout(cr, daynum)
 				if not cellInactive:
-					for calType, params in ui.getActiveMonthCalParams()[1:]:
-						if not params.get("enable", True):
-							continue
-						daynum = newTextLayout(
-							self,
-							_(c.dates[calType][2], calType),
-							getParamsFont(params),
-						)
-						fontw, fonth = daynum.get_pixel_size()
-						setColor(cr, params["color"])
-						cr.move_to(
-							x0 - fontw / 2 + params["pos"][0],
-							y0 - fonth / 2 + params["pos"][1],
-						)
-						show_layout(cr, daynum)
-					if cellHasCursor:
-						# # Drawing Cursor Outline
-						cx0 = x0 - self.dx / 2 + 1
-						cy0 = y0 - self.dy / 2 + 1
-						cw = self.dx - 1
-						ch = self.dy - 1
-						# ------- Circular Rounded
-						self.drawCursorOutline(cr, cx0, cy0, cw, ch)
-						fillColor(cr, conf.cursorOutColor.v)
-						# # end of Drawing Cursor Outline
+					self._drawCellSecondaryCalNumbers(
+						cr=cr,
+						cell=c,
+						x0=x0,
+						y0=y0,
+						activeParams=activeParams,
+						cellHasCursor=cellHasCursor,
+					)
+
 		# -------------- end of drawing cells
-		# # drawGrid
+		# drawGrid
 		if conf.mcalGrid.v:
 			setColor(cr, conf.mcalGridColor.v)
 			for i in range(7):
