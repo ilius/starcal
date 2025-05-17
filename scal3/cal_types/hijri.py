@@ -316,8 +316,8 @@ def to_jd(year: int, month: int, day: int) -> int:
 
 
 def jd_to(jd: int) -> tuple[int, int, int]:
+	assert isinstance(jd, int)
 	if hijriUseDB.v:
-		# jd = ifloor(jd)
 		date = monthDb.getDateFromJd(jd)
 		if date:
 			return date
