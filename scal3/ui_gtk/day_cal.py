@@ -883,7 +883,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		y0 = 0
 		# --------
 		self.drawEventIcons(cr, c, w, h, x0, y0)
-		# # Drawing numbers inside every cell
+		# Drawing numbers inside every cell
 		# cr.rectangle(
 		# 	x0-w/2.0+1,
 		# 	y0-h/2.0+1,

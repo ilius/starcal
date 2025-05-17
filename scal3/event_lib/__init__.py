@@ -274,9 +274,9 @@ __plugin_api_get__ = [
 # TODO
 # @classes.rule.register
 # class SunTimeRule(EventRule):
-# # ... minutes before Sun Rise      eval("sunRise-x")
-# # ... minutes after Sun Rise       eval("sunRise+x")
-# # ... minutes before Sun Set       eval("sunSet-x")
-# # ... minutes after Sun Set        eval("sunSet+x")
+# ... minutes before Sun Rise      eval("sunRise-x")
+# ... minutes after Sun Rise       eval("sunRise+x")
+# ... minutes before Sun Set       eval("sunSet-x")
+# ... minutes after Sun Set        eval("sunSet+x")
 
 # ---------------------------------------------------------------------------
