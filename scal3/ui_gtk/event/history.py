@@ -33,10 +33,6 @@ removeSymbol = "⊖"
 
 
 def _unnestStep(dst: dict[str, Any], src: dict[str, Any], path: str) -> None:
-	assert isinstance(src, dict)
-	# if not isinstance(src, dict):
-	# 	dst[path] = src
-	# 	return
 	if path:
 		path += "."
 	for key, value in src.items():
