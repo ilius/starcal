@@ -22,13 +22,13 @@ log = logger.get()
 
 import typing
 from contextlib import suppress
-from os.path import join
+from os.path import isfile, join
 
 from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import getLocaleFirstWeekDay, langSh
 from scal3.locale_man import tr as _
-from scal3.path import sourceDir
+from scal3.path import sourceDir, svgDir
 from scal3.ui import conf
 from scal3.ui_gtk import HBox, Menu, VBox, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
@@ -1081,7 +1081,11 @@ class PreferencesWindow(gtk.Window):
 		page.pageName = "statusIcon"
 		page.pageTitle = _("Status Icon")
 		page.pageLabel = _("Status Icon")
-		page.pageIcon = "status-icon-example.svg"
+		langExampleIcon = f"status-icon-example-{locale_man.langSh}.svg"
+		if isfile(join(svgDir, langExampleIcon)):
+			page.pageIcon = langExampleIcon
+		else:
+			page.pageIcon = "status-icon-example.svg"
 		self.prefPages.append(page)
 		# ------------------------------------- Page: Accounts
 		vbox = VBox(spacing=self.spacing / 2)
