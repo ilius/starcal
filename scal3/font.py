@@ -6,6 +6,9 @@ from typing import Self
 __all__ = ["Font"]
 
 
+type FontTuple = tuple[str, bool, bool, float]
+
+
 @dataclass(slots=True)
 class Font:
 	family: str | None
