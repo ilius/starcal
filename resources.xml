@@ -987,4 +987,14 @@
 			Minified by https://vecta.io/nano
 		</comment>
 	</resource>
+	<resource path="svg/status-icon-example.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
+	<resource path="svg/status-icon-example-fa.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://vecta.io/nano</comment>
+	</resource>
 </resources>
