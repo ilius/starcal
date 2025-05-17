@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import mercurial.ui
 from mercurial.localrepo import localrepository
@@ -26,6 +26,9 @@ from mercurial.util import iterlines
 from scal3.event_search_tree import EventSearchTree
 from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
+
+if TYPE_CHECKING:
+	from scal3.event_lib.vcs_base import VcsBaseEventGroup
 
 __all__ = [
 	"clearObj",
@@ -41,14 +44,18 @@ __all__ = [
 	"prepareObj",
 ]
 
-# TODO: obj: VcsEpochBaseEventGroup
+# TODO: obj: VcsBaseEventGroup
 
 
-def getLatestParentBefore(obj: Any, commitId: str, beforeEpoch: float) -> str:
+def getLatestParentBefore(
+	obj: VcsBaseEventGroup,
+	commitId: str,
+	beforeEpoch: float,
+) -> str:
 	raise NotImplementedError
 
 
-def prepareObj(obj: Any) -> None:
+def prepareObj(obj: VcsBaseEventGroup) -> None:
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
 	# ---
 	obj.est = EventSearchTree()
@@ -57,12 +64,16 @@ def prepareObj(obj: Any) -> None:
 		obj.est.add(epoch, epoch, rev_id)
 
 
-def clearObj(obj: Any) -> None:
+def clearObj(obj: VcsBaseEventGroup) -> None:
 	obj.repo = None
 	obj.est = EventSearchTree()
 
 
-def getCommitList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, int | str]]:
+def getCommitList(
+	obj: VcsBaseEventGroup,
+	startJd: int,
+	endJd: int,
+) -> list[tuple[int, int | str]]:
 	"""Return a list of (epoch, commit_id) tuples."""
 	return getCommitListFromEst(
 		obj,
@@ -72,7 +83,7 @@ def getCommitList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, int | s
 	)
 
 
-def getCommitInfo(obj: Any, commid_id: int) -> dict[str, Any]:
+def getCommitInfo(obj: VcsBaseEventGroup, commid_id: int) -> dict[str, Any]:
 	ctx = obj.repo[commid_id]
 	lines = ctx.description().split("\n")
 	return {
@@ -85,7 +96,11 @@ def getCommitInfo(obj: Any, commid_id: int) -> dict[str, Any]:
 
 
 # FIXME: SLOW
-def getShortStat(obj: Any, node1: str, node2: str) -> tuple[int, int, int]:
+def getShortStat(
+	obj: VcsBaseEventGroup,
+	node1: str,
+	node2: str,
+) -> tuple[int, int, int]:
 	repo = obj.repo
 	# if not node1 # FIXME
 	stats = diffstatdata(
@@ -107,7 +122,10 @@ def getShortStat(obj: Any, node1: str, node2: str) -> tuple[int, int, int]:
 	return len(stats), insertions, deletions
 
 
-def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
+def getCommitShortStat(
+	obj: VcsBaseEventGroup,
+	commit_id: str,
+) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	ctx = obj.repo[commit_id]
 	return getShortStat(
@@ -117,12 +135,19 @@ def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
 	)
 
 
-def getCommitShortStatLine(obj: Any, commit_id: str) -> tuple[int, int, int]:
+def getCommitShortStatLine(
+	obj: VcsBaseEventGroup,
+	commit_id: str,
+) -> tuple[int, int, int]:
 	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
-def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
+def getTagList(
+	obj: VcsBaseEventGroup,
+	startJd: int,
+	endJd: int,
+) -> list[tuple[int, str]]:
 	"""Returns a list of (epoch, tag_name) tuples."""
 	if not obj.repo:
 		return []
@@ -145,7 +170,11 @@ def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
 	return data
 
 
-def getTagShortStat(obj: Any, prevTag: str, tag: str) -> tuple[int, int, int]:
+def getTagShortStat(
+	obj: VcsBaseEventGroup,
+	prevTag: str,
+	tag: str,
+) -> tuple[int, int, int]:
 	repo = obj.repo
 	return getShortStat(
 		obj,
@@ -154,14 +183,14 @@ def getTagShortStat(obj: Any, prevTag: str, tag: str) -> tuple[int, int, int]:
 	)
 
 
-def getTagShortStatLine(obj: Any, prevTag: str, tag: str) -> str:
+def getTagShortStatLine(obj: VcsBaseEventGroup, prevTag: str, tag: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 
-def getFirstCommitEpoch(obj: Any) -> int:
+def getFirstCommitEpoch(obj: VcsBaseEventGroup) -> int:
 	return obj.repo[0].date()[0]
 
 
-def getLastCommitEpoch(obj: Any) -> int:
+def getLastCommitEpoch(obj: VcsBaseEventGroup) -> int:
 	return obj.repo[len(obj.repo) - 1].date()[0]
