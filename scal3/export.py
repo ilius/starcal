@@ -24,7 +24,10 @@ from scal3.monthcal import MonthStatus, getMonthDesc
 from scal3.ui import conf
 
 if TYPE_CHECKING:
-	from collections.abc import Iterable
+	from collections.abc import Callable, Iterable
+
+	from scal3.cell_type import CellType
+	from scal3.font import FontTuple
 
 __all__ = ["exportToHtml"]
 
@@ -70,11 +73,74 @@ def colorComposite(front: ColorType, back: ColorType) -> RGB:
 	# and don't multiply others by `a0`
 
 
+def formatFont(fontTuple: FontTuple) -> tuple[str, int]:
+	font = ui.Font(*fontTuple)
+	face = font.family
+	if font.bold:
+		face += " Bold"
+	if font.italic:
+		face += " Italic"
+	return face, font.size
+
+
+def _renderTableCellCalType(
+	calTypeIndex: int,
+	tag: str,
+	cell: CellType,
+	sizeMap: Callable[[int], int],
+	status: MonthStatus,
+	inactiveColor: str,
+	holidayColor: str,
+	colors: list[str],
+) -> tuple[bool, str]:
+	try:
+		calType = calTypes.active[calTypeIndex]
+	except IndexError:
+		return False, ""
+	try:
+		params = conf.mcalTypeParams.v[calTypeIndex]
+	except IndexError:
+		return False, ""
+	day = _(cell.dates[calType][2], calType)
+
+	face, sizeOrig = formatFont(tuple(params["font"]))
+	size = str(sizeMap(sizeOrig))
+	text = ""
+	if cell.month != status.month:
+		if calTypeIndex == 0:
+			text += "\t\t\t\t\t"
+			if tag:
+				text += f"<{tag}>"
+			text += (
+				f'<FONT COLOR="{inactiveColor}" '
+				f'FACE="{face}" SIZE="{size}">{day}</FONT>'
+			)
+			if tag:
+				text += f"</{tag}>"
+			text += "\n"
+			return True, text
+		return False, text
+	text += "\t\t\t\t\t"
+	if tag:
+		text += f"<{tag}>"
+	if calTypeIndex == 0 and cell.holiday:
+		color = holidayColor
+	else:
+		color = colors[calTypeIndex]
+	text += f'<FONT COLOR="{color}" FACE="{face}" SIZE="{size}">{day}</FONT>'
+	if tag:
+		text += f"</{tag}>"
+	text += "\n"
+	# text += sep  # FIXME
+	return False, text
+
+
 def exportToHtml(
 	fpath: str,
 	monthsStatus: Iterable[MonthStatus],
 	title: str = "",
 	fontSizeScale: float = 1.0,
+	pluginsTextPerLine: bool = True,  # description of each day in one line
 ) -> None:
 	def sizeMap(size: float) -> float:
 		return fontSizeScale * (size * 0.25 - 0.5)
@@ -87,8 +153,8 @@ def exportToHtml(
 	)  # a list of (calTypeIndex, htmlTag) tuples
 	# sep = " "
 	pluginsTextSep = " <B>–</B> "
-	pluginsTextPerLine = True  # description of each day in one line
 	# ---------------------
+	pluginSep = "<BR>\n" if pluginsTextPerLine else "\t\n"
 	bgColor = rgbToHtml(*conf.bgColor.v)
 	inactiveColor = rgbToHtml(*colorComposite(conf.inactiveColor.v, conf.bgColor.v))
 	borderColor = rgbToHtml(*colorComposite(conf.borderColor.v, conf.bgColor.v))
@@ -96,11 +162,9 @@ def exportToHtml(
 	textColor = rgbToHtml(*conf.textColor.v)
 	holidayColor = rgbToHtml(*conf.holidayColor.v)
 	colors = [rgbToHtml(*x["color"]) for x in conf.mcalTypeParams.v]
-	if locale_man.rtl:
-		DIR = "RTL"
-	else:
-		DIR = "LRT"
+	direction = "RTL" if locale_man.rtl else "LRT"
 	borderFontSize = sizeMap(ui.getFont().size)
+	gridSize = int(conf.mcalGrid.v)
 
 	text = f"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -108,7 +172,7 @@ def exportToHtml(
 <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 <TITLE>{title}</TITLE>
 </HEAD>
-<BODY LANG="{locale_man.langSh}" DIR="{DIR}" BGCOLOR="{bgColor}">\n"""
+<BODY LANG="{locale_man.langSh}" DIR="{direction}" BGCOLOR="{bgColor}">\n"""
 	for status in monthsStatus:
 		text += "\t<P>\n"
 		for i, line in enumerate(getMonthDesc(status).split("\n")):
@@ -121,7 +185,7 @@ def exportToHtml(
 		text += "\n".join(
 			[
 				f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
-				f'BORDER={int(conf.mcalGrid.v)} BORDERCOLOR="#000000"',
+				f'BORDER={gridSize} BORDERCOLOR="#000000"',
 				"\t\tCELLPADDING=4 CELLSPACING=0>",
 				"\t\t<TR VALIGN=TOP>\n",
 			],
@@ -152,58 +216,25 @@ def exportToHtml(
 				cell = status[i][j]
 				text += "\t\t\t<TD WIDTH=13%>\n"
 				text += '\t\t\t\t<P DIR="LTR" ALIGN=CENTER>\n'
+
 				for calTypeIndex, calTypeTag in calTypesFormat:
-					try:
-						calType = calTypes.active[calTypeIndex]
-					except IndexError:
-						continue
-					try:
-						params = conf.mcalTypeParams.v[calTypeIndex]
-					except IndexError:
-						continue
-					day = _(cell.dates[calType][2], calType)
-					font = ui.Font(*params["font"])
-					face = font.family
-					if font.bold:
-						face += " Bold"
-					if font.italic:
-						face += " Italic"
-					size = str(sizeMap(font.size))
-					if cell.month != status.month:
-						if calTypeIndex == 0:
-							text += "\t\t\t\t\t"
-							if calTypeTag:
-								text += f"<{calTypeTag}>"
-							text += (
-								f'<FONT COLOR="{inactiveColor}" '
-								f'FACE="{face}" SIZE="{size}">{day}</FONT>'
-							)
-							if calTypeTag:
-								text += f"</{calTypeTag}>"
-							text += "\n"
-							break
-						continue
-					text += "\t\t\t\t\t"
-					if calTypeTag:
-						text += f"<{calTypeTag}>"
-					if calTypeIndex == 0 and cell.holiday:
-						color = holidayColor
-					else:
-						color = colors[calTypeIndex]
-					text += (
-						f'<FONT COLOR="{color}" FACE="{face}" '
-						f'SIZE="{size}">{day}</FONT>'
+					stop, cell_text = _renderTableCellCalType(
+						calTypeIndex=calTypeIndex,
+						tag=calTypeTag,
+						cell=cell,
+						sizeMap=sizeMap,
+						status=status,
+						inactiveColor=inactiveColor,
+						holidayColor=holidayColor,
+						colors=colors,
 					)
-					if calTypeTag:
-						text += f"</{calTypeTag}>"
-					text += "\n"
-					# text += sep  # FIXME
+					text += cell_text
+					if stop:
+						break
+
 				text += "\t\t\t\t</P>\n\t\t\t</TD>\n"
 				if cell.month == status.month:
-					if cell.holiday:
-						color = holidayColor
-					else:
-						color = colors[0]
+					color = holidayColor if cell.holiday else colors[0]
 					t = cell.getPluginsText().replace("\n", pluginsTextSep)
 					if t:
 						pluginsText += (
@@ -211,10 +242,8 @@ def exportToHtml(
 							f"{_(cell.dates[calTypes.primary][2])}</FONT>:</B>"
 						)
 						pluginsText += f"\t<SMALL>{t}</SMALL>"
-						if pluginsTextPerLine:
-							pluginsText += "<BR>\n"
-						else:
-							pluginsText += "\t\n"
+						pluginsText += pluginSep
+
 			text += "\t\t</TR>\n"
 		pluginsText += "\t</FONT></P>\n"
 		text += "\t</TABLE>\n"
