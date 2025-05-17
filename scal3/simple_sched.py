@@ -16,12 +16,11 @@ also be used to integrate scheduling with STDWIN events; the delay
 function is allowed to modify the queue.  Time can be expressed as
 integers or floating-point numbers, as long as it is consistent.
 
-Events are specified by tuples (time, priority, action, argument, kwargs).
-As in UNIX, lower priority numbers mean higher priority; in this
-way the queue can be maintained as a priority queue.  Execution of the
+Events are specified by tuples (time, action, argument, kwargs).
+Execution of the
 event means calling the action function, passing it the argument
-sequence in "argument" (remember that in Python, multiple function
-arguments are be packed in a sequence) and keyword parameters in "kwargs".
+Sequence in "argument" (remember that in Python, multiple function
+arguments are be packed in a Sequence) and keyword parameters in "kwargs".
 The action function may be an instance method so it
 has another way to reference private data (besides global variables).
 """
@@ -29,7 +28,6 @@ has another way to reference private data (besides global variables).
 import heapq
 import time
 from collections import namedtuple
-from itertools import count
 from time import time as _time
 from typing import TYPE_CHECKING, Any
 
@@ -38,14 +36,10 @@ if TYPE_CHECKING:
 
 __all__ = ["scheduler"]
 
-# FIXME: priority and sequence are not used at all
-
 Event = namedtuple(
 	"Event",
 	[
 		"time",
-		"priority",
-		"sequence",
 		"action",
 		"argument",
 		"kwargs",
@@ -54,13 +48,9 @@ Event = namedtuple(
 
 Event.time.__doc__ = """Numeric type compatible with the return value of the
 timefunc function passed to the constructor."""
-Event.priority.__doc__ = """Events scheduled for the same time will be executed
-in the order of their priority."""
-Event.sequence.__doc__ = """A continually increasing sequence number that
-	separates events if time and priority are equal."""
 Event.action.__doc__ = """Executing the event means executing
 action(*argument, **kwargs)"""
-Event.argument.__doc__ = """argument is a sequence holding the positional
+Event.argument.__doc__ = """argument is a Sequence holding the positional
 arguments for the action."""
 Event.kwargs.__doc__ = """kwargs is a dictionary holding the keyword
 arguments for the action."""
@@ -85,12 +75,10 @@ class scheduler:
 		self.timefunc = timefunc
 		self.delayfunc = delayfunc
 		self.stopped = stopped
-		self._sequence_generator = count()
 
 	def enterabs(
 		self,
 		time: int,
-		priority: int,
 		action: Callable,
 		argument: Sequence[Any] = (),
 		kwargs: dict[str, Any] | None = None,
@@ -101,8 +89,6 @@ class scheduler:
 
 		event = Event(
 			time=time,
-			priority=priority,
-			sequence=next(self._sequence_generator),
 			action=action,
 			argument=argument,
 			kwargs=kwargs,
@@ -142,7 +128,7 @@ class scheduler:
 			if not q:
 				break
 
-			(time, _priority, _sequence, action, argument, kwargs) = q[0]
+			(time, action, argument, kwargs) = q[0]
 
 			now = timefunc()
 			if time > now:
