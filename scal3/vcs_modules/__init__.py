@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from scal3.time_utils import getEpochFromJd
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.event_lib.vcs_base import VcsBaseEventGroup
 
 __all__ = ["encodeShortStat", "getCommitListFromEst", "vcsModuleNames"]
 
@@ -24,7 +26,7 @@ def encodeShortStat(files_changed: int, insertions: int, deletions: int) -> str:
 
 
 def getCommitListFromEst(
-	obj: Any,
+	obj: VcsBaseEventGroup,
 	startJd: int,
 	endJd: int,
 	format_rev_id: Callable | None = None,
