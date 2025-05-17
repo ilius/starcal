@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -31,6 +31,9 @@ from pygit2 import (
 
 from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat
+
+if TYPE_CHECKING:
+	from scal3.event_lib.vcs_base import VcsBaseEventGroup
 
 __all__ = [
 	"clearObj",
@@ -47,16 +50,16 @@ __all__ = [
 ]
 
 
-def prepareObj(obj: Any) -> None:  # noqa: ARG001
+def prepareObj(obj: VcsBaseEventGroup) -> None:  # noqa: ARG001
 	pass
 
 
-def clearObj(obj: Any) -> None:  # noqa: ARG001
+def clearObj(obj: VcsBaseEventGroup) -> None:  # noqa: ARG001
 	pass
 
 
 def getCommitList(
-	obj: Any,
+	obj: VcsBaseEventGroup,
 	startJd: int | None = None,
 	endJd: int | None = None,
 	branch: str = "",
@@ -95,7 +98,7 @@ def getCommitList(
 	return data
 
 
-def getCommitInfo(obj: Any, commid_id: str) -> dict[str, Any]:
+def getCommitInfo(obj: VcsBaseEventGroup, commid_id: str) -> dict[str, Any]:
 	repo = Repository(obj.vcsDir)
 	commit = repo.revparse_single(commid_id)
 	msg = commit.message
@@ -108,12 +111,16 @@ def getCommitInfo(obj: Any, commid_id: str) -> dict[str, Any]:
 	}
 
 
-def getShortStatLine(obj: Any, prevId: str, thisId: str) -> str:
+def getShortStatLine(obj: VcsBaseEventGroup, prevId: str, thisId: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getShortStat(obj, prevId, thisId))
 
 
-def getShortStat(obj: Any, prevId: str, thisId: str) -> tuple[int, int, int]:
+def getShortStat(
+	obj: VcsBaseEventGroup,
+	prevId: str,
+	thisId: str,
+) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	diff = repo.diff(
@@ -124,12 +131,15 @@ def getShortStat(obj: Any, prevId: str, thisId: str) -> tuple[int, int, int]:
 	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
-def getCommitShortStatLine(obj: Any, commit_id: str) -> str:
+def getCommitShortStatLine(obj: VcsBaseEventGroup, commit_id: str) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
-def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
+def getCommitShortStat(
+	obj: VcsBaseEventGroup,
+	commit_id: str,
+) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	commit = repo.revparse_single(commit_id)
@@ -141,7 +151,11 @@ def getCommitShortStat(obj: Any, commit_id: str) -> tuple[int, int, int]:
 	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
-def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
+def getTagList(
+	obj: VcsBaseEventGroup,
+	startJd: int,
+	endJd: int,
+) -> list[tuple[int, str]]:
 	"""Returns a list of (epoch, tag_name) tuples."""
 	repo = Repository(obj.vcsDir)
 	startEpoch = getEpochFromJd(startJd)
@@ -173,11 +187,11 @@ def getTagList(obj: Any, startJd: int, endJd: int) -> list[tuple[int, str]]:
 	return data
 
 
-def getTagShortStatLine(obj: Any, prevTag: str, tag: str) -> str:
+def getTagShortStatLine(obj: VcsBaseEventGroup, prevTag: str, tag: str) -> str:
 	return getShortStatLine(obj, prevTag, tag)
 
 
-def getFirstCommitEpoch(obj: Any) -> str:
+def getFirstCommitEpoch(obj: VcsBaseEventGroup) -> str:
 	repo = Repository(obj.vcsDir)
 	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME | GIT_SORT_REVERSE)
@@ -185,7 +199,7 @@ def getFirstCommitEpoch(obj: Any) -> str:
 	return commit.author.time
 
 
-def getLastCommitEpoch(obj: Any) -> str:
+def getLastCommitEpoch(obj: VcsBaseEventGroup) -> str:
 	repo = Repository(obj.vcsDir)
 	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME)
@@ -193,7 +207,11 @@ def getLastCommitEpoch(obj: Any) -> str:
 	return commit.author.time
 
 
-def getLatestParentBefore(obj: Any, commitId: str, beforeEpoch: float) -> str:
+def getLatestParentBefore(
+	obj: VcsBaseEventGroup,
+	commitId: str,
+	beforeEpoch: float,
+) -> str:
 	repo = Repository(obj.vcsDir)
 
 	def find(commitIdArg: str) -> str:
