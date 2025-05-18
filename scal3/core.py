@@ -446,8 +446,8 @@ def initPlugins() -> None:
 			if plug is None:
 				log.error(f"failed to load plugin {path}")
 				continue
-			plugIndex.append(len(allPlugList))
-			allPlugList.append(plug)
+			plugIndex.v.append(len(allPlugList.v))
+			allPlugList.v.append(plug)
 	# Assert again that final plugins are OK
 	validatePlugList()
 	updatePlugins()
