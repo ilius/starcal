@@ -203,7 +203,73 @@ class PreferencesWindow(gtk.Window):
 		stack.setTitleCentered(True)
 		stack.setupWindowTitle(self, _("Preferences"), False)
 		self.stack = stack
-		# --------------- Page 0 (Language and Calendar Types) ----------------
+		# --------------------------------------------------------------------
+		self._initPageLangCalTypes()  # Page Language and Calendar Types)
+		self._initPageGeneral()  # Page General
+		self._initPageAppearance()  # Page Appearance
+		self._initPageRegional()  # Page Regional
+		self._initPageAdvanced()  # Page Advanced
+		self._initPagePlugins()  # Page Plugins
+		self._initPageStatusIcon()  # Page Status Icon
+		self._initPageAccounts()  # Page Accounts
+		# --------------------------------------------------------------------
+		rootPageName = "preferences"
+		# ---
+		mainPages = []
+		for page in self.prefPages:
+			if page.pageParent:
+				continue
+			page.pageParent = rootPageName
+			page.iconSize = 32
+			mainPages.append(page)
+		# ----
+		colN = 2
+		# ----
+		grid = gtk.Grid()
+		grid.set_row_homogeneous(True)
+		grid.set_column_homogeneous(True)
+		grid.set_row_spacing(self.mainGridSpacing)
+		grid.set_column_spacing(self.mainGridSpacing)
+		grid.set_border_width(self.mainGridSpacing * 4 // 3)
+		# ----
+		grid.get_style_context().add_class(self.mainGridStyleClass)
+		# ----
+		page = mainPages.pop(0)
+		button = self.newWideButton(page)
+		grid.attach(button, 0, 0, colN, 1)
+		self.defaultWidget = button
+		# ---
+		N = len(mainPages)
+		rowN = (N - 1) // colN + 1
+		for col_i in range(colN):
+			for row_i in range(rowN):
+				page_i = col_i * rowN + row_i
+				if page_i >= N:
+					break
+				page = mainPages[page_i]
+				button = self.newWideButton(page)
+				grid.attach(button, col_i, row_i + 1, 1, 1)
+		grid.show_all()
+		# ---------------
+		page = StackPage()
+		page.pagePath = page.pageName = rootPageName
+		page.pageWidget = grid
+		page.pageExpand = True
+		page.pageExpand = True
+		stack.addPage(page)
+		for page in self.prefPages:
+			page.pagePath = page.pageName
+			stack.addPage(page)
+		# if conf.preferencesPagePath.v:
+		# 	self.stack.gotoPage(conf.preferencesPagePath.v)
+		# -----------------------
+		pack(self.vbox, stack, 1, 1)
+		pack(self.vbox, self.buttonbox)
+		# ----
+		self.vbox.show_all()
+		self.vbox.connect("realize", self.onMainVBoxRealize)
+
+	def _initPageLangCalTypes(self) -> None:
 		vbox = VBox(spacing=self.spacing)
 		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
@@ -236,7 +302,8 @@ class PreferencesWindow(gtk.Window):
 		hbox.set_border_width(5)
 		frame.set_border_width(0)
 		pack(vbox, hbox, 1, 1)
-		# ------------------------------ Page 1 (General) ---------------------
+
+	def _initPageGeneral(self) -> None:
 		vbox = VBox(spacing=self.spacing)
 		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
@@ -312,7 +379,8 @@ class PreferencesWindow(gtk.Window):
 		# pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
 		# pack(vbox, hbox)
-		# ------------------------------ Page 2 (Appearance) ------------------
+
+	def _initPageAppearance(self) -> None:
 		vbox = VBox(spacing=self.spacing)
 		vbox.set_border_width(self.spacing)
 		page = StackPage()
@@ -472,7 +540,8 @@ class PreferencesWindow(gtk.Window):
 			grid.attach(self.newWideButton(page), 0, index, 1, 1)
 		grid.show_all()
 		pack(vbox, grid, padding=padding)
-		# ------------------------------ Page 3 (Regional) -------------------
+
+	def _initPageRegional(self) -> None:
 		vbox = VBox()
 		vbox.set_border_width(5)
 		page = StackPage()
@@ -627,7 +696,8 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, grid)
 		# ---
 		self.moduleOptions = options
-		# ------------------------------ Page 4 (Advanced) -------------------
+
+	def _initPageAdvanced(self) -> None:
 		vbox = VBox(spacing=self.spacing)
 		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
@@ -742,7 +812,8 @@ class PreferencesWindow(gtk.Window):
 		button.connect("clicked", self.onClearImageCacheClick)
 		pack(hbox, button)
 		pack(vbox, hbox)
-		# ------------------------------ Page 5 (Plugins) --------------------
+
+	def _initPagePlugins(self) -> None:
 		vbox = VBox(spacing=self.spacing / 2)
 		page = StackPage()
 		vbox.set_border_width(self.spacing / 2)
@@ -964,7 +1035,8 @@ class PreferencesWindow(gtk.Window):
 		# -------------
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
-		# ------------------------------------- Page: Status Icon
+
+	def _initPageStatusIcon(self) -> None:
 		pageVBox = VBox(spacing=self.spacing * 0.8)
 		pageVBox.set_border_width(self.spacing)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -1087,7 +1159,8 @@ class PreferencesWindow(gtk.Window):
 		else:
 			page.pageIcon = "status-icon-example.svg"
 		self.prefPages.append(page)
-		# ------------------------------------- Page: Accounts
+
+	def _initPageAccounts(self) -> None:
 		vbox = VBox(spacing=self.spacing / 2)
 		vbox.set_border_width(self.spacing / 2)
 		page = StackPage()
@@ -1196,62 +1269,6 @@ class PreferencesWindow(gtk.Window):
 		# -----------
 		pack(hbox, toolbar)
 		pack(vbox, hbox, 1, 1)
-		# --------------------------------------------------------------------
-		rootPageName = "preferences"
-		# ---
-		mainPages = []
-		for page in self.prefPages:
-			if page.pageParent:
-				continue
-			page.pageParent = rootPageName
-			page.iconSize = 32
-			mainPages.append(page)
-		# ----
-		colN = 2
-		# ----
-		grid = gtk.Grid()
-		grid.set_row_homogeneous(True)
-		grid.set_column_homogeneous(True)
-		grid.set_row_spacing(self.mainGridSpacing)
-		grid.set_column_spacing(self.mainGridSpacing)
-		grid.set_border_width(self.mainGridSpacing * 4 // 3)
-		# ----
-		grid.get_style_context().add_class(self.mainGridStyleClass)
-		# ----
-		page = mainPages.pop(0)
-		button = self.newWideButton(page)
-		grid.attach(button, 0, 0, colN, 1)
-		self.defaultWidget = button
-		# ---
-		N = len(mainPages)
-		rowN = (N - 1) // colN + 1
-		for col_i in range(colN):
-			for row_i in range(rowN):
-				page_i = col_i * rowN + row_i
-				if page_i >= N:
-					break
-				page = mainPages[page_i]
-				button = self.newWideButton(page)
-				grid.attach(button, col_i, row_i + 1, 1, 1)
-		grid.show_all()
-		# ---------------
-		page = StackPage()
-		page.pagePath = page.pageName = rootPageName
-		page.pageWidget = grid
-		page.pageExpand = True
-		page.pageExpand = True
-		stack.addPage(page)
-		for page in self.prefPages:
-			page.pagePath = page.pageName
-			stack.addPage(page)
-		# if conf.preferencesPagePath.v:
-		# 	self.stack.gotoPage(conf.preferencesPagePath.v)
-		# -----------------------
-		pack(self.vbox, stack, 1, 1)
-		pack(self.vbox, self.buttonbox)
-		# ----
-		self.vbox.show_all()
-		self.vbox.connect("realize", self.onMainVBoxRealize)
 
 	@staticmethod
 	def onMainVBoxRealize(*_args) -> None:
