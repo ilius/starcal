@@ -591,132 +591,137 @@ class IcsTextPlugin(BasePlugin):
 				return i
 		return -1
 
-	def load(self) -> None:
-		with open(self.file, encoding="utf-8") as fp:
-			lines = fp.read().replace("\r", "").split("\n")
-		i = self._findVeventBegin(lines)
-		if i < 0:
-			log.error(f'bad ics file "{self.fpath}"')
-			return
-
-		# FIXME: refactor this shit
-
+	def _loadAllYears(self, lines: list[str], lineNum: int) -> None:
 		SUMMARY = ""
 		DESCRIPTION = ""
 		DTSTART = None
 		DTEND = None
+		md = {}
+		while True:
+			lineNum += 1
+			try:
+				line = lines[lineNum]
+			except IndexError:
+				break
+			if line == "END:VEVENT":
+				if SUMMARY and DTSTART and DTEND:
+					text = SUMMARY
+					if DESCRIPTION:
+						text += "\n" + DESCRIPTION
+					for jd in getJdListFromEpochRange(DTSTART, DTEND):
+						_y, m, d = gregorian.jd_to(jd)
+						md[m, d] = text
+				else:
+					log.error(
+						f"unsupported ics event, {SUMMARY=}, {DTSTART=}, {DTEND}=",
+					)
+				SUMMARY = ""
+				DESCRIPTION = ""
+				DTSTART = None
+				DTEND = None
+			elif line.startswith("SUMMARY:"):
+				SUMMARY = line[8:].replace("\\,", ",").replace("\\n", "\n")
+			elif line.startswith("DESCRIPTION:"):
+				DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
+			elif line.startswith("DTSTART;"):
+				# if not line.startswith("DTSTART;VALUE=DATE;"):
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				icsTime = line.split(":")[-1]
+				# if len(icsTime)!=8:
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				try:
+					DTSTART = getEpochByIcsTime(icsTime)
+				except Exception:
+					log.exception(f"unsupported ics line: {line}")
+					continue
+			elif line.startswith("DTEND;"):
+				# if not line.startswith("DTEND;VALUE=DATE;"):
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				icsTime = line.split(":")[-1]
+				# if len(icsTime)!=8:
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				try:
+					DTEND = getEpochByIcsTime(icsTime)
+				except Exception:
+					log.exception(f"unsupported ics line: {line}")
+					continue
+		self.ymd = None
+		self.md = md
+
+	def _loadYMD(self, lines: list[str], lineNum: int) -> None:
+		SUMMARY = ""
+		DESCRIPTION = ""
+		DTSTART = None
+		DTEND = None
+		ymd = {}
+		while True:
+			lineNum += 1
+			try:
+				line = lines[lineNum]
+			except IndexError:
+				break
+			if line == "END:VEVENT":
+				if SUMMARY and DTSTART and DTEND:
+					text = SUMMARY
+					if DESCRIPTION:
+						text += "\n" + DESCRIPTION
+					for jd in getJdListFromEpochRange(DTSTART, DTEND):
+						y, m, d = gregorian.jd_to(jd)
+						ymd[y, m, d] = text
+				SUMMARY = ""
+				DESCRIPTION = ""
+				DTSTART = None
+				DTEND = None
+			elif line.startswith("SUMMARY:"):
+				SUMMARY = line[8:].replace("\\,", ",").replace("\\n", "\n")
+			elif line.startswith("DESCRIPTION:"):
+				DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
+			elif line.startswith("DTSTART"):
+				# if not line.startswith("DTSTART;VALUE=DATE"):
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				icsTime = line.split(":")[-1]
+				# if len(icsTime)!=8:
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				try:
+					DTSTART = getEpochByIcsTime(icsTime)
+				except Exception:
+					log.error(f"unsupported ics line: {line}")
+					log.exception("")
+					continue
+			elif line.startswith("DTEND"):
+				# if not line.startswith("DTEND;VALUE=DATE;"):
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				icsTime = line.split(":")[-1]
+				# if len(icsTime)!=8:
+				# 	log.error(f"unsupported ics line: {line}")
+				# 	continue
+				try:
+					DTEND = getEpochByIcsTime(icsTime)
+				except Exception:
+					log.error(f"unsupported ics line: {line}")
+					log.exception("")
+					continue
+		self.ymd = ymd
+		self.md = None
+
+	def load(self) -> None:
+		with open(self.file, encoding="utf-8") as fp:
+			lines = fp.read().replace("\r", "").split("\n")
+		lineNum = self._findVeventBegin(lines)
+		if lineNum < 0:
+			log.error(f'bad ics file "{self.file}"')
+			return
 		if self.all_years:
-			md = {}
-			while True:
-				i += 1
-				try:
-					line = lines[i]
-				except IndexError:
-					break
-				if line == "END:VEVENT":
-					if SUMMARY and DTSTART and DTEND:
-						text = SUMMARY
-						if DESCRIPTION:
-							text += "\n" + DESCRIPTION
-						for jd in getJdListFromEpochRange(DTSTART, DTEND):
-							y, m, d = gregorian.jd_to(jd)
-							md[m, d] = text
-					else:
-						log.error(
-							f"unsupported ics event, {SUMMARY=}, {DTSTART=}, {DTEND}=",
-						)
-					SUMMARY = ""
-					DESCRIPTION = ""
-					DTSTART = None
-					DTEND = None
-				elif line.startswith("SUMMARY:"):
-					SUMMARY = line[8:].replace("\\,", ",").replace("\\n", "\n")
-				elif line.startswith("DESCRIPTION:"):
-					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
-				elif line.startswith("DTSTART;"):
-					# if not line.startswith("DTSTART;VALUE=DATE;"):
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					icsTime = line.split(":")[-1]
-					# if len(icsTime)!=8:
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					try:
-						DTSTART = getEpochByIcsTime(icsTime)
-					except Exception:
-						log.error(f"unsupported ics line: {line}")
-						log.exception("")
-						continue
-				elif line.startswith("DTEND;"):
-					# if not line.startswith("DTEND;VALUE=DATE;"):
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					icsTime = line.split(":")[-1]
-					# if len(icsTime)!=8:
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					try:
-						DTEND = getEpochByIcsTime(icsTime)
-					except Exception:
-						log.error(f"unsupported ics line: {line}")
-						log.exception("")
-						continue
-			self.ymd = None
-			self.md = md
-		else:  # not self.all_years
-			ymd = {}
-			while True:
-				i += 1
-				try:
-					line = lines[i]
-				except IndexError:
-					break
-				if line == "END:VEVENT":
-					if SUMMARY and DTSTART and DTEND:
-						text = SUMMARY
-						if DESCRIPTION:
-							text += "\n" + DESCRIPTION
-						for jd in getJdListFromEpochRange(DTSTART, DTEND):
-							y, m, d = gregorian.jd_to(jd)
-							ymd[y, m, d] = text
-					SUMMARY = ""
-					DESCRIPTION = ""
-					DTSTART = None
-					DTEND = None
-				elif line.startswith("SUMMARY:"):
-					SUMMARY = line[8:].replace("\\,", ",").replace("\\n", "\n")
-				elif line.startswith("DESCRIPTION:"):
-					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
-				elif line.startswith("DTSTART"):
-					# if not line.startswith("DTSTART;VALUE=DATE"):
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					icsTime = line.split(":")[-1]
-					# if len(icsTime)!=8:
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					try:
-						DTSTART = getEpochByIcsTime(icsTime)
-					except Exception:
-						log.error(f"unsupported ics line: {line}")
-						log.exception("")
-						continue
-				elif line.startswith("DTEND"):
-					# if not line.startswith("DTEND;VALUE=DATE;"):
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					icsTime = line.split(":")[-1]
-					# if len(icsTime)!=8:
-					# 	log.error(f"unsupported ics line: {line}")
-					# 	continue
-					try:
-						DTEND = getEpochByIcsTime(icsTime)
-					except Exception:
-						log.error(f"unsupported ics line: {line}")
-						log.exception("")
-						continue
-			self.ymd = ymd
-			self.md = None
+			self._loadAllYears(lines, lineNum)
+		else:
+			self._loadYMD(lines, lineNum)
 
 	def getText(self, y: int, m: int, d: int) -> str:
 		if self.ymd and (y, m, d) in self.ymd:
