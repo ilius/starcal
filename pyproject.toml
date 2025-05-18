@@ -216,8 +216,8 @@ docstring-code-format = false
 
 
 [tool.ruff.lint.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 20
+# default is 10
+max-complexity = 18
 
 [tool.cercis]
 line-length = 88
