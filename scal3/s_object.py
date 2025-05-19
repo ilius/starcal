@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.filesystem import DefaultFileSystem
 
 log = logger.get()
 
@@ -50,6 +51,9 @@ class SObj:
 
 	params = ()  # used in getData, setData and copyFrom
 	canSetDataMultipleTimes = True
+
+	def __init__(self) -> None:
+		self.fs: FileSystem = DefaultFileSystem
 
 	def __bool__(self) -> bool:
 		raise NotImplementedError
