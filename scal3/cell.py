@@ -20,7 +20,7 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import Any
+from typing import Any, TypedDict
 
 from cachetools import LRUCache
 
@@ -30,12 +30,25 @@ from scal3.date_utils import monthPlus as lowMonthPlus
 from scal3.ui import conf
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable
+	from collections.abc import Callable, Sequence
 
 	from scal3.cell_type import CellType, CompiledTimeFormat
+	from scal3.color_utils import ColorType
 	from scal3.plugin_type import PluginType
 
 __all__ = ["Cell", "init"]
+
+
+class EventDataDict(TypedDict):
+	time: str  # time descriptive string
+	time_epoch: int  # epoch time
+	is_allday: bool
+	text: Sequence[str]  # of text lines
+	icon: str  # icon path
+	color: ColorType
+	ids: tuple[int, int]  # (gid, eid)
+	show: tuple[bool, bool, bool]  # (showInDCal, showInWCal, showInMCal)
+	showInStatusIcon: bool
 
 
 class Cell:
@@ -46,17 +59,7 @@ class Cell:
 	# ocTimeCount = 0
 	# ocTimeSum = 0
 	def __init__(self, jd: int) -> None:
-		self._eventsData: list[dict] | None = None
-		# each item in self._eventsData has these keys and type:
-		# 	time: str (time descriptive string)
-		# 	time_epoch: int (epoch time)
-		# 	is_allday: bool
-		# 	text: tuple of text lines
-		# 	icon: str (icon path)
-		# 	color: tuple (r, g, b) or (r, g, b, a)
-		# 	ids: tuple (gid, eid)
-		# 	show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
-		# 	showInStatusIcon: bool
+		self._eventsData: list[EventDataDict] | None = None
 		self._pluginsText: list[list[str]] = []
 		self._pluginsData: list[tuple[PluginType, str]] = []
 		# ---
