@@ -158,9 +158,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 				)
 		return params
 
-	def getWeekDayParams(self) -> dict[str, Any]:
-		return self.weekdayParams.v
-
 	def getWidgetButtons(self) -> list[BaseButton]:
 		if not self.widgetButtonsEnable:
 			return []
@@ -926,7 +923,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			show_layout(cr, layout)
 
 		if self.weekdayParams:
-			params = self.getWeekDayParams()
+			params = self.weekdayParams.v
 			if params.get("enable", True):
 				text = core.getWeekDayAuto(
 					c.weekDay,

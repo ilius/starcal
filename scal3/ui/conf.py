@@ -7,7 +7,17 @@ from scal3.property import Property
 if typing.TYPE_CHECKING:
 	from typing import Any
 
+	from scal3.color_utils import ColorType
 	from scal3.font import Font
+	from scal3.ui.pytypes import (
+		ButtonGeoDict,
+		CalTypeParamsDict,
+		DayCalNameTypeParamsDict,
+		DayCalTypeParamsDict,
+		PieGeoDict,
+		WeekCalDayNumParamsDict,
+	)
+
 
 __all__ = [
 	"bgColor",
@@ -243,28 +253,28 @@ eventViewMaxHeight: Property[int] = Property(200)
 statusBarEnable: Property[bool] = Property(True)
 statusBarDatesReverseOrder: Property[bool] = Property(False)
 statusBarDatesColorEnable: Property[bool] = Property(False)
-statusBarDatesColor = Property((255, 132, 255, 255))
+statusBarDatesColor: Property[ColorType] = Property((255, 132, 255, 255))
 fontCustomEnable: Property[bool] = Property(False)
 fontCustom: Property[Font | None] = Property(None)
 buttonIconEnable: Property[bool] = Property(True)
 useSystemIcons: Property[bool] = Property(False)
 oldStyleProgressBar: Property[bool] = Property(False)
-bgColor = Property((26, 0, 1, 255))
-borderColor = Property((123, 40, 0, 255))
-borderTextColor = Property((255, 255, 255, 255))
-textColor = Property((255, 255, 255, 255))
-holidayColor = Property((255, 160, 0, 255))
-inactiveColor = Property((255, 255, 255, 115))
-todayCellColor = Property((0, 255, 0, 50))
-cursorOutColor = Property((213, 207, 0, 255))
-cursorBgColor = Property((41, 41, 41, 255))
+bgColor: Property[ColorType] = Property((26, 0, 1, 255))
+borderColor: Property[ColorType] = Property((123, 40, 0, 255))
+borderTextColor: Property[ColorType] = Property((255, 255, 255, 255))
+textColor: Property[ColorType] = Property((255, 255, 255, 255))
+holidayColor: Property[ColorType] = Property((255, 160, 0, 255))
+inactiveColor: Property[ColorType] = Property((255, 255, 255, 115))
+todayCellColor: Property[ColorType] = Property((0, 255, 0, 50))
+cursorOutColor: Property[ColorType] = Property((213, 207, 0, 255))
+cursorBgColor: Property[ColorType] = Property((41, 41, 41, 255))
 showDigClockTr: Property[bool] = Property(True)
 statusIconImage: Property[str] = Property("status-icons/dark-green.svg")
 statusIconImageHoli: Property[str] = Property("status-icons/dark-red.svg")
 statusIconFontFamilyEnable: Property[bool] = Property(False)
 statusIconFontFamily: Property[str | None] = Property(None)
 statusIconHolidayFontColorEnable: Property[bool] = Property(False)
-statusIconHolidayFontColor = Property(None)
+statusIconHolidayFontColor: Property[ColorType | None] = Property(None)
 statusIconLocalizeNumber: Property[bool] = Property(True)
 statusIconFixedSizeEnable: Property[bool] = Property(False)
 statusIconFixedSizeWH: Property[tuple[int, int]] = Property((24, 24))
@@ -309,7 +319,7 @@ mainWinRightPanelResizeOnToggle: Property[bool] = Property(True)
 mainWinRightPanelBorderWidth: Property[int] = Property(7)
 mcalLeftMargin: Property[float] = Property(30)
 mcalTopMargin: Property[float] = Property(30)
-mcalTypeParams: Property[list[dict[str, Any]]] = Property(
+mcalTypeParams: Property[list[CalTypeParamsDict]] = Property(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 		{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
@@ -317,8 +327,8 @@ mcalTypeParams: Property[list[dict[str, Any]]] = Property(
 	],
 )
 mcalGrid: Property[bool] = Property(False)
-mcalGridColor = Property((255, 252, 0, 82))
-mcalCornerMenuTextColor = Property((255, 255, 255, 255))
+mcalGridColor: Property[ColorType] = Property((255, 252, 0, 82))
+mcalCornerMenuTextColor: Property[ColorType] = Property((255, 255, 255, 255))
 mcalCursorLineWidthFactor: Property[float] = Property(0.12)
 mcalCursorRoundingFactor: Property[float] = Property(0.5)
 wcalTextSizeScale: Property[float] = Property(0.6)
@@ -333,13 +343,13 @@ wcalItems: Property[list[tuple[str, bool]]] = Property(
 	],
 )
 wcalGrid: Property[bool] = Property(False)
-wcalGridColor = Property((255, 252, 0, 82))
+wcalGridColor: Property[ColorType] = Property((255, 252, 0, 82))
 wcalUpperGradientEnable: Property[bool] = Property(False)
-wcalUpperGradientColor = Property((255, 255, 255, 60))
+wcalUpperGradientColor: Property[ColorType] = Property((255, 255, 255, 60))
 wcal_eventsText_pastColorEnable: Property[bool] = Property(False)
-wcal_eventsText_pastColor = Property((100, 100, 100, 50))
+wcal_eventsText_pastColor: Property[ColorType] = Property((100, 100, 100, 50))
 wcal_eventsText_ongoingColorEnable: Property[bool] = Property(False)
-wcal_eventsText_ongoingColor = Property((80, 255, 80, 255))
+wcal_eventsText_ongoingColor: Property[ColorType] = Property((80, 255, 80, 255))
 wcal_eventsText_showDesc: Property[bool] = Property(False)
 wcal_eventsText_colorize: Property[bool] = Property(True)
 wcalFont_eventsText: Property[str | None] = Property(None)
@@ -351,7 +361,7 @@ wcalFont_weekDays: Property[str | None] = Property(None)
 wcalFont_pluginsText: Property[str | None] = Property(None)
 wcal_pluginsText_firstLineOnly: Property[bool] = Property(False)
 wcal_eventsIcon_width: Property[float] = Property(50)
-wcalTypeParams: Property[list[dict[str, Any]]] = Property(
+wcalTypeParams: Property[list[WeekCalDayNumParamsDict]] = Property(
 	[{"font": None}, {"font": None}, {"font": None}],
 )
 wcal_daysOfMonth_dir: Property[str] = Property("ltr")
@@ -365,80 +375,80 @@ wcal_moonStatus_southernHemisphere: Property[bool] = Property(False)
 wcalCursorLineWidthFactor: Property[float] = Property(0.12)
 wcalCursorRoundingFactor: Property[float] = Property(0.5)
 dcalWidgetButtonsEnable: Property[bool] = Property(False)
-dcalDayParams: Property[list[dict[str, Any]]] = Property(
+dcalDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 	[
 		{
-			"enable": True,
 			"pos": (0, -12),
-			"xalign": "center",
-			"yalign": "center",
 			"font": None,
 			"color": (220, 220, 220),
-		},
-		{
 			"enable": True,
-			"pos": (125, 30),
 			"xalign": "center",
 			"yalign": "center",
+		},
+		{
+			"pos": (125, 30),
 			"font": None,
 			"color": (165, 255, 114),
-		},
-		{
 			"enable": True,
-			"pos": (-125, 24),
 			"xalign": "center",
 			"yalign": "center",
+		},
+		{
+			"pos": (-125, 24),
 			"font": None,
 			"color": (0, 200, 205),
+			"enable": True,
+			"xalign": "center",
+			"yalign": "center",
 		},
 	],
 )
-dcalMonthParams: Property[list[dict[str, Any]]] = Property(
+dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 	[
 		{
-			"enable": False,
 			"pos": (0, -12),
-			"xalign": "center",
-			"yalign": "center",
 			"font": None,
 			"color": (220, 220, 220),
+			"enable": False,
+			"xalign": "center",
+			"yalign": "center",
 			"abbreviate": False,
 			"uppercase": False,
 		},
 		{
-			"enable": False,
 			"pos": (125, 30),
-			"xalign": "center",
-			"yalign": "center",
 			"font": None,
 			"color": (165, 255, 114),
+			"enable": False,
+			"xalign": "center",
+			"yalign": "center",
 			"abbreviate": False,
 			"uppercase": False,
 		},
 		{
-			"enable": False,
 			"pos": (-125, 24),
-			"xalign": "center",
-			"yalign": "center",
 			"font": None,
 			"color": (0, 200, 205),
+			"enable": False,
+			"xalign": "center",
+			"yalign": "center",
 			"abbreviate": False,
 			"uppercase": False,
 		},
 	],
 )
-dcalWeekdayParams: Property[dict[str, Any]] = Property(
+dcalWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 	{
-		"enable": False,
 		"pos": (20, 10),
-		"xalign": "right",
-		"yalign": "buttom",
 		"font": None,
 		"color": (0, 200, 205),
+		"enable": False,
+		"xalign": "right",
+		"yalign": "buttom",
 	},
 )
 dcalNavButtonsEnable: Property[bool] = Property(True)
-dcalNavButtonsGeo: Property[dict[str, Any]] = Property(
+dcalNavButtonsGeo: Property[ButtonGeoDict] = Property(
 	{
 		"auto_rtl": True,
 		"size": 64.0,
@@ -459,86 +469,89 @@ dcalWinX: Property[int] = Property(0)
 dcalWinY: Property[int] = Property(0)
 dcalWinWidth: Property[float] = Property(180.0)
 dcalWinHeight: Property[float] = Property(180.0)
-dcalWinBackgroundColor = Property((0, 10, 0))
+dcalWinBackgroundColor: Property[ColorType] = Property((0, 10, 0))
 dcalWinWidgetButtonsEnable: Property[bool] = Property(True)
 dcalWinWidgetButtonsSize: Property[float] = Property(16)
 dcalWinWidgetButtonsOpacity: Property[float] = Property(1.0)
 dcalWinWeekdayLocalize: Property[bool] = Property(True)
 dcalWinWeekdayAbbreviate: Property[bool] = Property(False)
 dcalWinWeekdayUppercase: Property[bool] = Property(False)
-dcalWinDayParams: Property[list[dict[str, Any]]] = Property(
+dcalWinDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 	[
 		{
 			"pos": (0, 5),
-			"xalign": "left",
-			"yalign": "center",
 			"font": None,
 			"color": (220, 220, 220),
+			"enable": True,
+			"xalign": "left",
+			"yalign": "center",
 		},
 		{
 			"pos": (5, 0),
-			"xalign": "right",
-			"yalign": "top",
 			"font": None,
 			"color": (165, 255, 114),
+			"enable": True,
+			"xalign": "right",
+			"yalign": "top",
 		},
 		{
 			"pos": (0, 0),
-			"xalign": "right",
-			"yalign": "buttom",
 			"font": None,
 			"color": (0, 200, 205),
+			"enable": True,
+			"xalign": "right",
+			"yalign": "buttom",
 		},
 	],
 )
-dcalWinMonthParams: Property[list[dict[str, Any]]] = Property(
+dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 	[
 		{
-			"enable": False,
 			"pos": (0, 5),
-			"xalign": "left",
-			"yalign": "center",
 			"font": None,
 			"color": (220, 220, 220),
+			"enable": False,
+			"xalign": "left",
+			"yalign": "center",
 			"abbreviate": False,
 			"uppercase": False,
 		},
 		{
-			"enable": False,
 			"pos": (5, 0),
+			"font": None,
+			"enable": False,
+			"color": (165, 255, 114),
 			"xalign": "right",
 			"yalign": "top",
-			"font": None,
-			"color": (165, 255, 114),
 			"abbreviate": False,
 			"uppercase": False,
 		},
 		{
-			"enable": False,
 			"pos": (0, 0),
-			"xalign": "right",
-			"yalign": "buttom",
 			"font": None,
 			"color": (0, 200, 205),
+			"enable": False,
+			"xalign": "right",
+			"yalign": "buttom",
 			"abbreviate": False,
 			"uppercase": False,
 		},
 	],
 )
-dcalWinWeekdayParams: Property[dict[str, Any]] = Property(
+dcalWinWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 	{
-		"enable": False,
 		"pos": (20, 10),
-		"xalign": "right",
-		"yalign": "buttom",
 		"font": None,
 		"color": (0, 200, 205),
+		"enable": False,
+		"xalign": "right",
+		"yalign": "buttom",
 	},
 )
 dcalWinEventIconSize: Property[float] = Property(20.0)
 dcalWinEventTotalSizeRatio: Property[float] = Property(0.3)
 dcalWinSeasonPieEnable: Property[bool] = Property(False)
-dcalWinSeasonPieGeo: Property[dict[str, Any]] = Property(
+dcalWinSeasonPieGeo: Property[PieGeoDict] = Property(
 	{
 		"size": 64,
 		"thickness": 0.3,
@@ -548,19 +561,19 @@ dcalWinSeasonPieGeo: Property[dict[str, Any]] = Property(
 		"startAngle": 270,
 	},
 )
-dcalWinSeasonPieSpringColor = Property((167, 252, 1, 180))
-dcalWinSeasonPieSummerColor = Property((255, 254, 0, 180))
-dcalWinSeasonPieAutumnColor = Property((255, 127, 0, 180))
-dcalWinSeasonPieWinterColor = Property((1, 191, 255, 180))
-dcalWinSeasonPieTextColor = Property((255, 255, 255, 180))
+dcalWinSeasonPieSpringColor: Property[ColorType] = Property((167, 252, 1, 180))
+dcalWinSeasonPieSummerColor: Property[ColorType] = Property((255, 254, 0, 180))
+dcalWinSeasonPieAutumnColor: Property[ColorType] = Property((255, 127, 0, 180))
+dcalWinSeasonPieWinterColor: Property[ColorType] = Property((1, 191, 255, 180))
+dcalWinSeasonPieTextColor: Property[ColorType] = Property((255, 255, 255, 180))
 monthPBarCalType: Property[int] = Property(-1)
 seasonPBar_southernHemisphere: Property[bool] = Property(False)
 labelBoxBorderWidth: Property[int] = Property(0)
-labelBoxMenuActiveColor = Property((0, 255, 0, 255))
+labelBoxMenuActiveColor: Property[ColorType] = Property((0, 255, 0, 255))
 labelBoxYearColorEnable: Property[bool] = Property(False)
-labelBoxYearColor = Property((255, 132, 255, 255))
+labelBoxYearColor: Property[ColorType] = Property((255, 132, 255, 255))
 labelBoxMonthColorEnable: Property[bool] = Property(False)
-labelBoxMonthColor = Property((255, 132, 255, 255))
+labelBoxMonthColor: Property[ColorType] = Property((255, 132, 255, 255))
 labelBoxFontEnable: Property[bool] = Property(False)
 labelBoxFont: Property[Font | None] = Property(None)
 labelBoxPrimaryFontEnable: Property[bool] = Property(False)
