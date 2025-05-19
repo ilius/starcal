@@ -27,7 +27,7 @@ class DayCalNameTypeParamsDict(TypedDict):
 	pos: tuple[float, float]
 	font: Font | None
 	color: ColorType  # | None?
-	enable: bool = True
+	enable: bool
 	xalign: str
 	yalign: str
 	abbreviate: bool

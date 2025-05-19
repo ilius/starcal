@@ -57,12 +57,13 @@ from scal3.ui.params import (
 )
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Iterable
+	from collections.abc import Iterable, Sequence
 
 	from scal3.cell_type import CellCacheType
 	from scal3.event_lib.event_base import Event
 	from scal3.filesystem import FileSystem
 	from scal3.s_object import SObj
+	from scal3.ui.pytypes import CalTypeParamsDict
 	from scal3.ui_gtk import gtk_ud
 
 
@@ -198,7 +199,7 @@ def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 	)
 
 
-def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
+def saveLiveConfLoop() -> bool:  # rename to saveConfLiveLoop FIXME
 	tm = perf_counter()
 	if tm - lastLiveConfChangeTime > saveLiveConfDelay:
 		saveLiveConf()
@@ -328,6 +329,7 @@ def moveEventToTrash(
 	sender: gtk_ud.CalObjType,
 	save: bool = True,
 ) -> int:
+	assert eventTrash is not None
 	eventIndex = group.remove(event)
 	eventTrash.add(event)  # or append? FIXME
 	if save:
@@ -338,10 +340,12 @@ def moveEventToTrash(
 
 
 def getEvent(groupId: int, eventId: int) -> event_lib.Event:
+	assert eventGroups is not None
 	return eventGroups[groupId][eventId]
 
 
 def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
+	assert eventGroups is not None
 	title = group.title
 	usedTitles = {g.title for g in eventGroups}
 	parts = title.split("#")
@@ -370,6 +374,7 @@ def init() -> None:
 	core.init()
 
 	fs = core.fs
+	assert fs is not None
 	event_lib.init(fs)
 	# Load accounts, groups and trash? FIXME
 	eventAccounts = event_lib.EventAccountsHolder.load(fs)
@@ -379,6 +384,7 @@ def init() -> None:
 
 
 def withFS(obj: SObj) -> SObj:
+	assert fs is not None
 	obj.fs = fs
 	return obj
 
@@ -386,7 +392,7 @@ def withFS(obj: SObj) -> SObj:
 # ----------------------------------------------------------------------
 
 
-def getActiveMonthCalParams() -> list[tuple[int, dict[str, Any]]]:
+def getActiveMonthCalParams() -> Sequence[tuple[int, CalTypeParamsDict]]:
 	return list(
 		zip(
 			calTypes.active,
@@ -399,13 +405,15 @@ def getActiveMonthCalParams() -> list[tuple[int, dict[str, Any]]]:
 # --------------------------------
 
 fs: FileSystem | None = None
-eventAccounts: list[event_lib.Account] = []
-eventGroups: list[event_lib.EventGroup] = []
+eventAccounts: event_lib.EventAccountsHolder | None = None
+eventGroups: event_lib.EventGroupsHolder | None = None
 eventTrash: event_lib.EventTrash | None = None
 eventNotif: EventNotificationManager | None = None
 
 
 def iterAllEvents() -> Iterable[Event]:
+	assert eventGroups is not None
+	assert eventTrash is not None
 	# dosen"t include orphan events
 	for group in eventGroups:
 		for event in group:
