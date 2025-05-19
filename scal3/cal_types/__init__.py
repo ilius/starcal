@@ -89,7 +89,7 @@ class CalTypesHolder:
 
 	def update(self) -> None:
 		self.active = []
-		self.inactive = []  # range(len(modules))
+		self.inactive = []
 		remainingNames = self.names.copy()
 		for name in self.activeNames:
 			try:

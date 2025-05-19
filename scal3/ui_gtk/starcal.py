@@ -701,13 +701,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		allPlugList = core.allPlugList.v
 		# log.debug("MainWin.onDateChange")
 		ud.BaseCalObj.onDateChange(self, *a, **kw)
-		# for j in range(len(plugIndex)):--????????????????????
-		# 	try:
-		# 		allPlugList[plugIndex[j]].date_change(*date)
-		# 	except AttributeError:
-		# 		pass
-		for j in range(len(plugIndex)):
-			plug = allPlugList[plugIndex[j]]
+		for idx in plugIndex:
+			plug = allPlugList[idx]
 			if hasattr(plug, "date_change_after"):
 				plug.date_change_after(*ui.cells.current.date)
 		# log.debug(
