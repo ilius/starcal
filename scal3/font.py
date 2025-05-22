@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Self
 
-__all__ = ["Font"]
+__all__ = ["Font", "FontTuple"]
 
 
 type FontTuple = tuple[str, bool, bool, float]
