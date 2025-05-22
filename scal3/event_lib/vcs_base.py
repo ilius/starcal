@@ -32,6 +32,8 @@ from .groups import EventGroup
 if TYPE_CHECKING:
 	from scal3.filesystem import FileSystem
 
+__all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
+
 
 class VcsBaseEventGroup(EventGroup):
 	acceptsEventTypes = ()
