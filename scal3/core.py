@@ -25,15 +25,13 @@ from contextlib import suppress
 from os.path import isdir, isfile, join
 from time import localtime
 from time import time as now
-from typing import Any, NamedTuple
+from typing import NamedTuple
 
 import scal3
 from scal3 import locale_man, logger
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
-from scal3.date_utils import (
-	jwday,
-)
+from scal3.date_utils import jwday
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
@@ -103,6 +101,8 @@ APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
 homePage = "http://ilius.github.io/starcal/"
 
+logger.init()
+log = logger.get()
 
 # __plugin_api_get__ = [
 # 	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
@@ -194,8 +194,6 @@ def saveConf() -> None:
 	inactiveCalTypes.v = calTypes.inactiveNames
 	saveSingleConfig(confPath, confParams, confEncoders)
 
-
-log = logger.get()
 
 fs: FileSystem | None = None
 
@@ -549,7 +547,7 @@ def stopRunningThreads() -> None:
 			cancel()
 
 
-def dataToJson(data: Any) -> str:
+def dataToJson(data: object) -> str:
 	return (
 		dataToCompactJson(data, useAsciiJson)
 		if useCompactJson

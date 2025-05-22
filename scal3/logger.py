@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import sys
 from os.path import join
+from typing import Protocol
 
 from scal3.path import confDir
 from scal3.property import Property
@@ -11,7 +13,45 @@ __all__ = ["get", "logLevel"]
 
 confPath = join(confDir, "log.json")
 
-log = None
+
+class LoggerType(Protocol):
+	# def __init__(self) -> None: ...
+	def info(self, text: str) -> None: ...
+	def error(self, text: str) -> None: ...
+	def warning(self, text: str) -> None: ...
+	def debug(self, text: str) -> None: ...
+	def exception(self, prefix: str) -> None: ...
+	def setLevel(self, level: int) -> None: ...
+
+
+class FallbackLogger:
+	def __init__(self) -> None:
+		pass
+
+	def info(self, text: str) -> None:  # noqa: PLR6301
+		print(text)
+
+	def error(self, text: str) -> None:  # noqa: PLR6301
+		sys.stderr.write("ERROR: " + text + "\n")
+
+	def warning(self, text: str) -> None:  # noqa: PLR6301
+		print("WARNING: " + text)
+
+	def debug(self, text: str) -> None:  # noqa: PLR6301
+		print(text)
+
+	def exception(self, prefix: str) -> None:  # noqa: PLR6301
+		typ, value, tback = sys.exc_info()
+		assert tback
+		assert typ
+		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
+		self.error(prefix + "\n" + text)
+
+	def setLevel(self, level: int) -> None:
+		pass
+
+
+log: LoggerType = FallbackLogger()
 logLevel = Property(logging.INFO)
 
 
@@ -60,19 +100,17 @@ def init() -> None:
 		log = logging.getLogger(APP_NAME)
 	except Exception as e:
 		print(f"failed to setup logger: {e}")  # noqa: T201
-		from scal3.utils import FallbackLogger
-
-		log = FallbackLogger()
 
 	log.setLevel(logLevel.v)
 
 	# can set env var WARNINGS to: "error", "ignore", "always",
 	# "default", "module", "once"
-	if os.getenv("WARNINGS"):
-		warnings.filterwarnings(os.getenv("WARNINGS"))
+	warningsEnv = os.getenv("WARNINGS")
+	if warningsEnv:
+		warnings.filterwarnings(warningsEnv)  # type: ignore[arg-type]
 
 
-def get() -> logging.Logger:
+def get() -> LoggerType:
 	if log is None:
 		init()
-	return log
+	return log  # type: ignore[return-value]

@@ -131,7 +131,7 @@ def dead(pid: int) -> bool:
 		if e.errno == 10:
 			return False
 		raise
-	return dead
+	return dead > 0
 
 
 # def kill(pid, sig=0): pass #DEBUG: test hang condition

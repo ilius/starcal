@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 __all__ = ["Graph", "addBoxHeightToColoredGraph", "colorGraph"]
 
 
-def colorGraph(g: Graph, vertexSortKey: Callable[[int], [Any]]) -> None:
+def colorGraph(g: Graph, vertexSortKey: Callable[[int], Any]) -> None:
 	"""VertexSortKey is the key function for sorting vertices."""
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
