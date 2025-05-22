@@ -26,7 +26,7 @@ from scal3 import logger
 from scal3.property import Property
 
 if TYPE_CHECKING:
-	from scal3.cal_types.pytypes import TranslateFunc
+	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
 
@@ -94,7 +94,7 @@ avgYearLen = 354.3666  # FIXME
 hijriUseDB = Property(True)
 
 
-options = [
+options: list[OptionTuple] = [
 	(
 		"hijriUseDB",
 		bool,

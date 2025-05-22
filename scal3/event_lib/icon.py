@@ -8,6 +8,8 @@ __all__ = ["WithIcon", "iconAbsToRelativelnData"]
 
 
 class WithIcon:
+	icon: str
+
 	def getIcon(self) -> str:
 		return self.icon
 

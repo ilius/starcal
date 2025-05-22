@@ -11,6 +11,13 @@ class TranslateFunc(Protocol):
 	def __call__(self, s: str, ctx: str | None = None) -> str: ...
 
 
+type OptionTuple = (
+	tuple[str, type[bool], str]
+	| tuple[str, type[list], str, list[str]]
+	| tuple[str, str, str, str]
+)
+
+
 class CalTypeModule(Protocol):
 	name: str
 	desc: str
