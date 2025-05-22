@@ -1007,7 +1007,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return idsList
 
 	def multiSelectBulkEdit(self, _widget: gtk.Widget | None = None) -> None:
-		from scal3.event_container import DummyEventContainer
+		from scal3.event_lib.event_container import DummyEventContainer
 		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
 
 		idsDict = self.multiSelectEventIdsDict()
