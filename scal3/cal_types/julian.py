@@ -23,7 +23,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from scal3.cal_types.pytypes import TranslateFunc
+	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "jd_to", "name", "to_jd"]
 
@@ -87,7 +87,7 @@ minMonthLen = 28
 maxMonthLen = 32
 avgYearLen = 365.25
 
-options = []
+options: list[OptionTuple] = []
 
 monthLenSum = (
 	0,

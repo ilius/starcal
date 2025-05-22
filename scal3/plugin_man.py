@@ -48,7 +48,7 @@ try:
 	log = logging.getLogger(APP_NAME)
 except Exception:
 	log.exception("Failed to setup logging")
-	from scal3.utils import FallbackLogger
+	from scal3.logger import FallbackLogger
 
 	log = FallbackLogger()
 
@@ -249,7 +249,7 @@ class DummyExternalPlugin(BasePlugin):
 
 def loadExternalPlugin(
 	file: str,
-	**data: Any,
+	**data: object,
 ) -> BasePlugin | None:
 	file = getPlugPath(file)
 	fname = split(file)[-1]
@@ -762,7 +762,7 @@ class IcsTextPlugin(BasePlugin):
 
 
 # must not rename _file argument
-def loadPlugin(_file: str | None = None, **kwargs: Any) -> BasePlugin | None:
+def loadPlugin(_file: str | None = None, **kwargs: object) -> BasePlugin | None:
 	if not _file:
 		log.error(f"plugin file is empty! {kwargs=}")
 		return

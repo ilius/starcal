@@ -16,19 +16,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from scal3 import logger
-
-if TYPE_CHECKING:
-	from collections.abc import Sequence
 
 __all__ = [
 	"ab_overlaps",
 	"humanizeIntervalList",
 	"intersectionOfTwoIntervalList",
 	"log",
-	"normalizeIntervalList",
 	"simplifyNumList",
 ]
 
@@ -51,8 +45,8 @@ def simplifyNumList(
 	Nums must be sorted
 	minCount >= 2.
 	"""
-	ranges = []
-	tmp = []
+	ranges: list[int | tuple[int, int]] = []
+	tmp: list[int] = []
 	for n in nums:
 		if tmp and n - tmp[-1] != 1:
 			if len(tmp) > minCount:
@@ -69,36 +63,52 @@ def simplifyNumList(
 	return ranges
 
 
-def getIntervalPoints(
-	lst: list[tuple[int, int] | tuple[int, int, bool]],
+def getIntervalPoints2(
+	lst: list[tuple[int, int]],
 	lst_index: int = 0,
 ) -> list[tuple[int, int, int]]:
 	"""
-	Lst is a list of (start, end, closedEnd) or (start, end) tuples
-		start (int)
-		end (int)
-		closedEnd (bool).
-
-	returns a list of (pos, ptype, lst_index) tuples
-	ptype is one of (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+	Lst is a list of (start, end) tuples.
+	returns a list of (pos, ptype, lst_index) tuples.
+	ptype is one of (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
 	"""
-	points = []
+	points: list[tuple[int, int, int]] = []
 	for row in lst:
-		start = row[0]
-		end = row[1]
-		try:
-			closedEnd = row[2]
-		except IndexError:
-			closedEnd = start == end
 		points += [
 			(
-				start,
+				row[0],
 				CLOSED_START,
 				lst_index,
 			),
 			(
-				end,
-				CLOSED_END if closedEnd else OPEN_END,
+				row[1],
+				CLOSED_END if row[0] == row[1] else OPEN_END,
+				lst_index,
+			),
+		]
+	return points
+
+
+def getIntervalPoints3(
+	lst: list[tuple[int, int, bool]],
+	lst_index: int = 0,
+) -> list[tuple[int, int, int]]:
+	"""
+	Lst is a list of (start, end, closedEnd) tuples.
+	returns a list of (pos, ptype, lst_index) tuples
+	ptype is one of (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
+	"""
+	points: list[tuple[int, int, int]] = []
+	for row in lst:
+		points += [
+			(
+				row[0],
+				CLOSED_START,
+				lst_index,
+			),
+			(
+				row[1],
+				CLOSED_END if row[2] else OPEN_END,
 				lst_index,
 			),
 		]
@@ -118,7 +128,7 @@ def getIntervalListByPoints(
 		closedEnd (bool)
 	"""
 	lst = []
-	startedStack = []
+	startedStack: list[int] = []
 	for pos, ptype, _ in points:
 		if ptype in {OPEN_END, CLOSED_END}:
 			if not startedStack:
@@ -137,14 +147,6 @@ def getIntervalListByPoints(
 			# log.debug(f"push {pos}")
 			startedStack.append(pos)
 	return lst
-
-
-def normalizeIntervalList(
-	lst: list[tuple[int, int] | tuple[int, int, bool]],
-) -> list[tuple[int, int, bool]]:
-	points = getIntervalPoints(lst)
-	points.sort()
-	return getIntervalListByPoints(points)
 
 
 def humanizeIntervalList(lst: list[tuple[int, int, bool]]) -> list[tuple[int, int]]:
@@ -168,22 +170,25 @@ def humanizeIntervalList(lst: list[tuple[int, int, bool]]) -> list[tuple[int, in
 
 
 def intersectionOfTwoIntervalList(
-	*lists: Sequence[list[tuple[int, int, bool]]],
+	*lists: list[tuple[int, int]],
 ) -> list[tuple[int, int]]:
 	listsN = len(lists)
 	assert listsN == 2
 	points = []
 	for lst_index, lst in enumerate(lists):
-		points += getIntervalPoints(normalizeIntervalList(lst), lst_index)
+		points += getIntervalPoints3(
+			getIntervalListByPoints(sorted(getIntervalPoints2(lst))),
+			lst_index,
+		)
 	points.sort()
 
-	openStartList = [None for i in range(listsN)]
+	openStartList: list[int | None] = [None for i in range(listsN)]
 	result = []
 	for pos, ptype, lst_index in points:
 		if ptype in {OPEN_END, CLOSED_END}:
 			# end == pos
 			if None not in openStartList:
-				start = max(openStartList)
+				start: int = max(openStartList)  # type: ignore
 				if start > pos:
 					raise RuntimeError(f"{start - pos = }")
 				if pos > start or ptype == CLOSED_END:

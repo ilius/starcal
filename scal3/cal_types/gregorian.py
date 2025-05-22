@@ -25,7 +25,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from scal3.cal_types.pytypes import TranslateFunc
+	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 __all__ = ["J1970", "J0001_epoch", "getMonthLen", "isLeap", "jd_to", "to_jd"]
 
@@ -86,7 +86,7 @@ minMonthLen = 29
 maxMonthLen = 31
 avgYearLen = 365.2425  # FIXME
 
-options = []
+options: list[OptionTuple] = []
 
 
 def save() -> None:

@@ -42,6 +42,7 @@ def rgbToHsl(red: int, green: int, blue: int) -> tuple[float | None, float, floa
 	# ln means lightness
 	ln = (mx + mn) / 2.0
 	# ---
+	s: float
 	if 0 in {ln, dm}:
 		s = 0
 	elif 0 < ln < 0.5:
@@ -55,28 +56,27 @@ def hslToRgb(h: float, s: float, ln: float) -> tuple[int, int, int]:
 	# 0.0 <= h <= 360.0
 	# 0.0 <= s <= 1.0
 	# 0.0 <= ln <= 1.0
+	q: float
 	if ln < 0.5:
 		q = ln * (1.0 + s)
 	else:
 		q = ln + s - ln * s
-	p = 2 * ln - q
-	hk = h / 360.0
-	tr = (hk + 1.0 / 3) % 1
-	tg = hk % 1
-	tb = (hk - 1.0 / 3) % 1
-	rgb = []
-	for tc in (tr, tg, tb):
+	p: float = 2 * ln - q
+	hk: float = h / 360.0
+	tr: float = (hk + 1.0 / 3) % 1
+	tg: float = hk % 1
+	tb: float = (hk - 1.0 / 3) % 1
+
+	def getChannel(tc: float) -> int:
 		if tc < 1.0 / 6:
-			c = p + (q - p) * 6 * tc
-		elif 1.0 / 6 <= tc < 0.5:
-			c = q
-		elif 0.5 <= tc < 2.0 / 3:
-			c = p + (q - p) * 6 * (2.0 / 3 - tc)
-		else:
-			c = p
-		rgb.append(round(c * 255))
-	return tuple(rgb)
-	# rgb = rgb + (255,)
+			return round(255 * (p + (q - p) * 6 * tc))
+		if 1.0 / 6 <= tc < 0.5:
+			return round(255 * q)
+		if 0.5 <= tc < 2.0 / 3:
+			return round(255 * (p + (q - p) * 6 * (2.0 / 3 - tc)))
+		return round(255 * p)
+
+	return getChannel(tr), getChannel(tg), getChannel(tb)
 
 
 # def getRandomHueColor(s, l):

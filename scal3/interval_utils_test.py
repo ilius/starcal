@@ -5,13 +5,61 @@ import random
 from scal3 import core
 from scal3.event_lib import JdOccurSet
 from scal3.interval_utils import (
+	CLOSED_END,
+	CLOSED_START,
+	OPEN_END,
 	ab_overlaps,
+	getIntervalListByPoints,
 	humanizeIntervalList,
 	intersectionOfTwoIntervalList,
 	log,
-	normalizeIntervalList,
 	simplifyNumList,
 )
+
+
+# TODO: remove this, test getIntervalPoints2 and getIntervalPoints3
+def getIntervalPoints(
+	lst: list[tuple[int, int] | tuple[int, int, bool]]
+	| list[tuple[int, int]]
+	| list[tuple[int, int, bool]],
+	lst_index: int = 0,
+) -> list[tuple[int, int, int]]:
+	"""
+	Lst is a list of (start, end, closedEnd) or (start, end) tuples
+		start (int)
+		end (int)
+		closedEnd (bool).
+
+	returns a list of (pos, ptype, lst_index) tuples
+	ptype is one of (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+	"""
+	points: list[tuple[int, int, int]] = []
+	for row in lst:
+		start = row[0]
+		end = row[1]
+		if len(row) > 2:
+			closedEnd = row[2]
+		else:
+			closedEnd = start == end
+		points += [
+			(
+				start,
+				CLOSED_START,
+				lst_index,
+			),
+			(
+				end,
+				CLOSED_END if closedEnd else OPEN_END,
+				lst_index,
+			),
+		]
+	return points
+
+
+def normalizeIntervalList(
+	lst: list[tuple[int, int] | tuple[int, int, bool]],
+) -> list[tuple[int, int, bool]]:
+	return getIntervalListByPoints(sorted(getIntervalPoints(lst)))
 
 
 def parseIntervalList(st: str, doShuffle: bool = False) -> list[tuple[int, int]]:
