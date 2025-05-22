@@ -9,7 +9,7 @@ from scal3 import logger
 log = logger.get()
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from scal3 import event_lib
 
@@ -132,7 +132,7 @@ def testEventUpdateQueue() -> None:
 		def __init__(
 			self,
 			ident: int,
-			parent: Any,  # FIXME
+			parent: object,  # FIXME
 		) -> None:
 			self.id = ident
 			self.parent = parent

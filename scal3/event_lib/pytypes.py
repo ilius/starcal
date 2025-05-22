@@ -12,4 +12,21 @@ class BaseClassType(Protocol):
 	nameAlias: str
 
 
-# TODO: EventRuleType, EventNotifierType, EventType, EventGroupType, AccountType
+class EventRuleType(BaseClassType, Protocol):
+	pass
+
+
+class EventNotifierType(BaseClassType, Protocol):
+	pass
+
+
+class EventType(BaseClassType, Protocol):
+	pass
+
+
+class EventGroupType(BaseClassType, Protocol):
+	pass
+
+
+class AccountType(BaseClassType, Protocol):
+	pass

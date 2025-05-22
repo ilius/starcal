@@ -23,6 +23,7 @@ log = logger.get()
 import os
 import sys
 import typing
+from abc import ABC, abstractmethod
 from math import ceil, floor
 from typing import Any
 
@@ -30,7 +31,6 @@ if typing.TYPE_CHECKING:
 	type Number = int | float
 
 __all__ = [
-	"FallbackLogger",
 	"arange",
 	"cmp",
 	"findNearestIndex",
@@ -80,7 +80,12 @@ def toStr(s: bytes | str) -> str:
 	return str(s, "utf8") if isinstance(s, bytes) else str(s)
 
 
-def cmp(a: Any, b: Any) -> bool:
+class Comparable(ABC):
+	@abstractmethod
+	def __lt__(self, other: Any) -> bool: ...
+
+
+def cmp(a: Comparable, b: Comparable) -> int:
 	return 0 if a == b else (1 if a > b else -1)
 
 
@@ -94,25 +99,6 @@ def versionLessThan(v0: str, v1: str) -> bool:
 # versionLessThan(core.prefVersion, v)
 
 
-class FallbackLogger:
-	def __init__(self) -> None:
-		pass
-
-	def error(self, text: str) -> None:  # noqa: PLR6301
-		sys.stderr.write("ERROR: " + text + "\n")
-
-	def warning(self, text: str) -> None:  # noqa: PLR6301
-		log.info("WARNING: " + text)
-
-	def debug(self, text: str) -> None:  # noqa: PLR6301
-		log.info(text)
-
-	def exception(self, prefix: str) -> None:  # noqa: PLR6301
-		typ, value, tback = sys.exc_info()
-		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
-		log.error(prefix + "\n" + text)
-
-
 def restartLow() -> typing.NoReturn:
 	"""Will not return from the function."""
 	os.execl(
@@ -124,7 +110,7 @@ def restartLow() -> typing.NoReturn:
 
 # a fully transparent object
 class NullObj:
-	def __setattr__(self, attr: str, value: Any) -> None:
+	def __setattr__(self, attr: str, value: object) -> None:
 		pass
 
 	def __getattr__(self, attr: str) -> NullObj:
@@ -171,9 +157,9 @@ def urlToPath(url: str) -> str:
 	return path2
 
 
-def findNearestNum(lst: list[int], num: int) -> int:
+def findNearestNum(lst: list[int], num: int) -> int | None:
 	if not lst:
-		return
+		return None
 	best = lst[0]
 	for x in lst[1:]:
 		if abs(x - num) < abs(best - num):
@@ -181,9 +167,9 @@ def findNearestNum(lst: list[int], num: int) -> int:
 	return best
 
 
-def findNearestIndex(lst: list[int], num: int) -> int:
+def findNearestIndex(lst: list[int], num: int) -> int | None:
 	if not lst:
-		return
+		return None
 	index = 0
 	count = len(lst)
 	for i in range(1, count):
@@ -219,7 +205,7 @@ def numRangesEncode(
 
 
 def numRangesDecode(text: str) -> list[int | tuple[int, int]]:
-	values = []
+	values: list[int | tuple[int, int]] = []
 	for part in text.split(","):
 		pparts = part.strip().split("-")
 		try:

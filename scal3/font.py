@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Self
 
 __all__ = ["Font", "FontTuple"]
 
@@ -17,13 +16,13 @@ class Font:
 	size: float = 0
 
 	@classmethod
-	def fromList(cls, lst: list | None) -> Self | None:
+	def fromList(cls, lst: list | None) -> Font | None:
 		if lst is None:
-			return
+			return None
 		return Font(*lst)
 
 	def to_json(self) -> tuple[str | None, bool, bool, float]:
 		return (self.family, self.bold, self.italic, self.size)
 
-	def copy(self) -> Self:
+	def copy(self) -> Font:
 		return Font(*self.to_json())

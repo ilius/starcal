@@ -65,30 +65,38 @@ pixDir = join(sourceDir, "pixmaps")
 svgDir = join(sourceDir, "svg")
 plugDir = join(sourceDir, plugDirName)
 
+
+def mustEnv(name: str) -> str:
+	value = os.getenv(name)
+	assert value, f"missing env {name}"
+	return value
+
+
 if osName in {"linux", "unix"}:
-	homeDir = os.getenv("HOME")
+	homeDir = mustEnv("HOME")
 	confDir = homeDir + "/." + APP_NAME
 	sysConfDir = "/etc/" + APP_NAME
 	tmpDir = "/tmp"
 	cacheDir = join(homeDir, ".cache", APP_NAME)
-	# user = os.getenv("USER")
+	# user = mustEnv("USER")
 elif osName == "mac":
-	homeDir = os.getenv("HOME")
+	homeDir = mustEnv("HOME")
 	_libDir = join(homeDir, "Library")
 	confDir = join(_libDir, "Preferences", APP_NAME)
 	# OR "/Library/" + APP_NAME
 	sysConfDir = join(sourceDir, "config")  # FIXME
 	tmpDir = "/tmp"
 	cacheDir = join(_libDir, "Caches", APP_NAME)
-	# user = os.getenv("USER")
+	# user = mustEnv("USER")
 elif osName == "win":
 	# homeDrive = os.environ["HOMEDRIVE"]
-	homeDir = os.getenv("HOMEPATH")
-	confDir = os.getenv("APPDATA") + "\\" + APP_NAME
+	homeDir = mustEnv("HOMEPATH")
+	_appData = mustEnv("APPDATA")
+	confDir = _appData + "\\" + APP_NAME
 	sysConfDir = join(sourceDir, "config")
-	tmpDir = os.getenv("TEMP")
+	tmpDir = mustEnv("TEMP")
 	cacheDir = join(confDir, "Cache")  # FIXME: right directory?
-	# user = os.getenv("USERNAME")
+	# user = mustEnv("USERNAME")
 else:
 	raise OSError("Unkown operating system!")
 

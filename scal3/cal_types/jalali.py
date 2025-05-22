@@ -28,7 +28,7 @@ from scal3 import logger
 from scal3.property import Property
 
 if TYPE_CHECKING:
-	from scal3.cal_types.pytypes import TranslateFunc
+	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 __all__ = ["desc", "getMonthLen", "isLeap", "jd_to", "name", "to_jd"]
 
@@ -40,7 +40,7 @@ desc = "Persian"
 origLang = "fa"
 
 monthNameMode = Property(0)
-options = [
+options: list[OptionTuple] = [
 	(
 		"monthNameMode",
 		list,

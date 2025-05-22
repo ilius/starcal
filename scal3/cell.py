@@ -20,7 +20,7 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from cachetools import LRUCache
 
@@ -173,7 +173,7 @@ class Cell:
 	# How do this with KOrginizer? FIXME
 	def dayOpenEvolution(
 		self,
-		arg: Any = None,  # noqa: ARG002
+		arg: object = None,  # noqa: ARG002
 	) -> None:
 		from subprocess import Popen
 
@@ -206,8 +206,6 @@ class CellCache:
 		self.current = self.today
 
 	def resetCache(self) -> None:
-		log.debug(f"resetCache: {conf.maxDayCacheSize.v=}, {conf.maxWeekCacheSize.v=}")
-
 		# key: jd(int), value: CellType
 		self.jdCells = LRUCache(maxsize=conf.maxDayCacheSize.v)
 

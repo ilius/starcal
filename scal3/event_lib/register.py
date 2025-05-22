@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from scal3.event_lib.pytypes import BaseClassType
+from .pytypes import (
+	AccountType,
+	BaseClassType,
+	EventGroupType,
+	EventNotifierType,
+	EventRuleType,
+	EventType,
+)
 
 __all__ = ["classes"]
 
@@ -9,10 +16,10 @@ class ClassGroup[T: BaseClassType](list):
 	def __init__(self, tname: str) -> None:
 		list.__init__(self)
 		self.tname = tname
-		self.names = []
-		self.byName = {}
-		self.byDesc = {}
-		self.main = None
+		self.names: list[str] = []
+		self.byName: dict[str, type[T]] = {}
+		self.byDesc: dict[str, type[T]] = {}
+		self.main: type[T] | None = None
 
 	def register(self, cls: type[T]) -> type[T]:
 		assert cls.name
@@ -33,8 +40,8 @@ class ClassGroup[T: BaseClassType](list):
 
 class classes:
 	# TODO: EventRuleType, EventNotifierType, EventType, EventGroupType, AccountType
-	rule = ClassGroup("rule")
-	notifier = ClassGroup("notifier")
-	event = ClassGroup("event")
-	group = ClassGroup("group")
-	account = ClassGroup("account")
+	rule: ClassGroup[EventRuleType] = ClassGroup("rule")
+	notifier: ClassGroup[EventNotifierType] = ClassGroup("notifier")
+	event: ClassGroup[EventType] = ClassGroup("event")
+	group: ClassGroup[EventGroupType] = ClassGroup("group")
+	account: ClassGroup[AccountType] = ClassGroup("account")

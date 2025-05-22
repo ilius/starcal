@@ -12,7 +12,7 @@ from json import JSONEncoder
 __all__ = ["dataToCompactJson", "dataToPrettyJson"]
 
 
-def _default(_self: Any, obj: Any) -> Any:
+def _default(_self: object, obj: object) -> Any:
 	return getattr(obj.__class__, "to_json", _default.default)(obj)
 
 

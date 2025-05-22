@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import os
 import re
 import subprocess
 import sys
 from os.path import isfile, join
+from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
+parse_version: Callable[[str], Any]
 try:
 	from packaging.version import parse as parse_version
 except ImportError:
