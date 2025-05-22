@@ -25,9 +25,10 @@ holidaysAuthors = [
 	"سعید رسولی <saeed.gnu@gmail.com>",
 ]
 
-
+homeDir = os.getenv("HOME")
+assert homeDir
 jsonPath = join(
-	os.getenv("HOME"),
+	homeDir,
 	"DroidPersianCalendar",
 	"PersianCalendar",
 	"data",
