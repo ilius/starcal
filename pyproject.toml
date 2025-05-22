@@ -69,6 +69,8 @@ lint.ignore = [
 	"ANN002",  # Missing type annotation for `*_args`
 	"ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
 
+	"PGH003", # Use specific rule codes when ignoring type issues
+
 	"FURB189", # Subclassing `list` can be error prone, use `collections.UserList` instead
 	"FURB103", # `open` and `write` should be replaced by `Path(...)....`
 	"PYI024",  # Use `typing.NamedTuple` instead of `collections.namedtuple`
@@ -233,7 +235,9 @@ wrap-comments = true
 wrap-pragma-comments = true
 
 [tool.mypy]
-exclude = []
+exclude = [  # DOES NOT WORK!!
+	'^scal3/json_utils\.py$',
+]
 
 [tool.refurb]
 ignore = [
