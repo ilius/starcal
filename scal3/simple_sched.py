@@ -71,7 +71,7 @@ class scheduler:
 		Initialize a new instance, passing the time and delay
 		functions.
 		"""
-		self._queue = []
+		self._queue: list[Event] = []
 		self.timefunc = timefunc
 		self.delayfunc = delayfunc
 		self.stopped = stopped
