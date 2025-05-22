@@ -265,7 +265,7 @@ confParamsData = [
 	),
 	Param(
 		name="",
-		type="bool",
+		type="float",
 		v3Name="boxSkipPixelLimit",
 		default=0.1,  # pixel
 	),

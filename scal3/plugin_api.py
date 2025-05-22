@@ -36,7 +36,7 @@ class PluginError(Exception):
 def getAttr(
 	moduleName: str,
 	attr: str,
-	default: Any = None,
+	default: object = None,
 	absolute: bool = False,
 ) -> Any:
 	if not absolute:
@@ -56,7 +56,7 @@ def getAttr(
 def setAttr(
 	moduleName: str,
 	attr: str,
-	value: Any,
+	value: object,
 	absolute: bool = False,
 ) -> None:
 	if not absolute:
