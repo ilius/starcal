@@ -197,11 +197,10 @@ class BaseCalObj(CalObjType):
 			self.set_visible(self.enable)
 		else:
 			log.warning(f"{self} has no set_visible method")
-			func = getattr(self, "show" if self.enable else "hide", None)
-			if func is not None:
-				func()
+			if self.enable:
+				self.show()
 			else:
-				log.error(f"{self} has no show/hide nor set_visible method")
+				self.hide()
 		for item in self.items:
 			item.showHide()
 
