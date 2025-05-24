@@ -103,6 +103,7 @@ def liveConfChanged() -> None:
 
 @registerSignals
 class MainWinVbox(gtk.Box, CustomizableCalBox):
+	vertical = True
 	objName = "mainPanel"
 	desc = _("Main Panel")
 	itemListCustomizable = True
