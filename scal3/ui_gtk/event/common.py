@@ -37,7 +37,7 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	labelImageButton,
@@ -396,7 +396,7 @@ class StrListEditor(gtk.Box):
 		# ----
 		pack(self, self.treev, 1, 1)
 		# ----------
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		toolbar.extend(
 			[
 				ToolBoxItem(

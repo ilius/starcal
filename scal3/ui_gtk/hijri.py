@@ -31,7 +31,7 @@ from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
 
 __all__ = ["checkHijriMonthsExpiration"]
@@ -102,7 +102,7 @@ class EditDbDialog(gtk.Dialog):
 		col = gtk.TreeViewColumn(title=_("End Date"), cell_renderer=cell, text=4)
 		treev.append_column(col)
 		# ------
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		# ---
 		toolbar.extend(
 			[
