@@ -41,6 +41,8 @@ class FileSystem:
 
 
 class DefaultFileSystem(FileSystem):
+	__slots__ = ["_rootPath"]
+
 	def __init__(self, rootPath: str) -> None:
 		self._rootPath = rootPath
 

@@ -36,6 +36,13 @@ pluginName = "MonthCal"
 
 
 class MonthStatus(list):  # FIXME
+	__slots__ = [
+		"month",
+		"offset",
+		"weekNum",
+		"year",
+	]
+
 	# self[sy<6][sx<7] of cells
 	# list (of 6 lists, each list containing 7 cells)
 	def __init__(

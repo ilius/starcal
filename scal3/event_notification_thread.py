@@ -43,6 +43,10 @@ DISABLE = False
 
 
 class EventNotificationManager:
+	__slots__ = [
+		"byGroup",
+	]
+
 	def __init__(self, eventGroups: Iterable[EventGroup]) -> None:
 		self.byGroup: dict[int, EventGroupNotificationThread] = {}
 		if DISABLE:

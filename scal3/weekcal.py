@@ -34,6 +34,10 @@ pluginName = "WeekCal"
 
 
 class WeekStatus(list):
+	__slots__ = [
+		"absWeekNumber",
+	]
+
 	# list (of 7 cells)
 	def __init__(self, cells: CellCacheType, absWeekNumber: int) -> None:
 		self.absWeekNumber = absWeekNumber
