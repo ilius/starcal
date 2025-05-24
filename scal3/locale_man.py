@@ -188,6 +188,16 @@ def tr(
 
 
 class LangData(SObjTextModel):
+	__slots__ = [
+		"fileName",  # shortName
+		"filecode",
+		"flag",  # flagFile
+		"hasUppercase",
+		"name",
+		"nativeName",
+		"rtl",
+		"timeZoneList",
+	]
 	params = (
 		"code",
 		"name",
