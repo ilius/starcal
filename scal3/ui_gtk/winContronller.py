@@ -230,6 +230,7 @@ class WinConButtonSep(WinConButton):
 
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalBox):
+	vertical = False
 	hasOptions = True
 	itemHaveOptions = False
 	objName = "winContronller"

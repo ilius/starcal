@@ -94,8 +94,11 @@ class DummyCalObj(ud.CalObjType):
 
 class CustomizableCalObj(ud.BaseCalObj):
 	customizable = True
-	itemListCustomizable = True
 	hasOptions = True
+	itemListCustomizable = True
+	vertical: bool | None = None
+	# vertical: only set (non-None) when `hasOptions and itemListCustomizable`
+	# vertical: True if items are on top of each other
 	isWrapper = False
 	enableParam = ""
 	optionsPageSpacing = 0
@@ -107,6 +110,8 @@ class CustomizableCalObj(ud.BaseCalObj):
 	myKeys = ()
 
 	def initVars(self) -> None:
+		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
+			log.error(f"Add vertical to {self.__class__}")
 		ud.BaseCalObj.initVars(self)
 		self.itemWidgets = {}  # for lazy construction of widgets
 		self.optionsWidget = None
