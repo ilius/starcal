@@ -351,6 +351,7 @@ class VerticalStaticToolBox(StaticToolBox):
 
 
 class CustomizableToolBox(StaticToolBox):
+	itemListCustomizable = True
 	objName = "toolbar"
 	desc = _("Toolbar")
 	styleList = (
