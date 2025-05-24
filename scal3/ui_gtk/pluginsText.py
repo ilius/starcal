@@ -31,6 +31,7 @@ __all__ = ["PluginsTextBox"]
 
 @registerSignals
 class PluginsTextView(gtk.TextView, CustomizableCalObj):
+	itemListCustomizable = False
 	def __init__(self, *args, **kwargs) -> None:
 		gtk.TextView.__init__(self, *args, **kwargs)
 		self.set_editable(False)

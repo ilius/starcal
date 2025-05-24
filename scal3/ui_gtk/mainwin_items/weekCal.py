@@ -80,6 +80,7 @@ def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
 
 
 class ColumnBase(CustomizableCalObj):
+	itemListCustomizable = False
 	customizeWidth = False
 	customizeExpand = False
 	customizeFont = False
@@ -1323,6 +1324,7 @@ class MoonStatusColumn(Column):
 class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	objName = "weekCal"
 	desc = _("Week Calendar")
+	vertical = False
 	expand = True
 	optionsPageSpacing = 10
 	itemListSeparatePage = True
