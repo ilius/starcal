@@ -27,7 +27,7 @@ from scal3.date_utils import dateDecode, dateEncode
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ class WidgetClass(gtk.Box):
 		# col.set_title
 		self.treev.append_column(col)
 		# --
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		# --
 		toolbar.extend(
 			[

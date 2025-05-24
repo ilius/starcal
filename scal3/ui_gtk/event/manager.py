@@ -61,7 +61,7 @@ from scal3.ui_gtk.event.utils import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
 	confirm,
 	dialog_add_button,
@@ -113,13 +113,9 @@ def saveConf() -> None:
 	saveSingleConfig(confPath, confParams, {})
 
 
-class EventManagerToolbar(StaticToolBox):
+class EventManagerToolbar(VerticalStaticToolBox):
 	def __init__(self, parent: gtk.Window) -> None:
-		StaticToolBox.__init__(
-			self,
-			parent,
-			vertical=True,
-		)
+		VerticalStaticToolBox.__init__(self, parent)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
 		# self.append(ToolBoxItem(

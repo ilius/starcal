@@ -146,7 +146,6 @@ class CalObj(CustomizableToolBox):
 		CustomizableToolBox.__init__(
 			self,
 			win,
-			# vertical=False,
 			continuousClick=False,
 		)
 		if not ud.mainToolbarData.v["items"]:

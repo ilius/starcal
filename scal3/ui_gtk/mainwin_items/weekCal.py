@@ -507,12 +507,13 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 
 @registerSignals
 class ToolbarColumn(CustomizableToolBox, ColumnBase):
+	vertical = True
 	desc = _("Toolbar (Vertical)")
 	autoButtonPressHandler = False
 	optionsPageSpacing = 5
 
 	def __init__(self, wcal: CalObj) -> None:
-		CustomizableToolBox.__init__(self, wcal, vertical=True)
+		CustomizableToolBox.__init__(self, wcal)
 		ColumnBase.__init__(self)
 		self.defaultItems = [
 			MainMenuToolBoxItem(wcal),

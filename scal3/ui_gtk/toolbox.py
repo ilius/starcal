@@ -266,14 +266,13 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 	def __init__(
 		self,
 		funcOwner: Any,
-		vertical: bool = False,
 		iconSize: float = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
 	) -> None:
+		assert self.vertical is not None
 		gtk.EventBox.__init__(self)
-		self.vertical = vertical
 		self.box = gtk.Box()
 		self.box.set_orientation(self.get_orientation())
 		self.box.set_homogeneous(homogeneous=False)
@@ -311,10 +310,11 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 
 
 class StaticToolBox(BaseToolBox):
+	vertical = False
+
 	def __init__(
 		self,
 		funcOwner: Any,
-		vertical: bool = False,
 		iconSize: float = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
@@ -323,7 +323,6 @@ class StaticToolBox(BaseToolBox):
 		BaseToolBox.__init__(
 			self,
 			funcOwner,
-			vertical=vertical,
 			iconSize=iconSize,
 			continuousClick=continuousClick,
 			buttonBorder=buttonBorder,
@@ -347,6 +346,10 @@ class StaticToolBox(BaseToolBox):
 			self.append(item)
 
 
+class VerticalStaticToolBox(StaticToolBox):
+	vertical = True
+
+
 class CustomizableToolBox(StaticToolBox):
 	objName = "toolbar"
 	desc = _("Toolbar")
@@ -364,14 +367,12 @@ class CustomizableToolBox(StaticToolBox):
 	def __init__(
 		self,
 		funcOwner: Any,
-		vertical: bool = False,
 		iconSize: float = 0,
 		continuousClick: bool = True,
 	) -> None:
 		BaseToolBox.__init__(
 			self,
 			funcOwner,
-			vertical=vertical,
 			iconSize=iconSize,
 			continuousClick=continuousClick,
 		)
