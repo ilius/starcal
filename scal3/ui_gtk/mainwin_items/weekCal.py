@@ -551,11 +551,11 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 			),
 		]
 		self.defaultItemsDict = {item.objName: item for item in self.defaultItems}
-		if not ud.wcalToolbarData.v["items"]:
-			ud.wcalToolbarData.v["items"] = [
+		if not ud.wcalToolbarData["items"]:
+			ud.wcalToolbarData["items"] = [
 				(item.objName, True) for item in self.defaultItems
 			]
-		self.setData(ud.wcalToolbarData.v)
+		self.setData(ud.wcalToolbarData)
 
 	def updateVars(self) -> None:
 		CustomizableToolBox.updateVars(self)
