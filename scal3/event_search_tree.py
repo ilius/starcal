@@ -80,6 +80,17 @@ class NodeType(Protocol):
 
 
 class Node:
+	__slots__ = [
+		"count",
+		"events",
+		"left",
+		"max_t",
+		"min_t",
+		"mt",
+		"red",
+		"right",
+	]
+
 	@staticmethod
 	def getCount(x: NodeType | None) -> int:
 		return x.count if x else 0
@@ -158,6 +169,8 @@ def flipColors(h: NodeType) -> None:
 
 
 class EventSearchTree:
+	__slots__ = ["byId", "root"]
+
 	def __init__(self) -> None:
 		self.clear()
 

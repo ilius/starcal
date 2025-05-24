@@ -37,6 +37,17 @@ if TYPE_CHECKING:
 
 
 class Node:
+	__slots__ = [
+		"base",
+		"children",
+		"events",
+		"level",
+		"offset",
+		"rightOri",
+		"s0",
+		"s1",
+	]
+
 	def __init__(
 		self,
 		base: int,

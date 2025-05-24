@@ -25,7 +25,7 @@ Usage:
 """
 
 
-@dataclass
+@dataclass(slots=True)
 class EventUpdateRecord:
 	action: str
 	obj: event_lib.Event | event_lib.EventGroup | event_lib.EventTrash
