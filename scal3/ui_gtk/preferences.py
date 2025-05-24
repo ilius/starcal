@@ -56,7 +56,7 @@ from scal3.ui_gtk.pref_utils_extra import (
 	WeekDayCheckListPrefItem,
 )
 from scal3.ui_gtk.stack import MyStack, StackPage
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
 	confirm,
 	dialog_add_button,
@@ -74,12 +74,11 @@ if typing.TYPE_CHECKING:
 __all__ = ["PreferencesWindow"]
 
 
-class PreferencesPluginsToolbar(StaticToolBox):
+class PreferencesPluginsToolbar(VerticalStaticToolBox):
 	def __init__(self, parent: gtk.Window) -> None:
-		StaticToolBox.__init__(
+		VerticalStaticToolBox.__init__(
 			self,
 			parent,
-			vertical=True,
 			# buttonBorder=0,
 			# buttonPadding=0,
 		)
@@ -1218,7 +1217,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vboxPlug, swin, 1, 1)
 		pack(hbox, vboxPlug, 1, 1)
 		# -----
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		# -----
 		toolbar.extend(
 			[
