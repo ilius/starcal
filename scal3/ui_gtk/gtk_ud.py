@@ -159,7 +159,7 @@ class BaseCalObj(CalObjType):
 				item.onDateChange(sender=sender, toParent=False)
 
 	def onEnableCheckClick(self) -> None:
-		enable = getattr(conf, self.enableParam)
+		enable = self.enableParam.v
 		self.enable = enable
 		self.onConfigChange()
 		self.showHide()
