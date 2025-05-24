@@ -16,6 +16,8 @@ __all__ = ["MaxHeap"]
 
 
 class MaxHeap[T](list):
+	__slots__ = []
+
 	def copy(self) -> Self:
 		return MaxHeap(self[:])
 

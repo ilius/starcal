@@ -198,6 +198,14 @@ class Cell:
 
 
 class CellCache:
+	__slots__ = [
+		"current",
+		"jdCells",
+		"plugins",
+		"today",
+		"weekEvents",
+	]
+
 	def __init__(self) -> None:
 		# a mapping from julan_day to Cell instance
 		self.resetCache()
