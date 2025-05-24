@@ -124,12 +124,8 @@ class RuleContainer:
 	def __delitem__(self, key: str) -> None:
 		self.rulesOd.__delitem__(key)
 
-	# returns (rule, found) where found is boolean
-	def __getitem__(self, key: str) -> tuple[EventRule | None, bool]:
-		rule = self.getRuleIfExists(key)
-		if rule is None:
-			return None, False
-		return rule, True
+	def __getitem__(self, key: str) -> EventRule | None:
+		return self.getRuleIfExists(key)
 
 	def __setitem__(self, key: str, value: EventRule) -> None:
 		self.setRule(key, value)

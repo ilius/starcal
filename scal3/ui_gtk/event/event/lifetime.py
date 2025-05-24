@@ -68,22 +68,22 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
-		start, ok = self.event["start"]
-		if not ok:
+		start = self.event["start"]
+		if start is None:
 			raise KeyError('rule "start" not found')
-		end, ok = self.event["end"]
-		if not ok:
+		end = self.event["end"]
+		if end is None:
 			raise KeyError('rule "end" not found')
 		self.startDateInput.set_value(start.date)
 		self.endDateInput.set_value(end.date)
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		start, ok = self.event["start"]
-		if not ok:
+		start = self.event["start"]
+		if start is None:
 			raise KeyError('rule "start" not found')
-		end, ok = self.event["end"]
-		if not ok:
+		end = self.event["end"]
+		if end is None:
 			raise KeyError('rule "end" not found')
 		start.setDate(self.startDateInput.get_value())
 		end.setDate(self.endDateInput.get_value())

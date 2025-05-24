@@ -110,8 +110,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			pageWidget = CalTypeParamWidget(
 				params=conf.mcalTypeParams,

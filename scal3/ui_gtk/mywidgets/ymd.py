@@ -21,8 +21,8 @@ class YearMonthDayBox(gtk.Box):
 		# ----
 		pack(self, gtk.Label(label=_("Month")))
 		comboMonth = gtk.ComboBoxText()
-		module, ok = calTypes[self.calType]
-		if not ok:
+		module = calTypes[self.calType]
+		if module is None:
 			raise RuntimeError(f"cal type {self.calType!r} not found")
 		for i in range(12):
 			comboMonth.append_text(
@@ -49,8 +49,8 @@ class YearMonthDayBox(gtk.Box):
 	def setCalType(self, calType: int) -> None:
 		self.comboMonth.disconnect(self.comboMonthConn)
 		self.calType = calType
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		combo = self.comboMonth
 		combo.remove_all()

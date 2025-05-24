@@ -147,8 +147,8 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 		if c1 in {"b", "h"}:  # FIXME
 
 			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
-				module, ok = calTypes[calType]
-				if not ok:
+				module = calTypes[calType]
+				if module is None:
 					raise RuntimeError(f"cal type '{calType}' not found")
 				return module.getMonthNameAb(_, cell.dates[calType][1])
 
@@ -159,8 +159,8 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 		if c1 == "B":
 
 			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
-				module, ok = calTypes[calType]
-				if not ok:
+				module = calTypes[calType]
+				if module is None:
 					raise RuntimeError(f"cal type '{calType}' not found")
 				return module.getMonthName(cell.dates[calType][1])
 

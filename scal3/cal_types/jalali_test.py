@@ -18,14 +18,9 @@ class TestJalali(unittest.TestCase):
 		# 978 <= year <= 987
 		isLeapFunc = jalali.isLeap
 		for year in range(10, -101, -1):
-			jalali.jalaliAlg = 0
 			isLeap1 = isLeapFunc(year)
-			jalali.jalaliAlg = 1
-			isLeap2 = isLeapFunc(year)
-			# print(
-			# 	f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   "
-			# 	f"{'L' if isLeap2 else ' '}")
-			print(f'{year}: "{"L" if isLeap1 else " "}{"L" if isLeap2 else " "}",')
+			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   ")
+			print(f'{year}: "{"L" if isLeap1 else " "}",')
 
 	isLeapDict = {
 		10: "  ",

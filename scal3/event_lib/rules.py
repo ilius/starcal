@@ -910,8 +910,8 @@ class DurationEventRule(EventRule):
 		endJd: int,
 		event: Event,  # noqa: ARG002
 	) -> OccurSet:
-		parentStart, ok = self.parent["start"]
-		if not ok:
+		parentStart = self.parent["start"]
+		if parentStart is None:
 			raise RuntimeError("parent has no start rule")
 		myStartEpoch = parentStart.getEpoch()
 		startEpoch = max(

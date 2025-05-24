@@ -151,17 +151,17 @@ class CalTypesHolder:
 			f"invalid key {key!r} given to {self.__class__.__name__!r}.__getitem__",
 		)
 
-	# returns (module, found) where found is bool
-	def __getitem__(self, key: str | int) -> tuple[CalTypeModule | None, bool]:
+	# TODO: removed the second result (found: bool) because mypy does not get it!
+	def __getitem__(
+		self,
+		key: str | int,
+	) -> CalTypeModule | None:
 		if isinstance(key, str):
-			module = self.byName.get(key)
-			if module is None:
-				return None, False
-			return module, True
+			return self.byName.get(key)
 		if isinstance(key, int):
 			if key >= len(modules):
-				return None, False
-			return modules[key], True
+				return None
+			return modules[key]
 		raise TypeError(
 			f"invalid key {key!r} given to {self.__class__.__name__!r}.__getitem__",
 		)
@@ -217,8 +217,8 @@ def convert(y: int, m: int, d: int, source: int, target: int) -> tuple[int, int,
 
 
 def getMonthLen(year: int, month: int, calType: int) -> int:
-	module, ok = calTypes[calType]
-	if not ok:
+	module = calTypes[calType]
+	if module is None:
 		raise RuntimeError(f"cal type '{calType}' not found")
 	return module.getMonthLen(year, month)
 

@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from scal3 import logger
 
@@ -36,11 +36,12 @@ from scal3.ics import getEpochByIcsTime, getIcsDateByJd, icsHeader, icsTmFormat
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.path import APP_NAME, plugDir
-from scal3.s_object import SObj, SObjTextModel
+from scal3.s_object import SObjTextModel
 from scal3.time_utils import getJdListFromEpochRange
 
 if TYPE_CHECKING:
 	from scal3.cell_type import CellType
+	from scal3.filesystem import FileSystem
 
 try:
 	import logging
@@ -61,10 +62,10 @@ pluginsTitleByName = {
 	"pray_times": _("Islamic Pray Times"),
 }
 
-pluginClassByName = {}
+pluginClassByName: dict[str, type[BasePlugin]] = {}
 
 
-def registerPlugin(cls: BasePlugin) -> BasePlugin:
+def registerPlugin[T: BasePlugin](cls: type[T]) -> type[T]:
 	assert cls.name
 	pluginClassByName[cls.name] = cls
 	return cls
@@ -74,8 +75,8 @@ def getPlugPath(_file: str) -> str:
 	return _file if isabs(_file) else join(plugDir, _file)
 
 
-class BasePlugin(SObj):
-	name = None
+class BasePlugin(SObjTextModel):
+	name: str = ""
 	external = False
 	loaded = True
 	params = (
@@ -109,7 +110,7 @@ class BasePlugin(SObj):
 	) -> None:
 		self.file = _file
 		# ------
-		self.calType = GREGORIAN
+		self.calType: int | None = GREGORIAN
 		self.title = ""
 		# ---
 		self.enable = False
@@ -119,14 +120,15 @@ class BasePlugin(SObj):
 		self.default_show_date = False
 		# ---
 		self.about = ""
-		self.authors = []
+		self.authors: list[str] = []
 		self.hasConfig = False
 		self.hasImage = False
 		self.lastDayMerge = True
 
 	def getData(self) -> dict[str, Any]:
 		data = SObjTextModel.getData(self)
-		data["calType"] = calTypes.names[self.calType]
+		if self.calType is not None:
+			data["calType"] = calTypes.names[self.calType]
 		return data
 
 	def setData(self, data: dict[str, Any]) -> None:
@@ -166,15 +168,22 @@ class BasePlugin(SObj):
 	def clear(self) -> None:
 		pass
 
-	def load(self) -> None:
-		pass
+	@classmethod
+	def load(
+		cls,
+		fs: FileSystem,  # noqa: ANN002
+		*args,  # noqa: ANN002
+	) -> Self:
+		raise NotImplementedError
 
 	def getText(self, _year: str, _month: str, _day: str) -> str:  # noqa: PLR6301
 		return ""
 
 	def updateCell(self, c: CellType) -> None:
-		module, ok = calTypes[self.calType]
-		if not ok:
+		if self.calType is None:
+			return
+		module = calTypes[self.calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
 
 		y, m, d = c.dates[self.calType]
@@ -367,8 +376,8 @@ class HolidayPlugin(BaseJsonPlugin):
 		BaseJsonPlugin.setData(self, data)
 
 	def dateIsHoliday(self, calType: int, y: int, m: int, d: int, jd: int) -> bool:
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 
 		for item in self.holidays[calType]:
@@ -481,8 +490,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 
 	def load(self) -> None:
 		# log.debug(f"YearlyTextPlugin({self._file}).load()")
-		module, ok = calTypes[self.calType]
-		if not ok:
+		module = calTypes[self.calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
 		yearlyData = [[""] * module.maxMonthLen for _j in range(12)]
 		# last item is a dict of dates (y, m, d) and the description of day:

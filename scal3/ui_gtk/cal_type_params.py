@@ -278,8 +278,8 @@ class CalTypeParamWidget(TextParamWidget):
 	) -> None:
 		self.index = index
 		# ----
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		TextParamWidget.__init__(
 			self,

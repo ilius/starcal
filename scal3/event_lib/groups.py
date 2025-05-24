@@ -769,11 +769,8 @@ class EventGroup(EventContainer):
 		importMode: int = IMPORT_MODE_APPEND,
 	) -> EventGroupsImportResult:
 		"""The caller must call group.save() after this."""
-		if not self.dataIsSet:
+		if not self.dataIsSet or importMode == IMPORT_MODE_OVERRIDE_MODIFIED:
 			self.setData(data)
-			# self.clearRemoteAttrs() # FIXME
-		elif importMode == IMPORT_MODE_OVERRIDE_MODIFIED:
-			self.setData(data, force=True)
 
 		res = EventGroupsImportResult()
 		gid = self.id
@@ -807,7 +804,7 @@ class EventGroup(EventContainer):
 				continue
 
 			event = self.getEvent(eid)
-			event.setData(eventData, force=True)
+			event.setDataOverride(eventData)
 			event.save()
 			res.modifiedEventIds.add((gid, event.id))
 			log.debug(f"overriden existing uuid={uuid!r}, eid={eid!r}")
@@ -999,23 +996,23 @@ class UniversityTerm(EventGroup):
 				return event.courseId
 			if attr == "time":
 				if event.name == "universityClass":
-					weekDay, ok = event["weekDay"]
-					if not ok:
+					weekDay = event["weekDay"]
+					if weekDay is None:
 						raise RuntimeError("no weekDay rule")
 					wd = weekDay.weekDayList[0]
-					dayTimeRange, ok = event["dayTimeRange"]
-					if not ok:
+					dayTimeRange = event["dayTimeRange"]
+					if dayTimeRange is None:
 						raise RuntimeError("no dayTimeRange rule")
 					return (
 						(wd - core.firstWeekDay.v) % 7,
 						dayTimeRange.getHourRange(),
 					)
 				if event.name == "universityExam":
-					date, ok = event["date"]
-					if not ok:
+					date = event["date"]
+					if date is None:
 						raise RuntimeError("no date rule")
-					dayTimeRange, ok = event["dayTimeRange"]
-					if not ok:
+					dayTimeRange = event["dayTimeRange"]
+					if dayTimeRange is None:
 						raise RuntimeError("no dayTimeRange rule")
 					return date.getJd(), dayTimeRange.getHourRange()
 		return EventGroup.getSortByValue(self, event, attr)
@@ -1085,8 +1082,8 @@ class UniversityTerm(EventGroup):
 		for event in self:
 			if event.name != "universityClass":
 				continue
-			weekNumModeRule, ok = event["weekNumMode"]
-			if not ok:
+			weekNumModeRule = event["weekNumMode"]
+			if weekNumModeRule is None:
 				raise RuntimeError("no weekNumMode rule")
 			weekNumMode = weekNumModeRule.getData()
 			if currentWeekNumMode:
@@ -1096,12 +1093,12 @@ class UniversityTerm(EventGroup):
 			elif weekNumMode == "any":
 				weekNumMode = ""
 			# ---
-			weekDayRule, ok = event["weekDay"]
-			if not ok:
+			weekDayRule = event["weekDay"]
+			if weekDayRule is None:
 				raise RuntimeError("no weekDay rule")
 			weekDay = weekDayRule.weekDayList[0]
-			dayTimeRangeRule, ok = event["dayTimeRange"]
-			if not ok:
+			dayTimeRangeRule = event["dayTimeRange"]
+			if dayTimeRangeRule is None:
 				raise RuntimeError("no dayTimeRange rule")
 			h0, h1 = dayTimeRangeRule.getHourRange()
 			startIndex = findNearestIndex(boundsHour, h0)
@@ -1169,8 +1166,8 @@ class UniversityTerm(EventGroup):
 	def copyFrom(self, other: EventGroup) -> None:
 		EventGroup.copyFrom(self, other)
 		if other.name == self.name:
-			self.classesEndDate = other.classesEndDate[:]
-			self.classTimeBounds = other.classTimeBounds[:]
+			self.classesEndDate = other.classesEndDate.copy()
+			self.classTimeBounds = other.classTimeBounds.copy()
 
 	def getData(self) -> dict[str, Any]:
 		data = EventGroup.getData(self)

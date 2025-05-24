@@ -241,14 +241,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				self.icon = group.icon
 
 	def getInfo(self) -> str:
-		calType = self.calType
-		calType, ok = calTypes[calType]
-		if not ok:
-			raise RuntimeError(f"cal type '{calType}' not found")
+		module = calTypes[self.calType]
+		if module is None:
+			raise RuntimeError(f"cal type '{self.calType}' not found")
 		rulesDict = self.rulesOd.copy()
 		lines = [
 			_("Type") + ": " + self.desc,
-			_("Calendar Type") + ": " + calType.desc,
+			_("Calendar Type") + ": " + module.desc,
 			_("Summary") + ": " + self.getSummary(),
 			_("Description") + ": " + self.description,
 		] + [rule.getInfo() for rule in rulesDict.values()]
@@ -341,8 +340,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		HistoryEventObjBinaryModel.copyFrom(self, other)
 		self.calType = other.calType
 		self.notifyBefore = other.notifyBefore[:]
-		# self.files = other.files[:]
-		self.notifiers = other.notifiers[:]  # FIXME
+		# self.files = other.files.copy()
+		self.notifiers = other.notifiers.copy()  # FIXME
 		self.copyRulesFrom(other)
 		self.addRequirements()
 		# ----
@@ -370,6 +369,11 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return data
 
 	def setData(self, data: dict[str, Any]) -> None:
+		if self.dataIsSet:
+			return
+		self.setDataOverride(data)
+
+	def setDataOverride(self, data: dict[str, Any]) -> None:
 		HistoryEventObjBinaryModel.setData(self, data)
 		if self.remoteIds:
 			self.remoteIds = tuple(self.remoteIds)
@@ -515,38 +519,38 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return True
 
 	def getStartJd(self) -> int:  # FIXME
-		start, ok = self["start"]
-		if ok:
+		start = self["start"]
+		if start is not None:
 			return start.getJd()
-		date, ok = self["date"]
-		if ok:
+		date = self["date"]
+		if date is not None:
 			return date.getJd()
 		return self.parent.startJd
 
 	def getEndJd(self) -> int:  # FIXME
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			return end.getJd()
-		date, ok = self["date"]
-		if ok:
+		date = self["date"]
+		if date is not None:
 			return date.getJd()
 		return self.parent.endJd
 
 	def getStartEpoch(self) -> int:
-		start, ok = self["start"]
-		if ok:
+		start = self["start"]
+		if start is not None:
 			return start.getEpoch()
-		date, ok = self["date"]
-		if ok:
+		date = self["date"]
+		if date is not None:
 			return date.getEpoch()
 		return self.parent.getStartEpoch()
 
 	def getEndEpoch(self) -> int:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			return end.getEpoch()
-		date, ok = self["date"]
-		if ok:
+		date = self["date"]
+		if date is not None:
 			return date.getEpoch()
 		return self.parent.getEndEpoch()
 

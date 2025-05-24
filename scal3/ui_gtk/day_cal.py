@@ -314,8 +314,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		assert self.dayParams
 		assert self.monthParams
 		for index, calType in enumerate(calTypes.active):
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			calTypeDesc = _("{calType} Calendar").format(
 				calType=_(module.desc, ctx="calendar"),

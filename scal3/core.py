@@ -195,7 +195,7 @@ def saveConf() -> None:
 	saveSingleConfig(confPath, confParams, confEncoders)
 
 
-fs: FileSystem | None = None
+fs: FileSystem = DefaultFileSystem(confDir)
 
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
@@ -556,11 +556,10 @@ def dataToJson(data: object) -> str:
 
 
 def init() -> None:
-	global VERSION, fs
+	global VERSION
 
 	VERSION = getVersion()  # right place?
 
-	fs = DefaultFileSystem(confDir)
 	loadConf()
 	initPlugins()
 

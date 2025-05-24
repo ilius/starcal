@@ -123,7 +123,7 @@ def formatYear(year: int, prettyPower: bool = False) -> str:
 
 # def setRandomColorsToEvents():
 # 	import random
-# 	events = ui.events[:]
+# 	events = ui.events.copy()
 # 	random.shuffle(events)
 # 	dh = 360.0/len(events)
 # 	hue = 0

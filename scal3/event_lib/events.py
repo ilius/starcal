@@ -167,8 +167,8 @@ class TaskEvent(SingleStartEndEvent):
 		date: tuple[int, int, int],
 		dayTime: tuple[int, int, int],
 	) -> None:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise KeyError('rule "start" not found')
 		start.date = date
 		start.time = dayTime
@@ -193,41 +193,41 @@ class TaskEvent(SingleStartEndEvent):
 		self.addRule(rule)
 
 	def getStart(self) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise KeyError('rule "start" not found')
 		return (start.date, start.time)
 
 	def getEnd(self) -> tuple[str, tuple[tuple[int, int, int], tuple[int, int, int]]]:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			return ("date", (end.date, end.time))
-		duration, ok = self["duration"]
-		if ok:
+		duration = self["duration"]
+		if duration is not None:
 			return ("duration", (duration.value, duration.unit))
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndEpoch(self) -> int:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			return end.getEpoch()
-		duration, ok = self["duration"]
-		if ok:
-			start, ok = self["start"]
-			if ok:
+		duration = self["duration"]
+		if duration is not None:
+			start = self["start"]
+			if start is not None:
 				return start.getEpoch() + duration.getSeconds()
 			raise RuntimeError("found duration rule without start rule")
 		raise ValueError("no end date neither duration specified for task")
 
 	def setEndEpoch(self, epoch: int) -> None:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			end.setEpoch(epoch)
 			return
-		duration, ok = self["duration"]
-		if ok:
-			start, ok = self["start"]
-			if ok:
+		duration = self["duration"]
+		if duration is not None:
+			start = self["start"]
+			if start is not None:
 				duration.setSeconds(epoch - start.getEpoch())
 			else:
 				raise RuntimeError("found duration rule without start rule")
@@ -235,30 +235,30 @@ class TaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def modifyPos(self, newStartEpoch: int) -> None:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise KeyError
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			end.setEpoch(end.getEpoch() + newStartEpoch - start.getEpoch())
 		start.setEpoch(newStartEpoch)
 
 	def modifyStart(self, newStartEpoch: int) -> None:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise KeyError
-		duration, ok = self["duration"]
-		if ok:
+		duration = self["duration"]
+		if duration is not None:
 			duration.value -= (newStartEpoch - start.getEpoch()) / duration.unit
 		start.setEpoch(newStartEpoch)
 
 	def modifyEnd(self, newEndEpoch: int) -> None:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			end.setEpoch(newEndEpoch)
 		else:
-			duration, ok = self["duration"]
-			if ok:
+			duration = self["duration"]
+			if duration is not None:
 				duration.value = (newEndEpoch - self.getStartEpoch()) / duration.unit
 			else:
 				raise RuntimeError("no end rule nor duration rule")
@@ -270,8 +270,8 @@ class TaskEvent(SingleStartEndEvent):
 		**kw,  # noqa: ANN003
 	) -> None:
 		Event.copyFrom(self, other, *a, **kw)
-		myStart, ok = self["start"]
-		if not ok:
+		myStart = self["start"]
+		if myStart is None:
 			raise KeyError
 		# --
 		if other.name == self.name:
@@ -284,8 +284,8 @@ class TaskEvent(SingleStartEndEvent):
 			self.removeSomeRuleTypes("end", "duration")
 			self.copySomeRuleTypesFrom(other, "start", "end", "duration")
 		else:
-			otherDayTime, ok = other["dayTime"]
-			if ok:
+			otherDayTime = other["dayTime"]
+			if otherDayTime is not None:
 				myStart.time = otherDayTime.dayTime
 
 	def setIcsData(self, data: dict[str, str]) -> bool:
@@ -366,23 +366,23 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.addRule(rule)
 
 	def getEnd(self) -> tuple[str, tuple[int, int, int] | int]:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			return ("date", end.date)
-		duration, ok = self["duration"]
-		if ok:
+		duration = self["duration"]
+		if duration is not None:
 			return ("duration", duration.value)
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndJd(self) -> int:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			# assert isinstance(end.getJd(), int)
 			return end.getJd()
-		duration, ok = self["duration"]
-		if ok:
-			start, ok = self["start"]
-			if not ok:
+		duration = self["duration"]
+		if duration is not None:
+			start = self["start"]
+			if start is None:
 				raise RuntimeError("no start rule")
 			# assert isinstance(start.getJd(), int)
 			return start.getJd() + duration.getSeconds() // dayLen
@@ -397,14 +397,14 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	# 	self.getAddRule("end").setJdExact(jd)
 
 	def setEndJd(self, jd: int) -> None:
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			end.setJd(jd)
 			return
-		duration, ok = self["duration"]
-		if ok:
-			start, ok = self["start"]
-			if ok:
+		duration = self["duration"]
+		if duration is not None:
+			start = self["start"]
+			if start is not None:
 				duration.setSeconds(dayLen * (jd - start.getJd()))
 				return
 		raise ValueError("no end date neither duration specified for task")
@@ -448,26 +448,26 @@ class DailyNoteEvent(Event):
 		return data
 
 	def getDate(self) -> tuple[int, int, int] | None:
-		rule, ok = self["date"]
-		if ok:
+		rule = self["date"]
+		if rule is not None:
 			return rule.date
 		return None
 
 	def setDate(self, year: int, month: int, day: int) -> None:
-		rule, ok = self["date"]
-		if not ok:
+		rule = self["date"]
+		if rule is None:
 			raise KeyError("no date rule")
 		rule.date = (year, month, day)
 
 	def getJd(self) -> int:
-		rule, ok = self["date"]
-		if ok:
+		rule = self["date"]
+		if rule is not None:
 			return rule.getJd()
 		return None
 
 	def setJd(self, jd: int) -> None:
-		rule, ok = self["date"]
-		if ok:
+		rule = self["date"]
+		if rule is not None:
 			return rule.setJd(jd)
 		return None
 
@@ -526,8 +526,8 @@ class YearlyEvent(Event):
 		return data
 
 	def getMonth(self) -> int | None:
-		rule, ok = self["month"]
-		if ok:
+		rule = self["month"]
+		if rule is not None:
 			return rule.values[0]
 		return None
 
@@ -535,8 +535,8 @@ class YearlyEvent(Event):
 		return self.getAddRule("month").setData(month)
 
 	def getDay(self) -> int | None:
-		rule, ok = self["day"]
-		if ok:
+		rule = self["day"]
+		if rule is not None:
 			return rule.values[0]
 		return None
 
@@ -550,8 +550,8 @@ class YearlyEvent(Event):
 		self.setDay(d)
 
 	def getJd(self) -> int:  # used only for copyFrom
-		startRule, ok = self["start"]
-		if ok:
+		startRule = self["start"]
+		if startRule is not None:
 			y = startRule.getDate(self.calType)[0]
 		else:
 			y = getSysDate(self.calType)[0]
@@ -576,8 +576,8 @@ class YearlyEvent(Event):
 		if day is None:
 			log.error(f"day is None for eventId={self.id}")
 			return
-		startRule, ok = self["start"]
-		if ok:
+		startRule = self["start"]
+		if startRule is not None:
 			startJd = max(startJd, startRule.getJd())
 		startYear = jd_to(ifloor(startJd), calType)[0]
 		endYear = jd_to(iceil(endJd), calType)[0]
@@ -593,8 +593,8 @@ class YearlyEvent(Event):
 
 	def getData(self) -> dict[str, Any]:
 		data = Event.getData(self)
-		start, ok = self["start"]
-		if ok:
+		start = self["start"]
+		if start is not None:
 			data["startYear"] = int(start.date[0])
 		data["month"] = self.getMonth()
 		data["day"] = self.getDay()
@@ -642,9 +642,9 @@ class YearlyEvent(Event):
 				_(self.getDay()),
 				getMonthName(self.calType, self.getMonth()),
 			]
-			startRule, ok = self["start"]
-			if ok:
-				newParts.append(_(startRule.date[0]))
+			start = self["start"]
+			if start is not None:
+				newParts.append(_(start.date[0]))
 			summary = " ".join(newParts) + ": " + summary
 		return summary
 
@@ -654,8 +654,8 @@ class YearlyEvent(Event):
 		month = self.getMonth()
 		day = self.getDay()
 		startYear = icsMinStartYear
-		startRule, ok = self["start"]
-		if ok:
+		startRule = self["start"]
+		if startRule is not None:
 			startYear = startRule.getDate(GREGORIAN)[0]
 		elif getattr(self.parent, "startJd", None):
 			startYear = jd_to(self.parent.startJd, GREGORIAN)[0]
@@ -722,29 +722,29 @@ class MonthlyEvent(Event):
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		year, month, day = jd_to(core.getCurrentJd(), self.calType)
-		start, ok = self["start"]
-		if ok:
+		start = self["start"]
+		if start is not None:
 			start.setDate((year, month, 1))
 		else:
 			raise RuntimeError("no start rule")
-		end, ok = self["end"]
-		if ok:
+		end = self["end"]
+		if end is not None:
 			end.setDate((year + 1, month, 1))
 		else:
 			raise RuntimeError("no end rule")
 		self.setDay(day)
 
 	def getDay(self) -> int:
-		rule, ok = self["day"]
-		if not ok:
+		rule = self["day"]
+		if rule is None:
 			raise RuntimeError("no day rule")
 		if not rule.values:
 			return 1
 		return rule.values[0]
 
 	def setDay(self, day: int) -> None:
-		rule, ok = self["day"]
-		if not ok:
+		rule = self["day"]
+		if rule is None:
 			raise RuntimeError("no day rule")
 		rule.values = [day]
 
@@ -780,11 +780,11 @@ class WeeklyEvent(Event):
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		jd = core.getCurrentJd()
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise RuntimeError("no start rule")
-		end, ok = self["end"]
-		if not ok:
+		end = self["end"]
+		if end is None:
 			raise RuntimeError("no end rule")
 		start.setJd(jd)
 		end.setJd(jd + 8)
@@ -847,8 +847,8 @@ class UniversityClassEvent(Event):
 			except ValueError:
 				log.exception("")
 			else:
-				rule, ok = self["dayTimeRange"]
-				if not ok:
+				rule = self["dayTimeRange"]
+				if rule is None:
 					raise RuntimeError("no dayTimeRange rule")
 				rule.setRange(
 					tm0 + (0,),
@@ -859,8 +859,8 @@ class UniversityClassEvent(Event):
 		return self.parent.getCourseNameById(self.courseId)
 
 	def getWeekDayName(self) -> str:
-		rule, ok = self["weekDay"]
-		if not ok:
+		rule = self["weekDay"]
+		if rule is None:
 			raise RuntimeError("no weekDay rule")
 		return core.weekDayName[rule.weekDayList[0]]
 
@@ -873,18 +873,18 @@ class UniversityClassEvent(Event):
 		)
 
 	def setJd(self, jd: int) -> None:
-		rule, ok = self["weekDay"]
-		if not ok:
+		rule = self["weekDay"]
+		if rule is None:
 			raise RuntimeError("no weekDay rule")
 		rule.weekDayList = [jwday(jd)]
 		# set weekNumMode from absWeekNumber FIXME
 
 	def getIcsData(self, prettyDateTime: bool = False) -> dict[str, str]:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise RuntimeError("no start rule")
-		end, ok = self["end"]
-		if not ok:
+		end = self["end"]
+		if end is None:
 			raise RuntimeError("no end rule")
 		startJd = start.getJd()
 		endJd = end.getJd()
@@ -892,11 +892,11 @@ class UniversityClassEvent(Event):
 		tRangeList = occur.getTimeRangeList()
 		if not tRangeList:
 			return
-		weekNumMode, ok = self["weekNumMode"]
-		if not ok:
+		weekNumMode = self["weekNumMode"]
+		if weekNumMode is None:
 			raise RuntimeError("no weekNumMode rule")
-		weekDay, ok = self["weekDay"]
-		if not ok:
+		weekDay = self["weekDay"]
+		if weekDay is None:
 			raise RuntimeError("no weekDay rule")
 		until = ics.getIcsDateByJd(endJd, prettyDateTime)
 		interval = 1 if weekNumMode.getData() == "any" else 2
@@ -965,8 +965,8 @@ class UniversityExamEvent(DailyNoteEvent):
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		DailyNoteEvent.setDefaults(self, group=group)
-		dayTimeRange, ok = self["dayTimeRange"]
-		if not ok:
+		dayTimeRange = self["dayTimeRange"]
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		dayTimeRange.setRange((9, 0), (11, 0))  # FIXME
 		if group and group.name == "universityTerm":
@@ -986,8 +986,8 @@ class UniversityExamEvent(DailyNoteEvent):
 			return IntervalOccurSet()
 
 		epoch = self.getEpochFromJd(jd)
-		dayTimeRange, ok = self["dayTimeRange"]
-		if not ok:
+		dayTimeRange = self["dayTimeRange"]
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		startSec, endSec = dayTimeRange.getSecondsRange()
 		return IntervalOccurSet(
@@ -1000,12 +1000,12 @@ class UniversityExamEvent(DailyNoteEvent):
 		)
 
 	def getIcsData(self, prettyDateTime: bool = False) -> dict[str, str]:
-		date, ok = self["date"]
-		if not ok:
+		date = self["date"]
+		if date is None:
 			raise RuntimeError("no date rule")
 		dayStart = date.getEpoch()
-		dayTimeRange, ok = self["dayTimeRange"]
-		if not ok:
+		dayTimeRange = self["dayTimeRange"]
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		startSec, endSec = dayTimeRange.getSecondsRange()
 		return [
@@ -1043,8 +1043,8 @@ class LifetimeEvent(SingleStartEndEvent):
 	isAllDay = True
 
 	# def setDefaults(self):
-	# 	start, ok = self["start"]
-	# 	if ok:
+	# 	start= self["start"]
+	# 	if XX is not None:
 	# 		start.date = ...
 
 	def getV4Data(self) -> dict[str, str]:
@@ -1074,14 +1074,14 @@ class LifetimeEvent(SingleStartEndEvent):
 		start.setJdExact(newStartJd)
 
 	def modifyStart(self, newEpoch: int) -> None:
-		start, ok = self["start"]
-		if not ok:
+		start = self["start"]
+		if start is None:
 			raise RuntimeError("no start rule")
 		start.setEpoch(roundEpochToDay(newEpoch))
 
 	def modifyEnd(self, newEpoch: int) -> None:
-		end, ok = self["end"]
-		if not ok:
+		end = self["end"]
+		if end is None:
 			raise RuntimeError("no end rule")
 		end.setEpoch(roundEpochToDay(newEpoch))
 

@@ -84,7 +84,7 @@ class EventTrash(EventContainer, WithIcon):
 			self.idList.remove(eid)
 
 	def empty(self) -> None:
-		idList2 = self.idList[:]
+		idList2 = self.idList.copy()
 		for eid in self.idList:
 			try:
 				self.fs.removeFile(Event.getFile(eid))

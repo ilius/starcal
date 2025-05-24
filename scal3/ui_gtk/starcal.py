@@ -1356,7 +1356,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			if conf.statusIconLocalizeNumber.v:
 				dayNum = locale_man.numEncode(
 					ddate[2],
-					localeMode=calTypes.primary,  # FIXME
+					localeMode="calendar",
 				)
 			else:
 				dayNum = str(ddate[2])

@@ -186,8 +186,8 @@ class SelectDateDialog(gtk.Dialog):
 
 	def setCalType(self, calType: int) -> None:
 		self.calType = calType
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		self.calTypeCombo.set_active(calType)
 		self.ymdBox.setCalType(calType)
@@ -197,8 +197,8 @@ class SelectDateDialog(gtk.Dialog):
 		prevCalType = self.calType
 		prevDate = self.get()
 		calType = self.calTypeCombo.get_active()
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		if prevDate is None:
 			y, m, d = ui.cells.current.dates[calType]

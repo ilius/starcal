@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from scal3 import logger
-from scal3.filesystem import DefaultFileSystem
+from scal3 import core, logger
 
 log = logger.get()
 
@@ -17,14 +16,15 @@ from scal3.path import sourceDir
 
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import bson
 
-from scal3.dict_utils import makeOrderedData
+from scal3.dict_utils import makeOrderedData, makeOrderedDict
 from scal3.json_utils import dataToPrettyJson
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
 	from typing import Any, Self
 
 	from scal3.filesystem import FileSystem
@@ -44,16 +44,26 @@ dataToJson = dataToPrettyJson
 objectDirName = "objects"
 
 
+class ParentSObj(Protocol):
+	def index(self, eid: int) -> int: ...
+	def getIdPath(self) -> list[int]: ...
+	def getPath(self) -> list[int]: ...
+
+
 class SObj:
+	name = ""
+	paramsOrder: Sequence[str] = ()
+
 	@classmethod
 	def getSubclass(cls, typeName: str) -> type:  # noqa: ARG003
 		return cls
 
-	params = ()  # used in getData, setData and copyFrom
-	canSetDataMultipleTimes = True
+	params: Sequence[str] = ()  # used in getData, setData and copyFrom
 
 	def __init__(self) -> None:
-		self.fs: FileSystem = DefaultFileSystem
+		self.fs: FileSystem = core.fs
+		self.parent: ParentSObj | None = None
+		self.id: int
 
 	def __bool__(self) -> bool:
 		raise NotImplementedError
@@ -81,21 +91,12 @@ class SObj:
 	def getData(self) -> dict[str, Any]:
 		return {param: getattr(self, param) for param in self.params}
 
-	def setData(self, data: dict[str, Any] | list, force: bool = False) -> bool:
-		if not force and not self.__class__.canSetDataMultipleTimes:
-			if getattr(self, "dataIsSet", False):
-				raise RuntimeError(
-					"can not run setData multiple times "
-					f"for {self.__class__.__name__} instance",
-				)
-			self.dataIsSet = True
-		# -----------
-		# if isinstance(data, dict):  # FIXME
+	def setData(self, data: dict[str, Any]) -> None:
 		for key, value in data.items():
 			if key in self.params:
 				setattr(self, key, value)
 
-	def getIdPath(self) -> str:
+	def getIdPath(self) -> list[int]:
 		try:
 			parent = self.parent
 		except AttributeError:
@@ -109,14 +110,14 @@ class SObj:
 				f"{self.__class__.__name__}.getIdPath: no id attribute",
 			) from None
 		# ------
-		path = []
+		path: list[int] = []
 		if ident is not None:
 			path.append(ident)
 		if parent is None:
 			return path
 		return parent.getIdPath() + path
 
-	def getPath(self) -> list[str]:
+	def getPath(self) -> list[int]:
 		parent = self.parent
 		if parent is None:
 			return []
@@ -125,11 +126,9 @@ class SObj:
 
 
 class SObjTextModel(SObj):
-	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
 	file = ""
-	paramsOrder = ()
 
 	@classmethod
 	def getFile(cls, ident: int | None = None) -> str:  # noqa: ARG003
@@ -169,7 +168,7 @@ class SObjTextModel(SObj):
 	# -----
 
 	def getDataOrdered(self) -> dict[str, Any]:
-		return makeOrderedData(self.getData(), self.paramsOrder)
+		return makeOrderedDict(self.getData(), self.paramsOrder)
 
 	def save(self) -> None:
 		if self.file:
@@ -181,7 +180,12 @@ class SObjTextModel(SObj):
 				f"save method called for object {self!r} while file is not set",
 			)
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(
+		self,
+		data: dict[str, Any],
+	) -> None:
+		# if self.dataIsSet:  # FIXME
+		# 	return
 		SObj.setData(self, data)
 		self.setModifiedFromFile()
 
@@ -202,13 +206,17 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 
 
 class SObjBinaryModel(SObj):
-	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
 	file = ""
-	lastHash = None
+	lastHash: str | None = None
 	# FIXME: basicParams or noHistParams
-	basicParams = ()
+	basicParams: Sequence[str] = ()
+
+	# def setData(self, data: dict[str, Any]) -> None:
+	# 	if self.dataIsSet:
+	# 		return
+	# 	SObj.setData(self, data)
 
 	@classmethod
 	def getFile(cls, ident: int | None = None) -> str:  # noqa: ARG003
@@ -243,7 +251,7 @@ class SObjBinaryModel(SObj):
 			)
 
 		if lastEpoch is None:
-			lastEpoch = now()  # FIXME
+			lastEpoch = now()
 
 		# data is the result of json.loads,
 		# so probably can be only dict or list (or str)
@@ -273,11 +281,11 @@ class SObjBinaryModel(SObj):
 	@classmethod
 	def updateBasicData(
 		cls,
-		data: dict | list,
+		data: dict[str, Any],
 		filePath: str,
 		fileType: str,
 		fs: FileSystem,
-	) -> tuple[int, str]:
+	) -> tuple[float, str]:
 		"""
 		fileType: "event" | "group" | "account"...,
 		display only, does not matter much
@@ -309,6 +317,7 @@ class SObjBinaryModel(SObj):
 
 	def loadHistory(self) -> list[tuple[int, str]]:  # (epoch, hashStr)
 		lastBasicData = self.loadBasicData()
+		assert isinstance(lastBasicData, dict)
 		history = lastBasicData.get("history")
 		if history is None:
 			if lastBasicData:
@@ -322,7 +331,7 @@ class SObjBinaryModel(SObj):
 			fp.write(jsonStr)
 
 	@classmethod
-	def saveData(cls, data: dict | list, fs: FileSystem) -> str:
+	def saveData(cls, data: dict[str, Any], fs: FileSystem) -> str:
 		data = dict(sorted(data.items()))
 		bsonBytes = bytes(bson.dumps(data))
 		hash_ = sha1(bsonBytes).hexdigest()
@@ -345,7 +354,7 @@ class SObjBinaryModel(SObj):
 		if self.fs is None:
 			raise RuntimeError(f"{self} has no fs object")
 		data = self.getData()
-		basicData = {}
+		basicData: dict[str, Any] = {}
 		for param in self.basicParams:
 			if param not in data:
 				continue
@@ -362,7 +371,7 @@ class SObjBinaryModel(SObj):
 			lastHash = None
 		if hash_ != lastHash:  # or lastHistArgs != histArgs:  # FIXME
 			tm = now()
-			history.insert(0, [tm, hash_] + list(histArgs))
+			history.insert(0, (tm, hash_) + histArgs)
 			self.modified = tm
 		basicData["history"] = history
 		self.saveBasicData(basicData)
@@ -375,6 +384,7 @@ class SObjBinaryModel(SObj):
 	) -> Self:
 		cls = self.__class__
 		data = self.loadBasicData()
+		assert isinstance(data, dict)
 		data.update(self.loadData(revHash, self.fs))
 		try:
 			type_ = data["type"]

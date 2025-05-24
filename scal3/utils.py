@@ -157,7 +157,7 @@ def urlToPath(url: str) -> str:
 	return path2
 
 
-def findNearestNum(lst: list[int], num: int) -> int | None:
+def findNearestNum(lst: list[int], num: float) -> int | None:
 	if not lst:
 		return None
 	best = lst[0]
@@ -167,7 +167,7 @@ def findNearestNum(lst: list[int], num: int) -> int | None:
 	return best
 
 
-def findNearestIndex(lst: list[int], num: int) -> int | None:
+def findNearestIndex(lst: list[int], num: float) -> int | None:
 	if not lst:
 		return None
 	index = 0

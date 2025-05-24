@@ -150,8 +150,8 @@ class WidgetClass(gtk.Box):
 		# --
 		self.dateInput.set_value(self.event.getDate())
 		# --
-		timeRangeRule, ok = self.event["dayTimeRange"]
-		if not ok:
+		timeRangeRule = self.event["dayTimeRange"]
+		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
@@ -173,8 +173,8 @@ class WidgetClass(gtk.Box):
 		# --
 		self.event.setDate(*self.dateInput.get_value())
 		# --
-		timeRangeRule, ok = self.event["dayTimeRange"]
-		if not ok:
+		timeRangeRule = self.event["dayTimeRange"]
+		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		timeRangeRule.setRange(
 			self.dayTimeStartCombo.get_value(),

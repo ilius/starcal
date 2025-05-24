@@ -102,8 +102,8 @@ class WidgetClass(common.WidgetClass):
 		# ---
 		self.daySpin.set_value(self.event.getDay())
 		# ---
-		dayTimeRange, ok = self.event["dayTimeRange"]
-		if not ok:
+		dayTimeRange = self.event["dayTimeRange"]
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
@@ -111,20 +111,20 @@ class WidgetClass(common.WidgetClass):
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		# --
-		start, ok = self.event["start"]
-		if not ok:
+		start = self.event["start"]
+		if start is None:
 			raise RuntimeError("no start rule")
 		start.setDate(self.startDateInput.get_value())
 		# --
-		end, ok = self.event["end"]
-		if not ok:
+		end = self.event["end"]
+		if end is None:
 			raise RuntimeError("no end rule")
 		end.setDate(self.endDateInput.get_value())
 		# --
 		self.event.setDay(self.daySpin.get_value())
 		# ---
-		dayTimeRange, ok = self.event["dayTimeRange"]
-		if not ok:
+		dayTimeRange = self.event["dayTimeRange"]
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		dayTimeRange.setRange(
 			self.dayTimeStartInput.get_value(),

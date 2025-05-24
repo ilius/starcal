@@ -698,14 +698,14 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		self.inactiveTrees.clear()
 		# --
 		for calType in calTypes.active:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.activeTrees.append([module.name, _(module.desc, ctx="calendar")])
 		# --
 		for calType in calTypes.inactive:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.inactiveTrees.append([module.name, _(module.desc, ctx="calendar")])
 
