@@ -35,7 +35,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
@@ -84,7 +84,7 @@ class CourseListEditor(gtk.Box):
 		else:
 			pack(self, self.treev, 1, 1)
 		# ----------
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		# ----
 		toolbar.extend(
 			[
@@ -228,7 +228,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		# ----
 		pack(self, self.treev, 1, 1)
 		# ----------
-		toolbar = StaticToolBox(self, vertical=True)
+		toolbar = VerticalStaticToolBox(self)
 		# ----
 		toolbar.extend(
 			[
