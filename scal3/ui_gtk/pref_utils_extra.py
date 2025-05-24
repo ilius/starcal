@@ -29,7 +29,7 @@ from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.pref_utils import PrefItem, SpinPrefItem
-from scal3.ui_gtk.toolbox import StaticToolBox, ToolBoxItem
+from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
@@ -451,13 +451,9 @@ class InactiveCalsTreeView(AICalsTreeview):
 	dragId = 101
 
 
-class ActiveInactiveCalsPrefItemToolbar(StaticToolBox):
+class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
 	def __init__(self, parent: PrefItem) -> None:
-		StaticToolBox.__init__(
-			self,
-			parent,
-			vertical=True,
-		)
+		VerticalStaticToolBox.__init__(self, parent)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
 
