@@ -21,6 +21,7 @@ __all__ = ["eventTags", "eventTagsDesc"]
 eventIconDir = join(svgDir, "event")
 
 
+# TODO: dataclass
 class TagIconItem:
 	def __init__(
 		self,
