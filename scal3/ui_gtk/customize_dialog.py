@@ -30,8 +30,8 @@ from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
-	StaticToolBox,
 	ToolBoxItem,
+	VerticalStaticToolBox,
 )
 from scal3.ui_gtk.tree_utils import tree_path_split
 from scal3.ui_gtk.utils import (
@@ -48,17 +48,13 @@ if TYPE_CHECKING:
 __all__ = ["CustomizeWindow"]
 
 
-class CustomizeWindowItemsToolbar(StaticToolBox):
+class CustomizeWindowItemsToolbar(VerticalStaticToolBox):
 	def __init__(
 		self,
 		parent: gtk.Widget,
 		onClickArgs: Sequence[Any],
 	) -> None:
-		StaticToolBox.__init__(
-			self,
-			parent,
-			vertical=True,
-		)
+		VerticalStaticToolBox.__init__(self, parent)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
 		self.extend(
