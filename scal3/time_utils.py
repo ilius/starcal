@@ -84,6 +84,7 @@ utcOffsetByJdCache = {}
 
 
 class HMS:
+	__slots__ = ["h", "m", "s"]
 	formats = {
 		"HMS": "{h:02d}:{m:02d}:{s:02d}",
 		"hMS": "{h}:{m:02d}:{s:02d}",
