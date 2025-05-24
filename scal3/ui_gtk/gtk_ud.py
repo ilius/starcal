@@ -545,18 +545,12 @@ wcalToolbarData = {
 # -----------------------------------------------------------
 
 # loaded from jsom
-tmpValue = getattr(conf, "ud__wcalToolbarData", None)
-if tmpValue is not None:
-	wcalToolbarData = tmpValue
-del tmpValue
-
+if conf.ud__wcalToolbarData.v is not None:
+	wcalToolbarData = conf.ud__wcalToolbarData.v
 
 # loaded from jsom
-tmpValue = getattr(conf, "ud__mainToolbarData", None)
-if tmpValue is not None:
-	mainToolbarData = tmpValue
-del tmpValue
-
+if conf.ud__mainToolbarData.v is not None:
+	mainToolbarData = conf.ud__mainToolbarData.v
 
 loadConf()
 
