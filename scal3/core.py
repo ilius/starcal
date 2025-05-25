@@ -574,7 +574,7 @@ log.info(f"Local Time Zone: {locale_man.localTzStr}")
 
 libDir = join(sourceDir, "lib")
 if isdir(libDir):
-	sys.path.insert(libDir)
+	sys.path.insert(0, libDir)
 	major, minor, patch = sys.version_info
 	pyVersion = f"{major}.{minor}"
 	pyLibDir = join(libDir, pyVersion)
