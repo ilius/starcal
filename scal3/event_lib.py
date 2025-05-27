@@ -1716,6 +1716,7 @@ class ExDatesEventRule(EventRule):
 		for jd in self.jdList:
 			dates.append(jd_to(jd, calType))
 		self.dates = dates
+		return True
 
 
 # TODO
