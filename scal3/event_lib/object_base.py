@@ -16,32 +16,22 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from scal3 import logger
 
-from scal3.timeline import conf
-
-if TYPE_CHECKING:
-	from scal3 import ui
-
-__all__ = ["Tick"]
+log = logger.get()
 
 
-class Tick:
-	def __init__(
-		self,
-		epoch: int,
-		pos: float,
-		unitSize: float,
-		label: str,
-		color: ui.ColorType | None = None,
-	) -> None:
-		self.epoch = epoch
-		self.pos = pos  # pixel position
-		self.height = unitSize**0.5 * conf.baseTickHeight.v
-		self.width = min(unitSize**0.2 * conf.baseTickWidth.v, conf.maxTickWidth.v)
-		self.fontSize = unitSize**0.1 * conf.baseFontSize.v
-		self.maxLabelWidth = min(unitSize * 0.5, conf.maxLabelWidth.v)  # FIXME
-		self.label = label
-		if color is None:
-			color = conf.fgColor.v
-		self.color = color
+from scal3.event_lib import state
+from scal3.s_object import (
+	SObjTextModel,
+)
+
+__all__ = ["EventObjTextModel"]
+
+
+class EventObjTextModel(SObjTextModel):
+	def save(self) -> None:
+		if state.allReadOnly:
+			log.info(f"events are read-only, ignored file {self.file}")
+			return
+		SObjTextModel.save(self)

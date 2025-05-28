@@ -8,13 +8,15 @@ __all__ = ["WithIcon", "iconAbsToRelativelnData"]
 
 
 class WithIcon:
-	icon: str
+	icon: str | None
 
-	def getIcon(self) -> str:
+	def getIcon(self) -> str | None:
 		return self.icon
 
-	def getIconRel(self) -> str:
+	def getIconRel(self) -> str | None:
 		icon = self.icon
+		if not icon:
+			return None
 		for direc in (svgDir, pixDir):
 			if icon.startswith(direc + os.sep):
 				return icon[len(direc) + 1 :]

@@ -23,6 +23,9 @@ class DemoWizardWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -67,10 +70,10 @@ class DemoWizardWindow(WizardWindow):
 		def run(self) -> None:
 			pass
 
-		def onCancelClick(self, _widget: gtk.Widget) -> None:
+		def onCancelClick(self, _w: gtk.Widget) -> None:
 			self.win.destroy()
 
-		def onNextClick(self, _widget: gtk.Widget) -> None:
+		def onNextClick(self, _w: gtk.Widget) -> None:
 			fpath = self.fcb.get_filename()
 			format_ = None
 			if self.radioJson.get_active():
@@ -79,6 +82,9 @@ class DemoWizardWindow(WizardWindow):
 
 	class SecondStep(gtk.Box):
 		desc = ""
+
+		def getWidget(self) -> gtk.Widget:
+			return self
 
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
@@ -106,10 +112,10 @@ class DemoWizardWindow(WizardWindow):
 		def _runJson(self, fpath: str) -> None:  # noqa: PLR6301
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
-		def onBackClick(self, _widget: gtk.Widget) -> None:
+		def onBackClick(self, _w: gtk.Widget) -> None:
 			self.win.showStep(0)
 
-		def onCloseClick(self, _widget: gtk.Widget) -> None:
+		def onCloseClick(self, _w: gtk.Widget) -> None:
 			self.win.destroy()
 
 	stepClasses = [

@@ -1,17 +1,69 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, NamedTuple
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+
 __all__ = [
+	"RGB",
+	"RGBA",
 	"ColorType",
+	"RawColor",
+	"black",
 	"colorizeSpan",
 	"hslToRgb",
 	"rgbToCSS",
 	"rgbToHsl",
 	"rgbToHtmlColor",
 	"rgbToInt",
+	"yellow",
 ]
 
 
-type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
+class RGB(NamedTuple):
+	red: int
+	green: int
+	blue: int
+
+	@property
+	def alpha(self) -> int:
+		return 255
+
+	def rgb(self) -> RGB:
+		return self
+
+	@staticmethod
+	def fromList(ls: Sequence[int]) -> RGBA | RGB:
+		if len(ls) == 3:
+			return RGB(ls[0], ls[1], ls[2])
+		raise ValueError(f"bad RGB color list {ls!r}")
+
+
+class RGBA(NamedTuple):
+	red: int
+	green: int
+	blue: int
+	alpha: int
+
+	def rgb(self) -> RGB:
+		return RGB(self.red, self.green, self.blue)
+
+	@staticmethod
+	def fromList(ls: Sequence[int]) -> RGBA | RGB:
+		if len(ls) == 4:
+			return RGBA(ls[0], ls[1], ls[2], ls[3])
+		if len(ls) == 3:
+			return RGB(ls[0], ls[1], ls[2])
+		raise ValueError(f"bad RGBA color list {ls!r}")
+
+
+type ColorType = RGBA | RGB
+type RawColor = tuple[int, int, int] | tuple[int, int, int, int]
+
+
+black = RGB(0, 0, 0)
+yellow = RGB(255, 255, 0)
 
 
 def rgbToInt(r: int, g: int, b: int) -> int:
@@ -52,7 +104,7 @@ def rgbToHsl(red: int, green: int, blue: int) -> tuple[float | None, float, floa
 	return (h, s, ln)
 
 
-def hslToRgb(h: float, s: float, ln: float) -> tuple[int, int, int]:
+def hslToRgb(h: float, s: float, ln: float) -> RGB:
 	# 0.0 <= h <= 360.0
 	# 0.0 <= s <= 1.0
 	# 0.0 <= ln <= 1.0
@@ -76,7 +128,7 @@ def hslToRgb(h: float, s: float, ln: float) -> tuple[int, int, int]:
 			return round(255 * (p + (q - p) * 6 * (2.0 / 3 - tc)))
 		return round(255 * p)
 
-	return getChannel(tr), getChannel(tg), getChannel(tb)
+	return RGB(getChannel(tr), getChannel(tg), getChannel(tb))
 
 
 # def getRandomHueColor(s, l):

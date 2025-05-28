@@ -23,7 +23,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import TYPE_CHECKING, Self
+from collections.abc import Sequence
 
 from scal3 import locale_man
 from scal3.locale_man import (
@@ -32,11 +32,9 @@ from scal3.locale_man import (
 	textNumDecode,
 )
 
-if TYPE_CHECKING:
-	from collections.abc import Sequence
-
 __all__ = [
 	"ContainerField",
+	"DateTimeFieldType",
 	"DayField",
 	"Field",
 	"FloatField",
@@ -51,7 +49,10 @@ __all__ = [
 
 
 class Field[T]:
-	myKeys = set()
+	# ValueType: type[object]
+	value: T
+
+	myKeys: set[str] = set()
 
 	def setDefault(self) -> None:
 		raise NotImplementedError
@@ -75,11 +76,15 @@ class Field[T]:
 	def getMaxWidth(self) -> int:
 		raise NotImplementedError
 
-	def getFieldAt(self, text: str, pos: int) -> Self:  # noqa: ARG002
-		return self
+	def getFieldAt(self, text: str, pos: int) -> Field:  # noqa: ARG002
+		raise NotImplementedError
 
 
-class NumField[T: int | float](Field[T]):
+class NumField[T: (int, float)](Field[T]):
+	# ValueType: type[T]
+	minim: T
+	maxim: T
+
 	def setRange(self, minim: T, maxim: T) -> None:
 		self.minim = minim
 		self.maxim = maxim
@@ -98,8 +103,13 @@ class NumField[T: int | float](Field[T]):
 	def getValue(self) -> T:
 		return self.value
 
+	def getFieldAt(self, text: str, pos: int) -> Field[T]:  # noqa: ARG002
+		return self
+
 
 class IntField(NumField[int]):
+	# ValueType = int
+
 	def __init__(self, minim: int, maxim: int, fill: int = 0) -> None:
 		self.minim = minim
 		self.maxim = maxim
@@ -137,6 +147,8 @@ class IntField(NumField[int]):
 
 
 class FloatField(NumField[float]):
+	# ValueType = float
+
 	def __init__(self, minim: float, maxim: float, digits: int) -> None:
 		self.minim = minim
 		self.maxim = maxim
@@ -202,6 +214,8 @@ class Z60Field(IntField):
 
 
 class StrConField(Field[str]):
+	# ValueType = str
+
 	def __init__(self, text: str) -> None:
 		self._text = text
 
@@ -215,7 +229,9 @@ class StrConField(Field[str]):
 		return len(self._text)
 
 
-class ContainerField[T](Field):
+class ContainerField[T](Field[Sequence[T]]):
+	# ValueType = Sequence[str]
+
 	def __len__(self) -> int:
 		return len(self.children)
 
@@ -234,8 +250,7 @@ class ContainerField[T](Field):
 			child.setDefault()
 
 	def setValue(self, value: Sequence[T]) -> None:
-		if not isinstance(value, tuple | list):
-			value = (value,)
+		assert isinstance(value, tuple | list), f"{value=}"
 		n = min(len(value), len(self))
 		for i in range(n):
 			self.children[i].setValue(value[i])
@@ -262,8 +277,7 @@ class ContainerField[T](Field):
 		)
 
 	def getFieldAt(self, text: str, pos: int) -> Field[T]:
-		if not self.children:
-			return self
+		assert self.children
 		fieldIndex = 0
 		i = 0
 		while 0 <= (i2 := text.find(self.sep, i + 1)) < pos:
@@ -275,3 +289,6 @@ class ContainerField[T](Field):
 		)
 
 	# def getRegion(self, text, pos, fieldIndexPlus):
+
+
+type DateTimeFieldType = ContainerField[Sequence[int]]

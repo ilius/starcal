@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.color_utils import RGBA
 
 log = logger.get()
 
@@ -61,25 +62,25 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 	# ---
 	scrollRotateDegree = 1
 	# ---
-	bgColor = (0, 0, 0, 255)
-	wheelBgColor = (255, 255, 255, 30)
-	lineColor = (255, 255, 255, 50)
-	yearStartLineColor = (255, 255, 0, 255)
+	bgColor = RGBA(0, 0, 0, 255)
+	wheelBgColor = RGBA(255, 255, 255, 30)
+	lineColor = RGBA(255, 255, 255, 50)
+	yearStartLineColor = RGBA(255, 255, 0, 255)
 	lineWidth = 2.0
-	textColor = (255, 255, 255, 255)
+	textColor = RGBA(255, 255, 255, 255)
 	innerCircleRatio = 0.6
 	# ---
 	todayIndicatorEnable = True
-	todayIndicatorColor = (255, 0, 0, 255)
+	todayIndicatorColor = RGBA(255, 0, 0, 255)
 	todayIndicatorWidth = 0.5
 	# ---
 	centerR = 3
-	centerColor = (255, 0, 0, 255)
+	centerColor = RGBA(255, 0, 0, 255)
 	# ---
-	springColor = (0, 255, 0, 15)
-	summerColor = (255, 0, 0, 15)
-	autumnColor = (255, 255, 0, 15)
-	winterColor = (0, 0, 255, 15)
+	springColor = RGBA(0, 255, 0, 15)
+	summerColor = RGBA(255, 0, 0, 15)
+	autumnColor = RGBA(255, 255, 0, 15)
+	winterColor = RGBA(0, 0, 255, 15)
 	# ---
 
 	def __init__(self, closeFunc: Callable) -> None:
@@ -102,8 +103,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		iconSize = 20
 		self.buttons = [
 			Button(
-				imageName="go-home.svg",
 				onPress=self.onHomeClick,
+				imageName="go-home.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -112,8 +113,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				yalign="buttom",
 			),
 			Button(
-				imageName="resize-small.svg",
 				onPress=self.startResize,
+				imageName="resize-small.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -122,8 +123,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				yalign="buttom",
 			),
 			Button(
-				imageName="application-exit.svg",
 				onPress=closeFunc,
+				imageName="application-exit.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -133,7 +134,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			),
 		]
 
-	def onHomeClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onHomeClick(self, _w: gtk.Widget | None = None) -> None:
 		self.angleOffset = 0.0
 		self.queue_draw()
 
@@ -391,7 +392,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		show_layout(cr, layout)
 		cr.rotate(-rotateAngle)
 
-	def onScroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onScroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
 		d = getScrollValue(gevent)
 		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
@@ -421,7 +422,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		x = gevent.x
 		y = gevent.y
 		w = self.get_allocation().width
@@ -483,7 +484,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 			gtk.main_quit()
 		return True
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

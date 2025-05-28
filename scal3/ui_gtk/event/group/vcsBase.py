@@ -8,15 +8,16 @@ from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 from scal3.vcs_modules import vcsModuleNames
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.vcs_base import VcsBaseEventGroup
 
 __all__ = ["VcsBaseWidgetClass"]
 
 
 class VcsBaseWidgetClass(NormalWidgetClass):
 	userCanAddEvents = False
+	group: VcsBaseEventGroup
 
-	def __init__(self, group: EventGroup) -> None:
+	def __init__(self, group: VcsBaseEventGroup) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ------
 		hbox = HBox()

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import typing
+
+from scal3.color_utils import RGB
 from scal3.property import Property
 
+if typing.TYPE_CHECKING:
+	from scal3.color_utils import ColorType
 __all__ = [
 	"baseFontSize",
 	"baseTickHeight",
@@ -60,22 +65,22 @@ __all__ = [
 	"yearPrettyPower",
 ]
 
-bgColor = Property(None)
-fgColor = Property(None)
-baseFontSize: Property[int] = Property(8)
+bgColor: Property[ColorType | None] = Property(None)
+fgColor: Property[ColorType | None] = Property(None)
+baseFontSize: Property[float] = Property(8)
 changeHolidayBg: Property[bool] = Property(False)
 changeHolidayBgMinDays: Property[int] = Property(1)
 changeHolidayBgMaxDays: Property[int] = Property(60)
-holidayBgBolor = Property((60, 35, 35))
-basicButtonsSize: Property[int] = Property(22)
-basicButtonsSpacing: Property[int] = Property(3)
+holidayBgBolor: Property[ColorType] = Property(RGB(red=60, green=35, blue=35))
+basicButtonsSize: Property[float] = Property(22)
+basicButtonsSpacing: Property[float] = Property(3)
 basicButtonsOpacity: Property[float] = Property(1.0)
 movementButtonsEnable: Property[bool] = Property(True)
-movementButtonsSize: Property[int] = Property(22)
+movementButtonsSize: Property[float] = Property(22)
 movementButtonsOpacity: Property[float] = Property(1.0)
-majorStepMin: Property[int] = Property(50)
-minorStepMin: Property[int] = Property(5)
-maxLabelWidth: Property[int] = Property(60)
+majorStepMin: Property[float] = Property(50)
+minorStepMin: Property[float] = Property(5)
+maxLabelWidth: Property[float] = Property(60)
 baseTickHeight: Property[float] = Property(1.0)
 baseTickWidth: Property[float] = Property(0.5)
 maxTickWidth: Property[float] = Property(40.0)
@@ -84,12 +89,14 @@ labelYRatio: Property[float] = Property(1.1)
 yearPrettyPower: Property[bool] = Property(True)
 truncateTickLabel: Property[bool] = Property(False)
 currentTimeMarkerHeightRatio: Property[float] = Property(0.3)
-currentTimeMarkerWidth: Property[int] = Property(2)
-currentTimeMarkerColor = Property((255, 100, 100))
+currentTimeMarkerWidth: Property[float] = Property(2)
+currentTimeMarkerColor: Property[ColorType] = Property(
+	RGB(red=255, green=100, blue=100),
+)
 showWeekStart: Property[bool] = Property(True)
 showWeekStartMinDays: Property[int] = Property(1)
 showWeekStartMaxDays: Property[int] = Property(60)
-weekStartTickColor = Property((0, 200, 0))
+weekStartTickColor: Property[ColorType] = Property(RGB(red=0, green=200, blue=0))
 boxLineWidth: Property[float] = Property(2)
 boxInnerAlpha: Property[float] = Property(0.1)
 boxEditBorderWidth: Property[float] = Property(10.0)
@@ -99,16 +106,16 @@ boxReverseGravity: Property[bool] = Property(False)
 boxSkipPixelLimit: Property[float] = Property(0.1)
 rotateBoxLabel: Property[int] = Property(-1)
 enableAnimation: Property[bool] = Property(False)
-movingStaticStepKeyboard: Property[int] = Property(20)
-movingStaticStepMouse: Property[int] = Property(20)
+movingStaticStepKeyboard: Property[float] = Property(20)
+movingStaticStepMouse: Property[float] = Property(20)
 movingUpdateTime: Property[float] = Property(10)
 movingInitialVelocity: Property[float] = Property(0)
-movingHandForceMouse: Property[int] = Property(1100)
-movingHandForceKeyboard: Property[int] = Property(1100)
-movingHandForceKeyboardSmall: Property[int] = Property(850)
-movingHandForceButton: Property[int] = Property(1100)
-movingFrictionForce: Property[int] = Property(600)
-movingMaxVelocity: Property[int] = Property(1200)
+movingHandForceMouse: Property[float] = Property(1100)
+movingHandForceKeyboard: Property[float] = Property(1100)
+movingHandForceKeyboardSmall: Property[float] = Property(850)
+movingHandForceButton: Property[float] = Property(1100)
+movingFrictionForce: Property[float] = Property(600)
+movingMaxVelocity: Property[float] = Property(1200)
 movingKeyTimeoutFirst: Property[float] = Property(0.5)
 movingKeyTimeout: Property[float] = Property(0.1)
 scrollZoomStep: Property[float] = Property(1.2)
@@ -131,7 +138,7 @@ keys: Property[dict[str, str]] = Property(
 )
 
 
-confParams = {
+confParams: dict[str, Property] = {
 	"baseFontSize": baseFontSize,
 	"baseTickHeight": baseTickHeight,
 	"baseTickWidth": baseTickWidth,

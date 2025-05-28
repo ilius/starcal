@@ -16,7 +16,7 @@ class Font:
 	size: float = 0
 
 	@classmethod
-	def fromList(cls, lst: list | None) -> Font | None:
+	def fromList(cls, lst: list | tuple | None) -> Font | None:
 		if lst is None:
 			return None
 		return Font(*lst)
@@ -24,5 +24,7 @@ class Font:
 	def to_json(self) -> tuple[str | None, bool, bool, float]:
 		return (self.family, self.bold, self.italic, self.size)
 
+	# def to_tuple(self) -> FontTuple:
+
 	def copy(self) -> Font:
-		return Font(*self.to_json())
+		return Font(self.family, self.bold, self.italic, self.size)

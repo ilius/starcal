@@ -13,7 +13,7 @@ from scal3.vcs_modules.git import (
 	getTagShortStatLine,
 	prepareObj,
 )
-from scal3.vcs_modules.hg import (
+from scal3.vcs_modules.hg import (  # type: ignore[assignment]
 	clearObj,
 	getCommitInfo,
 	getCommitList,

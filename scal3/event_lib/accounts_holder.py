@@ -17,6 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.pytypes import AccountType
+from scal3.s_object import SObjBinaryModel
 
 log = logger.get()
 
@@ -30,25 +32,28 @@ import json
 from os.path import join
 
 # from scal3.interval_utils import
-from .accounts import Account, DummyAccount, accountsDir
+from .accounts import accountsDir
 from .holders import ObjectsHolderTextModel
 from .register import classes
 
 __all__ = ["EventAccountsHolder"]
 
 
-class EventAccountsHolder(ObjectsHolderTextModel):
+class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 	file = join("event", "account_list.json")
-	childName = "account"
+
+	@classmethod
+	def getMainClass(cls) -> type[AccountType] | None:
+		return classes.account.main  # type: ignore[return-value]
 
 	def __init__(self, ident: int | None = None) -> None:
 		ObjectsHolderTextModel.__init__(self)
 		self.id = ident
 		self.parent = None
-		self.idByUuid = {}
+		self.idByUuid: dict[str, int] = {}
 
 	@staticmethod
-	def loadClass(name: str) -> type:
+	def loadClass(name: str) -> type[AccountType] | None:
 		cls = classes.account.byName.get(name)
 		if cls is not None:
 			return cls
@@ -65,17 +70,17 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 		)
 		return None
 
-	def loadData(self, ident: int) -> dict[str, Any]:
+	def loadData(self, ident: int) -> dict[str, Any] | None:
 		objFile = join(accountsDir, f"{ident}.json")
 		if not self.fs.isfile(objFile):
 			log.error(
 				f"error while loading account file {objFile!r}: file not found",
 			)
-			return
+			return None
 			# FIXME: or raise FileNotFoundError?
 		with self.fs.open(objFile) as fp:
 			data = json.loads(fp.read())
-		self.updateBasicData(data, objFile, "account", self.fs)
+		SObjBinaryModel.updateBasicData(data, objFile, "account", self.fs)
 		# if data["id"] != ident:
 		# 	log.error(
 		# 		"attribute 'id' in json file " +
@@ -85,21 +90,22 @@ class EventAccountsHolder(ObjectsHolderTextModel):
 		return data
 
 	# FIXME: types
-	def getLoadedObj(self, obj: DummyAccount) -> Account:
+	def getLoadedObj(self, obj: AccountType) -> AccountType | None:
 		ident = obj.id
 		data = self.loadData(ident)
+		assert data is not None
 		name = data["type"]
 		cls = self.loadClass(name)
 		if cls is None:
-			return
-		obj = cls(ident)
-		obj.fs = self.fs
-		data = self.loadData(ident)
-		obj.setData(data)
-		return obj
+			return None
+		objNew = cls(ident)
+		objNew.fs = self.fs
+		objNew.setDict(data)
+		return objNew
 
-	def replaceDummyObj(self, obj: DummyAccount) -> Account:
+	def replaceDummyObj(self, obj: AccountType) -> AccountType:
 		ident = obj.id
-		obj = self.getLoadedObj(obj)
-		self.byId[ident] = obj
-		return obj
+		objNew = self.getLoadedObj(obj)
+		assert objNew is not None
+		self.byId[ident] = objNew
+		return objNew

@@ -16,10 +16,11 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.color_utils import RGBA
 
 log = logger.get()
 
-from typing import TYPE_CHECKING, Never
+from typing import TYPE_CHECKING
 
 from scal3 import core, ui
 from scal3.ui import conf
@@ -29,6 +30,7 @@ from scal3.ui_gtk.drawing import newDndDatePixbuf
 
 if TYPE_CHECKING:
 	from scal3.cell_type import CellType
+	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["CalBase"]
 
@@ -43,13 +45,13 @@ class CalBase(CustomizableCalObj):
 		("pref-update-bg-color", []),
 		("day-info", []),
 	]
-	myKeys = (
+	myKeys: set[str] = {
 		"space",
 		"home",
 		"t",
 		"menu",
 		"i",
-	)
+	}
 
 	def connect(self, sigName: str, *a, **ka) -> None:
 		try:
@@ -71,13 +73,13 @@ class CalBase(CustomizableCalObj):
 			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
 			self.connect("day-info", self.win.dayInfoShow)
 		# ---
-		self.subPages = None
+		self.subPages: list[StackPage] | None = None
 
 	def gotoJd(self, jd: int) -> None:
 		ui.cells.gotoJd(jd)
 		self.onDateChange()
 
-	def goToday(self, _widget: gtk.Widget | None = None) -> None:
+	def goToday(self, _w: gtk.Widget | None = None) -> None:
 		self.gotoJd(core.getCurrentJd())
 
 	def jdPlus(self, p: int) -> None:
@@ -97,7 +99,8 @@ class CalBase(CustomizableCalObj):
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: ARG002
 		self.queue_draw()
 
-	def getCellPagePlus(self, jd: int, plus: int) -> CellType:  # use for sliding
+	@staticmethod
+	def getCellPagePlus(cell: CellType, plus: int) -> CellType:  # use for sliding
 		raise NotImplementedError
 
 	def defineDragAndDrop(self) -> None:
@@ -178,7 +181,7 @@ class CalBase(CustomizableCalObj):
 		if dtype == "application/x-color":
 			# selection.get_text() is None
 			text = selection.data
-			conf.bgColor.v = (
+			conf.bgColor.v = RGBA(
 				ord(text[1]),
 				ord(text[3]),
 				ord(text[5]),
@@ -206,7 +209,7 @@ class CalBase(CustomizableCalObj):
 		)
 		return True
 
-	def getCellPos(self) -> Never:
+	def getCellPos(self, *_args) -> tuple[int, int]:
 		raise NotImplementedError
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:

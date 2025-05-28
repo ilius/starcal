@@ -45,7 +45,7 @@ from scal3.ui_gtk.icon_mapping import (
 	rtlImageNameMapping,
 )
 from scal3.ui_gtk.svg_utils import pixbufFromSvgFile
-from scal3.utils import toBytes, toStr
+from scal3.utils import toBytes
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -129,7 +129,7 @@ def setClipboard(text: str, clipboard: gtk.Clipboard | None = None) -> None:
 	if not clipboard:
 		clipboard = gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD)
 	clipboard.set_text(
-		toStr(text),
+		text,
 		len(toBytes(text)),
 	)
 	# clipboard.store() # ?????? No need!
@@ -199,7 +199,7 @@ def resolveImagePath(path: str) -> str:
 
 
 def pixbufFromFile(
-	path: str,
+	path: str | None,
 	size: float = 0,
 ) -> GdkPixbuf.Pixbuf:
 	# the file may not exist
@@ -353,7 +353,7 @@ def setImageClassButton(
 # 	return widget.get_style_context().get_color(state)
 
 
-def rectangleContainsPoint(r: float, x: float, y: float) -> bool:
+def rectangleContainsPoint(r: gdk.Rectangle, x: float, y: float) -> bool:
 	return r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
 
@@ -602,15 +602,18 @@ def newHSep() -> gtk.Separator:
 
 
 def newAlignLabel(sgroup: gtk.SizeGroup | None = None, label: str = "") -> gtk.Label:
-	label = gtk.Label(label=label)
-	label.set_xalign(0)
+	glabel = gtk.Label(label=label)
+	glabel.set_xalign(0)
 	if sgroup:
-		sgroup.add_widget(label)
-	return label
+		sgroup.add_widget(glabel)
+	return glabel
 
 
 class IdComboBox(gtk.ComboBox):
-	def set_active(self, ident: int) -> None:
+	def set_active(self, ident: int | None) -> None:
+		if ident is None:
+			gtk.ComboBox.set_active(self, -1)
+			return
 		ls = self.get_model()
 		for i in range(len(ls)):
 			if ls[i][0] == ident:
@@ -620,14 +623,14 @@ class IdComboBox(gtk.ComboBox):
 	def get_active(self) -> int | None:
 		i = gtk.ComboBox.get_active(self)
 		if i is None:
-			return
+			return None
 		model = self.get_model()
 		if model is None:
 			log.info("IdComboBox.get_active: model is None")
 		try:
 			return model[i][0]
 		except IndexError:
-			return
+			return None
 
 
 class CopyLabelMenuItem(MenuItem):
