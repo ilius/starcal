@@ -28,9 +28,11 @@ log = logger.get()
 from scal3 import core
 from scal3.cal_types import calTypes, gregorian, to_jd
 from scal3.locale_man import tr as _
-from scal3.time_utils import getUtcOffsetByGDate
+from scal3.time_utils import getEpochFromJhms, getUtcOffsetByGDate
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.cell_type import CellType, CompiledTimeFormat
 
 __all__ = ["compileTmFormat"]
@@ -64,7 +66,12 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 	# pyFmt:	"Today: %s/%s/%s"
 	# funcs:	(get_y, get_m, get_d)
 	pyFmt = ""
-	funcs = []
+	funcs: list[
+		Callable[
+			[CellType, int, tuple[int, int, int]],
+			str,
+		]
+	] = []
 	n = len(fmt)
 	i = 0
 	while i < n:
@@ -147,8 +154,8 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 		if c1 in {"b", "h"}:  # FIXME
 
 			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
-				module, ok = calTypes[calType]
-				if not ok:
+				module = calTypes[calType]
+				if module is None:
 					raise RuntimeError(f"cal type '{calType}' not found")
 				return module.getMonthNameAb(_, cell.dates[calType][1])
 
@@ -159,8 +166,8 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 		if c1 == "B":
 
 			def f(cell: CellType, calType: int, _tm: tuple[int, int, int]) -> str:
-				module, ok = calTypes[calType]
-				if not ok:
+				module = calTypes[calType]
+				if module is None:
 					raise RuntimeError(f"cal type '{calType}' not found")
 				return module.getMonthName(cell.dates[calType][1])
 
@@ -393,7 +400,7 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 						+ ":"
 						+ _(tm[2], fillZero=2)
 						+ " "
-						+ _("AM" if tm[0] < 12 else "PM"),
+						+ _("AM" if tm[0] < 12 else "PM")
 					),
 				)
 				pyFmt += "%s"
@@ -402,7 +409,7 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 			if c1 == "R":  # %H:%M
 				funcs.append(
 					lambda _cell, _calType, tm: (
-						_(tm[0], fillZero=2) + ":" + _(tm[1], fillZero=2),
+						_(tm[0], fillZero=2) + ":" + _(tm[1], fillZero=2)
 					),
 				)
 				pyFmt += "%s"
@@ -441,7 +448,7 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 				# ))
 				funcs.append(
 					lambda cell, _calType, tm: _(
-						core.getEpochFromJhms(cell.jd, *tm),
+						getEpochFromJhms(cell.jd, *tm),
 					),
 				)
 				pyFmt += "%s"
@@ -481,7 +488,7 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 						+ ":"
 						+ _(tm[1], fillZero=2)
 						+ ":"
-						+ _(tm[2], fillZero=2),
+						+ _(tm[2], fillZero=2)
 					),
 				)
 				pyFmt += "%s"
@@ -494,7 +501,7 @@ def compileTmFormat(fmt: str, hasTime: bool = True) -> CompiledTimeFormat:
 						+ ":"
 						+ _(tm[1], fillZero=2)
 						+ ":"
-						+ _(tm[2], fillZero=2),
+						+ _(tm[2], fillZero=2)
 					),
 				)
 				pyFmt += "%s"

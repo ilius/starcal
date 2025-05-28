@@ -16,11 +16,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from scal3 import logger
+from scal3.event_lib.events import TaskEvent
 from scal3.event_lib.occur import OccurSet, TimeListOccurSet
-from scal3.event_lib.register import classes
 from scal3.utils import toStr
 
 log = logger.get()
@@ -32,18 +32,20 @@ from .groups import EventGroup
 if TYPE_CHECKING:
 	from scal3.filesystem import FileSystem
 
+	from .pytypes import EventGroupType
+
 __all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
 
 
 class VcsBaseEventGroup(EventGroup):
 	acceptsEventTypes = ()
-	myParams = (
+	myParams: list[str] = [
 		"vcsType",
 		"vcsDir",
 		"vcsBranch",
-	)
+	]
 
-	def __init__(self, ident: str | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		self.vcsType = "git"
 		self.vcsDir = ""
 		self.vcsBranch = "main"
@@ -72,11 +74,12 @@ class VcsBaseEventGroup(EventGroup):
 			),
 		)  # FIXME
 
-	def __getitem__(self, key: str) -> Event:
-		if key in classes.rule.names:
-			return EventGroup.__getitem__(self, key)
-		# len(commitId)==40 for git
-		return self.getEvent(key)
+	# FIXME: remove
+	# def __getitem__(self, key: str) -> EventType:
+	# 	if key in classes.rule.names:
+	# 		return EventGroup.__getitem__(self, key)
+	# 	# len(commitId)==40 for git
+	# 	return self.getEvent(key)
 
 	def getVcsModule(self) -> Any:
 		name = toStr(self.vcsType)
@@ -105,18 +108,18 @@ class VcsBaseEventGroup(EventGroup):
 		self.updateVcsModuleObj()
 		EventGroup.afterModify(self)
 
-	def setData(self, data: dict[str, Any]) -> None:
-		EventGroup.setData(self, data)
+	def setDict(self, data: dict[str, Any]) -> None:
+		EventGroup.setDict(self, data)
 		self.updateVcsModuleObj()
 
 
 class VcsEpochBaseEventGroup(VcsBaseEventGroup):
-	myParams = VcsBaseEventGroup.myParams + ("showSeconds",)
-	canConvertTo = VcsBaseEventGroup.canConvertTo + ("taskList",)
+	myParams = VcsBaseEventGroup.myParams + ["showSeconds"]
+	canConvertTo: list[str] = VcsBaseEventGroup.canConvertTo + ["taskList"]
 
-	def __init__(self, ident: str | None = None) -> None:
+	def __init__(self, ident: int | None = None) -> None:
 		self.showSeconds = True
-		self.vcsIds = []
+		self.vcsIds: list[int] = []
 		VcsBaseEventGroup.__init__(self, ident)
 
 	def clear(self) -> None:
@@ -140,16 +143,18 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 			),
 		)
 
-	def deepConvertTo(self, newGroupType: str) -> EventGroup:
+	def deepConvertTo(self, newGroupType: str) -> EventGroupType:
 		newGroup = self.copyAs(newGroupType)
 		if newGroupType == "taskList":
-			newEventType = "task"
 			newGroup.enable = False  # to prevent per-event node update
 			for vcsId in self.vcsIds:
 				event = self.getEvent(vcsId)
-				newEvent = newGroup.create(newEventType)
+				assert isinstance(event, VcsEpochBaseEvent)
+				assert event.epoch is not None
+				newEvent = newGroup.create("task")
+				assert isinstance(newEvent, TaskEvent)
 				newEvent.changeCalType(event.calType)  # FIXME needed?
-				newEvent.copyFrom(event, True)
+				newEvent.copyFromExact(event)
 				newEvent.setStartEpoch(event.epoch)
 				newEvent.setEnd("duration", 0, 1)
 				newEvent.save()
@@ -160,15 +165,16 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 
 class VcsEpochBaseEvent(Event):
 	readOnly = True
-	params = Event.params + ("epoch",)
+	params = Event.params + ["epoch"]
+	epoch: int | None = None
 
 	# FIXME
 	@classmethod
 	def load(
 		cls,
-		fs: FileSystem,
-		*args,  # noqa: ANN002
-	) -> type:
+		ident: int,
+		fs: FileSystem | None,
+	) -> Self | None:
 		pass
 
 	def __bool__(self) -> bool:
@@ -184,6 +190,7 @@ class VcsEpochBaseEvent(Event):
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+		assert isinstance(self.parent, VcsEpochBaseEventGroup)
 		epoch = self.epoch
 		if epoch is not None and self.getEpochFromJd(
 			startJd,

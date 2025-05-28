@@ -1,20 +1,22 @@
 import unittest
 
-from scal3 import locale_man
+from scal3 import locale_man, ui
 from scal3.cal_types import calTypes
 
 
 class Test_getMonthDesc(unittest.TestCase):
 	def __init__(self, *args) -> None:
 		unittest.TestCase.__init__(self, *args)
-		locale_man.lang = "en_US.UTF-8"
+		locale_man.lang.v = "en_US.UTF-8"
 		locale_man.prepareLanguage()
 		locale_man.loadTranslator()
 
 	def assertCase(self, year: int, month: int, desc: str) -> None:
-		from scal3.monthcal import getMonthDesc, getMonthStatus
+		from scal3.monthcal import getMonthDesc
 
-		self.assertEqual(desc, getMonthDesc(getMonthStatus(year, month)))
+		assert ui.cells is not None
+
+		self.assertEqual(desc, getMonthDesc(ui.cells.getMonthStatus(year, month)))
 
 	def test_gregorian(self) -> None:
 		calTypes.activeNames = ["gregorian"]

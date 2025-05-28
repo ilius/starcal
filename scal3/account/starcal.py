@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.errors import AccountError
 
 log = logger.get()
 
@@ -33,7 +34,7 @@ from scal3.time_utils import jsonTimeFromEpoch
 if TYPE_CHECKING:
 	import requests
 
-	from scal3.event_lib import Event, EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 
 
 __all__ = ["StarCalendarAccount"]
@@ -46,7 +47,10 @@ __all__ = ["StarCalendarAccount"]
 
 def formatJd(remoteEvent: dict[str, Any], attrName: str) -> str:
 	jd = remoteEvent[attrName]
-	y, m, d = calTypes[remoteEvent["calType"]].jd_to(jd)
+	mod = calTypes[remoteEvent["calType"]]
+	if mod is None:
+		raise ValueError(f"bad calType in {remoteEvent=}")
+	y, m, d = mod.jd_to(jd)
 	return f"{y:04}/{m:02}/{d:02}"
 
 
@@ -102,8 +106,8 @@ remoteEventTypeDecoders = {
 def decodeRemoteEvent(
 	remoteEventFull: dict,
 	accountId: int,
-	_group: EventGroup,
-) -> tuple[Event | None, str | None]:
+	_group: EventGroupType,
+) -> tuple[EventType | None, str | None]:
 	"""
 	Return (event, error)
 	where event is instance of event_lib.Event, or None
@@ -136,12 +140,18 @@ def decodeRemoteEvent(
 		return None, f"bad remoteEvent: {e}"
 	eventData.update(eventTypeData)
 	event = event_lib.classes.event.byName[eventType]()
-	event.setData(eventData)
+	event.setDict(eventData)
+	remoteGroupId = remoteEventFull["groupId"]
+	remoteEvendId = remoteEventFull["eventId"]
+	remoteSha1 = remoteEventFull["sha1"]
+	assert isinstance(remoteGroupId, str)
+	assert isinstance(remoteEvendId, str)
+	assert isinstance(remoteSha1, str)
 	event.remoteIds = (
 		accountId,
-		remoteEventFull["groupId"],  # remoteGroupId,
-		remoteEventFull["eventId"],
-		remoteEventFull["sha1"],
+		remoteGroupId,
+		remoteEvendId,
+		remoteSha1,
 	)
 	return event, None
 
@@ -150,20 +160,20 @@ def decodeRemoteEvent(
 class StarCalendarAccount(Account):
 	name = "starcal"
 	desc = _("StarCalendar.net")
-	params = Account.params + (
+	params = Account.params + [
 		"email",
 		"password",
 		"lastToken",
-	)
-	basicParams = Account.basicParams + (
+	]
+	basicParams: list[str] = Account.basicParams + [
 		"password",
 		"lastToken",
-	)
-	paramsOrder = Account.paramsOrder + (
+	]
+	paramsOrder = Account.paramsOrder + [
 		"email",
 		"password",
 		"lastToken",
-	)
+	]
 
 	serverUrl = "http://127.0.0.1:9001/"
 
@@ -186,14 +196,14 @@ class StarCalendarAccount(Account):
 		method: str,
 		path: str,
 		**kwargs,  # noqa: ANN003
-	) -> tuple[dict[str, Any], str]:
+	) -> tuple[dict[str, Any], str | None]:
 		"""
 		Return (data, None) if successful
 		return (data, error) if failed
 		where error is string and data is a dict.
 		"""
 		error = None
-		data = {}
+		data: dict[str, Any] = {}
 		tokenIsOld = bool(self.lastToken)
 
 		try:
@@ -221,8 +231,8 @@ class StarCalendarAccount(Account):
 				error = data.pop("error")
 		return data, error
 
-	def __init__(self, aid: int | None = None) -> None:
-		Account.__init__(self, aid)
+	def __init__(self, ident: int | None = None) -> None:
+		Account.__init__(self, ident)
 		self.email = ""
 		self.password = ""
 		self.lastToken = ""
@@ -269,17 +279,16 @@ class StarCalendarAccount(Account):
 		log.info("login successful")
 		return None
 
-	def fetchGroups(self) -> str | None:
-		"""Return None if successful, or error string if failed."""
+	def fetchGroups(self) -> None:
 		log.info("fetchGroups started")
 		data, error = self.call("get", "event/groups/")
 		if error:
-			return error
+			raise AccountError(error)
 
 		try:
 			groups = data["groups"]
 		except KeyError:
-			return 'bad data: missing "groups"'
+			raise AccountError('bad data: missing "groups"') from None
 
 		try:
 			self.remoteGroups = [
@@ -291,10 +300,9 @@ class StarCalendarAccount(Account):
 				if g["ownerEmail"] == self.email
 			]
 		except Exception as e:
-			return f"bad data: {e}"
+			raise AccountError(f"bad data: {e}") from None
 
 		log.info(f"fetchGroups successful, {len(self.remoteGroups)} groups")
-		return None
 
 	def addNewGroup(self, title: str) -> None:
 		pass
@@ -304,18 +312,20 @@ class StarCalendarAccount(Account):
 
 	def sync(
 		self,
-		group: EventGroup,
+		group: EventGroupType,
 		remoteGroupId: str,  # noqa: ARG002
-	) -> str | None:
+	) -> None:
 		# in progress TODO
 		"""Return None if successful, or error string if failed."""
 		log.info("sync started")
 		if not group.remoteIds:
-			return "sync not enabled"
+			raise AccountError("sync not enabled")
 		if group.remoteIds[0] != self.id:
-			return "mismatch account id"
+			raise AccountError("mismatch account id")
 		groupId = group.remoteIds[1]
 		lastSyncTuple = group.getLastSync()
+		lastSyncStartEpoch: float
+		lastSyncEndEpoch: float | None
 		if lastSyncTuple is None:
 			lastSyncStartEpoch = group.getStartEpoch()
 			lastSyncEndEpoch = None  # FIXME
@@ -330,11 +340,11 @@ class StarCalendarAccount(Account):
 		)
 		data, error = self.call("get", path)
 		if error:
-			return error
+			raise AccountError(error)
 		try:
 			remoteModifiedEvents = data["modifiedEvents"]
 		except KeyError:
-			return 'bad data: missing "modifiedEvents"'
+			raise AccountError('bad data: missing "modifiedEvents"') from None
 		try:
 			group.setReadOnly(True)
 
@@ -363,7 +373,7 @@ class StarCalendarAccount(Account):
 
 		except Exception as e:
 			log.exception("")
-			return f"sync failed: {e}"
+			raise AccountError(f"sync failed: {e}") from None
 		else:
 			group.afterSync(syncStart.timestamp())
 		finally:

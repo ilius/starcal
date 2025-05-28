@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 from collections import namedtuple
-from typing import TYPE_CHECKING, Protocol, Self
+from typing import TYPE_CHECKING, Protocol
 
 from scal3 import logger
 
@@ -30,7 +30,7 @@ from scal3.bin_heap import MaxHeap
 if TYPE_CHECKING:
 	from collections.abc import Iterable
 
-__all__ = ["EventSearchTree"]
+__all__ = ["EventSearchTree", "OccurItem"]
 
 
 # epsTm: seconds
@@ -51,32 +51,18 @@ OccurItem = namedtuple(
 
 
 class NodeType(Protocol):
-	@property
-	def count(self) -> int: ...
+	count: int
+	red: bool
+	mt: float
+	min_t: float
+	max_t: float
+	left: NodeType | None
+	right: NodeType | None
+	events: MaxHeap[int]
 
-	@property
-	def red(self) -> bool: ...
+	def add(self, t0: float, t1: float, dt: float, eid: int) -> None: ...
 
-	@property
-	def min_t(self) -> int: ...
-
-	@property
-	def max_t(self) -> int: ...
-
-	@property
-	def right(self) -> Self | None: ...
-
-	@property
-	def left(self) -> Self | None: ...
-
-	@right.setter
-	def right(self, x: Self | None) -> None: ...
-
-	@left.setter
-	def left(self, x: Self | None) -> None: ...
-
-	@red.setter
-	def red(self, x: bool) -> None: ...
+	def updateMinMax(self) -> None: ...
 
 
 class Node:
@@ -99,17 +85,17 @@ class Node:
 	def isRed(x: NodeType | None) -> bool:
 		return x.red if x else False
 
-	def __init__(self, mt: int, red: bool = True) -> None:
+	def __init__(self, mt: float, red: bool = True) -> None:
 		self.mt = mt
 		self.red = red
 		self.min_t = mt
 		self.max_t = mt
-		self.events = MaxHeap()
+		self.events: MaxHeap[int] = MaxHeap()
 		self.left: NodeType | None = None
 		self.right: NodeType | None = None
 		self.count = 0
 
-	def add(self, t0: int, t1: int, dt: int, eid: int) -> None:
+	def add(self, t0: float, t1: float, dt: float, eid: int) -> None:
 		self.events.push(dt, eid)
 		self.min_t = min(t0, self.min_t)
 		self.max_t = max(t1, self.max_t)
@@ -128,12 +114,11 @@ class Node:
 	# 		Node.getCount(self.right)
 
 
-def rotateLeft(h: NodeType) -> NodeType | None:
+def rotateLeft(h: NodeType) -> NodeType:
 	# if not Node.isRed(h.right):
 	# 	raise RuntimeError("rotateLeft: h.right is not red")
 	x = h.right
-	if x is None:
-		return None
+	assert x is not None
 	h.right = x.left
 	x.left = h
 	x.red = h.red
@@ -141,12 +126,11 @@ def rotateLeft(h: NodeType) -> NodeType | None:
 	return x
 
 
-def rotateRight(h: NodeType) -> NodeType | None:
+def rotateRight(h: NodeType) -> NodeType:
 	# if not Node.isRed(h.left):
 	# 	raise RuntimeError("rotateRight: h.left is not red")
 	x = h.left
-	if x is None:
-		return None
+	assert x is not None
 	h.left = x.right
 	x.right = h
 	x.red = h.red
@@ -162,8 +146,8 @@ def flipColors(h: NodeType) -> None:
 	# if not Node.isRed(h.right):
 	# 	raise RuntimeError("flipColors: h.right is not red")
 	h.red = True
-	assert h.left
-	assert h.right
+	assert h.left is not None
+	assert h.right is not None
 	h.left.red = False
 	h.right.red = False
 
@@ -175,8 +159,8 @@ class EventSearchTree:
 		self.clear()
 
 	def clear(self) -> None:
-		self.root = None
-		self.byId = {}
+		self.root: NodeType | None = None
+		self.byId: dict[int, MaxHeap[float]] = {}
 
 	@staticmethod
 	def doCountBalancing(node: NodeType) -> NodeType:
@@ -204,19 +188,20 @@ class EventSearchTree:
 
 	def _addStep(
 		self,
-		node: NodeType | None,
-		t0: int,
-		t1: int,
-		mt: int,
-		dt: int,
+		nodeArg: NodeType | None,
+		t0: float,
+		t1: float,
+		mt: float,
+		dt: float,
 		eid: int,
 	) -> NodeType | None:
 		if t0 > t1:
-			return node
-		if not node:
-			node = Node(mt)
-			node.add(t0, t1, dt, eid)
-			return node
+			return nodeArg
+		if not nodeArg:
+			node2: NodeType = Node(mt)
+			node2.add(t0, t1, dt, eid)
+			return node2
+		node = nodeArg
 		if mt < node.mt:
 			node.left = self._addStep(
 				node.left,
@@ -240,7 +225,7 @@ class EventSearchTree:
 		# node = self.doCountBalancing(node)
 		if Node.isRed(node.right) and not Node.isRed(node.left):
 			node = rotateLeft(node)
-		if Node.isRed(node.left) and Node.isRed(node.left.left):
+		if Node.isRed(node.left) and Node.isRed(node.left.left):  # type: ignore[union-attr]
 			node = rotateRight(node)
 		if Node.isRed(node.left) and Node.isRed(node.right):
 			flipColors(node)
@@ -250,8 +235,8 @@ class EventSearchTree:
 
 	def add(
 		self,
-		t0: int,
-		t1: int,
+		t0: float,
+		t1: float,
 		eid: int,
 		debug: bool = False,
 	) -> None:
@@ -264,8 +249,8 @@ class EventSearchTree:
 				f"\t{strftime(f, localtime(t1))}",
 			)
 		# ---
-		if t0 == t1:
-			t1 += epsTm  # needed? FIXME
+		# if t0 == t1:
+		# 	t1 += epsTm  # needed? FIXME
 		mt = (t0 + t1) / 2.0
 		dt = (t1 - t0) / 2.0
 		# ---
@@ -287,11 +272,11 @@ class EventSearchTree:
 
 	def _searchStep(
 		self,
-		node: NodeType,
-		t0: int,
-		t1: int,
-	) -> Iterable[tuple[int, int, int]]:
-		if not node:
+		node: NodeType | None,
+		t0: float,
+		t1: float,
+	) -> Iterable[tuple[float, float, int]]:
+		if node is None:
 			return
 		t0 = max(t0, node.min_t)
 		t1 = min(t1, node.max_t)
@@ -312,7 +297,7 @@ class EventSearchTree:
 		for item in self._searchStep(node.right, t0, t1):
 			yield item
 
-	def search(self, t0: int, t1: int) -> Iterable[OccurItem]:
+	def search(self, t0: float, t1: float) -> Iterable[OccurItem]:
 		for mt, dt, eid in self._searchStep(self.root, t0, t1):
 			yield OccurItem(
 				start=max(t0, mt - dt),
@@ -322,7 +307,7 @@ class EventSearchTree:
 				oid=(eid, mt - dt, mt + dt),
 			)
 
-	def getLastBefore(self, t1: int) -> tuple[int, int, int] | None:
+	def getLastBefore(self, t1: float) -> tuple[float, float, int] | None:
 		res = self._getLastBeforeStep(self.root, t1)
 		if res:
 			mt, dt, eid = res
@@ -335,14 +320,14 @@ class EventSearchTree:
 
 	def _getLastBeforeStep(
 		self,
-		node: NodeType,
-		t1: int,
-	) -> tuple[int, int, int] | None:
-		if not node:
-			return
+		node: NodeType | None,
+		t1: float,
+	) -> tuple[float, float, int] | None:
+		if node is None:
+			return None
 		t1 = min(t1, node.max_t)
 		if t1 <= node.min_t:
-			return
+			return None
 		# ---
 		right_res = self._getLastBeforeStep(node.right, t1)
 		if right_res:
@@ -359,15 +344,13 @@ class EventSearchTree:
 		return self._getLastBeforeStep(node.left, t1)
 
 	@staticmethod
-	def getMinNode(node: NodeType | None) -> NodeType | None:
-		if not node:
-			return
+	def getMinNode(node: NodeType) -> NodeType:
 		while node.left:
 			node = node.left
 		return node
 
 	def deleteMinNode(self, node: NodeType) -> NodeType | None:
-		if not node.left:
+		if node.left is None:
 			return node.right
 		node.left = self.deleteMinNode(node.left)
 		return node
@@ -375,12 +358,12 @@ class EventSearchTree:
 	def _deleteStep(
 		self,
 		node: NodeType | None,
-		mt: int,
-		dt: int,
+		mt: float,
+		dt: float,
 		eid: int,
 	) -> NodeType | None:
-		if not node:
-			return
+		if node is None:
+			return None
 		if mt < node.mt:
 			node.left = self._deleteStep(node.left, mt, dt, eid)
 		elif mt > node.mt:
@@ -393,6 +376,7 @@ class EventSearchTree:
 				if not node.left:
 					return node.right
 				node2 = node
+				assert node2.right is not None
 				node = self.getMinNode(node2.right)
 				node.right = self.deleteMinNode(node2.right)
 				node.left = node2.left
@@ -415,28 +399,28 @@ class EventSearchTree:
 		del self.byId[eid]
 		return n
 
-	def getLastOfEvent(self, eid: int) -> tuple[int, int] | None:
+	def getLastOfEvent(self, eid: int) -> tuple[float, float] | None:
 		hp = self.byId.get(eid)
 		if hp is None:
-			return
+			return None
 		try:
 			mt, dt = hp.getMax()
 		except ValueError:
-			return
+			return None
 		return (
 			mt - dt,
 			mt + dt,
 		)
 
-	def getFirstOfEvent(self, eid: int) -> tuple[int, int] | None:
+	def getFirstOfEvent(self, eid: int) -> tuple[float, float] | None:
 		hp = self.byId.get(eid)
 		if hp is None:
-			return
+			return None
 		try:
 			mt, dt = hp.getMin()
 			# slower than getMax, but twice faster than max()
 		except ValueError:
-			return
+			return None
 		return (
 			mt - dt,
 			mt + dt,
@@ -502,4 +486,4 @@ if __name__ == "__main__":
 	tree = EventSearchTree()
 	for x in ls:
 		tree.add(x, x + 4, x)
-	log.info(tree.getLastBefore(15.5))
+	log.info(str(tree.getLastBefore(15.5)))

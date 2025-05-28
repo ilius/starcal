@@ -56,14 +56,15 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
-		self.optionsWidget = HBox()
+		optionsWidget = HBox()
 		prefItem = CheckPrefItem(
 			prop=conf.seasonPBar_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)
-		pack(self.optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		self.optionsWidget.show_all()
-		return self.optionsWidget
+		optionsWidget.show_all()
+		self.optionsWidget = optionsWidget
+		return optionsWidget

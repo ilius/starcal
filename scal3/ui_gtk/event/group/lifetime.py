@@ -7,13 +7,15 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.groups import LifetimeGroup
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NormalWidgetClass):
-	def __init__(self, group: EventGroup) -> None:
+	group: LifetimeGroup
+
+	def __init__(self, group: LifetimeGroup) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()

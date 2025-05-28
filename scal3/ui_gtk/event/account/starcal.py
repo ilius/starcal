@@ -7,12 +7,13 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.account import BaseWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.accounts import Account
+	from scal3.account.starcal import StarCalendarAccount
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, account: Account) -> None:
+	def __init__(self, account: StarCalendarAccount) -> None:
 		BaseWidgetClass.__init__(self, account)
+		self.account = account
 		# -----
 		hbox = HBox()
 		label = gtk.Label(label=_("Email"))

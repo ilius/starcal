@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+# mypy: ignore-errors
 
 from __future__ import annotations
 
@@ -173,7 +174,7 @@ def getTagList(
 			author = tag.author
 		except AttributeError:
 			author = tag.tagger
-		epoch = author.time  # type: int
+		epoch: int = author.time
 		if epoch < startEpoch:
 			continue
 		if epoch >= endEpoch:

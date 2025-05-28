@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from scal3.ui_gtk.event.event.allDayTask import WidgetClass
 from scal3.ui_gtk.event.event.custom import WidgetClass
 from scal3.ui_gtk.event.event.dailyNote import WidgetClass

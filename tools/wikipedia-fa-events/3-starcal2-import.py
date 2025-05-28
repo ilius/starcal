@@ -13,7 +13,7 @@ def dataToPrettyJson(data):
 
 log = logger.get()
 
-ui.eventGroups.load()
+ui.ev.groups.load()
 
 groupTitlePrefix = "ویکی‌پدیا - "
 newGroupsDict = {}
@@ -32,7 +32,7 @@ def getGroupByTitle(title):
 			},
 		)
 		newGroupsDict[title] = group
-		ui.eventGroups.append(group)
+		ui.ev.groups.append(group)
 		return group
 
 
@@ -61,4 +61,4 @@ for line in open("wikipedia-fa.tab", encoding="utf-8"):  # noqa: SIM115
 
 for group in newGroupsDict.values():
 	group.save()
-ui.eventGroups.save()
+ui.ev.groups.save()

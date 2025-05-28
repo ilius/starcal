@@ -9,7 +9,8 @@ from scal3.ui_gtk import gtk
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.event_lib.notifier_base import EventNotifier
+	from scal3.event_lib.notifiers import AlarmNotifier
+
 
 # from scal3.ui_gtk import player
 
@@ -24,11 +25,11 @@ __all__ = ["WidgetClass", "notify"]
 # 		if self.notifier.alarmSound:
 # 			self.openFile(self.notifier.alarmSound)
 # 	def updateVars(self):
-# 		self.notifier.alarmSound = self.getFile()
+# 		self.notifier.alarmSound = self.getFile(0)
 
 
 class WidgetClass(gtk.FileChooserButton):
-	def __init__(self, notifier: EventNotifier) -> None:
+	def __init__(self, notifier: AlarmNotifier) -> None:
 		self.notifier = notifier
 		gtk.FileChooserButton.__init__(self)
 		self.set_title(_("Select Sound"))
@@ -55,7 +56,7 @@ class WidgetClass(gtk.FileChooserButton):
 # 	# finishFunc()
 
 
-def notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:
+def notify(notifier: AlarmNotifier, finishFunc: Callable[[], None]) -> None:
 	# import thread
 	# thread.start_new_thread(notifyWait, (notifier, finishFunc))
 	finishFunc()

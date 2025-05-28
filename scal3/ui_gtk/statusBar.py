@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan
@@ -11,6 +13,9 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.label import SLabel
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.pref_utils import PrefItem
 
 __all__ = ["CalObj"]
 
@@ -46,7 +51,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# ---
 		activeCalTypes = calTypes.active
 		if conf.statusBarDatesReverseOrder.v:
-			activeCalTypes = reversed(activeCalTypes)  # to not modify calTypes.active
+			# to not modify calTypes.active
+			activeCalTypes = list(reversed(activeCalTypes))
 		for calType in activeCalTypes:
 			label = SLabel()
 			label.calType = calType
@@ -57,6 +63,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.onDateChange()
 
 	def onDateChange(self, *a, **kw) -> None:
+		assert ud.dateFormatBin is not None
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
 		for label in labels:
@@ -78,6 +85,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			return self.optionsWidget
 		# ----
 		optionsWidget = VBox(spacing=10)
+		prefItem: PrefItem
 		# ----
 		prefItem = CheckPrefItem(
 			prop=conf.statusBarDatesReverseOrder,

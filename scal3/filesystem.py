@@ -10,7 +10,7 @@ from os.path import isabs, join
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from io import IOBase
+	from typing import IO
 
 __all__ = ["DefaultFileSystem", "FileSystem"]
 
@@ -21,7 +21,7 @@ class FileSystem:
 		fpath: str,
 		mode: str = "r",
 		encoding: str | None = None,
-	) -> IOBase:
+	) -> IO:
 		raise NotImplementedError
 
 	def abspath(self, path: str) -> str:
@@ -37,6 +37,9 @@ class FileSystem:
 		raise NotImplementedError
 
 	def removeFile(self, fpath: str) -> None:
+		raise NotImplementedError
+
+	def isfile(self, fpath: str) -> bool:
 		raise NotImplementedError
 
 
@@ -61,7 +64,7 @@ class DefaultFileSystem(FileSystem):
 		fpath: str,
 		mode: str = "r",
 		encoding: str | None = None,
-	) -> IOBase:
+	) -> IO:
 		if isabs(fpath):
 			log.warning(f"DefaultFileSystem: open: reading abs path {fpath}")
 		fpath = self.abspath(fpath)

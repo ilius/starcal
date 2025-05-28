@@ -98,7 +98,7 @@ class IconSelectButton(gtk.Button):
 
 		return dialog
 
-	def onButtonPressEvent(self, _widget: gtk.Widget, gevent: gdk.Event) -> None:
+	def onButtonPressEvent(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
 		b = gevent.button
 		if b == 1:
 			dialog = self.createDialog()
@@ -107,7 +107,7 @@ class IconSelectButton(gtk.Button):
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
-	def menuItemActivate(self, _widget: gtk.Widget, icon: str) -> None:
+	def menuItemActivate(self, _w: gtk.Widget, icon: str) -> None:
 		self.set_filename(icon)
 		self.emit("changed", icon)
 
@@ -144,13 +144,10 @@ class IconSelectButton(gtk.Button):
 	def get_filename(self) -> str:
 		return self.filename
 
-	def set_filename(self, filename: str) -> None:
+	def set_filename(self, filename: str | None) -> None:
 		if filename is None:
 			filename = ""
 		if filename:
 			filename = resolveImagePath(filename)
 		self.filename = filename
-		if not filename:
-			self._setImage(join(pixDir, "empty.png"))
-		else:
-			self._setImage(filename)
+		self._setImage(filename or join(pixDir, "empty.png"))

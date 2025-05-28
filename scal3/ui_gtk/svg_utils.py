@@ -28,7 +28,7 @@ from scal3.ui_gtk import GdkPixbuf, GLibError, gtk
 __all__ = ["pixbufFromSvgFile"]
 
 
-def pixbufFromSvgFile(path: str, size: int) -> GdkPixbuf.Pixbuf:
+def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
 	if size <= 0:
 		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):

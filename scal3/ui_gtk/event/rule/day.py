@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 from scal3.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import DayOfMonthEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NumRangesEntry):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: DayOfMonthEventRule) -> None:
 		self.rule = rule
 		NumRangesEntry.__init__(self, 1, 31, 10)
 

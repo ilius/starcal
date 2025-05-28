@@ -60,9 +60,6 @@ lint.select = [
 	"LOG", # flake8-logging
 	"RUF", # Ruff-specific rules
 ]
-# warning: The following rules may cause conflicts when used with the formatter:
-# `COM812`, `ISC001`.
-# To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
 	"ANN003",  # Missing type annotation for `**kwargs`
@@ -115,6 +112,8 @@ lint.ignore = [
 	"RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
 	"RUF100",  # Unused `noqa` directive (non-enabled: ...)
 
+	"COM812",
+	"D203",
 	"TRY003", # BS: Avoid specifying long messages outside the exception class
 	"TRY400", # BS: Use `logging.exception` instead of `logging.error`
 	"SIM105", # Use contextlib.suppress({exception}) instead of try-except-pass
@@ -236,8 +235,10 @@ wrap-pragma-comments = true
 
 [tool.mypy]
 exclude = [  # DOES NOT WORK!!
+	'^libs/bson/bson/*.py$',
 	'^scal3/json_utils\.py$',
 ]
+ignore_missing_imports = true
 
 [tool.refurb]
 ignore = [
@@ -263,7 +264,6 @@ exclude = ["scal3/account/", "*_test.py", "scal3/ui_gtk/arch-enable-locale.py"]
 ignore_names = [
 	"OPEN_START",
 	"validDate",
-	"prefVersion",
 	"getMonthWeekNth",
 	"rgbToInt",
 	"rgbToHsl",

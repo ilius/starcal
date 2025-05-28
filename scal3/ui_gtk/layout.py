@@ -42,26 +42,20 @@ class WinLayoutBase(CustomizableCalObj):
 
 	def __init__(
 		self,
-		name: str = "",
-		desc: str = "",
+		name: str,
+		desc: str,
+		vertical: bool,
+		expand: bool,
 		enableParam: Property | None = None,
-		vertical: bool | None = None,
-		expand: bool | None = None,
 	) -> None:
-		if not name:
-			raise ValueError("name= argument is missing")
-		if vertical is None:
-			raise ValueError("vertical= argument is missing")
-		if expand is None:
-			raise ValueError("expand= argument is missing")
 		self.objName = name
 		self.desc = desc
+		self.vertical: bool = vertical
+		self.expand: bool = expand
 		self.enableParam = enableParam
-		self.vertical = vertical
-		self.expand = expand
 		# ----
-		self.optionsButtonBox = None  # type: gtk.Widget
-		self.subPages = None
+		self.optionsButtonBox: gtk.Widget | None = None
+		self.subPages: list[StackPage] | None = None
 		# ----
 		CustomizableCalObj.__init__(self)
 		self.initVars()
@@ -72,11 +66,11 @@ class WinLayoutObj(WinLayoutBase):
 
 	def __init__(
 		self,
-		name: str = "",
-		desc: str = "",
+		name: str,
+		desc: str,
+		vertical: bool,
+		expand: bool,
 		enableParam: Property | None = None,
-		vertical: bool | None = None,
-		expand: bool | None = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
@@ -89,9 +83,9 @@ class WinLayoutObj(WinLayoutBase):
 			self,
 			name=name,
 			desc=desc,
-			enableParam=enableParam,
 			vertical=vertical,
 			expand=expand,
+			enableParam=enableParam,
 		)
 		# ---
 		self.movable = movable
@@ -100,10 +94,10 @@ class WinLayoutObj(WinLayoutBase):
 		self.initializer = initializer
 		self._item: CustomizableCalObj | None = None
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if self._item is None:
-			return
-		self._item.onKeyPress(arg, gevent)
+			return False
+		return self._item.onKeyPress(arg, gevent)
 
 	def getWidget(self) -> gtk.Widget:
 		if self._item is not None:
@@ -152,6 +146,7 @@ class WinLayoutObj(WinLayoutBase):
 		page.pageIcon = ""
 		page.pageItem = item
 		self.subPages = [page]
+		# assert self.vertical is not None
 		optionsButtonBox = newSubPageButton(
 			item,
 			page,
@@ -168,17 +163,18 @@ class WinLayoutObj(WinLayoutBase):
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsButtonBox()
+		assert self.subPages is not None
 		return self.subPages
 
 
 class WinLayoutBox(WinLayoutBase):
 	def __init__(
 		self,
-		name: str = "",
-		desc: str = "",
+		name: str,
+		desc: str,
+		vertical: bool,
+		expand: bool,
 		enableParam: Property | None = None,
-		vertical: bool | None = None,
-		expand: bool | None = None,
 		itemsMovable: bool = False,
 		itemsParam: Property | None = None,
 		buttonSpacing: int = 5,
@@ -208,14 +204,13 @@ class WinLayoutBox(WinLayoutBase):
 		self.buttonSpacing = buttonSpacing
 		self.arrowSize = arrowSize
 		# ---
-		self._box = None  # type: gtk.Box
+		self._box: gtk.Box | None = None
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
-		for item in self.items:
-			if item.enable and item.onKeyPress(arg, gevent):
-				break
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
+		return any(item.enable and item.onKeyPress(arg, gevent) for item in self.items)
 
 	def showHide(self) -> None:
+		assert self._box is not None
 		if self.enable:
 			self._box.show()
 		else:
@@ -224,6 +219,7 @@ class WinLayoutBox(WinLayoutBase):
 	def getWidget(self) -> gtk.Widget:
 		if self._box is not None:
 			return self._box
+		# assert self.vertical is not None
 		box = gtk.Box(orientation=getOrientation(self.vertical))
 
 		for item in self.items:
@@ -298,7 +294,7 @@ class WinLayoutBox(WinLayoutBase):
 
 	def onItemMoveClick(
 		self,
-		_button: gtk.Button,
+		_b: gtk.Button,
 		item: WinLayoutBox | WinLayoutObj,
 	) -> None:
 		index = self.items.index(item)
@@ -309,6 +305,7 @@ class WinLayoutBox(WinLayoutBase):
 		self.moveItem(index, newIndex)
 		# ---
 		listBox = self.optionsButtonBox
+		assert listBox is not None
 		hbox = listBox.get_row_at_index(index)
 		listBox.remove(hbox)
 		listBox.insert(hbox, newIndex)

@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3.font import Font
 from scal3.ui import getFont
+
+if TYPE_CHECKING:
+	from scal3.ui.pytypes import DictWithFont
 
 __all__ = ["getParamsFont"]
 
 
-def getParamsFont(params: dict) -> Font | None:
+def getParamsFont(params: DictWithFont) -> Font | None:
 	font = params.get("font")
 	if not font:
 		return None

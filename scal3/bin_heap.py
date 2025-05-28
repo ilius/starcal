@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from scal3 import logger
 
@@ -15,11 +15,9 @@ if TYPE_CHECKING:
 __all__ = ["MaxHeap"]
 
 
+# list has .copy() since Python 3.3
 class MaxHeap[T](list):
-	__slots__ = []
-
-	def copy(self) -> Self:
-		return MaxHeap(self[:])
+	# __slots__ = []  # causes mypy to give internal error
 
 	def exch(self, i: int, j: int) -> None:
 		self[i], self[j] = self[j], self[i]
@@ -46,10 +44,10 @@ class MaxHeap[T](list):
 			self.exch(k, j)
 			k = j
 
-	def push(self, key: int, value: T) -> None:
+	def push(self, key: float, value: T) -> None:
 		heappush(self, (-key, value))
 
-	def pop(self, index: int | None = None) -> tuple[int, T]:
+	def popIndex(self, index: int | None = None) -> tuple[int, T]:
 		if index is None:
 			mkey, value = heappop(self)
 		else:
@@ -64,10 +62,10 @@ class MaxHeap[T](list):
 			self.swim(index)
 		return -mkey, value
 
-	def moreThan(self, key: int) -> Iterable[tuple[int, T]]:
+	def moreThan(self, key: float) -> Iterable[tuple[int, T]]:
 		return self.moreThanStep(key, 0)
 
-	def moreThanStep(self, key: int, index: int) -> Iterable[tuple[int, T]]:
+	def moreThanStep(self, key: float, index: int) -> Iterable[tuple[int, T]]:
 		if index < 0:
 			return
 		try:
@@ -85,13 +83,13 @@ class MaxHeap[T](list):
 	def __str__(self) -> str:
 		return " ".join([str(-k) for k, v in self])
 
-	def delete(self, key: int, value: T) -> None:
+	def delete(self, key: float, value: T) -> None:
 		try:
 			index = self.index((-key, value))  # not optimal FIXME
 		except ValueError:
 			pass
 		else:
-			self.pop(index)
+			self.popIndex(index)
 
 	def verify(self) -> bool:
 		return self.verifyIndex(0)
@@ -116,17 +114,17 @@ class MaxHeap[T](list):
 			return True
 		return self.verifyIndex(2 * i + 1) and self.verifyIndex(2 * i + 2)
 
-	def getAll(self) -> Iterable[tuple[int, T]]:
+	def getAll(self) -> Iterable[tuple[float, T]]:
 		for key, value in self:
 			yield -key, value
 
-	def getMax(self) -> tuple[int, T]:
+	def getMax(self) -> tuple[float, T]:
 		if not self:
 			raise ValueError("heap empty")
 		k, v = self[0]
 		return -k, v
 
-	def getMin(self) -> tuple[int, T]:
+	def getMin(self) -> tuple[float, T]:
 		# at least 2 times faster than max(self)
 		if not self:
 			raise ValueError("heap empty")
@@ -143,14 +141,14 @@ class MaxHeap[T](list):
 		return -k, v
 
 	"""
-	def deleteLessThanStep(self, key, index):
+	def deleteLessThanStep(self, key: float, index: int):
 		try:
 			key1, value1 = self[index]
 		except IndexError:
 			return
 		key1 = -key1
 		#if key
-	def deleteLessThan(self, key):
+	def deleteLessThan(self, key: float):
 		pass
 	"""
 
@@ -158,7 +156,7 @@ class MaxHeap[T](list):
 def testGetMin(N: int) -> None:
 	from random import randint
 
-	h = MaxHeap()
+	h: MaxHeap[int] = MaxHeap()
 	for _ in range(N):
 		x = randint(1, 10 * N)
 		h.push(x, 0)
@@ -176,17 +174,17 @@ def testDeleteStep(N: int, maxKey: int) -> bool:
 	from random import randint
 
 	# ---
-	h = MaxHeap()
+	h: MaxHeap[int] = MaxHeap()
 	for _ in range(N):
 		h.push(randint(0, maxKey), 0)
 	h0 = h.copy()
 	rmIndex = randint(0, N - 1)
 	rmKey = -h[rmIndex][0]
-	rmKey2 = h.pop(rmIndex)
+	rmKey2 = h.popIndex(rmIndex)
 	if not h.verify():
 		log.info(f"not verified, {N=}, I={rmIndex}")
-		log.info(h0)
-		log.info(h)
+		log.info(f"{h0=}")
+		log.info(f"{h=}")
 		log.info("------------------------")
 		return False
 	print(rmKey, rmKey2)  # noqa: T201

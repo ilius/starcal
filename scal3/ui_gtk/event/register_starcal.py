@@ -17,7 +17,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -29,10 +29,14 @@ from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
+if TYPE_CHECKING:
+	from scal3.account.starcal import StarCalendarAccount
+	from scal3.event_lib.pytypes import AccountType
+
 __all__ = ["StarCalendarRegisterDialog"]
 
 
-class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
+class StarCalendarRegisterDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		# ---
@@ -138,7 +142,8 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
 
-		accountCls = ui.eventAccounts.loadClass("starcal")
+		accountCls: type[StarCalendarAccount] = ui.ev.accounts.loadClass("starcal")  # type: ignore[assignment]
+		assert accountCls is not None
 
 		res = requests.post(
 			accountCls.serverUrl + "auth/register/",
@@ -162,8 +167,8 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			self.errorLabel.set_text(_(error))
 			return error
 
-		account = accountCls()
-		account.setData(
+		account: AccountType = accountCls()  # type: ignore[assignment] # FIXME
+		account.setDict(
 			{
 				"title": "StarCalendar: " + email,
 				"email": email,
@@ -172,31 +177,33 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			},
 		)
 		account.save()
-		ui.eventAccounts.append(account)
-		ui.eventAccounts.save()
+		ui.ev.accounts.append(account)
+		ui.ev.accounts.save()
 		if ui.prefWindow:
 			ui.prefWindow.refreshAccounts()  # messy, I know, FIXME
 		# ---
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		error = account.fetchGroups()
-		if error:
-			log.error(error)
-			return error
+
+		try:
+			account.fetchGroups()
+		except Exception as e:
+			log.error("error in fetchGroups: {e}")
+			return str(e)
 		account.save()
 		return None
 
-	def onOkClick(self, _widget: gtk.Widget) -> bool:
+	def onOkClick(self, _w: gtk.Widget) -> bool:
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
 		return True
 
-	def onCancelClick(self, _widget: gtk.Widget) -> bool:
+	def onCancelClick(self, _w: gtk.Widget) -> bool:
 		self.destroy()
 		return True
 
-	def onDeleteEvent(self, _widget: gtk.Widget, _event: Any) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: Any) -> bool:
 		self.destroy()
 		return True
 

@@ -123,7 +123,7 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		# should we save on Escape? or when clicking the X (close) button?
 		# ---
-		self.itemByPagePath = {}
+		self.itemByPagePath: dict[str, CustomizableCalObj] = {}
 		self.rootItem = item
 		# ---
 		rootPagePath = "mainWin"
@@ -247,10 +247,10 @@ class CustomizeWindow(gtk.Dialog):
 		# ---
 		return treev, vbox
 
-	def vboxSizeRequest(self, _widget: gtk.Widget = None, _req: Any = None) -> None:
+	def vboxSizeRequest(self, _w: gtk.Widget = None, _req: Any = None) -> None:
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
+	def onTopClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -269,7 +269,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i + 1))
 		treev.set_cursor(0)
 
-	def onUpClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
+	def onUpClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -287,7 +287,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i - 1), model.get_iter(i))
 		treev.set_cursor(i - 1)
 
-	def onDownClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
+	def onDownClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -305,7 +305,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i), model.get_iter(i + 1))
 		treev.set_cursor(i + 1)
 
-	def onBottomClick(self, _button: gtk.Button, treev: gtk.TreeView) -> None:
+	def onBottomClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -327,6 +327,7 @@ class CustomizeWindow(gtk.Dialog):
 	def _addPageItemsTree(self, page: StackPage) -> None:
 		pagePath = page.pagePath
 		item = page.pageItem
+		assert item is not None
 
 		_childrenTreev, childrenBox = self.newItemList(
 			pagePath,
@@ -361,6 +362,8 @@ class CustomizeWindow(gtk.Dialog):
 		pagePath = page.pagePath
 		title = page.pageTitle
 		item = page.pageItem
+		assert item is not None
+		assert page.pageWidget is not None
 		log.debug(f"addPageObj: {page.pagePath=}, {page.pageParent=}, {item.objName=}")
 
 		if self.stack.hasPage(pagePath):
@@ -418,7 +421,7 @@ class CustomizeWindow(gtk.Dialog):
 			title = title + " - " + parentItem.desc
 
 		page = StackPage()
-		page.pageName = pagePath.split(".")[-1]
+		page.pageName = pagePath.split(".", maxsplit=1)[-1]
 		page.pagePath = pagePath
 		page.pageParent = parentPagePath
 		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
@@ -527,9 +530,10 @@ class CustomizeWindow(gtk.Dialog):
 		assert parentItem.items[itemIndex] == item
 		# ---
 		if active:
-			item = self.loadItem(parentItem, itemIndex)
-			if item is None:
+			itemNew = self.loadItem(parentItem, itemIndex)
+			if itemNew is None:
 				return
+			item = itemNew
 		item.enable = active
 		model.set_value(itr, 3, self.itemPixbuf(item))
 		item.showHide()
@@ -554,9 +558,9 @@ class CustomizeWindow(gtk.Dialog):
 		conf.ud__mainToolbarData.v = ud.mainToolbarData
 		conf.customizePagePath.v = self.stack.currentPagePath()
 		ui.saveConfCustomize()
-		# data = item.getData()-- remove? FIXME
+		# data = item.getDict()-- remove? FIXME
 
-	def onSaveClick(self, _button: gtk.Button = None, _event: Any = None) -> bool:
+	def onSaveClick(self, _b: gtk.Button = None, _ge: Any = None) -> bool:
 		self.save()
 		self.hide()
 		return True

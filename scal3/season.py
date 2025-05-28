@@ -76,7 +76,7 @@ Wikipedia:
 def getSeasonNamePercentFromJd(
 	jd: int,
 	southernHemisphere: bool = False,
-) -> tuple[str, int]:
+) -> tuple[str, float]:
 	d, m = divmod(getSeasonValueFromJd(jd), 1)
 	if southernHemisphere:
 		d = (d + 2) % 4

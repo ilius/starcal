@@ -29,13 +29,14 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.event_lib.notifier_base import EventNotifier
+	from scal3.event_lib.notifiers import FloatingMsgNotifier
+
 
 __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, notifier: EventNotifier) -> None:
+	def __init__(self, notifier: FloatingMsgNotifier) -> None:
 		self.notifier = notifier
 		# --
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -73,11 +74,14 @@ class WidgetClass(gtk.Box):
 		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
-def notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:
+def notify(notifier: FloatingMsgNotifier, finishFunc: Callable[[], None]) -> None:
 	glib.idle_add(_notify, notifier, finishFunc)
 
 
-def _notify(notifier: EventNotifier, finishFunc: Callable[[], None]) -> None:  # FIXME
+def _notify(
+	notifier: FloatingMsgNotifier,
+	finishFunc: Callable[[], None],
+) -> None:  # FIXME
 	cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
 	text = notifier.event.getText()
 	msg = cls(

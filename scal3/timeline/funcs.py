@@ -123,7 +123,7 @@ def formatYear(year: int, prettyPower: bool = False) -> str:
 
 # def setRandomColorsToEvents():
 # 	import random
-# 	events = ui.events[:]
+# 	events = ui.events.copy()
 # 	random.shuffle(events)
 # 	dh = 360.0/len(events)
 # 	hue = 0
@@ -133,10 +133,10 @@ def formatYear(year: int, prettyPower: bool = False) -> str:
 
 
 def calcTimeLineData(
-	timeStart: int,
-	timeWidth: int,
+	timeStart: float,
+	timeWidth: float,
 	pixelPerSec: float,
-	borderTm: int,
+	borderTm: float,
 ) -> dict[str, Any]:
 	# from time import time as now
 	# funcTimeStart = now()

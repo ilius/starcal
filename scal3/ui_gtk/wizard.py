@@ -1,19 +1,33 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Protocol
+
 from scal3 import logger
 
 log = logger.get()
 
 from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.mywidgets.dialog import MyWindow
 from scal3.ui_gtk.stack import MyStack, StackPage
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["WizardWindow"]
 
 
-class WizardWindow(gtk.Window, MyDialog):
-	stepClasses = []
+class StepType(Protocol):
+	desc: str
+	buttons: list[tuple[str, Callable[[gtk.Button], None]]]
+
+	def __init__(self, window: WizardWindow) -> None: ...
+	def run(self) -> None: ...
+	def getWidget(self) -> gtk.Widget: ...
+
+
+class WizardWindow(MyWindow):
+	stepClasses: list[type[StepType]] = []
 
 	def __init__(self, title: str) -> None:
 		gtk.Window.__init__(self)
@@ -26,7 +40,7 @@ class WizardWindow(gtk.Window, MyDialog):
 		)
 		pack(self.vbox, self.stack, 1, 1)
 		self.add(self.vbox)
-		self.steps = []
+		self.steps: list[StepType] = []
 		self.stepIndex = 0
 		# ----
 		for index, cls in enumerate(self.stepClasses):
@@ -34,7 +48,7 @@ class WizardWindow(gtk.Window, MyDialog):
 			self.steps.append(step)
 			# --
 			page = StackPage()
-			page.pageWidget = step
+			page.pageWidget = step.getWidget()
 			page.pageParent = str(index - 1) if index > 0 else ""
 			page.pageName = str(index)
 			page.pagePath = str(index)
@@ -53,7 +67,7 @@ class WizardWindow(gtk.Window, MyDialog):
 		self.show_all()
 		# log.debug(id(self.get_action_area()))
 
-	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.EventKey) -> bool:
+	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "escape":
 			self.destroy()

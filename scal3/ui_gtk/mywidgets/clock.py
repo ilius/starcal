@@ -68,7 +68,7 @@ class ClockLabel(gtk.Label):
 	def stop(self) -> None:
 		self.running = False
 
-	# def onButtonPress(self, obj, gevent):
+	# 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 	# 	if gevent.button == 3:
 
 

@@ -58,7 +58,7 @@ def createDiscoveryEvent(group, atom):
 
 
 if __name__ == "__main__":
-	ui.eventGroups.load()
+	ui.ev.groups.load()
 	group = event_lib.LargeScaleGroup()
 	group.setData(
 		{
@@ -76,5 +76,5 @@ if __name__ == "__main__":
 			event.save()
 			group.append(event)
 	group.save()
-	ui.eventGroups.append(group)
-	ui.eventGroups.save()
+	ui.ev.groups.append(group)
+	ui.ev.groups.save()

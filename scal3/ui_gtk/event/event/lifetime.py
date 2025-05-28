@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from scal3.event_lib.groups import LifetimeGroup
+from scal3.event_lib.rules import EndEventRule, StartEventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -25,20 +27,20 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import LifetimeEvent
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event: Event) -> None:  # FIXME
+	def __init__(self, event: LifetimeEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		try:
+		if isinstance(event.parent, LifetimeGroup):
 			separateYmd = event.parent.showSeparateYmdInputs
-		except AttributeError:
+		else:
 			separateYmd = False
 		if separateYmd:
 			self.startDateInput = YearMonthDayBox()
@@ -68,29 +70,30 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
-		start, ok = self.event["start"]
-		if not ok:
+		start = StartEventRule.getFrom(self.event)
+		if start is None:
 			raise KeyError('rule "start" not found')
-		end, ok = self.event["end"]
-		if not ok:
+		end = EndEventRule.getFrom(self.event)
+		if end is None:
 			raise KeyError('rule "end" not found')
-		self.startDateInput.set_value(start.date)
-		self.endDateInput.set_value(end.date)
+		self.startDateInput.setDate(start.date)
+		self.endDateInput.setDate(end.date)
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		start, ok = self.event["start"]
-		if not ok:
+		start = StartEventRule.getFrom(self.event)
+		if start is None:
 			raise KeyError('rule "start" not found')
-		end, ok = self.event["end"]
-		if not ok:
+		end = EndEventRule.getFrom(self.event)
+		if end is None:
 			raise KeyError('rule "end" not found')
-		start.setDate(self.startDateInput.get_value())
-		end.setDate(self.endDateInput.get_value())
+		start.setDate(self.startDateInput.getDate())
+		end.setDate(self.endDateInput.getDate())
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
+		assert newCalType is not None
 		self.startDateInput.changeCalType(self.event.calType, newCalType)
 		self.endDateInput.changeCalType(self.event.calType, newCalType)
 		self.event.calType = newCalType

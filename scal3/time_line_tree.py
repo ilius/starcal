@@ -75,13 +75,16 @@ class Node:
 		else:
 			self.s0, self.s1 = offset - width, offset
 		# ---
+		# possible keys of `self.children` are 0 to `base-1` for right node,
+		# and `-(base-1)` to 0 for left node
+		self.children: dict[int, Node] = {}
+		# events: list of tuples (rel_start, rel_end, event_id)
+		self.events: list[tuple[int, int, int]]
 		self.clear()
 
 	def clear(self) -> None:
-		self.children: dict[int, Node] = {}
-		# possible keys of `self.children` are 0 to `base-1` for right node,
-		# and `-(base-1)` to 0 for left node
-		self.events = []  # list of tuples (rel_start, rel_end, event_id)
+		self.children = {}
+		self.events = []
 
 	def sOverlaps(self, t0: int, t1: int) -> bool:
 		return ab_overlaps(t0, t1, self.s0, self.s1)
@@ -152,7 +155,7 @@ class TimeLineTree:
 	def clear(self) -> None:
 		self.right = Node(self.base, 1, self.offset, True)
 		self.left = Node(self.base, 1, self.offset, False)
-		self.byEvent = {}
+		self.byEvent: dict[int, list[tuple[Node, tuple]]] = {}
 
 	def search(self, t0: int, t1: int) -> Iterable[tuple[int, int, int, int]]:
 		if self.offset < t1:

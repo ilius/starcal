@@ -31,6 +31,7 @@ if typing.TYPE_CHECKING:
 	type Number = int | float
 
 __all__ = [
+	"Comparable",
 	"arange",
 	"cmp",
 	"findNearestIndex",
@@ -86,6 +87,10 @@ class Comparable(ABC):
 
 
 def cmp(a: Comparable, b: Comparable) -> int:
+	return 0 if a == b else (1 if a > b else -1)
+
+
+def intcmp(a: int, b: int) -> int:
 	return 0 if a == b else (1 if a > b else -1)
 
 
@@ -157,7 +162,7 @@ def urlToPath(url: str) -> str:
 	return path2
 
 
-def findNearestNum(lst: list[int], num: int) -> int | None:
+def findNearestNum(lst: list[int], num: float) -> int | None:
 	if not lst:
 		return None
 	best = lst[0]
@@ -167,7 +172,7 @@ def findNearestNum(lst: list[int], num: int) -> int | None:
 	return best
 
 
-def findNearestIndex(lst: list[int], num: int) -> int | None:
+def findNearestIndex(lst: list[float], num: float) -> int | None:
 	if not lst:
 		return None
 	index = 0
@@ -192,7 +197,7 @@ def findWordByPos(text: str, pos: int) -> tuple[str, int]:
 
 
 def numRangesEncode(
-	values: list[int | tuple[int, int] | list[int]],
+	values: list[int | tuple[int, int]],  # FIXME: item might be list instead of tuple
 	sep: str,
 ) -> str:
 	parts = []

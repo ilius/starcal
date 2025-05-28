@@ -17,15 +17,13 @@ from __future__ import annotations
 
 from typing import Any, NamedTuple
 
+from scal3.color_utils import RGB
+
 __all__ = ["NOT_SET", "confParamsData"]
 
 
 class NOT_SET:
 	pass
-
-
-# TODO: switch to NamedTuple
-ColorType = tuple[int, int, int] | tuple[int, int, int, int]
 
 
 class Param(NamedTuple):
@@ -41,19 +39,19 @@ class Param(NamedTuple):
 confParamsData = [
 	Param(
 		name="bgColor",
-		type="ColorType",
+		type="ColorType | None",
 		v3Name="bgColor",
 		default=None,
 	),
 	Param(
 		name="fgColor",
-		type="ColorType",
+		type="ColorType | None",
 		v3Name="fgColor",
 		default=None,
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="baseFontSize",
 		default=8,
 	),
@@ -79,18 +77,18 @@ confParamsData = [
 		name="",
 		type="ColorType",
 		v3Name="holidayBgBolor",
-		default=(60, 35, 35),
+		default=RGB(60, 35, 35),
 	),
 	# ---------------------
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="basicButtonsSize",
 		default=22,
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="basicButtonsSpacing",
 		default=3,
 	),
@@ -109,7 +107,7 @@ confParamsData = [
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movementButtonsSize",
 		default=22,
 	),
@@ -123,19 +121,19 @@ confParamsData = [
 	# ---------------------
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="majorStepMin",
 		default=50,  # with label
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="minorStepMin",
 		default=5,  # with or without label
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="maxLabelWidth",
 		default=60,  # or the same majorStepMin
 	),
@@ -189,7 +187,7 @@ confParamsData = [
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="currentTimeMarkerWidth",
 		default=2,
 	),
@@ -197,7 +195,7 @@ confParamsData = [
 		name="",
 		type="ColorType",
 		v3Name="currentTimeMarkerColor",
-		default=(255, 100, 100),
+		default=RGB(255, 100, 100),
 	),
 	# TODO: change timeline background according to daylight
 	# sunLightEnable = False
@@ -224,7 +222,7 @@ confParamsData = [
 		name="",
 		type="ColorType",
 		v3Name="weekStartTickColor",
-		default=(0, 200, 0),
+		default=RGB(0, 200, 0),
 	),
 	# ---------------------
 	Param(
@@ -290,13 +288,13 @@ confParamsData = [
 	# number of pixels on each step (keyboard / mouse event)
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingStaticStepKeyboard",
 		default=20,  # pixel
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingStaticStepMouse",
 		default=20,  # pixel
 	),
@@ -316,39 +314,39 @@ confParamsData = [
 	# Force is the same as Acceleration, assuming Mass == 1
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingHandForceMouse",
 		default=1100,  # pixel / second^2
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingHandForceKeyboard",
 		default=1100,  # pixel / second^2
 	),
 	# movingHandForceKeyboardSmall is when press Shift with Left/Right arrow
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingHandForceKeyboardSmall",
 		default=850,  # pixel / second^2
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingHandForceButton",
 		default=1100,
 	),
 	# movingHandForce > movingFrictionForce
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingFrictionForce",
 		default=600,  # pixel / second^2
 	),
 	Param(
 		name="",
-		type="int",
+		type="float",
 		v3Name="movingMaxVelocity",
 		default=1200,  # pixel / second
 	),

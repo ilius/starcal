@@ -6,13 +6,13 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import WeekNumberModeEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.ComboBoxText):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: WeekNumberModeEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.ComboBoxText.__init__(self)

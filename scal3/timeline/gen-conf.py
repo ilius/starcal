@@ -21,23 +21,27 @@ all_names = sorted(confParams + ["confParams"])
 
 output = io.StringIO()
 
-output.write("from __future__ import annotations\n\n")
-output.write("from os.path import join\n")
-output.write("from scal3.path import sourceDir\n\n")
-output.write("from scal3.property import Property\n\n")
+output.write(
+	"from __future__ import annotations\n\n"
+	"import typing\n"
+	"from scal3.color_utils import RGB, RGBA\n"
+	"from scal3.property import Property\n\n"
+	"if typing.TYPE_CHECKING:\n"
+	"\tfrom typing import Any\n\n"
+	"\tfrom scal3.color_utils import ColorType\n"
+	"\tfrom scal3.font import Font\n",
+)
 output.write(f"__all__ = {all_names!r}\n\n")
 
 for p in params.confParamsData:
 	assert p.default is not params.NOT_SET
 	value = p.default
-	if p.type.startswith("Color"):
-		output.write(f"{p.v3Name} = Property({value!r})" + "\n")
-		continue
 	output.write(f"{p.v3Name}: Property[{p.type}] = Property({value!r})" + "\n")
+
 
 output.write("\n\n")
 
-output.write("confParams = " + genParamDict(confParams))
+output.write("confParams: dict[str, Property] = " + genParamDict(confParams))
 
 output.write("\n")
 

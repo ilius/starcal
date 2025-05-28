@@ -18,6 +18,7 @@ from __future__ import annotations
 from os.path import join
 from typing import Any, NamedTuple
 
+from scal3.color_utils import RGB, RGBA
 from scal3.font import Font
 
 __all__ = [
@@ -265,7 +266,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: (Footer): Status Bar",
 		desc="Dates Color",
-		default=(255, 132, 255, 255),
+		default=RGBA(255, 132, 255, 255),
 	),
 	# ----------------- Preferences: Appearance
 	Param(
@@ -321,7 +322,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Background",
-		default=(26, 0, 1, 255),
+		default=RGBA(26, 0, 1, 255),
 	),
 	Param(
 		name="borderColor",
@@ -330,7 +331,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Border",
-		default=(123, 40, 0, 255),
+		default=RGBA(123, 40, 0, 255),
 	),
 	Param(
 		name="borderTextColor",
@@ -339,7 +340,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Border Font",
-		default=(255, 255, 255, 255),
+		default=RGBA(255, 255, 255, 255),
 	),
 	Param(
 		name="textColor",
@@ -348,7 +349,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Normal Text",
-		default=(255, 255, 255, 255),
+		default=RGBA(255, 255, 255, 255),
 	),
 	Param(
 		name="holidayColor",
@@ -357,7 +358,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Holidays Font",
-		default=(255, 160, 0, 255),
+		default=RGBA(255, 160, 0, 255),
 	),
 	Param(
 		name="inactiveColor",
@@ -366,7 +367,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Inactive Day Font",
-		default=(255, 255, 255, 115),
+		default=RGBA(255, 255, 255, 115),
 	),
 	Param(
 		name="todayCellColor",
@@ -375,7 +376,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Today",
-		default=(0, 255, 0, 50),
+		default=RGBA(0, 255, 0, 50),
 	),
 	Param(
 		"cursorOutColor",
@@ -384,7 +385,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Cursor",
-		default=(213, 207, 0, 255),
+		default=RGBA(213, 207, 0, 255),
 	),
 	Param(
 		name="cursorBgColor",
@@ -393,7 +394,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="Preferences: Appearance: Colors",
 		desc="Cursor BG",
-		default=(41, 41, 41, 255),
+		default=RGBA(41, 41, 41, 255),
 	),
 	# ----------------- Preferences: Appearance: Status Icon
 	Param(
@@ -746,7 +747,7 @@ confParamsData: list[Param] = [
 		name="rightPanel.border",
 		v3Name="mainWinRightPanelBorderWidth",
 		flags=CUSTOMIZE,
-		type="int",
+		type="float",
 		where="MainWin: Customize: Right Panel",
 		desc="Border Width",
 		default=7,
@@ -799,7 +800,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Month Calendar",
 		desc="Grid Color",
-		default=(255, 252, 0, 82),
+		default=RGBA(255, 252, 0, 82),
 	),
 	Param(
 		name="monthCal.cornerMenuTextColor",
@@ -808,7 +809,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Month Calendar",
 		desc="Corner Menu Text Color",
-		default=(255, 255, 255, 255),
+		default=RGBA(255, 255, 255, 255),
 	),
 	Param(
 		name="monthCal.cursorLineWidthFactor",
@@ -870,7 +871,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Week Calendar",
 		desc="Grid Color",
-		default=(255, 252, 0, 82),
+		default=RGBA(255, 252, 0, 82),
 	),
 	Param(
 		name="weekCal.upperGradientEnable",
@@ -888,7 +889,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Week Calendar",
 		desc="Row's Upper Gradient",
-		default=(255, 255, 255, 60),
+		default=RGBA(255, 255, 255, 60),
 	),
 	Param(
 		name="weekCal.eventsText.pastColorEnable",
@@ -906,7 +907,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Week Calendar: Columns: Events Text",
 		desc="Past Event Color",
-		default=(100, 100, 100, 50),
+		default=RGBA(100, 100, 100, 50),
 	),
 	Param(
 		name="weekCal.eventsText.ongoingColorEnable",
@@ -924,7 +925,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Week Calendar: Columns: Events Text",
 		desc="Ongoing Event Color",
-		default=(80, 255, 80, 255),
+		default=RGBA(80, 255, 80, 255),
 	),
 	Param(
 		name="weekCal.eventsText.showDesc",
@@ -1359,7 +1360,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize",
 		desc="Background Color",
-		default=(0, 10, 0),
+		default=RGB(0, 10, 0),
 	),
 	Param(
 		name="dayCalWin.widgetButtons.enable",
@@ -1557,7 +1558,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize: Season Pie",
 		desc="Spring Color",
-		default=(167, 252, 1, 180),
+		default=RGBA(167, 252, 1, 180),
 	),
 	Param(
 		name="dayCalWin.seasonPie.summerColor",
@@ -1566,7 +1567,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize: Season Pie",
 		desc="Summer Color",
-		default=(255, 254, 0, 180),
+		default=RGBA(255, 254, 0, 180),
 	),
 	Param(
 		name="dayCalWin.seasonPie.autumnColor",
@@ -1575,7 +1576,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize: Season Pie",
 		desc="Autumn Color",
-		default=(255, 127, 0, 180),
+		default=RGBA(255, 127, 0, 180),
 	),
 	Param(
 		name="dayCalWin.seasonPie.winterColor",
@@ -1584,7 +1585,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize: Season Pie",
 		desc="Winter Color",
-		default=(1, 191, 255, 180),
+		default=RGBA(1, 191, 255, 180),
 	),
 	Param(
 		name="dayCalWin.seasonPie.textColor",
@@ -1593,7 +1594,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="DayCalWin: Customize: Season Pie",
 		desc="Text Color",
-		default=(255, 255, 255, 180),
+		default=RGBA(255, 255, 255, 180),
 	),
 	# ------------ progress bars
 	Param(
@@ -1631,7 +1632,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Main Panel: Year & Month Bar",
 		desc="Active menu item color",
-		default=(0, 255, 0, 255),
+		default=RGBA(0, 255, 0, 255),
 	),
 	Param(
 		name="yearMonthBar.yearColorEnable",
@@ -1649,7 +1650,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Main Panel: Year & Month Bar",
 		desc="Year Color",
-		default=(255, 132, 255, 255),
+		default=RGBA(255, 132, 255, 255),
 	),
 	Param(
 		name="yearMonthBar.monthColorEnable",
@@ -1667,7 +1668,7 @@ confParamsData: list[Param] = [
 		type="ColorType",
 		where="MainWin: Customize: Main Panel: Year & Month Bar",
 		desc="Month Color",
-		default=(255, 132, 255, 255),
+		default=RGBA(255, 132, 255, 255),
 	),
 	Param(
 		name="yearMonthBar.fontEnable",
@@ -1719,7 +1720,7 @@ confParamsData: list[Param] = [
 		name="weekCal.toolbar.items",
 		v3Name="ud__wcalToolbarData",
 		flags=CUSTOMIZE,
-		type="dict | None",  # TODO: TypedDict?
+		type="CustomizableToolBoxDict | None",
 		where="MainWin: Customize: Main Panel: Week Calendar: Columns/; Toolbar",
 		desc="Toolbar Buttons",
 		default=None,
@@ -1728,7 +1729,7 @@ confParamsData: list[Param] = [
 		name="mainWin.toolbar.items",
 		v3Name="ud__mainToolbarData",
 		flags=CUSTOMIZE,
-		type="dict | None",  # TODO: TypedDict?
+		type="CustomizableToolBoxDict | None",
 		where="MainWin: Customize: Main Panel: Toolbar",
 		desc="Toolbar Buttons",
 		default=None,
@@ -1812,7 +1813,7 @@ confParamsData: list[Param] = [
 		name="",
 		v3Name="stackIconSize",
 		flags=0,
-		type="float",
+		type="int",
 		where="",
 		desc="",
 		default=22,

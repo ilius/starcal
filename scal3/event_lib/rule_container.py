@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.s_object import SObj
 
 log = logger.get()
 
@@ -27,14 +28,14 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 	from typing import Any
 
-	from .rules import EventRule
+	from scal3.event_lib.pytypes import EventRuleType, RuleContainerType
 
-from collections import OrderedDict
 
 import mytz
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
+	HMS,
 	getEpochFromJd,
 	getEpochFromJhms,
 	getJdFromEpoch,
@@ -46,21 +47,22 @@ from .register import classes
 __all__ = ["RuleContainer"]
 
 
-class RuleContainer:
-	requiredRules = ()
-	supportedRules = None  # None means all rules are supported
-	params = (
+class RuleContainer(SObj):
+	requiredRules: list[str] = []
+	supportedRules: Sequence[str] | None = None  # None means all rules are supported
+	params: list[str] = [
 		"timeZoneEnable",
 		"timeZone",
-	)
-	paramsOrder = (
+	]
+	paramsOrder: list[str] = [
 		"timeZoneEnable",
 		"timeZone",
-	)
+	]
+	calType: int
 
 	@staticmethod
-	def copyRulesDict(rulesOd: dict[str, EventRule]) -> dict[str, EventRule]:
-		newRulesOd = OrderedDict()
+	def copyRulesDict(rulesOd: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
+		newRulesOd = {}
 		for ruleName, rule in rulesOd.items():
 			newRulesOd[ruleName] = rule.copy()
 		return newRulesOd
@@ -70,23 +72,20 @@ class RuleContainer:
 		self.timeZone = ""
 		# ---
 		self.clearRules()
-		self.rulesHash = None
+		self.rulesHash: int | None = None
 
 	def clearRules(self) -> None:
-		self.rulesOd = OrderedDict()
+		self.rulesOd: dict[str, EventRuleType] = {}
 
-	def getRule(self, key: str) -> EventRule:
-		return self.rulesOd[key]
-
-	def getRuleIfExists(self, key: str) -> EventRule | None:
+	def getRule(self, key: str) -> EventRuleType | None:
 		return self.rulesOd.get(key)
 
-	def setRule(self, key: str, value: EventRule) -> None:
+	def setRule(self, key: str, value: EventRuleType) -> None:
 		self.rulesOd[key] = value
 
 	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
 		for rule in self.rulesOd.values():
-			yield rule.name, rule.getData()
+			yield rule.name, rule.getRuleValue()
 
 	def getRulesData(self) -> list[tuple[str, Any]]:
 		return list(self.iterRulesData())
@@ -104,44 +103,40 @@ class RuleContainer:
 	def getRuleNames(self) -> list[str]:
 		return list(self.rulesOd)
 
-	def addRule(self, rule: EventRule) -> None:
+	def addRule(self, rule: EventRuleType) -> None:
 		self.rulesOd[rule.name] = rule
 
-	def addNewRule(self, ruleType: str) -> EventRule:
-		rule = classes.rule.byName[ruleType](self)
+	def addNewRule(self, ruleType: str) -> EventRuleType:
+		rule = classes.rule.byName[ruleType](self)  # type: ignore[arg-type]
 		self.addRule(rule)
 		return rule
 
-	def getAddRule(self, ruleType: str) -> EventRule:
-		rule = self.getRuleIfExists(ruleType)
+	def getAddRule(self, ruleType: str) -> EventRuleType:
+		rule = self.getRule(ruleType)
 		if rule is not None:
 			return rule
 		return self.addNewRule(ruleType)
 
-	def removeRule(self, rule: EventRule) -> None:
+	def removeRule(self, rule: EventRuleType) -> None:
 		del self.rulesOd[rule.name]
 
 	def __delitem__(self, key: str) -> None:
 		self.rulesOd.__delitem__(key)
 
-	# returns (rule, found) where found is boolean
-	def __getitem__(self, key: str) -> tuple[EventRule | None, bool]:
-		rule = self.getRuleIfExists(key)
-		if rule is None:
-			return None, False
-		return rule, True
+	def __getitem__(self, key: str) -> EventRuleType | None:
+		return self.getRule(key)
 
-	def __setitem__(self, key: str, value: EventRule) -> None:
+	def __setitem__(self, key: str, value: EventRuleType) -> None:
 		self.setRule(key, value)
 
-	def __iter__(self) -> Iterator[EventRule]:
+	def __iter__(self) -> Iterator[EventRuleType]:
 		return iter(self.rulesOd.values())
 
 	def setRulesData(self, rulesData: list[tuple[str, Any]]) -> None:
 		self.clearRules()
 		for ruleName, ruleData in rulesData:
-			rule = classes.rule.byName[ruleName](self)
-			rule.setData(ruleData)
+			rule = classes.rule.byName[ruleName](self)  # type: ignore[arg-type]
+			rule.setRuleValue(ruleData)
 			self.addRule(rule)
 
 	def addRequirements(self) -> None:
@@ -149,7 +144,7 @@ class RuleContainer:
 			if name not in self.rulesOd:
 				self.addNewRule(name)
 
-	def checkAndAddRule(self, rule: EventRule) -> tuple[bool, str]:
+	def checkAndAddRule(self, rule: EventRuleType) -> tuple[bool, str]:
 		ok, msg = self.checkRulesDependencies(newRule=rule)
 		if ok:
 			self.addRule(rule)
@@ -157,13 +152,13 @@ class RuleContainer:
 
 	def removeSomeRuleTypes(
 		self,
-		*rmTypes: Sequence[str],
+		*typesToRemove: str,
 	) -> None:
-		for ruleType in rmTypes:
+		for ruleType in typesToRemove:
 			if ruleType in self.rulesOd:
 				del self.rulesOd[ruleType]
 
-	def checkAndRemoveRule(self, rule: EventRule) -> tuple[bool, str]:
+	def checkAndRemoveRule(self, rule: EventRuleType) -> tuple[bool, str]:
 		ok, msg = self.checkRulesDependencies(disabledRule=rule)
 		if ok:
 			self.removeRule(rule)
@@ -171,8 +166,8 @@ class RuleContainer:
 
 	def checkRulesDependencies(
 		self,
-		newRule: EventRule | None = None,
-		disabledRule: EventRule | None = None,
+		newRule: EventRuleType | None = None,
+		disabledRule: EventRuleType | None = None,
 	) -> tuple[bool, str]:
 		rulesOd = self.rulesOd.copy()
 		if newRule:
@@ -207,16 +202,17 @@ class RuleContainer:
 					)
 		return (True, "")
 
-	def copyRulesFrom(self, other: EventRule) -> None:
+	def copyRulesFrom(self, other: RuleContainerType) -> None:
 		for ruleType, rule in other.rulesOd.items():
 			if self.supportedRules is None or ruleType in self.supportedRules:
 				self.getAddRule(ruleType).copyFrom(rule)
 
 	def copySomeRuleTypesFrom(
 		self,
-		other: EventRule,
-		*ruleTypes: tuple[str],
+		other: RuleContainerType,
+		*ruleTypes: str,
 	) -> None:
+		assert self.supportedRules is not None
 		for ruleType in ruleTypes:
 			if ruleType not in self.supportedRules:
 				log.info(
@@ -224,7 +220,7 @@ class RuleContainer:
 					f" for container {self!r}",
 				)
 				continue
-			rule = other.getRuleIfExists(ruleType)
+			rule = other.getRule(ruleType)
 			if rule is None:
 				continue
 			self.getAddRule(ruleType).copyFrom(rule)
@@ -235,6 +231,7 @@ class RuleContainer:
 			tz = mytz.gettz(self.timeZone)
 			if tz:
 				return tz
+		assert locale_man.localTz is not None
 		return locale_man.localTz
 
 	def getTimeZoneStr(self) -> str:
@@ -246,7 +243,7 @@ class RuleContainer:
 	def getJdFromEpoch(self, jd: int) -> int:
 		return getJdFromEpoch(jd, tz=self.getTimeZoneObj())
 
-	def getJhmsFromEpoch(self, epoch: int) -> int:
+	def getJhmsFromEpoch(self, epoch: int) -> tuple[int, HMS]:
 		return getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
 
 	def getEpochFromJhms(self, jd: int, h: int, m: int, s: int) -> int:

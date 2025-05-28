@@ -51,7 +51,7 @@ def encodeIcsWeekDayList(weekDayList: list[int]) -> str:
 	return ",".join([icsWeekDays[wd] for wd in weekDayList])
 
 
-def getIcsTimeByEpoch(epoch: int, pretty: bool = False) -> str:
+def getIcsTimeByEpoch(epoch: float, pretty: bool = False) -> str:
 	# from scal3.time_utils import getJhmsFromEpoch
 	return strftime(
 		icsTmFormatPretty if pretty else icsTmFormat,
@@ -105,7 +105,7 @@ def getEpochByIcsTime(tmStr: str) -> int:
 # 	return int(mktime(tm))
 
 
-def splitIcsValue(value: str) -> list[str]:
+def splitIcsValue(value: str) -> list[list[str]]:
 	data = []
 	for p in value.split(";"):
 		pp = p.split("=")

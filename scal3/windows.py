@@ -7,7 +7,9 @@ from scal3.core import APP_NAME
 
 __all__ = ["winMakeShortcut", "winStartupDir", "winStartupFile"]
 winStartupRelPath = r"\Microsoft\Windows\Start Menu\Programs\Startup"
-winStartupDir = os.getenv("APPDATA") + winStartupRelPath
+appData = os.getenv("APPDATA")
+assert appData
+winStartupDir = appData + winStartupRelPath
 # winStartupDirSys = os.getenv("ALLUSERSPROFILE") + winStartupRelPath
 winStartupFile = join(winStartupDir, APP_NAME + ".lnk")
 

@@ -26,13 +26,15 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import AllDayTaskEvent
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event: Event) -> None:  # FIXME
+	event: AllDayTaskEvent
+
+	def __init__(self, event: AllDayTaskEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -94,19 +96,19 @@ class WidgetClass(common.WidgetClass):
 		endType, endValue = self.event.getEnd()
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
-			self.durationSpin.set_value(endValue)
+			self.durationSpin.set_value(endValue)  # type: ignore[arg-type]
 			self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
 			# ^ FIXME
 		elif endType == "date":
 			self.endTypeCombo.set_active(1)
-			self.endDateInput.set_value(endValue)
+			self.endDateInput.set_value(endValue)  # type: ignore[arg-type]
 		else:
 			raise RuntimeError
 		self.endTypeComboChanged()
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		self.event.setStartDate(self.startDateInput.get_value())
+		self.event.setStartDate(self.startDateInput.getDate())
 		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
@@ -114,12 +116,13 @@ class WidgetClass(common.WidgetClass):
 		elif active == 1:
 			self.event.setEnd(
 				"date",
-				self.endDateInput.get_value(),
+				self.endDateInput.getDate(),
 			)
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
+		assert newCalType is not None
 		self.startDateInput.changeCalType(self.event.calType, newCalType)
 		self.endDateInput.changeCalType(self.event.calType, newCalType)
 		self.event.calType = newCalType

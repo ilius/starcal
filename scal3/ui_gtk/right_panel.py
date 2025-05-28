@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 
 log = logger.get()
 
@@ -41,7 +42,8 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 			),
 		)
 
-	def onSwapClick(self, _widget: gtk.Widget) -> None:
+	def onSwapClick(self, _w: gtk.Widget) -> None:
+		assert self.rightPanel is not None
 		self.rightPanel.swapItems()
 
 
@@ -50,7 +52,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 		PluginsTextBox.__init__(self, **kwargs)
 		self.rightPanel = rightPanel
 		self.updateJustification()
-		self.textview.addExtraMenuItems = self.addExtraMenuItems
+		self.textview.addExtraMenuItems = self.addExtraMenuItems  # type: ignore[method-assign]
 
 	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
 		if self.rightPanel:
@@ -63,7 +65,8 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 				),
 			)
 
-	def onSwapClick(self, _widget: gtk.Widget) -> None:
+	def onSwapClick(self, _w: gtk.Widget) -> None:
+		assert self.rightPanel is not None
 		self.rightPanel.swapItems()
 
 
@@ -180,7 +183,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		conf.mainWinRightPanelRatio.v = self.get_position() / height
 		ui.saveLiveConf()
 
-	def onSizeAllocate(self, _widget: gtk.Widget, requisition: gtk.Requisition) -> None:
+	def onSizeAllocate(self, _w: gtk.Widget, requisition: gtk.Requisition) -> None:
 		self.updatePosition(requisition.height)
 
 	def onWindowSizeChange(self, *_a, **_kw) -> None:
@@ -219,13 +222,13 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			width = conf.mainWinRightPanelWidth.v
 		return width, width
 
-	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
+	def do_get_preferred_width_for_height(self, _size: int) -> tuple[float, float]:
 		return self.do_get_preferred_width()
 
 	def getOptionsWidget(self) -> gtk.Box:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
-			SpinPrefItem,
+			IntSpinPrefItem,
 		)
 		from scal3.ui_gtk.pref_utils_extra import FixedSizeOrRatioPrefItem
 		from scal3.ui_gtk.stack import StackPage
@@ -246,17 +249,17 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		# ---
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
+		prefItem: PrefItem
 		# -----
 		prefItem = FixedSizeOrRatioPrefItem(
 			ratioEnableProp=conf.mainWinRightPanelWidthRatioEnable,
 			fixedLabel=_("Fixed width"),
-			fixedItem=SpinPrefItem(
+			fixedItem=IntSpinPrefItem(
 				prop=conf.mainWinRightPanelWidth,
 				bounds=(1, 9999),
-				digits=0,
 			),
 			ratioLabel=_("Relative to window"),
-			ratioItem=SpinPrefItem(
+			ratioItem=FloatSpinPrefItem(
 				prop=conf.mainWinRightPanelWidthRatio,
 				bounds=(0, 1),
 				digits=3,
@@ -270,7 +273,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		frame.set_border_width(0)
 		pack(sizesVBox, frame)
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mainWinRightPanelBorderWidth,
 			bounds=(1, 999),
 			digits=1,
@@ -294,7 +297,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.rightPanelEventIconSize,
 			bounds=(5, 128),
 			digits=1,

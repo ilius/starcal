@@ -5,7 +5,7 @@ from scal3 import logger
 log = logger.get()
 
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.ui_gtk import gdk, gtk, pack, timeout_add
@@ -17,50 +17,50 @@ if TYPE_CHECKING:
 __all__ = ["ConButton", "ConButtonBase"]
 
 
-class ConButtonBase:
+class ConButtonBase(gtk.Widget):
 	def __init__(self, button: int | None = None) -> None:
-		self.pressTm = 0
+		self.pressTm = 0.0
 		self.counter = 0
 		self._button = button
 		# ---
-		self.connect("button-press-event", self.onPress)
-		self.connect("button-release-event", self.onRelease)
+		self.connect("button-press-event", self._onConPress)
+		self.connect("button-release-event", self._onRelease)
 
-	def doTrigger(self) -> None:
+	def _doTrigger(self) -> None:
 		self.emit("con-clicked")
 
-	def onPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def _onConPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
 		if self._button is not None and gevent.button != self._button:
-			return
+			return False
 		self.pressTm = now()
-		self.doTrigger()
+		self._doTrigger()
 		self.counter += 1
 		timeout_add(
 			ui.timeout_initial,
-			self.onPressRemain,
-			self.doTrigger,
+			self._onPressRemain,
+			self._doTrigger,
 			self.counter,
 		)
 		return True
 
-	def onRelease(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
+	def _onRelease(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.counter += 1
 		return True
 
-	def onPressRemain(self, func: Callable, counter: int) -> None:
+	def _onPressRemain(self, func: Callable, counter: int) -> None:
 		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
 			func()
 			timeout_add(
 				ui.timeout_repeat,
-				self.onPressRemain,
-				self.doTrigger,
+				self._onPressRemain,
+				self._doTrigger,
 				self.counter,
 			)
 
 
 @registerSignals
 class ConButton(gtk.Button, ConButtonBase):
-	signals = [
+	signals: list[tuple[str, list[Any]]] = [
 		("con-clicked", []),
 	]
 

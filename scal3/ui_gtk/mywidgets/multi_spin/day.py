@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.mywidgets.multi_spin import DayField
 from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
@@ -13,5 +15,5 @@ class DaySpinButton(SingleSpinButton):
 		)
 
 	def set_range(self, minim: int, maxim: int) -> None:
-		self.field.children[0].setRange(minim, maxim)
+		self.field.setRange(minim, maxim)
 		self.set_text(self.field.getText())

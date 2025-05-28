@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.color_utils import RGB, RGBA, ColorType, RawColor
 
 log = logger.get()
 
@@ -35,9 +36,7 @@ from scal3.ui_gtk.utils import buffer_get_text
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-__all__ = ["MyColorButton", "MyFontButton", "TextFrame"]
-
-type ColorType = tuple[int, int, int] | tuple[int, int, int, int]
+__all__ = ["ColorType", "MyColorButton", "MyFontButton", "TextFrame"]
 
 
 def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
@@ -147,13 +146,13 @@ class MyColorButton(gtk.ColorButton):
 		# self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)
-	def set_rgba(self, color: ColorType) -> None:
+	def set_rgba(self, color: RGB | RGBA | RawColor) -> None:
 		gtk.ColorButton.set_rgba(self, rgbaToGdkRGBA(*color))
 		self.update_tooltip()
 
-	def get_rgba(self) -> ColorType:
+	def get_rgba(self) -> RGBA:
 		color = gtk.ColorButton.get_rgba(self)
-		return (
+		return RGBA(
 			int(color.red * 255),
 			int(color.green * 255),
 			int(color.blue * 255),

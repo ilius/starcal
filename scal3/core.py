@@ -22,10 +22,10 @@ import subprocess
 import sys
 import typing
 from contextlib import suppress
-from os.path import isdir, isfile, join
+from os.path import isdir, isfile, join, split
 from time import localtime
 from time import time as now
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 import scal3
 from scal3 import locale_man, logger
@@ -45,6 +45,9 @@ from scal3.path import (
 )
 from scal3.plugin_man import loadPlugin
 from scal3.property import Property
+
+if typing.TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
 
 try:
 	__file__  # noqa: B018
@@ -92,7 +95,7 @@ __all__ = [
 	"weekNumberModeAuto",
 ]
 
-VERSION = "3.2.4"
+VERSION_TAG = "3.2.4"
 
 # BRANCH = join(sourceDir, "branch")
 # FIXME: figure out a policy for updating it
@@ -133,15 +136,15 @@ version = Property("")
 activeCalTypes: Property[list[str]] = Property([])
 inactiveCalTypes: Property[list[str]] = Property([])
 
-allPlugList = Property([])
-plugIndex = Property([])
-holidayWeekDays = Property([0])
-firstWeekDayAuto = Property(False)
-firstWeekDay = Property(0)
-weekNumberModeAuto = Property(False)
-weekNumberMode = Property(7)
+allPlugList: Property[list[PluginType | None]] = Property([])
+plugIndex: Property[list[int]] = Property([])
+holidayWeekDays: Property[list[int]] = Property([0])
+firstWeekDayAuto: Property[bool] = Property(False)
+firstWeekDay: Property[int] = Property(0)
+weekNumberModeAuto: Property[bool] = Property(False)
+weekNumberMode: Property[int] = Property(7)
 
-confParams = {
+confParams: dict[str, Property] = {
 	"version": version,
 	"allPlugList": allPlugList,
 	"plugIndex": plugIndex,
@@ -166,19 +169,12 @@ confEncoders = {
 
 
 def loadConf() -> None:
-	global prefVersion  # noqa: PLW0602
-	# -----------
 	loadModuleConfig(
 		confPath=confPath,
 		sysConfPath=sysConfPath,
 		params=confParams,
 		decoders=confDecoders,
 	)
-	# -----------
-	if "version" in globals():
-		prefVersion = version.v
-	else:
-		prefVersion = ""
 	# -----------
 	with suppress(NameError):
 		# activeCalTypes and inactiveCalType might be
@@ -195,17 +191,14 @@ def saveConf() -> None:
 	saveSingleConfig(confPath, confParams, confEncoders)
 
 
-fs: FileSystem | None = None
+fs: FileSystem = DefaultFileSystem(confDir)
 
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
 
 
 def getVersion() -> str:
-	try:
-		from packaging.version import parse as parse_version
-	except ImportError:
-		from pkg_resources import parse_version
+	from packaging.version import parse as parse_version
 
 	if isfile(join(sourceDir, "VERSION")):
 		with open(join(sourceDir, "VERSION"), encoding="utf-8") as _file:
@@ -213,7 +206,7 @@ def getVersion() -> str:
 
 	gitDir = os.path.join(sourceDir, ".git")
 	if not os.path.isdir(gitDir):
-		return VERSION
+		return VERSION_TAG
 	try:
 		outputB, _error = subprocess.Popen(
 			[  # noqa: S603, S607
@@ -226,11 +219,11 @@ def getVersion() -> str:
 			stdout=subprocess.PIPE,
 		).communicate()
 	except Exception:
-		return VERSION
+		return VERSION_TAG
 
 	gitVersionRaw = outputB.decode("utf-8").strip()
 	if not gitVersionRaw:
-		return VERSION
+		return VERSION_TAG
 
 	# Python believes:
 	# 3.1.12-15-gd50399ea	< 3.1.12
@@ -247,10 +240,10 @@ def getVersion() -> str:
 		r"post\1+\2",
 		gitVersionRaw,
 	)
-	if parse_version(gitVersion) > parse_version(VERSION):
+	if parse_version(gitVersion) > parse_version(VERSION_TAG):
 		return gitVersion
 
-	return VERSION
+	return VERSION_TAG
 
 
 def primary_to_jd(y: int, m: int, d: int) -> int:
@@ -417,7 +410,7 @@ def initPlugins() -> None:
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
 	# ------------------------
-	names = [os.path.split(plug.file)[1] for plug in allPlugList.v]
+	names = [None if plug is None else split(plug.file)[1] for plug in allPlugList.v]
 	# newPlugs = []#????????
 	for direc in (plugDir, plugDirUser):
 		if not isdir(direc):
@@ -457,26 +450,27 @@ def updatePlugins() -> None:
 		if plug is None:
 			continue
 		if plug.enable:
-			plug.load()
+			plug.loadData()
 		else:
 			plug.clear()
 
 
 class PluginTuple(NamedTuple):
-	index: int
+	idx: int
 	enable: bool
 	show_date: bool
 	title: str
 
 
-def getPluginsTable() -> list[list]:
-	# returns a list of [i, enable, show_date, description]
+def getPluginsTable() -> list[PluginTuple]:
 	table = []
 	for index in plugIndex.v:
 		plug = allPlugList.v[index]
+		if plug is None:
+			continue
 		table.append(
 			PluginTuple(
-				index=index,
+				idx=index,
 				enable=plug.enable,
 				show_date=plug.show_date,
 				title=plug.title,
@@ -485,10 +479,12 @@ def getPluginsTable() -> list[list]:
 	return table
 
 
-def getDeletedPluginsTable() -> list[list]:
-	"""Returns a list of (index description)."""
+def getDeletedPluginsTable() -> list[tuple[int, str]]:
+	"""Returns a list of (index, description)."""
 	table = []
 	for i, plug in enumerate(allPlugList.v):
+		if plug is None:
+			continue
 		try:
 			plugIndex.v.index(i)
 		except ValueError:  # noqa: PERF203
@@ -539,7 +535,7 @@ def stopRunningThreads() -> None:
 	for thread in threading.enumerate():
 		# if thread.__class__.__name__ == "_Timer":
 		try:
-			cancel = thread.cancel
+			cancel = thread.cancel  # type: ignore[attr-defined]
 		except AttributeError:  # noqa: PERF203
 			log.debug(f"Thread {thread} has no cancel function")
 		else:
@@ -547,7 +543,7 @@ def stopRunningThreads() -> None:
 			cancel()
 
 
-def dataToJson(data: object) -> str:
+def dataToJson(data: Any) -> str:
 	return (
 		dataToCompactJson(data, useAsciiJson)
 		if useCompactJson
@@ -556,17 +552,14 @@ def dataToJson(data: object) -> str:
 
 
 def init() -> None:
-	global VERSION, fs
-
-	VERSION = getVersion()  # right place?
-
-	fs = DefaultFileSystem(confDir)
 	loadConf()
 	initPlugins()
 
 
 # ___________________________________________________________________________ #
 # __________________ End of class and function defenitions __________________ #
+
+VERSION = getVersion()
 
 
 if len(sys.argv) > 1:
@@ -587,7 +580,8 @@ log.info(f"Local Time Zone: {locale_man.localTzStr}")
 libDir = join(sourceDir, "lib")
 if isdir(libDir):
 	sys.path.insert(0, libDir)
-	major, minor, _patch = sys.version_info
+	major = sys.version_info.major
+	minor = sys.version_info.minor
 	pyVersion = f"{major}.{minor}"
 	pyLibDir = join(libDir, pyVersion)
 	if isdir(pyLibDir):

@@ -13,13 +13,13 @@ from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExportDialog"]
 
 
-class SingleGroupExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, group: EventGroup, **kwargs) -> None:
+class SingleGroupExportDialog(MyDialog):
+	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
@@ -74,7 +74,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def formatRadioChanged(self, _w: gtk.Widget | None = None) -> None:
 		from scal3.os_utils import fixStrForFileName
 
 		fpath = self.fcw.get_filename()
@@ -92,21 +92,22 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.fcw.set_current_name(fname_nox + ext)
 
 	def save(self) -> None:
+		assert self._group.id is not None
 		fpath = self.fcw.get_filename()
 		if self.radioJsonCompact.get_active():
 			text = dataToCompactJson(
-				ui.eventGroups.exportData([self._group.id]),
+				ui.ev.groups.exportData([self._group.id]),
 			)
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 		elif self.radioJsonPretty.get_active():
 			text = dataToPrettyJson(
-				ui.eventGroups.exportData([self._group.id]),
+				ui.ev.groups.exportData([self._group.id]),
 			)
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 		elif self.radioIcs.get_active():
-			ui.eventGroups.exportToIcs(
+			ui.ev.groups.exportToIcs(
 				fpath,
 				[self._group.id],
 			)
@@ -117,7 +118,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.destroy()
 
 
-class MultiGroupExportDialog(gtk.Dialog, MyDialog):
+class MultiGroupExportDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export", ctx="window title"))
@@ -205,13 +206,13 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.formatRadioChanged()
 		self.resize(600, 600)
 
-	def disableAllClicked(self, _widget: gtk.Widget | None = None) -> None:
+	def disableAllClicked(self, _w: gtk.Widget | None = None) -> None:
 		self.groupSelect.disableAll()
 
-	def enableAllClicked(self, _widget: gtk.Widget | None = None) -> None:
+	def enableAllClicked(self, _w: gtk.Widget | None = None) -> None:
 		self.groupSelect.enableAll()
 
-	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def formatRadioChanged(self, _w: gtk.Widget | None = None) -> None:
 		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
 		# ---
 		fpath = self.fpathEntry.get_text()
@@ -229,9 +230,9 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		fpath = self.fpathEntry.get_text()
 		activeGroupIds = self.groupSelect.getValue()
 		if self.radioIcs.get_active():
-			ui.eventGroups.exportToIcs(fpath, activeGroupIds)
+			ui.ev.groups.exportToIcs(fpath, activeGroupIds)
 		else:
-			data = ui.eventGroups.exportData(activeGroupIds)
+			data = ui.ev.groups.exportData(activeGroupIds)
 			# FIXME: what to do with all groupData["info"] s?
 			if self.radioJsonCompact.get_active():
 				text = dataToCompactJson(data)
@@ -248,7 +249,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.destroy()
 
 
-class EventListExportDialog(gtk.Dialog, MyDialog):
+class EventListExportDialog(MyDialog):
 	def __init__(
 		self,
 		idsList: list[tuple[int, int]],
@@ -311,7 +312,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 
-	def formatRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def formatRadioChanged(self, _w: gtk.Widget | None = None) -> None:
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])
@@ -336,7 +337,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		if not groupTitle:
 			groupTitle = split(fpath)[1]
 
-		data = ui.eventGroups.eventListExportData(
+		data = ui.ev.groups.eventListExportData(
 			self._idsList,
 			groupTitle=groupTitle,
 		)

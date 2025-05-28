@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
@@ -14,12 +14,12 @@ __all__ = ["MultiSpinOptionBox"]
 
 
 @registerSignals
-class MultiSpinOptionBox(gtk.Box):
-	signals = [
+class MultiSpinOptionBox[F: Field, V](gtk.Box):
+	signals: list[tuple[str, list[Any]]] = [
 		("activate", []),
 	]
 
-	def _entry_activate(self, _widget: gtk.Widget) -> bool:
+	def _entry_activate(self, _w: gtk.Widget) -> bool:
 		# self.spin.update() #?????
 		# self.add_history()
 		self.emit("activate")
@@ -27,8 +27,7 @@ class MultiSpinOptionBox(gtk.Box):
 
 	def __init__(
 		self,
-		sep: str,
-		fields: list[Field],
+		field: F,
 		spacing: int = 0,
 		is_hbox: bool = False,
 		hist_size: int = 10,
@@ -40,7 +39,10 @@ class MultiSpinOptionBox(gtk.Box):
 				orientation=gtk.Orientation.HORIZONTAL,
 				spacing=spacing,
 			)
-		self.spin = MultiSpinButton(sep=sep, fields=fields, **kwargs)
+		self.spin: MultiSpinButton[F, V] = MultiSpinButton(
+			field=field,
+			**kwargs,
+		)
 		pack(self, self.spin, 1, 1)
 		self.hist_size = hist_size
 		self.option = imageClassButton(
@@ -52,14 +54,14 @@ class MultiSpinOptionBox(gtk.Box):
 		self.menu = Menu()
 		# self.menu.show()
 		self.option.connect("button-press-event", self.option_pressed)
-		self.menuItems = []
+		self.menuItems: list[MenuItem] = []
 		# self.option.set_sensitive(False) #???????
 		# self.spin._entry_activate = self._entry_activate
 		self.spin.connect("activate", self._entry_activate)
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
-	def option_pressed(self, _widget: gtk.Widget, gevent: gdk.Event) -> None:
+	def option_pressed(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
 		# x, y, w, h = self.option.
 		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
 

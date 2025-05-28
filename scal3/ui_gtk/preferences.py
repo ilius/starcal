@@ -43,10 +43,10 @@ from scal3.ui_gtk.pref_utils import (
 	FontFamilyPrefItem,
 	FontPrefItem,
 	ImageFileChooserPrefItem,
+	IntSpinPrefItem,
 	ModuleOptionButton,
 	ModuleOptionItem,
 	PrefItem,
-	SpinPrefItem,
 	WidthHeightPrefItem,
 )
 from scal3.ui_gtk.pref_utils_extra import (
@@ -161,8 +161,8 @@ class PreferencesWindow(gtk.Window):
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
 		# ---
-		self.spacing = ui.getFont().size
-		self.mainGridSpacing = ui.getFont(scale=0.8).size
+		self.spacing = int(ui.getFont().size)
+		self.mainGridSpacing = int(ui.getFont(scale=0.8).size)
 		# ---
 		self.vbox = VBox()
 		self.add(self.vbox)
@@ -187,13 +187,13 @@ class PreferencesWindow(gtk.Window):
 		# okB.grab_default()  # FIXME
 		# okB.grab_focus()  # FIXME
 		# ----------------------------------------------
-		self.loggerPrefItem = None
-		self.localePrefItems = []
-		self.corePrefItems = []
-		self.uiPrefItems = []
-		self.gtkPrefItems = []  # FIXME
+		self.loggerPrefItem: LogLevelPrefItem | None = None
+		self.localePrefItems: list[PrefItem] = []
+		self.corePrefItems: list[PrefItem] = []
+		self.uiPrefItems: list[PrefItem] = []
+		self.gtkPrefItems: list[PrefItem] = []  # FIXME
 		# -----
-		self.prefPages = []
+		self.prefPages: list[StackPage] = []
 		# ----------------------------------------------
 		stack = MyStack(
 			iconSize=conf.stackIconSize.v,
@@ -312,6 +312,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_General")
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
+		item: PrefItem
 		# --------------------------
 		hbox = HBox(spacing=self.spacing / 2)
 		item = CheckStartupPrefItem()
@@ -393,7 +394,7 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------
 		buttonPadding = self.spacing
-		padding = self.spacing / 2
+		padding = int(self.spacing / 2)
 		# ---
 		hbox = HBox(spacing=self.spacing / 2)
 		# ---
@@ -410,6 +411,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		customCheckItem.syncSensitive(customItem.getWidget())
 		pack(vbox, hbox, padding=padding)
+		item: PrefItem
 		# ---------------------------
 		item = CheckPrefItem(
 			prop=conf.buttonIconEnable,
@@ -434,7 +436,7 @@ class PreferencesWindow(gtk.Window):
 		# ------------------------- Theme ---------------------
 		pageHBox = HBox()
 		pageHBox.set_border_width(self.spacing)
-		spacing = self.spacing / 3
+		spacing = int(self.spacing / 3)
 		# ---
 		pageVBox = VBox()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -517,7 +519,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
-		pack(pageHBox, pageVBox, 1, 1, padding=self.spacing / 2)
+		pack(pageHBox, pageVBox, 1, 1, padding=int(self.spacing / 2))
 		# ----
 		page = StackPage()
 		page.pageParent = "appearance"
@@ -552,6 +554,7 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# ------
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		item: PrefItem
 		# ------
 		hbox = HBox(spacing=self.spacing)
 		label = gtk.Label(label=_("Date Format"))
@@ -575,7 +578,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# --------------------------------
-		hbox = HBox(spacing=self.spacing / 3)
+		hbox = HBox(spacing=int(self.spacing / 3))
 		item = CheckPrefItem(
 			prop=locale_man.enableNumLocale,
 			label=_("Numbers Localization"),
@@ -591,8 +594,8 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(label=_("First day of week")))
 		# item = ComboTextPrefItem(  # FIXME
 		self.comboFirstWD = gtk.ComboBoxText()
-		for item in core.weekDayName:
-			self.comboFirstWD.append_text(item)
+		for wdName in core.weekDayName:
+			self.comboFirstWD.append_text(wdName)
 		self.comboFirstWD.append_text(_("Automatic"))
 		self.comboFirstWD.connect("changed", self.comboFirstWDChanged)
 		pack(hbox, self.comboFirstWD)
@@ -665,6 +668,7 @@ class PreferencesWindow(gtk.Window):
 			self.prefPages.append(page)
 			# -----
 			regionalSubPages.append(page)
+			optl: typing.Any
 			for opt in mod.options:
 				if opt[0] == "button":
 					try:
@@ -706,6 +710,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("A_dvanced")
 		page.pageIcon = "applications-system.svg"
 		self.prefPages.append(page)
+		item: PrefItem
 		# ------
 		item = LogLevelPrefItem()
 		self.loggerPrefItem = item
@@ -779,10 +784,9 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = SpinPrefItem(
+		item = IntSpinPrefItem(
 			prop=conf.maxDayCacheSize,
 			bounds=(100, 9999),
-			digits=0,
 			step=10,
 		)
 		self.uiPrefItems.append(item)
@@ -792,10 +796,9 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=self.spacing / 2)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
-		item = SpinPrefItem(
+		item = IntSpinPrefItem(
 			prop=conf.cellMenuXOffset,
 			bounds=(0, 999),
-			digits=0,
 			step=1,
 		)
 		self.uiPrefItems.append(item)
@@ -1039,6 +1042,7 @@ class PreferencesWindow(gtk.Window):
 		pageVBox = VBox(spacing=self.spacing * 0.8)
 		pageVBox.set_border_width(self.spacing)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		item: PrefItem
 		# ----
 		hbox = HBox(spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
@@ -1274,11 +1278,11 @@ class PreferencesWindow(gtk.Window):
 		ud.windowList.updateCSS()
 
 	@staticmethod
-	def onClearImageCacheClick(_button: gtk.Widget) -> None:
+	def onClearImageCacheClick(_b: gtk.Widget) -> None:
 		pixcache.clearFiles()
 		pixcache.clear()
 
-	def onPageButtonClicked(self, _button: gtk.Widget, page: StackPage) -> None:
+	def onPageButtonClicked(self, _b: gtk.Widget, page: StackPage) -> None:
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage) -> gtk.Widget:
@@ -1287,10 +1291,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
-		if hasattr(page, "iconSize"):
-			iconSize = page.iconSize
-		else:
-			iconSize = self.stack.iconSize()
+		iconSize = page.iconSize or self.stack.iconSize()
 		if page.pageIcon and conf.buttonIconEnable.v:
 			pack(hbox, imageFromFile(page.pageIcon, iconSize))
 		pack(hbox, label, 0, 0)
@@ -1323,12 +1324,12 @@ class PreferencesWindow(gtk.Window):
 			return True
 		return False
 
-	def ok(self, _widget: gtk.Widget) -> None:
+	def ok(self, _w: gtk.Widget) -> None:
 		self.hide()
 
 		self.apply()
 
-	def cancel(self, _widget: gtk.Widget | None = None) -> bool:
+	def cancel(self, _w: gtk.Widget | None = None) -> bool:
 		self.hide()
 		self.updatePrefGui()
 		return True
@@ -1336,6 +1337,7 @@ class PreferencesWindow(gtk.Window):
 	def iterAllPrefItems(self) -> typing.Iterable[PrefItem]:
 		import itertools
 
+		assert self.loggerPrefItem is not None
 		return itertools.chain(
 			[self.loggerPrefItem],
 			self.moduleOptions,
@@ -1347,13 +1349,13 @@ class PreferencesWindow(gtk.Window):
 
 	@staticmethod
 	def loadPlugin(plug: PluginType, plugI: int) -> PluginType:
-		plug = plugin_man.loadPlugin(plug.file, enable=True)
-		if plug:
-			assert plug.loaded
-		core.allPlugList.v[plugI] = plug
+		plug2 = plugin_man.loadPlugin(plug.file, enable=True)
+		if plug2:
+			assert plug2.loaded
+		core.allPlugList.v[plugI] = plug2
 		return plug
 
-	def apply(self, _widget: gtk.Widget | None = None) -> None:
+	def apply(self, _w: gtk.Widget | None = None) -> None:
 		from scal3.ui_gtk.font_utils import gfontDecode
 
 		# log.debug(f"{ui.fontDefault=}")
@@ -1410,6 +1412,7 @@ class PreferencesWindow(gtk.Window):
 		ud.updateFormatsBin()
 		# ---------------------- Saving Preferences -----------------------
 		# ------------------- Saving logger config
+		assert self.loggerPrefItem is not None
 		self.loggerPrefItem.save()
 		# ------------------- Saving calendar types config
 		for mod in calTypes:
@@ -1417,9 +1420,8 @@ class PreferencesWindow(gtk.Window):
 		# ------------------- Saving locale config
 		locale_man.saveConf()
 		# ------------------- Saving core config
-		core.version = core.VERSION
+		core.version.v = core.VERSION
 		core.saveConf()
-		del core.version
 		# ------------------- Saving ui config
 		ui.saveConf()
 		# ------------------- Saving gtk_ud config
@@ -1476,7 +1478,7 @@ class PreferencesWindow(gtk.Window):
 
 	def refreshAccounts(self) -> None:
 		self.accountsTreeModel.clear()
-		for account in ui.eventAccounts:
+		for account in ui.ev.accounts:
 			self.accountsTreeModel.append(
 				[
 					account.id,
@@ -1503,7 +1505,7 @@ class PreferencesWindow(gtk.Window):
 		for p in core.getPluginsTable():
 			model.append(
 				[
-					p.index,
+					p.idx,
 					p.enable,
 					p.show_date,
 					p.title,
@@ -1538,7 +1540,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugButtonAbout.set_sensitive(bool(plug.about))
 		self.plugButtonConf.set_sensitive(plug.hasConfig)
 
-	def onPlugAboutClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onPlugAboutClick(self, _w: gtk.Widget | None = None) -> None:
 		from scal3.ui_gtk.about import AboutDialog
 
 		cur = self.plugTreeview.get_cursor()[0]
@@ -1566,7 +1568,7 @@ class PreferencesWindow(gtk.Window):
 		openWindow(about)  # FIXME
 		return None
 
-	def onPlugConfClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onPlugConfClick(self, _w: gtk.Widget | None = None) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1587,13 +1589,13 @@ class PreferencesWindow(gtk.Window):
 	def plugTreevRActivate(
 		self,
 		_treev: gtk.TreeView,
-		_path: str,
+		_path: gtk.TreePath,
 		col: gtk.TreeViewColumn,
 	) -> None:
 		if col.get_title() == _("Title"):  # FIXME
 			self.onPlugAboutClick()
 
-	def plugTreevButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def plugTreevButtonPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
 		b = gevent.button
 		if b == 3:
 			cur = self.plugTreeview.get_cursor()[0]
@@ -1634,7 +1636,7 @@ class PreferencesWindow(gtk.Window):
 			return True
 		return False
 
-	def onPlugAddClick(self, _button: gtk.Widget) -> None:
+	def onPlugAddClick(self, _b: gtk.Widget) -> None:
 		# FIXME
 		# Reize window to show all texts
 		# self.plugAddTreeview.columns_autosize()  # FIXME
@@ -1656,7 +1658,11 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddDialog.hide()
 		return True
 
-	def plugTreeviewCellToggled(self, cell: gtk.CellRenderer, path: str) -> None:
+	def plugTreeviewCellToggled(
+		self,
+		cell: gtk.CellRenderer,
+		path: gtk.TreePath,
+	) -> None:
 		model = self.plugTreeview.get_model()
 		active = not cell.get_active()
 		itr = model.get_iter(path)
@@ -1668,13 +1674,17 @@ class PreferencesWindow(gtk.Window):
 				plug = self.loadPlugin(plug, plugI)
 			self.plugTreevCursorChanged()
 
-	def plugTreeviewCellToggled2(self, cell: gtk.CellRenderer, path: str) -> None:
+	def plugTreeviewCellToggled2(
+		self,
+		cell: gtk.CellRenderer,
+		path: gtk.TreePath,
+	) -> None:
 		model = self.plugTreeview.get_model()
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 2, active)
 
-	def plugTreeviewTop(self, _button: gtk.Widget) -> None:
+	def plugTreeviewTop(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1687,7 +1697,7 @@ class PreferencesWindow(gtk.Window):
 		t.remove(t.get_iter(i + 1))
 		self.plugTreeview.set_cursor(0)
 
-	def plugTreeviewBottom(self, _button: gtk.Widget) -> None:
+	def plugTreeviewBottom(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1700,7 +1710,7 @@ class PreferencesWindow(gtk.Window):
 		t.remove(t.get_iter(i))
 		self.plugTreeview.set_cursor(len(t) - 1)
 
-	def plugTreeviewUp(self, _button: gtk.Widget) -> None:
+	def plugTreeviewUp(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1712,7 +1722,7 @@ class PreferencesWindow(gtk.Window):
 		t.swap(t.get_iter(i - 1), t.get_iter(i))
 		self.plugTreeview.set_cursor(i - 1)
 
-	def plugTreeviewDown(self, _button: gtk.Widget) -> None:
+	def plugTreeviewDown(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1759,7 +1769,7 @@ class PreferencesWindow(gtk.Window):
 				t.get_iter(dest[0][0]),
 			)
 
-	def onPlugDeleteClick(self, _button: gtk.Widget) -> None:
+	def onPlugDeleteClick(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1780,7 +1790,7 @@ class PreferencesWindow(gtk.Window):
 		if n > 1:
 			self.plugTreeview.set_cursor(min(n - 2, i))
 
-	def plugAddDialogOK(self, _widget: gtk.Widget) -> None:
+	def plugAddDialogOK(self, _w: gtk.Widget) -> None:
 		cur = self.plugAddTreeview.get_cursor()[0]
 		if cur is None:
 			gdk.beep()
@@ -1809,7 +1819,7 @@ class PreferencesWindow(gtk.Window):
 	def plugAddTreevRActivate(
 		self,
 		_treev: gtk.TreeView,
-		_path: str,
+		_path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
 	) -> None:
 		self.plugAddDialogOK(None)  # FIXME
@@ -1818,39 +1828,39 @@ class PreferencesWindow(gtk.Window):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.eventAccounts[accountId]
+		account = ui.ev.accounts[accountId]
 		if not account.loaded:
 			showError(_("Account must be enabled before editing"), transient_for=self)
 			return
-		account = AccountEditorDialog(account, transient_for=self).run()
-		if account is None:
+		accountNew = AccountEditorDialog(account, transient_for=self).run()
+		if accountNew is None:
 			return
-		account.save()
-		ui.eventAccounts.save()
-		self.accountsTreeModel[index][2] = account.title
+		accountNew.save()
+		ui.ev.accounts.save()
+		self.accountsTreeModel[index][2] = accountNew.title
 
-	def onAccountsEditClick(self, _button: gtk.Widget) -> None:
+	def onAccountsEditClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur[0]
 		self.editAccount(index)
 
-	def onAccountsRegisterClick(self, _button: gtk.Widget) -> None:
+	def onAccountsRegisterClick(self, _b: gtk.Widget) -> None:
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 
 		win = StarCalendarRegisterDialog(transient_for=self)
 		win.run()
 
-	def onAccountsAddClick(self, _button: gtk.Widget) -> None:
+	def onAccountsAddClick(self, _b: gtk.Widget) -> None:
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		account = AccountEditorDialog(transient_for=self).run()
 		if account is None:
 			return
 		account.save()
-		ui.eventAccounts.append(account)
-		ui.eventAccounts.save()
+		ui.ev.accounts.append(account)
+		ui.ev.accounts.save()
 		self.accountsTreeModel.append(
 			[
 				account.id,
@@ -1861,19 +1871,20 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		error = account.fetchGroups()
-		if error:
-			log.error(error)
+		try:
+			account.fetchGroups()
+		except Exception as e:
+			log.error(f"error in fetchGroups: {e}")
 			return
 		account.save()
 
-	def onAccountsDeleteClick(self, _button: gtk.Widget) -> None:
+	def onAccountsDeleteClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur[0]
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.eventAccounts[accountId]
+		account = ui.ev.accounts[accountId]
 		if not confirm(
 			_('Do you want to delete account "{accountTitle}"').format(
 				accountTitle=account.title,
@@ -1881,11 +1892,11 @@ class PreferencesWindow(gtk.Window):
 			transient_for=self,
 		):
 			return
-		ui.eventAccounts.delete(account)
-		ui.eventAccounts.save()
+		ui.ev.accounts.delete(account)
+		ui.ev.accounts.save()
 		del self.accountsTreeModel[index]
 
-	def onAccountsUpClick(self, _button: gtk.Widget) -> None:
+	def onAccountsUpClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1894,15 +1905,15 @@ class PreferencesWindow(gtk.Window):
 		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
-		ui.eventAccounts.moveUp(index)
-		ui.eventAccounts.save()
+		ui.ev.accounts.moveUp(index)
+		ui.ev.accounts.save()
 		t.swap(
 			t.get_iter(index - 1),
 			t.get_iter(index),
 		)
 		self.accountsTreeview.set_cursor(index - 1)
 
-	def onAccountsDownClick(self, _button: gtk.Widget) -> None:
+	def onAccountsDownClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1911,15 +1922,15 @@ class PreferencesWindow(gtk.Window):
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
-		ui.eventAccounts.moveDown(index)
-		ui.eventAccounts.save()
+		ui.ev.accounts.moveDown(index)
+		ui.ev.accounts.save()
 		t.swap(t.get_iter(index), t.get_iter(index + 1))
 		self.accountsTreeview.set_cursor(index + 1)
 
 	def accountsTreevRActivate(
 		self,
 		_treev: gtk.TreeView,
-		path: str,
+		path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
 	) -> None:
 		index = path[0]
@@ -1934,7 +1945,7 @@ class PreferencesWindow(gtk.Window):
 			# if cur:
 			# 	index = cur[0]
 			# 	accountId = self.accountsTreeModel[index][0]
-			# 	account = ui.eventAccounts[accountId]
+			# 	account = ui.ev.accounts[accountId]
 			# 	menu = Menu()
 			# 	#
 			# 	menu.show_all()
@@ -1943,15 +1954,19 @@ class PreferencesWindow(gtk.Window):
 			return True
 		return False
 
-	def accountsTreeviewCellToggled(self, cell: gtk.CellRenderer, path: str) -> None:
+	def accountsTreeviewCellToggled(
+		self,
+		cell: gtk.CellRenderer,
+		path: gtk.TreePath,
+	) -> None:
 		index = int(path)
 		active = not cell.get_active()
 		# ---
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.eventAccounts[accountId]
+		account = ui.ev.accounts[accountId]
 		# not account.loaded -> it's a dummy account
 		if active and not account.loaded:
-			account = ui.eventAccounts.replaceDummyObj(account)
+			account = ui.ev.accounts.replaceDummyObj(account)
 			if account is None:
 				return
 		account.enable = active
@@ -1961,6 +1976,6 @@ class PreferencesWindow(gtk.Window):
 
 
 if __name__ == "__main__":
-	dialog = PreferencesWindow(0)
+	dialog = PreferencesWindow()
 	dialog.updatePrefGui()
 	dialog.run()

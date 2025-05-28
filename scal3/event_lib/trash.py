@@ -55,15 +55,15 @@ class EventTrash(EventContainer, WithIcon):
 		if fs.isfile(cls.file):
 			yield cls.file
 
-	def __init__(self) -> None:
+	def __init__(self, ident: int) -> None:  # noqa: ARG002
 		EventContainer.__init__(self, title=_("Trash"))
 		self.icon = self.defaultIcon
 		self.enable = False
 		self.addEventsToBeginning = True
 
-	def setData(self, data: dict[str, Any]) -> None:
-		EventContainer.setData(self, data)
-		if not os.path.isfile(self.icon):
+	def setDict(self, data: dict[str, Any]) -> None:
+		EventContainer.setDict(self, data)
+		if not self.icon or not os.path.isfile(self.icon):
 			log.info(f"Trash icon {self.icon} does not exist, using {self.defaultIcon}")
 			self.icon = self.defaultIcon
 
@@ -84,7 +84,7 @@ class EventTrash(EventContainer, WithIcon):
 			self.idList.remove(eid)
 
 	def empty(self) -> None:
-		idList2 = self.idList[:]
+		idList2 = self.idList.copy()
 		for eid in self.idList:
 			try:
 				self.fs.removeFile(Event.getFile(eid))
