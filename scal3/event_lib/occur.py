@@ -21,6 +21,8 @@ from scal3 import logger
 log = logger.get()
 
 
+from typing import TYPE_CHECKING
+
 from scal3.interval_utils import intersectionOfTwoIntervalList
 
 # from scal3.interval_utils import
@@ -31,14 +33,17 @@ from scal3.time_utils import (
 	getJdListFromEpochRange,
 )
 
+if TYPE_CHECKING:
+	from scal3.event_lib.pytypes import EventType
+
 __all__ = ["IntervalOccurSet", "JdOccurSet", "OccurSet", "TimeListOccurSet"]
 
 
 class OccurSet(SObj):
 	def __init__(self) -> None:
-		self.event = None
+		self.event: EventType | None = None
 
-	def intersection(self) -> None:
+	def intersection(self, other: OccurSet) -> OccurSet:
 		raise NotImplementedError
 
 	def getDaysJdList(self) -> list[int]:  # noqa: PLR6301
@@ -47,10 +52,10 @@ class OccurSet(SObj):
 	def getTimeRangeList(self) -> list[tuple[int, int]]:  # noqa: PLR6301
 		return []  # make generator FIXME
 
-	def getStartJd(self) -> int:
+	def getStartJd(self) -> int | None:
 		raise NotImplementedError
 
-	def getEndJd(self) -> int:
+	def getEndJd(self) -> int | None:
 		raise NotImplementedError
 
 	# def __iter__(self) -> Iterator:
@@ -62,9 +67,11 @@ class JdOccurSet(OccurSet):
 
 	def __init__(self, jdSet: set[int] | None = None) -> None:
 		OccurSet.__init__(self)
-		if not jdSet:
-			jdSet = []
-		self.jdSet = set(jdSet)
+		if jdSet is None:
+			jdSet = set()
+		else:
+			assert isinstance(jdSet, set)
+		self.jdSet = jdSet
 
 	def __repr__(self) -> str:
 		return f"JdOccurSet({list(self.jdSet)})"
@@ -75,14 +82,14 @@ class JdOccurSet(OccurSet):
 	def __len__(self) -> int:
 		return len(self.jdSet)
 
-	def getStartJd(self) -> int:
+	def getStartJd(self) -> int | None:
 		if not self.jdSet:
-			return
+			return None
 		return min(self.jdSet)
 
-	def getEndJd(self) -> int:
+	def getEndJd(self) -> int | None:
 		if not self.jdSet:
-			return
+			return None
 		return max(self.jdSet) + 1
 
 	def intersection(self, occur: OccurSet) -> OccurSet:
@@ -135,7 +142,7 @@ class JdOccurSet(OccurSet):
 class IntervalOccurSet(OccurSet):
 	name = "timeRange"
 
-	def __init__(self, rangeList: list[tuple[int, int]] | None = None) -> str:
+	def __init__(self, rangeList: list[tuple[int, int]] | None = None) -> None:
 		OccurSet.__init__(self)
 		if not rangeList:
 			rangeList = []
@@ -153,14 +160,14 @@ class IntervalOccurSet(OccurSet):
 	# def __getitem__(i):
 	# 	self.rangeList.__getitem__(i)  # FIXME
 
-	def getStartJd(self) -> int:
+	def getStartJd(self) -> int | None:
 		if not self.rangeList:
-			return
+			return None
 		return getJdFromEpoch(min(r[0] for r in self.rangeList))
 
-	def getEndJd(self) -> int:
+	def getEndJd(self) -> int | None:
 		if not self.rangeList:
-			return
+			return None
 		return getJdFromEpoch(max(r[1] for r in self.rangeList))
 
 	def intersection(self, occur: OccurSet) -> OccurSet:
@@ -226,21 +233,21 @@ class TimeListOccurSet(OccurSet):
 	def __bool__(self) -> bool:
 		return bool(self.epochList)
 
-	def getStartJd(self) -> int:
+	def getStartJd(self) -> int | None:
 		if not self.epochList:
-			return
+			return None
 		return getJdFromEpoch(min(self.epochList))
 
-	def getEndJd(self) -> int:
+	def getEndJd(self) -> int | None:
 		if not self.epochList:
-			return
+			return None
 		return getJdFromEpoch(max(self.epochList) + 1)
 
 	def setRange(self, startEpoch: int, endEpoch: int, stepSeconds: int) -> None:
 		try:
 			from numpy.core.multiarray import arange
 		except ImportError:
-			from scal3.utils import arange
+			from scal3.utils import arange  # type: ignore[no-redef]
 		# ------
 		self.startEpoch = startEpoch
 		self.endEpoch = endEpoch

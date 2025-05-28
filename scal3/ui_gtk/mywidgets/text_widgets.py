@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Never
-
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, gdk, gtk
@@ -14,9 +12,12 @@ __all__ = ["ReadOnlyTextView"]
 
 class ReadOnlyTextWidget:
 	def copyAll(self, _item: gtk.MenuItem) -> None:
-		setClipboard(toStr(self.get_text()))
+		setClipboard(self.get_text())
 
-	def has_selection() -> Never:
+	def has_selection(self) -> bool:
+		raise NotImplementedError
+
+	def get_text(self) -> str:
 		raise NotImplementedError
 
 	# def cursorIsOnURL(self):
@@ -57,7 +58,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	def copyText(cls, _item: gtk.MenuItem, text: str) -> None:
 		setClipboard(text)
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
@@ -72,8 +73,10 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
 		# ----
 		text = self.get_text()
-		pos = iter_.get_offset()
-		word = findWordByPos(text, pos)[0]
+		if iter_ is not None:
+			word = findWordByPos(text, iter_.get_offset())[0]
+		else:
+			word = ""
 		# ----
 		menu = Menu()
 		# ----

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.property import Property
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 
 log = logger.get()
 
@@ -21,7 +22,15 @@ from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable, Sequence
 
-__all__ = ["CustomizableToolBox", "LabelToolBoxItem", "StaticToolBox", "ToolBoxItem"]
+	from scal3.ui.pytypes import CustomizableToolBoxDict
+
+__all__ = [
+	"CustomizableToolBox",
+	"LabelToolBoxItem",
+	"StaticToolBox",
+	"ToolBoxItem",
+	"VerticalStaticToolBox",
+]
 
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
@@ -149,13 +158,13 @@ class ToolBoxItem(BaseToolBoxItem):
 				self.iconName,
 				gtk.IconSize.DIALOG,
 			)
-			self._setIconSizeImage(self.iconSize.v)
+			self._setIconImage(self.iconSize.v)
 		else:
 			self.bigPixbuf = pixbufFromFile(self.imageName, size=self.iconSize.v)
 			if self.imageName.endswith(".svg"):
 				self.image.set_from_pixbuf(self.bigPixbuf)
 			else:
-				self._setIconSizeImage(self.iconSize.v)
+				self._setIconImage(self.iconSize.v)
 
 	def setIconName(self, iconName: str) -> None:
 		self.iconName = iconName
@@ -163,7 +172,7 @@ class ToolBoxItem(BaseToolBoxItem):
 	def setIconFile(self, fname: str) -> None:
 		self.imageName = fname
 
-	def _setIconSizeImage(self, iconSize: int) -> None:
+	def _setIconImage(self, iconSize: float) -> None:
 		if self.bigPixbuf is None:
 			if self.imageName:
 				self.image.set_from_pixbuf(
@@ -197,7 +206,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
 		onPress: str | Callable | None = None,
-		args: tuple[Any] | None = None,  # for onClick and onPress
+		args: list[Any] | None = None,  # for onClick and onPress
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
@@ -215,7 +224,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		self.onClick = onClick
 		self.onPress = onPress
 		if args is None:
-			args = ()
+			args = []
 		self.args = args
 		self.continuousClick = continuousClick
 		self.vertical = False
@@ -354,16 +363,8 @@ class CustomizableToolBox(StaticToolBox):
 	itemListCustomizable = True
 	objName = "toolbar"
 	desc = _("Toolbar")
-	styleList = (
-		# Gnome"s naming is not exactly the best here
-		# And Gnome"s order of options is also different from Gtk"s enum
-		"Icon",  # "icons", "Icons only"
-		"Text",  # "text", "Text only"
-		"Text below Icon",  # "both", "Text below items"
-		"Text beside Icon",  # "both-horiz", "Text beside items"
-	)
-	defaultItems = []
-	defaultItemsDict = {}
+	defaultItems: list[ToolBoxItem] = []
+	defaultItemsDict: dict[str, ToolBoxItem] = {}
 
 	def __init__(
 		self,
@@ -380,16 +381,17 @@ class CustomizableToolBox(StaticToolBox):
 
 		# self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
 
-		# set on setData(), used in getData() to keep compatibility
-		self.data = {}
+		# set on setDict(), used in getDict() to keep compatibility
+		self.data: CustomizableToolBoxDict = {}  # type: ignore[typeddict-item]
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem, SpinPrefItem
+		from scal3.ui_gtk.pref_utils import CheckPrefItem
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ---
 		optionsWidget = VBox()
+		prefItem: PrefItem
 		# ----
 		prefItem = CheckPrefItem(
 			prop=self.preferIconName,
@@ -399,7 +401,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=self.iconSize,
 			bounds=(5, 128),
 			digits=1,
@@ -410,10 +412,9 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=self.buttonBorder,
 			bounds=(0, 99),
-			digits=1,
 			step=1,
 			label=_("Buttons Border"),
 			live=True,
@@ -421,10 +422,9 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=self.buttonPadding,
 			bounds=(0, 99),
-			digits=1,
 			step=1,
 			label=_("Space between buttons"),
 			live=True,
@@ -462,7 +462,7 @@ class CustomizableToolBox(StaticToolBox):
 
 	def updateItems(self) -> None:
 		"""
-		Must be called after creating the instance and calling setData()
+		Must be called after creating the instance and calling setDict()
 		Also after one of the properties (preferIconName, iconSize,
 		buttonBorder, buttonPadding) are changed.
 		Must be called before onConfigChange().
@@ -481,7 +481,7 @@ class CustomizableToolBox(StaticToolBox):
 			item.build()
 			item.onConfigChange(toParent=False)
 
-	def getData(self) -> dict[str, Any]:
+	def getDict(self) -> CustomizableToolBoxDict:
 		self.data.update(
 			{
 				"items": self.getItemsData(),
@@ -493,7 +493,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		return self.data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: CustomizableToolBoxDict) -> None:
 		self.data = data
 		for name, enable in data["items"]:
 			item = self.defaultItemsDict.get(name)

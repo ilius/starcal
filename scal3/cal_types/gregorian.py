@@ -149,11 +149,11 @@ def jd_to(jd: int) -> tuple[int, int, int]:
 	return int(year), int(month), int(day)
 
 
-def getMonthLen(y: int, m: int) -> int:
-	if m == 12:
-		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
+def getMonthLen(year: int, month: int) -> int:
+	if month == 12:
+		return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
 
-	return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
+	return to_jd(year, month + 1, 1) - to_jd(year, month, 1)
 
 
 # J0001 = 1721426  # to_jd(1, 1, 1)

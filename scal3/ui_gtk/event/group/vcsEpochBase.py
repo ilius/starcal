@@ -7,13 +7,15 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.group.vcsBase import VcsBaseWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.vcs_base import VcsEpochBaseEventGroup
 
 __all__ = ["VcsEpochBaseWidgetClass"]
 
 
 class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
-	def __init__(self, group: EventGroup) -> None:
+	group: VcsEpochBaseEventGroup
+
+	def __init__(self, group: VcsEpochBaseEventGroup) -> None:
 		VcsBaseWidgetClass.__init__(self, group)
 		# ------
 		hbox = HBox()

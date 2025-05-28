@@ -22,14 +22,14 @@ def getDefaultAppCommand(fpath: str) -> str | None:
 	try:
 		app = gio.app_info_get_all_for_type(mime_type)[0]
 	except IndexError:
-		return
+		return None
 	return app.get_executable()
 
 
 def popenFile(fpath: str) -> subprocess.Popen | None:
 	command = getDefaultAppCommand(fpath)
 	if not command:
-		return
+		return None
 	return popenDefaultLang(
 		[
 			command,
@@ -39,4 +39,4 @@ def popenFile(fpath: str) -> subprocess.Popen | None:
 
 
 if __name__ == "__main__":
-	log.info(getDefaultAppCommand(sys.argv[1]))
+	log.info(repr(getDefaultAppCommand(sys.argv[1])))

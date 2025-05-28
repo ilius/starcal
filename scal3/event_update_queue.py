@@ -5,15 +5,18 @@ from threading import Thread
 from time import sleep
 
 from scal3 import logger
+from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.pytypes import EventGroupType
 
 log = logger.get()
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
 
-from scal3 import event_lib
+from scal3.event_lib.trash import EventTrash
 
 if TYPE_CHECKING:
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui_gtk.gtk_ud import CalObjType
 
 __all__ = ["EventUpdateQueue", "EventUpdateRecord"]
@@ -28,17 +31,17 @@ Usage:
 @dataclass(slots=True)
 class EventUpdateRecord:
 	action: str
-	obj: event_lib.Event | event_lib.EventGroup | event_lib.EventTrash
-	sender: CalObjType  # gtk_ud.BaseCalObj
+	obj: EventType | EventGroupType | EventTrash
+	sender: CalObjType | None  # gtk_ud.BaseCalObj
 
 
 class ConsumerType(Protocol):
 	def onEventUpdate(self, record: EventUpdateRecord) -> None: ...
 
 
-class EventUpdateQueue(Queue):
+class EventUpdateQueue:
 	def __init__(self) -> None:
-		Queue.__init__(self)
+		self.q: Queue = Queue()
 		self._consumers: list[ConsumerType] = []
 		self._thread: Thread | None = None
 		self._paused: bool = False
@@ -54,8 +57,8 @@ class EventUpdateQueue(Queue):
 	def put(
 		self,
 		action: str,
-		obj: event_lib.Event | event_lib.EventGroup | event_lib.EventTrash,
-		sender: CalObjType,
+		obj: EventType | EventGroupType | EventTrash,
+		sender: CalObjType | None,
 	) -> None:
 		if action not in {
 			"+",  # add/create event
@@ -71,18 +74,18 @@ class EventUpdateQueue(Queue):
 		if action not in {"r", "eg", "+g", "-g"} and obj.parent is None:
 			raise ValueError("obj.parent is None")
 		if action == "r":
-			if not isinstance(obj, event_lib.EventGroup | event_lib.EventTrash):
+			if not isinstance(obj, EventGroup | EventTrash):
 				raise TypeError(
 					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
 		elif action == "eg":  # noqa: SIM102
-			if not isinstance(obj, event_lib.EventGroup):
+			if not isinstance(obj, EventGroup):
 				raise TypeError(
 					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
 		log.info(f"EventUpdateQueue: add: {action=}, {obj=}")
 		record = EventUpdateRecord(action, obj, sender)
-		Queue.put(self, record)
+		self.q.put(record)
 
 	def startLoop(self) -> None:
 		if self._thread is not None:
@@ -93,7 +96,7 @@ class EventUpdateQueue(Queue):
 		self._thread.start()
 
 	def stopLoop(self) -> None:
-		Queue.put(self, None)
+		self.q.put(None)
 		if self._thread is None:
 			return
 		# should we wait here until it's stopped?
@@ -113,7 +116,7 @@ class EventUpdateQueue(Queue):
 				continue
 			# Queue.get: Remove and return an item from the queue.
 			# If queue is empty, wait until an item is available.
-			record = self.get()
+			record = self.q.get()
 			if record is None:
 				return
 			for consumer in self._consumers:
@@ -160,8 +163,8 @@ def testEventUpdateQueue() -> None:
 	sender = None
 	group = MockGroup()
 	for action, eid in items:
-		queue.put(action, MockEvent(eid, group), sender)
-	group.startLoop()
+		queue.put(action, MockEvent(eid, group), sender)  # type: ignore[arg-type]
+	queue.startLoop()
 	time.sleep(2)
 	queue.stopLoop()
 
