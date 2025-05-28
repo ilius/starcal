@@ -29,6 +29,7 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import imageFromFile
 
 if TYPE_CHECKING:
+	from scal3.property import Property
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = [
@@ -63,9 +64,9 @@ class DummyCalObj(ud.CalObjType):
 		self.moduleName = f"{pkg}.{name}"
 		self.customizable = customizable
 		self.optionsWidget = None
-		self.items = []
+		self.items: list[CustomizableCalObj] = []
 
-	def getLoadedObj(self) -> ud.BaseCalObj:
+	def getLoadedObj(self) -> ud.BaseCalObj | None:
 		try:
 			module = __import__(
 				self.moduleName,
@@ -74,7 +75,7 @@ class DummyCalObj(ud.CalObjType):
 			CalObj = module.CalObj
 		except Exception:
 			log.exception("")
-			return
+			return None
 		obj = CalObj(ui.mainWin)
 		obj.enable = self.enable
 		return obj
@@ -100,20 +101,20 @@ class CustomizableCalObj(ud.BaseCalObj):
 	# vertical: only set (non-None) when `hasOptions and itemListCustomizable`
 	# vertical: True if items are on top of each other
 	isWrapper = False
-	enableParam = ""
+	enableParam: Property[bool] | None = None
 	optionsPageSpacing = 0
 	itemListSeparatePage = False
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
 	expand = False
 	params = ()
-	myKeys = ()
+	myKeys: set[str] = set()
 
 	def initVars(self) -> None:
 		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
 			log.error(f"Add vertical to {self.__class__}")
 		ud.BaseCalObj.initVars(self)
-		self.itemWidgets = {}  # for lazy construction of widgets
+		# self.itemWidgets = {}  # for lazy construction of widgets
 		self.optionsWidget = None
 		try:
 			self.connect("key-press-event", self.onKeyPress)
@@ -129,11 +130,12 @@ class CustomizableCalObj(ud.BaseCalObj):
 			if item.customizable:
 				item.updateVars()
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> None:
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
 			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
-				break
+				return True
+		return False
 
 	def getOptionsWidget(self) -> gtk.Widget:  # noqa: PLR6301
 		return None
@@ -143,7 +145,6 @@ class CustomizableCalObj(ud.BaseCalObj):
 
 
 class CustomizableCalBox(CustomizableCalObj):
-
 	"""for GtkBox (HBox and VBox)."""
 
 	def appendItem(self, item: CustomizableCalObj) -> None:
@@ -197,7 +198,7 @@ def newSubPageButton(
 	button = gtk.Button()
 	button.add(hbox)
 
-	def onClick(_button: gtk.Button, page: StackPage) -> None:
+	def onClick(_b: gtk.Button, page: StackPage) -> None:
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
 		item.emit("goto-page", page.pagePath)

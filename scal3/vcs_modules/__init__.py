@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3.time_utils import getEpochFromJd
 
@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.event_lib.vcs_base import VcsBaseEventGroup
+	from scal3.event_search_tree import EventSearchTree
 
 __all__ = ["encodeShortStat", "getCommitListFromEst", "vcsModuleNames"]
 
@@ -36,10 +37,13 @@ def getCommitListFromEst(
 	endEpoch = getEpochFromJd(endJd)
 	# ---
 	data = []
-	for t0, _t1, rev_id, _dt in obj.est.search(startEpoch, endEpoch):
+	est: EventSearchTree = obj.est  # type: ignore[attr-defined]
+	repo: Any = obj.repo  # type: ignore[attr-defined]
+	for occur in est.search(startEpoch, endEpoch):
 		if format_rev_id:
-			rev_id = format_rev_id(obj.repo, rev_id)  # noqa: PLW2901
-		data.append((t0, rev_id))
+			data.append((occur.start, format_rev_id(repo, occur.oid)))  # noqa: PLW2901
+		else:
+			data.append((occur.start, occur.oid))
 	data.sort(reverse=True)
 	return data
 

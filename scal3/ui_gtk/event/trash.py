@@ -34,7 +34,7 @@ class TrashEditorDialog(gtk.Dialog):
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
 		# -------
-		self.trash = ui.eventTrash
+		self.trash = ui.ev.trash
 		# --
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -------
@@ -78,7 +78,8 @@ class TrashEditorDialog(gtk.Dialog):
 
 	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.trash.title)
-		self.iconSelect.set_filename(self.trash.icon)
+		if self.trash.icon:
+			self.iconSelect.set_filename(self.trash.icon)
 		self.addEventsToBeginningCheck.set_active(self.trash.addEventsToBeginning)
 
 	def updateVars(self) -> None:

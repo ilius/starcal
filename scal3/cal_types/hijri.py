@@ -158,27 +158,26 @@ class MonthDbHolder:
 		self.startDate = (1426, 2, 1)  # hijriDbInitH
 		self.startJd = 2453441  # hijriDbInitJD
 		self.endJd = self.startJd  # hijriDbEndJD
-		self.expJd = None
-		self.monthLenByYm = {}  # hijriMonthLen
+		self.expJd: int | None = None
+		self.monthLenByYm: dict[int, int] = {}  # hijriMonthLen
 		self.userDbPath = join(confDir, "hijri-monthes.json")
 		self.sysDbPath = f"{modDir}/hijri-monthes.json"
 
-	def setMonthLenByYear(self, monthLenByYear: dict[int, int]) -> None:
+	def setMonthLenByYear(self, monthLenByYear: dict[int, list[int]]) -> None:
 		self.endJd = self.startJd
 		self.monthLenByYm = {}
-		for y in monthLenByYear:
-			lst = monthLenByYear[y]
-			for m, ml in enumerate(lst):
-				if ml == 0:
+		for year, lenList in monthLenByYear.items():
+			for month, mLen in enumerate(lenList):
+				if mLen == 0:
 					continue
-				if ml < 0:
-					raise ValueError(f"invalid {ml = }")
-				self.monthLenByYm[y * 12 + m] = ml
-				self.endJd += ml
+				if mLen < 0:
+					raise ValueError(f"invalid {mLen = }")
+				self.monthLenByYm[year * 12 + month] = mLen
+				self.endJd += mLen
 		if self.expJd is None:
 			self.expJd = self.endJd
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: dict[str, Any]) -> None:
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
 		self.expJd = data.get("expJd")
@@ -200,9 +199,9 @@ class MonthDbHolder:
 				data = userData
 			else:
 				log.info(f"---- ignoring user's old db {self.userDbPath}")
-		self.setData(data)
+		self.setDict(data)
 
-	def getMonthLenByYear(self) -> dict[int, int]:
+	def getMonthLenByYear(self) -> dict[int, list[int]]:
 		monthLenByYear = {}
 		for ym, mLen in sorted(self.monthLenByYm.items()):
 			year, month0 = divmod(ym, 12)
@@ -249,7 +248,7 @@ class MonthDbHolder:
 
 	def getDateFromJd(self, jd: int) -> tuple[int, int, int] | None:
 		if not self.endJd >= jd >= self.startJd:
-			return
+			return None
 		y, m, d = self.startDate
 		ym = y * 12 + m - 1
 		startJd = self.startJd
@@ -278,7 +277,7 @@ class MonthDbHolder:
 		ym = year * 12 + month - 1
 		y0, m0, _d0 = monthDb.startDate
 		if ym - 1 not in monthDb.monthLenByYm:
-			return
+			return None
 		ym0 = y0 * 12 + m0 - 1
 		jd = monthDb.startJd
 		for ymi in range(ym0, ym):
@@ -332,13 +331,13 @@ def jd_to(jd: int) -> tuple[int, int, int]:
 	return year, month, day
 
 
-def getMonthLen(y: int, m: int) -> int:
+def getMonthLen(year: int, month: int) -> int:
 	# if `hijriUseDB.v`:
 	# 	try:
 	# 		return monthDb.monthLenByYm[y*12+m]
 	# 	except KeyError:
 	# 		pass
-	if m == 12:
-		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
+	if month == 12:
+		return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
 
-	return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
+	return to_jd(year, month + 1, 1) - to_jd(year, month, 1)

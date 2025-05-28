@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from scal3 import logger
+from scal3 import core, logger
 
 log = logger.get()
 
@@ -35,9 +35,8 @@ if TYPE_CHECKING:
 	from collections.abc import Iterator
 	from typing import Any
 
+	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.filesystem import FileSystem
-
-	from .groups import EventGroup
 
 
 __all__ = ["Account", "DummyAccount", "accountsDir"]
@@ -47,8 +46,8 @@ accountsDir = join("event", "accounts")
 class DummyAccount:
 	loaded = False
 	enable = False
-	params = ()
-	paramsOrder = ()
+	params: list[str] = []
+	paramsOrder: list[str] = []
 	accountsDesc = {
 		"google": _("Google"),
 	}
@@ -64,8 +63,8 @@ class DummyAccount:
 
 	def load(
 		cls,
-		fs: FileSystem,
-		*args,  # noqa: ANN002
+		ident: int,
+		fs: FileSystem | None = None,
 	) -> None:
 		pass
 
@@ -79,21 +78,21 @@ class Account(HistoryEventObjBinaryModel):
 	loaded = True
 	name = ""
 	desc = ""
-	basicParams = (  # FIXME
+	basicParams = [  # FIXME
 		# "enable",
 		"type",
-	)
-	params = (
+	]
+	params = [
 		# "enable",
 		"title",
 		"remoteGroups",
-	)
-	paramsOrder = (
+	]
+	paramsOrder = [
 		# "enable",
 		"type",
 		"title",
 		"remoteGroups",
-	)
+	]
 
 	@classmethod
 	def getFile(cls, ident: int) -> str:
@@ -101,6 +100,7 @@ class Account(HistoryEventObjBinaryModel):
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
+		assert state.lastIds is not None
 		for ident in range(1, state.lastIds.account + 1):
 			fpath = cls.getFile(ident)
 			if not fs.isfile(fpath):
@@ -119,15 +119,16 @@ class Account(HistoryEventObjBinaryModel):
 			self.id = None
 		else:
 			self.setId(ident)
+		self.fs = core.fs
 		self.enable = True
 		self.title = "Account"
 
 		# a list of dictionarise {"id":..., "title":...}
-		self.remoteGroups = []
+		self.remoteGroups: list[dict[str, Any]] = []
 
 		# example for status: {"action": "pull", "done": 10, "total": 20}
 		# action values: "fetchGroups", "pull", "push"
-		self.status = None
+		self.status: str | None = None
 
 	def save(self) -> None:
 		if self.id is None:
@@ -135,6 +136,7 @@ class Account(HistoryEventObjBinaryModel):
 		HistoryEventObjBinaryModel.save(self)
 
 	def setId(self, ident: int | None = None) -> None:
+		assert state.lastIds is not None
 		if ident is None or ident < 0:
 			ident = state.lastIds.account + 1  # FIXME
 			state.lastIds.account = ident
@@ -152,10 +154,14 @@ class Account(HistoryEventObjBinaryModel):
 	def fetchAllEventsInGroup(self, _remoteGroupId: Any) -> list[dict]:
 		raise NotImplementedError
 
-	def sync(self, _group: EventGroup, _remoteGroupId: Any) -> None:
+	def sync(
+		self,
+		group: EventGroupType,
+		remoteGroupId: str,  # noqa: ARG002
+	) -> None:
 		raise NotImplementedError
 
-	def getData(self) -> dict:
-		data = HistoryEventObjBinaryModel.getData(self)
+	def getDict(self) -> dict:
+		data = HistoryEventObjBinaryModel.getDict(self)
 		data["type"] = self.name
 		return data

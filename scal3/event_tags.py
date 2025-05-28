@@ -47,8 +47,10 @@ class TagIconItem:
 		self.eventTypes = eventTypes
 		self.usage = 0
 
-	def getIconRel(self) -> str:
+	def getIconRel(self) -> str | None:
 		icon = self.icon
+		if not icon:
+			return None
 		if icon.startswith(svgDir + os.sep):
 			return icon[len(svgDir) + 1 :]
 		return icon
@@ -60,7 +62,7 @@ class TagIconItem:
 		)
 
 
-eventTags = (
+eventTags: list[TagIconItem] = [
 	TagIconItem("alarm"),
 	TagIconItem("birthday", eventTypes=("yearly",), desc="Birthday (Balloons)"),
 	TagIconItem("birthday2", eventTypes=("yearly",), desc="Birthday (Cake)"),
@@ -80,7 +82,7 @@ eventTags = (
 	TagIconItem("appointment", eventTypes=("task",)),  # TODO: icon
 	TagIconItem("meeting", eventTypes=("task",)),  # TODO: icon
 	TagIconItem("travel"),  # TODO: icon
-)
+]
 
 
 # def updateEventTagsUsage():  # FIXME where to use?

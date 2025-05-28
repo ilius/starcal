@@ -28,7 +28,7 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
-from scal3.ui_gtk.pref_utils import PrefItem, SpinPrefItem
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import set_tooltip
 
@@ -65,13 +65,16 @@ def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 
 
 class FixedSizeOrRatioPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		ratioEnableProp: Property[bool] | None,
 		fixedLabel: str = "",
-		fixedItem: SpinPrefItem | None = None,
+		fixedItem: IntSpinPrefItem | None = None,
 		ratioLabel: str = "",
-		ratioItem: SpinPrefItem | None = None,
+		ratioItem: FloatSpinPrefItem | None = None,
 		vspacing: int = 0,
 		hspacing: int = 0,
 		borderWidth: int = 2,
@@ -136,6 +139,9 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 
 
 class WeekDayCheckListPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[list[int]],
@@ -200,6 +206,9 @@ class WeekDayCheckListPrefItem(PrefItem):
 
 """
 class ToolbarIconSizePrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self, prop: Property):
 		self.prop = prop
 		# ----
@@ -221,6 +230,9 @@ class ToolbarIconSizePrefItem(PrefItem):
 
 
 class CalTypePrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[int],
@@ -246,7 +258,9 @@ class CalTypePrefItem(PrefItem):
 			raise ValueError("onChangeFunc is given without live=True")
 
 	def get(self) -> int:
-		return self._combo.get_active()
+		value = self._combo.get_active()
+		assert value is not None
+		return value
 
 	def set(self, value: int) -> None:
 		self._combo.set_active(value)
@@ -259,6 +273,9 @@ class CalTypePrefItem(PrefItem):
 
 # FIXME: switch to: prop: Property,
 class LangPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self) -> None:
 		self.prop = locale_man.lang
 		# ---
@@ -300,6 +317,9 @@ class LangPrefItem(PrefItem):
 
 
 class CheckStartupPrefItem(PrefItem):  # FIXME
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self) -> None:
 		w = gtk.CheckButton(label=_("Run on session startup"))
 		set_tooltip(
@@ -517,6 +537,9 @@ def treeviewSelect(treev: gtk.TreeView, index: int) -> None:
 
 
 class ActiveInactiveCalsPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self) -> None:
 		self._widget = HBox()
 		# --------
@@ -698,19 +721,22 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		self.inactiveTrees.clear()
 		# --
 		for calType in calTypes.active:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.activeTrees.append([module.name, _(module.desc, ctx="calendar")])
 		# --
 		for calType in calTypes.inactive:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.inactiveTrees.append([module.name, _(module.desc, ctx="calendar")])
 
 
 class KeyBindingPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[dict[str, str]],
@@ -779,7 +805,7 @@ class KeyBindingPrefItem(PrefItem):
 		b = gevent.button
 		cur = self.treeview.get_cursor()[0]
 		if not cur:
-			return
+			return None
 		# cur is gtk.TreePath
 		rowI = cur[0]
 		if b == 1:

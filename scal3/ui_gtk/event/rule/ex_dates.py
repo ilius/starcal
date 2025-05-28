@@ -31,7 +31,7 @@ from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import ExDatesEventRule
 
 __all__ = ["WidgetClass"]
 
@@ -49,7 +49,7 @@ def validate(s: str) -> str:
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: ExDatesEventRule) -> None:
 		self.rule = rule
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# ---
@@ -57,7 +57,7 @@ class WidgetClass(gtk.Box):
 		pack(self, self.countLabel)
 		# ---
 		self.treeModel = gtk.ListStore(str)
-		self.dialog = None
+		self.dialog: gtk.Dialog | None = None
 		# ---
 		self.editButton = labelImageButton(
 			label=_("Edit"),
@@ -143,6 +143,7 @@ class WidgetClass(gtk.Box):
 
 	def showDialog(self, _w: Any = None) -> None:
 		self.createDialog()
+		assert self.dialog is not None
 		self.dialog.run()
 		self.updateCountLabel()
 
@@ -163,7 +164,7 @@ class WidgetClass(gtk.Box):
 			return None
 		return path[0]
 
-	def onAddClick(self, _button: gtk.Widget) -> None:
+	def onAddClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
@@ -176,13 +177,13 @@ class WidgetClass(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
 
-	def onDeleteClick(self, _button: gtk.Widget) -> None:
+	def onDeleteClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.treeModel[index]
 
-	def onMoveUpClick(self, _button: gtk.Widget) -> None:
+	def onMoveUpClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -196,7 +197,7 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def onMoveDownClick(self, _button: gtk.Widget) -> None:
+	def onMoveDownClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return

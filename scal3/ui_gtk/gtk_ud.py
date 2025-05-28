@@ -27,8 +27,8 @@ log = logger.get()
 
 import os
 import sys
-import typing
 from os.path import join
+from typing import TYPE_CHECKING, Any
 
 from gi.overrides.GObject import Object
 
@@ -44,10 +44,12 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.cell_type import CompiledTimeFormat
 	from scal3.event_update_queue import EventUpdateRecord
+	from scal3.ui.pytypes import CustomizableToolBoxDict
 	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = [
@@ -55,6 +57,7 @@ __all__ = [
 	"CalObjType",
 	"adjustTimeCmd",
 	"cssFunc",
+	"dateFormatBin",
 	"hasLightTheme",
 	"justificationList",
 	"mainToolbarData",
@@ -110,14 +113,14 @@ class BaseCalObj(CalObjType):
 	loaded = True
 	customizable = False
 	itemHaveOptions = True
-	signals = [
+	signals: list[tuple[str, list[Any]]] = [
 		("config-change", []),
 		("date-change", []),
 		("goto-page", [str]),
 	]
 
 	def initVars(self) -> None:
-		self.items = []
+		self.items: list[CustomizableCalObj] = []
 		self.enable = True
 
 	def onConfigChange(
@@ -223,7 +226,7 @@ class IntegatedWindowList(BaseCalObj):
 		# ---
 		self.cssFuncList: list[Callable[[], str]] = []
 		# ---
-		self.lastAlphabetHeight = 0
+		self.lastAlphabetHeight = 0.0
 
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
 		self.cssFuncList.append(func)
@@ -246,7 +249,7 @@ class IntegatedWindowList(BaseCalObj):
 		conf.menuCheckSize.v = int(height * 0.8)
 		conf.menuEventCheckIconSize.v = height * 0.8
 		conf.buttonIconSize.v = height * 0.65
-		conf.stackIconSize.v = height * 0.8
+		conf.stackIconSize.v = int(height * 0.8)
 		conf.eventTreeIconSize.v = height * 0.7
 		conf.eventTreeGroupIconSize.v = height * 0.85
 		conf.imageInputIconSize.v = height * 1.2
@@ -291,6 +294,7 @@ class IntegatedWindowList(BaseCalObj):
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		from scal3.ui_gtk.utils import cssTextStyle
 
+		assert ui.mainWin is not None
 		font = ui.getFont()
 		fgColor = gdkColorToRgb(
 			ui.mainWin.get_style_context().get_color(gtk.StateFlags.NORMAL),
@@ -446,8 +450,8 @@ justificationByName = {name: value for name, desc, value in justificationList}
 # 	settings.set_property("gtk-font-name", fontCustom)
 
 
-dateFormatBin = None
-clockFormatBin = None
+dateFormatBin: CompiledTimeFormat | None = None
+clockFormatBin: CompiledTimeFormat | None = None
 
 
 def updateFormatsBin() -> None:
@@ -512,21 +516,21 @@ def setDefault_adjustTimeCmd() -> None:
 
 
 # user should be able to configure this in Preferences
-adjustTimeCmd = ""
+adjustTimeCmd: list[str] = []
 adjustTimeEnv = os.environ
 setDefault_adjustTimeCmd()
 
 # ------------------------------
 
-mainToolbarData = {
+mainToolbarData: CustomizableToolBoxDict = {
 	"items": [],
-	"iconSize": "Large Toolbar",
 	"iconSizePixel": 24,
-	"style": "Icon",
-	"buttonsBorder": 0,
+	"buttonBorder": 0,
+	"buttonPadding": 0,
+	"preferIconName": False,
 }
 
-wcalToolbarData = {
+wcalToolbarData: CustomizableToolBoxDict = {
 	"items": [
 		("mainMenu", True),
 		("weekNum", False),
@@ -537,8 +541,9 @@ wcalToolbarData = {
 		("forward4", False),
 	],
 	"iconSizePixel": 16,
-	"style": "Icon",
-	"buttonsBorder": 0,
+	"buttonBorder": 0,
+	"buttonPadding": 0,
+	"preferIconName": False,
 }
 
 # -----------------------------------------------------------
@@ -577,7 +582,7 @@ def getMonitor() -> gdk.Monitor:
 	return None
 
 
-def getScreenSize() -> tuple[int, int]:
+def getScreenSize() -> tuple[int, int] | None:
 	# includes panels/docks
 	monitor = getMonitor()
 	if monitor is None:

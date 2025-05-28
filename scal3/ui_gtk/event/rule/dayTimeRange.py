@@ -7,13 +7,13 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import DayTimeRangeEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: DayTimeRangeEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -29,5 +29,7 @@ class WidgetClass(gtk.Box):
 		self.endTbox.set_value(self.rule.dayTimeEnd)
 
 	def updateVars(self) -> None:
-		self.rule.dayTimeStart = self.startTbox.get_value()
-		self.rule.dayTimeEnd = self.endTbox.get_value()
+		s1, s2, s3 = self.startTbox.get_value()
+		e1, e2, e3 = self.endTbox.get_value()
+		self.rule.dayTimeStart = (s1, s2, s3)
+		self.rule.dayTimeEnd = (e1, e2, e3)

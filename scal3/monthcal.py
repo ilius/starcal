@@ -19,99 +19,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scal3 import core, ui
+from scal3 import ui
 from scal3.cal_types import calTypes
-from scal3.core import getWeekDay, getWeekNumberByJd
-from scal3.date_utils import getJdRangeForMonth
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 
 if TYPE_CHECKING:
-	from scal3.cell_type import CellCacheType, CellType
+	from scal3.cell import MonthStatus
+	from scal3.cell_type import CellType
 
-__all__ = ["MonthStatus", "getCurrentMonthStatus", "getMonthDesc", "getMonthStatus"]
+__all__ = ["getMonthDesc"]
 
 
 pluginName = "MonthCal"
-
-
-class MonthStatus(list):  # FIXME
-	__slots__ = [
-		"month",
-		"offset",
-		"weekNum",
-		"year",
-	]
-
-	# self[sy<6][sx<7] of cells
-	# list (of 6 lists, each list containing 7 cells)
-	def __init__(
-		self,
-		cells: CellCacheType,
-		year: int,
-		month: int,
-	) -> None:
-		self.year = year
-		self.month = month
-		self.offset = getWeekDay(year, month, 1)  # month start offset
-		initJd = core.primary_to_jd(year, month, 1)
-		self.weekNum = [getWeekNumberByJd(initJd + i * 7) for i in range(6)]
-		# ---------
-		startJd, _endJd = getJdRangeForMonth(year, month, calTypes.primary)
-		tableStartJd = startJd - self.offset
-		# -----
-		list.__init__(
-			self,
-			[
-				[
-					cells.getCell(
-						tableStartJd + yPos * 7 + xPos,
-					)
-					for xPos in range(7)
-				]
-				for yPos in range(6)
-			],
-		)
-
-	# needed? FIXME
-	# def getDayCell(self, day):
-	# 	yPos, xPos = divmod(day + self.offset - 1, 7)
-	# 	return self[yPos][xPos]
-
-
-def setParamsFunc(cell: CellType) -> None:
-	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
-	yPos, xPos = divmod(offset + cell.day - 1, 7)
-	cell.monthPos = (xPos, yPos)
-	# ---
-	"""
-	if yPos==0:
-		cell.monthPosPrev = (xPos, 5)
-	else:
-		cell.monthPosPrev = None
-	# ---
-	if yPos==5:
-		cell.monthPosNext = (xPos, 0)
-	else:
-		cell.monthPosNext = None
-	"""
-
-
-def getMonthStatus(year: int, month: int) -> MonthStatus:
-	return ui.cells.getCellGroup(
-		pluginName,
-		year,
-		month,
-	)
-
-
-def getCurrentMonthStatus() -> MonthStatus:
-	return ui.cells.getCellGroup(
-		pluginName,
-		ui.cells.current.year,
-		ui.cells.current.month,
-	)
-
 
 # ------------------------
 
@@ -119,9 +39,9 @@ def getCurrentMonthStatus() -> MonthStatus:
 # TODO: write test for it
 def getMonthDesc(status: MonthStatus | None = None) -> str:
 	if not status:
-		status = getCurrentMonthStatus()
-	first = None
-	last = None
+		status = ui.cells.getCurrentMonthStatus()
+	first: CellType | None = None
+	last: CellType | None = None
 	for i in range(6):
 		for j in range(7):
 			c = status[i][j]
@@ -132,6 +52,8 @@ def getMonthDesc(status: MonthStatus | None = None) -> str:
 				break
 			if c.month == status.month:
 				first = c
+	assert first is not None
+	assert last is not None
 	text = ""
 	for calType in calTypes.active:
 		if text:
@@ -221,12 +143,3 @@ def getMonthDesc(status: MonthStatus | None = None) -> str:
 						+ _(y2)
 					)
 	return text
-
-
-# ------------------------
-
-ui.cells.registerPlugin(
-	pluginName,
-	setParamsFunc,
-	MonthStatus,
-)

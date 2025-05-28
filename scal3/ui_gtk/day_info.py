@@ -48,6 +48,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka) -> None:
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		assert ud.dateFormatBin is not None
 		for child in self.get_children():
 			child.destroy()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -186,14 +187,14 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		self.hide()
 		return True
 
-	def goBack(self, _widget: gtk.Widget | None = None) -> None:
+	def goBack(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(-1)
 		self.onDateChange()
 
-	def goToday(self, _widget: gtk.Widget | None = None) -> None:
+	def goToday(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.gotoJd(core.getCurrentJd())
 		self.onDateChange()
 
-	def goNext(self, _widget: gtk.Widget | None = None) -> None:
+	def goNext(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(1)
 		self.onDateChange()

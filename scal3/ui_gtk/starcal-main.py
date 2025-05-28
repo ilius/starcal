@@ -101,7 +101,7 @@ def imageFromFile(path: str, size: float = 0) -> gtk.Image:
 	return gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(path))
 
 
-def pixbufFromSvgFile(path: str, size: int) -> GdkPixbuf.Pixbuf:
+def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
 	if size <= 0:
 		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
@@ -186,7 +186,7 @@ def error_exit(resCode: int, text: str, **kwargs) -> None:
 try:
 	from scal3.ui_gtk.starcal import main
 
-	sys.exit(main())
+	main()
 except Exception as e:
 	msg = str(e).strip()
 	log.error(msg)

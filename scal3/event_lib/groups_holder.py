@@ -19,6 +19,8 @@ from __future__ import annotations
 import json
 
 from scal3 import logger
+from scal3.color_utils import RGB
+from scal3.event_lib.pytypes import EventGroupType
 
 log = logger.get()
 
@@ -50,34 +52,52 @@ from .register import classes
 __all__ = ["EventGroupsHolder"]
 
 
-class EventGroupsHolder(ObjectsHolderTextModel):
+class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 	file = join("event", "group_list.json")
-	childName = "group"
 
-	def __init__(self, ident: int | None = None) -> None:
+	@classmethod
+	def getMainClass(cls) -> type[EventGroupType] | None:
+		return classes.group.main
+
+	def __init__(
+		self,
+		ident: int | None = None,
+	) -> None:
 		ObjectsHolderTextModel.__init__(self)
 		self.id = ident
 		self.parent = None
 		self.idByUuid = {}
+		self.trash: EventTrash | None = None
 
-	def create(self, groupName: str) -> EventGroup:
+	def setTrash(self, trash: EventTrash) -> None:
+		self.trash = trash
+
+	def groupOrTrash(self, ident: int) -> EventGroupType | EventTrash:
+		if ident == -1 and self.trash is not None:
+			return self.trash
+		return self.byId[ident]
+
+	def create(self, groupName: str) -> EventGroupType:
 		group = classes.group.byName[groupName]()
 		group.fs = self.fs
 		return group
 
-	def delete(self, obj: EventGroup) -> None:
-		assert not obj.idList  # FIXME
-		obj.parent = None
-		ObjectsHolderTextModel.delete(self, obj)
+	def delete(self, group: EventGroupType) -> None:
+		assert not group.idList  # FIXME
+		group.parent = None
+		ObjectsHolderTextModel.delete(self, group)
 
-	def setData(self, data: list[Any]) -> None:
+	def setDict(self, data: dict[str, Any]) -> None:
 		self.clear()
+		log.info(f"EventGroupsHolder: setDict: {data = }")
 		if data:
-			ObjectsHolderTextModel.setData(self, data)
+			ObjectsHolderTextModel.setDict(self, data)
 			for group in self:
+				assert group.id is not None
 				if group.uuid is None:
 					group.save()
 					log.info(f"saved group {group.id} with uuid = {group.uuid}")
+					assert group.uuid
 				self.idByUuid[group.uuid] = group.id
 				if group.enable:
 					group.updateOccurrence()
@@ -93,16 +113,18 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 				obj.setRandomColor()
 				obj.setTitle(cls.desc)
 				obj.save()
+				assert obj.uuid is not None
+				assert obj.id is not None
 				self.idByUuid[obj.uuid] = obj.id
 				self.append(obj)
 			self.save()
 
 	def getEnableIds(self) -> list[int]:
-		return [group.id for group in self if group.enable]
+		return [group.id or -1 for group in self if group.enable]
 
 	def moveToTrash(
 		self,
-		group: EventGroup,
+		group: EventGroupType,
 		trash: EventTrash,
 	) -> None:
 		if trash.addEventsToBeginning:
@@ -116,35 +138,28 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 
 	def convertGroupTo(
 		self,
-		group: EventGroup,
+		group: EventGroupType,
 		newGroupType: str,
-	) -> EventGroup:
+	) -> EventGroupType:
 		newGroup = group.deepConvertTo(newGroupType)
 		newGroup.setId(group.id)
 		newGroup.afterModify()
 		newGroup.save()
+		assert newGroup.id is not None
 		self.byId[newGroup.id] = newGroup
 		return newGroup
 		# and then never use old `group` object
 
 	def exportData(self, gidList: list[int]) -> dict[str, Any]:
-		data = OrderedDict(
-			[
-				(
-					"info",
-					OrderedDict(
-						[
-							("appName", core.APP_NAME),
-							("version", core.VERSION),
-						],
-					),
-				),
-				("groups", []),
-			],
-		)
-		for gid in gidList:
-			data["groups"].append(self.byId[gid].exportData())
-		return data
+		return {
+			"info": OrderedDict(
+				[
+					("appName", core.APP_NAME),
+					("version", core.VERSION),
+				],
+			),
+			"groups": [self.byId[gid].exportData() for gid in gidList],
+		}
 
 	def eventListExportData(
 		self,
@@ -153,10 +168,10 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 	) -> dict[str, Any]:
 		eventsData = []
 		for groupId, eventId in idsList:
-			event = self.byId[groupId][eventId]
+			event = self.byId[groupId].getEvent(eventId)
 			if event.uuid is None:
 				event.save()
-			eventData = event.getDataOrdered()
+			eventData = event.getDictOrdered()
 			eventData["modified"] = event.modified
 			# eventData["sha1"] = event.lastHash
 			with suppress(KeyError):
@@ -166,31 +181,23 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 				del eventData["notifyBefore"]
 			eventsData.append(eventData)
 
-		return OrderedDict(
-			[
-				(
-					"info",
-					OrderedDict(
-						[
-							("appName", core.APP_NAME),
-							("version", core.VERSION),
-						],
-					),
-				),
-				(
-					"groups",
+		return {
+			"info": OrderedDict(
+				[
+					("appName", core.APP_NAME),
+					("version", core.VERSION),
+				],
+			),
+			"groups": [
+				OrderedDict(
 					[
-						OrderedDict(
-							[
-								("type", "group"),
-								("title", groupTitle),
-								("events", eventsData),
-							],
-						),
+						("type", "group"),
+						("title", groupTitle),
+						("events", eventsData),
 					],
 				),
 			],
-		)
+		}
 
 	def importData(self, data: dict[str, Any]) -> EventGroupsImportResult:
 		res = EventGroupsImportResult()
@@ -208,7 +215,8 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 			group = classes.group.byName[gdata["type"]]()
 			group.fs = self.fs
 			group.setId()
-			group.importData(gdata)
+			assert group.id is not None
+			group.importData(gdata, importMode=IMPORT_MODE_SKIP_MODIFIED)
 			group.save()
 			self.append(group)
 			res.newGroupIds.add(group.id)
@@ -234,7 +242,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 		newGroup = EventGroup()
 		newGroup.fs = fs
 		newGroup.setTitle(_("Orphan Events"))
-		newGroup.setColor((255, 255, 0))
+		newGroup.setColor(RGB(255, 255, 0))
 		newGroup.enable = False
 		for gid_fname in fs.listdir(groupsDir):
 			try:
@@ -247,11 +255,11 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 				except Exception:
 					log.exception("")
 		# ---------
-		myEventIds = []
+		myEventIdList: list[int] = []
 		for group in self:
-			myEventIds += group.idList
-		myEventIds = set(myEventIds)
-		eventHashSet = set()
+			myEventIdList += group.idList
+		myEventIdSet: set[int] = set(myEventIdList)
+		eventHashSet: set[str] = set()
 
 		for fname in fs.listdir(eventsDir):
 			fname_nox, ext = splitext(fname)
@@ -261,7 +269,7 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 				eid = int(fname_nox)
 			except ValueError:
 				continue
-			if eid not in myEventIds:
+			if eid not in myEventIdSet:
 				newGroup.idList.append(eid)
 
 			with fs.open(join(eventsDir, fname)) as fp:
@@ -275,12 +283,12 @@ class EventGroupsHolder(ObjectsHolderTextModel):
 		for _hash, _fpath in iterObjectFiles(fs):
 			if _hash in eventHashSet:
 				continue
-			data = SObjBinaryModel.loadData(_hash, fs)
+			data = SObjBinaryModel.loadBinaryData(_hash, fs)
 			if data.get("type") not in eventTypeSet:
 				continue
 			# newEventHashList.append(_hash)
 			newEvent = newGroup.create(data["type"])
-			newEvent.setData(data)
+			newEvent.setDict(data)
 			newEvent.save()
 			newGroup.append(newEvent)
 
