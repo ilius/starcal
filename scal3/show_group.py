@@ -1,5 +1,7 @@
 # no logging in this file
 
+from __future__ import annotations
+
 import json
 import sys
 
@@ -16,5 +18,5 @@ if __name__ == "__main__":
 		eventJsonData = json.load(fp)
 
 	lastHash = eventJsonData["history"][0][1]
-	data = SObjBinaryModel.loadData(lastHash, fs)
+	data = SObjBinaryModel.loadBinaryData(lastHash, fs)
 	print(dataToPrettyJson(data))  # noqa: T201

@@ -27,7 +27,7 @@ from scal3.s_object import SObj
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from .event_base import Event
+	from .pytypes import EventType
 
 __all__ = ["EventNotifier"]
 
@@ -38,12 +38,13 @@ class EventNotifier(SObj):
 	tname = ""
 	nameAlias = ""
 	desc = ""
-	params = ()
+	params = []
 
-	def __init__(self, event: Event) -> None:
+	def __init__(self, event: EventType) -> None:
 		self.event = event
+		self.extraMessage = ""
 
-	def getCalType(self) -> str:
+	def getCalType(self) -> int:
 		return self.event.calType
 
 	def notify(self, finishFunc: Callable) -> None:

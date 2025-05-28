@@ -36,11 +36,12 @@ from scal3.ics import getEpochByIcsTime, getIcsDateByJd, icsHeader, icsTmFormat
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.path import APP_NAME, plugDir
-from scal3.s_object import SObj, SObjTextModel
+from scal3.s_object import SObjTextModel
 from scal3.time_utils import getJdListFromEpochRange
 
 if TYPE_CHECKING:
 	from scal3.cell_type import CellType
+	from scal3.plugin_type import PluginType
 
 try:
 	import logging
@@ -61,10 +62,10 @@ pluginsTitleByName = {
 	"pray_times": _("Islamic Pray Times"),
 }
 
-pluginClassByName = {}
+pluginClassByName: dict[str, type[BasePlugin]] = {}
 
 
-def registerPlugin(cls: BasePlugin) -> BasePlugin:
+def registerPlugin[T: BasePlugin](cls: type[T]) -> type[T]:
 	assert cls.name
 	pluginClassByName[cls.name] = cls
 	return cls
@@ -74,11 +75,11 @@ def getPlugPath(_file: str) -> str:
 	return _file if isabs(_file) else join(plugDir, _file)
 
 
-class BasePlugin(SObj):
-	name = None
+class BasePlugin(SObjTextModel):
+	name: str = ""
 	external = False
 	loaded = True
-	params = (
+	params = [
 		# "calType",
 		"title",  # previously "desc"
 		"enable",
@@ -90,8 +91,8 @@ class BasePlugin(SObj):
 		"hasConfig",
 		"hasImage",
 		"lastDayMerge",
-	)
-	essentialParams = ("title",)  # FIXME
+	]
+	essentialParams = ["title"]  # FIXME
 
 	def getArgs(self) -> dict[str, Any]:
 		return {
@@ -109,7 +110,7 @@ class BasePlugin(SObj):
 	) -> None:
 		self.file = _file
 		# ------
-		self.calType = GREGORIAN
+		self.calType: int | None = GREGORIAN
 		self.title = ""
 		# ---
 		self.enable = False
@@ -119,17 +120,24 @@ class BasePlugin(SObj):
 		self.default_show_date = False
 		# ---
 		self.about = ""
-		self.authors = []
+		self.authors: list[str] = []
 		self.hasConfig = False
 		self.hasImage = False
 		self.lastDayMerge = True
 
-	def getData(self) -> dict[str, Any]:
-		data = SObjTextModel.getData(self)
-		data["calType"] = calTypes.names[self.calType]
+	def open_configure(self) -> None:
+		pass
+
+	def open_about(self) -> None:
+		pass
+
+	def getDict(self) -> dict[str, Any]:
+		data = SObjTextModel.getDict(self)
+		if self.calType is not None:
+			data["calType"] = calTypes.names[self.calType]
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: dict[str, Any]) -> None:
 		if "enable" not in data:
 			data["enable"] = data.get("default_enable", self.default_enable)
 		# ---
@@ -161,20 +169,27 @@ class BasePlugin(SObj):
 				self.calType = None
 			del data["calType"]
 		# -----
-		SObjTextModel.setData(self, data)
+		SObjTextModel.setDict(self, data)
+
+	def loadData(self) -> None:
+		pass
 
 	def clear(self) -> None:
 		pass
 
-	def load(self) -> None:
-		pass
-
-	def getText(self, _year: str, _month: str, _day: str) -> str:  # noqa: PLR6301
+	def getText(  # noqa: PLR6301
+		self,
+		year: int,  # noqa: ARG002
+		month: int,  # noqa: ARG002
+		day: int,  # noqa: ARG002
+	) -> str:
 		return ""
 
 	def updateCell(self, c: CellType) -> None:
-		module, ok = calTypes[self.calType]
-		if not ok:
+		if self.calType is None:
+			return
+		module = calTypes[self.calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
 
 		y, m, d = c.dates[self.calType]
@@ -190,14 +205,18 @@ class BasePlugin(SObj):
 				if nt:
 					text += nt
 		if text:
-			c.addPluginText(self, text)
+			plug: PluginType = self
+			c.addPluginText(plug, text)
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
 		pass
 
 	def exportToIcs(self, fileName: str, startJd: int, endJd: int) -> None:
+		if self.calType is None:
+			log.error("self.calType is None")
+			return
 		currentTimeStamp = strftime(icsTmFormat)
-		self.load()  # FIXME
+		self.load(0, fs=None)  # FIXME
 		calType = self.calType
 		icsText = icsHeader
 		for jd in range(startJd, endJd):
@@ -250,7 +269,7 @@ class DummyExternalPlugin(BasePlugin):
 def loadExternalPlugin(
 	file: str,
 	**data: object,
-) -> BasePlugin | None:
+) -> PluginType | None:
 	file = getPlugPath(file)
 	fname = split(file)[-1]
 	if not isfile(file):
@@ -276,7 +295,7 @@ def loadExternalPlugin(
 			pluginsTitleByName.get(name, name),
 		)
 	# ---
-	mainFile = data.get("mainFile")
+	mainFile: str = data.get("mainFile")  # type: ignore[assignment]
 	if not mainFile:
 		log.error(f'invalid external plugin "{file}"')
 		return None
@@ -294,9 +313,9 @@ def loadExternalPlugin(
 	except Exception:
 		log.error(f'error while loading external plugin "{file}"')
 		log.exception("")
-		return
+		return None
 	# ---
-	cls = pyEnv.get("TextPlugin")
+	cls: type[PluginType] | None = pyEnv.get("TextPlugin")  # type: ignore[assignment]
 	if cls is None:
 		log.error(f'invalid external plugin "{file}", no TextPlugin class')
 		return None
@@ -324,7 +343,7 @@ def loadExternalPlugin(
 	# 	# log.debug(dir(mod))
 	# 	return
 	plugin.external = True
-	plugin.setData(data)
+	plugin.setDict(data)
 	plugin.onCurrentDateChange(localtime()[:3])
 	return plugin
 
@@ -339,9 +358,9 @@ class HolidayPlugin(BaseJsonPlugin):
 			_file,
 		)
 		self.lastDayMerge = True  # FIXME
-		self.holidays = {}
+		self.holidays: dict[int, list[tuple[int, int] | tuple[int, int, int]]] = {}
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: dict[str, Any]) -> None:
 		if "holidays" in data:
 			for calTypeName in data["holidays"]:
 				try:
@@ -364,11 +383,11 @@ class HolidayPlugin(BaseJsonPlugin):
 		else:
 			log.error(f'no "holidays" key in holiday plugin "{self.file}"')
 		# ---
-		BaseJsonPlugin.setData(self, data)
+		BaseJsonPlugin.setDict(self, data)
 
 	def dateIsHoliday(self, calType: int, y: int, m: int, d: int, jd: int) -> bool:
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 
 		for item in self.holidays[calType]:
@@ -454,7 +473,7 @@ class HolidayPlugin(BaseJsonPlugin):
 @registerPlugin
 class YearlyTextPlugin(BaseJsonPlugin):
 	name = "yearlyText"
-	params = BaseJsonPlugin.params + ("dataFile",)
+	params = BaseJsonPlugin.params + ["dataFile"]
 
 	def __init__(self, _file: str) -> None:
 		BaseJsonPlugin.__init__(
@@ -462,8 +481,10 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			_file,
 		)
 		self.dataFile = ""
+		self.yearlyData: list[list[str]] = []
+		self.yearlyDateData: dict[tuple[int, int, int], str] = {}
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: dict[str, Any]) -> None:
 		if "dataFile" in data:
 			self.dataFile = getPlugPath(data["dataFile"])
 			del data["dataFile"]
@@ -472,21 +493,24 @@ class YearlyTextPlugin(BaseJsonPlugin):
 				f'no "dataFile" key in yearly text plugin "{self.file}"',
 			)
 		# ----
-		BaseJsonPlugin.setData(self, data)
+		BaseJsonPlugin.setDict(self, data)
 
 	def clear(self) -> None:
 		# yearlyData is a list of size 13 or 0, each item being a list
 		# except for last item (index 12) which is a dict
 		self.yearlyData = []
+		self.yearlyDateData = {}
 
-	def load(self) -> None:
+	def loadData(self) -> None:
+		if self.calType is None:
+			return
 		# log.debug(f"YearlyTextPlugin({self._file}).load()")
-		module, ok = calTypes[self.calType]
-		if not ok:
+		module = calTypes[self.calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
 		yearlyData = [[""] * module.maxMonthLen for _j in range(12)]
-		# last item is a dict of dates (y, m, d) and the description of day:
-		yearlyData.append({})
+		# a dict of dates (y, m, d) and the description of day:
+		yearlyDateData: dict[tuple[int, int, int], str] = {}
 		ext = splitext(self.dataFile)[1].lower()
 		if ext == ".txt":
 			# sep = "\t"
@@ -508,7 +532,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 					y = int(date[0])
 					m = int(date[1])
 					d = int(date[2])
-					yearlyData[12][y, m, d] = text
+					yearlyDateData[y, m, d] = text
 				elif len(date) == 2:
 					m = int(date[0])
 					d = int(date[1])
@@ -518,12 +542,15 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		else:
 			raise ValueError(f'invalid plugin dataFile extention "{ext}"')
 		self.yearlyData = yearlyData
+		self.yearlyDateData = yearlyDateData
 
 	# def getBasicYearlyText(month, day):
 	# 	item = self.yearlyData[month - 1]
 	# 	return item
 
 	def getText(self, year: int, month: int, day: int) -> str:
+		if self.calType is None:
+			return ""
 		yearlyData = self.yearlyData
 		if not yearlyData:
 			return ""
@@ -536,8 +563,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			text = item[day - 1]
 		if self.show_date and text:
 			text = _(day) + " " + getMonthName(calType, month) + ": " + text
-		if len(yearlyData) > 12:
-			text2 = yearlyData[12].get((year, month, day), "")
+		if self.yearlyDateData:
+			text2 = self.yearlyDateData.get((year, month, day), "")
 			if text2:
 				if text:
 					text += "\n"
@@ -568,8 +595,8 @@ class IcsTextPlugin(BasePlugin):
 		all_years: bool = False,
 	) -> None:
 		title = splitext(_file)[0]
-		self.ymd = None
-		self.md = None
+		self.ymd: dict[tuple[int, int, int], str] | None = None
+		self.md: dict[tuple[int, int], str] | None = None
 		self.all_years = all_years
 		BasePlugin.__init__(
 			self,
@@ -711,7 +738,7 @@ class IcsTextPlugin(BasePlugin):
 		self.ymd = ymd
 		self.md = None
 
-	def load(self) -> None:
+	def loadData(self) -> None:
 		with open(self.file, encoding="utf-8") as fp:
 			lines = fp.read().replace("\r", "").split("\n")
 		lineNum = self._findVeventBegin(lines)
@@ -724,6 +751,9 @@ class IcsTextPlugin(BasePlugin):
 			self._loadYMD(lines, lineNum)
 
 	def getText(self, y: int, m: int, d: int) -> str:
+		if self.calType is None:
+			return ""
+
 		if self.ymd and (y, m, d) in self.ymd:
 			if self.show_date:
 				return (
@@ -736,25 +766,16 @@ class IcsTextPlugin(BasePlugin):
 					+ self.ymd[y, m, d]
 				)
 			return self.ymd[y, m, d]
+
 		if self.md and (m, d) in self.md:
-			if self.show_date:
-				return (
-					_(d)
-					+ " "
-					+ getMonthName(self.calType, m)
-					+ " "
-					+ _(y)
-					+ ": "
-					+ self.ymd[y, m, d]
-				)
-			return self.md[m, d]
+			if not self.show_date:
+				return self.md[m, d]
+			text = _(d) + " " + getMonthName(self.calType, m) + " " + _(y)
+			if self.ymd:
+				text += ": " + self.ymd[y, m, d]
+			return text
+
 		return ""
-
-	def open_configure(self) -> None:
-		pass
-
-	def open_about(self) -> None:
-		pass
 
 
 # class EveryDayTextPlugin(BaseJsonPlugin):
@@ -762,14 +783,14 @@ class IcsTextPlugin(BasePlugin):
 
 
 # must not rename _file argument
-def loadPlugin(_file: str | None = None, **kwargs: object) -> BasePlugin | None:
+def loadPlugin(_file: str | None = None, **kwargs: Any) -> PluginType | None:
 	if not _file:
 		log.error(f"plugin file is empty! {kwargs=}")
-		return
+		return None
 	file = getPlugPath(_file)
 	if not isfile(file):
 		log.error(f'error while loading plugin "{file}": no such file!\n')
-		return
+		return None
 	ext = splitext(file)[1].lower()
 	# ----
 	# FIXME: should ics plugins require a json file too?
@@ -777,12 +798,12 @@ def loadPlugin(_file: str | None = None, **kwargs: object) -> BasePlugin | None:
 		return IcsTextPlugin(file, **kwargs)
 	# ----
 	if ext == ".md":
-		return
+		return None
 	if ext != ".json":
 		log.error(
 			f"unsupported plugin extention {ext}, new style plugins have a json file",
 		)
-		return
+		return None
 	try:
 		with open(file, encoding="utf-8") as fp:
 			text = fp.read()
@@ -790,20 +811,20 @@ def loadPlugin(_file: str | None = None, **kwargs: object) -> BasePlugin | None:
 		log.error(
 			f'error while reading plugin file "{file}": {e}',
 		)
-		return
+		return None
 	try:
 		data = json.loads(text)
 	except Exception:
 		log.error(f'invalid json file "{file}"')
 		log.exception("")
-		return
+		return None
 	# ----
 	data.update(kwargs)  # FIXME
 	# ----
 	name = data.get("type")
 	if not name:
 		log.error(f'invalid plugin "{file}", no "type" key')
-		return
+		return None
 	# ----
 	if name == "external":
 		return loadExternalPlugin(file, **data)
@@ -812,16 +833,16 @@ def loadPlugin(_file: str | None = None, **kwargs: object) -> BasePlugin | None:
 		cls = pluginClassByName[name]
 	except KeyError:
 		log.error(f'invald plugin type "{name}" in file "{file}"')
-		return
+		return None
 	# ----
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
 				f'invalid plugin "{file}": parameter "{param}" is missing',
 			)
-			return
+			return None
 	# ----
 	plug = cls(file)
-	plug.setData(data)
+	plug.setDict(data)
 	# ----
 	return plug

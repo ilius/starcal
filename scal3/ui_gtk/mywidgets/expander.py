@@ -68,7 +68,9 @@ class ExpanderFrameTitle(gtk.Button):
 
 @registerSignals
 class ExpanderFrame(gtk.Frame):
-	signals = (("activate", []),)
+	signals: list[tuple[str, list]] = [
+		("activate", []),
+	]
 
 	def __init__(
 		self,
@@ -100,7 +102,7 @@ class ExpanderFrame(gtk.Frame):
 	def add(self, child: gtk.Widget) -> None:
 		pack(self._box, child, 1, 1)
 
-	def _onTitleClick(self, _button: gtk.Widget) -> None:
+	def _onTitleClick(self, _b: gtk.Widget) -> None:
 		self.set_expanded(not self.get_expanded())
 		self.emit("activate")
 

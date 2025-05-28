@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
+from scal3.color_utils import black, yellow
 from scal3.ui_gtk import gdk, gtk, timeout_add
 from scal3.ui_gtk.decorators import registerType
 from scal3.ui_gtk.drawing import newTextLayout, setColor
@@ -46,15 +47,15 @@ screenWidth = rootWin.get_width()
 
 @registerType
 class FloatingMsg(gtk.DrawingArea):
-	def on_realize(self, _widget: gtk.Widget) -> None:
+	def on_realize(self, _w: gtk.Widget) -> None:
 		self.animateStart()
 
 	def __init__(
 		self,
 		text: str,
 		speed: float = 100,
-		bgColor: ColorType = (255, 255, 0),
-		textColor: ColorType = (0, 0, 0),
+		bgColor: ColorType = yellow,
+		textColor: ColorType = black,
 		refreshTime: float = 10,
 		finishFunc: Callable | None = None,
 		finishOnClick: bool = True,
@@ -131,7 +132,7 @@ class FloatingMsg(gtk.DrawingArea):
 		if self.finishFunc:
 			self.finishFunc()
 
-	def onExposeEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
+	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -197,7 +198,7 @@ class MyLabel(gtk.DrawingArea):
 		self.rtl = self.isRtl()
 		self.rtlSign = 1 if self.rtl else -1
 
-	def onExposeEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
+	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -234,8 +235,8 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self,
 		text: str,
 		speed: float = 100,
-		bgColor: ColorType = (255, 255, 0),
-		textColor: ColorType = (0, 0, 0),
+		bgColor: ColorType = yellow,
+		textColor: ColorType = black,
 		refreshTime: float = 10,
 		finishFunc: Callable | None = None,
 		finishOnClick: bool = True,

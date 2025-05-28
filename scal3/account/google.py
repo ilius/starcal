@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# FIXME
 from __future__ import annotations
+from typing import Any
+
+from scal3.event_lib.errors import AccountError
+from scal3.event_lib.pytypes import EventGroupType
 
 developerKey = (
 	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2"
@@ -33,7 +36,7 @@ from time import time as now
 try:
 	from urllib.parse import parse_qsl
 except ImportError:
-	from cgi import parse_qsl
+	from cgi import parse_qsl  # type: ignore
 
 import httplib2
 
@@ -180,7 +183,7 @@ class ClientRedirectServer(http.server.HTTPServer):
 	into query_params and then stops serving.
 	"""
 
-	query_params = {}
+	query_params: dict[str, str] = {}
 
 
 class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
@@ -234,13 +237,13 @@ def dumpRequest(request):
 class GoogleAccount(Account):
 	name = "google"
 	desc = _("Google")
-	paramsOrder = Account.paramsOrder + ("email",)
-	params = Account.params + ("email",)
+	paramsOrder = Account.paramsOrder + ["email"]
+	params = Account.params + ["email"]
 
-	def __init__(self, aid=None, email=""):
+	def __init__(self, ident=None, email=""):
 		from oauth2client.client import OAuth2WebServerFlow
 
-		Account.__init__(self, aid)
+		Account.__init__(self, ident)
 		self.authFile = splitext(self.file)[0] + ".oauth2"
 		self.email = email
 		self.flow = OAuth2WebServerFlow(
@@ -253,8 +256,8 @@ class GoogleAccount(Account):
 			user_agent=f"{core.APP_NAME}/{core.VERSION}",
 		)
 
-	def getData(self):
-		data = Account.getData(self)
+	def getDict(self):
+		data = Account.getDict(self)
 		data.update(
 			{
 				"email": self.email,
@@ -262,8 +265,8 @@ class GoogleAccount(Account):
 		)
 		return data
 
-	def setData(self, data):
-		Account.setData(self, data)
+	def setDict(self, data):
+		Account.setDict(self, data)
 		for attr in ("email",):
 			if attr not in data:
 				continue
@@ -411,11 +414,11 @@ class GoogleAccount(Account):
 			return
 		service.calendars().delete(calendarId=remoteGroupId).execute()
 
-	def fetchGroups(self):
+	def fetchGroups(self) -> None:
 		"""Return None if successful, or error string if failed."""
 		service = self.getCalendarService()
 		if not service:
-			return "no service"  # fix msg FIXME
+			raise AccountError("no service")
 		groups = [
 			{
 				"id": group["id"],
@@ -425,7 +428,6 @@ class GoogleAccount(Account):
 		]
 		# log.debug(f"{groups = }")
 		self.remoteGroups = groups
-		return None
 
 	def fetchAllEventsInGroup(self, remoteGroupId):
 		service = self.getCalendarService()
@@ -441,7 +443,11 @@ class GoogleAccount(Account):
 		)
 		return eventsRes.get("items", [])
 
-	def sync(self, group, remoteGroupId):
+	def sync(
+		self,
+		group: EventGroupType,
+		remoteGroupId: str,  # noqa: ARG002
+	) -> None:
 		"""Return None if successful, or error string if failed."""
 		from apiclient.discovery import HttpError
 
@@ -449,8 +455,8 @@ class GoogleAccount(Account):
 		# 	service = self.getTasksService()
 		service = self.getCalendarService()
 		if not service:
-			return "no service"  # fix msg FIXME
-		lastSync = group.getLastSync()
+			raise AccountError("no service")  # fix msg FIXME
+		lastSyncTuple = group.getLastSync()
 		funcStartTime = now()
 		# _________________ Pull _________________
 		# log.debug("------------------- pulling...")
@@ -462,8 +468,9 @@ class GoogleAccount(Account):
 			"timeZone": "GMT",
 			"pageToken": 0,
 		}
-		if lastSync:
-			kwargs["updatedMin"] = getIcsTimeByEpoch(lastSync, True)  # FIXME
+		if lastSyncTuple:
+			lastSyncStartEpoch, lastSyncEndEpoch = lastSyncTuple
+			kwargs["updatedMin"] = getIcsTimeByEpoch(lastSyncEndEpoch, True)  # FIXME
 			# int(lastSync)
 		# log.debug(kwargs)
 		request = service.events().list(**kwargs)
@@ -473,11 +480,11 @@ class GoogleAccount(Account):
 			geventsRes = request.execute()
 		except HttpError as e:
 			self.showHttpException(e)
-			return str(e)
+			raise AccountError(str(e))
 		# plog.info(geventsRes)
 		gevents = geventsRes.get("items", [])
 		# plog.info(gevents)
-		diff = {}
+		diff: dict[str, list[Any]] = {}
 
 		def addToDiff(key, here, status, *args):
 			value = (status, here) + args
@@ -486,6 +493,8 @@ class GoogleAccount(Account):
 				diff[key] = [value]
 			else:
 				diff[key].append(value)
+
+		remoteEventId: str | None = None
 
 		for gevent in gevents:
 			remoteIds = (self.id, remoteGroupId, gevent["id"])
@@ -502,7 +511,7 @@ class GoogleAccount(Account):
 				# group.remove(group[eventId])
 				# group.save()  # FIXME
 			if gevent["status"] != "confirmed":  # FIXME
-				log.info(gevent["status"], gevent["summary"])
+				log.info(f"{gevent["status"]=}, {gevent["summary"]=}")
 				continue
 			event = importEvent(gevent, group)
 			if not event:
@@ -548,10 +557,10 @@ class GoogleAccount(Account):
 			if event.remoteIds and event.remoteIds[:2] == (self.id, remoteGroupId):
 				remoteEventId = event.remoteIds[2]
 			# log.debug(f"---------- {remoteEventId = }")
-			if remoteEventId and lastSync and event.modified < lastSync:
+			if remoteEventId and lastSyncTuple and event.modified < lastSyncTuple:
 				log.info(
 					f"---------- skipping event {event.summary}"
-					f"(modified = {event.modified} < {lastSync =})",
+					f"(modified = {event.modified} < {lastSyncTuple =})",
 				)
 				continue
 			bothId = (event.id, remoteEventId)
@@ -618,12 +627,13 @@ def printAllEvent(account, remoteGroupId):
 
 
 if __name__ == "__main__":
-	account = GoogleAccount.load(1)
-	log.info(account.fetchGroups())
+	account = GoogleAccount.load(1, fs=core.fs)
+	assert account is not None
+	account.fetchGroups()
 	# remoteGroupId = "gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com"
 	# groupId = 102
-	# ui.eventGroups = event_lib.EventGroupsHolder.load()
-	# group = ui.eventGroups[groupId]
+	# ui.ev.groups = event_lib.EventGroupsHolder.load(0, fs=core.fs)
+	# group = ui.ev.groups[groupId]
 	# log.debug(f"{group.remoteIds = }")
 	# group.remoteIds = (account.id, remoteGroupId)
 	# account.sync(group, remoteGroupId)  # 400 Bad Request

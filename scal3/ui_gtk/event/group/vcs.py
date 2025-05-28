@@ -9,13 +9,15 @@ from scal3.ui_gtk.event.group.vcsEpochBase import (
 )
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.vcs import VcsCommitEventGroup
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group: EventGroup) -> None:
+	group: VcsCommitEventGroup
+
+	def __init__(self, group: VcsCommitEventGroup) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ----
 		hbox = HBox()

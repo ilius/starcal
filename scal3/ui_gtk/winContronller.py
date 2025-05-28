@@ -12,6 +12,7 @@ from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 __all__ = ["CalObj"]
@@ -123,17 +124,17 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("button-release-event", self.onButtonRelease)
 		set_tooltip(self, self.desc)  # FIXME
 
-	def enterNotify(self, _widget: gtk.Widget, _gevent: gdk.Event) -> None:
+	def enterNotify(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		self.setFocus(True)
 
-	def leaveNotify(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
+	def leaveNotify(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		if self.controller.winFocused:
 			self.setFocus(False)
 		else:
 			self.setInactive()
 		return False
 
-	def onButtonPress(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, _ge: gdk.ButtonEvent) -> bool:
 		self.setPressed()
 		return True
 
@@ -143,7 +144,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	def onRightClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:
 		pass
 
-	def onButtonRelease(self, _button: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonRelease(self, _b: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
@@ -188,7 +189,7 @@ class WinConButtonClose(WinConButton):
 	imageNameInactive = "close-inactive"
 	imageNamePress = "close-press"
 
-	def onClick(self, gWin: gtk.Window, _gevent: gdk.Event) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, _ge: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.emit("delete-event", gdk.Event())
 
 
@@ -204,7 +205,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNamePress = f"{direc}-press"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin: gtk.Window, _gevent: gdk.Event) -> None:  # noqa: PLR6301
+	def onClick(self, gWin: gtk.Window, _ge: gdk.Event) -> None:  # noqa: PLR6301
 		gWin.emit("toggle-right-panel")
 
 
@@ -298,12 +299,12 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			ComboTextPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
+		prefItem: PrefItem
 		# ----
 		prefItem = ComboTextPrefItem(
 			prop=conf.winControllerTheme,
@@ -314,7 +315,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.winControllerIconSize,
 			bounds=(5, 128),
 			digits=1,
@@ -325,10 +326,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.winControllerBorder,
 			bounds=(0, 99),
-			digits=1,
 			step=1,
 			label=_("Buttons Border"),
 			live=True,
@@ -336,10 +336,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.winControllerSpacing,
 			bounds=(0, 99),
-			digits=1,
 			step=1,
 			label=_("Space between buttons"),
 			live=True,

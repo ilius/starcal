@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 
 from scal3 import logger
+from scal3.color_utils import RGB
 
 log = logger.get()
 
@@ -52,9 +53,9 @@ movableEventTypes = (
 class Box:
 	def __init__(
 		self,
-		t0: int,
-		t1: int,
-		odt: int,
+		t0: float,
+		t1: float,
+		odt: float,
 		u0: float,
 		du: float,
 		text: str = "",
@@ -109,21 +110,21 @@ def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 		from igraph import Graph
 	except ImportError:
 		log.exception("error importing Graph")
-		return
+		return None
 	g = Graph()
 	n = len(boxes)
 	g.add_vertices(n)
 	g.vs["name"] = list(range(n))
 	# ----
 	# list[(time: int, isStart: bool, boxIndex: int)]
-	points: list[tuple[int, bool, int]] = []
+	points: list[tuple[float, bool, int]] = []
 	for boxI, box in enumerate(boxes):
 		points += [
 			(box.t0, True, boxI),
 			(box.t1, False, boxI),
 		]
 	points.sort()
-	openBoxes = set()
+	openBoxes: set[int] = set()
 	for _t, isStart, boxI in points:
 		if isStart:
 			g.add_edges([(boxI, oboxI) for oboxI in openBoxes])
@@ -136,7 +137,7 @@ def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 def renderBoxesByGraph(
 	boxes: Sequence[Box],
 	graph: Graph,
-	minColor: ui.ColorType,
+	minColor: int,
 	minU: float,
 ) -> None:
 	colorCount = max(graph.vs["color"]) - minColor + 1
@@ -160,10 +161,10 @@ def renderBoxesByGraph(
 
 
 def calcEventBoxes(
-	timeStart: int,
-	timeEnd: int,
+	timeStart: float,
+	timeEnd: float,
 	pixelPerSec: float,
-	borderTm: int,
+	borderTm: float,
 ) -> list[Box]:
 	try:
 		from scal3.graph_utils import (
@@ -180,18 +181,19 @@ def calcEventBoxes(
 				1 - errorBoxH,  # u0
 				errorBoxH,  # du
 				text='Install "python3-igraph" to see events',
-				color=(128, 0, 0),  # FIXME
+				color=RGB(128, 0, 0),  # FIXME
 				lineW=2 * conf.boxLineWidth.v,
 			),
 		]
-	boxesDict = {}
+	boxesDict: dict[tuple[int, float, float], list[Box]] = {}
 	# timeMiddle = (timeStart + timeEnd) / 2.0
-	for groupIndex in range(len(ui.eventGroups)):
-		group = ui.eventGroups.byIndex(groupIndex)
+	for groupIndex in range(len(ui.ev.groups)):
+		group = ui.ev.groups.byIndex(groupIndex)
 		if not group.enable:
 			continue
 		if not group.showInTimeLine:
 			continue
+		assert group.id is not None
 		for item in group.occur.search(
 			timeStart - borderTm,
 			timeEnd + borderTm,
@@ -206,13 +208,14 @@ def calcEventBoxes(
 			# if not isinstance(eid, int):
 			# 	log.error(f"----- bad eid from search: {eid!r}")
 			# 	continue
-			event = group[eid]
 			if t0 <= timeStart and timeEnd <= t1:
 				# Fills Range, FIXME
 				continue
 			lineW = conf.boxLineWidth.v
 			if lineW >= 0.5 * pixBoxW:
 				lineW = 0
+			event = group[eid]
+			assert event.id is not None
 			box = Box(
 				t0,
 				t1,
@@ -225,7 +228,7 @@ def calcEventBoxes(
 				lineW=lineW,
 			)
 			box.hasBorder = borderTm > 0 and event.name in movableEventTypes
-			boxValue = (groupIndex, t0, t1)
+			boxValue: tuple[int, float, float] = (groupIndex, t0, t1)
 			toAppend = boxesDict.get(boxValue)
 			if toAppend is None:
 				boxesDict[boxValue] = [box]
@@ -258,7 +261,7 @@ def calcEventBoxes(
 	# ---
 	graph = makeIntervalGraph(boxes)
 	if graph is None:
-		return
+		return []
 	if debugMode:
 		log.debug(f"makeIntervalGraph: {perf_counter() - t1:e}")
 	# -----

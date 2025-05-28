@@ -97,7 +97,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		)
 		self.swin.add(hbox3)
 		pack(self, self.swin, 1, 1)
-		self.customTypeWidgets = (iconLabel, self.iconSelect, tagsLabel, self.swin)
+		self.customTypeWidgets = [iconLabel, self.iconSelect, tagsLabel, self.swin]
 		# ---------
 		self.typeCombo.connect("changed", self.typeComboChanged)
 		self.connect("scroll-event", self.scrollEvent)
@@ -105,7 +105,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
-	def scrollEvent(self, _widget: gtk.Widget, gevent: gdk.ScrollEvent) -> None:
+	def scrollEvent(self, _w: gtk.Widget, gevent: gdk.ScrollEvent) -> None:
 		self.swin.get_hscrollbar().emit("scroll-event", gevent)
 
 	def typeComboChanged(self, combo: gtk.ComboBox) -> None:
@@ -117,7 +117,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		else:
 			hideList(self.customTypeWidgets)
 
-	def getData(self) -> dict[str, Any]:
+	def getDict(self) -> dict[str, Any]:
 		active = self.typeCombo.get_active()
 		if active in {-1, None}:
 			icon = ""
@@ -136,7 +136,6 @@ class EventTagsAndIconSelect(gtk.Box):
 
 
 class TagsListBox(gtk.Box):
-
 	"""
 	[x] Only related tags     tt: Show only tags related to this event type
 	Sort by:
@@ -223,7 +222,7 @@ class TagsListBox(gtk.Box):
 		tags: list[str] | None = None,
 	) -> None:
 		if not tags:
-			tags = self.getData()
+			tags = self.getDict()
 		tagObjList = ui.eventTags
 		if self.eventType and self.relatedCheck.get_active():
 			tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
@@ -245,10 +244,10 @@ class TagsListBox(gtk.Box):
 		self.treeModel[i][1] = active
 		cell.set_active(active)
 
-	def getData(self) -> list[str]:
+	def getDict(self) -> list[str]:
 		return [row[0] for row in self.treeModel if row[1]]
 
-	def setData(self, tags: list[str]) -> None:
+	def setDict(self, tags: list[str]) -> None:
 		self.optionsChanged(tags=tags)
 
 
@@ -257,7 +256,7 @@ class TagEditorDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tags"))
 		self.set_transient_for(None)
-		self.tags = []
+		self.tags: list[str] = []
 		self.tagsBox = TagsListBox(eventType)
 		pack(self.vbox, self.tagsBox, 1, 1)
 		# ----
@@ -275,14 +274,14 @@ class TagEditorDialog(gtk.Dialog):
 		)
 		# ----
 		self.vbox.show_all()
-		self.getData = self.tagsBox.getData
-		self.setData = self.tagsBox.setData
+		self.getDict = self.tagsBox.getDict
+		self.setDict = self.tagsBox.setDict
 
 
 class ViewEditTagsHbox(gtk.Box):
 	def __init__(self, eventType: str = "") -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.tags = []
+		self.tags: list[str] = []
 		pack(self, gtk.Label(label=_("Tags") + ":  "))
 		self.tagsLabel = gtk.Label()
 		pack(self, self.tagsLabel, 1, 1)
@@ -296,20 +295,20 @@ class ViewEditTagsHbox(gtk.Box):
 		pack(self, self.editButton)
 		self.show_all()
 
-	def onEditButtonClick(self, _widget: gtk.Widget) -> None:
+	def onEditButtonClick(self, _w: gtk.Widget) -> None:
 		openWindow(self.dialog)
 
 	def dialogResponse(self, dialog: gtk.Window, resp: gtk.ResponseType) -> None:
 		# log.debug("dialogResponse", dialog, resp)
 		if resp == gtk.ResponseType.OK:
-			self.setData(dialog.getData())
+			self.setDict(dialog.getDict())
 		dialog.hide()
 
-	def setData(self, tags: list[str]) -> None:
+	def setDict(self, tags: list[str]) -> None:
 		self.tags = tags
-		self.dialog.setData(tags)
+		self.dialog.setDict(tags)
 		sep = _(",") + " "
 		self.tagsLabel.set_label(sep.join([eventTagsDesc[tag] for tag in tags]))
 
-	def getData(self) -> list[str]:
+	def getDict(self) -> list[str]:
 		return self.tags

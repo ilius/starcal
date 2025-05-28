@@ -6,27 +6,28 @@ log = logger.get()
 
 from time import localtime
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import Protocol
 
 from scal3 import ui
 from scal3.ui_gtk import timeout_add_seconds
-
-if TYPE_CHECKING:
-	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = ["dateChange"]
 
 dayLen = 24 * 3600
 
 
+class ReceiverType(Protocol):
+	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None: ...
+
+
 class DateChangeListener:
 	def __init__(self, timeout: float = 1) -> None:
 		self.timeout = timeout  # seconds
-		self.receivers = []
+		self.receivers: list[ReceiverType] = []
 		self.gdate = localtime()[:3]
 		self.check()
 
-	def add(self, receiver: CustomizableCalObj) -> None:
+	def add(self, receiver: ReceiverType) -> None:
 		self.receivers.append(receiver)
 
 	def check(self) -> None:

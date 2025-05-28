@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Protocol
 
-__all__ = ["CalTypeModule", "TranslateFunc"]
+__all__ = ["CalTypeModule", "OptionTuple", "TranslateFunc"]
 
 # type TranslateFunc = Callable[[str, str]]
 
@@ -13,7 +14,7 @@ class TranslateFunc(Protocol):
 
 type OptionTuple = (
 	tuple[str, type[bool], str]
-	| tuple[str, type[list], str, list[str]]
+	| tuple[str, type[list], str, Sequence[str]]
 	| tuple[str, str, str, str]
 )
 
@@ -25,6 +26,7 @@ class CalTypeModule(Protocol):
 	minMonthLen: int
 	maxMonthLen: int
 	options: list[tuple[str, ...]]
+	avgYearLen: float
 
 	def getMonthName(self, m: int, y: int | None = None) -> str: ...
 

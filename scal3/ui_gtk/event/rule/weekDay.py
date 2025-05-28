@@ -6,13 +6,13 @@ from scal3 import core
 from scal3.ui_gtk import gtk, pack
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import WeekDayEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: WeekDayEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -34,7 +34,7 @@ class WidgetClass(gtk.Box):
 
 	def updateVars(self) -> None:
 		cbl = self.cbList
-		self.rule.weekDayList = tuple(j for j in range(7) if cbl[j].get_active())
+		self.rule.weekDayList = [j for j in range(7) if cbl[j].get_active()]
 
 	def updateWidget(self) -> None:
 		cbl = self.cbList

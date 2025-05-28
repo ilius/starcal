@@ -94,12 +94,12 @@ def isLeap(y: int) -> bool:
 	return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
 
 
-def getMonthLen(y: int, m: int) -> int:
-	if m == 2:
-		if isLeap(y):
+def getMonthLen(year: int, month: int) -> int:
+	if month == 2:
+		if isLeap(year):
 			return 29
 		return 28
-	if m in {4, 6, 9, 11}:
+	if month in {4, 6, 9, 11}:
 		return 30
 	return 31
 
