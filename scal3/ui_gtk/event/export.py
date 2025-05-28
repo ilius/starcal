@@ -13,13 +13,13 @@ from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExportDialog"]
 
 
-class SingleGroupExportDialog(gtk.Dialog, MyDialog):
-	def __init__(self, group: EventGroup, **kwargs) -> None:
+class SingleGroupExportDialog(MyDialog):
+	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
@@ -117,7 +117,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		self.destroy()
 
 
-class MultiGroupExportDialog(gtk.Dialog, MyDialog):
+class MultiGroupExportDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export", ctx="window title"))
@@ -248,7 +248,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.destroy()
 
 
-class EventListExportDialog(gtk.Dialog, MyDialog):
+class EventListExportDialog(MyDialog):
 	def __init__(
 		self,
 		idsList: list[tuple[int, int]],

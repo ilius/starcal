@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 
 log = logger.get()
 
@@ -225,7 +226,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def getOptionsWidget(self) -> gtk.Box:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
-			SpinPrefItem,
+			IntSpinPrefItem,
 		)
 		from scal3.ui_gtk.pref_utils_extra import FixedSizeOrRatioPrefItem
 		from scal3.ui_gtk.stack import StackPage
@@ -250,13 +251,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		prefItem = FixedSizeOrRatioPrefItem(
 			ratioEnableProp=conf.mainWinRightPanelWidthRatioEnable,
 			fixedLabel=_("Fixed width"),
-			fixedItem=SpinPrefItem(
+			fixedItem=IntSpinPrefItem(
 				prop=conf.mainWinRightPanelWidth,
 				bounds=(1, 9999),
-				digits=0,
 			),
 			ratioLabel=_("Relative to window"),
-			ratioItem=SpinPrefItem(
+			ratioItem=FloatSpinPrefItem(
 				prop=conf.mainWinRightPanelWidthRatio,
 				bounds=(0, 1),
 				digits=3,
@@ -270,7 +270,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		frame.set_border_width(0)
 		pack(sizesVBox, frame)
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mainWinRightPanelBorderWidth,
 			bounds=(1, 999),
 			digits=1,
@@ -294,7 +294,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.rightPanelEventIconSize,
 			bounds=(5, 128),
 			digits=1,

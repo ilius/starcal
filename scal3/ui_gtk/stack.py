@@ -41,9 +41,12 @@ class StackPage:
 
 	def __str__(self) -> str:
 		return (
-			f"StackPage(name={self.pageName!r}, path={self.pagePath!r}, "
-			f"parent={self.pageParent!r})"
+			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
+			f"pageParent={self.pageParent!r})"
 		)
+
+	def __repr__(self) -> str:
+		return self.__str__()
 
 
 class MyStack(gtk.Stack):
@@ -58,10 +61,10 @@ class MyStack(gtk.Stack):
 		self.set_transition_duration(300)  # milliseconds
 		# ---
 		self._header = header
-		self._rtl = self.get_direction() == gtk.TextDirection.RTL  # type: bool
-		self._iconSize = iconSize  # type: int
-		self._headerSpacing = headerSpacing  # type: int
-		self._verticalSlide = verticalSlide  # type: bool
+		self._rtl: bool = self.get_direction() == gtk.TextDirection.RTL
+		self._iconSize = iconSize
+		self._headerSpacing = headerSpacing
+		self._verticalSlide = verticalSlide
 		# ---
 		self._parentPaths: dict[str, str] = {}
 		self._currentPagePath = ""
@@ -226,6 +229,7 @@ class MyStack(gtk.Stack):
 	def _setPageWindowTitle(self, pagePath: str) -> None:
 		if not self._windowTitleEnable:
 			return
+		assert self._window is not None
 		title = self._titles[pagePath]
 		if not title:
 			self._window.set_title(self._windowTitleMain)

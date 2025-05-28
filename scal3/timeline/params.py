@@ -41,13 +41,13 @@ class Param(NamedTuple):
 confParamsData = [
 	Param(
 		name="bgColor",
-		type="ColorType",
+		type="ColorType | None",
 		v3Name="bgColor",
 		default=None,
 	),
 	Param(
 		name="fgColor",
-		type="ColorType",
+		type="ColorType | None",
 		v3Name="fgColor",
 		default=None,
 	),

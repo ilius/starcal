@@ -11,8 +11,7 @@ from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import confirm, pixbufFromFile, showError
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui_gtk import GdkPixbuf, gtk
 
 __all__ = [
@@ -26,7 +25,8 @@ __all__ = [
 ]
 
 
-def confirmEventTrash(event: Event, **kwargs) -> bool:
+def confirmEventTrash(event: EventType, **kwargs) -> bool:
+	assert ui.eventTrash is not None
 	return confirm(
 		_(
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
@@ -39,6 +39,7 @@ def confirmEventTrash(event: Event, **kwargs) -> bool:
 
 
 def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
+	assert ui.eventTrash is not None
 	return confirm(
 		_(
 			"Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
@@ -78,7 +79,7 @@ def eventWriteImageMenuItem(*args, **kwargs) -> gtk.MenuItem:
 	return item
 
 
-def menuItemFromEventGroup(group: EventGroup, **kwargs) -> gtk.MenuItem:
+def menuItemFromEventGroup(group: EventGroupType, **kwargs) -> gtk.MenuItem:
 	return ImageMenuItem(
 		group.title,
 		pixbuf=newColorCheckPixbuf(

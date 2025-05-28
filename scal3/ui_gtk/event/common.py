@@ -462,12 +462,12 @@ class StrListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(i + 1)
 
-	def setData(self, strList: list[str]) -> None:
+	def setDict(self, strList: list[str]) -> None:
 		self.treeModel.clear()
 		for st in strList:
 			self.treeModel.append([st])
 
-	def getData(self) -> list[str]:
+	def getDict(self) -> list[str]:
 		return [row[0] for row in self.treeModel]
 
 
@@ -628,4 +628,4 @@ if __name__ == "__main__":
 	# dialog.run()
 	dialog.show_all()
 	gtk.main()
-	log.info(pformat(widget.getData()))
+	log.info(pformat(widget.getDict()))

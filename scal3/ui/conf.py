@@ -12,6 +12,7 @@ if typing.TYPE_CHECKING:
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
 		CalTypeParamsDict,
+		CustomizableToolBoxDict,
 		DayCalNameTypeParamsDict,
 		DayCalTypeParamsDict,
 		PieGeoDict,
@@ -579,8 +580,8 @@ labelBoxFont: Property[Font | None] = Property(None)
 labelBoxPrimaryFontEnable: Property[bool] = Property(False)
 labelBoxPrimaryFont: Property[Font | None] = Property(None)
 boldYmLabel: Property[bool] = Property(True)
-ud__wcalToolbarData: Property[dict | None] = Property(None)
-ud__mainToolbarData: Property[dict | None] = Property(None)
+ud__wcalToolbarData: Property[CustomizableToolBoxDict | None] = Property(None)
+ud__mainToolbarData: Property[CustomizableToolBoxDict | None] = Property(None)
 preferencesPagePath: Property[str] = Property("")
 customizePagePath: Property[str] = Property("")
 localTzHist: Property[list[str]] = Property([])
@@ -656,7 +657,7 @@ wcalEventIconSizeMax: Property[float] = Property(26)
 eventWeekViewTimeFormat: Property[str] = Property("HM$")
 
 
-confParams = {
+confParams: dict[str, Property] = {
 	"showMain": showMain,
 	"winTaskbar": winTaskbar,
 	"useAppIndicator": useAppIndicator,
@@ -692,7 +693,7 @@ confParams = {
 	"preferencesPagePath": preferencesPagePath,
 	"localTzHist": localTzHist,
 }
-confParamsLive = {
+confParamsLive: dict[str, Property] = {
 	"winX": winX,
 	"winY": winY,
 	"winWidth": winWidth,
@@ -705,7 +706,7 @@ confParamsLive = {
 	"mainWinRightPanelRatio": mainWinRightPanelRatio,
 	"wcal_toolbar_weekNum_negative": wcal_toolbar_weekNum_negative,
 }
-confParamsCustomize = {
+confParamsCustomize: dict[str, Property] = {
 	"mainWinItems": mainWinItems,
 	"mainWinFooterItems": mainWinFooterItems,
 	"pluginsTextEnable": pluginsTextEnable,
@@ -827,7 +828,7 @@ confParamsCustomize = {
 	"ud__mainToolbarData": ud__mainToolbarData,
 	"customizePagePath": customizePagePath,
 }
-dayCalWinParamsLive = {
+dayCalWinParamsLive: dict[str, Property] = {
 	"dcalWinX": dcalWinX,
 	"dcalWinY": dcalWinY,
 	"dcalWinWidth": dcalWinWidth,

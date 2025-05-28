@@ -27,8 +27,8 @@ log = logger.get()
 
 import os
 import sys
-import typing
 from os.path import join
+from typing import TYPE_CHECKING, Any
 
 from gi.overrides.GObject import Object
 
@@ -44,10 +44,11 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.event_update_queue import EventUpdateRecord
+	from scal3.ui.pytypes import CustomizableToolBoxDict
 	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = [
@@ -110,14 +111,14 @@ class BaseCalObj(CalObjType):
 	loaded = True
 	customizable = False
 	itemHaveOptions = True
-	signals = [
+	signals: list[tuple[str, list[Any]]] = [
 		("config-change", []),
 		("date-change", []),
 		("goto-page", [str]),
 	]
 
 	def initVars(self) -> None:
-		self.items = []
+		self.items: list[CustomizableCalObj] = []
 		self.enable = True
 
 	def onConfigChange(
@@ -223,7 +224,7 @@ class IntegatedWindowList(BaseCalObj):
 		# ---
 		self.cssFuncList: list[Callable[[], str]] = []
 		# ---
-		self.lastAlphabetHeight = 0
+		self.lastAlphabetHeight = 0.0
 
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
 		self.cssFuncList.append(func)
@@ -291,6 +292,7 @@ class IntegatedWindowList(BaseCalObj):
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		from scal3.ui_gtk.utils import cssTextStyle
 
+		assert ui.mainWin is not None
 		font = ui.getFont()
 		fgColor = gdkColorToRgb(
 			ui.mainWin.get_style_context().get_color(gtk.StateFlags.NORMAL),
@@ -512,21 +514,21 @@ def setDefault_adjustTimeCmd() -> None:
 
 
 # user should be able to configure this in Preferences
-adjustTimeCmd = ""
+adjustTimeCmd: list[str] = []
 adjustTimeEnv = os.environ
 setDefault_adjustTimeCmd()
 
 # ------------------------------
 
-mainToolbarData = {
+mainToolbarData: CustomizableToolBoxDict = {
 	"items": [],
-	"iconSize": "Large Toolbar",
 	"iconSizePixel": 24,
 	"style": "Icon",
 	"buttonsBorder": 0,
+	"preferIconName": False,
 }
 
-wcalToolbarData = {
+wcalToolbarData: CustomizableToolBoxDict = {
 	"items": [
 		("mainMenu", True),
 		("weekNum", False),
@@ -539,6 +541,7 @@ wcalToolbarData = {
 	"iconSizePixel": 16,
 	"style": "Icon",
 	"buttonsBorder": 0,
+	"preferIconName": False,
 }
 
 # -----------------------------------------------------------
@@ -577,7 +580,7 @@ def getMonitor() -> gdk.Monitor:
 	return None
 
 
-def getScreenSize() -> tuple[int, int]:
+def getScreenSize() -> tuple[int, int] | None:
 	# includes panels/docks
 	monitor = getMonitor()
 	if monitor is None:

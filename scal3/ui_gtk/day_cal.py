@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 
 log = logger.get()
 
@@ -69,6 +70,7 @@ if TYPE_CHECKING:
 
 	from scal3.color_utils import ColorType
 	from scal3.property import Property
+	from scal3.ui.pytypes import DayCalTypeParamsDict
 
 __all__ = ["DayCal"]
 
@@ -103,7 +105,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	seasonPieColors: dict[str, Property] | None = None
 	seasonPieTextColor: Property[ColorType] | None = None
 
-	myKeys = CalBase.myKeys + (
+	myKeys = CalBase.myKeys | {
 		"up",
 		"down",
 		"right",
@@ -117,7 +119,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		# "end",
 		"f10",
 		"m",
-	)
+	}
 
 	def getBackgroundColor(self) -> ColorType:
 		if self.backgroundColor:
@@ -167,8 +169,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		opacity = self.widgetButtonsOpacity.v if self.widgetButtonsOpacity else 1.0
 		return [
 			Button(
-				imageName=d.get("imageName", ""),
 				onPress=getattr(self, d["onClick"]),
+				imageName=d.get("imageName", ""),
 				x=d["pos"][0],
 				y=d["pos"][1],
 				autoDir=d["autoDir"],
@@ -246,8 +248,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 		return [
 			SVGButton(
-				imageName=d.get("imageName", ""),
 				onPress=getattr(self, d["onClick"]),
+				imageName=d.get("imageName", ""),
 				x=x_start + index * x_delta,
 				y=y,
 				autoDir=False,
@@ -314,8 +316,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		assert self.dayParams
 		assert self.monthParams
 		for index, calType in enumerate(calTypes.active):
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			calTypeDesc = _("{calType} Calendar").format(
 				calType=_(module.desc, ctx="calendar"),
@@ -404,7 +406,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			ColorPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -450,7 +451,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.widgetButtonsSize:
-			prefItem = SpinPrefItem(
+			prefItem = FloatSpinPrefItem(
 				prop=self.widgetButtonsSize,
 				bounds=(0, 99),
 				digits=1,
@@ -461,7 +462,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.widgetButtonsOpacity:
-			prefItem = SpinPrefItem(
+			prefItem = FloatSpinPrefItem(
 				prop=self.widgetButtonsOpacity,
 				bounds=(0, 1),
 				digits=2,
@@ -549,7 +550,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		buttons2.append(newSubPageButton(self, page))
 		# ---
 		if self.eventIconSize:
-			prefItem = SpinPrefItem(
+			prefItem = FloatSpinPrefItem(
 				prop=self.eventIconSize,
 				bounds=(5, 999),
 				digits=1,
@@ -561,7 +562,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(vbox, prefItem.getWidget())
 		# ---
 		if self.eventTotalSizeRatio:
-			prefItem = SpinPrefItem(
+			prefItem = FloatSpinPrefItem(
 				prop=self.eventTotalSizeRatio,
 				bounds=(0, 1),
 				digits=3,
@@ -671,7 +672,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	@staticmethod
 	def getRenderPos(
-		params: dict[str, Any],
+		params: DayCalTypeParamsDict,
 		x0: float,
 		y0: float,
 		w: float,
@@ -771,8 +772,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.fill()
 
 	@staticmethod
-	def getMonthName(c: CellType, calType: int, params: dict[str, Any]) -> str:
-		month = c.dates[calType][1]  # type: int
+	def getMonthName(c: CellType, calType: int, params: DayCalTypeParamsDict) -> str:
+		month: int = c.dates[calType][1]
 		abbreviate = params.get("abbreviate", False)
 		uppercase = params.get("uppercase", False)
 		text = getMonthName(calType, month, abbreviate=abbreviate)

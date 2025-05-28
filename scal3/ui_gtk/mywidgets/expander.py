@@ -68,7 +68,9 @@ class ExpanderFrameTitle(gtk.Button):
 
 @registerSignals
 class ExpanderFrame(gtk.Frame):
-	signals = (("activate", []),)
+	signals: list[tuple[str, list]] = [
+		("activate", []),
+	]
 
 	def __init__(
 		self,

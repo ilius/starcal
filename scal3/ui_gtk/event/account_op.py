@@ -56,9 +56,8 @@ class AccountEditorDialog(gtk.Dialog):
 			self.isNew = True
 			defaultAccountTypeIndex = 0
 			combo.set_active(defaultAccountTypeIndex)
-			self.account = ui.withFS(
-				event_lib.classes.account[defaultAccountTypeIndex](),
-			)
+			self.account = event_lib.classes.account[defaultAccountTypeIndex]()
+			# self.account.fs = core.fs
 		self.activeWidget = None
 		combo.connect("changed", self.typeChanged)
 		self.comboType = combo
@@ -73,7 +72,7 @@ class AccountEditorDialog(gtk.Dialog):
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
 		cls = event_lib.classes.account[self.comboType.get_active()]
-		account = ui.withFS(cls())
+		account = cls()
 		if self.account:
 			account.copyFrom(self.account)
 			account.setId(self.account.id)

@@ -74,9 +74,8 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
-	from scal3.event_lib.event_base import Event
 	from scal3.event_lib.event_container import DummyEventContainer
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.event_update_queue import EventUpdateRecord
 
 __all__ = ["EventManagerDialog"]
@@ -160,7 +159,7 @@ class EventManagerToolbar(VerticalStaticToolBox):
 
 
 @registerSignals
-class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
+class EventManagerDialog(MyDialog, ud.BaseCalObj):  # FIXME
 	objName = "eventMan"
 	desc = _("Event Manager")
 
@@ -1226,7 +1225,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self,
 		menu: gtk.Menu,
 		path: str,
-		group: EventGroup,
+		group: EventGroupType,
 	) -> None:
 		# log.debug("right click on trash", group.title)
 		menu.add(
@@ -1267,7 +1266,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self,
 		menu: gtk.Menu,
 		path: str,
-		group: EventGroup,
+		group: EventGroupType,
 	) -> None:
 		# log.debug("right click on group", group.title)
 		menu.add(
@@ -1467,8 +1466,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self,
 		menu: gtk.Menu,
 		path: str,
-		group: EventGroup,
-		event: Event,
+		group: EventGroupType,
+		event: EventType,
 	) -> None:
 		# log.debug("right click on event", event.summary)
 		menu.add(

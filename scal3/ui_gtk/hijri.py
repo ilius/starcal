@@ -201,8 +201,8 @@ class EditDbDialog(gtk.Dialog):
 		# for index, module in calTypes.iterIndexModule():
 		# 	if module.name != "hijri":
 		for calType in calTypes.active:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			calTypeDesc = module.desc
 			if "hijri" not in calTypeDesc.lower():

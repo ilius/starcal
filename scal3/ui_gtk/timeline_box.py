@@ -27,6 +27,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
 from scal3.timeline import conf
+from scal3.ui import conf as uiConf
 from scal3.ui_gtk.drawing import fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
 
@@ -52,9 +53,9 @@ def drawBoxBG(
 	if d == 0:
 		fillColor(cr, box.color)
 		return
-	try:
+	if len(box.color) > 3:
 		alpha = box.color[3]
-	except IndexError:
+	else:
 		alpha = 255
 	fillColor(
 		cr,
@@ -167,7 +168,8 @@ def drawBoxText(
 		textH / layoutW,
 	)
 
-	fillColor(cr, conf.fgColor.v)  # before cr.move_to
+	# fillColor before cr.move_to:
+	fillColor(cr, conf.fgColor.v or uiConf.textColor.v)
 
 	if conf.rotateBoxLabel.v == 0 or rotateRatio <= normRatio:
 		font.size *= normRatio

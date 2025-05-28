@@ -80,7 +80,7 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from typing import Any
 
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 
 __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
@@ -107,7 +107,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 	objName = "mainPanel"
 	desc = _("Main Panel")
 	itemListCustomizable = True
-	myKeys = (
+	myKeys: set[str] = {
 		"down",
 		"end",
 		"f10",
@@ -126,7 +126,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		"space",
 		"t",
 		"up",
-	)
+	}
 
 	def __init__(self, win: gtk.Window) -> None:
 		self.win = win
@@ -1048,7 +1048,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def addToGroupFromMenu(
 		self,
 		_menu: gtk.Widget,
-		group: EventGroup,
+		group: EventGroupType,
 		eventType: int,
 	) -> None:
 		from scal3.ui_gtk.event.editor import addNewEvent
@@ -1356,7 +1356,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			if conf.statusIconLocalizeNumber.v:
 				dayNum = locale_man.numEncode(
 					ddate[2],
-					localeMode=calTypes.primary,  # FIXME
+					localeMode="calendar",
 				)
 			else:
 				dayNum = str(ddate[2])

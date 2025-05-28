@@ -4,6 +4,7 @@ from scal3 import logger
 
 log = logger.get()
 
+
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
@@ -11,13 +12,13 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button, window_set_size_aspect
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 
 
 class GroupSortDialog(gtk.Dialog):
-	def __init__(self, group: EventGroup, **kwargs) -> None:
+	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Sort Events"))
@@ -81,7 +82,7 @@ class GroupSortDialog(gtk.Dialog):
 
 
 class GroupConvertCalTypeDialog(gtk.Dialog):
-	def __init__(self, group: EventGroup, **kwargs) -> None:
+	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
 		self._group = group
@@ -132,16 +133,19 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		self.resize(100, 50)
 
 	def perform(self) -> bool:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
-			calType = self.calTypeCombo.get_active()
-			failedSummaryList = []
-			for event in self._group:
-				if event.changeCalType(calType):
-					event.save()
-				else:
-					failedSummaryList.append(event.summary)
-			if failedSummaryList:  # FIXME
-				log.error(f"{failedSummaryList=}")
-			return True
-		self.destroy()
-		return False
+		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
+			self.destroy()
+			return False
+		calType = self.calTypeCombo.get_active()
+		if calType is None:
+			log.error("GroupConvertCalTypeDialog: calType is None")
+			return False
+		failedSummaryList = []
+		for event in self._group:
+			if event.changeCalType(calType):
+				event.save()
+			else:
+				failedSummaryList.append(event.summary)
+		if failedSummaryList:  # FIXME
+			log.error(f"{failedSummaryList=}")
+		return True

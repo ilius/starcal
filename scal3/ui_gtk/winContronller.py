@@ -12,6 +12,7 @@ from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 __all__ = ["CalObj"]
@@ -298,7 +299,6 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			ComboTextPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -314,7 +314,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.winControllerIconSize,
 			bounds=(5, 128),
 			digits=1,
@@ -325,7 +325,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.winControllerBorder,
 			bounds=(0, 99),
 			digits=1,
@@ -336,7 +336,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.winControllerSpacing,
 			bounds=(0, 99),
 			digits=1,

@@ -17,7 +17,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -29,10 +29,13 @@ from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
+if TYPE_CHECKING:
+	from scal3.account.starcal import StarCalendarAccount
+
 __all__ = ["StarCalendarRegisterDialog"]
 
 
-class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
+class StarCalendarRegisterDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		# ---
@@ -138,7 +141,9 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
 
-		accountCls = ui.eventAccounts.loadClass("starcal")
+		assert ui.eventAccounts is not None
+		accountCls: type[StarCalendarAccount] = ui.eventAccounts.loadClass("starcal")  # type: ignore[assignment]
+		assert accountCls is not None
 
 		res = requests.post(
 			accountCls.serverUrl + "auth/register/",
@@ -163,7 +168,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			return error
 
 		account = accountCls()
-		account.setData(
+		account.setDict(
 			{
 				"title": "StarCalendar: " + email,
 				"email": email,
@@ -179,10 +184,12 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		# ---
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		error = account.fetchGroups()
-		if error:
-			log.error(error)
-			return error
+
+		try:
+			account.fetchGroups()
+		except Exception as e:
+			log.error("error in fetchGroups: {e}")
+			return str(e)
 		account.save()
 		return None
 

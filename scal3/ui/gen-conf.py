@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import os
 import sys
@@ -45,6 +47,7 @@ output.write(
 output.write("""\tfrom scal3.ui.pytypes import (
 		ButtonGeoDict,
 		CalTypeParamsDict,
+		CustomizableToolBoxDict,
 		DayCalNameTypeParamsDict,
 		DayCalTypeParamsDict,
 		WeekCalDayNumParamsDict,
@@ -65,10 +68,14 @@ confParamsLive = params.getParamNamesWithFlag(params.LIVE)
 confParamsCustomize = params.getParamNamesWithFlag(params.CUSTOMIZE)
 dayCalWinParamsLive = params.getParamNamesWithFlag(params.DAYCAL_WIN_LIVE)
 
-output.write("confParams = " + genParamDict(confParams))
-output.write("confParamsLive = " + genParamDict(confParamsLive))
-output.write("confParamsCustomize = " + genParamDict(confParamsCustomize))
-output.write("dayCalWinParamsLive = " + genParamDict(dayCalWinParamsLive))
+output.write("confParams: dict[str, Property] = " + genParamDict(confParams))
+output.write("confParamsLive: dict[str, Property] = " + genParamDict(confParamsLive))
+output.write(
+	"confParamsCustomize: dict[str, Property] = " + genParamDict(confParamsCustomize),
+)
+output.write(
+	"dayCalWinParamsLive: dict[str, Property] = " + genParamDict(dayCalWinParamsLive),
+)
 
 output.write("\n")
 

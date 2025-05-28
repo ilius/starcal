@@ -16,34 +16,81 @@
 
 from __future__ import annotations
 
-from scal3 import logger
+from scal3 import core, logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Self
+
+from scal3.event_lib import state
+from scal3.json_utils import dataToPrettyJson
+from scal3.s_object import SObjTextModel
 
 if TYPE_CHECKING:
 	from collections.abc import Iterator
 	from typing import Any
 
+	from scal3.filesystem import FileSystem
 
-from .objects import EventObjTextModel
-from .register import classes
 
 __all__ = ["ObjectsHolderTextModel"]
 
 
-class ObjectsHolderTextModel(EventObjTextModel):
+class ObjectsHolderTextModel[T](SObjTextModel):
 	# keeps all objects in memory
 	# Only use to keep groups and accounts, but not events
 	skipLoadNoFile = True
+
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem | None,
+	) -> Self | None:
+		assert fs is not None
+		fpath = cls.getFile(ident)
+		data: list[int] = []
+		if fs.isfile(fpath):
+			try:
+				with fs.open(fpath) as fp:
+					jsonStr = fp.read()
+				data = json.loads(jsonStr)
+			except Exception:
+				if not cls.skipLoadExceptions:
+					raise
+				return None
+		else:
+			log.debug(f"ObjectsHolderTextModel: {fpath=} does not exist")
+
+		obj = cls(ident)
+		obj.fs = fs
+		obj.setList(data)
+		return obj
+
+	def save(self) -> None:
+		if state.allReadOnly:
+			log.info(f"events are read-only, ignored file {self.file}")
+			return
+		if not self.file:
+			log.warning(
+				f"save method called for object {self!r} while file is not set",
+			)
+			return
+
+		jstr = dataToPrettyJson(self.getList())
+		with self.fs.open(self.file, "w") as fp:
+			fp.write(jstr)
 
 	def __init__(
 		self,
 		ident: int | None = None,  # noqa: ARG002 # FIXME?
 	) -> None:
-		self.fs = None
+		self.fs = core.fs
 		self.clear()
+		self.byId: dict[int, T] = {}
+		self.idList: list[int] = []
+		self.idByUuid: dict[str, int] = {}
 
 	def clear(self) -> None:
 		self.byId = {}
@@ -112,23 +159,23 @@ class ObjectsHolderTextModel(EventObjTextModel):
 	def moveDown(self, index: int) -> Any:
 		return self.idList.insert(index + 1, self.idList.pop(index))
 
-	def setData(self, data: list[int]) -> None:
+	@classmethod
+	def getMainClass(cls) -> type[T] | None:
+		raise NotImplementedError
+
+	def setList(self, data: list[int]) -> None:
 		self.clear()
 		for sid in data:
 			if not isinstance(sid, int) or sid == 0:
 				raise RuntimeError(f"unexpected {sid=}, {self=}")
 			idTmp = abs(sid)
-			try:
-				cls = getattr(classes, self.childName).main
-				obj = cls.load(self.fs, idTmp)
-			except Exception:
-				log.error(f"error loading {self.childName}")
-				log.exception("")
-				continue
+			cls = self.getMainClass()
+			assert cls is not None
+			obj = cls.load(idTmp, fs=self.fs)  # type: ignore[attr-defined]
 			obj.parent = self
 			obj.enable = sid > 0
 			self.idList.append(idTmp)
 			self.byId[obj.id] = obj
 
-	def getData(self) -> list[int]:
+	def getList(self) -> list[int]:
 		return [ident if self.byId[ident] else -ident for ident in self.idList]

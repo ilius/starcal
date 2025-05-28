@@ -73,8 +73,7 @@ if TYPE_CHECKING:
 
 	import cairo
 
-	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.timeline.box import Box
 	from scal3.timeline.tick import Tick
 
@@ -169,8 +168,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		space = size + conf.basicButtonsSpacing.v
 		self.basicButtons = [
 			SVGButton(
-				imageName="go-home.svg",
 				onPress=self.onCenterToNowClick,
+				imageName="go-home.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -180,8 +179,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				opacity=conf.basicButtonsOpacity.v,
 			),
 			SVGButton(
-				imageName="zoom-question.svg",
 				onPress=self.zoomMenuOpen,
+				imageName="zoom-question.svg",
 				x=1 + space,
 				y=1,
 				autoDir=False,
@@ -191,8 +190,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				opacity=conf.basicButtonsOpacity.v,
 			),
 			SVGButton(
-				imageName="preferences-system.svg",
 				onPress=self.openPreferences,
+				imageName="preferences-system.svg",
 				x=1 + space * 2,
 				y=1,
 				autoDir=False,
@@ -202,8 +201,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				opacity=conf.basicButtonsOpacity.v,
 			),
 			SVGButton(
-				imageName="application-exit.svg",
 				onPress=self.closeFunc,
+				imageName="application-exit.svg",
 				x=1 + space * 3,
 				y=1,
 				autoDir=False,
@@ -213,9 +212,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				opacity=conf.basicButtonsOpacity.v,
 			),
 			SVGButton(
+				onPress=self.startResize,
 				imageName="resize-small.svg",
 				# equivalent of "sw-resize"
-				onPress=self.startResize,
 				x=1,
 				y=1,
 				autoDir=False,
@@ -234,8 +233,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		size = conf.movementButtonsSize.v
 		self.movementButtons = [
 			SVGButton(
-				imageName="go-previous.svg",
 				onPress=self.onMoveLeftClick,
+				imageName="go-previous.svg",
 				x=-size * 1.5,
 				y=0,
 				autoDir=False,
@@ -246,8 +245,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				onRelease=self.arrowButtonReleased,
 			),
 			SVGButton(
-				imageName="process-stop.svg",
 				onPress=self.onMoveStopClick,
+				imageName="process-stop.svg",
 				x=0,
 				y=0,
 				autoDir=False,
@@ -257,8 +256,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				opacity=conf.movementButtonsOpacity.v,
 			),
 			SVGButton(
-				imageName="go-next.svg",
 				onPress=self.onMoveRightClick,
+				imageName="go-next.svg",
 				x=size * 1.5,
 				y=0,
 				autoDir=False,
@@ -727,7 +726,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self,
 		_menu: gtk.Menu,
 		winTitle: str,
-		event: Event,
+		event: EventType,
 		_gid: int,
 	) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
@@ -746,7 +745,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self,
 		_menu: gtk.Menu,
 		_winTitle: str,
-		group: EventGroup,
+		group: EventGroupType,
 	) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
@@ -764,8 +763,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def moveEventToTrash(
 		self,
 		_menu: gtk.Menu,
-		group: EventGroup,
-		event: Event,
+		group: EventGroupType,
+		event: EventType,
 	) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 

@@ -29,7 +29,7 @@ from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.pytypes import EventType
 	from scal3.event_lib.rules import EventRule
 
 __all__ = ["WidgetClass"]
@@ -42,7 +42,7 @@ class WidgetClass(common.WidgetClass):
 	]
 	expandDescription = False
 
-	def __init__(self, event: Event, autoCheck: bool = True) -> None:
+	def __init__(self, event: EventType, autoCheck: bool = True) -> None:
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		self.autoCheck = autoCheck
@@ -164,8 +164,8 @@ class WidgetClass(common.WidgetClass):
 		newCalType = self.calTypeCombo.get_active()
 		for hbox in self.rulesBox.get_children():
 			widget = hbox.inputWidget
-			if hasattr(widget, "changeCalType"):
-				widget.changeCalType(newCalType)
+			if hasattr(widget, "changeRuleCalType"):
+				widget.changeRuleCalType(newCalType)
 		self.event.calType = newCalType
 
 	def onRemoveButtonClick(self, _button: gtk.Button, hbox: gtk.Box) -> None:

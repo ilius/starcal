@@ -26,7 +26,6 @@ from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
-from scal3.monthcal import getCurrentMonthStatus, getMonthStatus
 from scal3.path import homeDir
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
@@ -41,7 +40,7 @@ if TYPE_CHECKING:
 __all__ = ["ExportDialog", "ExportToIcsDialog"]
 
 
-class ExportDialog(gtk.Dialog, MyDialog):
+class ExportDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="HTML"))
@@ -134,7 +133,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		months = []
 		fontSizeScale = self.fontScaleSpin.get_value()
 		if comboItem == 0:
-			s = getCurrentMonthStatus()
+			s = ui.cells.getCurrentMonthStatus()
 			months = [s]
 			title = (
 				locale_man.getMonthName(
@@ -147,7 +146,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			)
 		elif comboItem == 1:
 			for i in range(1, 13):
-				months.append(getMonthStatus(ui.cells.current.year, i))
+				months.append(ui.cells.getMonthStatus(ui.cells.current.year, i))
 			title = _("Calendar {year}").format(year=_(ui.cells.current.year))
 		elif comboItem == 2:
 			y0, m0 = self.ymBox0.get_value()
@@ -155,7 +154,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			for ym in range(y0 * 12 + m0 - 1, y1 * 12 + m1):
 				y, m = divmod(ym, 12)
 				m += 1
-				months.append(getMonthStatus(y, m))
+				months.append(ui.cells.getMonthStatus(y, m))
 			title = _("Calendar")
 		exportToHtml(
 			path,
@@ -211,7 +210,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 	"""
 
 
-class ExportToIcsDialog(gtk.Dialog, MyDialog):
+class ExportToIcsDialog(MyDialog):
 	def __init__(
 		self,
 		saveIcsFunc: Callable[[str, int, int], None],

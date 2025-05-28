@@ -6,9 +6,9 @@ from scal3 import logger
 
 log = logger.get()
 
-from collections import OrderedDict
 
-from scal3 import ui
+from scal3 import core, ui
+from scal3.event_lib.groups import EventGroup
 from scal3.format_time import compileTmFormat
 from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
@@ -21,7 +21,7 @@ from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.pytypes import EventType
 
 __all__ = ["EventHistoryDialog"]
 
@@ -42,7 +42,7 @@ def _unnestStep(dst: dict[str, Any], src: dict[str, Any], path: str) -> None:
 def unnest(src: Any) -> dict[str, Any]:
 	if not isinstance(src, dict):
 		return src
-	dst = OrderedDict()
+	dst: dict[str, Any] = {}
 	_unnestStep(dst, src, "")
 	return dst
 
@@ -66,14 +66,14 @@ class EventHistoryDialog(gtk.Dialog):
 
 	def __init__(
 		self,
-		event: Event,
+		event: EventType,
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("History") + ": " + event.summary)
 		self.event = event
-		self.objectCache = {}  # hash(str) -> data(dict)
+		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
 
 		dialog_add_button(
 			self,
@@ -309,13 +309,13 @@ class EventHistoryDialog(gtk.Dialog):
 				text = event.getRevision(hashBefore).getInfo()
 		elif viewType == "After change (JSON)":
 			if hashAfter:
-				text = dataToPrettyJson(event.getRevision(hashAfter).getData())
+				text = dataToPrettyJson(event.getRevision(hashAfter).getDict())
 		elif viewType == "After change (Plain JSON)":
 			if hashAfter:
 				text = dataToPrettyJson(self.getObjectData(hashAfter))
 		elif viewType == "Before change (JSON)":
 			if hashBefore:
-				text = dataToPrettyJson(event.getRevision(hashBefore).getData())
+				text = dataToPrettyJson(event.getRevision(hashBefore).getDict())
 		elif viewType == "Before change (Plain JSON)":
 			if hashBefore:
 				text = dataToPrettyJson(self.getObjectData(hashBefore))
@@ -340,6 +340,8 @@ class EventHistoryDialog(gtk.Dialog):
 			new_child.show()
 
 	def switchToRevision(self, revHash: str) -> None:
+		assert isinstance(self.event.parent, EventGroup)
+		assert self.event.id is not None
 		newEvent = self.event.getRevision(revHash)
 		self.event.parent.removeFromCache(self.event.id)
 		# newEvent.id is set
@@ -389,9 +391,7 @@ class EventHistoryDialog(gtk.Dialog):
 	@staticmethod
 	def normalizeObjectData(data: dict[str, Any]) -> dict[str, Any]:
 		if "rules" in data:
-			rulesOd = OrderedDict()
-			for name, value in data["rules"]:
-				rulesOd[name] = value
+			rulesOd = dict(data["rules"])
 			data["rules"] = rulesOd
 		return unnest(data)
 
@@ -401,7 +401,8 @@ class EventHistoryDialog(gtk.Dialog):
 			return {}
 		if hashStr in self.objectCache:
 			return self.objectCache[hashStr]
-		data = SObjBinaryModel.loadData(hashStr, ui.fs)
+		data = SObjBinaryModel.loadBinaryData(hashStr, core.fs)
+		assert isinstance(data, dict)
 		data = self.normalizeObjectData(data)
 		if len(self.objectCache) > 100:
 			self.objectCache.popitem()
@@ -464,7 +465,7 @@ class EventHistoryDialog(gtk.Dialog):
 		return dataFull
 
 	@staticmethod
-	def extractChangeSummary(diff: list) -> str:
+	def extractChangeSummary(diff: dict[str, Any]) -> str:
 		"""diff: dict: param -> (valueBefore, valueAfter)."""
 		if len(diff) < 3:
 			return ", ".join(diff)

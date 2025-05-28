@@ -34,6 +34,7 @@ class TrashEditorDialog(gtk.Dialog):
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
 		# -------
+		assert ui.eventTrash is not None
 		self.trash = ui.eventTrash
 		# --
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)

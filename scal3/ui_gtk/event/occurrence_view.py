@@ -22,10 +22,10 @@ log = logger.get()
 
 from typing import TYPE_CHECKING, Any
 
-from scal3 import core, event_lib, ui
+from scal3 import event_lib, ui
 from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import GdkPixbuf, Menu, VBox, gdk, gtk, pack, pango
+from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -40,8 +40,8 @@ from scal3.utils import toStr
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
 	from scal3.event_lib.occur_data import DayOccurData
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.property import Property
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
@@ -339,9 +339,9 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def moveEventToGroupFromMenu(
 		self,
 		_item: gtk.Widget,
-		event: Event,
-		prev_group: EventGroup,
-		newGroup: EventGroup,
+		event: EventType,
+		prev_group: EventGroupType,
+		newGroup: EventGroupType,
 	) -> None:
 		prev_group.remove(event)
 		prev_group.save()
@@ -357,9 +357,9 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def copyOccurToGroupFromMenu(
 		self,
 		_item: gtk.Widget,
-		newGroup: EventGroup,
+		newGroup: EventGroupType,
 		newEventType: str,
-		event: Event,
+		event: EventType,
 		occurData: DayOccurData,
 	) -> None:
 		newEvent = newGroup.create(newEventType)
@@ -385,7 +385,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		menu: gtk.Menu,
 		occurData: dict[str, Any],
 		event: event_lib.Event,
-		group: event_lib.EventGroup,
+		group: EventGroupType,
 	) -> None:
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
 
@@ -501,7 +501,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self,
 		_item: gtk.Widget,
 		winTitle: str,
-		event: Event,
+		event: EventType,
 		_groupId: int,
 	) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
@@ -516,7 +516,12 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
-	def moveEventToTrash(self, _item: gtk.Widget, event: Event, groupId: int) -> None:
+	def moveEventToTrash(
+		self,
+		_item: gtk.Widget,
+		event: EventType,
+		groupId: int,
+	) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
 		if not confirmEventTrash(event, transient_for=ui.mainWin):
@@ -559,13 +564,13 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		return height, height
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import SpinPrefItem
+		from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = self._item.getOptionsWidget()
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.eventViewMaxHeight,
 			bounds=(1, 9999),
 			digits=1,
@@ -585,124 +590,142 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		ui.mainWin.autoResize()
 
 
-@registerSignals
-class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
-	# def updateData(self):
-	# 	return self.updateDataByGroups(ui.eventGroups)
+# @registerSignals
+# class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
+# 	# def updateData(self):
+# 	# 	return self.updateDataByGroups(ui.eventGroups)
 
-	def __init__(self, abbreviateWeekDays: bool = False) -> None:
-		self.initVars()
-		self.abbreviateWeekDays = abbreviateWeekDays
-		self.absWeekNumber = core.getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
-		gtk.TreeView.__init__(self)
-		self.set_headers_visible(False)
-		self.ls = gtk.ListStore(
-			GdkPixbuf.Pixbuf,  # icon
-			str,  # weekDay
-			str,  # time
-			str,  # text
-		)
-		self.set_model(self.ls)
-		# ---
-		cell = gtk.CellRendererPixbuf()
-		col = gtk.TreeViewColumn(title=_("Icon"), cell_renderer=cell)
-		col.add_attribute(cell, "pixbuf", 0)
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(
-			title=_("Week Day"),
-			cell_renderer=cell,
-			text=1,
-		)
-		col.set_resizable(True)
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(
-			title=_("Time"),
-			cell_renderer=cell,
-			text=2,
-		)
-		col.set_resizable(True)  # FIXME
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(
-			title=_("Description"),
-			cell_renderer=cell,
-			text=3,
-		)
-		col.set_resizable(True)
-		self.append_column(col)
+# 	def __init__(self, abbreviateWeekDays: bool = False) -> None:
+# 		self.initVars()
+# 		self.abbreviateWeekDays = abbreviateWeekDays
+# 		self.absWeekNumber = core.getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
+# 		gtk.TreeView.__init__(self)
+# 		self.set_headers_visible(False)
+# 		self.ls = gtk.ListStore(
+# 			GdkPixbuf.Pixbuf,  # icon
+# 			str,  # weekDay
+# 			str,  # time
+# 			str,  # text
+# 		)
+# 		self.set_model(self.ls)
+# 		# ---
+# 		cell = gtk.CellRendererPixbuf()
+# 		col = gtk.TreeViewColumn(title=_("Icon"), cell_renderer=cell)
+# 		col.add_attribute(cell, "pixbuf", 0)
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(
+# 			title=_("Week Day"),
+# 			cell_renderer=cell,
+# 			text=1,
+# 		)
+# 		col.set_resizable(True)
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(
+# 			title=_("Time"),
+# 			cell_renderer=cell,
+# 			text=2,
+# 		)
+# 		col.set_resizable(True)  # FIXME
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(
+# 			title=_("Description"),
+# 			cell_renderer=cell,
+# 			text=3,
+# 		)
+# 		col.set_resizable(True)
+# 		self.append_column(col)
 
-	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.absWeekNumber = ui.cells.current.absWeekNumber
-		_cells, wEventData = ui.cells.getWeekData(self.absWeekNumber)
-		self.ls.clear()
-		for item in wEventData:
-			if not item.show[1]:
-				continue
-			self.ls.append(
-				[
-					pixbufFromFile(item.icon),
-					core.getWeekDayAuto(
-						item.weekDay,
-						abbreviate=self.abbreviateWeekDays,
-					),
-					item.time,
-					item.text,
-				],
-			)
+# 	def getWeekData(
+# 		self,
+# 		absWeekNumber: int,
+# 	) -> tuple[list[CellType], list[dict]]:
+# 		from scal3.ui import eventGroups
+
+# 		cellCache = ui.cells
+# 		cell_list = cellCache.getCellGroup("WeekCal", absWeekNumber)
+# 		wEventData = cellCache.weekEvents.get(absWeekNumber)
+# 		if wEventData is None:
+# 			wEventData = event_lib.getWeekOccurrenceData(
+# 				absWeekNumber,
+# 				eventGroups,
+# 				tfmt=conf.eventWeekViewTimeFormat.v,
+# 			)
+# 			cellCache.weekEvents[absWeekNumber] = wEventData
+# 			# log.info(f"weekEvents cache: {len(self.weekEvents)}")
+# 		return cell_list, wEventData
 
 
-"""
-class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
-	# def updateData(self):
-	# 	return self.updateDataByGroups(ui.eventGroups)
+# 	def onDateChange(self, *a, **kw) -> None:
+# 		CustomizableCalObj.onDateChange(self, *a, **kw)
+# 		self.absWeekNumber = ui.cells.current.absWeekNumber
+# 		_cells, wEventData = self.getWeekData(self.absWeekNumber)
+# 		self.ls.clear()
+# 		for item in wEventData:
+# 			if not item.show[1]:
+# 				continue
+# 			self.ls.append(
+# 				[
+# 					pixbufFromFile(item.icon),
+# 					core.getWeekDayAuto(
+# 						item.weekDay,
+# 						abbreviate=self.abbreviateWeekDays,
+# 					),
+# 					item.time,
+# 					item.text,
+# 				],
+# 			)
 
-	def __init__(self):
-		event_lib.MonthOccurrenceView.__init__(self, ui.cells.current.jd)
-		gtk.TreeView.__init__(self)
-		self.set_headers_visible(False)
-		self.ls = gtk.ListStore(
-			GdkPixbuf.Pixbuf,  # icon
-			str,  # day
-			str,  # time
-			str,  # text
-		)
-		self.set_model(self.ls)
-		# ---
-		cell = gtk.CellRendererPixbuf()
-		col = gtk.TreeViewColumn(title="", cell_renderer=cell)
-		col.add_attribute(cell, "pixbuf", 0)
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(title=_("Day"), cell_renderer=cell, text=1)
-		col.set_resizable(True)
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=2)
-		col.set_resizable(True)-- FIXME
-		self.append_column(col)
-		# ---
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(title=_("Description"), cell_renderer=cell, text=3)
-		col.set_resizable(True)
-		self.append_column(col)
-	def updateWidget(self):
-		self.updateData()
-		self.ls.clear()-- FIXME
-		for item in self.data:
-			if not item.show[2]:
-				continue
-			self.ls.append(
-				pixbufFromFile(item.icon]),
-				_(item.day),
-				item.time,
-				item.text,
-			)
-"""
+
+# class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
+# 	# def updateData(self):
+# 	# 	return self.updateDataByGroups(ui.eventGroups)
+
+# 	def __init__(self):
+# 		event_lib.MonthOccurrenceView.__init__(self, ui.cells.current.jd)
+# 		gtk.TreeView.__init__(self)
+# 		self.set_headers_visible(False)
+# 		self.ls = gtk.ListStore(
+# 			GdkPixbuf.Pixbuf,  # icon
+# 			str,  # day
+# 			str,  # time
+# 			str,  # text
+# 		)
+# 		self.set_model(self.ls)
+# 		# ---
+# 		cell = gtk.CellRendererPixbuf()
+# 		col = gtk.TreeViewColumn(title="", cell_renderer=cell)
+# 		col.add_attribute(cell, "pixbuf", 0)
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(title=_("Day"), cell_renderer=cell, text=1)
+# 		col.set_resizable(True)
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=2)
+# 		col.set_resizable(True)-- FIXME
+# 		self.append_column(col)
+# 		# ---
+# 		cell = gtk.CellRendererText()
+# 		col = gtk.TreeViewColumn(title=_("Description"), cell_renderer=cell, text=3)
+# 		col.set_resizable(True)
+# 		self.append_column(col)
+# 	def updateWidget(self):
+# 		self.updateData()
+# 		self.ls.clear()-- FIXME
+# 		for item in self.data:
+# 			if not item.show[2]:
+# 				continue
+# 			self.ls.append(
+# 				pixbufFromFile(item.icon]),
+# 				_(item.day),
+# 				item.time,
+# 				item.text,
+# 			)

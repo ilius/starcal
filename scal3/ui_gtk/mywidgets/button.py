@@ -5,7 +5,7 @@ from scal3 import logger
 log = logger.get()
 
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.ui_gtk import gdk, gtk, pack, timeout_add
@@ -17,9 +17,9 @@ if TYPE_CHECKING:
 __all__ = ["ConButton", "ConButtonBase"]
 
 
-class ConButtonBase:
+class ConButtonBase(gtk.Widget):
 	def __init__(self, button: int | None = None) -> None:
-		self.pressTm = 0
+		self.pressTm = 0.0
 		self.counter = 0
 		self._button = button
 		# ---
@@ -29,9 +29,9 @@ class ConButtonBase:
 	def doTrigger(self) -> None:
 		self.emit("con-clicked")
 
-	def onPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def onPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
 		if self._button is not None and gevent.button != self._button:
-			return
+			return False
 		self.pressTm = now()
 		self.doTrigger()
 		self.counter += 1
@@ -60,7 +60,7 @@ class ConButtonBase:
 
 @registerSignals
 class ConButton(gtk.Button, ConButtonBase):
-	signals = [
+	signals: list[tuple[str, list[Any]]] = [
 		("con-clicked", []),
 	]
 

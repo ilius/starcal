@@ -151,7 +151,7 @@ class MyColorButton(gtk.ColorButton):
 		gtk.ColorButton.set_rgba(self, rgbaToGdkRGBA(*color))
 		self.update_tooltip()
 
-	def get_rgba(self) -> ColorType:
+	def get_rgba(self) -> tuple[int, int, int, int]:
 		color = gtk.ColorButton.get_rgba(self)
 		return (
 			int(color.red * 255),

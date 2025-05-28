@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import typing
+
 from scal3.property import Property
 
+if typing.TYPE_CHECKING:
+	from scal3.color_utils import ColorType
 __all__ = [
 	"baseFontSize",
 	"baseTickHeight",
@@ -60,13 +64,13 @@ __all__ = [
 	"yearPrettyPower",
 ]
 
-bgColor = Property(None)
-fgColor = Property(None)
+bgColor: Property[ColorType | None] = Property(None)
+fgColor: Property[ColorType | None] = Property(None)
 baseFontSize: Property[int] = Property(8)
 changeHolidayBg: Property[bool] = Property(False)
 changeHolidayBgMinDays: Property[int] = Property(1)
 changeHolidayBgMaxDays: Property[int] = Property(60)
-holidayBgBolor = Property((60, 35, 35))
+holidayBgBolor: Property[ColorType] = Property((60, 35, 35))
 basicButtonsSize: Property[int] = Property(22)
 basicButtonsSpacing: Property[int] = Property(3)
 basicButtonsOpacity: Property[float] = Property(1.0)
@@ -85,11 +89,11 @@ yearPrettyPower: Property[bool] = Property(True)
 truncateTickLabel: Property[bool] = Property(False)
 currentTimeMarkerHeightRatio: Property[float] = Property(0.3)
 currentTimeMarkerWidth: Property[int] = Property(2)
-currentTimeMarkerColor = Property((255, 100, 100))
+currentTimeMarkerColor: Property[ColorType] = Property((255, 100, 100))
 showWeekStart: Property[bool] = Property(True)
 showWeekStartMinDays: Property[int] = Property(1)
 showWeekStartMaxDays: Property[int] = Property(60)
-weekStartTickColor = Property((0, 200, 0))
+weekStartTickColor: Property[ColorType] = Property((0, 200, 0))
 boxLineWidth: Property[float] = Property(2)
 boxInnerAlpha: Property[float] = Property(0.1)
 boxEditBorderWidth: Property[float] = Property(10.0)
@@ -131,7 +135,7 @@ keys: Property[dict[str, str]] = Property(
 )
 
 
-confParams = {
+confParams: dict[str, Property] = {
 	"baseFontSize": baseFontSize,
 	"baseTickHeight": baseTickHeight,
 	"baseTickWidth": baseTickWidth,

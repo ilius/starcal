@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 
 log = logger.get()
 
@@ -123,8 +124,8 @@ class ColumnBase(CustomizableCalObj):
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
+			FloatSpinPrefItem,
 			FontFamilyPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -133,7 +134,7 @@ class ColumnBase(CustomizableCalObj):
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
 		# ----
 		if self.customizeWidth:
-			prefItem = SpinPrefItem(
+			prefItem = FloatSpinPrefItem(
 				prop=self.getWidthProp(),
 				bounds=(1, 999),
 				digits=1,
@@ -555,11 +556,11 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 			ud.wcalToolbarData["items"] = [
 				(item.objName, True) for item in self.defaultItems
 			]
-		self.setData(ud.wcalToolbarData)
+		self.setDict(ud.wcalToolbarData)
 
 	def updateVars(self) -> None:
 		CustomizableToolBox.updateVars(self)
-		ud.wcalToolbarData = self.getData()
+		ud.wcalToolbarData = self.getDict()
 
 
 @registerSignals
@@ -959,8 +960,8 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		self.index = index
 		self.calType = calType
 		# ------
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		label = gtk.Label(label=_(module.desc, ctx="calendar") + "  ")
 		label.set_xalign(0)
@@ -1331,7 +1332,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	itemListSeparatePage = True
 	itemsPageTitle = _("Columns")
 	itemsPageButtonBorder = 15
-	myKeys = CalBase.myKeys + (
+	myKeys = CalBase.myKeys | {
 		"up",
 		"down",
 		"left",
@@ -1345,8 +1346,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		"end",
 		"f10",
 		"m",
-	)
-	signals = CalBase.signals
+	}
+	# signals = CalBase.signals
 
 	def do_get_preferred_height(self) -> tuple[float, float]:  # noqa: PLR6301
 		return 0, conf.winHeight.v / 3
@@ -1401,7 +1402,6 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -1409,7 +1409,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
 		# -----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.wcalTextSizeScale,
 			bounds=(0.01, 1),
 			digits=3,
@@ -1443,7 +1443,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.wcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -1455,7 +1455,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.wcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -1495,9 +1495,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		conf.wcalItems.v = self.getItemsData()
 
 	def updateStatus(self) -> None:
-		from scal3.weekcal import getCurrentWeekStatus
-
-		self.status = getCurrentWeekStatus()
+		self.status = ui.cells.getCurrentWeekStatus()
 		index = ui.cells.current.jd - self.status[0].jd
 		if index > 6:
 			log.info(f"warning: drawCursorFg: {index = }")

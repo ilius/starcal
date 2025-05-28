@@ -29,7 +29,6 @@ from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3.monthcal import MonthStatus, getCurrentMonthStatus
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
@@ -56,6 +55,7 @@ from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
 
 __all__ = ["CalObj"]
@@ -69,7 +69,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 	itemListCustomizable = False
 	optionsPageSpacing = 5
 	cx = [0, 0, 0, 0, 0, 0, 0]
-	myKeys = CalBase.myKeys + (
+	myKeys = CalBase.myKeys | {
 		"up",
 		"down",
 		"right",
@@ -83,7 +83,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"end",
 		"f10",
 		"m",
-	)
+	}
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
@@ -110,8 +110,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			pageWidget = CalTypeParamWidget(
 				params=conf.mcalTypeParams,
@@ -183,7 +183,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			SpinPrefItem,
+			FloatSpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -192,7 +192,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# -------
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalLeftMargin,
 			bounds=(0, 999),
 			digits=1,
@@ -204,7 +204,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalTopMargin,
 			bounds=(0, 999),
 			digits=1,
@@ -241,7 +241,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -253,7 +253,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -468,7 +468,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, conf.bgColor.v)
-		status = getCurrentMonthStatus()
+		status = ui.cells.getCurrentMonthStatus()
 
 		# Drawing Border
 		self._drawBorder(cr=cr, w=w, h=h, status=status)
@@ -589,7 +589,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			if abs(y - self.cy[i]) <= self.dy / 2:
 				yPos = i
 				break
-		status = getCurrentMonthStatus()
+		status = ui.cells.getCurrentMonthStatus()
 		if -1 in {yPos, xPos}:
 			self.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:

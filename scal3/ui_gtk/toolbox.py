@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.property import Property
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem
 
 log = logger.get()
 
@@ -21,7 +22,15 @@ from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable, Sequence
 
-__all__ = ["CustomizableToolBox", "LabelToolBoxItem", "StaticToolBox", "ToolBoxItem"]
+	from scal3.ui.pytypes import CustomizableToolBoxDict
+
+__all__ = [
+	"CustomizableToolBox",
+	"LabelToolBoxItem",
+	"StaticToolBox",
+	"ToolBoxItem",
+	"VerticalStaticToolBox",
+]
 
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
@@ -380,11 +389,11 @@ class CustomizableToolBox(StaticToolBox):
 
 		# self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
 
-		# set on setData(), used in getData() to keep compatibility
+		# set on setDict(), used in getDict() to keep compatibility
 		self.data = {}
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem, SpinPrefItem
+		from scal3.ui_gtk.pref_utils import CheckPrefItem
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -399,7 +408,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=self.iconSize,
 			bounds=(5, 128),
 			digits=1,
@@ -410,7 +419,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=self.buttonBorder,
 			bounds=(0, 99),
 			digits=1,
@@ -421,7 +430,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=self.buttonPadding,
 			bounds=(0, 99),
 			digits=1,
@@ -462,7 +471,7 @@ class CustomizableToolBox(StaticToolBox):
 
 	def updateItems(self) -> None:
 		"""
-		Must be called after creating the instance and calling setData()
+		Must be called after creating the instance and calling setDict()
 		Also after one of the properties (preferIconName, iconSize,
 		buttonBorder, buttonPadding) are changed.
 		Must be called before onConfigChange().
@@ -481,7 +490,7 @@ class CustomizableToolBox(StaticToolBox):
 			item.build()
 			item.onConfigChange(toParent=False)
 
-	def getData(self) -> dict[str, Any]:
+	def getDict(self) -> CustomizableToolBoxDict:
 		self.data.update(
 			{
 				"items": self.getItemsData(),
@@ -493,7 +502,7 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		return self.data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setDict(self, data: CustomizableToolBoxDict) -> None:
 		self.data = data
 		for name, enable in data["items"]:
 			item = self.defaultItemsDict.get(name)

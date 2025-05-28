@@ -46,7 +46,7 @@ from scal3.ui_gtk.event.utils import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.mywidgets.dialog import MyWindow
 from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 from scal3.ui_gtk.utils import (
@@ -62,13 +62,13 @@ if typing.TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 
 __all__ = ["EventSearchWindow"]
 
 
 @registerSignals
-class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
+class EventSearchWindow(MyWindow, ud.BaseCalObj):
 	def __init__(self, showDesc: bool = False) -> None:
 		gtk.Window.__init__(self)
 		self.maximize()
@@ -498,7 +498,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			for gid in groupIds:
 				group = ui.eventGroups[gid]
 				for event in group.search(conds):
-					eventData = event.getDataOrdered()
+					eventData = event.getDictOrdered()
 					eventData["modified"] = event.modified
 					# eventData["sha1"] = event.lastHash
 					if "remoteIds" in eventData:
@@ -605,9 +605,9 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self,
 		_menu: gtk.Widget | None,
 		eventPath: str,
-		event: Event,
-		old_group: EventGroup,
-		new_group: EventGroup,
+		event: EventType,
+		old_group: EventGroupType,
+		new_group: EventGroupType,
 	) -> None:
 		old_group.remove(event)
 		old_group.save()
@@ -625,8 +625,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self,
 		_menu: gtk.Widget,
 		_eventPath: str,
-		event: Event,
-		new_group: EventGroup,
+		event: EventType,
+		new_group: EventGroupType,
 	) -> None:
 		new_event = event.copy()
 		new_event.save()
@@ -663,8 +663,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def getMoveToGroupSubMenu(
 		self,
 		path: str,
-		group: EventGroup,
-		event: Event,
+		group: EventGroupType,
+		event: EventType,
 	) -> gtk.Menu:
 		# returns a MenuItem instance
 		item = ImageMenuItem(

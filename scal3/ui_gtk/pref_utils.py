@@ -54,11 +54,13 @@ __all__ = [
 	"ComboTextPrefItem",
 	"DirectionPrefItem",
 	"FileChooserPrefItem",
+	"FloatSpinPrefItem",
 	"FontFamilyPrefItem",
 	"FontPrefItem",
 	"HListPrefItem",
 	"IconChooserPrefItem",
 	"ImageFileChooserPrefItem",
+	"IntSpinPrefItem",
 	"JustificationPrefItem",
 	"ListPrefItem",
 	"ModuleOptionButton",
@@ -67,7 +69,6 @@ __all__ = [
 	"RadioHListPrefItem",
 	"RadioListPrefItem",
 	"RadioVListPrefItem",
-	"SpinPrefItem",
 	"TextPrefItem",
 	"VListPrefItem",
 	"WidthHeightPrefItem",
@@ -187,7 +188,7 @@ class PrefItem:
 		self.set(self.prop.v)
 
 	def getWidget(self) -> gtk.Widget:
-		return self._widget
+		raise NotImplementedError
 
 
 class ComboTextPrefItem(PrefItem):
@@ -197,10 +198,13 @@ class ComboTextPrefItem(PrefItem):
 	# def valueString(cls, value: Any) -> str:
 	# 	return self._combo.get_model()[value]
 
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
-		items: list[str] | None = None,
+		items: list[str],
 		label: str = "",
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
@@ -238,11 +242,14 @@ class ComboTextPrefItem(PrefItem):
 	def get(self) -> int:
 		return self._combo.get_active_text()
 
-	def set(self, value: int) -> None:
+	def set(self, value: str) -> None:
 		self._combo.set_active(self._items.index(value))
 
 
 class FontFamilyPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -332,6 +339,9 @@ class FontFamilyPrefItem(PrefItem):
 
 
 class ComboEntryTextPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -362,6 +372,9 @@ class ComboEntryTextPrefItem(PrefItem):
 
 
 class ComboImageTextPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[int],
@@ -409,6 +422,9 @@ class FontPrefItem(PrefItem):
 	def valueString(cls, value: Any) -> str:
 		return gfontEncode(value)
 
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[ui.Font],
@@ -437,6 +453,9 @@ class FontPrefItem(PrefItem):
 
 
 class CheckPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[bool],
@@ -484,6 +503,9 @@ class CheckPrefItem(PrefItem):
 
 
 class ColorPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	@classmethod
 	def valueString(cls, value: Any) -> str:
 		if value is None:
@@ -537,6 +559,9 @@ class ColorPrefItem(PrefItem):
 # combination of CheckPrefItem and ColorPrefItem in a HBox,
 # with auto-update / auto-apply, for use in Customize window
 class CheckColorPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		checkItem: CheckPrefItem,
@@ -589,6 +614,9 @@ class CheckColorPrefItem(PrefItem):
 
 # combination of CheckPrefItem and FontPrefItem in a HBox
 class CheckFontPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		checkItem: CheckPrefItem,
@@ -641,10 +669,68 @@ class CheckFontPrefItem(PrefItem):
 				self._onChangeFunc()
 
 
-class SpinPrefItem(PrefItem):
+class IntSpinPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
-		prop: Property[float] | Property[int],
+		prop: Property[int],
+		bounds: tuple[int, int],
+		step: int = 0,
+		label: str = "",
+		labelSizeGroup: gtk.SizeGroup | None = None,
+		unitLabel: str = "",
+		live: bool = False,
+		onChangeFunc: Callable | None = None,
+	) -> None:
+		minim, maxim = bounds
+		self.prop = prop
+		self._onChangeFunc = onChangeFunc
+		# --
+		spinb = IntSpinButton(minim, maxim, step=step)
+		self._spinb = spinb
+
+		if labelSizeGroup and not label:
+			raise ValueError("labelSizeGroup= is passed without label=")
+
+		if label or unitLabel:
+			hbox = HBox(spacing=3)
+			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
+			pack(hbox, spinb)
+			if unitLabel:
+				pack(hbox, gtk.Label(label=unitLabel))
+			self._widget = hbox
+		else:
+			self._widget = spinb
+
+		if live:
+			# updateWidget needs to be called before following connect() calls
+			self.updateWidget()
+			spinb.connect("changed", self.onChange)
+		elif onChangeFunc is not None:
+			raise ValueError("onChangeFunc is given without live=True")
+
+	def get(self) -> int:
+		return self._spinb.get_value()
+
+	def set(self, value: int) -> None:
+		self._spinb.set_value(value)
+
+	# FIXME: updateWidget is triggering onChange func, can we avoid that?
+	def onChange(self, _w: gtk.Widget) -> None:
+		self.updateVar()
+		if self._onChangeFunc:
+			self._onChangeFunc()
+
+
+class FloatSpinPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
+	def __init__(
+		self,
+		prop: Property[float],
 		bounds: tuple[float, float],
 		digits: int = 1,
 		step: float = 0,
@@ -658,10 +744,7 @@ class SpinPrefItem(PrefItem):
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# --
-		if digits == 0:
-			spinb = IntSpinButton(minim, maxim, step=int(step))
-		else:
-			spinb = FloatSpinButton(minim, maxim, digits, step=step)
+		spinb = FloatSpinButton(minim, maxim, digits, step=step)
 		self._spinb = spinb
 
 		if labelSizeGroup and not label:
@@ -698,6 +781,9 @@ class SpinPrefItem(PrefItem):
 
 
 class TextPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -740,10 +826,13 @@ class TextPrefItem(PrefItem):
 
 
 class WidthHeightPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[tuple[int, int]],
-		maxim: float,
+		maxim: int,
 	) -> None:
 		minim = 0
 		self.prop = prop
@@ -771,6 +860,9 @@ class WidthHeightPrefItem(PrefItem):
 
 
 class FileChooserPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -823,6 +915,9 @@ class FileChooserPrefItem(PrefItem):
 
 
 class ImageFileChooserPrefItem(FileChooserPrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self, *args, **kwargs) -> None:
 		FileChooserPrefItem.__init__(self, *args, **kwargs)
 		self._preview = gtk.Image()
@@ -836,6 +931,9 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 
 
 class IconChooserPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -881,6 +979,9 @@ class IconChooserPrefItem(PrefItem):
 
 
 class RadioListPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		vertical: bool,
@@ -928,6 +1029,9 @@ class RadioVListPrefItem(RadioListPrefItem):
 
 
 class ListPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		vertical: bool,
@@ -970,6 +1074,9 @@ class VListPrefItem(ListPrefItem):
 
 
 class DirectionPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],
@@ -1006,6 +1113,9 @@ class DirectionPrefItem(PrefItem):
 
 
 class JustificationPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(
 		self,
 		prop: Property[str],

@@ -142,6 +142,7 @@ class CheckMenuItem(gtk.MenuItem):
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
+		assert self._func is not None
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 
@@ -164,8 +165,8 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
-		edgePadding = (
-			conf.menuIconEdgePadding.v - conf.menuCheckSize.v + conf.menuIconSize.v
+		edgePadding = int(
+			conf.menuIconEdgePadding.v - conf.menuCheckSize.v + conf.menuIconSize.v,
 		)
 		# print(f"CheckMenuItem: {edgePadding=}")
 		edgePadding += 2  # FIXME: why is this needed?
@@ -193,6 +194,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
+		assert self._func is not None
 		self.set_active(not self._active)
 		self._func(menuItem, *self._args)
 

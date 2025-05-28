@@ -20,14 +20,15 @@ from typing import TYPE_CHECKING
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.monthcal import MonthStatus, getMonthDesc
+from scal3.monthcal import getMonthDesc
 from scal3.ui import conf
+from scal3.ui.font import getParamsFont
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
+	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
-	from scal3.font import FontTuple
 
 __all__ = ["exportToHtml"]
 
@@ -73,9 +74,9 @@ def colorComposite(front: ColorType, back: ColorType) -> RGB:
 	# and don't multiply others by `a0`
 
 
-def formatFont(fontTuple: FontTuple) -> tuple[str, int]:
-	font = ui.Font(*fontTuple)
+def formatFont(font: ui.Font) -> tuple[str, float]:
 	face = font.family
+	assert face is not None
 	if font.bold:
 		face += " Bold"
 	if font.italic:
@@ -85,9 +86,9 @@ def formatFont(fontTuple: FontTuple) -> tuple[str, int]:
 
 def _renderTableCellCalType(
 	calTypeIndex: int,
-	tag: str,
+	tag: str | None,
 	cell: CellType,
-	sizeMap: Callable[[int], int],
+	sizeMap: Callable[[float], float],
 	status: MonthStatus,
 	inactiveColor: str,
 	holidayColor: str,
@@ -103,7 +104,9 @@ def _renderTableCellCalType(
 		return False, ""
 	day = _(cell.dates[calType][2], calType)
 
-	face, sizeOrig = formatFont(tuple(params["font"]))
+	font = getParamsFont(params)
+	assert font is not None
+	face, sizeOrig = formatFont(font)
 	size = str(sizeMap(sizeOrig))
 	text = ""
 	if cell.month != status.month:

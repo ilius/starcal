@@ -236,8 +236,10 @@ wrap-pragma-comments = true
 
 [tool.mypy]
 exclude = [  # DOES NOT WORK!!
+	'^libs/bson/bson/*.py$',
 	'^scal3/json_utils\.py$',
 ]
+ignore_missing_imports = true
 
 [tool.refurb]
 ignore = [
@@ -263,7 +265,6 @@ exclude = ["scal3/account/", "*_test.py", "scal3/ui_gtk/arch-enable-locale.py"]
 ignore_names = [
 	"OPEN_START",
 	"validDate",
-	"prefVersion",
 	"getMonthWeekNth",
 	"rgbToInt",
 	"rgbToHsl",

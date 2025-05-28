@@ -676,8 +676,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			CheckFontPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
+			FloatSpinPrefItem,
 			FontPrefItem,
-			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -685,7 +685,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# ----
 		optionsWidget = VBox(spacing=5)
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.labelBoxBorderWidth,
 			bounds=(0, 99),
 			digits=1,

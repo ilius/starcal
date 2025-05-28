@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.cell_type import DummyCellCache
 
 log = logger.get()
 
@@ -40,6 +41,7 @@ from scal3.font import Font
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.property import Property
+from scal3.s_object import SObj
 from scal3.ui import conf
 from scal3.ui.conf import (
 	confParams,
@@ -57,12 +59,14 @@ from scal3.ui.params import (
 )
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Iterable, Sequence
+	from collections.abc import Callable, Iterable, Sequence
 
 	from scal3.cell_type import CellCacheType
+	from scal3.event_lib.accounts_holder import EventAccountsHolder
 	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.groups_holder import EventGroupsHolder
+	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.filesystem import FileSystem
-	from scal3.s_object import SObj
 	from scal3.ui.pytypes import CalTypeParamsDict
 	from scal3.ui_gtk import gtk_ud
 
@@ -75,6 +79,7 @@ __all__ = [
 	"ColorType",
 	"Font",
 	"Property",
+	"SObj",
 	"cells",
 	"checkMainWinItems",
 	"checkNeedRestart",
@@ -114,7 +119,6 @@ __all__ = [
 	"timeLineWin",
 	"timeout_repeat",
 	"updateFocusTime",
-	"withFS",
 	"yearWheelWin",
 ]
 # -------------------------------------------------------
@@ -132,7 +136,7 @@ fontParams = ["fontDefault"] + [
 ]
 
 confDecoders = dict.fromkeys(fontParams, Font.fromList)
-confEncoders = {
+confEncoders: dict[str, Callable[[Any], Any]] = {
 	# param: Font.to_json for param in fontParams
 }
 
@@ -324,7 +328,7 @@ def checkWinControllerButtons() -> None:
 
 
 def moveEventToTrash(
-	group: event_lib.EventGroup,
+	group: EventGroupType,
 	event: event_lib.Event,
 	sender: gtk_ud.CalObjType,
 	save: bool = True,
@@ -344,7 +348,7 @@ def getEvent(groupId: int, eventId: int) -> event_lib.Event:
 	return eventGroups[groupId][eventId]
 
 
-def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
+def duplicateGroupTitle(group: EventGroupType) -> None:
 	assert eventGroups is not None
 	title = group.title
 	usedTitles = {g.title for g in eventGroups}
@@ -377,16 +381,12 @@ def init() -> None:
 	assert fs is not None
 	event_lib.init(fs)
 	# Load accounts, groups and trash? FIXME
-	eventAccounts = event_lib.EventAccountsHolder.load(fs)
-	eventGroups = event_lib.EventGroupsHolder.load(fs)
-	eventTrash = event_lib.EventTrash.load(fs)
+	eventAccounts = event_lib.EventAccountsHolder.load(0, fs=fs)
+	eventGroups = event_lib.EventGroupsHolder.load(0, fs=fs)
+	assert eventGroups is not None
+	eventTrash = event_lib.EventTrash.load(0, fs=fs)
+	assert eventTrash is not None
 	eventNotif = EventNotificationManager(eventGroups)
-
-
-def withFS(obj: SObj) -> SObj:
-	assert fs is not None
-	obj.fs = fs
-	return obj
 
 
 # ----------------------------------------------------------------------
@@ -405,8 +405,8 @@ def getActiveMonthCalParams() -> Sequence[tuple[int, CalTypeParamsDict]]:
 # --------------------------------
 
 fs: FileSystem | None = None
-eventAccounts: event_lib.EventAccountsHolder | None = None
-eventGroups: event_lib.EventGroupsHolder | None = None
+eventAccounts: EventAccountsHolder | None = None
+eventGroups: EventGroupsHolder | None = None
 eventTrash: event_lib.EventTrash | None = None
 eventNotif: EventNotificationManager | None = None
 
@@ -427,7 +427,7 @@ eventUpdateQueue = EventUpdateQueue()
 # -------------------
 # BUILD CACHE AFTER SETTING calTypes.primary
 
-cells: CellCacheType | None = None  # FIXME: CellCacheType based on CellCache
+cells: CellCacheType = DummyCellCache()
 # ---------------------------
 # appLogo = join(pixDir, "starcal.png")
 appLogo = join(svgDir, "starcal.svg")
@@ -479,7 +479,7 @@ ntpServers = (
 disableRedraw = False
 # when set disableRedraw=True, widgets will not re-draw their contents
 
-focusTime = 0
+focusTime: float = 0
 lastLiveConfChangeTime = 0
 
 

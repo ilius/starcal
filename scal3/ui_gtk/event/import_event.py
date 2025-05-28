@@ -36,6 +36,9 @@ class EventsImportWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -98,6 +101,9 @@ class EventsImportWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -146,6 +152,7 @@ class EventsImportWindow(WizardWindow):
 
 		@staticmethod
 		def _runJson(fpath: str) -> None:
+			assert ui.eventGroups is not None
 			try:
 				with open(fpath, encoding="utf-8") as fp:
 					text = fp.read()

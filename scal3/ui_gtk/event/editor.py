@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import state as event_state
+from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -11,8 +12,7 @@ from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button, showInfo
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 
 __all__ = ["EventEditorDialog", "addNewEvent"]
 
@@ -20,13 +20,14 @@ __all__ = ["EventEditorDialog", "addNewEvent"]
 class EventEditorDialog(gtk.Dialog):
 	def __init__(
 		self,
-		event: Event,
+		event: EventType,
 		typeChangable: bool = True,
 		isNew: bool = False,
 		useSelectedDate: bool = False,
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
+		assert event.parent is not None
 		gtk.Dialog.__init__(self, **kwargs)
 		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		self.isNew = isNew
@@ -49,6 +50,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.connect("response", lambda _w, _e: self.hide())
 		# ---
 		self.activeWidget = None
+		assert isinstance(event.parent, EventGroup)
 		self._group = event.parent
 		self.eventTypeOptions = list(self._group.acceptsEventTypes)
 		# ----
@@ -93,12 +95,14 @@ class EventEditorDialog(gtk.Dialog):
 		if useSelectedDate:
 			self.event.setJd(ui.cells.current.jd)
 		self.activeWidget = makeWidget(event)
+		assert self.activeWidget is not None
 		if self.isNew:
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
 
 	def replaceExistingEvent(self, eventType: str) -> None:
+		assert isinstance(self._group, EventGroup)
 		oldEvent = self.event
 		newEvent = self._group.create(eventType)
 		# ---
@@ -132,18 +136,21 @@ class EventEditorDialog(gtk.Dialog):
 		self.replaceEventWithType(eventType)
 		self._group.updateCache(self.event)  # needed? FIXME
 		self.activeWidget = makeWidget(self.event)
+		assert self.activeWidget is not None
 		if self.isNew:
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
 		# self.activeWidget.calTypeComboChanged()-- apearantly not needed
 
-	def run(self) -> Event | None:
-		# if not self.activeWidget:
-		# 	return None
+	def run(self) -> EventType | None:
+		assert self.activeWidget is not None
+		assert event_state.lastIds is not None
+		assert ui.eventNotif is not None
+
 		parentWin = self.get_transient_for()
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
 			try:
-				filesBox = self.activeWidget.filesBox
+				filesBox = self.activeWidget.filesBox  # type: ignore[union-attr]
 			except AttributeError:
 				pass
 			else:
@@ -155,6 +162,7 @@ class EventEditorDialog(gtk.Dialog):
 
 		event = self.event
 		group = event.parent
+		assert isinstance(group, EventGroup)
 		event.afterModify()
 		event.save()
 		if self.isNew:
@@ -166,31 +174,31 @@ class EventEditorDialog(gtk.Dialog):
 
 		self.destroy()
 		# -----
-		if self.event.isSingleOccur:
-			occur = self.event.calcEventOccurrenceIn(
-				self.event.parent.startJd,
-				self.event.parent.endJd,
+		if event.isSingleOccur:
+			occur = event.calcEventOccurrenceIn(
+				group.startJd,
+				group.endJd,
 			)
 			if not occur:
 				msg = _(
 					"This event is outside of date range specified in "
 					"it's group. You probably need to edit group "
 					'"{groupTitle}" and change "Start" or "End" values',
-				).format(groupTitle=self.event.parent.title)
+				).format(groupTitle=group.title)
 				showInfo(msg)
 		# -----
 		if parentWin is not None:
 			parentWin.present()
 		# -----
-		return self.event
+		return event
 
 
 def addNewEvent(
-	group: EventGroup,
+	group: EventGroupType,
 	eventType: str,
 	typeChangable: bool = False,
 	**kwargs,
-) -> Event | None:
+) -> EventType | None:
 	event = group.create(eventType)
 	if eventType == "custom":  # FIXME
 		typeChangable = True

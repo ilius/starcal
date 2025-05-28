@@ -27,7 +27,8 @@ from scal3.ui_gtk.pref_utils import (
 	CheckColorPrefItem,
 	CheckPrefItem,
 	ColorPrefItem,
-	SpinPrefItem,
+	FloatSpinPrefItem,
+	IntSpinPrefItem,
 )
 from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
@@ -116,7 +117,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.baseFontSize,
 			bounds=(0.1, 999),
 			digits=1,
@@ -165,7 +166,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			timeLine.queue_draw()
 
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.basicButtonsSize,
 			bounds=(1, 999),
 			digits=1,
@@ -179,7 +180,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.basicButtonsSpacing,
 			bounds=(0, 999),
 			digits=1,
@@ -209,7 +210,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movementButtonsSize,
 			bounds=(1, 999),
 			digits=1,
@@ -224,7 +225,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		# --------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.basicButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
@@ -237,7 +238,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movementButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
@@ -260,7 +261,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.majorStepMin,
 			bounds=(1, 999),
 			digits=1,
@@ -275,7 +276,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# FIXME: ValueError: could not convert string to float:
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.minorStepMin,
 			bounds=(1, 999),
 			digits=1,
@@ -301,7 +302,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.baseTickHeight,
 			bounds=(0.1, 999),
 			digits=1,
@@ -315,7 +316,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.baseTickWidth,
 			bounds=(0.1, 99),
 			digits=2,
@@ -329,7 +330,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.maxTickWidth,
 			bounds=(0.1, 99),
 			digits=1,
@@ -343,7 +344,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.maxTickHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
@@ -357,7 +358,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.maxLabelWidth,
 			bounds=(1, 999),
 			digits=1,
@@ -390,7 +391,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.currentTimeMarkerHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
@@ -404,7 +405,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.currentTimeMarkerWidth,
 			bounds=(0.1, 99),
 			digits=2,
@@ -462,10 +463,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.showWeekStartMinDays,
 			bounds=(1, 999),
-			digits=0,
 			step=1,
 			label=_("Minimum Interval"),
 			live=True,
@@ -476,10 +476,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.showWeekStartMaxDays,
 			bounds=(1, 999),
-			digits=0,
 			step=1,
 			label=_("Maximum Interval"),
 			live=True,
@@ -500,7 +499,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.boxLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -514,7 +513,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.boxInnerAlpha,
 			bounds=(0, 1),
 			digits=2,
@@ -527,7 +526,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.boxEditBorderWidth,
 			bounds=(0, 999),
 			digits=1,
@@ -541,7 +540,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.boxEditInnerLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -555,7 +554,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.boxEditHelperLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -621,7 +620,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, frame)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingStaticStepMouse,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -635,7 +634,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(noAnimVBox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingStaticStepKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -663,7 +662,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(animVBox, self.newWideButton(page), 1, 1)
 		# -----------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingInitialVelocity,
 			bounds=(0, 9999),
 			digits=1,
@@ -677,7 +676,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingMaxVelocity,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -691,7 +690,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingHandForceMouse,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -711,7 +710,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingHandForceKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -731,7 +730,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingHandForceKeyboardSmall,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -751,7 +750,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingHandForceButton,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -771,7 +770,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.movingFrictionForce,
 			bounds=(0, 9999),
 			digits=1,
@@ -804,7 +803,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.scrollZoomStep,
 			bounds=(1, 9),
 			digits=2,
@@ -817,7 +816,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------
 		hbox = HBox(spacing=5)
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.keyboardZoomStep,
 			bounds=(1, 9),
 			digits=2,

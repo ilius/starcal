@@ -418,7 +418,7 @@ class CustomizeWindow(gtk.Dialog):
 			title = title + " - " + parentItem.desc
 
 		page = StackPage()
-		page.pageName = pagePath.split(".")[-1]
+		page.pageName = pagePath.split(".", maxsplit=1)[-1]
 		page.pagePath = pagePath
 		page.pageParent = parentPagePath
 		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
@@ -554,7 +554,7 @@ class CustomizeWindow(gtk.Dialog):
 		conf.ud__mainToolbarData.v = ud.mainToolbarData
 		conf.customizePagePath.v = self.stack.currentPagePath()
 		ui.saveConfCustomize()
-		# data = item.getData()-- remove? FIXME
+		# data = item.getDict()-- remove? FIXME
 
 	def onSaveClick(self, _button: gtk.Button = None, _event: Any = None) -> bool:
 		self.save()

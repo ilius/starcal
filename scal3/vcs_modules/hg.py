@@ -56,17 +56,16 @@ def getLatestParentBefore(
 
 
 def prepareObj(obj: VcsBaseEventGroup) -> None:
-	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
-	# ---
-	obj.est = EventSearchTree()
-	for rev_id in obj.repo.changelog:
-		epoch = obj.repo[rev_id].date()[0]
-		obj.est.add(epoch, epoch, rev_id)
+	repo = obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)  # type: ignore[attr-defined]
+	est = obj.est = EventSearchTree()  # type: ignore[attr-defined]
+	for rev_id in repo.changelog:
+		epoch = repo[rev_id].date()[0]
+		est.add(epoch, epoch, rev_id)
 
 
 def clearObj(obj: VcsBaseEventGroup) -> None:
-	obj.repo = None
-	obj.est = EventSearchTree()
+	obj.repo = None  # type: ignore[attr-defined]
+	obj.est = EventSearchTree()  # type: ignore[attr-defined]
 
 
 def getCommitList(
@@ -84,7 +83,7 @@ def getCommitList(
 
 
 def getCommitInfo(obj: VcsBaseEventGroup, commid_id: int) -> dict[str, Any]:
-	ctx = obj.repo[commid_id]
+	ctx = obj.repo[commid_id]  # type: ignore[attr-defined]
 	lines = ctx.description().split("\n")
 	return {
 		"epoch": ctx.date()[0],
@@ -101,7 +100,7 @@ def getShortStat(
 	node1: str,
 	node2: str,
 ) -> tuple[int, int, int]:
-	repo = obj.repo
+	repo = obj.repo  # type: ignore[attr-defined]
 	# if not node1 # FIXME
 	stats = diffstatdata(
 		iterlines(
@@ -127,7 +126,7 @@ def getCommitShortStat(
 	commit_id: str,
 ) -> tuple[int, int, int]:
 	"""Returns (files_changed, insertions, deletions)."""
-	ctx = obj.repo[commit_id]
+	ctx = obj.repo[commit_id]  # type: ignore[attr-defined]
 	return getShortStat(
 		obj,
 		ctx.p1(),
@@ -138,7 +137,7 @@ def getCommitShortStat(
 def getCommitShortStatLine(
 	obj: VcsBaseEventGroup,
 	commit_id: str,
-) -> tuple[int, int, int]:
+) -> str:
 	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
@@ -149,16 +148,17 @@ def getTagList(
 	endJd: int,
 ) -> list[tuple[int, str]]:
 	"""Returns a list of (epoch, tag_name) tuples."""
-	if not obj.repo:
+	repo = obj.repo  # type: ignore[attr-defined]
+	if not repo:
 		return []
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
 	# ---
 	data = []
-	for tag, _unknown in obj.repo.tagslist():
+	for tag, _unknown in repo.tagslist():
 		if tag == "tip":
 			continue
-		epoch = obj.repo[tag].date()[0]
+		epoch = repo[tag].date()[0]
 		if startEpoch <= epoch < endEpoch:
 			data.append(
 				(
@@ -175,7 +175,7 @@ def getTagShortStat(
 	prevTag: str,
 	tag: str,
 ) -> tuple[int, int, int]:
-	repo = obj.repo
+	repo = obj.repo  # type: ignore[attr-defined]
 	return getShortStat(
 		obj,
 		repo[prevTag or 0],
@@ -189,8 +189,8 @@ def getTagShortStatLine(obj: VcsBaseEventGroup, prevTag: str, tag: str) -> str:
 
 
 def getFirstCommitEpoch(obj: VcsBaseEventGroup) -> int:
-	return obj.repo[0].date()[0]
+	return obj.repo[0].date()[0]  # type: ignore[attr-defined]
 
 
 def getLastCommitEpoch(obj: VcsBaseEventGroup) -> int:
-	return obj.repo[len(obj.repo) - 1].date()[0]
+	return obj.repo[len(obj.repo) - 1].date()[0]  # type: ignore[attr-defined]

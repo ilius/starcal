@@ -43,10 +43,10 @@ from scal3.ui_gtk.pref_utils import (
 	FontFamilyPrefItem,
 	FontPrefItem,
 	ImageFileChooserPrefItem,
+	IntSpinPrefItem,
 	ModuleOptionButton,
 	ModuleOptionItem,
 	PrefItem,
-	SpinPrefItem,
 	WidthHeightPrefItem,
 )
 from scal3.ui_gtk.pref_utils_extra import (
@@ -779,10 +779,9 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = SpinPrefItem(
+		item = IntSpinPrefItem(
 			prop=conf.maxDayCacheSize,
 			bounds=(100, 9999),
-			digits=0,
 			step=10,
 		)
 		self.uiPrefItems.append(item)
@@ -792,10 +791,9 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=self.spacing / 2)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
-		item = SpinPrefItem(
+		item = IntSpinPrefItem(
 			prop=conf.cellMenuXOffset,
 			bounds=(0, 999),
-			digits=0,
 			step=1,
 		)
 		self.uiPrefItems.append(item)
@@ -1503,7 +1501,7 @@ class PreferencesWindow(gtk.Window):
 		for p in core.getPluginsTable():
 			model.append(
 				[
-					p.index,
+					p.idx,
 					p.enable,
 					p.show_date,
 					p.title,
@@ -1861,9 +1859,10 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		error = account.fetchGroups()
-		if error:
-			log.error(error)
+		try:
+			account.fetchGroups()
+		except Exception as e:
+			log.error(f"error in fetchGroups: {e}")
 			return
 		account.save()
 

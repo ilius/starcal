@@ -76,8 +76,8 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateWidget(self)
 		self.monthCombo.setValue(self.event.getMonth())
 		self.daySpin.set_value(self.event.getDay())
-		startRule, ok = self.event["start"]
-		if ok:
+		startRule = self.event["start"]
+		if startRule is not None:
 			self.startYearCheck.set_active(True)
 			self.startYearSpin.set_value(startRule.date[0])
 		else:
@@ -98,8 +98,8 @@ class WidgetClass(common.WidgetClass):
 	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
-		_module, ok = calTypes[newCalType]
-		if not ok:
+		module = calTypes[newCalType]
+		if module is None:
 			raise RuntimeError(f"cal type '{newCalType}' not found")
 		monthCombo = self.monthCombo
 		month = monthCombo.getValue()

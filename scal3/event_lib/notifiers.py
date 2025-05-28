@@ -30,8 +30,11 @@ from .register import classes
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.color_utils import ColorType
+
 	from .event_base import Event
 
+__all__ = ["AlarmNotifier", "FloatingMsgNotifier"]
 
 classes.notifier.setMain(EventNotifier)
 
@@ -40,10 +43,10 @@ classes.notifier.setMain(EventNotifier)
 class AlarmNotifier(EventNotifier):
 	name = "alarm"
 	desc = _("Alarm")
-	params = (
+	params = [
 		"alarmSound",
 		"playerCmd",
-	)
+	]
 
 	def __init__(self, event: Event) -> None:
 		EventNotifier.__init__(self, event)
@@ -60,20 +63,20 @@ class AlarmNotifier(EventNotifier):
 class FloatingMsgNotifier(EventNotifier):
 	name = "floatingMsg"
 	desc = _("Floating Message")
-	params = (
+	params = [
 		"fillWidth",
 		"speed",
 		"bgColor",
 		"textColor",
-	)
+	]
 
 	def __init__(self, event: Event) -> None:
 		EventNotifier.__init__(self, event)
 		# ---
 		self.fillWidth = False
 		self.speed = 100
-		self.bgColor = (255, 255, 0)
-		self.textColor = (0, 0, 0)
+		self.bgColor: ColorType = (255, 255, 0)
+		self.textColor: ColorType = (0, 0, 0)
 
 	def notify(self, finishFunc: Callable) -> None:
 		from scal3.ui_gtk.event.notifier.floatingMsg import notify
@@ -85,11 +88,10 @@ class FloatingMsgNotifier(EventNotifier):
 class WindowMsgNotifier(EventNotifier):
 	name = "windowMsg"
 	desc = _("Message Window")  # FIXME
-	params = ("extraMessage",)
+	params = ["extraMessage"]
 
 	def __init__(self, event: Event) -> None:
 		EventNotifier.__init__(self, event)
-		self.extraMessage = ""
 		# window icon, FIXME
 
 	def notify(self, finishFunc: Callable) -> None:
@@ -102,10 +104,10 @@ class WindowMsgNotifier(EventNotifier):
 class CommandNotifier(EventNotifier):
 	name = "command"
 	desc = _("Run a Command")
-	params = (
+	params = [
 		"command",
 		"pyEval",
-	)
+	]
 
 	def __init__(self, event: Event) -> None:
 		EventNotifier.__init__(self, event)

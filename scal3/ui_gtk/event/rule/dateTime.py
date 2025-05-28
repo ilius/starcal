@@ -8,13 +8,13 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import DateAndTimeEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: DateAndTimeEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.ComboBox.__init__(self)
@@ -31,10 +31,12 @@ class WidgetClass(gtk.Box):
 		self.timeInput.set_value(self.rule.time)
 
 	def updateVars(self) -> None:
-		self.rule.date = self.dateInput.get_value()
-		self.rule.time = self.timeInput.get_value()
+		year, month, day = self.dateInput.get_value()
+		hour, minute, second = self.timeInput.get_value()
+		self.rule.date = (year, month, day)
+		self.rule.time = (hour, minute, second)
 
-	def changeCalType(self, calType: str) -> None:
+	def changeRuleCalType(self, calType: int) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.updateVars()

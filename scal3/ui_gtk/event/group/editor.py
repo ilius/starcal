@@ -54,8 +54,9 @@ class GroupEditorDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		# ----
-		if self.isNew:
+		if group is None:
 			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
+			assert ui.eventGroups is not None
 			self._group = ui.eventGroups.create(name)
 			combo.set_active(event_lib.defaultGroupTypeIndex)
 		else:
@@ -72,6 +73,7 @@ class GroupEditorDialog(gtk.Dialog):
 
 	@staticmethod
 	def getNewGroupTitle(baseTitle: str) -> str:
+		assert ui.eventGroups is not None
 		usedTitles = {group.title for group in ui.eventGroups}
 		if baseTitle not in usedTitles:
 			return baseTitle
@@ -88,7 +90,7 @@ class GroupEditorDialog(gtk.Dialog):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
-		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
+		group = event_lib.classes.group[self.comboType.get_active()]()
 		log.info(
 			f"GroupEditorDialog: typeChanged: {self.activeWidget=}"
 			f", new class: {group.name}",
@@ -104,6 +106,7 @@ class GroupEditorDialog(gtk.Dialog):
 			group.title = self.getNewGroupTitle(group.desc)
 		self._group = group
 		self.activeWidget = makeWidget(group)
+		assert self.activeWidget is not None
 		pack(self.vbox, self.activeWidget)
 		self.activeWidget.show()
 

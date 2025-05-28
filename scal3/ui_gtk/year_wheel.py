@@ -102,8 +102,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		iconSize = 20
 		self.buttons = [
 			Button(
-				imageName="go-home.svg",
 				onPress=self.onHomeClick,
+				imageName="go-home.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -112,8 +112,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				yalign="buttom",
 			),
 			Button(
-				imageName="resize-small.svg",
 				onPress=self.startResize,
+				imageName="resize-small.svg",
 				x=1,
 				y=1,
 				autoDir=False,
@@ -122,8 +122,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				yalign="buttom",
 			),
 			Button(
-				imageName="application-exit.svg",
 				onPress=closeFunc,
+				imageName="application-exit.svg",
 				x=1,
 				y=1,
 				autoDir=False,

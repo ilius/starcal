@@ -43,13 +43,13 @@ class CalBase(CustomizableCalObj):
 		("pref-update-bg-color", []),
 		("day-info", []),
 	]
-	myKeys = (
+	myKeys: set[str] = {
 		"space",
 		"home",
 		"t",
 		"menu",
 		"i",
-	)
+	}
 
 	def connect(self, sigName: str, *a, **ka) -> None:
 		try:

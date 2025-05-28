@@ -66,6 +66,9 @@ class LogLevelComboBox(gtk.ComboBox):
 
 
 class LogLevelPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self) -> None:
 		self.prop = logger.logLevel
 		# ---

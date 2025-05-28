@@ -23,6 +23,9 @@ class DemoWizardWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -79,6 +82,9 @@ class DemoWizardWindow(WizardWindow):
 
 	class SecondStep(gtk.Box):
 		desc = ""
+
+		def getWidget(self) -> gtk.Widget:
+			return self
 
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)

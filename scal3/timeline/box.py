@@ -109,7 +109,7 @@ def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 		from scal3.graph_utils import Graph
 	except ImportError:
 		log.exception("")
-		return
+		return None
 	g = Graph()
 	n = len(boxes)
 	g.add_vertices(n)
@@ -123,7 +123,7 @@ def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 			(box.t1, False, boxI),
 		]
 	points.sort()
-	openBoxes = set()
+	openBoxes: set[int] = set()
 	for _t, isStart, boxI in points:
 		if isStart:
 			g.add_edges([(boxI, oboxI) for oboxI in openBoxes])
@@ -136,7 +136,7 @@ def makeIntervalGraph(boxes: Sequence[Box]) -> Graph | None:
 def renderBoxesByGraph(
 	boxes: Sequence[Box],
 	graph: Graph,
-	minColor: ui.ColorType,
+	minColor: int,
 	minU: float,
 ) -> None:
 	colorCount = max(graph.vs["color"]) - minColor + 1
@@ -184,7 +184,8 @@ def calcEventBoxes(
 				lineW=2 * conf.boxLineWidth.v,
 			),
 		]
-	boxesDict = {}
+	boxesDict: dict[tuple[int, float, float], list[Box]] = {}
+	assert ui.eventGroups is not None
 	# timeMiddle = (timeStart + timeEnd) / 2.0
 	for groupIndex in range(len(ui.eventGroups)):
 		group = ui.eventGroups.byIndex(groupIndex)
@@ -225,7 +226,7 @@ def calcEventBoxes(
 				lineW=lineW,
 			)
 			box.hasBorder = borderTm > 0 and event.name in movableEventTypes
-			boxValue = (groupIndex, t0, t1)
+			boxValue: tuple[int, float, float] = (groupIndex, t0, t1)
 			toAppend = boxesDict.get(boxValue)
 			if toAppend is None:
 				boxesDict[boxValue] = [box]
@@ -258,7 +259,7 @@ def calcEventBoxes(
 	# ---
 	graph = makeIntervalGraph(boxes)
 	if graph is None:
-		return
+		return []
 	if debugMode:
 		log.debug(f"makeIntervalGraph: {perf_counter() - t1:e}")
 	# -----

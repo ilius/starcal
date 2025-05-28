@@ -236,11 +236,10 @@ def newColorCheckPixbuf(
 		"fill:#000000;",
 		f"fill:{rgbToHtmlColor(color[:3])};",
 	)
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	loader.set_size(size, size)
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()
@@ -253,10 +252,9 @@ def newDndDatePixbuf(ymd: tuple[int, int, int]) -> GdkPixbuf.Pixbuf:
 	data = data.replace("YYYY", f"{ymd[0]:04d}")
 	data = data.replace("MM", f"{ymd[1]:02d}")
 	data = data.replace("DD", f"{ymd[2]:02d}")
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()
@@ -267,10 +265,9 @@ def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
 	with open(imagePath, encoding="utf-8") as fp:
 		data = fp.read()
 	data = data.replace("FONTNAME", name)
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()
