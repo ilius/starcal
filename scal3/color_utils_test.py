@@ -31,6 +31,8 @@ class TestColorUtils(unittest.TestCase):
 	def assertEqualHSL(self, first: HSL, second: HSL) -> None:
 		self.assertEqual(len(first), 3)
 		self.assertEqual(len(second), 3)
+		assert first[0] is not None
+		assert second[0] is not None
 		self.assertAlmostEqual(first[0], second[0], places=1)  # hue
 		self.assertAlmostEqual(first[1], second[1], places=3)  # saturation
 		self.assertAlmostEqual(first[2], second[2], places=3)  # lightness

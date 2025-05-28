@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
+# mypy: ignore-errors
+
 
 # use subprocess instead of os.popen* FIXME
 
@@ -321,7 +323,7 @@ class PlayerBox(gtk.Box):
 			scale.connect("key-press-event", self.divert)
 			pack(self, scale, False, False, 5)
 
-	def divert(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def divert(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
 		key = gevent.hardware_keycode
 		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
@@ -420,10 +422,10 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
 
-	def decVol(self, _widget: gtk.Widget) -> None:
+	def decVol(self, _w: gtk.Widget) -> None:
 		self.mplayer.stepVolume(False)
 
-	def incVol(self, _widget: gtk.Widget) -> None:
+	def incVol(self, _w: gtk.Widget) -> None:
 		self.mplayer.stepVolume(True)
 
 	@staticmethod
@@ -432,7 +434,7 @@ class PlayerBox(gtk.Box):
 		keycode = gevent.hardware_keycode
 		return keycode in {98, 104}
 
-	def quit(self, _event: gdk.Event | None = None) -> None:
+	def quit(self, _ge: gdk.Event | None = None) -> None:
 		self.mplayer.close()
 		gtk.main_quit()
 

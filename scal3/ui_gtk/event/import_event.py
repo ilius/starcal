@@ -36,6 +36,9 @@ class EventsImportWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -98,6 +101,9 @@ class EventsImportWindow(WizardWindow):
 	class SecondStep(gtk.Box):
 		desc = ""
 
+		def getWidget(self) -> gtk.Widget:
+			return self
+
 		def __init__(self, win: gtk.Window) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -159,13 +165,13 @@ class EventsImportWindow(WizardWindow):
 				sys.stderr.write(f"{_('Error in loading JSON data')}\n{e}\n")
 			else:
 				try:
-					res = ui.eventGroups.importData(data)
+					res = ui.ev.groups.importData(data)
 				except Exception as e:
 					sys.stderr.write(f"{_('Error in importing events')}\n{e}\n")
 					log.exception("")
 				else:
 					for gid in res.newGroupIds:
-						group = ui.eventGroups[gid]
+						group = ui.ev.groups[gid]
 						ui.eventUpdateQueue.put("+g", group, None)
 					# TODO: res.newEventIds
 					# TODO: res.modifiedEventIds

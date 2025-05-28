@@ -141,14 +141,14 @@ class SelectDateDialog(gtk.Dialog):
 	) -> bool | None:
 		text = selection.get_text()
 		if text is None:
-			return
+			return None
 		date = parseDroppedDate(text)
 		if date is None:
 			log.info(f"selectDateDialog: dropped text {text!r}")
-			return
+			return None
 		log.info(f"selectDateDialog: dropped date: {date!r}")
 		calType = self.calTypeCombo.get_active()
-		if calType != ui.dragGetCalType:
+		if calType is not None and calType != ui.dragGetCalType:
 			date = convert(
 				date[0],
 				date[1],
@@ -175,7 +175,7 @@ class SelectDateDialog(gtk.Dialog):
 		if parentWin is not None:
 			parentWin.present()
 
-	def onCancel(self, _widget: gtk.Widget, _event: gdk.Event | None = None) -> bool:
+	def onCancel(self, _w: gtk.Widget, _ge: gdk.Event | None = None) -> bool:
 		self.onResponse()
 		return True
 
@@ -186,19 +186,22 @@ class SelectDateDialog(gtk.Dialog):
 
 	def setCalType(self, calType: int) -> None:
 		self.calType = calType
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		self.calTypeCombo.set_active(calType)
 		self.ymdBox.setCalType(calType)
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
+		calType = self.calTypeCombo.get_active()
+		if calType is None:
+			return
+
 		prevCalType = self.calType
 		prevDate = self.get()
-		calType = self.calTypeCombo.get_active()
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		if prevDate is None:
 			y, m, d = ui.cells.current.dates[calType]
@@ -212,6 +215,7 @@ class SelectDateDialog(gtk.Dialog):
 
 	def get(self) -> tuple[int, int, int]:
 		calType = self.calTypeCombo.get_active()
+		assert calType is not None
 		if self.radio1.get_active():
 			y0, m0, d0 = self.ymdBox.get_value()
 		elif self.radio2.get_active():
@@ -221,7 +225,7 @@ class SelectDateDialog(gtk.Dialog):
 			y0, m0, d0 = jd_to(jd, calType)
 		return (y0, m0, d0)
 
-	def ok(self, _widget: gtk.Widget) -> None:
+	def ok(self, _w: gtk.Widget) -> None:
 		calType = self.calTypeCombo.get_active()
 		if calType is None:
 			return
@@ -241,7 +245,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.dateInput.set_value((y0, m0, d0))
 		self.dateInput.add_history()
 
-	def radioChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def radioChanged(self, _w: gtk.Widget | None = None) -> None:
 		if self.radio1.get_active():
 			self.ymdBox.set_sensitive(True)
 			self.hbox2.set_sensitive(False)

@@ -19,7 +19,11 @@ from __future__ import annotations
 from scal3 import logger
 
 __all__ = [
+	"CLOSED_END",
+	"CLOSED_START",
+	"OPEN_END",
 	"ab_overlaps",
+	"getIntervalListByPoints",
 	"humanizeIntervalList",
 	"intersectionOfTwoIntervalList",
 	"log",

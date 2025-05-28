@@ -25,6 +25,7 @@ from scal3.utils import findWordByPos, toStr
 if TYPE_CHECKING:
 	from scal3.plugin_type import PluginType
 	from scal3.property import Property
+	from scal3.ui_gtk.pref_utils import PrefItem
 
 __all__ = ["PluginsTextBox"]
 
@@ -87,7 +88,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			self.addText(text)
 		self.occurOffsets = occurOffsets
 
-	def findPluginByY(self, y: int) -> tuple[PluginType, str]:
+	def findPluginByY(self, y: int) -> tuple[PluginType, str] | None:
 		lineIter, _lineTop = self.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
@@ -183,7 +184,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		b_text = text.encode("utf-8")
 		textbuff.insert_markup(endIter, text, len(b_text))
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
@@ -193,13 +194,13 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			gevent.x,
 			gevent.y,
 		)
+		text = self.get_text()
+		word = ""
 		if buf_x is not None and buf_y is not None:
 			# overText, iter_, trailing = ...
 			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
-		# ----
-		text = self.get_text()
-		pos = iter_.get_offset()
-		word = findWordByPos(text, pos)[0]
+			pos = iter_.get_offset()
+			word = findWordByPos(text, pos)[0]
 		# ----
 		menu = Menu()
 		# ----
@@ -333,7 +334,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		self.textview.set_justification(ud.justificationByName[value])
 
 	@staticmethod
-	def onButtonPress(_widget: gtk.Widget, _gevent: gdk.Event) -> bool:
+	def onButtonPress(_widget: gtk.Widget, _ge: gdk.Event) -> bool:
 		# log.debug("PluginsText: onButtonPress")
 		# without this, it will switch to begin_move_drag on button-press
 		return True
@@ -349,6 +350,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=20)
+		prefItem: PrefItem
 		# ----
 		if self.insideExpanderParam:
 			prefItem = CheckPrefItem(
@@ -382,6 +384,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		return optionsWidget
 
 	def onInsideExpanderCheckClick(self) -> None:
+		assert self.insideExpanderParam is not None
 		enable = self.insideExpanderParam.v
 		prevEnable = self.expanderEnable
 		self.expanderEnable = enable

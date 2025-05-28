@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.cell_type import DummyCellCache
 
 log = logger.get()
 
@@ -33,13 +34,18 @@ from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
 )
+from scal3.event_lib.accounts_holder import EventAccountsHolder
+from scal3.event_lib.event_base import Event
+from scal3.event_lib.groups_holder import EventGroupsHolder
 from scal3.event_notification_thread import EventNotificationManager
 from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
+from scal3.filesystem import FileSystem
 from scal3.font import Font
 from scal3.locale_man import tr as _
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.property import Property
+from scal3.s_object import SObj
 from scal3.ui import conf
 from scal3.ui.conf import (
 	confParams,
@@ -57,12 +63,10 @@ from scal3.ui.params import (
 )
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Iterable, Sequence
+	from collections.abc import Callable, Iterable
 
 	from scal3.cell_type import CellCacheType
-	from scal3.event_lib.event_base import Event
-	from scal3.filesystem import FileSystem
-	from scal3.s_object import SObj
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui.pytypes import CalTypeParamsDict
 	from scal3.ui_gtk import gtk_ud
 
@@ -73,8 +77,14 @@ __all__ = [
 	"MAIN_CONF",
 	"NEED_RESTART",
 	"ColorType",
+	"Event",
+	"EventAccountsHolder",
+	"EventGroupsHolder",
+	"EventNotificationManager",
+	"FileSystem",
 	"Font",
 	"Property",
+	"SObj",
 	"cells",
 	"checkMainWinItems",
 	"checkNeedRestart",
@@ -83,13 +93,10 @@ __all__ = [
 	"disableRedraw",
 	"dragGetCalType",
 	"duplicateGroupTitle",
-	"eventAccounts",
-	"eventGroups",
+	"ev",
 	"eventManDialog",
-	"eventNotif",
 	"eventSearchWin",
 	"eventTags",
-	"eventTrash",
 	"eventUpdateQueue",
 	"focusTime",
 	"fontDefault",
@@ -114,7 +121,6 @@ __all__ = [
 	"timeLineWin",
 	"timeout_repeat",
 	"updateFocusTime",
-	"withFS",
 	"yearWheelWin",
 ]
 # -------------------------------------------------------
@@ -132,7 +138,7 @@ fontParams = ["fontDefault"] + [
 ]
 
 confDecoders = dict.fromkeys(fontParams, Font.fromList)
-confEncoders = {
+confEncoders: dict[str, Callable[[Any], Any]] = {
 	# param: Font.to_json for param in fontParams
 }
 
@@ -324,30 +330,27 @@ def checkWinControllerButtons() -> None:
 
 
 def moveEventToTrash(
-	group: event_lib.EventGroup,
-	event: event_lib.Event,
+	group: EventGroupType,
+	event: EventType,
 	sender: gtk_ud.CalObjType,
 	save: bool = True,
 ) -> int:
-	assert eventTrash is not None
 	eventIndex = group.remove(event)
-	eventTrash.add(event)  # or append? FIXME
+	ev.trash.add(event)  # or append? FIXME
 	if save:
 		group.save()
-		eventTrash.save()
+		ev.trash.save()
 	eventUpdateQueue.put("-", event, sender)
 	return eventIndex
 
 
-def getEvent(groupId: int, eventId: int) -> event_lib.Event:
-	assert eventGroups is not None
-	return eventGroups[groupId][eventId]
+def getEvent(groupId: int, eventId: int) -> EventType:
+	return ev.groups[groupId][eventId]
 
 
-def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
-	assert eventGroups is not None
+def duplicateGroupTitle(group: EventGroupType) -> None:
 	title = group.title
-	usedTitles = {g.title for g in eventGroups}
+	usedTitles = {g.title for g in ev.groups}
 	parts = title.split("#")
 	try:
 		index = int(parts[-1])
@@ -370,29 +373,16 @@ def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 
 
 def init() -> None:
-	global fs, eventAccounts, eventGroups, eventTrash, eventNotif
 	core.init()
-
 	fs = core.fs
-	assert fs is not None
 	event_lib.init(fs)
-	# Load accounts, groups and trash? FIXME
-	eventAccounts = event_lib.EventAccountsHolder.load(fs)
-	eventGroups = event_lib.EventGroupsHolder.load(fs)
-	eventTrash = event_lib.EventTrash.load(fs)
-	eventNotif = EventNotificationManager(eventGroups)
-
-
-def withFS(obj: SObj) -> SObj:
-	assert fs is not None
-	obj.fs = fs
-	return obj
+	ev.init(fs)
 
 
 # ----------------------------------------------------------------------
 
 
-def getActiveMonthCalParams() -> Sequence[tuple[int, CalTypeParamsDict]]:
+def getActiveMonthCalParams() -> list[tuple[int, CalTypeParamsDict]]:
 	return list(
 		zip(
 			calTypes.active,
@@ -404,21 +394,17 @@ def getActiveMonthCalParams() -> Sequence[tuple[int, CalTypeParamsDict]]:
 
 # --------------------------------
 
-fs: FileSystem | None = None
-eventAccounts: event_lib.EventAccountsHolder | None = None
-eventGroups: event_lib.EventGroupsHolder | None = None
-eventTrash: event_lib.EventTrash | None = None
-eventNotif: EventNotificationManager | None = None
+ev = event_lib.Handler()
+
+# --------------------------------
 
 
-def iterAllEvents() -> Iterable[Event]:
-	assert eventGroups is not None
-	assert eventTrash is not None
+def iterAllEvents() -> Iterable[EventType]:
 	# dosen"t include orphan events
-	for group in eventGroups:
+	for group in ev.groups:
 		for event in group:
 			yield event
-	for event in eventTrash:
+	for event in ev.trash:
 		yield event
 
 
@@ -427,12 +413,15 @@ eventUpdateQueue = EventUpdateQueue()
 # -------------------
 # BUILD CACHE AFTER SETTING calTypes.primary
 
-cells: CellCacheType | None = None  # FIXME: CellCacheType based on CellCache
+cells: CellCacheType = DummyCellCache()
 # ---------------------------
 # appLogo = join(pixDir, "starcal.png")
 appLogo = join(svgDir, "starcal.svg")
 appIcon = join(pixDir, "starcal-48.png")
 # ---------------------------
+
+uiName = ""
+
 # themeDir = join(sourceDir, "themes")
 # theme = None
 
@@ -479,8 +468,8 @@ ntpServers = (
 disableRedraw = False
 # when set disableRedraw=True, widgets will not re-draw their contents
 
-focusTime = 0
-lastLiveConfChangeTime = 0
+focusTime: float = 0.0
+lastLiveConfChangeTime = 0.0
 
 
 saveLiveConfDelay = 0.5  # seconds
@@ -508,11 +497,11 @@ needRestartList: list[tuple[Property, Any]] = [
 # ----------------------------------
 
 # move to gtk_ud ? FIXME
-mainWin = None
-prefWindow = None
-eventManDialog = None
-eventSearchWin = None
-timeLineWin = None
-dayCalWin = None
-yearWheelWin = None
-weekCalWin = None
+mainWin: Any = None
+prefWindow: Any = None
+eventManDialog: Any = None
+eventSearchWin: Any = None
+timeLineWin: Any = None
+dayCalWin: Any = None
+yearWheelWin: Any = None
+weekCalWin: Any = None

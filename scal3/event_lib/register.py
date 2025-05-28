@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from .pytypes import (
 	AccountType,
 	BaseClassType,
@@ -21,7 +23,10 @@ class ClassGroup[T: BaseClassType](list):
 		self.byDesc: dict[str, type[T]] = {}
 		self.main: type[T] | None = None
 
-	def register(self, cls: type[T]) -> type[T]:
+	def register(
+		self,
+		cls: Any,  # FIXME: type[T] gives error
+	) -> type[T]:
 		assert cls.name
 		cls.tname = self.tname
 		self.append(cls)
@@ -33,7 +38,10 @@ class ClassGroup[T: BaseClassType](list):
 			self.byName[nameAlias] = cls
 		return cls
 
-	def setMain(self, cls: type[T]) -> type[T]:
+	def setMain(
+		self,
+		cls: Any,  # FIXME: type[T] gives error
+	) -> type[T]:
 		self.main = cls
 		return cls
 

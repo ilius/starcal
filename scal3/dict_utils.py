@@ -4,17 +4,21 @@ from scal3 import logger
 
 log = logger.get()
 
-from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
+	from collections.abc import Callable, Sequence
 	from typing import Any
 
-__all__ = ["makeOrderedData", "sortDict"]
+	from scal3.utils import Comparable
+
+__all__ = ["makeOrderedDict", "sortDict"]
 
 
-def sortDict(data: dict[str, Any], keyFunc: str) -> dict[str, Any]:
+def sortDict[T](
+	data: dict[str, T],
+	keyFunc: Callable[[T], Comparable],
+) -> dict[str, T]:
 	return dict(
 		sorted(
 			data.items(),
@@ -23,20 +27,17 @@ def sortDict(data: dict[str, Any], keyFunc: str) -> dict[str, Any]:
 	)
 
 
-def makeOrderedData(
-	data: dict[str, Any] | Sequence,
+def makeOrderedDict(
+	data: dict[str, Any],
 	params: Sequence[str],
-) -> dict[str, Any] | list:
-	if isinstance(data, dict) and params:
-		data = list(data.items())
+) -> dict[str, Any]:
+	if not params:
+		return data
 
-		def paramIndex(key: str) -> int:
-			try:
-				return params.index(key)
-			except ValueError:
-				return len(params)
+	def paramIndex(key: str) -> int:
+		try:
+			return params.index(key)
+		except ValueError:
+			return len(params)
 
-		data.sort(key=lambda x: paramIndex(x[0]))
-		data = OrderedDict(data)
-
-	return data
+	return dict(sorted(data.items(), key=lambda x: paramIndex(x[0])))

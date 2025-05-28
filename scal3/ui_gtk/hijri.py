@@ -39,7 +39,7 @@ __all__ = ["checkHijriMonthsExpiration"]
 hijriMode = calTypes.names.index("hijri")
 
 
-def getCurrentYm() -> tuple[int, int]:
+def getCurrentYm() -> int:
 	y, m, _d = ui.cells.today.dates[hijriMode]
 	return y * 12 + m - 1
 
@@ -58,7 +58,7 @@ class EditDbDialog(gtk.Dialog):
 		pack(hbox, self.topLabel)
 		self.startDateInput = DateButton()
 		self.startDateInput.set_editable(False)  # FIXME
-		self.startDateInput.connect("changed", lambda _widget: self.updateEndDates())
+		self.startDateInput.connect("changed", lambda _w: self.updateEndDates())
 		pack(hbox, self.startDateInput)
 		pack(self.vbox, hbox)
 		# ----------------------------
@@ -158,14 +158,14 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		self.vbox.show_all()
 
-	def resetToDefaults(self, _widget: gtk.Widget) -> bool:
+	def resetToDefaults(self, _w: gtk.Widget) -> bool:
 		if isfile(hijri.monthDb.userDbPath):
 			os.remove(hijri.monthDb.userDbPath)
 		hijri.monthDb.load()
 		self.updateWidget()
 		return True
 
-	def onAddClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onAddClick(self, _w: gtk.Widget | None = None) -> None:
 		last = self.treeModel[-1]
 		# 0 ym
 		# 1 yearLocale
@@ -192,7 +192,7 @@ class EditDbDialog(gtk.Dialog):
 		self.treev.scroll_to_cell(lastPath)
 		self.treev.set_cursor(lastPath)
 
-	def onDeleteClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onDeleteClick(self, _w: gtk.Widget | None = None) -> None:
 		if len(self.treeModel) > 1:
 			del self.treeModel[-1]
 		self.selectLastRow()
@@ -201,8 +201,8 @@ class EditDbDialog(gtk.Dialog):
 		# for index, module in calTypes.iterIndexModule():
 		# 	if module.name != "hijri":
 		for calType in calTypes.active:
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			calTypeDesc = module.desc
 			if "hijri" not in calTypeDesc.lower():
@@ -305,7 +305,7 @@ class EditDbDialog(gtk.Dialog):
 			self.destroy()
 		return True
 
-	def onDeleteEvent(self, _dialog: gtk.Widget, _gevent: gdk.Event) -> bool:
+	def onDeleteEvent(self, _dialog: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.destroy()
 		return True
 

@@ -36,8 +36,8 @@ if TYPE_CHECKING:
 
 __all__ = ["scheduler"]
 
-Event = namedtuple(
-	"Event",
+SchedEvent = namedtuple(
+	"SchedEvent",
 	[
 		"time",
 		"action",
@@ -46,13 +46,13 @@ Event = namedtuple(
 	],
 )
 
-Event.time.__doc__ = """Numeric type compatible with the return value of the
+SchedEvent.time.__doc__ = """Numeric type compatible with the return value of the
 timefunc function passed to the constructor."""
-Event.action.__doc__ = """Executing the event means executing
+SchedEvent.action.__doc__ = """Executing the event means executing
 action(*argument, **kwargs)"""
-Event.argument.__doc__ = """argument is a Sequence holding the positional
+SchedEvent.argument.__doc__ = """argument is a Sequence holding the positional
 arguments for the action."""
-Event.kwargs.__doc__ = """kwargs is a dictionary holding the keyword
+SchedEvent.kwargs.__doc__ = """kwargs is a dictionary holding the keyword
 arguments for the action."""
 
 
@@ -71,7 +71,7 @@ class scheduler:
 		Initialize a new instance, passing the time and delay
 		functions.
 		"""
-		self._queue: list[Event] = []
+		self._queue: list[SchedEvent] = []
 		self.timefunc = timefunc
 		self.delayfunc = delayfunc
 		self.stopped = stopped
@@ -82,12 +82,12 @@ class scheduler:
 		action: Callable,
 		argument: Sequence[Any] = (),
 		kwargs: dict[str, Any] | None = None,
-	) -> Event:
+	) -> SchedEvent:
 		"""Enter a new event in the queue at an absolute time."""
 		if kwargs is None:
 			kwargs = {}
 
-		event = Event(
+		event = SchedEvent(
 			time=time,
 			action=action,
 			argument=argument,

@@ -19,6 +19,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.cal_types import jd_to
+from scal3.event_lib.rules import (
+	CycleWeeksEventRule,
+	DayTimeRangeEventRule,
+	EndEventRule,
+	StartEventRule,
+)
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -27,13 +33,15 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import WeeklyEvent
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event: Event) -> None:  # FIXME
+	event: WeeklyEvent
+
+	def __init__(self, event: WeeklyEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -98,46 +106,50 @@ class WidgetClass(common.WidgetClass):
 		# ---
 		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
 		# ---
-		cycleWeeks, ok = self.event["cycleWeeks"]
-		if not ok:
+		cycleWeeks = CycleWeeksEventRule.getFrom(self.event)
+		if cycleWeeks is None:
 			raise RuntimeError("no cycleWeeks rule")
 		self.weeksSpin.set_value(cycleWeeks.weeks)
 		# ---
 		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
 		# ---
-		dayTimeRange, ok = self.event["dayTimeRange"]
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		assert dayTimeRange is not None
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		# ---
-		start, ok = self.event["start"]
-		if not ok:
+		start = StartEventRule.getFrom(self.event)
+		if start is None:
 			raise RuntimeError("no start rule")
-		start.setDate(self.startDateInput.get_value())
+		start.setDate(self.startDateInput.getDate())
 		# ---
-		end, ok = self.event["end"]
-		if not ok:
+		end = EndEventRule.getFrom(self.event)
+		if end is None:
 			raise RuntimeError("no end rule")
-		end.setDate(self.endDateInput.get_value())
+		end.setDate(self.endDateInput.getDate())
 		# ---
-		cycleWeeks, ok = self.event["cycleWeeks"]
-		if not ok:
+		cycleWeeks = self.event["cycleWeeks"]
+		if cycleWeeks is None:
 			raise RuntimeError("no cycleWeeks rule")
-		cycleWeeks.setData(self.weeksSpin.get_value())
+		cycleWeeks.setRuleValue(self.weeksSpin.get_value())
 		# ---
-		dayTimeRange, ok = self.event["dayTimeRange"]
-		if not ok:
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
+		h1, m1 = self.dayTimeStartInput.get_value()
+		h2, m2 = self.dayTimeEndInput.get_value()
 		dayTimeRange.setRange(
-			self.dayTimeStartInput.get_value(),
-			self.dayTimeEndInput.get_value(),
+			(h1, m1, 0),
+			(h2, m2, 0),
 		)
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
+		assert newCalType is not None
 		self.startDateInput.changeCalType(self.event.calType, newCalType)
 		self.endDateInput.changeCalType(self.event.calType, newCalType)
 		self.event.calType = newCalType

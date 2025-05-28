@@ -20,6 +20,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.cal_types import calTypes, convert
+from scal3.event_lib.rules import StartEventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -28,13 +29,15 @@ from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import YearlyEvent
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event: Event) -> None:  # FIXME
+	event: YearlyEvent
+
+	def __init__(self, event: YearlyEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ----------------
 		hbox = HBox()
@@ -67,17 +70,19 @@ class WidgetClass(common.WidgetClass):
 		# self.filesBox = common.FilesBox(self.event)
 		# pack(self, self.filesBox)
 
-	def onStartYearCheckClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onStartYearCheckClick(self, _w: gtk.Widget | None = None) -> None:
 		self.startYearSpin.set_sensitive(
 			self.startYearCheck.get_active(),
 		)
 
 	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
-		self.monthCombo.setValue(self.event.getMonth())
+		month = self.event.getMonth()
+		assert month is not None
+		self.monthCombo.setValue(month)
 		self.daySpin.set_value(self.event.getDay())
-		startRule, ok = self.event["start"]
-		if ok:
+		startRule = StartEventRule.getFrom(self.event)
+		if startRule is not None:
 			self.startYearCheck.set_active(True)
 			self.startYearSpin.set_value(startRule.date[0])
 		else:
@@ -89,17 +94,20 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateVars(self)
 		self.event.setMonth(self.monthCombo.getValue())
 		self.event.setDay(int(self.daySpin.get_value()))
+		startRule = StartEventRule.getFrom(self.event)
 		if self.startYearCheck.get_active():
-			startRule = self.event.getAddRule("start")
+			if startRule is None:
+				startRule = StartEventRule.addOrGetFrom(self.event)
 			startRule.date = (self.startYearSpin.get_value(), 1, 1)
-		elif "start" in self.event:
+		elif startRule is not None:
 			del self.event["start"]
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
-		_module, ok = calTypes[newCalType]
-		if not ok:
+		assert newCalType is not None
+		module = calTypes[newCalType]
+		if module is None:
 			raise RuntimeError(f"cal type '{newCalType}' not found")
 		monthCombo = self.monthCombo
 		month = monthCombo.getValue()

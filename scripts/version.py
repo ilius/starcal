@@ -6,16 +6,8 @@ import re
 import subprocess
 import sys
 from os.path import isfile, join
-from typing import TYPE_CHECKING, Any
 
-if TYPE_CHECKING:
-	from collections.abc import Callable
-
-parse_version: Callable[[str], Any]
-try:
-	from packaging.version import parse as parse_version
-except ImportError:
-	from pkg_resources import parse_version
+from packaging.version import parse as parse_version
 
 scriptsDir = os.path.dirname(__file__)
 rootDir = os.path.dirname(scriptsDir)

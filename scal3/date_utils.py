@@ -122,21 +122,22 @@ def parseDroppedDate(text: str) -> tuple[int, int, int] | None:
 	if len(part) != 3:
 		return None
 	try:
-		part[0] = numDecode(part[0])
-		part[1] = numDecode(part[1])
-		part[2] = numDecode(part[2])
+		num0 = numDecode(part[0])
+		num1 = numDecode(part[1])
+		num2 = numDecode(part[2])
 	except ValueError:
 		log.exception("")
-		return
-	maxPart = max(part)
+		return None
+	del part
+	maxPart = max(num0, num1, num2)
 	if maxPart <= 999:
-		valid = 0 <= part[0] <= 99 and 1 <= part[1] <= 12 and 1 <= part[2] <= 31
+		valid = 0 <= num0 <= 99 and 1 <= num1 <= 12 and 1 <= num2 <= 31
 		if not valid:
-			return
+			return None
 		return (
-			2000 + part[0],
-			part[1],
-			part[2],
+			2000 + num0,
+			num1,
+			num2,
 		)
 
 	minMax = (
@@ -151,19 +152,21 @@ def parseDroppedDate(text: str) -> tuple[int, int, int] | None:
 	)
 	# "format" must be list because we use method "index"
 
+	nums = [num0, num1, num2]
+
 	def formatIsValid(fmt: list[int]) -> bool:
-		for i in range(3):
+		for i, num in enumerate(nums):
 			f = fmt[i]
-			if not (minMax[f][0] <= part[i] <= minMax[f][1]):
+			if not (minMax[f][0] <= num <= minMax[f][1]):
 				return False
 		return True
 
 	for fmt in formats:
 		if formatIsValid(fmt):
 			return (
-				part[fmt.index(0)],
-				part[fmt.index(1)],
-				part[fmt.index(2)],
+				nums[fmt.index(0)],
+				nums[fmt.index(1)],
+				nums[fmt.index(2)],
 			)
 	return None
 

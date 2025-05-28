@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from gi.repository import Gdk as gdk
 
+from scal3.color_utils import RGB
+
 __all__ = [
 	"gdkColorToRgb",
 	"rgbToGdkColor",
@@ -27,9 +29,9 @@ def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 	)
 
 
-def gdkColorToRgb(gc: gdk.RGBA) -> tuple[int, int, int]:
+def gdkColorToRgb(gc: gdk.RGBA) -> RGB:
 	assert isinstance(gc, gdk.RGBA)
-	return (
+	return RGB(
 		int(gc.red * 257),
 		int(gc.green * 257),
 		int(gc.blue * 257),

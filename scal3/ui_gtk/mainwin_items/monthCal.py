@@ -21,7 +21,7 @@ from scal3.ui import conf
 log = logger.get()
 
 from math import sqrt
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -29,7 +29,6 @@ from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3.monthcal import MonthStatus, getCurrentMonthStatus
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
@@ -56,7 +55,10 @@ from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 if TYPE_CHECKING:
 	import cairo
 
+	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
+	from scal3.ui.pytypes import CalTypeParamsDict
+	from scal3.ui_gtk.pref_utils import PrefItem
 
 __all__ = ["CalObj"]
 
@@ -69,7 +71,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 	itemListCustomizable = False
 	optionsPageSpacing = 5
 	cx = [0, 0, 0, 0, 0, 0, 0]
-	myKeys = CalBase.myKeys + (
+	myKeys = CalBase.myKeys | {
 		"up",
 		"down",
 		"right",
@@ -83,7 +85,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"end",
 		"f10",
 		"m",
-	)
+	}
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
@@ -110,11 +112,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
-			module, ok = calTypes[calType]
-			if not ok:
+			module = calTypes[calType]
+			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			pageWidget = CalTypeParamWidget(
-				params=conf.mcalTypeParams,
+				params=conf.mcalTypeParams,  # type: ignore[arg-type]
 				index=index,
 				cal=self,
 				sgroupLabel=sgroupLabel,
@@ -183,16 +185,17 @@ class CalObj(gtk.DrawingArea, CalBase):
 			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			SpinPrefItem,
+			FloatSpinPrefItem,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
+
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
-		# -------
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		# ----
-		prefItem = SpinPrefItem(
+		prefItem: PrefItem
+		# -------
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalLeftMargin,
 			bounds=(0, 999),
 			digits=1,
@@ -204,7 +207,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalTopMargin,
 			bounds=(0, 999),
 			digits=1,
@@ -241,7 +244,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -253,7 +256,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
-		prefItem = SpinPrefItem(
+		prefItem = FloatSpinPrefItem(
 			prop=conf.mcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -290,9 +293,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
+		assert self.subPages is not None
 		return self.subPages
 
-	def drawAll(self, _widget: gtk.Widget | None = None, cursor: bool = True) -> None:
+	def drawAll(self, _w: gtk.Widget | None = None, cursor: bool = True) -> None:
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -431,7 +435,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		cell: CellType,
 		x0: float,
 		y0: float,
-		activeParams: list[tuple[int, dict[str, Any]]],
+		activeParams: list[tuple[int, CalTypeParamsDict]],
 		cellHasCursor: bool,
 	) -> None:
 		for calType, params in activeParams[1:]:
@@ -468,7 +472,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, conf.bgColor.v)
-		status = getCurrentMonthStatus()
+		status = ui.cells.getCurrentMonthStatus()
 
 		# Drawing Border
 		self._drawBorder(cr=cr, w=w, h=h, status=status)
@@ -568,7 +572,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin.v
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		# self.winActivate() #?????????
 		b = gevent.button
 		(
@@ -589,7 +593,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			if abs(y - self.cy[i]) <= self.dy / 2:
 				yPos = i
 				break
-		status = getCurrentMonthStatus()
+		status = ui.cells.getCurrentMonthStatus()
 		if -1 in {yPos, xPos}:
 			self.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
@@ -672,7 +676,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def scroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
@@ -711,7 +715,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 if __name__ == "__main__":
 	win = gtk.Dialog()
-	cal = CalObj()
+	cal = CalObj(win)
 	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 	pack(win.vbox, cal, 1, 1)
 	win.vbox.show_all()

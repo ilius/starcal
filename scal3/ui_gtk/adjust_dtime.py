@@ -17,6 +17,8 @@
 
 from __future__ import annotations
 
+from typing import Never
+
 from scal3 import logger
 
 log = logger.get()
@@ -42,7 +44,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 _ = str  # FIXME
 
 
-def error_exit(resCode: int, text: str, **kwargs) -> None:
+def error_exit(resCode: int, text: str, **kwargs) -> Never:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,
@@ -186,8 +188,8 @@ class AdjusterDialog(gtk.Dialog):
 			stdout=subprocess.PIPE,
 		)
 		resCode = proc.wait()
-		error = proc.stderr.read().strip()
-		output = proc.stdout.read().strip()
+		error = proc.stderr.read().strip().decode("utf-8")  # type: ignore[union-attr]
+		output = proc.stdout.read().strip().decode("utf-8")  # type: ignore[union-attr]
 		if output:
 			log.info(output)
 		# log.debug(f"{resCode=}, {error=}, {output=}")
@@ -235,7 +237,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.dateInput.set_value((y, m, d))
 		return False
 
-	def updateSetButtonSensitive(self, _widget: gtk.Widget | None = None) -> None:
+	def updateSetButtonSensitive(self, _w: gtk.Widget | None = None) -> None:
 		if self.radioMan.get_active():
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
@@ -243,7 +245,7 @@ class AdjusterDialog(gtk.Dialog):
 				bool(self.ntpServerEntry.get_text()),
 			)
 
-	def onSetSysTimeClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onSetSysTimeClick(self, _w: gtk.Widget | None = None) -> None:
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()

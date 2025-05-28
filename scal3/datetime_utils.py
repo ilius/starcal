@@ -5,6 +5,6 @@ from scal3.time_utils import getJhmsFromEpoch
 __all__ = ["epochDateTimeEncode"]
 
 
-def epochDateTimeEncode(epoch: int) -> str:
+def epochDateTimeEncode(epoch: float) -> str:
 	jd, hms = getJhmsFromEpoch(epoch)
 	return dateEncode(jd_to(jd, calTypes.primary)) + f" {hms:HMS}"

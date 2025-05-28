@@ -94,8 +94,8 @@ def testnormalizeIntervalList() -> None:
 	for inpStr, ansStr in testDict.items():
 		inpList = parseIntervalList(inpStr, True)
 		ansList = parseIntervalList(ansStr, False)
-		resList = normalizeIntervalList(inpList)
-		resList = humanizeIntervalList(resList)
+		resList = normalizeIntervalList(inpList)  # type: ignore[arg-type]
+		resList = humanizeIntervalList(resList)  # type: ignore[assignment]
 		if resList == ansList:
 			log.info("OK")
 		else:
@@ -148,9 +148,9 @@ def testIntersection() -> None:
 			log.info("OK")
 		else:
 			log.error("Failed")
-			log.info((list1Str, list2Str))
-			log.info(result)
-			log.info()
+			log.info(f"{list1Str=}, {list2Str=}")
+			log.info(f"{result=}")
+			log.info("")
 
 
 def testJdRanges() -> None:
@@ -158,7 +158,7 @@ def testJdRanges() -> None:
 
 	pprint(
 		JdOccurSet(
-			[
+			{
 				1,
 				3,
 				4,
@@ -171,7 +171,7 @@ def testJdRanges() -> None:
 				13,
 				14,
 				18,
-			],
+			},
 		).calcJdRanges(),
 	)
 

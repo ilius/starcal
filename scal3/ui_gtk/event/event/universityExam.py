@@ -17,6 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.groups import UniversityTerm
+from scal3.event_lib.rules import DayTimeRangeEventRule
 
 log = logger.get()
 
@@ -33,16 +35,16 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.utils import showError
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import UniversityExamEvent
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, event: Event) -> None:  # FIXME
+	def __init__(self, event: UniversityExamEvent) -> None:  # FIXME
+		assert isinstance(event.parent, UniversityTerm)
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
-		assert event.parent.name == "universityTerm"  # FIXME
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
 		if not event.parent.courses:
@@ -146,12 +148,16 @@ class WidgetClass(gtk.Box):
 		if self.event.courseId is None:
 			pass
 		else:
-			self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
+			courseIndex = self.courseIds.index(self.event.courseId)
+			assert courseIndex >= 0
+			self.courseCombo.set_active(courseIndex)
 		# --
-		self.dateInput.set_value(self.event.getDate())
+		date = self.event.getDate()
+		assert date is not None
+		self.dateInput.setDate(date)
 		# --
-		timeRangeRule, ok = self.event["dayTimeRange"]
-		if not ok:
+		timeRangeRule = DayTimeRangeEventRule.getFrom(self.event)
+		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
@@ -173,12 +179,14 @@ class WidgetClass(gtk.Box):
 		# --
 		self.event.setDate(*self.dateInput.get_value())
 		# --
-		timeRangeRule, ok = self.event["dayTimeRange"]
-		if not ok:
+		timeRangeRule = DayTimeRangeEventRule.getFrom(self.event)
+		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
+		h1, m1 = self.dayTimeStartCombo.get_value()
+		h2, m2 = self.dayTimeEndCombo.get_value()
 		timeRangeRule.setRange(
-			self.dayTimeStartCombo.get_value(),
-			self.dayTimeEndCombo.get_value(),
+			(h1, m1, 0),
+			(h2, m2, 0),
 		)
 		# ----
 		# self.event.summary = self.summaryEntry.get_text()
@@ -188,7 +196,7 @@ class WidgetClass(gtk.Box):
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
 
-	def calTypeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		self.dateInput.changeCalType(self.event.calType, newCalType)

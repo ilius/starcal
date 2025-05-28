@@ -66,6 +66,9 @@ class LogLevelComboBox(gtk.ComboBox):
 
 
 class LogLevelPrefItem(PrefItem):
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
 	def __init__(self) -> None:
 		self.prop = logger.logLevel
 		# ---
@@ -79,7 +82,9 @@ class LogLevelPrefItem(PrefItem):
 		self._widget = hbox
 
 	def get(self) -> int:
-		return self.combo.get_value()
+		value = self.combo.get_value()
+		assert value is not None
+		return value
 
 	def set(self, levelNum: int) -> None:
 		self.combo.set_value(levelNum)

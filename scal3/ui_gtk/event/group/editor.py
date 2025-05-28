@@ -7,7 +7,6 @@ from scal3 import logger
 log = logger.get()
 
 from scal3 import event_lib, ui
-from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -16,12 +15,13 @@ from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
 	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["GroupEditorDialog"]
 
 
 class GroupEditorDialog(gtk.Dialog):
-	def __init__(self, group: EventGroup | None = None, **kwargs) -> None:
+	def __init__(self, group: EventGroupType | None = None, **kwargs) -> None:
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.isNew = group is None
@@ -54,9 +54,9 @@ class GroupEditorDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		# ----
-		if self.isNew:
+		if group is None:
 			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
-			self._group = ui.eventGroups.create(name)
+			self._group = ui.ev.groups.create(name)
 			combo.set_active(event_lib.defaultGroupTypeIndex)
 		else:
 			self._group = group
@@ -72,7 +72,7 @@ class GroupEditorDialog(gtk.Dialog):
 
 	@staticmethod
 	def getNewGroupTitle(baseTitle: str) -> str:
-		usedTitles = {group.title for group in ui.eventGroups}
+		usedTitles = {group.title for group in ui.ev.groups}
 		if baseTitle not in usedTitles:
 			return baseTitle
 
@@ -88,7 +88,7 @@ class GroupEditorDialog(gtk.Dialog):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
-		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
+		group = event_lib.classes.group[self.comboType.get_active()]()
 		log.info(
 			f"GroupEditorDialog: typeChanged: {self.activeWidget=}"
 			f", new class: {group.name}",
@@ -104,6 +104,7 @@ class GroupEditorDialog(gtk.Dialog):
 			group.title = self.getNewGroupTitle(group.desc)
 		self._group = group
 		self.activeWidget = makeWidget(group)
+		assert self.activeWidget is not None
 		pack(self.vbox, self.activeWidget)
 		self.activeWidget.show()
 
@@ -115,9 +116,9 @@ class GroupEditorDialog(gtk.Dialog):
 		self.activeWidget.updateVars()
 		self._group.save()  # FIXME
 		if self.isNew:
-			event_state.lastIds.save()
+			ui.ev.lastIds.save()
 		else:
-			ui.eventGroups[self._group.id] = self._group  # FIXME
-		ui.eventNotif.checkGroup(self._group)
+			ui.ev.groups[self._group.id] = self._group  # FIXME
+		ui.ev.notif.checkGroup(self._group)
 		self.destroy()
 		return self._group

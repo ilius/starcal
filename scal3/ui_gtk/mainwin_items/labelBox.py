@@ -55,6 +55,8 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.ui_gtk.pref_utils import PrefItem
+
 __all__ = ["CalObj"]
 
 primaryCalStyleClass = "primarycal"
@@ -111,7 +113,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		self.add(self.label)
 		self.menu = Menu()
 		self.menu.set_border_width(0)
-		self.menuLabels = []
+		self.menuLabels: list[gtk.Label] = []
 		self.connect("button-press-event", self.onButtonPress)
 		self.active = active
 		self.setActive(active)
@@ -177,7 +179,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		ui.cells.changeDate(y, m, d, self.calType)
 		self.onDateChange()
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		if gevent.button == 3:
 			self.createMenuLabels()
 			_foo, x, y = self.get_window().get_origin()
@@ -223,14 +225,14 @@ class IntLabel(BaseLabel):
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
 		self.add(self.label)
-		self.menu = None
+		self.menu: Menu | None = None
 		self.connect("button-press-event", self.onButtonPress)
 		self.active = active
 		self.setActive(active)
 		self.start = 0
 		self.remain = 0
 		self.ymPressTime = 0
-		self.etime = 0
+		self.etime = 0.0
 		self.step = 0
 
 	def setActive(self, active: int) -> None:
@@ -304,9 +306,10 @@ class IntLabel(BaseLabel):
 		self.setActive(self.start + index)
 		self.emit("changed", self.start + index)
 
-	def onButtonPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
 		if gevent.button == 3:
 			self.updateMenu()
+			assert self.menu is not None
 			_foo, x, y = self.get_window().get_origin()
 			y += self.get_allocation().height
 			x -= 6  # FIXME: because of menu padding
@@ -352,7 +355,7 @@ class IntLabel(BaseLabel):
 
 		return False
 
-	def menuScroll(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def menuScroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
@@ -462,11 +465,11 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		# ---
 		pack(self, self.addButton)
 
-	def onPrevClick(self, _button: gtk.Widget) -> None:
+	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(-1)
 		self.label.onDateChange()
 
-	def onNextClick(self, _button: gtk.Widget) -> None:
+	def onNextClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(1)
 		self.label.onDateChange()
 
@@ -500,11 +503,11 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		# ---
 		pack(self, self.addButton)
 
-	def onPrevClick(self, _button: gtk.Widget) -> None:
+	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.monthPlus(-1)
 		self.label.onDateChange()
 
-	def onNextClick(self, _button: gtk.Widget) -> None:
+	def onNextClick(self, _b: gtk.Widget) -> None:
 		ui.cells.monthPlus(1)
 		self.label.onDateChange()
 
@@ -540,9 +543,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.initVars()
 		self.get_style_context().add_class(self.styleClass)
 		# self.set_border_width(2)
-		self.ybox = None
-		self.mbox = None
-		self.monthLabels = []
+		self.ybox: YearLabelButtonBox | None = None
+		self.mbox: MonthLabelButtonBox | None = None
+		self.monthLabels: list[gtk.Label] = []
 		self.onBorderWidthChange()
 
 	@staticmethod
@@ -677,18 +680,18 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			CheckPrefItem,
 			ColorPrefItem,
 			FontPrefItem,
-			SpinPrefItem,
+			IntSpinPrefItem,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
 		optionsWidget = VBox(spacing=5)
+		prefItem: PrefItem
 		# ----
-		prefItem = SpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.labelBoxBorderWidth,
 			bounds=(0, 99),
-			digits=1,
 			step=1,
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
@@ -765,7 +768,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 if __name__ == "__main__":
 	win = gtk.Dialog()
-	box = CalObj()
+	box = CalObj(win)
 	win.add_events(
 		gdk.EventMask.POINTER_MOTION_MASK
 		| gdk.EventMask.FOCUS_CHANGE_MASK

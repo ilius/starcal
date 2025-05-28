@@ -29,6 +29,7 @@ from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
 if TYPE_CHECKING:
+	from scal3.ui.pytypes import GenericTypeParamsDict
 	from scal3.ui_gtk.cal_base import CalBase
 
 __all__ = ["CalTypeParamWidget", "TextParamWidget"]
@@ -51,7 +52,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 			return "center"
 		if index == 2:
 			return "right"
-		log.info(f"XAlignComboBox: unexpected {index = }")
+		log.error(f"XAlignComboBox: unexpected {index = }")
 		return None
 
 	def set(self, value: str) -> None:
@@ -96,10 +97,11 @@ class YAlignComboBox(gtk.ComboBoxText):
 			self.set_active(1)
 
 
+# only used for Day Cal so far
 class TextParamWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Property[dict[str, Any]],
+		params: Property[GenericTypeParamsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
@@ -218,8 +220,8 @@ class TextParamWidget(gtk.Box):
 		if hasUppercase:
 			self.uppercaseCheck.connect("clicked", self.onChange)
 
-	def get(self) -> dict[str, Any]:
-		params = {
+	def get(self) -> GenericTypeParamsDict:
+		params: GenericTypeParamsDict = {
 			"pos": (
 				self.spinX.get_value(),
 				self.spinY.get_value(),
@@ -230,18 +232,20 @@ class TextParamWidget(gtk.Box):
 		if self.hasEnable:
 			params["enable"] = self.enableCheck.get_active()
 		if self.hasAlign:
-			params["xalign"] = self.xalignCombo.get()
-			params["yalign"] = self.yalignCombo.get()
+			params["xalign"] = self.xalignCombo.get() or "center"
+			params["yalign"] = self.yalignCombo.get() or "center"
 		if self.hasAbbreviate:
 			params["abbreviate"] = self.abbreviateCheck.get_active()
 		if self.hasUppercase:
 			params["uppercase"] = self.uppercaseCheck.get_active()
 		return params
 
-	def set(self, params: dict[str, Any]) -> None:
+	def set(self, params: GenericTypeParamsDict) -> None:
 		self.spinX.set_value(params["pos"][0])
 		self.spinY.set_value(params["pos"][1])
-		self.fontb.set_font(getParamsFont(params))
+		font = getParamsFont(params)
+		assert font is not None
+		self.fontb.set_font(font)
 		self.colorb.set_rgba(params["color"])
 		if self.hasEnable:
 			self.enableCheck.set_active(params.get("enable", True))
@@ -253,7 +257,7 @@ class TextParamWidget(gtk.Box):
 		if self.hasUppercase:
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
-	def onChange(self, _widget: gtk.Widget | None = None, _event: Any = None) -> None:
+	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
 		self.params.v = self.get()
 		self.cal.queue_draw()
 
@@ -264,7 +268,7 @@ class TextParamWidget(gtk.Box):
 class CalTypeParamWidget(TextParamWidget):
 	def __init__(
 		self,
-		params: Property[list[dict[str, Any]]],
+		params: Property[list[GenericTypeParamsDict]],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -278,8 +282,8 @@ class CalTypeParamWidget(TextParamWidget):
 	) -> None:
 		self.index = index
 		# ----
-		module, ok = calTypes[calType]
-		if not ok:
+		module = calTypes[calType]
+		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		TextParamWidget.__init__(
 			self,

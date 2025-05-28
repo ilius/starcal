@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from scal3 import logger
 from scal3.property import Property
 
@@ -8,6 +10,9 @@ log = logger.get()
 import json
 
 from scal3.json_utils import dataToPrettyJson
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = [
 	"loadModuleConfig",
@@ -55,7 +60,7 @@ def loadSingleConfig(
 def saveSingleConfig(
 	confPath: str,
 	params: dict[str, Property],
-	encoders: dict | None = None,
+	encoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	data = {}
 	for param, prop in params.items():

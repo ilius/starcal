@@ -43,7 +43,6 @@ from scal3.date_utils import (
 	getJdRangeForMonth,
 	jwday,
 )
-from scal3.dict_utils import makeOrderedData
 from scal3.event_lib.objects import iterObjectFiles
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.interval_utils import (
@@ -98,9 +97,10 @@ from .accounts_holder import EventAccountsHolder
 from .event_base import Event, eventsDir
 from .groups import EventGroup, LargeScaleGroup, NoteBook, groupsDir
 from .groups_holder import EventGroupsHolder
+from .handler import Handler
 from .icon import WithIcon
 from .occur import JdOccurSet
-from .occur_data import getDayOccurrenceData, getWeekOccurrenceData
+from .occur_data import getDayOccurrenceData
 from .register import classes
 from .state import InfoWrapper, LastIdsWrapper
 from .trash import EventTrash
@@ -115,6 +115,7 @@ __all__ = [
 	"EventGroup",
 	"EventGroupsHolder",
 	"EventTrash",
+	"Handler",
 	"JdOccurSet",
 	"LargeScaleGroup",
 	"NoteBook",
@@ -123,7 +124,6 @@ __all__ = [
 	"SObjTextModel",
 	"WithIcon",
 	"_",
-	"allReadOnly",
 	"calTypes",
 	"checkDate",
 	"classes",
@@ -146,7 +146,6 @@ __all__ = [
 	"getMonthName",
 	"getSecondsFromHms",
 	"getSysDate",
-	"getWeekOccurrenceData",
 	"hmDecode",
 	"hmEncode",
 	"iceil",
@@ -157,7 +156,6 @@ __all__ = [
 	"jd_to_primary",
 	"jsonTimeFromEpoch",
 	"jwday",
-	"makeOrderedData",
 	"numRangesEncode",
 	"pixDir",
 	"removeUnusedObjects",
@@ -194,8 +192,9 @@ def init(fs: FileSystem) -> None:
 	if state.allReadOnly:
 		log.info(f"Event lock file {lockPath} exists, EVENT DATA IS READ-ONLY")
 
-	state.info = InfoWrapper.load(fs)
-	state.lastIds = LastIdsWrapper.load(fs)
+	state.info = InfoWrapper.load(0, fs=fs)
+	state.lastIds = LastIdsWrapper.load(0, fs=fs)
+	assert state.lastIds is not None
 	state.lastIds.scan()
 
 
@@ -203,8 +202,7 @@ def init(fs: FileSystem) -> None:
 
 
 def removeUnusedObjects(fs: FileSystem) -> None:
-	global allReadOnly
-	if allReadOnly:
+	if state.allReadOnly:
 		raise RuntimeError("removeUnusedObjects: EVENTS ARE READ-ONLY")
 
 	def do_removeUnusedObjects() -> None:
@@ -229,13 +227,13 @@ def removeUnusedObjects(fs: FileSystem) -> None:
 				fs.removeFile(fpath)
 		log.info(f"Removed {removedCount} objects")
 
-	allReadOnly = True
+	state.allReadOnly = True
 	try:
 		tm0 = perf_counter()
 		do_removeUnusedObjects()
 		log.info(f"removeUnusedObjects: took {perf_counter() - tm0}")
 	finally:
-		allReadOnly = False
+		state.allReadOnly = False
 
 
 # ---------------------------------------------------------------------------
@@ -262,7 +260,7 @@ __plugin_api_get__ = [
 # class HolidayEventRule(EventRule):
 # 	name = "holiday"
 # 	desc = _("Holiday")
-# 	conflict = ("date",)
+# 	conflict: Sequence[str] =("date",)
 
 
 # TODO

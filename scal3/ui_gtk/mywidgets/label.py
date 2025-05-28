@@ -11,7 +11,6 @@ __all__ = ["SLabel"]
 
 
 class SLabel(gtk.Label):
-
 	"""
 	Selectable Label with custom, localized and minimal menu
 	for right-click, with only 2 menu items: Copy All, Copy.

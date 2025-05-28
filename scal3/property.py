@@ -22,11 +22,12 @@ class Property[T]:
 	__slots__ = ["_default", "_v"]
 
 	def __init__(self, default: T) -> None:
-		self._default = default
-		if hasattr(default, "copy"):
-			self._v = default.copy()
+		self._v = default
+		self._default: T
+		if isinstance(default, list | dict):
+			self._default = default.copy()  # type: ignore[assignment]
 		else:
-			self._v = default
+			self._default = default
 
 	@property
 	def v(self) -> T:

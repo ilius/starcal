@@ -20,16 +20,21 @@ from scal3.ui import conf
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = ["MyStack", "StackPage"]
 
 
 class StackPage:
 	def __init__(self) -> None:
-		self.pageWidget = None
+		self.pageWidget: gtk.Widget | None = None
 		self.pageParent = ""
 		self.pageName = ""
 		self.pagePath = ""
@@ -37,13 +42,17 @@ class StackPage:
 		self.pageLabel = ""
 		self.pageIcon = ""
 		self.pageExpand = True
-		self.pageItem = None
+		self.pageItem: CustomizableCalObj | None = None
+		self.iconSize = 0
 
 	def __str__(self) -> str:
 		return (
-			f"StackPage(name={self.pageName!r}, path={self.pagePath!r}, "
-			f"parent={self.pageParent!r})"
+			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
+			f"pageParent={self.pageParent!r})"
 		)
+
+	def __repr__(self) -> str:
+		return self.__str__()
 
 
 class MyStack(gtk.Stack):
@@ -58,10 +67,10 @@ class MyStack(gtk.Stack):
 		self.set_transition_duration(300)  # milliseconds
 		# ---
 		self._header = header
-		self._rtl = self.get_direction() == gtk.TextDirection.RTL  # type: bool
-		self._iconSize = iconSize  # type: int
-		self._headerSpacing = headerSpacing  # type: int
-		self._verticalSlide = verticalSlide  # type: bool
+		self._rtl: bool = self.get_direction() == gtk.TextDirection.RTL
+		self._iconSize = iconSize
+		self._headerSpacing = headerSpacing
+		self._verticalSlide = verticalSlide
 		# ---
 		self._parentPaths: dict[str, str] = {}
 		self._currentPagePath = ""
@@ -109,7 +118,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, _widget: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -226,6 +235,7 @@ class MyStack(gtk.Stack):
 	def _setPageWindowTitle(self, pagePath: str) -> None:
 		if not self._windowTitleEnable:
 			return
+		assert self._window is not None
 		title = self._titles[pagePath]
 		if not title:
 			self._window.set_title(self._windowTitleMain)

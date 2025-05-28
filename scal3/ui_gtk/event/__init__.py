@@ -7,7 +7,7 @@ from scal3 import logger
 if TYPE_CHECKING:
 	from gi.repository import Gtk as gtk
 
-	from scal3.event_lib.pytypes import BaseClassType
+	from scal3.event_lib.pytypes import BaseClassType, EventGroupType
 
 __all__ = [
 	"makeWidget",
@@ -32,7 +32,7 @@ def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 		module = __import__(modulePath, fromlist=["WidgetClass"])
 	except Exception:
 		log.exception("")
-		return
+		return None
 	WidgetClass = cls.WidgetClass = module.WidgetClass
 	log.info(f"getWidgetClass: {cls.__name__} -> {modulePath} -> {WidgetClass}")
 	return WidgetClass
@@ -42,7 +42,7 @@ def makeWidget(obj: BaseClassType) -> gtk.Widget | None:
 	"""Obj is an instance of Event, EventRule, EventNotifier or EventGroup."""
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
-		return
+		return None
 	widget = WidgetClass(obj)
 	try:
 		widget.show_all()
@@ -52,7 +52,7 @@ def makeWidget(obj: BaseClassType) -> gtk.Widget | None:
 	return widget
 
 
-def setActionFuncs(obj: BaseClassType) -> None:
+def setActionFuncs(obj: EventGroupType) -> None:
 	"""Obj is an instance of EventGroup."""
 	cls = obj.__class__
 	try:

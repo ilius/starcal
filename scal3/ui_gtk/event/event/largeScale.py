@@ -12,7 +12,7 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.events import LargeScaleEvent
 
 __all__ = ["WidgetClass"]
 
@@ -21,7 +21,9 @@ maxDur = 99999
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event: Event) -> None:  # FIXME
+	event: LargeScaleEvent
+
+	def __init__(self, event: LargeScaleEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -98,4 +100,4 @@ if __name__ == "__main__":
 	pack(win.vbox, combo)
 	win.vbox.show_all()
 	win.run()
-	log.info(combo.get_value())
+	log.info(str(combo.get_value()))

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
 
-try:
-	import json
-except ImportError:
-	import simplejson as json
+import json
 
 
 def dataToPrettyJson(data):
@@ -14,7 +12,7 @@ def dataToPrettyJson(data):
 if __name__ == "__main__":
 	from mytz.tree import getZoneInfoTree
 
-	zoneTree = getZoneInfoTree(["usr", "share", "zoneinfo"])
+	zoneTree = getZoneInfoTree()
 	# open("data/zoneinfo-tree.json", "w").write(
 	# 	dataToPrettyJson(zoneTree).replace(" \n", "\n")
 	# )

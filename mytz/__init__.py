@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 # Python 3.9 added support for the IANA Time Zone Database
 # in the Standard Library
 # https://www.python.org/dev/peps/pep-0615/
@@ -15,7 +16,7 @@ from os.path import isfile, islink
 import dateutil.tz
 
 __all__ = ["UTC", "gettz"]
-defaultTZ = None
+defaultTZ: TimeZone | None = None
 tzErrCount = 0
 
 

@@ -17,7 +17,7 @@
 
 from __future__ import annotations
 
-from scal3 import event_lib, logger
+from scal3 import logger
 
 log = logger.get()
 
@@ -34,7 +34,8 @@ from .simple_sched import scheduler
 if TYPE_CHECKING:
 	from collections.abc import Iterable
 
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.event_search_tree import OccurItem
 
 __all__ = ["EventNotificationManager"]
 
@@ -47,7 +48,7 @@ class EventNotificationManager:
 		"byGroup",
 	]
 
-	def __init__(self, eventGroups: Iterable[EventGroup]) -> None:
+	def __init__(self, eventGroups: Iterable[EventGroupType]) -> None:
 		self.byGroup: dict[int, EventGroupNotificationThread] = {}
 		if DISABLE:
 			return
@@ -58,16 +59,18 @@ class EventNotificationManager:
 		for thread in self.byGroup.values():
 			thread.cancel()
 
-	def _startGroup(self, group: event_lib.EventGroup) -> None:
+	def _startGroup(self, group: EventGroupType) -> None:
 		log.info(f"EventNotificationManager: {group=}: creating thread")
+		assert group.id is not None
 		thread = EventGroupNotificationThread(group)
 		self.byGroup[group.id] = thread
 		thread.start()
 
-	def checkGroup(self, group: event_lib.EventGroup) -> None:
+	def checkGroup(self, group: EventGroupType) -> None:
 		# log.debug(f"EventNotificationManager.checkGroup: {group=}")
 		if not (group.enable and group.notificationEnabled):
 			return
+		assert group.id is not None
 
 		log.info(f"EventNotificationManager.checkGroup: {group=}")
 
@@ -77,10 +80,11 @@ class EventNotificationManager:
 
 		self._startGroup(group)
 
-	def checkEvent(self, group: event_lib.EventGroup, event: event_lib.Event) -> None:
+	def checkEvent(self, group: EventGroupType, event: EventType) -> None:
 		if not (group.enable and group.notificationEnabled):
 			log.info("EventNotificationManager.checkEvent: not enabled")
 			return
+		assert group.id is not None
 
 		log.info(f"EventNotificationManager.checkEvent: {group=}, {event=}")
 
@@ -98,12 +102,12 @@ class EventGroupNotificationThread(Thread):
 	# ^ seconds
 	# TODO: get from group.notificationCheckInterval
 
-	def __init__(self, group: EventGroup) -> None:
+	def __init__(self, group: EventGroupType) -> None:
 		self.group = group
 
-		self.sent = set()
+		self.sent: set[int] = set()
 		self._stop_event = threading.Event()
-		self._new_events = Queue()
+		self._new_events: Queue = Queue()
 
 		# self.sch: sched.scheduler | None = None
 		# threading.Timer is a subclass of threading.Thread
@@ -125,7 +129,7 @@ class EventGroupNotificationThread(Thread):
 	def stopped(self) -> bool:
 		return self._stop_event.is_set()
 
-	def checkEvent(self, event: event_lib.Event) -> None:
+	def checkEvent(self, event: EventType) -> None:
 		self._new_events.put_nowait(event)
 
 	def sleep(self, seconds: float) -> None:
@@ -159,7 +163,7 @@ class EventGroupNotificationThread(Thread):
 		log.info(f"EventGroupNotificationThread: notify: {eid=}")
 		for _ in range(10):
 			try:
-				event = self.group[eid]
+				event = self.group.getEvent(eid)
 			except ValueError as e:
 				log.error(str(e))
 				sleep(2)
@@ -178,10 +182,10 @@ class EventGroupNotificationThread(Thread):
 		group = self.group
 
 		tm = now()
-		items = list(group.notifyOccur.search(tm, tm + interval))
-		log.info(f"{tm=}, {tm + interval=}, {items=}")
+		occurItems: list[OccurItem] = list(group.notifyOccur.search(tm, tm + interval))
+		log.info(f"{tm=}, {tm + interval=}, {occurItems=}")
 
-		if not items:
+		if not occurItems:
 			return
 
 		sch = scheduler(
@@ -190,19 +194,21 @@ class EventGroupNotificationThread(Thread):
 			stopped=self.stopped,
 		)
 
-		for item in items:
-			if item.oid in self.sent:
-				log.info(f"EventGroupNotificationThread: skipping {item}")
+		for occur in occurItems:
+			if occur.oid in self.sent:
+				log.info(f"EventGroupNotificationThread: skipping {occur}")
 				continue
-			log.info(f"EventGroupNotificationThread: adding {item}")
-			self.sent.add(item.oid)
+			log.info(f"EventGroupNotificationThread: adding {occur}")
+			self.sent.add(occur.oid)
 			sch.enterabs(
-				item.start,  # max(now(), item.start),
+				occur.start,  # max(now(), item.start),
 				self.notify,
-				argument=(item.eid,),
+				argument=(occur.eid,),
 			)
 
 		# self.sch = sch
-		log.info(f"EventGroupNotificationThread: run: starting sch.run, {len(items)=}")
+		log.info(
+			f"EventGroupNotificationThread: run: starting sch.run, {len(occurItems)=}",
+		)
 		sch.run()
 		log.info("EventGroupNotificationThread: run: finished sch.run")

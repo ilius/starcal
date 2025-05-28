@@ -171,7 +171,7 @@ class NumRangesEntry(gtk.Entry):
 					# Shortcuts like Ctrl + [A, C, X, V]
 					return False
 			else:
-				log.info(kval, kname)
+				log.info(f"{kval=}, {kname=}")
 		return True
 
 	def getValues(self) -> list[int | tuple[int, int]]:

@@ -1,3 +1,4 @@
+from scal3.event_lib.groups import LargeScaleGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
@@ -9,6 +10,8 @@ maxStartEnd = 999999
 
 
 class WidgetClass(BaseWidgetClass):
+	group: LargeScaleGroup
+
 	def addStartEndWidgets(self) -> None:
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------

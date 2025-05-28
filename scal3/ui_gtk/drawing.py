@@ -26,7 +26,7 @@ from os.path import join
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.color_utils import ColorType, rgbToHtmlColor
+from scal3.color_utils import RGB, RGBA, ColorType, RawColor, rgbToHtmlColor
 from scal3.locale_man import cutText
 from scal3.path import sourceDir
 from scal3.ui import conf
@@ -72,7 +72,7 @@ colorCheckSvgTextUnchecked = re.sub(
 )
 
 
-def setColor(cr: cairo.Context, color: ColorType) -> None:
+def setColor(cr: cairo.Context, color: RGB | RGBA | RawColor) -> None:
 	# arguments to set_source_rgb and set_source_rgba must be between 0 and 1
 	if len(color) == 3:
 		cr.set_source_rgb(
@@ -224,7 +224,7 @@ def calcTextPixelWidth(
 
 
 def newColorCheckPixbuf(
-	color: ColorType,
+	color: RGB,
 	size: float,
 	checked: bool,
 ) -> GdkPixbuf.Pixbuf:
@@ -234,13 +234,12 @@ def newColorCheckPixbuf(
 		data = colorCheckSvgTextUnchecked
 	data = data.replace(
 		"fill:#000000;",
-		f"fill:{rgbToHtmlColor(color[:3])};",
+		f"fill:{rgbToHtmlColor(color)};",
 	)
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	loader.set_size(size, size)
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()
@@ -253,10 +252,9 @@ def newDndDatePixbuf(ymd: tuple[int, int, int]) -> GdkPixbuf.Pixbuf:
 	data = data.replace("YYYY", f"{ymd[0]:04d}")
 	data = data.replace("MM", f"{ymd[1]:02d}")
 	data = data.replace("DD", f"{ymd[2]:02d}")
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()
@@ -267,10 +265,9 @@ def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
 	with open(imagePath, encoding="utf-8") as fp:
 		data = fp.read()
 	data = data.replace("FONTNAME", name)
-	data = toBytes(data)
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	try:
-		loader.write(data)
+		loader.write(toBytes(data))
 	finally:
 		loader.close()
 	return loader.get_pixbuf()

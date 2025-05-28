@@ -37,8 +37,8 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 	def onButtonPress(
 		self,
-		_widget: gtk.Widget | None = None,
-		gevent: gdk.Event | None = None,
+		_widget: gtk.Widget,
+		gevent: gdk.ButtonEvent,
 	) -> None:
 		toolbar = self.get_parent()
 		x, y = self.translate_coordinates(
@@ -158,11 +158,11 @@ class CalObj(CustomizableToolBox):
 				if name not in currentNames:
 					ud.mainToolbarData["items"].append((name, False))
 
-		self.setData(ud.mainToolbarData)
+		self.setDict(ud.mainToolbarData)
 		if win:
 			self.connect("button-press-event", win.childButtonPress)
 			self.connect("popup-main-menu", win.menuMainPopup)
 
 	def updateVars(self) -> None:
 		CustomizableToolBox.updateVars(self)
-		ud.mainToolbarData = self.getData()
+		ud.mainToolbarData = self.getDict()

@@ -17,13 +17,13 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_container import EventContainer
+	from scal3.event_lib.pytypes import EventContainerType
 
 __all__ = ["EventsBulkEditDialog"]
 
 
 class EventsBulkEditDialog(gtk.Dialog):
-	def __init__(self, container: EventContainer, **kwargs) -> None:
+	def __init__(self, container: EventContainerType, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		self._container = container
@@ -101,7 +101,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		pack(hbox, self.iconChangeCombo)
 		pack(hbox, gtk.Label(label="  "))
 		self.iconSelect = IconSelectButton()
-		if hasattr(container, "icon"):
+		if hasattr(container, "icon") and container.icon:
 			self.iconSelect.set_filename(container.icon)
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
@@ -157,7 +157,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		# ----
 		window_set_size_aspect(self, 1.6)
 
-	def firstRadioChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def firstRadioChanged(self, _w: gtk.Widget | None = None) -> None:
 		if self.iconRadio.get_active():
 			self.iconHbox.show()
 			self.textVbox.hide()
@@ -171,7 +171,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()
 
-	def textChangeComboChanged(self, _widget: gtk.Widget | None = None) -> None:
+	def textChangeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		self.textVbox.show_all()
 		chType = self.textChangeCombo.get_active()
 		if chType == 0:

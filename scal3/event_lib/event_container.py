@@ -22,11 +22,14 @@ log = logger.get()
 
 import json
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol, Self
 
-from scal3 import ui
+import mytz
+from scal3 import core, locale_man, logger
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
+from scal3.s_object import SObj
+from scal3.time_utils import getEpochFromJd
 
 from .event_base import Event
 from .icon import WithIcon, iconAbsToRelativelnData
@@ -34,27 +37,38 @@ from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
 if TYPE_CHECKING:
-	from collections.abc import Iterator
+	from collections.abc import Iterator, Sequence
+	from datetime import tzinfo
 	from typing import Any
 
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.event_search_tree import EventSearchTree
 
 
 __all__ = ["DummyEventContainer", "EventContainer"]
 
 
+class DummyEventGroupsHolder(Protocol):
+	def __getitem__(self, ident: int) -> EventGroupType: ...
+
+
 class DummyEventContainer:
-	def __init__(self, idsDict: dict[int, list[int]]) -> None:
+	def __init__(
+		self,
+		groups: DummyEventGroupsHolder,
+		idsDict: dict[int, list[int]],
+	) -> None:
+		self.groups = groups
 		self.idsDict = idsDict
 
 	def __len__(self) -> int:
 		return sum(len(eventIds) for eventIds in self.idsDict.values())
 
-	def __iter__(self) -> Iterator[EventGroup]:
+	def __iter__(self) -> Iterator[EventType]:
 		for groupId, eventIdList in self.idsDict.items():
-			group = ui.eventGroups[groupId]
+			group = self.groups[groupId]
 			for eventId in eventIdList:
-				yield group[eventId]
+				yield group.getEvent(eventId)
 
 
 class Smallest:
@@ -77,12 +91,12 @@ smallest = Smallest()
 class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	name = ""
 	desc = ""
-	basicParams = (
+	basicParams: list[str] = [
 		"idList",  # FIXME
 		"uuid",
-	)
+	]
 	# HistoryEventObjBinaryModel.params is empty
-	params = (
+	params: list[str] = [
 		"timeZoneEnable",
 		"timeZone",
 		"icon",
@@ -92,9 +106,9 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		"modified",
 		"uuid",
 		"addEventsToBeginning",
-	)
+	]
 
-	acceptsEventTypes = (
+	acceptsEventTypes: Sequence[str] = (
 		"yearly",
 		"dailyNote",
 		"task",
@@ -106,16 +120,16 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		"custom",
 	)
 
-	sortBys = (
+	sortBys: list[tuple[str, str, bool]] = [
 		# name, description, is_type_dependent
 		("calType", _("Calendar Type"), False),
 		("summary", _("Summary"), False),
 		("description", _("Description"), False),
 		("icon", _("Icon"), False),
-	)
+	]
 	sortByDefault = "summary"
 
-	def __getitem__(self, key: int) -> Event:
+	def __getitem__(self, key: int) -> EventType:
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
 		raise TypeError(
@@ -127,23 +141,28 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			return self.timeZone
 		return ""
 
-	def byIndex(self, index: int) -> Event:
+	def byIndex(self, index: int) -> EventType:
 		return self.getEvent(self.idList[index])
 
 	def __str__(self) -> str:
 		return f"{self.__class__.__name__}(title='{self.title}')"
 
 	def __init__(self, title: str = "Untitled") -> None:
-		self.fs = None
+		self.fs = core.fs
 		self.parent = None
+		self.enable = True
 		self.timeZoneEnable = False
 		self.timeZone = ""
 		self.calType = calTypes.primary
-		self.idList = []
+		self.idList: list[int] = []
 		self.title = title
-		self.icon = ""
+		self.icon: str | None = None
 		self.showFullEventDesc = False
 		self.addEventsToBeginning = False
+		self.eventTextSep = core.eventTextSep
+		self.startJd = 0
+		self.endJd = 0
+		self.occur: EventSearchTree | None = None
 		# ------
 		self.uuid = None
 		self.modified = now()
@@ -151,15 +170,31 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		######
 		self.notificationEnabled = False
 
+	def getTimeZoneObj(self) -> tzinfo | None:
+		if self.timeZoneEnable and self.timeZone:
+			tz = mytz.gettz(self.timeZone)
+			if tz:
+				return tz
+		return locale_man.localTz
+
+	def getEpochFromJd(self, jd: int) -> int:
+		return getEpochFromJd(jd, tz=self.getTimeZoneObj())
+
+	def getStartEpoch(self) -> int:
+		return self.getEpochFromJd(self.startJd)
+
+	def getEndEpoch(self) -> int:
+		return self.getEpochFromJd(self.endJd)
+
 	def afterModify(self) -> None:
 		self.modified = now()
 
-	def getEvent(self, eid: int) -> Event:
-		if eid not in self.idList:
-			raise ValueError(f"{self} does not contain {eid!r}")
-		return self._getEvent(eid)
+	def getEvent(self, ident: int) -> EventType:
+		if ident not in self.idList:
+			raise ValueError(f"{self} does not contain {ident!r}")
+		return self._getEvent(ident)
 
-	def _getEvent(self, eid: int) -> Event:
+	def _getEvent(self, eid: int) -> EventType:
 		eventFile = Event.getFile(eid)
 		if not self.fs.isfile(eventFile):
 			# self.idList.remove(eid)
@@ -180,12 +215,12 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		event = classes.event.byName[data["type"]](eid)
 		event.fs = self.fs
 		event.parent = self
-		event.setData(data)
+		event.setDict(data)
 		event.lastHash = lastHash
 		event.modified = lastEpoch
 		return event
 
-	def __iter__(self) -> Iterator[Event]:
+	def __iter__(self) -> Iterator[EventType]:
 		for eid in self.idList:
 			try:
 				event = self.getEvent(eid)
@@ -197,7 +232,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	def __len__(self) -> int:
 		return len(self.idList)
 
-	def preAdd(self, event: Event) -> None:
+	def preAdd(self, event: EventType) -> None:
 		if event.id in self.idList:
 			raise ValueError(f"{self} already contains {event}")
 		if event.parent not in {None, self}:
@@ -205,27 +240,37 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 				f"{event} already has a parent={event.parent}, trying to add to {self}",
 			)
 
-	def postAdd(self, event: Event) -> None:
+	def postAdd(self, event: EventType) -> None:
 		event.parent = self  # needed? FIXME
 
-	def insert(self, index: int, event: Event) -> None:
+	def insert(self, index: int, event: EventType) -> None:
+		assert event.id is not None
 		self.preAdd(event)
 		self.idList.insert(index, event.id)
 		self.postAdd(event)
 
-	def append(self, event: Event) -> None:
+	def append(self, event: EventType) -> None:
+		assert event.id is not None
 		self.preAdd(event)
 		self.idList.append(event.id)
 		self.postAdd(event)
 
-	def add(self, event: Event) -> None:
+	def add(self, event: EventType) -> None:
 		if self.addEventsToBeginning:
 			self.insert(0, event)
 		else:
 			self.append(event)
 
-	def index(self, eid: int) -> int:
-		return self.idList.index(eid)
+	def getPath(self) -> list[int]:
+		if self.parent is None:
+			raise RuntimeError("getPath: parent is None")
+		path = SObj.getPath(self)
+		if len(path) != 2:
+			raise RuntimeError(f"getPath: unexpected {path=}")
+		return path
+
+	def index(self, ident: int) -> int:
+		return self.idList.index(ident)
 
 	def moveUp(self, index: int) -> None:
 		self.idList.insert(index - 1, self.idList.pop(index))
@@ -233,29 +278,30 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	def moveDown(self, index: int) -> None:
 		self.idList.insert(index + 1, self.idList.pop(index))
 
-	def remove(self, event: Event) -> int:  # call when moving to trash
+	def remove(self, event: EventType) -> int:  # call when moving to trash
 		"""
 		Excludes event from this container (group or trash),
 		not delete event data completely
 		and returns the index of (previously contained) event.
 		"""
+		assert event.id is not None
 		index = self.idList.index(event.id)
 		self.idList.remove(event.id)
 		event.parent = None
 		return index
 
-	def copyFrom(self, other: EventContainer) -> None:
+	def copyFrom(self, other: Self) -> None:
 		HistoryEventObjBinaryModel.copyFrom(self, other)
 		self.calType = other.calType
 
-	def getData(self) -> dict[str, Any]:
-		data = HistoryEventObjBinaryModel.getData(self)
+	def getDict(self) -> dict[str, Any]:
+		data = HistoryEventObjBinaryModel.getDict(self)
 		data["calType"] = calTypes.names[self.calType]
 		iconAbsToRelativelnData(data)
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
-		HistoryEventObjBinaryModel.setData(self, data)
+	def setDict(self, data: dict[str, Any]) -> None:
+		HistoryEventObjBinaryModel.setDict(self, data)
 		if "calType" in data:
 			calType = data["calType"]
 			try:
@@ -265,7 +311,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		# ---
 		self.iconRelativeToAbsInObj()
 
-	def getEventNoCache(self, eid: int) -> Event:
+	def getEventNoCache(self, eid: int) -> EventType:
 		"""
 		No caching. and no checking if group contains eid
 		used only for sorting events.
@@ -275,7 +321,16 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		event.rulesHash = event.getRulesHash()
 		return event
 
-	def getSortBys(self) -> tuple[str, list[str]]:
+	def updateOccurrenceEvent(self, event: EventType) -> None:
+		raise NotImplementedError
+
+	def getCourseNameById(
+		self,
+		courseId: int,
+	) -> str:
+		raise NotImplementedError
+
+	def getSortBys(self) -> tuple[str, list[tuple[str, str, bool]]]:
 		if not self.enable:
 			return self.sortByDefault, self.sortBys
 
@@ -284,7 +339,9 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			("time_first", _("First Occurrence Time"), False),
 		]
 
-	def getSortByValue(self, event: Event, attr: str) -> Any:
+	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		assert self.occur is not None
+		assert event.id is not None
 		if attr in {"time_last", "time_first"}:
 			if event.isSingleOccur:
 				epoch = event.getStartEpoch()
@@ -313,12 +370,12 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 				break
 		if isTypeDep:
 
-			def event_key(event: Event) -> Any:
+			def event_key(event: EventType) -> Any:
 				return (event.name, self.getSortByValue(event, attr))
 
 		else:
 
-			def event_key(event: Event) -> Any:
+			def event_key(event: EventType) -> Any:
 				return self.getSortByValue(event, attr)
 
 		self.idList.sort(

@@ -16,7 +16,7 @@ class WidgetClass(IntSpinButton):
 		IntSpinButton.__init__(self, 0, 999999)
 
 	def updateWidget(self) -> None:
-		self.set_value(self.rule.getData())
+		self.set_value(self.rule.getRuleValue())
 
 	def updateVars(self) -> None:
-		self.rule.setData(self.get_value())
+		self.rule.setRuleValue(self.get_value())

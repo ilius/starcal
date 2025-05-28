@@ -8,13 +8,15 @@ from typing import Protocol
 from scal3.path import confDir
 from scal3.property import Property
 
-__all__ = ["get", "logLevel"]
+__all__ = ["FallbackLogger", "get", "init", "logLevel"]
 
 
 confPath = join(confDir, "log.json")
 
 
 class LoggerType(Protocol):
+	level: int
+
 	# def __init__(self) -> None: ...
 	def info(self, text: str) -> None: ...
 	def error(self, text: str) -> None: ...
@@ -26,7 +28,7 @@ class LoggerType(Protocol):
 
 class FallbackLogger:
 	def __init__(self) -> None:
-		pass
+		self.level = logging.DEBUG
 
 	def info(self, text: str) -> None:  # noqa: PLR6301
 		print(text)

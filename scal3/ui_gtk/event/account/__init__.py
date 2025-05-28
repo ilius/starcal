@@ -13,6 +13,7 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.event_lib.accounts import Account
+	from scal3.event_lib.pytypes import AccountType
 
 __all__ = [
 	"AccountCombo",
@@ -25,7 +26,7 @@ __all__ = [
 class BaseWidgetClass(gtk.Box):
 	def __init__(self, account: Account) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.account = account
+		self.baseAccount = account
 		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
@@ -39,10 +40,10 @@ class BaseWidgetClass(gtk.Box):
 		pack(self, hbox)
 
 	def updateWidget(self) -> None:
-		self.titleEntry.set_text(self.account.title)
+		self.titleEntry.set_text(self.baseAccount.title)
 
 	def updateVars(self) -> None:
-		self.account.title = self.titleEntry.get_text()
+		self.baseAccount.title = self.titleEntry.get_text()
 
 
 class AccountCombo(IdComboBox):
@@ -56,7 +57,7 @@ class AccountCombo(IdComboBox):
 		self.add_attribute(cell, "text", 1)
 		# ---
 		ls.append([-1, _("None")])
-		for account in ui.eventAccounts:
+		for account in ui.ev.accounts:
 			if account.enable:
 				ls.append([account.id, account.title])
 		# ---
@@ -76,7 +77,7 @@ class AccountCombo(IdComboBox):
 
 class AccountGroupCombo(IdComboBox):
 	def __init__(self) -> None:
-		self.account = None
+		self.account: AccountType | None = None
 		# ---
 		ls = gtk.ListStore(str, str)
 		gtk.ComboBox.__init__(self)
@@ -86,11 +87,12 @@ class AccountGroupCombo(IdComboBox):
 		pack(self, cell, 1)
 		self.add_attribute(cell, "text", 1)
 
-	def setAccount(self, account: Account) -> None:
+	def setAccount(self, account: AccountType) -> None:
 		self.account = account
 		self.updateList()
 
 	def updateList(self) -> None:
+		assert self.account is not None
 		ls = self.get_model()
 		ls.clear()
 		if self.account:
@@ -130,11 +132,12 @@ class AccountGroupBox(gtk.Box):
 
 	def accountComboChanged(self, combo: gtk.ComboBox) -> None:
 		aid = combo.get_active()
-		if aid:
-			account = ui.eventAccounts[aid]
-			self.combo.setAccount(account)
+		if aid is None:
+			return
+		account = ui.ev.accounts[aid]
+		self.combo.setAccount(account)
 
-	def onFetchClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onFetchClick(self, _w: gtk.Widget | None = None) -> None:
 		combo = self.combo
 		account = combo.account
 		if not account:

@@ -41,7 +41,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 if TYPE_CHECKING:
 	import cairo
 
-	from scal3.event_lib.groups import EventGroup, UniversityTerm
+	from scal3.event_lib.groups import UniversityTerm, WeeklyScheduleItem
 
 __all__ = ["WidgetClass"]
 
@@ -202,12 +202,12 @@ class CourseListEditor(gtk.Box):
 		units = numDecode(newText)
 		self.treeModel[index][2] = units
 
-	def setData(self, rows: list[tuple[int, str, int]]) -> None:
+	def setDict(self, rows: list[tuple[int, str, int]]) -> None:
 		self.treeModel.clear()
 		for row in rows:
 			self.treeModel.append(row)
 
-	def getData(self) -> list[tuple[int, str, int]]:
+	def getDict(self) -> list[tuple[int, str, int]]:
 		return [tuple(row) for row in self.treeModel]
 
 
@@ -316,17 +316,19 @@ class ClassTimeBoundsEditor(gtk.Box):
 		self.treeModel[index][0] = hm
 		# self.treeModel.sort()-- FIXME
 
-	def setData(self, hmList: list[tuple[int, int]]) -> None:
+	def setDict(self, hmList: list[tuple[int, int]]) -> None:
 		self.treeModel.clear()
 		for hm in hmList:
 			self.treeModel.append([hmEncode(hm)])
 
-	def getData(self) -> list[tuple[int, int]]:
+	def getDict(self) -> list[tuple[int, int]]:
 		return sorted(hmDecode(row[0]) for row in self.treeModel)
 
 
 class WidgetClass(NormalWidgetClass):
-	def __init__(self, group: EventGroup) -> None:
+	group: UniversityTerm
+
+	def __init__(self, group: UniversityTerm) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# -----
 		totalFrame = gtk.Frame()
@@ -357,21 +359,21 @@ class WidgetClass(NormalWidgetClass):
 
 	def updateWidget(self) -> None:  # FIXME
 		NormalWidgetClass.updateWidget(self)
-		self.courseListEditor.setData(self.group.courses)
-		self.classTimeBoundsEditor.setData(self.group.classTimeBounds)
+		self.courseListEditor.setDict(self.group.courses)
+		self.classTimeBoundsEditor.setDict(self.group.classTimeBounds)
 
 	def updateVars(self) -> None:
 		NormalWidgetClass.updateVars(self)
 		# --
-		self.group.setCourses(self.courseListEditor.getData())
-		self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
+		self.group.setCourses(self.courseListEditor.getDict())
+		self.group.classTimeBounds = self.classTimeBoundsEditor.getDict()
 
 
 @registerType
 class WeeklyScheduleWidget(gtk.DrawingArea):
 	def __init__(self, term: UniversityTerm) -> None:
 		self.term = term
-		self.data = []
+		self.data: list[list[list[WeeklyScheduleItem]]] = []
 		# ----
 		gtk.DrawingArea.__init__(self)
 		# self.connect("button-press-event", self.onButtonPress)
@@ -408,7 +410,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		gridColor = conf.mcalGridColor.v  # FIXME
 		# ---
 		# classBounds = self.term.classTimeBounds
-		titles, tmfactors = self.term.getClassBoundsFormatted()
+		boundsFormatter = self.term.getClassBoundsFormatted()
+		assert boundsFormatter is not None
+		titles, tmfactors = boundsFormatter
 		# ---
 		weekDayLayouts = []
 		weekDayLayoutsWidth = []
@@ -558,7 +562,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		surface.flush()
 		surface.finish()
 
-	def onExportToSvgClick(self, _widget: gtk.Widget | None = None) -> None:
+	def onExportToSvgClick(self, _w: gtk.Widget | None = None) -> None:
 		fcd = gtk.FileChooserDialog(
 			transient_for=self,
 			action=gtk.FileChooserAction.SAVE,
@@ -582,5 +586,8 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		fcd.destroy()
 
 
-def viewWeeklySchedule(group: EventGroup, parentWin: gtk.Window | None = None) -> None:
+def viewWeeklySchedule(
+	group: UniversityTerm,
+	parentWin: gtk.Window | None = None,
+) -> None:
 	WeeklyScheduleWindow(group, transient_for=parentWin).show()

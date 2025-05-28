@@ -24,9 +24,9 @@ from os.path import join
 from typing import TYPE_CHECKING
 
 from scal3.event_lib import state
+from scal3.event_lib.object_base import EventObjTextModel
 from scal3.s_object import (
 	SObjBinaryModel,
-	SObjTextModel,
 	objectDirName,
 )
 
@@ -38,15 +38,9 @@ if TYPE_CHECKING:
 __all__ = ["EventObjTextModel", "HistoryEventObjBinaryModel", "iterObjectFiles"]
 
 
-class EventObjTextModel(SObjTextModel):
-	def save(self) -> None:
-		if state.allReadOnly:
-			log.info(f"events are read-only, ignored file {self.file}")
-			return
-		SObjTextModel.save(self)
-
-
 class HistoryEventObjBinaryModel(SObjBinaryModel):
+	uuid: str | None
+
 	def set_uuid(self) -> None:
 		from uuid import uuid4
 
@@ -55,10 +49,10 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 	def save(
 		self,
 		*args,  # noqa: ANN002
-	) -> None:
+	) -> tuple[int, str] | None:
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
-			return
+			return None
 		if hasattr(self, "uuid") and self.uuid is None:
 			self.set_uuid()
 		return SObjBinaryModel.save(self, *args)

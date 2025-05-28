@@ -2,4 +2,4 @@
 
 ruff format "$@"
 # git diff --name-only | xargs -n1 sed -i -E $'s|^\t+ | |g'
-ruff check --fix --preview "$@"
+ruff check --fix --preview --output-format=concise "$@"

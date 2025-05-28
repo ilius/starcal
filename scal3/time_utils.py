@@ -20,7 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from datetime import datetime
+from datetime import datetime, tzinfo
 from time import time as now
 
 import mytz
@@ -60,7 +60,7 @@ __all__ = [
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
 
-type TZ = mytz.TimeZone | None
+type TZ = mytz.TimeZone | tzinfo | None
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -78,7 +78,7 @@ type TZ = mytz.TimeZone | None
 # function time.time() having the same name as its module is problematic
 # don't use time.time() directly again (other than once)
 
-utcOffsetByJdCache = {}
+utcOffsetByJdCache: dict[str, dict[int, int]] = {}
 # utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
 # utcOffsetByJdCacheSize # FIXME
 
@@ -126,19 +126,22 @@ class HMS:
 		return pyfmt.format(h=self.h, m=self.m, s=self.s)
 
 
-def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
+def getUtcOffsetByEpoch(epoch: float, tz: TZ = None) -> int:
 	if epoch < J0001_epoch:
 		return 0
 	if epoch >= G10000_epoch:
 		return 0
 	if not tz:
 		tz = mytz.gettz()
+		assert tz is not None
 	try:
 		dt = datetime.fromtimestamp(epoch)  # noqa: DTZ006
 	except ValueError as e:
 		log.error(f"{epoch=}, error: {e}")
 		return 0
-	return int(tz.utcoffset(dt).total_seconds())
+	delta = tz.utcoffset(dt)
+	assert delta is not None
+	return int(delta.total_seconds())
 
 
 def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
@@ -148,12 +151,15 @@ def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
 		return 0
 	if not tz:
 		tz = mytz.gettz()
+		assert tz is not None
 	try:
 		dt = datetime(year, month, day)
 	except ValueError as e:
 		log.error(f"getUtcOffsetByGDate: {year=}, error: {e}")
 		return 0
-	return int(tz.utcoffset(dt).total_seconds())
+	delta = tz.utcoffset(dt)
+	assert delta is not None
+	return int(delta.total_seconds())
 
 
 def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
@@ -182,11 +188,11 @@ def getUtcOffsetCurrent(tz: TZ = None) -> int:
 	return getUtcOffsetByEpoch(now(), tz)
 
 
-def getFloatJdFromEpoch(epoch: int, tz: TZ = None) -> float:
+def getFloatJdFromEpoch(epoch: float, tz: TZ = None) -> float:
 	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0 * 3600) + J1970
 
 
-def getJdFromEpoch(epoch: int, tz: TZ = None) -> int:
+def getJdFromEpoch(epoch: float, tz: TZ = None) -> int:
 	return ifloor(getFloatJdFromEpoch(epoch, tz))
 
 
@@ -215,7 +221,7 @@ def getHmsFromSeconds(second: int) -> HMS:
 
 
 def getJhmsFromEpoch(
-	epoch: int,
+	epoch: float,
 	currentOffset: bool = False,
 	tz: TZ = None,
 ) -> tuple[int, HMS]:
@@ -225,7 +231,7 @@ def getJhmsFromEpoch(
 	)
 	# ^ FIXME
 	days, second = divmod(ifloor(epoch + offset), 24 * 3600)
-	return days + J1970, getHmsFromSeconds(second)
+	return days + J1970, getHmsFromSeconds(int(second))
 
 
 def getSecondsFromHms(hour: int, minute: int, second: int = 0) -> int:
@@ -242,13 +248,13 @@ def getEpochFromJhms(
 	return getEpochFromJd(jd, tz) + hour * 3600 + minute * 60 + second
 
 
-durationUnitsRel: list[tuple[int, str]] = (
+durationUnitsRel: list[tuple[int, str]] = [
 	(1, "second"),
 	(60, "minute"),
 	(60, "hour"),
 	(24, "day"),
 	(7, "week"),
-)
+]
 
 durationUnitsAbs: list[tuple[int, str]] = []
 num = 1
@@ -318,11 +324,11 @@ def durationEncode(value: float, unit: int) -> str:
 	return str(value) + " " + durationUnitValueToName[unit]
 
 
-def durationDecode(durStr: str) -> tuple[int, int]:
+def durationDecode(durStr: str) -> tuple[float, int]:
 	durStr = durStr.strip()
 	if " " in durStr:
-		value, unit = durStr.split(" ")
-		value = float(value)
+		valueStr, unit = durStr.split(" ")
+		value = float(valueStr)
 		unit = unit.lower()
 		if not unit:
 			return (value, 1)
@@ -350,7 +356,7 @@ def clockWaitMilliseconds() -> int:
 	return int(1000 * (1.01 - now() % 1))
 
 
-def jsonTimeFromEpoch(epoch: int) -> str:
+def jsonTimeFromEpoch(epoch: float) -> str:
 	tm = datetime.fromtimestamp(epoch, tz=mytz.UTC)
 	# Python's `datetime` does not support "%:z" format ("+03:30")
 	# so we have to set `tz` to None

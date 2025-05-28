@@ -13,7 +13,6 @@ __all__ = ["GtkBufferFile"]
 
 
 class GtkBufferFile:
-
 	"""Implements a file-like object for redirect the stream to the buffer."""
 
 	def __init__(self, buff: gtk.TextBuffer, tag: gtk.TextTag) -> None:

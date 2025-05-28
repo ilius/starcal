@@ -13,14 +13,14 @@ from scal3.ui_gtk import gtk_ud as ud
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-__all__ = ["MyDialog"]
+__all__ = ["MyDialog", "MyWindow"]
 
 
 def newCursor(cursor_type: gdk.CursorType) -> gdk.Cursor:
 	return gdk.Cursor.new_for_display(ud.display, cursor_type)
 
 
-class MyDialog:
+class MyWindow(gtk.Window):
 	def startWaiting(self) -> None:
 		self.queue_draw()
 		self.vbox.set_sensitive(False)
@@ -49,3 +49,7 @@ class MyDialog:
 		finally:
 			self.endWaiting()
 		return result
+
+
+class MyDialog(gtk.Dialog, MyWindow):
+	pass

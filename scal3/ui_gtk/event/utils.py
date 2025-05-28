@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.event_lib import state as event_state
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
@@ -11,8 +10,7 @@ from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import confirm, pixbufFromFile, showError
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui_gtk import GdkPixbuf, gtk
 
 __all__ = [
@@ -26,13 +24,13 @@ __all__ = [
 ]
 
 
-def confirmEventTrash(event: Event, **kwargs) -> bool:
+def confirmEventTrash(event: EventType, **kwargs) -> bool:
 	return confirm(
 		_(
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
 		).format(
 			eventSummary=event.summary,
-			trashTitle=ui.eventTrash.title,
+			trashTitle=ui.ev.trash.title,
 		),
 		**kwargs,
 	)
@@ -46,7 +44,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 		).format(
 			toTrashCount=_(toTrashCount),
 			deleteCount=_(deleteCount),
-			trashTitle=ui.eventTrash.title,
+			trashTitle=ui.ev.trash.title,
 		),
 		use_markup=True,
 		**kwargs,
@@ -54,7 +52,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 
 
 def checkEventsReadOnly(doException: bool = True) -> bool:
-	if event_state.allReadOnly:
+	if ui.ev.allReadOnly:
 		error = (
 			"Events are Read-Only because they are locked by "
 			"another StarCalendar 3.x process"
@@ -68,21 +66,21 @@ def checkEventsReadOnly(doException: bool = True) -> bool:
 
 def eventWriteMenuItem(*args, sensitive: bool = True, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(sensitive and not event_state.allReadOnly)
+	item.set_sensitive(sensitive and not ui.ev.allReadOnly)
 	return item
 
 
 def eventWriteImageMenuItem(*args, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(not event_state.allReadOnly)
+	item.set_sensitive(not ui.ev.allReadOnly)
 	return item
 
 
-def menuItemFromEventGroup(group: EventGroup, **kwargs) -> gtk.MenuItem:
+def menuItemFromEventGroup(group: EventGroupType, **kwargs) -> gtk.MenuItem:
 	return ImageMenuItem(
 		group.title,
 		pixbuf=newColorCheckPixbuf(
-			group.color,
+			group.color.rgb(),
 			conf.menuEventCheckIconSize.v,
 			group.enable,
 		),
@@ -90,7 +88,7 @@ def menuItemFromEventGroup(group: EventGroup, **kwargs) -> gtk.MenuItem:
 	)
 
 
-def eventTreeIconPixbuf(icon: str) -> GdkPixbuf.Pixbuf:
+def eventTreeIconPixbuf(icon: str | None) -> GdkPixbuf.Pixbuf:
 	return pixbufFromFile(
 		icon,
 		conf.eventTreeIconSize.v,

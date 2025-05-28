@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 
 	from gi.repository import Gdk as gdk
 
-	from scal3.cell import Cell
+	from scal3.cell_type import CellType
 	from scal3.property import Property
 	from scal3.ui_gtk.cal_base import CalBase
 	from scal3.ui_gtk.customize import CustomizableCalObj
@@ -59,7 +59,7 @@ confPathLive = join(confDir, "ui-daycal-live.json")
 
 confParamsLive = conf.dayCalWinParamsLive
 
-lastLiveConfChangeTime = 0
+lastLiveConfChangeTime = 0.0
 
 loadSingleConfig(confPathLive, confParamsLive)
 
@@ -138,7 +138,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 
 	def onSaveClick(
 		self,
-		_button: gtk.Button | None = None,
+		_b: gtk.Button | None = None,
 		_gevent: Any = None,
 	) -> bool:
 		self.save()
@@ -176,14 +176,14 @@ class DayCalWindowWidget(DayCal):
 	seasonPieTextColor = conf.dcalWinSeasonPieTextColor
 
 	@classmethod
-	def getCell(cls) -> Cell:
+	def getCell(cls) -> CellType:
 		return ui.cells.today
 
 	def __init__(self, win: gtk.Window) -> None:
 		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
-		self.menu = None
-		self.customizeWindow = None
+		self.menu: gtk.Menu | None = None
+		self.customizeWindow: DayCalWindowCustomizeWindow | None = None
 
 	def customizeWindowCreate(self) -> None:
 		if not self.customizeWindow:
@@ -192,8 +192,10 @@ class DayCalWindowWidget(DayCal):
 				transient_for=self._window,
 			)
 
-	def openCustomize(self, _gevent: Any) -> None:
+	def openCustomize(self, _ge: gdk.EventButton | None = None) -> None:
 		self.customizeWindowCreate()
+		assert self._window is not None
+		assert self.customizeWindow is not None
 		x, y = self._window.get_position()
 		w, h = self._window.get_size()
 		cw, ch = self.customizeWindow.get_size()
@@ -256,26 +258,29 @@ class DayCalWindowWidget(DayCal):
 
 	def getMenu(self, reverse: bool) -> gtk.Menu:
 		menu = self.menu
-		if menu is None:
-			menu = Menu()
-			if os.sep == "\\":
-				from scal3.ui_gtk.windows import setupMenuHideOnLeave
+		if menu is not None:
+			menu.show_all()
+			return menu
+		assert ui.mainWin is not None
+		menu = Menu()
+		if os.sep == "\\":
+			from scal3.ui_gtk.windows import setupMenuHideOnLeave
 
-				setupMenuHideOnLeave(menu)
-			items = ui.mainWin.getStatusIconPopupItems()
-			items.insert(
-				5,
-				ImageMenuItem(
-					_("Customize This Window"),
-					imageName="document-edit.svg",
-					func=self.openCustomize,
-				),
-			)
-			if reverse:
-				items.reverse()
-			for item in items:
-				menu.add(item)
-			self.menu = menu
+			setupMenuHideOnLeave(menu)
+		items = ui.mainWin.getStatusIconPopupItems()
+		items.insert(
+			5,
+			ImageMenuItem(
+				_("Customize This Window"),
+				imageName="document-edit.svg",
+				func=self.openCustomize,
+			),
+		)
+		if reverse:
+			items.reverse()
+		for item in items:
+			menu.add(item)
+		self.menu = menu
 		menu.show_all()
 		return menu
 
@@ -364,18 +369,19 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 
 	@staticmethod
 	def dayInfoShow(widget: gtk.Widget | None = None) -> None:
+		assert ui.mainWin is not None
 		ui.mainWin.dayInfoShow(widget)
 
-	def onDeleteEvent(self, _arg: Any = None, _event: Any = None) -> bool:
+	def onDeleteEvent(self, _arg: Any = None, _ge: Any = None) -> bool:
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, _widget: gtk.Widget, _gevent: gdk.Event) -> bool | None:
+	def configureEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool | None:
 		if not self.get_property("visible"):
-			return
+			return None
 		wx, wy = self.get_position()
 		ww, wh = self.get_size()
 		conf.dcalWinX.v, conf.dcalWinY.v = (wx, wy)

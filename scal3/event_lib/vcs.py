@@ -37,7 +37,6 @@ from scal3.time_utils import (
 from scal3.utils import toStr
 
 from .event_base import Event
-from .groups import EventGroup
 from .occur import JdOccurSet, OccurSet
 from .register import classes
 
@@ -45,20 +44,22 @@ if TYPE_CHECKING:
 	from scal3.filesystem import FileSystem
 
 	from .event_container import EventContainer
+	from .pytypes import EventType
 
 
 # @classes.event.register  # FIXME
 class VcsCommitEvent(VcsEpochBaseEvent):
 	name = "vcs"
 	desc = _("VCS Commit")
-	params = VcsEpochBaseEvent.params + (
+	params = VcsEpochBaseEvent.params + [
 		"author",
 		"shortHash",
-	)
+	]
 
 	def __init__(self, parent: EventContainer, ident: str) -> None:
 		Event.__init__(self, parent=parent)
-		self.id = ident  # commit full hash
+		# commit full hash:
+		self.id = ident  # type: ignore[assignment]
 		# ---
 		self.epoch = None
 		self.author = ""
@@ -71,11 +72,12 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 class VcsTagEvent(VcsEpochBaseEvent):
 	name = "vcsTag"
 	desc = _("VCS Tag")
-	params = VcsEpochBaseEvent.params + ()
+	# params = VcsEpochBaseEvent.params +
 
 	def __init__(self, parent: EventContainer, ident: str) -> None:
 		Event.__init__(self, parent=parent)
-		self.id = ident  # tag name
+		# tag name
+		self.id = ident  # type: ignore[assignment]
 		self.epoch = None
 		self.author = ""
 
@@ -84,16 +86,16 @@ class VcsTagEvent(VcsEpochBaseEvent):
 class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	name = "vcs"
 	desc = _("VCS Repository (Commits)")
-	myParams = VcsEpochBaseEventGroup.myParams + (
+	_myParams = [
 		"showAuthor",
 		"showShortHash",
 		"showStat",
-	)
-	params = EventGroup.params + myParams
-	paramsOrder = EventGroup.paramsOrder + myParams
+	]
+	params = VcsEpochBaseEventGroup.params + _myParams
+	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myParams
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, ident)
+		VcsEpochBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
 		self.showAuthor = True
 		self.showShortHash = True
 		self.showStat = True
@@ -128,7 +130,8 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
-	def updateEventDesc(self, event: Event) -> None:
+	def updateEventDesc(self, event: EventType) -> None:
+		assert isinstance(event, VcsCommitEvent)
 		mod = self.getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
@@ -147,18 +150,20 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		event.description = "\n".join(lines)
 
 	# TODO: cache commit data
-	def getEvent(self, commitId: str) -> Event:
+	def getEvent(
+		self,
+		commitId: str,  # type: ignore[override]
+	) -> EventType:
 		mod = self.getVcsModule()
 		if mod is None:
-			log.info(f"VCS module {self.vcsType!r} not found")
-			return
+			raise ValueError(f"VCS module {self.vcsType!r} not found")
 		data = mod.getCommitInfo(self, commitId)
 		if not data:
 			raise ValueError(f"No commit with {commitId=}")
 		data["summary"] = self.title + ": " + data["summary"]
 		data["icon"] = self.icon
 		event = VcsCommitEvent(self, commitId)
-		event.setData(data)
+		event.setDict(data)
 		self.updateEventDesc(event)
 		return event
 
@@ -167,12 +172,11 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 class VcsTagEventGroup(VcsEpochBaseEventGroup):
 	name = "vcsTag"
 	desc = _("VCS Repository (Tags)")
-	myParams = VcsEpochBaseEventGroup.myParams + ("showStat",)
-	params = EventGroup.params + myParams
-	paramsOrder = EventGroup.paramsOrder + myParams
+	params = VcsEpochBaseEventGroup.params + ["showStat"]
+	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + ["showStat"]
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, ident)
+		VcsEpochBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
@@ -202,11 +206,11 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
-	def updateEventDesc(self, event: Event) -> None:
+	def updateEventDesc(self, event: EventType) -> None:
 		mod = self.getVcsModule()
 		if mod is None:
-			log.info(f"VCS module {self.vcsType!r} not found")
-			return
+			raise ValueError(f"VCS module {self.vcsType!r} not found")
+		assert event.id is not None
 		tag = event.id
 		lines = []
 		if self.showStat:
@@ -221,15 +225,18 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		event.description = "\n".join(lines)
 
 	# TODO: cache commit data
-	def getEvent(self, tag: str) -> Event:
+	def getEvent(
+		self,
+		tag: str,  # type: ignore[override]
+	) -> EventType:
 		tag = toStr(tag)
 		if tag not in self.vcsIds:
 			raise ValueError(f"No tag {tag!r}")
 		data = {}
 		data["summary"] = self.title + " " + tag
-		data["icon"] = self.icon
+		data["icon"] = self.icon  # type: ignore[assignment]
 		event = VcsTagEvent(self, tag)
-		event.setData(data)
+		event.setDict(data)
 		self.updateEventDesc(event)
 		return event
 
@@ -239,13 +246,13 @@ class VcsDailyStatEvent(Event):
 	desc = _("VCS Daily Stat")
 	readOnly = True
 	isAllDay = True
-	params = Event.params + ("jd",)
+	params = Event.params + ["jd"]
 
 	@classmethod
 	def load(
 		cls,
-		fs: FileSystem,
-		*args,  # noqa: ANN002
+		ident: int,
+		fs: FileSystem | None = None,
 	) -> None:  # FIXME
 		pass
 
@@ -266,7 +273,7 @@ class VcsDailyStatEvent(Event):
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
-		jd = self.jd
+		jd = self.id
 		if jd is not None and startJd <= jd < endJd:
 			return JdOccurSet({jd})
 		return JdOccurSet()
@@ -276,17 +283,15 @@ class VcsDailyStatEvent(Event):
 class VcsDailyStatEventGroup(VcsBaseEventGroup):
 	name = "vcsDailyStat"
 	desc = _("VCS Repository (Daily Stat)")
-	myParams = VcsBaseEventGroup.myParams + ()
-	params = EventGroup.params + myParams
-	paramsOrder = EventGroup.paramsOrder + myParams
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsBaseEventGroup.__init__(self, ident)
-		self.statByJd = {}
+		VcsBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
+		# statByJd value: (commitsCount, lastCommitId)
+		self.statByJd: dict[int, tuple[int, str]] = {}
 
 	def clear(self) -> None:
 		VcsBaseEventGroup.clear(self)
-		self.statByJd = {}  # a dict of (commintsCount, lastCommitId)s
+		self.statByJd = {}
 
 	def updateOccurrence(self) -> None:
 		stm0 = perf_counter()
@@ -341,7 +346,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
-	def getEvent(self, jd: int) -> Event:
+	def getEvent(self, jd: int) -> EventType:
 		# cache commit data FIXME
 		from scal3.vcs_modules import encodeShortStat
 
@@ -351,8 +356,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 			raise ValueError(f"No commit for jd {jd}") from None
 		mod = self.getVcsModule()
 		if mod is None:
-			log.info(f"VCS module {self.vcsType!r} not found")
-			return
+			raise ValueError(f"VCS module {self.vcsType!r} not found")
 		event = VcsDailyStatEvent(self, jd)
 		# ---
 		event.icon = self.icon

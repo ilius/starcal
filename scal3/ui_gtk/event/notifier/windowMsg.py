@@ -12,12 +12,13 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.event_lib.notifier_base import EventNotifier
+	from scal3.event_lib.pytypes import EventNotifierType
 
 __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Entry):
-	def __init__(self, notifier: EventNotifier) -> None:
+	def __init__(self, notifier: EventNotifierType) -> None:
 		self.notifier = notifier
 		gtk.Entry.__init__(self)
 

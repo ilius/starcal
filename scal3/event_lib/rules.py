@@ -16,20 +16,13 @@
 
 from __future__ import annotations
 
-from scal3 import logger
+from scal3 import locale_man, logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-	from typing import Any
-
-	from .events import Event
-	from .rule_container import RuleContainer
-
 import json
 from time import localtime
+from typing import TYPE_CHECKING, Self
 
 from scal3 import core
 from scal3.cal_types import (
@@ -46,9 +39,9 @@ from scal3.date_utils import (
 	jwday,
 )
 from scal3.interval_utils import simplifyNumList
-from scal3.locale_man import textNumEncode
+from scal3.locale_man import floatEncode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.s_object import SObj
+from scal3.s_object import SObjBase
 from scal3.time_utils import (
 	durationDecode,
 	durationEncode,
@@ -64,23 +57,55 @@ from .exceptions import BadEventFile
 from .occur import IntervalOccurSet, JdOccurSet, OccurSet, TimeListOccurSet
 from .register import classes
 
-__all__ = ["DurationEventRule", "EndEventRule", "EventRule"]
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+	from typing import Any
+
+	from scal3.event_lib.pytypes import EventType, RuleContainerType
+
+	# _ruleDymmy: EventRuleType = EventRule(Event())
+
+
+__all__ = [
+	"CycleLenEventRule",
+	"CycleWeeksEventRule",
+	"DateAndTimeEventRule",
+	"DateEventRule",
+	"DayOfMonthEventRule",
+	"DayTimeEventRule",
+	"DayTimeRangeEventRule",
+	"DurationEventRule",
+	"EndEventRule",
+	"EventRule",
+	"MonthEventRule",
+	"StartEventRule",
+	"WeekDayEventRule",
+	"WeekMonthEventRule",
+	"WeekNumberModeEventRule",
+	"YearEventRule",
+]
 dayLen = 24 * 3600
+
+
+# def checkTypes() -> None:
+# 	rule: EventRuleType = WeekNumberModeEventRule(Event())  # OK
+# 	ruleCls: type[EventRuleType] = WeekNumberModeEventRule  # OK
 
 
 # Should not be registered, or instantiate directly
 @classes.rule.setMain
-class EventRule(SObj):
+class EventRule(SObjBase):
 	name = ""
 	tname = ""
 	nameAlias = ""
 	desc = ""
-	provide = ()
-	need = ()
-	conflict = ()
+	provide: Sequence[str] = ()
+	need: Sequence[str] = ()
+	conflict: Sequence[str] = ()
 	sgroup = -1
 	expand = False
-	params = ()
+	params: list[str] = []
+	WidgetClass: Any
 
 	def getServerString(self) -> str:
 		raise NotImplementedError
@@ -88,13 +113,21 @@ class EventRule(SObj):
 	def __bool__(self) -> bool:
 		return True
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		"""Parent can be an event for now (maybe later a group too)."""
 		self.parent = parent
+		self.fs = core.fs
 
-	def copy(self) -> EventRule:
+	def getRuleValue(self) -> Any:
+		log.warning(f"No implementation for {self.__class__.__name__}.getRuleValue")
+		return None
+
+	def setRuleValue(self, data: Any) -> None:  # noqa: ARG002
+		log.warning(f"No implementation for {self.__class__.__name__}.setRuleValue")
+
+	def copy(self) -> Self:
 		newObj = self.__class__(self.parent)
-		newObj.fs = getattr(self, "fs", None)
+		newObj.fs = getattr(self, "fs", None)  # type: ignore[assignment]
 		newObj.copyFrom(self)
 		return newObj
 
@@ -108,7 +141,7 @@ class EventRule(SObj):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,
+		event: EventType,
 	) -> OccurSet:
 		raise NotImplementedError
 
@@ -121,6 +154,20 @@ class EventRule(SObj):
 			tz=self.parent.getTimeZoneObj(),
 		)
 
+	def getEpoch(self) -> int:
+		raise NotImplementedError
+
+	def getJd(self) -> int:
+		raise NotImplementedError
+
+	@classmethod
+	def getFrom(cls, container: RuleContainerType) -> Self | None:
+		return container.rulesOd.get(cls.name)  # type: ignore[return-value]
+
+	@classmethod
+	def addOrGetFrom(cls, container: RuleContainerType) -> Self:
+		return container.getAddRule(cls.name)  # type: ignore[return-value]
+
 
 class AllDayEventRule(EventRule):
 	def jdMatches(self, jd: int) -> bool:  # noqa: ARG002, PLR6301
@@ -130,7 +177,7 @@ class AllDayEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		# improve performance FIXME
 		jds = set()
@@ -142,18 +189,18 @@ class AllDayEventRule(EventRule):
 
 # Should not be registered, or instantiate directly
 class MultiValueAllDayEventRule(AllDayEventRule):
-	conflict = ("date",)
-	params = ("values",)
+	conflict: Sequence[str] = ("date",)
+	params = ["values"]
 	expand = True  # FIXME
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
-		self.values = []
+		self.values: list[int | tuple[int, int]] = []
 
-	def getData(self) -> list[Any]:
+	def getRuleValue(self) -> Any:
 		return self.values
 
-	def setData(self, data: Any) -> None:
+	def setRuleValue(self, data: Any) -> None:
 		if not isinstance(data, tuple | list):
 			data = [data]
 		self.values = data
@@ -171,7 +218,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return False
 
 	def getValuesPlain(self) -> list[int | tuple[int, int]]:
-		ls = []
+		ls: list[int | tuple[int, int]] = []
 		for item in self.values:
 			if isinstance(item, tuple | list):
 				ls += list(range(item[0], item[1] + 1))
@@ -179,7 +226,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 				ls.append(item)
 		return ls
 
-	def setValuesPlain(self, values: list[int | tuple[int, int]]) -> None:
+	def setValuesPlain(self, values: list[int]) -> None:
 		self.values = simplifyNumList(values)
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
@@ -190,12 +237,12 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 class YearEventRule(MultiValueAllDayEventRule):
 	name = "year"
 	desc = _("Year")
-	params = ("values",)
+	params = ["values"]
 
 	def getServerString(self) -> str:
 		return numRangesEncode(self.values, " ")  # no comma
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		MultiValueAllDayEventRule.__init__(self, parent)
 		self.values = [getSysDate(self.getCalType())[0]]
 
@@ -206,11 +253,11 @@ class YearEventRule(MultiValueAllDayEventRule):
 		self,
 		newCalType: int,
 	) -> list[int | tuple[int, int]]:
-		def yearConv(year: int) -> tuple[int, int, int]:
+		def yearConv(year: int) -> int:
 			return convert(year, 7, 1, curCalType, newCalType)[0]
 
 		curCalType = self.getCalType()
-		values2 = []
+		values2: list[int | tuple[int, int]] = []
 		for item in self.values:
 			if isinstance(item, tuple | list):
 				values2.append(
@@ -228,22 +275,24 @@ class YearEventRule(MultiValueAllDayEventRule):
 		return True
 
 
+# FIXME: directly inherit from AllDayEventRule
 @classes.rule.register
 class MonthEventRule(MultiValueAllDayEventRule):
 	name = "month"
 	desc = _("Month")
-	conflict = (
+	conflict: Sequence[str] = (
 		"date",
 		"weekMonth",
 	)
-	params = ("values",)
+	params = ["values"]
 
 	def getServerString(self) -> str:
-		return numRangesEncode(self.values, " ")  # no comma
+		# return numRangesEncode(self.values, " ")  # no comma
+		return " ".join(str(n) for n in self.values)
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		MultiValueAllDayEventRule.__init__(self, parent)
-		self.values = [1]
+		self.values: list[int] = [1]  # type: ignore[assignment]
 
 	def jdMatches(self, jd: int) -> bool:
 		return self.hasValue(jd_to(jd, self.getCalType())[1])
@@ -253,12 +302,12 @@ class MonthEventRule(MultiValueAllDayEventRule):
 class DayOfMonthEventRule(MultiValueAllDayEventRule):
 	name = "day"
 	desc = _("Day of Month")
-	params = ("values",)
+	params = ["values"]
 
 	def getServerString(self) -> str:
 		return numRangesEncode(self.values, " ")  # no comma
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		MultiValueAllDayEventRule.__init__(self, parent)
 		self.values = [1]
 
@@ -270,27 +319,27 @@ class DayOfMonthEventRule(MultiValueAllDayEventRule):
 class WeekNumberModeEventRule(EventRule):
 	name = "weekNumMode"
 	desc = _("Week Number")
-	need = ("start",)  # FIXME
-	conflict = (
+	need: Sequence[str] = ("start",)  # FIXME
+	conflict: Sequence[str] = (
 		"date",
 		"weekMonth",
 	)
-	params = ("weekNumMode",)
+	params = ["weekNumMode"]
 	EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS = list(range(3))
 	# remove EVERY_WEEK? FIXME
 	weekNumModeNames = ("any", "odd", "even")
 
 	def getServerString(self) -> str:
-		return self.weekNumMode
+		return self.weekNumModeNames[self.weekNumMode]
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.weekNumMode = self.EVERY_WEEK
 
-	def getData(self) -> str:
+	def getRuleValue(self) -> Any:
 		return self.weekNumModeNames[self.weekNumMode]
 
-	def setData(self, wnModeName: str) -> None:
+	def setRuleValue(self, wnModeName: str) -> None:
 		if wnModeName not in self.weekNumModeNames:
 			raise BadEventFile(
 				f"bad rule value {wnModeName=}, "
@@ -303,14 +352,14 @@ class WeekNumberModeEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,
+		event: EventType,
 	) -> OccurSet:
 		# improve performance FIXME
 		startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1
 		# 1st week # FIXME
 		if self.weekNumMode == self.EVERY_WEEK:
 			return JdOccurSet(
-				range(startJd, endJd),
+				set(range(startJd, endJd)),
 			)
 		if self.weekNumMode == self.ODD_WEEKS:
 			return JdOccurSet(
@@ -328,42 +377,44 @@ class WeekNumberModeEventRule(EventRule):
 					if (getAbsWeekNumberFromJd(jd) - startAbsWeekNum) % 2 == 0
 				},
 			)
-		return None
+		log.error(f"calcOccurrence: invalid weekNumMode={self.weekNumMode}")
+		return JdOccurSet()
 
 	def __str__(self) -> str:
 		return self.weekNumModeNames[self.weekNumMode]
 
-	def getInfo(self) -> None:
+	def getInfo(self) -> str:
 		if self.weekNumMode == self.EVERY_WEEK:
 			return ""
 		if self.weekNumMode == self.ODD_WEEKS:
 			return _("Odd Weeks")
 		if self.weekNumMode == self.EVEN_WEEKS:
 			return _("Even Weeks")
-		return None
+		log.error(f"getInfo: invalid weekNumMode={self.weekNumMode}")
+		return ""
 
 
 @classes.rule.register
 class WeekDayEventRule(AllDayEventRule):
 	name = "weekDay"
 	desc = _("Day of Week")
-	conflict = (
+	conflict: Sequence[str] = (
 		"date",
 		"weekMonth",
 	)
-	params = ("weekDayList",)
+	params = ["weekDayList"]
 
 	def getServerString(self) -> str:
 		return s_join(self.weekDayList)
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.weekDayList = list(range(7))  # or [] FIXME
 
-	def getData(self) -> list[int]:
+	def getRuleValue(self) -> Any:
 		return self.weekDayList
 
-	def setData(self, data: int | list[int]) -> None:
+	def setRuleValue(self, data: int | list[int]) -> None:
 		if isinstance(data, int):
 			self.weekDayList = [data]
 		elif isinstance(data, tuple | list):
@@ -375,7 +426,7 @@ class WeekDayEventRule(AllDayEventRule):
 				" (0 for sunday)",
 			)
 
-	def jdMatches(self, jd: int) -> None:
+	def jdMatches(self, jd: int) -> bool:
 		return jwday(jd) in self.weekDayList
 
 	def __str__(self) -> str:
@@ -401,7 +452,7 @@ class WeekDayEventRule(AllDayEventRule):
 class WeekMonthEventRule(EventRule):
 	name = "weekMonth"
 	desc = _("Week-Month")
-	conflict = (
+	conflict: Sequence[str] = (
 		"date",
 		"month",
 		"ex_month",
@@ -411,11 +462,11 @@ class WeekMonthEventRule(EventRule):
 		"cycleWeeks",
 		"cycleLen",
 	)
-	params = (
+	params = [
 		"month",  # 0..12   0 means every month
 		"wmIndex",  # 0..4
 		"weekDay",  # 0..6
-	)
+	]
 	"""
 	paramsValidators = {
 		"month": lambda m: 0 <= m <= 12,
@@ -438,21 +489,12 @@ class WeekMonthEventRule(EventRule):
 		_("Last"),  # 4
 	)
 
-	def getServerString(self) -> str:
-		return json.dumps(
-			{
-				"weekIndex": self.wmIndex,
-				"weekDay": self.weekDay,
-				"month": self.month,
-			},
-		)
-
 	def __str__(self) -> str:
 		calType = self.getCalType()
 		if self.month == 0:
 			monthDesc = "every month"
 		else:
-			monthDesc = core.getMonthName(calType, self.month)
+			monthDesc = locale_man.getMonthName(calType, self.month)
 		return " ".join(
 			[
 				self.wmIndexNamesEn[self.wmIndex],
@@ -462,11 +504,33 @@ class WeekMonthEventRule(EventRule):
 			],
 		)
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.month = 1
 		self.wmIndex = 4
 		self.weekDay = core.firstWeekDay.v
+
+	def getRuleValue(self) -> Any:
+		return {
+			"month": self.month,
+			"wmIndex": self.wmIndex,
+			"weekDay": self.weekDay,
+		}
+
+	def setRuleValue(self, data: Any) -> None:
+		assert isinstance(data, dict), f"{data=}"
+		self.month = data["month"]
+		self.wmIndex = data["wmIndex"]
+		self.weekDay = data["weekDay"]
+
+	def getServerString(self) -> str:
+		return json.dumps(
+			{
+				"weekIndex": self.wmIndex,
+				"weekDay": self.weekDay,
+				"month": self.month,
+			},
+		)
 
 	# usefull? FIXME
 	# def setJd(self, jd) -> None:
@@ -481,7 +545,7 @@ class WeekMonthEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		calType = self.getCalType()
 		startYear, _startMonth, _startDay = jd_to(startJd, calType)
@@ -509,8 +573,8 @@ class WeekMonthEventRule(EventRule):
 class DateEventRule(EventRule):
 	name = "date"
 	desc = _("Date")
-	need = ()
-	conflict = (
+	need: Sequence[str] = ()
+	conflict: Sequence[str] = (
 		"year",
 		"month",
 		"day",
@@ -533,14 +597,14 @@ class DateEventRule(EventRule):
 	def __str__(self) -> str:
 		return dateEncode(self.date)
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.date = getSysDate(self.getCalType())
 
-	def getData(self) -> str:
+	def getRuleValue(self) -> Any:
 		return str(self)
 
-	def setData(self, data: str) -> None:
+	def setRuleValue(self, data: str) -> None:
 		try:
 			self.date = dateDecode(data)
 		except ValueError:
@@ -560,7 +624,7 @@ class DateEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		myJd = self.getJd()
 		if startJd <= myJd < endJd:
@@ -574,17 +638,17 @@ class DateEventRule(EventRule):
 
 class DateAndTimeEventRule(DateEventRule):
 	sgroup = 1
-	params = (
+	params = [
 		"date",
 		"time",
-	)
+	]
 
 	def getServerString(self) -> str:
 		y, m, d = self.date
 		H, M, S = self.time
 		return f"{y:04d}/{m:02d}/{d:02d} {H:02d}:{M:02d}:{S:02d}"
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		DateEventRule.__init__(self, parent)
 		self.time = localtime()[3:6]
 
@@ -620,13 +684,13 @@ class DateAndTimeEventRule(DateEventRule):
 			calType,
 		)
 
-	def getData(self) -> dict[str, str]:
+	def getRuleValue(self) -> Any:
 		return {
 			"date": dateEncode(self.date),
 			"time": timeEncode(self.time),
 		}
 
-	def setData(self, arg: dict[str, str] | str) -> None:
+	def setRuleValue(self, arg: dict[str, str] | str) -> None:
 		if isinstance(arg, dict):
 			try:
 				self.date = dateDecode(arg["date"])
@@ -663,11 +727,11 @@ class DayTimeEventRule(EventRule):  # Moment Event
 	name = "dayTime"
 	desc = _("Time in Day")
 	provide = ("time",)
-	conflict = (
+	conflict: Sequence[str] = (
 		"dayTimeRange",
 		"cycleLen",
 	)
-	params = ("dayTime",)
+	params = ["dayTime"]
 
 	def getServerString(self) -> str:
 		H, M, S = self.dayTime
@@ -677,14 +741,14 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		H, M, S = self.dayTime
 		return f"{H:02d}:{M:02d}:{S:02d}"
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.dayTime = localtime()[3:6]
 
-	def getData(self) -> str:
+	def getRuleValue(self) -> Any:
 		return timeEncode(self.dayTime)
 
-	def setData(self, data: str) -> None:
+	def setRuleValue(self, data: str) -> None:
 		try:
 			self.dayTime = timeDecode(data)
 		except ValueError:
@@ -694,7 +758,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		mySec = getSecondsFromHms(*self.dayTime)
 		return TimeListOccurSet(  # FIXME
@@ -711,14 +775,14 @@ class DayTimeEventRule(EventRule):  # Moment Event
 class DayTimeRangeEventRule(EventRule):
 	name = "dayTimeRange"
 	desc = _("Day Time Range")
-	conflict = (
+	conflict: Sequence[str] = (
 		"dayTime",
 		"cycleLen",
 	)
-	params = (
+	params = [
 		"dayTimeStart",
 		"dayTimeEnd",
-	)
+	]
 
 	def __str__(self) -> str:
 		H1, M1, S1 = self.dayTimeStart
@@ -730,7 +794,7 @@ class DayTimeRangeEventRule(EventRule):
 		H2, M2, S2 = self.dayTimeEnd
 		return f"{H1:02d}:{M1:02d}:{S1:02d} {H2:02d}:{M2:02d}:{S2:02d}"
 
-	def __init__(self, parent: RuleContainer | None) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.dayTimeStart = (0, 0, 0)
 		self.dayTimeEnd = (24, 0, 0)
@@ -755,10 +819,10 @@ class DayTimeRangeEventRule(EventRule):
 			getSecondsFromHms(*self.dayTimeEnd),
 		)
 
-	def getData(self) -> tuple[str, str]:
+	def getRuleValue(self) -> Any:
 		return (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
 
-	def setData(self, data: tuple[str, str]) -> None:
+	def setRuleValue(self, data: tuple[str, str]) -> None:
 		try:
 			self.setRange(timeDecode(data[0]), timeDecode(data[1]))
 		except ValueError:
@@ -768,7 +832,7 @@ class DayTimeRangeEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		daySecStart = getSecondsFromHms(*self.dayTimeStart)
 		daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
@@ -789,7 +853,7 @@ class DayTimeRangeEventRule(EventRule):
 class StartEventRule(DateAndTimeEventRule):
 	name = "start"
 	desc = _("Start")
-	conflict = ("date",)
+	conflict: Sequence[str] = ("date",)
 
 	# def getServerString(self) -> str: # in DateAndTimeEventRule
 
@@ -797,7 +861,7 @@ class StartEventRule(DateAndTimeEventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getEpoch()),
@@ -809,7 +873,7 @@ class StartEventRule(DateAndTimeEventRule):
 class EndEventRule(DateAndTimeEventRule):
 	name = "end"
 	desc = _("End")
-	conflict = (
+	conflict: Sequence[str] = (
 		"date",
 		"duration",
 	)
@@ -820,7 +884,7 @@ class EndEventRule(DateAndTimeEventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		return IntervalOccurSet.newFromStartEnd(
 			self.getEpochFromJd(startJd),
@@ -832,15 +896,15 @@ class EndEventRule(DateAndTimeEventRule):
 class DurationEventRule(EventRule):
 	name = "duration"
 	desc = _("Duration")
-	need = ("start",)
-	conflict = (
+	need: Sequence[str] = ("start",)
+	conflict: Sequence[str] = (
 		"date",
 		"end",
 	)
-	params = (
+	params = [
 		"value",
 		"unit",
-	)
+	]
 	sgroup = 1
 	units = (1, 60, 3600, dayLen, 7 * dayLen)
 
@@ -853,7 +917,7 @@ class DurationEventRule(EventRule):
 			+ ": "
 			+ _(
 				"{count} " + self.getUnitDesc(),
-			).format(count=_(self.value))
+			).format(count=floatEncode(str(self.value)))
 		)
 
 	def getUnitDesc(self) -> str:
@@ -877,23 +941,23 @@ class DurationEventRule(EventRule):
 			3600 * 24 * 7: "w",
 		}[self.unit]
 
-	def __init__(self, parent: RuleContainer) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
-		self.value = 0
-		self.unit = 1  # seconds
+		self.value: float = 0
+		self.unit: int = 1  # seconds
 
 	def getSeconds(self) -> int:
 		return int(self.value * self.unit)
 
 	def setSeconds(self, s: int) -> None:
-		assert isinstance(s, int)
+		assert isinstance(s, int), f"{s=}"
 		for unit in reversed(self.units):
 			if s % unit == 0:
 				self.value, self.unit = s // unit, unit
 				return
 		self.unit, self.value = s, 1
 
-	def setData(self, data: str) -> None:
+	def setRuleValue(self, data: str) -> None:
 		try:
 			self.value, self.unit = durationDecode(data)
 		except Exception as e:
@@ -901,17 +965,17 @@ class DurationEventRule(EventRule):
 				f'Error while loading event rule "{self.name}": {e}',
 			)
 
-	def getData(self) -> str:
+	def getRuleValue(self) -> Any:
 		return durationEncode(self.value, self.unit)
 
 	def calcOccurrence(
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
-		parentStart, ok = self.parent["start"]
-		if not ok:
+		parentStart = self.parent["start"]
+		if parentStart is None:
 			raise RuntimeError("parent has no start rule")
 		myStartEpoch = parentStart.getEpoch()
 		startEpoch = max(
@@ -932,7 +996,7 @@ def cycleDaysCalcOccurrence(
 	days: int,
 	startJd: int,
 	endJd: int,
-	event: Event,
+	event: EventType,
 ) -> OccurSet:
 	eStartJd = event.getStartJd()
 	if startJd <= eStartJd:
@@ -940,10 +1004,12 @@ def cycleDaysCalcOccurrence(
 	else:
 		startJd = eStartJd + ((startJd - eStartJd - 1) // days + 1) * days
 	return JdOccurSet(
-		range(
-			startJd,
-			endJd,
-			days,
+		set(
+			range(
+				startJd,
+				endJd,
+				days,
+			),
 		),
 	)
 
@@ -952,14 +1018,14 @@ def cycleDaysCalcOccurrence(
 class CycleDaysEventRule(EventRule):
 	name = "cycleDays"
 	desc = _("Cycle (Days)")
-	need = ("start",)
-	conflict = (
+	need: Sequence[str] = ("start",)
+	conflict: Sequence[str] = (
 		"date",
 		"cycleWeeks",
 		"cycleLen",
 		"weekMonth",
 	)
-	params = ("days",)
+	params = ["days"]
 
 	def getServerString(self) -> str:
 		return str(self.days)
@@ -967,21 +1033,21 @@ class CycleDaysEventRule(EventRule):
 	def __str__(self) -> str:
 		return str(self.days)
 
-	def __init__(self, parent: Event) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.days = 7
 
-	def getData(self) -> int:
+	def getRuleValue(self) -> Any:
 		return self.days
 
-	def setData(self, days: int) -> None:
+	def setRuleValue(self, days: int) -> None:
 		self.days = days
 
 	def calcOccurrence(
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,
+		event: EventType,
 	) -> OccurSet:
 		return cycleDaysCalcOccurrence(self.days, startJd, endJd, event)
 
@@ -993,14 +1059,14 @@ class CycleDaysEventRule(EventRule):
 class CycleWeeksEventRule(EventRule):
 	name = "cycleWeeks"
 	desc = _("Cycle (Weeks)")
-	need = ("start",)
-	conflict = (
+	need: Sequence[str] = ("start",)
+	conflict: Sequence[str] = (
 		"date",
 		"cycleDays",
 		"cycleLen",
 		"weekMonth",
 	)
-	params = ("weeks",)
+	params = ["weeks"]
 
 	def getServerString(self) -> str:
 		return str(self.weeks)
@@ -1008,21 +1074,21 @@ class CycleWeeksEventRule(EventRule):
 	def __str__(self) -> str:
 		return str(self.weeks)
 
-	def __init__(self, parent: RuleContainer) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.weeks = 1
 
-	def getData(self) -> int:
+	def getRuleValue(self) -> Any:
 		return self.weeks
 
-	def setData(self, weeks: int) -> None:
+	def setRuleValue(self, weeks: int) -> None:
 		self.weeks = weeks
 
 	def calcOccurrence(
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,
+		event: EventType,
 	) -> OccurSet:
 		return cycleDaysCalcOccurrence(
 			self.weeks * 7,
@@ -1040,8 +1106,8 @@ class CycleLenEventRule(EventRule):
 	name = "cycleLen"  # or "cycle" FIXME
 	desc = _("Cycle (Days & Time)")
 	provide = ("time",)
-	need = ("start",)
-	conflict = (
+	need: Sequence[str] = ("start",)
+	conflict: Sequence[str] = (
 		"date",
 		"dayTime",
 		"dayTimeRange",
@@ -1049,10 +1115,10 @@ class CycleLenEventRule(EventRule):
 		"cycleWeeks",
 		"weekMonth",
 	)
-	params = (
+	params = [
 		"days",
 		"extraTime",
-	)
+	]
 
 	def getServerString(self) -> str:
 		H, M, S = self.extraTime
@@ -1062,18 +1128,18 @@ class CycleLenEventRule(EventRule):
 		H, M, S = self.extraTime
 		return f"{self.days} days, {H:02d}:{M:02d}:{S:02d}"
 
-	def __init__(self, parent: RuleContainer) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.days = 7
 		self.extraTime = (0, 0, 0)
 
-	def getData(self) -> dict[str, Any]:
+	def getRuleValue(self) -> Any:
 		return {
 			"days": self.days,
 			"extraTime": timeEncode(self.extraTime),
 		}
 
-	def setData(self, arg: dict[str, Any]) -> None:
+	def setRuleValue(self, arg: dict[str, Any]) -> None:
 		self.days = arg["days"]
 		try:
 			self.extraTime = timeDecode(arg["extraTime"])
@@ -1084,7 +1150,7 @@ class CycleLenEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,
+		event: EventType,
 	) -> OccurSet:
 		startEpoch = self.getEpochFromJd(startJd)
 		eventStartEpoch = event.getStartEpoch()
@@ -1124,7 +1190,7 @@ class ExYearEventRule(YearEventRule):
 class ExMonthEventRule(MonthEventRule):
 	name = "ex_month"
 	desc = "[" + _("Exception") + "] " + _("Month")
-	conflict = (
+	conflict: Sequence[str] = (
 		"date",
 		"month",
 		"weekMonth",
@@ -1147,8 +1213,8 @@ class ExDayOfMonthEventRule(DayOfMonthEventRule):
 class ExDatesEventRule(EventRule):
 	name = "ex_dates"
 	desc = "[" + _("Exception") + "] " + _("Date")
-	# conflict = ("date",)  # FIXME
-	params = ("dates",)
+	# conflict: Sequence[str] =("date",)  # FIXME
+	params = ["dates"]
 
 	def getServerString(self) -> str:
 		return " ".join(f"{y:04d}/{m:02d}/{d:02d}" for y, m, d in self.dates)
@@ -1156,7 +1222,7 @@ class ExDatesEventRule(EventRule):
 	def __str__(self) -> str:
 		return " ".join(f"{y:04d}/{m:02d}/{d:02d}" for y, m, d in self.dates)
 
-	def __init__(self, parent: RuleContainer | None) -> None:
+	def __init__(self, parent: RuleContainerType) -> None:
 		EventRule.__init__(self, parent)
 		self.setDates([])
 
@@ -1168,34 +1234,38 @@ class ExDatesEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: Event,  # noqa: ARG002
+		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		# improve performance # FIXME
 		return JdOccurSet(
 			set(range(startJd, endJd)).difference(self.jdList),
 		)
 
-	def getData(self) -> list[str]:
+	def getRuleValue(self) -> Any:
 		return [dateEncode(date) for date in self.dates]
 
-	def setData(
+	def setRuleValue(
 		self,
 		datesConf: str | list[str | tuple | list],
 	) -> None:
-		dates = []
+		dates: list[tuple[int, int, int]] = []
 		try:
 			if isinstance(datesConf, str):
 				dates = [dateDecode(date.strip()) for date in datesConf.split(",")]
 			else:
 				for date in datesConf:
 					if isinstance(date, str):
-						date = dateDecode(date)  # noqa: PLW2901
+						dates.append(dateDecode(date))  # noqa: PLW2901
 					elif isinstance(date, tuple | list):
-						checkDate(date)
-					dates.append(date)
+						y, m, d = date
+						checkDate((y, m, d))
+						dates.append((y, m, d))
+					else:
+						log.error(f"ExDatesEventRule: setRuleValue: invalid {date=}")
 			self.setDates(dates)
 		except ValueError:
 			log.exception("")
 
 	def changeCalType(self, calType: int) -> bool:
 		self.dates = [jd_to(jd, calType) for jd in self.jdList]
+		return True

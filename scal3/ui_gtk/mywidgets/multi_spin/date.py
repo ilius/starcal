@@ -1,23 +1,30 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from time import localtime
 
 from scal3.cal_types import jd_to, to_jd
-from scal3.mywidgets.multi_spin import DayField, MonthField, YearField
+from scal3.mywidgets.multi_spin import (
+	ContainerField,
+	DayField,
+	MonthField,
+	YearField,
+)
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
 __all__ = ["DateButton"]
 
 
-class DateButton(MultiSpinButton):
+class DateButton(MultiSpinButton[ContainerField[int], Sequence[int]]):
 	def __init__(self, date: tuple[int, int, int] | None = None, **kwargs) -> None:
+		self.dayField = DayField()
 		MultiSpinButton.__init__(
 			self,
-			sep="/",
-			fields=(
+			field=ContainerField(
+				"/",
 				YearField(),
 				MonthField(),
-				DayField(),
+				self.dayField,
 			),
 			**kwargs,
 		)
@@ -38,5 +45,13 @@ class DateButton(MultiSpinButton):
 		)
 
 	def setMaxDay(self, maxDay: int) -> None:
-		self.field.children[2].setMax(maxDay)
+		self.dayField.setMax(maxDay)
 		self.update()
+
+	def getDate(self) -> tuple[int, int, int]:
+		y, m, d = self.get_value()
+		return (y, m, d)
+
+	def setDate(self, date: Sequence[int]) -> None:
+		y, m, d = date
+		self.set_value((y, m, d))

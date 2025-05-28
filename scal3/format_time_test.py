@@ -23,8 +23,9 @@ def formatTime(
 	compiledFmt: CompiledTimeFormat,
 	calType: int,
 	jd: int,
-	tm: float,
+	tm: tuple[int, int, int],
 ) -> str:
+	assert ui.cells is not None
 	cell = ui.cells.getCell(jd)
 	pyFmt, funcs = compiledFmt
 	return pyFmt % tuple(f(cell, calType, tm) for f in funcs)
@@ -45,8 +46,9 @@ class TestJalali(unittest.TestCase):
 		# --------
 		compiledFmt = compileTmFormat(fmt1)
 		calType = core.GREGORIAN
-		tm = list(time.localtime())
-		jd = to_jd(tm[0], tm[1], tm[2], calType)
+		tm = time.localtime()
+		hms = (tm.tm_hour, tm.tm_min, tm.tm_sec)
+		jd = to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, calType)
 		# --------
 		t0 = perf_counter()
 		for _i in range(n):
@@ -54,10 +56,10 @@ class TestJalali(unittest.TestCase):
 		t1 = perf_counter()
 		log.info(f"Python strftime: {int(n / (t1 - t0)):7d} op/sec")
 		# --------
-		jd = to_jd(tm[0], tm[1], tm[2], calType)
+		jd = to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, calType)
 		t0 = perf_counter()
 		for _i in range(n):
-			formatTime(compiledFmt, calType, jd, tm)
+			formatTime(compiledFmt, calType, jd, hms)
 		t1 = perf_counter()
 		log.info(f"My strftime:     {int(n / (t1 - t0)):7d} op/sec")
 
@@ -70,7 +72,8 @@ class TestJalali(unittest.TestCase):
 		day = 4
 		jd = to_jd(year, month, day, core.GREGORIAN)
 		tm = (year, month, day, 12, 10, 0, 15, 1, 1)
-		log.info(formatTime(compiledFmt, core.GREGORIAN, jd, tm))
+		hms = (12, 10, 0)
+		log.info(formatTime(compiledFmt, core.GREGORIAN, jd, hms))
 		log.info(strftime("%OY/%Om/%Od", tm))
 
 

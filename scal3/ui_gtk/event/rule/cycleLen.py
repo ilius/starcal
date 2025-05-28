@@ -8,13 +8,13 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.rules import EventRule
+	from scal3.event_lib.rules import CycleLenEventRule
 
 __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, rule: EventRule) -> None:
+	def __init__(self, rule: CycleLenEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -33,4 +33,5 @@ class WidgetClass(gtk.Box):
 
 	def updateVars(self) -> None:
 		self.rule.days = self.spin.get_value()
-		self.rule.extraTime = self.tbox.get_value()
+		h, m, s = self.tbox.get_value()
+		self.rule.extraTime = (h, m, s)

@@ -38,7 +38,7 @@ __all__ = ["BaseButton", "Button", "SVGButton"]
 class BaseButton:
 	def __init__(
 		self,
-		onPress: Callable | None = None,
+		onPress: Callable,
 		onRelease: Callable | None = None,
 		x: float | None = None,
 		y: float | None = None,
@@ -101,12 +101,13 @@ class BaseButton:
 class SVGButton(BaseButton):
 	def __init__(
 		self,
+		onPress: Callable,
 		imageName: str = "",
 		iconSize: float = 16,
 		rectangleColor: ColorType | None = None,
 		**kwargs,
 	) -> None:
-		BaseButton.__init__(self, **kwargs)
+		BaseButton.__init__(self, onPress=onPress, **kwargs)
 
 		if not imageName:
 			raise ValueError("imageName is given")
@@ -123,7 +124,7 @@ class SVGButton(BaseButton):
 
 		self.rectangleColor = rectangleColor
 
-	def getImagePath(self) -> None:
+	def getImagePath(self) -> str:
 		from os.path import isabs
 
 		path = self.imageName
@@ -144,7 +145,7 @@ class SVGButton(BaseButton):
 			size = self.iconSize
 			red, green, blue = color[:3]
 			if len(color) > 3:
-				opacity = color[3]
+				opacity = color[3] / 255.0
 			else:
 				opacity = self.opacity
 			lineWidth = 1
@@ -194,12 +195,13 @@ class SVGButton(BaseButton):
 class Button(BaseButton):
 	def __init__(
 		self,
+		onPress: Callable,
 		imageName: str = "",
 		iconName: str = "",
 		iconSize: float = 0,
 		**kwargs,
 	) -> None:
-		BaseButton.__init__(self, **kwargs)
+		BaseButton.__init__(self, onPress=onPress, **kwargs)
 
 		shouldResize = True
 

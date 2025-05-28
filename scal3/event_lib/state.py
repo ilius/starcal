@@ -25,7 +25,7 @@ from time import perf_counter
 from time import time as now
 
 from scal3 import core
-from scal3.s_object import SObjTextModel
+from scal3.event_lib.object_base import EventObjTextModel
 
 __all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
 
@@ -33,27 +33,19 @@ __all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
 allReadOnly = False
 
 
-class EventObjTextModel(SObjTextModel):
-	def save(self) -> None:
-		if allReadOnly:
-			log.info(f"events are read-only, ignored file {self.file}")
-			return
-		SObjTextModel.save(self)
-
-
 class InfoWrapper(EventObjTextModel):
 	file = join("event", "info.json")
 	skipLoadNoFile = True
-	params = (
+	params = [
 		"version",
 		"last_run",
-	)
-	paramsOrder = (
+	]
+	paramsOrder = [
 		"version",
 		"last_run",
-	)
+	]
 
-	def __init__(self) -> None:
+	def __init__(self, ident: int) -> None:  # noqa: ARG002
 		self.version = ""
 		self.last_run = 0
 
@@ -69,18 +61,18 @@ class InfoWrapper(EventObjTextModel):
 class LastIdsWrapper(EventObjTextModel):
 	skipLoadNoFile = True
 	file = join("event", "last_ids.json")
-	params = (
+	params = [
 		"event",
 		"group",
 		"account",
-	)
-	paramsOrder = (
+	]
+	paramsOrder = [
 		"event",
 		"group",
 		"account",
-	)
+	]
 
-	def __init__(self) -> None:
+	def __init__(self, ident: int) -> None:  # noqa: ARG002
 		self.event = 0
 		self.group = 0
 		self.account = 0
@@ -115,5 +107,5 @@ class LastIdsWrapper(EventObjTextModel):
 		)
 
 
-info = None  # type: InfoWrapper
-lastIds = None  # type: LastIdsWrappe
+info: InfoWrapper | None = None
+lastIds: LastIdsWrapper | None = None

@@ -37,8 +37,8 @@ __all__ = [
 	"getPixbuf",
 	"setPixbuf",
 ]
-pixbufCache = {}
-saveQueue = Queue()
+pixbufCache: dict[str, GdkPixbuf.Pixbuf] = {}
+saveQueue: Queue[tuple[str, GdkPixbuf.Pixbuf] | None] = Queue()
 saveThread = None
 
 

@@ -25,7 +25,6 @@ import gettext
 import json
 import os
 import string
-import typing
 from contextlib import suppress
 from operator import attrgetter
 from os.path import (
@@ -34,6 +33,7 @@ from os.path import (
 	join,
 	splitext,
 )
+from typing import TYPE_CHECKING
 
 import mytz
 from scal3.cal_types import calTypes
@@ -48,9 +48,11 @@ from scal3.path import (
 from scal3.s_object import SObjTextModel
 from scal3.utils import toStr
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
 	import subprocess
 	from collections.abc import Callable
+	from typing import Any
+
 __all__ = [
 	"addLRM",
 	"cutText",
@@ -97,7 +99,7 @@ confPath = join(confDir, "locale.json")
 lang = Property("")
 enableNumLocale = Property(True)
 
-confParams = {
+confParams: dict[str, Property] = {
 	"lang": lang,
 	"enableNumLocale": enableNumLocale,
 }
@@ -198,7 +200,7 @@ class LangData(SObjTextModel):
 		"rtl",
 		"timeZoneList",
 	]
-	params = (
+	params = [
 		"code",
 		"name",
 		"nativeName",
@@ -207,7 +209,7 @@ class LangData(SObjTextModel):
 		"rtl",
 		"hasUppercase",
 		"timeZoneList",
-	)
+	]
 
 	def __init__(self, _file: str) -> None:
 		self.file = _file  # json file path
@@ -223,8 +225,11 @@ class LangData(SObjTextModel):
 		# --
 		self.timeZoneList: list[str] = []
 
-	def setData(self, data: dict) -> None:
-		SObjTextModel.setData(self, data)
+	def setDict(
+		self,
+		data: dict[str, Any],
+	) -> None:
+		SObjTextModel.setDict(self, data)
 		# -----
 		for param in (
 			"code",
@@ -297,7 +302,7 @@ for fname in langFileList:
 		log.error(f"failed to load json file {fpath}")
 		raise
 	langObj = LangData(fpath)
-	langObj.setData(data)
+	langObj.setDict(data)
 	langDict[langObj.code] = langObj
 	# ---
 	if localTzStr in langObj.timeZoneList:
@@ -308,7 +313,7 @@ for fname in langFileList:
 langDict = sortDict(langDict, attrgetter("name"))
 
 
-def popen_output(cmd: list[str] | str) -> str:
+def popen_output(cmd: list[str] | str) -> bytes:
 	import subprocess
 
 	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]  # noqa: S603
@@ -349,6 +354,14 @@ def prepareLanguage() -> str:
 	return langSh
 
 
+def fallbackTranslate(
+	s: str | float,
+	*_a,  # noqa: ANN002
+	**_ka,  # noqa: ANN003
+) -> str:
+	return str(s)
+
+
 def loadTranslator() -> Callable:
 	global tr
 	transObj = None
@@ -359,45 +372,40 @@ def loadTranslator() -> Callable:
 				transObj = gettext.GNUTranslations(fp)
 		except Exception:
 			log.exception("")
-	if transObj:
 
-		def tr(
-			s: str | float,
-			*a,  # noqa: ANN002
-			nums: bool = False,
-			ctx: str | None = None,
-			default: str | None = None,
-			**ka,  # noqa: ANN003
-		) -> str:
-			orig = s
-			if isinstance(s, int | float):
-				s = numEncode(s, *a, **ka)
+	if not transObj:
+		return fallbackTranslate
+
+	def tr(
+		s: str | float,
+		*a,  # noqa: ANN002
+		nums: bool = False,
+		ctx: str | None = None,
+		default: str | None = None,
+		**ka,  # noqa: ANN003
+	) -> str:
+		orig = s
+		if isinstance(s, int):
+			s = numEncode(s, *a, **ka)
+		elif isinstance(s, float):
+			return floatEncode(str(s))
+		else:
+			# pgettext is added in Python 3.8
+			# even the word "context" does not exist in docs of 3.7
+			# https://docs.python.org/3.7/library/gettext.html
+			if ctx and hasattr(transObj, "pgettext"):
+				s = toStr(transObj.pgettext(ctx, s))
 			else:
-				# pgettext is added in Python 3.8
-				# even the word "context" does not exist in docs of 3.7
-				# https://docs.python.org/3.7/library/gettext.html
-				if ctx and hasattr(transObj, "pgettext"):
-					s = toStr(transObj.pgettext(ctx, s))
-				else:
-					s = toStr(transObj.gettext(s))
-				if default is not None and s == orig:
-					s = default
-				if a:
-					s %= a
-				if ka:
-					s %= ka
-				if nums:
-					s = textNumEncode(s)
-			return s
-
-	else:
-
-		def tr(
-			s: str | float,
-			*_a,  # noqa: ANN002
-			**_ka,  # noqa: ANN003
-		) -> str:
-			return str(s)
+				s = toStr(transObj.gettext(s))
+			if default is not None and s == orig:
+				s = default
+			if a:
+				s %= a
+			if ka:
+				s %= ka
+			if nums:
+				s = textNumEncode(s)
+		return s
 
 	return tr
 
@@ -412,8 +420,8 @@ def getMonthName(
 	year: int | None = None,
 	abbreviate: bool = False,
 ) -> str:
-	module, ok = calTypes[calType]
-	if not ok:
+	module = calTypes[calType]
+	if module is None:
 		raise RuntimeError(f"cal type '{calType}' not found")
 	if abbreviate:
 		return module.getMonthNameAb(tr, month, year)
@@ -456,7 +464,8 @@ def getAvailableDigitKeys() -> set[str]:
 
 def numEncode(
 	num: int,
-	localeMode: str | int | None = None,
+	localeMode: str | None = None,  # language name or "calendar"
+	calType: int | None = None,  # only used when localeMode == "calendar"
 	fillZero: int = 0,
 	negEnd: bool = False,
 ) -> str:
@@ -464,15 +473,16 @@ def numEncode(
 		localeMode = "en"
 	if localeMode is None:
 		localeMode = langSh
-	elif isinstance(localeMode, int):  # noqa: SIM102
-		if langSh != "en":
-			module, ok = calTypes[localeMode]
-			if not ok:
-				raise RuntimeError(f"cal type '{localeMode}' not found")
-			try:
-				localeMode = module.origLang
-			except AttributeError:
-				localeMode = langSh
+	elif localeMode == "calendar" and langSh != "en":
+		if calType is None:
+			calType = calTypes.primary
+		module = calTypes[calType]
+		if module is None:
+			raise RuntimeError(f"cal type '{calType}' not found")
+		try:
+			localeMode = module.origLang
+		except AttributeError:
+			localeMode = langSh
 	if localeMode == "en" or localeMode not in digits:
 		if fillZero:
 			return str(num).zfill(fillZero)
@@ -497,7 +507,8 @@ def numEncode(
 
 def textNumEncode(
 	st: str,
-	localeMode: str | int | None = None,
+	localeMode: str | None = None,
+	calType: int | None = None,
 	changeSpecialChars: bool = True,
 	changeDot: bool = False,
 ) -> str:
@@ -505,15 +516,16 @@ def textNumEncode(
 		localeMode = "en"
 	if localeMode is None:
 		localeMode = langSh
-	elif isinstance(localeMode, int):  # noqa: SIM102
-		if langSh != "en":
-			module, ok = calTypes[localeMode]
-			if not ok:
-				raise RuntimeError(f"cal type '{localeMode}' not found")
-			try:
-				localeMode = module.origLang
-			except AttributeError:
-				localeMode = langSh
+	elif localeMode == "calendar" and langSh != "en":
+		if calType is None:
+			calType = calTypes.primary
+		module = calTypes[calType]
+		if module is None:
+			raise RuntimeError(f"cal type '{calType}' not found")
+		try:
+			localeMode = module.origLang
+		except AttributeError:
+			localeMode = langSh
 	dig = getLangDigits(localeMode)
 	res = ""
 	for c in toStr(st):
@@ -538,7 +550,7 @@ def textNumEncode(
 
 def floatEncode(
 	st: str,
-	localeMode: str | int | None = None,
+	localeMode: str | None = None,
 ) -> str:
 	return textNumEncode(
 		st,
