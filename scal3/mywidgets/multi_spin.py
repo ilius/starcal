@@ -134,6 +134,9 @@ class FloatField(NumField):
 		self.setDefault()
 
 	def setText(self, text):
+		if not text:
+			self.setDefault()
+			return
 		try:
 			num = float(textNumDecode(text))
 		except ValueError:
