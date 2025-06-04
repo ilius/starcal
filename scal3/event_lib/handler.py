@@ -7,6 +7,8 @@ from .accounts_holder import EventAccountsHolder
 from .groups_holder import EventGroupsHolder
 from .trash import EventTrash
 
+__all__ = ["Handler"]
+
 
 class Handler:
 	def __init__(self) -> None:
