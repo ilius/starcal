@@ -29,6 +29,7 @@ from scal3.cal_types import calTypes, jd_to
 from scal3.cell_type import CellType
 from scal3.date_utils import getJdRangeForMonth
 from scal3.date_utils import monthPlus as lowMonthPlus
+from scal3.event_lib import ev
 from scal3.ui import conf
 
 if typing.TYPE_CHECKING:
@@ -134,7 +135,7 @@ class Cell:
 		# t0 = perf_counter()
 		self._eventsData = event_lib.getDayOccurrenceData(
 			self.jd,
-			ui.ev.groups,
+			ev.groups,
 			tfmt=conf.eventDayViewTimeFormat.v,
 		)
 		return self._eventsData

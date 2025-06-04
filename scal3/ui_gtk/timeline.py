@@ -30,6 +30,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
 from scal3.cal_types import calTypes
+from scal3.event_lib import ev
 from scal3.locale_man import localTz
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
@@ -603,7 +604,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				if not box.contains(x, y):
 					continue
 				gid, eid = box.ids
-				group = ui.ev.groups[gid]
+				group = ev.groups[gid]
 				event = group[eid]
 				# ----
 				top = y - box.y
@@ -638,7 +639,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				if not box.contains(x, y):
 					continue
 				gid, eid = box.ids
-				group = ui.ev.groups[gid]
+				group = ev.groups[gid]
 				event = group[eid]
 				# ----
 				menu = Menu()
@@ -675,8 +676,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				# --
 				menu.add(
 					ImageMenuItem(
-						_("Move to {title}").format(title=ui.ev.trash.title),
-						imageName=ui.ev.trash.getIconRel(),
+						_("Move to {title}").format(title=ev.trash.title),
+						imageName=ev.trash.getIconRel(),
 						func=self.moveEventToTrash,
 						args=(
 							group,

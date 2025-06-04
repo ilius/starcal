@@ -16,18 +16,18 @@
 
 from __future__ import annotations
 
-from time import localtime
-
 from scal3 import logger
 
 log = logger.get()
 
 import typing
 from os.path import join
+from time import localtime
 
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes
 from scal3.core import jd_to_primary
+from scal3.event_lib import ev
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
@@ -399,8 +399,8 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		_user_data: Any = None,
 	) -> int:
 		return intcmp(
-			ui.ev.groups.index(model.get(iter1, 0)[0]),
-			ui.ev.groups.index(model.get(iter2, 0)[0]),
+			ev.groups.index(model.get(iter1, 0)[0]),
+			ev.groups.index(model.get(iter2, 0)[0]),
 		)
 
 	def updateTimeFromSensitive(self, _w: gtk.Widget | None = None) -> None:
@@ -428,7 +428,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			assert groupId is not None
 			groupIds = [groupId]
 		else:
-			groupIds = ui.ev.groups.getEnableIds()
+			groupIds = ev.groups.getEnableIds()
 		# ---
 		# TODO: get from input widget
 		calType = self.currentCalType
@@ -458,7 +458,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		# ---
 		self.treeModel.clear()
 		for gid in groupIds:
-			group = ui.ev.groups[gid]
+			group = ev.groups[gid]
 			for event in group.search(conds):
 				self.treeModel.append(
 					None,
@@ -496,7 +496,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			_file.flush()
 			eventCount = 0
 			for gid in groupIds:
-				group = ui.ev.groups[gid]
+				group = ev.groups[gid]
 				for event in group.search(conds):
 					eventData = event.getDictOrdered()
 					eventData["modified"] = event.modified
@@ -573,7 +573,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			# IndexError: could not find tree path 'N'
 			# IndexError: column index is out of bounds: N
 			return
-		group = ui.ev.groups[gid]
+		group = ev.groups[gid]
 		event = group[eid]
 		eventNew = EventEditorDialog(
 			event,
@@ -645,7 +645,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			eid = self.treeModel[path][1]
 		except IndexError:
 			return
-		group = ui.ev.groups[gid]
+		group = ev.groups[gid]
 		event = group[eid]
 		if not confirmEventTrash(event):
 			return
@@ -673,7 +673,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		)
 		subMenu = Menu()
 		# ---
-		for new_group in ui.ev.groups:
+		for new_group in ev.groups:
 			if new_group.id == group.id:
 				continue
 			# if not new_group.enable:-- FIXME
@@ -702,7 +702,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		)
 		subMenu = Menu()
 		# ---
-		for new_group in ui.ev.groups:
+		for new_group in ev.groups:
 			# if not new_group.enable:-- FIXME
 			# 	continue
 			if event.name in new_group.acceptsEventTypes:
@@ -726,14 +726,14 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 
 		gid = self.treeModel[path][0]
 		eid = self.treeModel[path][1]
-		group = ui.ev.groups[gid]
+		group = ev.groups[gid]
 		event = group[eid]
 		EventHistoryDialog(event, transient_for=self).run()
 
 	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]
 		eid = self.treeModel[path][1]
-		group = ui.ev.groups[gid]
+		group = ev.groups[gid]
 		event = group[eid]
 		# --
 		menu = Menu()
@@ -763,8 +763,8 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			ImageMenuItem(
-				_("Move to {title}").format(title=ui.ev.trash.title),
-				imageName=ui.ev.trash.getIconRel(),
+				_("Move to {title}").format(title=ev.trash.title),
+				imageName=ev.trash.getIconRel(),
 				func=self.moveEventToTrashFromMenu,
 				args=(path,),
 			),

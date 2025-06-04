@@ -34,6 +34,7 @@ from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
 )
+from scal3.event_lib import ev
 from scal3.event_lib.accounts_holder import EventAccountsHolder
 from scal3.event_lib.event_base import Event
 from scal3.event_lib.groups_holder import EventGroupsHolder
@@ -391,10 +392,6 @@ def getActiveMonthCalParams() -> list[tuple[int, CalTypeParamsDict]]:
 		),
 	)
 
-
-# --------------------------------
-
-ev = event_lib.Handler()
 
 # --------------------------------
 

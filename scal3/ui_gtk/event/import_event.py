@@ -12,6 +12,7 @@ import sys
 from gi.repository import Gtk as gtk
 
 from scal3 import ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import HBox, VBox, gdk, pack
@@ -165,13 +166,13 @@ class EventsImportWindow(WizardWindow):
 				sys.stderr.write(f"{_('Error in loading JSON data')}\n{e}\n")
 			else:
 				try:
-					res = ui.ev.groups.importData(data)
+					res = ev.groups.importData(data)
 				except Exception as e:
 					sys.stderr.write(f"{_('Error in importing events')}\n{e}\n")
 					log.exception("")
 				else:
 					for gid in res.newGroupIds:
-						group = ui.ev.groups[gid]
+						group = ev.groups[gid]
 						ui.eventUpdateQueue.put("+g", group, None)
 					# TODO: res.newEventIds
 					# TODO: res.modifiedEventIds

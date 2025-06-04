@@ -1,4 +1,4 @@
-from scal3 import ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
@@ -34,7 +34,7 @@ class TrashEditorDialog(gtk.Dialog):
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
 		# -------
-		self.trash = ui.ev.trash
+		self.trash = ev.trash
 		# --
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -------

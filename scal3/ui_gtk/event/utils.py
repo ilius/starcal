@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scal3 import ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
@@ -30,7 +30,7 @@ def confirmEventTrash(event: EventType, **kwargs) -> bool:
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
 		).format(
 			eventSummary=event.summary,
-			trashTitle=ui.ev.trash.title,
+			trashTitle=ev.trash.title,
 		),
 		**kwargs,
 	)
@@ -44,7 +44,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 		).format(
 			toTrashCount=_(toTrashCount),
 			deleteCount=_(deleteCount),
-			trashTitle=ui.ev.trash.title,
+			trashTitle=ev.trash.title,
 		),
 		use_markup=True,
 		**kwargs,
@@ -52,7 +52,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 
 
 def checkEventsReadOnly(doException: bool = True) -> bool:
-	if ui.ev.allReadOnly:
+	if ev.allReadOnly:
 		error = (
 			"Events are Read-Only because they are locked by "
 			"another StarCalendar 3.x process"
@@ -66,13 +66,13 @@ def checkEventsReadOnly(doException: bool = True) -> bool:
 
 def eventWriteMenuItem(*args, sensitive: bool = True, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(sensitive and not ui.ev.allReadOnly)
+	item.set_sensitive(sensitive and not ev.allReadOnly)
 	return item
 
 
 def eventWriteImageMenuItem(*args, **kwargs) -> gtk.MenuItem:
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(not ui.ev.allReadOnly)
+	item.set_sensitive(not ev.allReadOnly)
 	return item
 
 

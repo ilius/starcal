@@ -26,6 +26,7 @@ from os.path import isfile, join
 
 from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
+from scal3.event_lib import ev
 from scal3.locale_man import getLocaleFirstWeekDay, langSh
 from scal3.locale_man import tr as _
 from scal3.path import sourceDir, svgDir
@@ -1478,7 +1479,7 @@ class PreferencesWindow(gtk.Window):
 
 	def refreshAccounts(self) -> None:
 		self.accountsTreeModel.clear()
-		for account in ui.ev.accounts:
+		for account in ev.accounts:
 			self.accountsTreeModel.append(
 				[
 					account.id,
@@ -1828,7 +1829,7 @@ class PreferencesWindow(gtk.Window):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.ev.accounts[accountId]
+		account = ev.accounts[accountId]
 		if not account.loaded:
 			showError(_("Account must be enabled before editing"), transient_for=self)
 			return
@@ -1836,7 +1837,7 @@ class PreferencesWindow(gtk.Window):
 		if accountNew is None:
 			return
 		accountNew.save()
-		ui.ev.accounts.save()
+		ev.accounts.save()
 		self.accountsTreeModel[index][2] = accountNew.title
 
 	def onAccountsEditClick(self, _b: gtk.Widget) -> None:
@@ -1859,8 +1860,8 @@ class PreferencesWindow(gtk.Window):
 		if account is None:
 			return
 		account.save()
-		ui.ev.accounts.append(account)
-		ui.ev.accounts.save()
+		ev.accounts.append(account)
+		ev.accounts.save()
 		self.accountsTreeModel.append(
 			[
 				account.id,
@@ -1884,7 +1885,7 @@ class PreferencesWindow(gtk.Window):
 			return
 		index = cur[0]
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.ev.accounts[accountId]
+		account = ev.accounts[accountId]
 		if not confirm(
 			_('Do you want to delete account "{accountTitle}"').format(
 				accountTitle=account.title,
@@ -1892,8 +1893,8 @@ class PreferencesWindow(gtk.Window):
 			transient_for=self,
 		):
 			return
-		ui.ev.accounts.delete(account)
-		ui.ev.accounts.save()
+		ev.accounts.delete(account)
+		ev.accounts.save()
 		del self.accountsTreeModel[index]
 
 	def onAccountsUpClick(self, _b: gtk.Widget) -> None:
@@ -1905,8 +1906,8 @@ class PreferencesWindow(gtk.Window):
 		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
-		ui.ev.accounts.moveUp(index)
-		ui.ev.accounts.save()
+		ev.accounts.moveUp(index)
+		ev.accounts.save()
 		t.swap(
 			t.get_iter(index - 1),
 			t.get_iter(index),
@@ -1922,8 +1923,8 @@ class PreferencesWindow(gtk.Window):
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
-		ui.ev.accounts.moveDown(index)
-		ui.ev.accounts.save()
+		ev.accounts.moveDown(index)
+		ev.accounts.save()
 		t.swap(t.get_iter(index), t.get_iter(index + 1))
 		self.accountsTreeview.set_cursor(index + 1)
 
@@ -1945,7 +1946,7 @@ class PreferencesWindow(gtk.Window):
 			# if cur:
 			# 	index = cur[0]
 			# 	accountId = self.accountsTreeModel[index][0]
-			# 	account = ui.ev.accounts[accountId]
+			# 	account = ev.accounts[accountId]
 			# 	menu = Menu()
 			# 	#
 			# 	menu.show_all()
@@ -1963,10 +1964,10 @@ class PreferencesWindow(gtk.Window):
 		active = not cell.get_active()
 		# ---
 		accountId = self.accountsTreeModel[index][0]
-		account = ui.ev.accounts[accountId]
+		account = ev.accounts[accountId]
 		# not account.loaded -> it's a dummy account
 		if active and not account.loaded:
-			account = ui.ev.accounts.replaceDummyObj(account)
+			account = ev.accounts.replaceDummyObj(account)
 			if account is None:
 				return
 		account.enable = active

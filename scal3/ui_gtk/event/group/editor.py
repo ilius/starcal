@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any
 from scal3 import logger
 
 log = logger.get()
-
-from scal3 import event_lib, ui
+from scal3 import event_lib
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -56,7 +56,7 @@ class GroupEditorDialog(gtk.Dialog):
 		# ----
 		if group is None:
 			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
-			self._group = ui.ev.groups.create(name)
+			self._group = ev.groups.create(name)
 			combo.set_active(event_lib.defaultGroupTypeIndex)
 		else:
 			self._group = group
@@ -72,7 +72,7 @@ class GroupEditorDialog(gtk.Dialog):
 
 	@staticmethod
 	def getNewGroupTitle(baseTitle: str) -> str:
-		usedTitles = {group.title for group in ui.ev.groups}
+		usedTitles = {group.title for group in ev.groups}
 		if baseTitle not in usedTitles:
 			return baseTitle
 
@@ -116,9 +116,9 @@ class GroupEditorDialog(gtk.Dialog):
 		self.activeWidget.updateVars()
 		self._group.save()  # FIXME
 		if self.isNew:
-			ui.ev.lastIds.save()
+			ev.lastIds.save()
 		else:
-			ui.ev.groups[self._group.id] = self._group  # FIXME
-		ui.ev.notif.checkGroup(self._group)
+			ev.groups[self._group.id] = self._group  # FIXME
+		ev.notif.checkGroup(self._group)
 		self.destroy()
 		return self._group
