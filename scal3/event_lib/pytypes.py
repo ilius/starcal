@@ -40,7 +40,7 @@ class BaseClassType(Protocol):
 
 class RuleContainerType(BaseClassType, Protocol):
 	calType: int
-	rulesOd: dict[str, EventRuleType]
+	rulesDict: dict[str, EventRuleType]
 
 	def __getitem__(self, key: str) -> EventRuleType | None: ...
 	def getTimeZoneObj(self) -> tzinfo: ...
