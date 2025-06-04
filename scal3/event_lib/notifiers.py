@@ -18,7 +18,8 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.color_utils import RGB
-from scal3.event_lib.notifier_base import EventNotifier
+
+from .notifier_base import EventNotifier
 
 log = logger.get()
 
@@ -32,7 +33,8 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.color_utils import ColorType
-	from scal3.event_lib.pytypes import EventType
+
+	from .pytypes import EventType
 
 
 __all__ = ["AlarmNotifier", "FloatingMsgNotifier"]

@@ -23,12 +23,13 @@ log = logger.get()
 from os.path import join
 from typing import TYPE_CHECKING
 
-from scal3.event_lib import state
-from scal3.event_lib.object_base import EventObjTextModel
 from scal3.s_object import (
 	SObjBinaryModel,
 	objectDirName,
 )
+
+from . import state
+from .object_base import EventObjTextModel
 
 if TYPE_CHECKING:
 	from collections.abc import Iterable
