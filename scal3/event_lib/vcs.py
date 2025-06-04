@@ -46,6 +46,8 @@ if TYPE_CHECKING:
 	from .event_container import EventContainer
 	from .pytypes import EventType
 
+__all__ = ["VcsCommitEventGroup", "VcsTagEventGroup"]
+
 
 # @classes.event.register  # FIXME
 class VcsCommitEvent(VcsEpochBaseEvent):
