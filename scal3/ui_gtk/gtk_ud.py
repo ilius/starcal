@@ -56,6 +56,7 @@ __all__ = [
 	"BaseCalObj",
 	"CalObjType",
 	"adjustTimeCmd",
+	"clockFormatBin",
 	"cssFunc",
 	"dateFormatBin",
 	"hasLightTheme",
