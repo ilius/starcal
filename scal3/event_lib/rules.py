@@ -162,7 +162,7 @@ class EventRule(SObjBase):
 
 	@classmethod
 	def getFrom(cls, container: RuleContainerType) -> Self | None:
-		return container.rulesOd.get(cls.name)  # type: ignore[return-value]
+		return container.rulesDict.get(cls.name)  # type: ignore[return-value]
 
 	@classmethod
 	def addOrGetFrom(cls, container: RuleContainerType) -> Self:

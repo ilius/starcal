@@ -1893,7 +1893,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # FIXME
 			text = _("Event ID: {eventId}").format(eventId=_(event.id))
 			modified = event.modified
 			# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
-			for rule in event.rulesOd.values():
+			for rule in event.rulesDict.values():
 				log.debug(f"Rule {rule.name}: '{rule}', info='{rule.getInfo()}'")
 
 		if modified is None:
