@@ -632,8 +632,8 @@ if __name__ == "__main__":
 	account.fetchGroups()
 	# remoteGroupId = "gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com"
 	# groupId = 102
-	# ui.ev.groups = event_lib.EventGroupsHolder.load(0, fs=core.fs)
-	# group = ui.ev.groups[groupId]
+	# ev.groups = event_lib.EventGroupsHolder.load(0, fs=core.fs)
+	# group = ev.groups[groupId]
 	# log.debug(f"{group.remoteIds = }")
 	# group.remoteIds = (account.id, remoteGroupId)
 	# account.sync(group, remoteGroupId)  # 400 Bad Request

@@ -14,6 +14,7 @@ from gi.repository.GLib import idle_add
 
 from scal3 import ui
 from scal3.cell import init as initCell
+from scal3.event_lib import ev
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk import pixcache, starcal
 from scal3.ui_gtk.event.export import MultiGroupExportDialog
@@ -31,7 +32,7 @@ starcal.listener.dateChange.add(hijri_gtk.HijriMonthsExpirationListener())
 hijri_gtk.checkHijriMonthsExpiration()
 
 starcal.checkEventsReadOnly(False)
-ui.ev.info.updateAndSave()
+ev.info.updateAndSave()
 
 mainWin = starcal.MainWin(statusIconMode=2)
 

@@ -133,6 +133,7 @@ __all__ = [
 	"defaultGroupTypeIndex",
 	"durationDecode",
 	"durationEncode",
+	"ev",
 	"findNearestIndex",
 	"getAbsWeekNumberFromJd",
 	"getDayOccurrenceData",
@@ -238,6 +239,7 @@ def removeUnusedObjects(fs: FileSystem) -> None:
 
 # ---------------------------------------------------------------------------
 
+ev = Handler()
 
 defaultGroupTypeIndex = 0  # FIXME
 

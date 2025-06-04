@@ -3,7 +3,8 @@ from __future__ import annotations
 from os.path import join, split, splitext
 from typing import TYPE_CHECKING
 
-from scal3 import cal_types, core, ui
+from scal3 import cal_types, core
+from scal3.event_lib import ev
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
@@ -96,18 +97,18 @@ class SingleGroupExportDialog(MyDialog):
 		fpath = self.fcw.get_filename()
 		if self.radioJsonCompact.get_active():
 			text = dataToCompactJson(
-				ui.ev.groups.exportData([self._group.id]),
+				ev.groups.exportData([self._group.id]),
 			)
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 		elif self.radioJsonPretty.get_active():
 			text = dataToPrettyJson(
-				ui.ev.groups.exportData([self._group.id]),
+				ev.groups.exportData([self._group.id]),
 			)
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 		elif self.radioIcs.get_active():
-			ui.ev.groups.exportToIcs(
+			ev.groups.exportToIcs(
 				fpath,
 				[self._group.id],
 			)
@@ -230,9 +231,9 @@ class MultiGroupExportDialog(MyDialog):
 		fpath = self.fpathEntry.get_text()
 		activeGroupIds = self.groupSelect.getValue()
 		if self.radioIcs.get_active():
-			ui.ev.groups.exportToIcs(fpath, activeGroupIds)
+			ev.groups.exportToIcs(fpath, activeGroupIds)
 		else:
-			data = ui.ev.groups.exportData(activeGroupIds)
+			data = ev.groups.exportData(activeGroupIds)
 			# FIXME: what to do with all groupData["info"] s?
 			if self.radioJsonCompact.get_active():
 				text = dataToCompactJson(data)
@@ -337,7 +338,7 @@ class EventListExportDialog(MyDialog):
 		if not groupTitle:
 			groupTitle = split(fpath)[1]
 
-		data = ui.ev.groups.eventListExportData(
+		data = ev.groups.eventListExportData(
 			self._idsList,
 			groupTitle=groupTitle,
 		)
