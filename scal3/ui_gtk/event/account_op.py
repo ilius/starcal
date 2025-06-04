@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scal3 import event_lib, ui
+from scal3 import event_lib
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
@@ -91,9 +92,9 @@ class AccountEditorDialog(gtk.Dialog):
 		self.activeWidget.updateVars()
 		self.account.save()
 		if self.isNew:
-			ui.ev.lastIds.save()
+			ev.lastIds.save()
 		else:
-			ui.ev.accounts[self.account.id] = self.account
+			ev.accounts[self.account.id] = self.account
 		self.destroy()
 		return self.account
 

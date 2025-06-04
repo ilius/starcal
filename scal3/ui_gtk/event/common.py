@@ -24,8 +24,9 @@ log = logger.get()
 
 from contextlib import suppress
 
-from scal3 import event_lib, ui
+from scal3 import event_lib
 from scal3.cal_types import calTypes
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
 from scal3.ui import conf
@@ -530,7 +531,7 @@ class GroupsTreeCheckList(gtk.TreeView):
 		col.set_resizable(True)
 		self.append_column(col)
 		# ---
-		for group in ui.ev.groups:
+		for group in ev.groups:
 			self.treeModel.append([group.id, True, group.title])
 
 	def enableCellToggled(self, cell: gtk.CellRenderer, path: str) -> None:
@@ -579,7 +580,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		activeGid = self.get_active()
 		ls.clear()
 		# ---
-		for group in ui.ev.groups:
+		for group in ev.groups:
 			if not group.enable:  # FIXME
 				continue
 			ls.append(getGroupRow(group))

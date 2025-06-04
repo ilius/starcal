@@ -27,6 +27,7 @@ from time import perf_counter
 from typing import TYPE_CHECKING
 
 from scal3 import ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.timeline import conf
 from scal3.ui import conf as uiconf
@@ -187,8 +188,8 @@ def calcEventBoxes(
 		]
 	boxesDict: dict[tuple[int, float, float], list[Box]] = {}
 	# timeMiddle = (timeStart + timeEnd) / 2.0
-	for groupIndex in range(len(ui.ev.groups)):
-		group = ui.ev.groups.byIndex(groupIndex)
+	for groupIndex in range(len(ev.groups)):
+		group = ev.groups.byIndex(groupIndex)
 		if not group.enable:
 			continue
 		if not group.showInTimeLine:

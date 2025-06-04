@@ -22,8 +22,8 @@ from typing import TYPE_CHECKING, Any
 from scal3 import logger
 
 log = logger.get()
-
 from scal3 import core, locale_man, ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
@@ -142,7 +142,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
 
-		accountCls: type[StarCalendarAccount] = ui.ev.accounts.loadClass("starcal")  # type: ignore[assignment]
+		accountCls: type[StarCalendarAccount] = ev.accounts.loadClass("starcal")  # type: ignore[assignment]
 		assert accountCls is not None
 
 		res = requests.post(
@@ -177,8 +177,8 @@ class StarCalendarRegisterDialog(MyDialog):
 			},
 		)
 		account.save()
-		ui.ev.accounts.append(account)
-		ui.ev.accounts.save()
+		ev.accounts.append(account)
+		ev.accounts.save()
 		if ui.prefWindow:
 			ui.prefWindow.refreshAccounts()  # messy, I know, FIXME
 		# ---
