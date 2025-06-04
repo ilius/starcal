@@ -91,9 +91,11 @@ if TYPE_CHECKING:
 __all__ = [
 	"EventGroup",
 	"LargeScaleGroup",
+	"LifetimeGroup",
 	"NoteBook",
 	"TaskList",
 	"UniversityTerm",
+	"WeeklyScheduleItem",
 	"YearlyGroup",
 	"groupsDir",
 ]
