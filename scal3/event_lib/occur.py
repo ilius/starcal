@@ -34,7 +34,7 @@ from scal3.time_utils import (
 )
 
 if TYPE_CHECKING:
-	from scal3.event_lib.pytypes import EventType
+	from .pytypes import EventType
 
 __all__ = ["IntervalOccurSet", "JdOccurSet", "OccurSet", "TimeListOccurSet"]
 
