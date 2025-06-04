@@ -21,10 +21,11 @@ from scal3 import logger
 log = logger.get()
 
 
-from scal3.event_lib import state
 from scal3.s_object import (
 	SObjTextModel,
 )
+
+from . import state
 
 __all__ = ["EventObjTextModel"]
 

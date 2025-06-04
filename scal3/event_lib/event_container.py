@@ -41,8 +41,9 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.event_search_tree import EventSearchTree
+
+	from .pytypes import EventGroupType, EventType
 
 
 __all__ = ["DummyEventContainer", "EventContainer"]

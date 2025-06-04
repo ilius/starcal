@@ -61,7 +61,7 @@ if TYPE_CHECKING:
 	from collections.abc import Sequence
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventType, RuleContainerType
+	from .pytypes import EventType, RuleContainerType
 
 	# _ruleDymmy: EventRuleType = EventRule(Event())
 

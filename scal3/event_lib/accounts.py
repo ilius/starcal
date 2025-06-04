@@ -24,10 +24,10 @@ log = logger.get()
 from os.path import join
 from typing import TYPE_CHECKING
 
-# from scal3.interval_utils import
-from scal3.event_lib import state
 from scal3.locale_man import tr as _
 
+# from scal3.interval_utils import
+from . import state
 from .objects import HistoryEventObjBinaryModel
 from .register import classes
 
@@ -35,8 +35,9 @@ if TYPE_CHECKING:
 	from collections.abc import Iterator
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.filesystem import FileSystem
+
+	from .pytypes import EventGroupType
 
 
 __all__ = ["Account", "DummyAccount", "accountsDir"]

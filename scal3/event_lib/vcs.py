@@ -17,7 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.vcs_base import (
+
+from .vcs_base import (
 	VcsBaseEventGroup,
 	VcsEpochBaseEvent,
 	VcsEpochBaseEventGroup,

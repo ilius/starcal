@@ -25,7 +25,8 @@ from time import perf_counter
 from time import time as now
 
 from scal3 import core
-from scal3.event_lib.object_base import EventObjTextModel
+
+from .object_base import EventObjTextModel
 
 __all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
 
