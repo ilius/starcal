@@ -29,16 +29,14 @@ class MultiSpinOptionBox[F: Field, V](gtk.Box):
 		self,
 		field: F,
 		spacing: int = 0,
-		is_hbox: bool = False,
 		hist_size: int = 10,
 		**kwargs,
 	) -> None:
-		if not is_hbox:
-			gtk.Box.__init__(
-				self,
-				orientation=gtk.Orientation.HORIZONTAL,
-				spacing=spacing,
-			)
+		gtk.Box.__init__(
+			self,
+			orientation=gtk.Orientation.HORIZONTAL,
+			spacing=spacing,
+		)
 		self.spin: MultiSpinButton[F, V] = MultiSpinButton(
 			field=field,
 			**kwargs,
