@@ -3,9 +3,11 @@ from xml.etree.ElementTree import XML
 
 sys.path.append("/starcal2")
 
-from scal3 import event_lib, logger, ui
+from scal3 import event_lib, logger
 
 log = logger.get()
+
+from scal3.event_lib import ev
 
 with open("/usr/share/apps/libkdeedu/data/elements.xml", encoding="utf-8") as _file:
 	tree = XML(_file.read())
@@ -58,7 +60,7 @@ def createDiscoveryEvent(group, atom):
 
 
 if __name__ == "__main__":
-	ui.ev.groups.load()
+	ev.groups.load()
 	group = event_lib.LargeScaleGroup()
 	group.setData(
 		{
@@ -76,5 +78,5 @@ if __name__ == "__main__":
 			event.save()
 			group.append(event)
 	group.save()
-	ui.ev.groups.append(group)
-	ui.ev.groups.save()
+	ev.groups.append(group)
+	ev.groups.save()

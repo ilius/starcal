@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3 import event_lib, locale_man, ui
+from scal3.event_lib import ev
 from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
@@ -166,8 +167,8 @@ class EventEditorDialog(gtk.Dialog):
 			group.add(event)
 			group.save()
 		event.afterAddedToGroup()
-		ui.ev.lastIds.save()
-		ui.ev.notif.checkEvent(group, event)
+		ev.lastIds.save()
+		ev.notif.checkEvent(group, event)
 
 		self.destroy()
 		# -----
