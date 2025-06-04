@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 __all__ = [
 	"AccountType",
 	"BaseClassType",
+	"EventContainerType",
 	"EventGroupType",
 	"EventNotifierType",
 	"EventRuleType",

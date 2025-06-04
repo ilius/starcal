@@ -69,12 +69,18 @@ if TYPE_CHECKING:
 
 
 __all__ = [
+	"AllDayTaskEvent",
+	"DailyNoteEvent",
 	"Event",
 	"LargeScaleEvent",
+	"LifetimeEvent",
+	"MonthlyEvent",
 	"SingleStartEndEvent",
 	"TaskEvent",
 	"UniversityClassEvent",
 	"UniversityExamEvent",
+	"WeeklyEvent",
+	"YearlyEvent",
 ]
 
 

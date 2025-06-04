@@ -39,6 +39,7 @@ __all__ = [
 	"findWordByPos",
 	"iceil",
 	"ifloor",
+	"intcmp",
 	"numRangesDecode",
 	"numRangesEncode",
 	"restartLow",

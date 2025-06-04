@@ -77,6 +77,7 @@ __all__ = [
 	"DurationEventRule",
 	"EndEventRule",
 	"EventRule",
+	"ExDatesEventRule",
 	"MonthEventRule",
 	"StartEventRule",
 	"WeekDayEventRule",
