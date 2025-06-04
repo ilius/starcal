@@ -141,7 +141,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return SObjBinaryModel.getRevision(self, revHash, self.id)
 
 	def __bool__(self) -> bool:
-		return bool(self.rulesOd)  # FIXME
+		return bool(self.rulesDict)  # FIXME
 
 	def __repr__(self) -> str:
 		return f"{self.__class__.__name__}(id={self.id!r})"
@@ -256,7 +256,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		module = calTypes[self.calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
-		rulesDict = self.rulesOd.copy()
+		rulesDict = self.rulesDict.copy()
 		lines = [
 			_("Type") + ": " + self.desc,
 			_("Calendar Type") + ": " + module.desc,
@@ -441,7 +441,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		"""StartJd and endJd are float jd."""
 		# cache Occurrences  # FIXME
-		rules = list(self.rulesOd.values())
+		rules = list(self.rulesDict.values())
 		if not rules:
 			return JdOccurSet()
 		occur = rules[0].calcOccurrence(startJd, endJd, self)
@@ -543,14 +543,14 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return False
 
 	def changeCalType(self, calType: int) -> bool:
-		backupRulesOd = RuleContainer.copyRulesDict(self.rulesOd)
+		backupRulesOd = RuleContainer.copyRulesDict(self.rulesDict)
 		if calType != self.calType:
-			for rule in self.rulesOd.values():
+			for rule in self.rulesDict.values():
 				if not rule.changeCalType(calType):
 					log.info(
 						f"changeCalType: failed because of rule {rule.name}={rule}",
 					)
-					self.rulesOd = backupRulesOd
+					self.rulesDict = backupRulesOd
 					return False
 			self.calType = calType
 		return True

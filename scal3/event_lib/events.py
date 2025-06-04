@@ -1327,7 +1327,7 @@ class CustomEvent(Event):
 						"type": ruleName,
 						"value": rule.getServerString(),
 					}
-					for ruleName, rule in self.rulesOd.items()
+					for ruleName, rule in self.rulesDict.items()
 				],
 			},
 		)
