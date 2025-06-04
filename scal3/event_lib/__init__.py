@@ -43,7 +43,6 @@ from scal3.date_utils import (
 	getJdRangeForMonth,
 	jwday,
 )
-from scal3.event_lib.objects import iterObjectFiles
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
@@ -99,6 +98,7 @@ from .groups import EventGroup, LargeScaleGroup, NoteBook, groupsDir
 from .groups_holder import EventGroupsHolder
 from .handler import Handler
 from .icon import WithIcon
+from .objects import iterObjectFiles
 from .occur import JdOccurSet
 from .occur_data import getDayOccurrenceData
 from .register import classes

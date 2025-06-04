@@ -7,13 +7,14 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 
 	from scal3.color_utils import ColorType
-	from scal3.event_lib.event_container import EventContainer
-	from scal3.event_lib.groups_import import EventGroupsImportResult
-	from scal3.event_lib.occur import OccurSet
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
 	from scal3.s_object import ParentSObj
 	from scal3.time_utils import HMS
+
+	from .event_container import EventContainer
+	from .groups_import import EventGroupsImportResult
+	from .occur import OccurSet
 
 __all__ = [
 	"AccountType",

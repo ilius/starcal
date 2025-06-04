@@ -39,13 +39,6 @@ from scal3.cal_types import (
 from scal3.core import getAbsWeekNumberFromJd
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.dict_utils import makeOrderedDict
-from scal3.event_lib import state
-from scal3.event_lib.events import (
-	LargeScaleEvent,
-	UniversityClassEvent,
-	UniversityExamEvent,
-)
-from scal3.event_lib.rules import DayTimeRangeEventRule
 from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
@@ -59,7 +52,13 @@ from scal3.time_utils import (
 )
 from scal3.utils import findNearestIndex
 
+from . import state
 from .event_container import EventContainer
+from .events import (
+	LargeScaleEvent,
+	UniversityClassEvent,
+	UniversityExamEvent,
+)
 from .groups_import import (
 	IMPORT_MODE_APPEND,
 	IMPORT_MODE_OVERRIDE_MODIFIED,
@@ -74,6 +73,7 @@ from .occur import (
 from .register import classes
 from .rules import (
 	DateEventRule,
+	DayTimeRangeEventRule,
 	WeekDayEventRule,
 	WeekNumberModeEventRule,
 )
@@ -83,9 +83,10 @@ if TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.color_utils import ColorType
-	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
+
+	from .pytypes import EventGroupType, EventType
 
 
 __all__ = [

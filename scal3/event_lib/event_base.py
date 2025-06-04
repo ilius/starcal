@@ -28,12 +28,12 @@ from typing import TYPE_CHECKING, Self
 import mytz
 from scal3 import core
 from scal3.cal_types import calTypes
-from scal3.event_lib import state
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import durationDecode, durationEncode
 
+from . import state
 from .exceptions import BadEventFile
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
@@ -46,17 +46,17 @@ if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator
 	from typing import Any
 
-	from scal3.event_lib.pytypes import (
-		EventNotifierType,
-		EventRuleType,
-		EventType,
-		RuleContainerType,
-	)
 	from scal3.filesystem import FileSystem
 
 	from .event_container import EventContainer
 	from .groups import EventGroup
 	from .occur import OccurSet
+	from .pytypes import (
+		EventNotifierType,
+		EventRuleType,
+		EventType,
+		RuleContainerType,
+	)
 
 
 __all__ = ["Event", "eventsDir"]

@@ -19,9 +19,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Self
 
 from scal3 import logger
-from scal3.event_lib.events import TaskEvent
-from scal3.event_lib.occur import OccurSet, TimeListOccurSet
 from scal3.utils import toStr
+
+from .events import TaskEvent
+from .occur import OccurSet, TimeListOccurSet
 
 log = logger.get()
 

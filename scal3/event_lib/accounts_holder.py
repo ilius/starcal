@@ -17,8 +17,9 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.pytypes import AccountType
 from scal3.s_object import SObjBinaryModel
+
+from .pytypes import AccountType
 
 log = logger.get()
 

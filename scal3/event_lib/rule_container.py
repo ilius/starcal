@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventRuleType, RuleContainerType
+	from .pytypes import EventRuleType, RuleContainerType
 
 
 import mytz
