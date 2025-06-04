@@ -16,15 +16,16 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.events import SingleStartEndEvent
-from scal3.ui import conf
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
 
 from scal3 import event_lib, ui
+from scal3.event_lib import ev
+from scal3.event_lib.events import SingleStartEndEvent
 from scal3.locale_man import tr as _
+from scal3.ui import conf
 from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
@@ -417,7 +418,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		)
 		moveToMenu = Menu()
 		disabledGroupsMenu = Menu()
-		for newGroup in ui.ev.groups:
+		for newGroup in ev.groups:
 			if newGroup.id == group.id:
 				continue
 			if event.name not in newGroup.acceptsEventTypes:
@@ -452,7 +453,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				),
 			)
 			copyOccurMenu = Menu()
-			for newGroup in ui.ev.groups:
+			for newGroup in ev.groups:
 				if not newGroup.enable:
 					continue
 				if newEventType in newGroup.acceptsEventTypes:
@@ -473,8 +474,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		# ---
 		menu.add(
 			ImageMenuItem(
-				_("Move to {title}").format(title=ui.ev.trash.title),
-				imageName=ui.ev.trash.getIconRel(),
+				_("Move to {title}").format(title=ev.trash.title),
+				imageName=ev.trash.getIconRel(),
 				func=self.moveEventToTrash,
 				args=(
 					event,
@@ -484,12 +485,12 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		)
 
 	def addEventMenuItems(self, menu: gtk.Menu, occurData: DayOccurData) -> None:
-		if ui.ev.allReadOnly:
+		if ev.allReadOnly:
 			return
 		# ----
 		groupId, eventId = occurData.ids
 		event = ui.getEvent(groupId, eventId)
-		group = ui.ev.groups[groupId]
+		group = ev.groups[groupId]
 		# ----
 		menu.add(
 			ImageMenuItem(
@@ -534,7 +535,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 		if not confirmEventTrash(event, transient_for=ui.mainWin):
 			return
-		ui.moveEventToTrash(ui.ev.groups[groupId], event, self)
+		ui.moveEventToTrash(ev.groups[groupId], event, self)
 		self.onConfigChange()
 
 	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
@@ -601,7 +602,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 # @registerSignals
 # class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 # 	# def updateData(self):
-# 	# 	return self.updateDataByGroups(ui.ev.groups)
+# 	# 	return self.updateDataByGroups(ev.groups)
 
 # 	def __init__(self, abbreviateWeekDays: bool = False) -> None:
 # 		self.initVars()
@@ -692,7 +693,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 
 # class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 # 	# def updateData(self):
-# 	# 	return self.updateDataByGroups(ui.ev.groups)
+# 	# 	return self.updateDataByGroups(ev.groups)
 
 # 	def __init__(self):
 # 		event_lib.MonthOccurrenceView.__init__(self, ui.cells.current.jd)

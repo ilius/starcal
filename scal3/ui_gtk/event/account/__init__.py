@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3 import ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import (
@@ -57,7 +58,7 @@ class AccountCombo(IdComboBox):
 		self.add_attribute(cell, "text", 1)
 		# ---
 		ls.append([-1, _("None")])
-		for account in ui.ev.accounts:
+		for account in ev.accounts:
 			if account.enable:
 				ls.append([account.id, account.title])
 		# ---
@@ -134,7 +135,7 @@ class AccountGroupBox(gtk.Box):
 		aid = combo.get_active()
 		if aid is None:
 			return
-		account = ui.ev.accounts[aid]
+		account = ev.accounts[aid]
 		self.combo.setAccount(account)
 
 	def onFetchClick(self, _w: gtk.Widget | None = None) -> None:
