@@ -113,7 +113,7 @@ class MultiSpinButton[F: Field, V](gtk.Box):
 
 	def __init__(
 		self,
-		field: F | None = None,
+		field: F,
 		arrow_select: bool = True,
 		step_inc: float = 1,
 		page_inc: float = 10,
