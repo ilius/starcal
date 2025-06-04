@@ -61,11 +61,10 @@ from .rules import (
 if TYPE_CHECKING:
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventRuleType
-
 	from .event_container import EventContainer
 	from .groups import EventGroup, TaskList, UniversityTerm, YearlyGroup
 	from .occur import OccurSet
+	from .pytypes import EventRuleType
 
 
 __all__ = [

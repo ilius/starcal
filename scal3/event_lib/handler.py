@@ -1,10 +1,10 @@
-from scal3.event_lib import state
-from scal3.event_lib.state import InfoWrapper, LastIdsWrapper
 from scal3.event_notification_thread import EventNotificationManager
 from scal3.filesystem import FileSystem
 
+from . import state
 from .accounts_holder import EventAccountsHolder
 from .groups_holder import EventGroupsHolder
+from .state import InfoWrapper, LastIdsWrapper
 from .trash import EventTrash
 
 __all__ = ["Handler"]
