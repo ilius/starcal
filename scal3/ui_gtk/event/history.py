@@ -391,8 +391,8 @@ class EventHistoryDialog(gtk.Dialog):
 	@staticmethod
 	def normalizeObjectData(data: dict[str, Any]) -> dict[str, Any]:
 		if "rules" in data:
-			rulesOd = dict(data["rules"])
-			data["rules"] = rulesOd
+			rulesDict = dict(data["rules"])
+			data["rules"] = rulesDict
 		return unnest(data)
 
 	# returns normalized data ("rules.RULE_NAME" keys)

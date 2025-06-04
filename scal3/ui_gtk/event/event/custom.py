@@ -124,7 +124,7 @@ class WidgetClass(common.WidgetClass):
 		for hbox in self.rulesBox.get_children():
 			hbox.destroy()
 		comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
-		for rule in self.event.rulesOd.values():
+		for rule in self.event.rulesDict.values():
 			hbox = self.makeRuleHbox(rule)
 			if not hbox:
 				continue

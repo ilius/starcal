@@ -61,9 +61,9 @@ class RuleContainer(SObj):
 	calType: int
 
 	@staticmethod
-	def copyRulesDict(rulesOd: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
+	def copyRulesDict(rulesDict: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
 		newRulesOd = {}
-		for ruleName, rule in rulesOd.items():
+		for ruleName, rule in rulesDict.items():
 			newRulesOd[ruleName] = rule.copy()
 		return newRulesOd
 
@@ -75,16 +75,16 @@ class RuleContainer(SObj):
 		self.rulesHash: int | None = None
 
 	def clearRules(self) -> None:
-		self.rulesOd: dict[str, EventRuleType] = {}
+		self.rulesDict: dict[str, EventRuleType] = {}
 
 	def getRule(self, key: str) -> EventRuleType | None:
-		return self.rulesOd.get(key)
+		return self.rulesDict.get(key)
 
 	def setRule(self, key: str, value: EventRuleType) -> None:
-		self.rulesOd[key] = value
+		self.rulesDict[key] = value
 
 	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
-		for rule in self.rulesOd.values():
+		for rule in self.rulesDict.values():
 			yield rule.name, rule.getRuleValue()
 
 	def getRulesData(self) -> list[tuple[str, Any]]:
@@ -101,10 +101,10 @@ class RuleContainer(SObj):
 		)
 
 	def getRuleNames(self) -> list[str]:
-		return list(self.rulesOd)
+		return list(self.rulesDict)
 
 	def addRule(self, rule: EventRuleType) -> None:
-		self.rulesOd[rule.name] = rule
+		self.rulesDict[rule.name] = rule
 
 	def addNewRule(self, ruleType: str) -> EventRuleType:
 		rule = classes.rule.byName[ruleType](self)  # type: ignore[arg-type]
@@ -118,10 +118,10 @@ class RuleContainer(SObj):
 		return self.addNewRule(ruleType)
 
 	def removeRule(self, rule: EventRuleType) -> None:
-		del self.rulesOd[rule.name]
+		del self.rulesDict[rule.name]
 
 	def __delitem__(self, key: str) -> None:
-		self.rulesOd.__delitem__(key)
+		self.rulesDict.__delitem__(key)
 
 	def __getitem__(self, key: str) -> EventRuleType | None:
 		return self.getRule(key)
@@ -130,7 +130,7 @@ class RuleContainer(SObj):
 		self.setRule(key, value)
 
 	def __iter__(self) -> Iterator[EventRuleType]:
-		return iter(self.rulesOd.values())
+		return iter(self.rulesDict.values())
 
 	def setRulesData(self, rulesData: list[tuple[str, Any]]) -> None:
 		self.clearRules()
@@ -141,7 +141,7 @@ class RuleContainer(SObj):
 
 	def addRequirements(self) -> None:
 		for name in self.requiredRules:
-			if name not in self.rulesOd:
+			if name not in self.rulesDict:
 				self.addNewRule(name)
 
 	def checkAndAddRule(self, rule: EventRuleType) -> tuple[bool, str]:
@@ -155,8 +155,8 @@ class RuleContainer(SObj):
 		*typesToRemove: str,
 	) -> None:
 		for ruleType in typesToRemove:
-			if ruleType in self.rulesOd:
-				del self.rulesOd[ruleType]
+			if ruleType in self.rulesDict:
+				del self.rulesDict[ruleType]
 
 	def checkAndRemoveRule(self, rule: EventRuleType) -> tuple[bool, str]:
 		ok, msg = self.checkRulesDependencies(disabledRule=rule)
@@ -169,16 +169,16 @@ class RuleContainer(SObj):
 		newRule: EventRuleType | None = None,
 		disabledRule: EventRuleType | None = None,
 	) -> tuple[bool, str]:
-		rulesOd = self.rulesOd.copy()
+		rulesDict = self.rulesDict.copy()
 		if newRule:
-			rulesOd[newRule.name] = newRule
-		if disabledRule and disabledRule.name in rulesOd:
-			del rulesOd[disabledRule.name]
+			rulesDict[newRule.name] = newRule
+		if disabledRule and disabledRule.name in rulesDict:
+			del rulesDict[disabledRule.name]
 		provideList = []
-		for ruleName, rule in rulesOd.items():
+		for ruleName, rule in rulesDict.items():
 			provideList.append(ruleName)
 			provideList += rule.provide
-		for rule in rulesOd.values():
+		for rule in rulesDict.values():
 			for conflictName in rule.conflict:
 				if conflictName in provideList:
 					return (
@@ -187,7 +187,7 @@ class RuleContainer(SObj):
 							'Conflict between "{rule1}" and "{rule2}"',
 						).format(
 							rule1=_(rule.desc),
-							rule2=_(rulesOd[conflictName].desc),
+							rule2=_(rulesDict[conflictName].desc),
 						),
 					)
 			for needName in rule.need:
@@ -203,7 +203,7 @@ class RuleContainer(SObj):
 		return (True, "")
 
 	def copyRulesFrom(self, other: RuleContainerType) -> None:
-		for ruleType, rule in other.rulesOd.items():
+		for ruleType, rule in other.rulesDict.items():
 			if self.supportedRules is None or ruleType in self.supportedRules:
 				self.getAddRule(ruleType).copyFrom(rule)
 
