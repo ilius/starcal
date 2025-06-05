@@ -31,7 +31,7 @@ __all__ = ["PluginsTextBox"]
 
 
 @registerSignals
-class PluginsTextView(gtk.TextView, CustomizableCalObj):
+class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 	itemListCustomizable = False
 
 	def __init__(self, *args, **kwargs) -> None:
@@ -158,7 +158,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			authors=plug.authors,
 			comments=plug.about,
 		)
-		about.set_transient_for(self.get_toplevel())
+		about.set_transient_for(self.get_toplevel())  # type: ignore[arg-type]
 		about.connect("delete-event", lambda w, _e: w.destroy())
 		about.connect("response", lambda w, _e: w.destroy())
 		# about.set_resizable(True)
@@ -184,15 +184,15 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		b_text = text.encode("utf-8")
 		textbuff.insert_markup(endIter, text, len(b_text))
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
 		iter_ = None
 		buf_x, buf_y = self.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
-			gevent.x,
-			gevent.y,
+			int(gevent.x),
+			int(gevent.y),
 		)
 		text = self.get_text()
 		word = ""
@@ -204,7 +204,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		# ----
 		menu = Menu()
 		# ----
-		occurData = self.findPluginByY(gevent.y)
+		occurData = self.findPluginByY(int(gevent.y))
 		if occurData is not None:
 			self.addPluginMenuItems(menu, occurData)
 		# ----
@@ -252,7 +252,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 
 
 @registerSignals
-class PluginsTextBox(gtk.Box, CustomizableCalObj):
+class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 	objName = "pluginsText"
 	desc = _("Plugins Text")
 	itemListCustomizable = False
@@ -339,7 +339,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		# without this, it will switch to begin_move_drag on button-press
 		return True
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckFontPrefItem,
 			CheckPrefItem,

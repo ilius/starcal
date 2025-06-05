@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import cal_types
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 
 __all__ = ["YearMonthDayBox"]
 
@@ -45,6 +50,14 @@ class YearMonthDayBox(gtk.Box):
 			self.comboMonthChanged,
 		)
 		self.spinY.connect("changed", self.comboMonthChanged)
+
+	def getDate(self) -> tuple[int, int, int]:
+		y, m, d = self.get_value()
+		return (y, m, d)
+
+	def setDate(self, date: Sequence[int]) -> None:
+		y, m, d = date
+		self.set_value((y, m, d))
 
 	def setCalType(self, calType: int) -> None:
 		self.comboMonth.disconnect(self.comboMonthConn)

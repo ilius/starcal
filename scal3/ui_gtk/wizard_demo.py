@@ -4,10 +4,15 @@ from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING, Any
+
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.wizard import WizardWindow
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 
 class DemoWizardWindow(WizardWindow):
@@ -23,17 +28,17 @@ class DemoWizardWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def getWidget(self) -> gtk.Widget:
+		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, win: gtk.Window) -> None:
+		def __init__(self, window: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = win
-			self.buttons = (
+			self.win = window
+			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Cancel"), self.onCancelClick),
 				(_("Next"), self.onNextClick),
-			)
+			]
 			# ----
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
@@ -67,7 +72,7 @@ class DemoWizardWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self) -> None:
+		def run(self, args: dict[str, Any]) -> None:
 			pass
 
 		def onCancelClick(self, _w: gtk.Widget) -> None:
@@ -78,30 +83,33 @@ class DemoWizardWindow(WizardWindow):
 			format_ = None
 			if self.radioJson.get_active():
 				format_ = "json"
-			self.win.showStep(1, format_, fpath)
+			self.win.showStep(1, {"format": format_, "fpath": fpath})
 
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def getWidget(self) -> gtk.Widget:
+		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, win: gtk.Window) -> None:
+		def __init__(self, window: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = win
-			self.buttons = (
+			self.win = window
+			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Back"), self.onBackClick),
 				(_("Close"), self.onCloseClick),
-			)
+			]
 			# ----
 			self.textview = gtk.TextView()
 			pack(self, self.textview, 1, 1)
 			# ----
 			self.show_all()
+			# ----
+			self._format = ""
+			self._fpath = ""
 
-		def run(self, format_: str, fpath: str) -> None:
-			self.win.waitingDo(self._runAndCleanup, format_, fpath)
+		def run(self, args: dict[str, Any]) -> None:
+			self.win.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
 
 		def _runAndCleanup(self, format_: str, fpath: str) -> None:
 			if format_ == "json":

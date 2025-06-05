@@ -20,10 +20,10 @@ from os.path import join
 from typing import TYPE_CHECKING
 
 from scal3.drawing import getAbsPos
-from scal3.path import pixDir, svgDir
-from scal3.ui_gtk import GdkPixbuf, gdk, gtk
+from scal3.path import svgDir
+from scal3.ui_gtk import GdkPixbuf, gdk
 from scal3.ui_gtk.drawing import drawOutlineRoundedRect
-from scal3.ui_gtk.utils import pixbufFromFile
+from scal3.ui_gtk.utils import pixbufFromFile, pixbufFromFileMust, pixbufFromIconName
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -103,7 +103,7 @@ class SVGButton(BaseButton):
 		self,
 		onPress: Callable,
 		imageName: str = "",
-		iconSize: float = 16,
+		iconSize: int = 16,
 		rectangleColor: ColorType | None = None,
 		**kwargs,
 	) -> None:
@@ -198,43 +198,20 @@ class Button(BaseButton):
 		onPress: Callable,
 		imageName: str = "",
 		iconName: str = "",
-		iconSize: float = 0,
+		iconSize: int = 0,
 		**kwargs,
 	) -> None:
 		BaseButton.__init__(self, onPress=onPress, **kwargs)
 
-		shouldResize = True
-
+		pixbuf: GdkPixbuf.Pixbuf
 		if iconName:
 			self.imageName = iconName
-			if iconSize == 0:
-				iconSize = 16
-			# GdkPixbuf.Pixbuf.new_from_stock is removed
-			# gtk.Widget.render_icon_pixbuf: Deprecated since version 3.10:
-			# 		Use Gtk.IconTheme.load_icon()
-			pixbuf = gtk.IconTheme.get_default().load_icon(
-				iconName,
-				iconSize,
-				0,  # Gtk.IconLookupFlags
-			)
+			pixbuf = pixbufFromIconName(iconName, iconSize or 16)
 		else:
 			if not imageName:
 				raise ValueError("no imageName nor iconName were given")
 			self.imageName = imageName
-			if imageName.endswith(".svg"):
-				if iconSize == 0:
-					iconSize = 16
-				shouldResize = False
-				pixbuf = pixbufFromFile(imageName, iconSize)
-			else:
-				pixbuf = GdkPixbuf.Pixbuf.new_from_file(join(pixDir, imageName))
-
-		if shouldResize and iconSize != 0:  # need to resize
-			pixbuf = pixbuf.scale_simple(
-				iconSize,
-				iconSize,
-				GdkPixbuf.InterpType.BILINEAR,
-			)
+			pixbuf = pixbufFromFileMust(imageName, iconSize or 16)
 
 		# the actual/final width and height of pixbuf/button
 		width, height = pixbuf.get_width(), pixbuf.get_height()

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.pref_utils import IntSpinPrefItem
 
 log = logger.get()
 
@@ -32,6 +33,7 @@ from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
+	Dialog,
 	HBox,
 	VBox,
 	gdk,
@@ -64,7 +66,7 @@ __all__ = ["CalObj"]
 
 
 @registerSignals
-class CalObj(gtk.DrawingArea, CalBase):
+class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	objName = "monthCal"
 	desc = _("Month Calendar")
 	expand = True
@@ -169,7 +171,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.pagePath = f"{win.objName}.{win.mainVBox.objName}.{self.objName}"
+		self.pagePath = f"mainWin.mainPanel.{self.objName}"
 		# ----------------------
 		# self.kTime = 0
 		# ----------------------
@@ -180,7 +182,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# ----------------------
 		# self.updateTextWidth()
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
 			CheckPrefItem,
@@ -195,10 +197,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		prefItem: PrefItem
 		# -------
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.mcalLeftMargin,
 			bounds=(0, 999),
-			digits=1,
 			step=1,
 			label=_("Left Margin"),
 			labelSizeGroup=labelSizeGroup,
@@ -207,10 +208,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.mcalTopMargin,
 			bounds=(0, 999),
-			digits=1,
 			step=1,
 			label=_("Top Margin"),
 			labelSizeGroup=labelSizeGroup,
@@ -298,6 +298,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 	def drawAll(self, _w: gtk.Widget | None = None, cursor: bool = True) -> None:
 		win = self.get_window()
+		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -326,21 +327,25 @@ class CalObj(gtk.DrawingArea, CalBase):
 			setColor(cr, conf.borderTextColor.v)
 			wdayAb = self.wdaysWidth > w
 			for i in range(7):
-				wday = newTextLayout(self, core.getWeekDayAuto(i, abbreviate=wdayAb))
+				weekDayLayout = newTextLayout(
+					self, core.getWeekDayAuto(i, abbreviate=wdayAb)
+				)
+				assert weekDayLayout is not None
 				try:
-					fontw, fonth = wday.get_pixel_size()
+					fontw, fonth = weekDayLayout.get_pixel_size()
 				except Exception:
 					log.exception("")
-					fontw, fonth = wday.get_pixel_size()
+					fontw, fonth = weekDayLayout.get_pixel_size()
 				cr.move_to(
 					self.cx[i] - fontw / 2,
 					(conf.mcalTopMargin.v - fonth) / 2 - 1,
 				)
-				show_layout(cr, wday)
+				show_layout(cr, weekDayLayout)
 			# ------ Drawing "Menu" label
 			setColor(cr, conf.mcalCornerMenuTextColor.v)
-			text = newTextLayout(self, _("Menu"))
-			fontw, fonth = text.get_pixel_size()
+			menuLayout = newTextLayout(self, _("Menu"))
+			assert menuLayout is not None
+			fontw, fonth = menuLayout.get_pixel_size()
 			if rtl:
 				cr.move_to(
 					w - (conf.mcalLeftMargin.v + fontw) / 2 - 3,
@@ -351,7 +356,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					(conf.mcalLeftMargin.v - fontw) / 2,
 					(conf.mcalTopMargin.v - fonth) / 2 - 1,
 				)
-			show_layout(cr, text)
+			show_layout(cr, menuLayout)
 		if conf.mcalLeftMargin.v > 0:
 			# Drawing border left background
 			if rtl:
@@ -372,8 +377,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			# Drawing week numbers
 			setColor(cr, conf.borderTextColor.v)
 			for i in range(6):
-				lay = newTextLayout(self, _(status.weekNum[i]))
-				fontw, fonth = lay.get_pixel_size()
+				layout = newTextLayout(self, _(status.weekNum[i]))
+				assert layout is not None
+				fontw, fonth = layout.get_pixel_size()
 				if rtl:
 					cr.move_to(
 						w - (conf.mcalLeftMargin.v + fontw) / 2,
@@ -384,7 +390,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 						(conf.mcalLeftMargin.v - fontw) / 2,
 						self.cy[i] - fonth / 2 + 2,
 					)
-				show_layout(cr, lay)
+				show_layout(cr, layout)
 
 	def _drawTodayMarker(self, cr: cairo.Context) -> None:
 		tx, ty = ui.cells.today.monthPos  # today x and y
@@ -411,19 +417,22 @@ class CalObj(gtk.DrawingArea, CalBase):
 		for icon in iconList:
 			# if len(iconList) > 1  # FIXME
 			try:
-				pix = pixbufFromFile(icon, size=iconSizeMax)
+				pixbuf = pixbufFromFile(icon, size=iconSizeMax)
 			except Exception:
 				log.exception("")
 				continue
-			pix_w = pix.get_width()
-			pix_h = pix.get_height()
+			if pixbuf is None:
+				log.error(f"pixbuf=None, {icon=}")
+				continue
+			pix_w = pixbuf.get_width()
+			pix_h = pixbuf.get_height()
 			# right buttom corner ???
 			# right side:
 			x1 = (x0 + self.dx / 2) / scaleFact - fromRight - pix_w
 			# buttom side:
 			y1 = (y0 + self.dy / 2) / scaleFact - pix_h
 			cr.scale(scaleFact, scaleFact)
-			gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
+			gdk.cairo_set_source_pixbuf(cr, pixbuf, x1, y1)
 			cr.rectangle(x1, y1, pix_w, pix_h)
 			cr.fill()
 			cr.scale(1 / scaleFact, 1 / scaleFact)
@@ -441,18 +450,19 @@ class CalObj(gtk.DrawingArea, CalBase):
 		for calType, params in activeParams[1:]:
 			if not params.get("enable", True):
 				continue
-			daynum = newTextLayout(
+			dayNumLayout = newTextLayout(
 				self,
 				_(cell.dates[calType][2], calType),
 				getParamsFont(params),
 			)
-			fontw, fonth = daynum.get_pixel_size()
+			assert dayNumLayout is not None
+			fontw, fonth = dayNumLayout.get_pixel_size()
 			setColor(cr, params["color"])
 			cr.move_to(
 				x0 - fontw / 2 + params["pos"][0],
 				y0 - fonth / 2 + params["pos"][1],
 			)
-			show_layout(cr, daynum)
+			show_layout(cr, dayNumLayout)
 		if cellHasCursor:
 			# Drawing Cursor Outline
 			cx0 = x0 - self.dx / 2 + 1
@@ -507,12 +517,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 				# Drawing numbers inside every cell
 				calType = calTypes.primary
 				params = conf.mcalTypeParams.v[0]
-				daynum = newTextLayout(
+				dayNumLayout = newTextLayout(
 					self,
 					_(c.dates[calType][2], calType),
 					getParamsFont(params),
 				)
-				fontw, fonth = daynum.get_pixel_size()
+				assert dayNumLayout is not None
+				fontw, fonth = dayNumLayout.get_pixel_size()
 				if cellInactive:
 					setColor(cr, conf.inactiveColor.v)
 				elif c.holiday:
@@ -523,7 +534,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 					x0 - fontw / 2 + params["pos"][0],
 					y0 - fonth / 2 + params["pos"][1],
 				)
-				show_layout(cr, daynum)
+				show_layout(cr, dayNumLayout)
 				if not cellInactive:
 					self._drawCellSecondaryCalNumbers(
 						cr=cr,
@@ -559,12 +570,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 	def updateTextWidth(self) -> None:
 		# update width of week days names to be able to find out
 		# whether or not they should be shortened for the UI
-		lay = newTextLayout(self)
+		layout = newTextLayout(self)
+		assert layout is not None
 		wm = 0  # max width
 		for i in range(7):
 			wday = core.weekDayName[i]
-			lay.set_markup(text=wday, length=-1)
-			w = lay.get_pixel_size()[0]  # FIXME
+			layout.set_markup(text=wday, length=-1)
+			w = layout.get_pixel_size()[0]  # FIXME
 			# w = lay.get_pixel_extents()[0]  # FIXME
 			# log.debug(w,)
 			wm = max(w, wm)
@@ -572,7 +584,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.wdaysWidth = wm * 7 * 0.7 + conf.mcalLeftMargin.v
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		# self.winActivate() #?????????
 		b = gevent.button
 		(
@@ -614,11 +626,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.cx is centers x, self.cy is centers y
 		if rtl:
 			self.cx = [
-				(w - conf.mcalLeftMargin.v) * (13 - 2 * i) / 14 for i in range(7)
+				int((w - conf.mcalLeftMargin.v) * (13 - 2 * i) / 14) for i in range(7)
 			]
 		else:
 			self.cx = [
-				conf.mcalLeftMargin.v + ((w - conf.mcalLeftMargin.v) * (1 + 2 * i) / 14)
+				int(
+					conf.mcalLeftMargin.v
+					+ ((w - conf.mcalLeftMargin.v) * (1 + 2 * i) / 14)
+				)
 				for i in range(7)
 			]
 		self.cy = [
@@ -635,7 +650,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		# if kname.startswith("alt"):
 		# 	return True
 		if kname == "up":
@@ -676,7 +694,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
@@ -714,7 +732,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 
 if __name__ == "__main__":
-	win = gtk.Dialog()
+	win = Dialog()
 	cal = CalObj(win)
 	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 	pack(win.vbox, cal, 1, 1)

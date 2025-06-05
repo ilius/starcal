@@ -1138,6 +1138,8 @@ class UniversityTerm(EventGroup):
 			h0, h1 = dayTimeRangeRule.getHourRange()
 			startIndex = findNearestIndex(boundsHour, h0)
 			endIndex = findNearestIndex(boundsHour, h1)
+			assert startIndex is not None
+			assert endIndex is not None
 			# ---
 			classData = WeeklyScheduleItem(
 				name=self.getCourseNameById(event.courseId),

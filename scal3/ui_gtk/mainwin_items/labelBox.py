@@ -29,6 +29,7 @@ from scal3.color_utils import colorizeSpan
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
+	Dialog,
 	HBox,
 	Menu,
 	MenuItem,
@@ -63,12 +64,13 @@ primaryCalStyleClass = "primarycal"
 
 
 class BaseLabel(gtk.EventBox):
-	def __init__(self) -> None:
+	def __init__(self, calType: int) -> None:
 		gtk.EventBox.__init__(self)
+		self.calType = calType
 
 
 @registerSignals
-class MonthLabel(BaseLabel, ud.BaseCalObj):
+class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
 	styleClass = "monthlabel"
 
 	@staticmethod
@@ -97,13 +99,12 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		# return f"<b>{s}</b>"
 
 	def __init__(self, calType: int, active: int = 0) -> None:
-		BaseLabel.__init__(self)
+		BaseLabel.__init__(self, calType)
 		self.get_style_context().add_class(self.styleClass)
 		# ---
 		self.objName = f"monthLabel({calType})"
 		# self.set_border_width(1)#???????????
 		self.initVars()
-		self.calType = calType
 		# ---
 		if calType == calTypes.primary:
 			self.get_style_context().add_class(primaryCalStyleClass)
@@ -130,6 +131,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 				text = self.getActiveStr(text)
 			item = MenuItem()
 			label = item.get_child()
+			assert isinstance(label, gtk.Label)
 			label.set_label(text)
 			# label.set_justify(gtk.Justification.LEFT)
 			label.set_xalign(0)
@@ -179,10 +181,12 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		ui.cells.changeDate(y, m, d, self.calType)
 		self.onDateChange()
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 3:
 			self.createMenuLabels()
-			_foo, x, y = self.get_window().get_origin()
+			win = self.get_window()
+			assert win is not None
+			_foo, x, y = win.get_origin()
 			# foo == 1, doc says "not meaningful, ignore"
 			y += self.get_allocation().height
 			# align menu to center:
@@ -217,8 +221,8 @@ class IntLabel(BaseLabel):
 	def getActiveStr(cls, s: str) -> str:
 		return colorizeSpan(s, conf.labelBoxMenuActiveColor.v)
 
-	def __init__(self, height: int = 9, active: int = 0) -> None:
-		BaseLabel.__init__(self)
+	def __init__(self, calType: int, height: int = 9, active: int = 0) -> None:
+		BaseLabel.__init__(self, calType)
 		# self.set_border_width(1)#???????????
 		self.height = height
 		# self.delay = delay
@@ -270,6 +274,7 @@ class IntLabel(BaseLabel):
 		for i in range(self.height):
 			item = MenuItem()
 			label = item.get_child()
+			assert isinstance(label, gtk.Label)
 			label.set_use_markup(True)
 			label.set_direction(gtk.TextDirection.LTR)
 			item.connect("activate", self.itemActivate, i)
@@ -306,11 +311,13 @@ class IntLabel(BaseLabel):
 		self.setActive(self.start + index)
 		self.emit("changed", self.start + index)
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 3:
 			self.updateMenu()
 			assert self.menu is not None
-			_foo, x, y = self.get_window().get_origin()
+			win = self.get_window()
+			assert win is not None
+			_foo, x, y = win.get_origin()
 			y += self.get_allocation().height
 			x -= 6  # FIXME: because of menu padding
 			self.menu.popup(
@@ -355,7 +362,7 @@ class IntLabel(BaseLabel):
 
 		return False
 
-	def menuScroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def menuScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
@@ -369,7 +376,7 @@ class IntLabel(BaseLabel):
 
 
 @registerSignals
-class YearLabel(IntLabel, ud.BaseCalObj):
+class YearLabel(IntLabel, ud.BaseCalObj):  # type: ignore[misc]
 	signals = ud.BaseCalObj.signals
 	styleClass = "yearlabel"
 
@@ -389,11 +396,10 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 			)
 		return ""
 
-	def __init__(self, calType: int, **kwargs) -> None:
-		IntLabel.__init__(self, **kwargs)
+	def __init__(self, calType: int) -> None:
+		IntLabel.__init__(self, calType=calType)
 		self.objName = f"yearLabel({calType})"
 		self.initVars()
-		self.calType = calType
 		# ---
 		self.get_style_context().add_class(self.styleClass)
 		if calType == calTypes.primary:
@@ -424,7 +430,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 class SmallNoFocusButton(ConButton):
 	def __init__(self, imageName: str, func: Callable, tooltip: str = "") -> None:
 		ConButton.__init__(self)
-		self.set_relief(2)
+		self.set_relief(gtk.ReliefStyle.NONE)
 		self.set_can_focus(False)
 		self._imageName = imageName
 		self._image = gtk.Image()
@@ -443,7 +449,7 @@ class SmallNoFocusButton(ConButton):
 		)
 
 
-class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
+class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	def __init__(self, calType: int, **kwargs) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
@@ -481,7 +487,7 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 		self.addButton.updateIcon()
 
 
-class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
+class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	def __init__(self, calType: int, **kwargs) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
@@ -520,7 +526,7 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 
 
 @registerSignals
-class CalObj(gtk.Box, CustomizableCalObj):
+class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 	objName = "labelBox"
 	desc = _("Year & Month Bar")
 	itemListCustomizable = False
@@ -545,7 +551,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		# self.set_border_width(2)
 		self.ybox: YearLabelButtonBox | None = None
 		self.mbox: MonthLabelButtonBox | None = None
-		self.monthLabels: list[gtk.Label] = []
+		self.monthLabels: list[MonthLabel] = []
 		self.onBorderWidthChange()
 
 	@staticmethod
@@ -556,7 +562,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def updateIconSize(self) -> None:
 		alphabet = locale_man.getAlphabet()
 		height = calcTextPixelSize(self.win, alphabet, font=self.getFont())[1]
-		conf.labelBoxIconSize.v = height * 0.6
+		conf.labelBoxIconSize.v = int(height * 0.6)
 
 	def updateTextWidth(self) -> None:
 		font = self.getFont()
@@ -673,7 +679,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def onBorderWidthChange(self) -> None:
 		self.set_border_width(conf.labelBoxBorderWidth.v)
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
 			CheckFontPrefItem,
@@ -767,7 +773,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 
 if __name__ == "__main__":
-	win = gtk.Dialog()
+	win = Dialog()
 	box = CalObj(win)
 	win.add_events(
 		gdk.EventMask.POINTER_MOTION_MASK

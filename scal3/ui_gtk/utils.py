@@ -29,6 +29,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
 from scal3.ui_gtk import (
+	Dialog,
 	GdkPixbuf,
 	GLibError,
 	HBox,
@@ -76,6 +77,8 @@ __all__ = [
 	"newHSep",
 	"openWindow",
 	"pixbufFromFile",
+	"pixbufFromFileMust",
+	"pixbufFromIconName",
 	"rectangleContainsPoint",
 	"resolveImagePath",
 	"setClipboard",
@@ -114,13 +117,13 @@ def buffer_get_text(b: gtk.TextBuffer) -> str:
 
 
 def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	try:
-		value = gevent.get_value()
-	except AttributeError:
-		value = "NONE"
+	# try:
+	# 	value = gevent.get_value()
+	# except AttributeError:
+	# 	value = "NONE"
 	log.debug(
 		# f"{type(widget).__class__.__name__}, " +
-		f"{widget.__class__.__name__}, {gevent.type.value_name=}, {value=}",
+		f"{widget.__class__.__name__}, {gevent.type.value_name=}",
 	)
 	# gevent.send_event
 
@@ -182,7 +185,7 @@ def imageFromIconNameWithPixelSize(
 	return image
 
 
-def imageFromFile(path: str, size: float = 0) -> gtk.Image:
+def imageFromFile(path: str, size: int = 0) -> gtk.Image:
 	# the file must exist
 	im = gtk.Image()
 	pixbuf = pixbufFromFile(path, size=size)
@@ -198,10 +201,19 @@ def resolveImagePath(path: str) -> str:
 	return join(pixDir, path)
 
 
+def pixbufFromFileMust(
+	path: str | None,
+	size: int = 0,
+) -> GdkPixbuf.Pixbuf:
+	pixbuf = pixbufFromFile(path, size)
+	assert pixbuf is not None
+	return pixbuf
+
+
 def pixbufFromFile(
 	path: str | None,
-	size: float = 0,
-) -> GdkPixbuf.Pixbuf:
+	size: int = 0,
+) -> GdkPixbuf.Pixbuf | None:
 	# the file may not exist
 	if not path:
 		return None
@@ -222,7 +234,7 @@ def pixbufFromFile(
 		log.exception(f"Error while opening image {path}")
 		return None
 	if pixbuf is None:
-		return
+		return None
 	if size < 0:
 		raise ValueError(f"pixbufFromFile: invalid {size=}")
 	if pixbuf.get_width() != size:
@@ -233,6 +245,16 @@ def pixbufFromFile(
 		)
 		if pixbuf is not None:
 			pixcache.setPixbuf(relPath, size, pixbuf)
+	return pixbuf
+
+
+def pixbufFromIconName(iconName: str, iconSize: int) -> GdkPixbuf.Pixbuf:
+	pixbuf = gtk.IconTheme.get_default().load_icon(
+		iconName,
+		iconSize,
+		0,  # type: ignore[arg-type] # Gtk.IconLookupFlags
+	)
+	assert pixbuf is not None
 	return pixbuf
 
 
@@ -314,7 +336,7 @@ def labelImageButton(
 	return button
 
 
-def imageClassButton(iconName: str, styleClass: str, size: int) -> gtk.Button:
+def imageClassButton(iconName: str, styleClass: str, size: gtk.IconSize) -> gtk.Button:
 	button = gtk.Button()
 	button.add(
 		imageFromIconName(
@@ -333,9 +355,11 @@ def setImageClassButton(
 	button: gtk.Button,
 	iconName: str,
 	styleClass: str,
-	size: int,
+	size: gtk.IconSize,
 ) -> gtk.Button:
-	button.remove(button.get_child())
+	child = button.get_child()
+	if child is not None:
+		button.remove(child)
 	image = imageFromIconName(
 		iconName,
 		size,
@@ -376,16 +400,16 @@ def rectangleContainsPoint(r: gdk.Rectangle, x: float, y: float) -> bool:
 
 def dialog_add_button(
 	dialog: gtk.Dialog,
+	res: int,
 	iconName: str = "",
 	label: str = "",
-	res: gtk.ResponseType | None = None,
 	onClick: Callable | None = None,
 	tooltip: str = "",
 	imageName: str = "",
 ) -> gtk.Button:
-	b = dialog.add_button(label, res)
-	if label:
-		b.set_label(label)
+	b: gtk.Button = dialog.add_button(button_text=label, response_id=res)  # type: ignore[assignment]
+	# if label:
+	# 	b.set_label(label)
 	if conf.buttonIconEnable.v:
 		b.set_always_show_image(True)
 		# FIXME: how to get rid of set_image calls?
@@ -426,17 +450,17 @@ def confirm(
 	)
 	button = dialog_add_button(
 		win,
+		res=gtk.ResponseType.CANCEL,
 		imageName="dialog-cancel.svg",
 		label=_("Cancel"),
-		res=gtk.ResponseType.CANCEL,
 	)
 	button.set_border_width(border_width)
 	button.get_style_context().add_class("bigger")
 	button = dialog_add_button(
 		win,
+		res=gtk.ResponseType.OK,
 		imageName="dialog-ok.svg",
 		label=_("_Confirm"),
-		res=gtk.ResponseType.OK,
 	)
 	button.set_border_width(border_width)
 	button.get_style_context().add_class("bigger")
@@ -448,14 +472,12 @@ def confirm(
 def showMsg(
 	msg: str,
 	imageName: str = "",
-	parent: gtk.Window | None = None,
 	transient_for: gtk.Window | None = None,
 	title: str = "",
 	borderWidth: int = 10,
 	selectable: bool = False,
 ) -> None:
-	win = gtk.Dialog(
-		parent=parent,
+	win = Dialog(
 		transient_for=transient_for,
 	)
 	# flags=0 makes it skip task bar
@@ -482,12 +504,12 @@ def showMsg(
 		label.set_selectable(True)
 	pack(hbox, label)
 	hbox.show_all()
-	pack(win.vbox, hbox)
+	pack(win.vbox, hbox)  # type: ignore[arg-type]
 	dialog_add_button(
 		win,
+		res=gtk.ResponseType.OK,
 		imageName="window-close.svg",
 		label=_("_Close"),
-		res=gtk.ResponseType.OK,
 	)
 	win.resize(600, 1)
 	win.run()
@@ -570,9 +592,10 @@ def get_pixbuf_hash(pbuf: GdkPixbuf.Pixbuf) -> str:
 		md5.update(chunkBytes)
 		return True
 
+	# stub has many bugs
 	pbuf.save_to_callbackv(
-		save_func,
-		None,  # user_data
+		save_func,  # type: ignore[arg-type]
+		None,  # type: ignore[arg-type] # user_data
 		"png",  # type, name of file format
 		[],  # option_keys
 		[],  # option_values
@@ -610,7 +633,7 @@ def newAlignLabel(sgroup: gtk.SizeGroup | None = None, label: str = "") -> gtk.L
 
 
 class IdComboBox(gtk.ComboBox):
-	def set_active(self, ident: int | None) -> None:
+	def setActive(self, ident: int | None) -> None:
 		if ident is None:
 			gtk.ComboBox.set_active(self, -1)
 			return
@@ -620,9 +643,9 @@ class IdComboBox(gtk.ComboBox):
 				gtk.ComboBox.set_active(self, i)
 				return
 
-	def get_active(self) -> int | None:
+	def getActive(self) -> int | None:
 		i = gtk.ComboBox.get_active(self)
-		if i is None:
+		if i == -1 or i is None:
 			return None
 		model = self.get_model()
 		if model is None:
@@ -634,7 +657,7 @@ class IdComboBox(gtk.ComboBox):
 
 
 class CopyLabelMenuItem(MenuItem):
-	def __init__(self, label: gtk.Label) -> None:
+	def __init__(self, label: str) -> None:
 		MenuItem.__init__(self)
 		self.set_label(label)
 		self.connect("activate", self.on_activate)
