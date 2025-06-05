@@ -128,8 +128,9 @@ class BasePlugin(SObjTextModel):
 	def open_configure(self) -> None:
 		pass
 
-	def open_about(self) -> None:
-		pass
+	# open_about returns True only if overriden by external plugin
+	def open_about(self) -> bool:  # noqa: PLR6301
+		return False
 
 	def getDict(self) -> dict[str, Any]:
 		data = SObjTextModel.getDict(self)
