@@ -376,8 +376,8 @@ def duplicateGroupTitle(group: EventGroupType) -> None:
 def init() -> None:
 	core.init()
 	fs = core.fs
-	event_lib.init(fs)
-	ev.init(fs)
+	event_lib.init(fs)  # must come before ev.init
+	ev.init(fs)  # must come after event_lib.init
 
 
 # ----------------------------------------------------------------------
