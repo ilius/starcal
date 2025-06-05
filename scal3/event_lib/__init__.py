@@ -88,6 +88,7 @@ from scal3.utils import (
 
 from . import (
 	events,  # noqa: F401
+	notifiers,  # noqa: F401
 	state,
 	vcs,  # noqa: F401
 )
