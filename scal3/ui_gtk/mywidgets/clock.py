@@ -26,7 +26,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui import conf
-from scal3.ui_gtk import gdk, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import fillColor, setColor
 
 if TYPE_CHECKING:
@@ -68,7 +68,7 @@ class ClockLabel(gtk.Label):
 	def stop(self) -> None:
 		self.running = False
 
-	# 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	# 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 	# 	if gevent.button == 3:
 
 
@@ -154,6 +154,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		_event: gdk.Event | None = None,
 	) -> None:
 		win = self.get_window()
+		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -197,9 +198,9 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 
 
 if __name__ == "__main__":
-	d = gtk.Dialog()
+	d = Dialog()
 	widget = FClockWidget()
 	# widget = ClockLabel()
-	pack(d.vbox, widget, 1, 1)
-	d.vbox.show_all()
+	pack(d.vbox, widget, 1, 1)  # type: ignore[arg-type]
+	d.vbox.show_all()  # type: ignore[attr-defined]
 	d.run()

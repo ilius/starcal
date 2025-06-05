@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gtk
 
 __all__ = ["MonthComboBox"]
 
@@ -14,14 +14,15 @@ class MonthComboBox(gtk.ComboBox):
 		ls = gtk.ListStore(str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
+		self._listStore = ls
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 0)
 
 	def build(self, calType: int) -> None:
 		active = self.get_active()
-		ls = self.get_model()
+		ls = self._listStore
 		ls.clear()
 		if self.includeEvery:
 			ls.append([_("Every Month")])

@@ -14,7 +14,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	event: DailyNoteEvent
+	_event: DailyNoteEvent
 
 	def __init__(self, event: DailyNoteEvent) -> None:
 		common.WidgetClass.__init__(self, event)
@@ -25,22 +25,22 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
-		date = self.event.getDate()
+		date = self._event.getDate()
 		assert date is not None
 		self.dateInput.setDate(date)
 
 	def updateVars(self) -> None:
 		common.WidgetClass.updateVars(self)
-		self.event.setDate(*self.dateInput.get_value())
+		self._event.setDate(*self.dateInput.get_value())
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
-		self.dateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		self.dateInput.changeCalType(self._event.calType, newCalType)
+		self._event.calType = newCalType

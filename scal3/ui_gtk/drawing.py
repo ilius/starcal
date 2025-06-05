@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.color_utils import RGB, RGBA, ColorType, RawColor, rgbToHtmlColor
+from scal3.font import Font
 from scal3.locale_man import cutText
 from scal3.path import sourceDir
 from scal3.ui import conf
@@ -38,7 +39,6 @@ if TYPE_CHECKING:
 	import cairo
 	from gi.repository import Pango as pango
 
-	from scal3.font import Font
 
 __all__ = [
 	"calcTextPixelSize",
@@ -103,57 +103,60 @@ def newTextLayout(
 	maxSize: tuple[float, float] | None = None,
 	maximizeScale: float = 0.6,
 	truncate: bool = False,
-) -> pango.Layout:
+) -> pango.Layout | None:
 	"""None return value should be expected and handled, only if maxSize is given."""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
-		assert isinstance(font, ui.Font)
+		assert isinstance(font, Font)
 		assert isinstance(font.family, str), font
 		# should we copy the font? font = font.copy()
 	else:
 		font = ui.getFont()
 	layout.set_font_description(pfontEncode(font))
-	if text:
-		layout.set_markup(text=text, length=-1)
-		if maxSize:
+	if not text:
+		return layout
+	layout.set_markup(text=text, length=-1)
+	if maxSize is None:
+		return layout
+	layoutW, layoutH = layout.get_pixel_size()
+	# --
+	maxW, maxH = maxSize
+	if maxW <= 0:
+		return None
+	if maxH <= 0:
+		minRat = 1.0
+	else:
+		minRat = 1.01 * layoutH / maxH  # FIXME
+	if not truncate:
+		if maximizeScale > 0:
+			minRat /= maximizeScale
+		minRat = max(minRat, layoutW / maxW)
+		if minRat > 1:
+			font.size /= minRat
+		layout.set_font_description(pfontEncode(font))
+		return layout
+
+	if minRat > 1:
+		font.size /= minRat
+	layout.set_font_description(pfontEncode(font))
+	layoutW, layoutH = layout.get_pixel_size()
+	if layoutW > 0:
+		char_w = layoutW / len(text)
+		char_num = int(maxW // char_w)
+		while layoutW > maxW:
+			text = cutText(text, char_num)
+			if not text:
+				break
+			layout = widget.create_pango_layout(text)
+			layout.set_font_description(pfontEncode(font))
 			layoutW, layoutH = layout.get_pixel_size()
-			# --
-			maxW, maxH = maxSize
-			if maxW <= 0:
-				return
-			if maxH <= 0:
-				minRat = 1.0
-			else:
-				minRat = 1.01 * layoutH / maxH  # FIXME
-			if truncate:
-				if minRat > 1:
-					font.size /= minRat
-				layout.set_font_description(pfontEncode(font))
-				layoutW, layoutH = layout.get_pixel_size()
-				if layoutW > 0:
-					char_w = layoutW / len(text)
-					char_num = int(maxW // char_w)
-					while layoutW > maxW:
-						text = cutText(text, char_num)
-						if not text:
-							break
-						layout = widget.create_pango_layout(text)
-						layout.set_font_description(pfontEncode(font))
-						layoutW, layoutH = layout.get_pixel_size()
-						char_num -= max(
-							int((layoutW - maxW) // char_w),
-							1,
-						)
-						if char_num < 0:
-							layout = None
-							break
-			else:
-				if maximizeScale > 0:
-					minRat /= maximizeScale
-				minRat = max(minRat, layoutW / maxW)
-				if minRat > 1:
-					font.size /= minRat
-				layout.set_font_description(pfontEncode(font))
+			char_num -= max(
+				int((layoutW - maxW) // char_w),
+				1,
+			)
+			if char_num < 0:
+				log.error(f"newTextLayout: {char_num=}, {text=}, {maxSize=}")
+				return None
 	return layout
 
 
@@ -205,7 +208,7 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: ui.Font | None = None,
+	font: Font | None = None,
 ) -> tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
@@ -217,7 +220,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: ui.Font | None = None,
+	font: Font | None = None,
 ) -> float:
 	width, _height = calcTextPixelSize(widget, text, font=font)
 	return width
@@ -225,7 +228,7 @@ def calcTextPixelWidth(
 
 def newColorCheckPixbuf(
 	color: RGB,
-	size: float,
+	size: int,
 	checked: bool,
 ) -> GdkPixbuf.Pixbuf:
 	if checked:
@@ -242,7 +245,9 @@ def newColorCheckPixbuf(
 		loader.write(toBytes(data))
 	finally:
 		loader.close()
-	return loader.get_pixbuf()
+	pixbuf = loader.get_pixbuf()
+	assert pixbuf is not None
+	return pixbuf
 
 
 def newDndDatePixbuf(ymd: tuple[int, int, int]) -> GdkPixbuf.Pixbuf:
@@ -257,7 +262,9 @@ def newDndDatePixbuf(ymd: tuple[int, int, int]) -> GdkPixbuf.Pixbuf:
 		loader.write(toBytes(data))
 	finally:
 		loader.close()
-	return loader.get_pixbuf()
+	pixbuf = loader.get_pixbuf()
+	assert pixbuf is not None
+	return pixbuf
 
 
 def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
@@ -270,7 +277,9 @@ def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
 		loader.write(toBytes(data))
 	finally:
 		loader.close()
-	return loader.get_pixbuf()
+	pixbuf = loader.get_pixbuf()
+	assert pixbuf is not None
+	return pixbuf
 
 
 def drawRoundedRect(

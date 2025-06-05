@@ -136,7 +136,7 @@ class TextParamWidget(gtk.Box):
 		if hasEnable:
 			self.enableCheck = gtk.CheckButton(label=enableTitleLabel)
 		# ---
-		vbox = self
+		vbox: gtk.Box = self
 		if useFrame:
 			frame = gtk.Frame()
 			vbox = gtk.VBox()
@@ -226,8 +226,8 @@ class TextParamWidget(gtk.Box):
 				self.spinX.get_value(),
 				self.spinY.get_value(),
 			),
-			"font": self.fontb.get_font(),
-			"color": self.colorb.get_rgba(),
+			"font": self.fontb.getFont(),
+			"color": self.colorb.getRGBA(),
 		}
 		if self.hasEnable:
 			params["enable"] = self.enableCheck.get_active()
@@ -245,8 +245,8 @@ class TextParamWidget(gtk.Box):
 		self.spinY.set_value(params["pos"][1])
 		font = getParamsFont(params)
 		assert font is not None
-		self.fontb.set_font(font)
-		self.colorb.set_rgba(params["color"])
+		self.fontb.setFont(font)
+		self.colorb.setRGBA(params["color"])
 		if self.hasEnable:
 			self.enableCheck.set_active(params.get("enable", True))
 		if self.hasAlign:

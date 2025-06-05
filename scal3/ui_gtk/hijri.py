@@ -29,7 +29,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, hijri, jd_to, to_jd
 from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
@@ -44,9 +44,9 @@ def getCurrentYm() -> int:
 	return y * 12 + m - 1
 
 
-class EditDbDialog(gtk.Dialog):
+class EditDbDialog(Dialog):
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Tune Hijri Monthes"))
 		self.connect("delete-event", self.onDeleteEvent)
 		# ------------
@@ -133,22 +133,22 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		# --
 		resetB = dialog_add_button(
 			self,
+			res=gtk.ResponseType.NONE,
 			imageName="edit-undo.svg",
 			label=_("_Reset to Defaults"),
-			res=gtk.ResponseType.NONE,
 		)
 		resetB.connect("clicked", self.resetToDefaults)
 		# --
@@ -188,8 +188,14 @@ class EditDbDialog(gtk.Dialog):
 		self.selectLastRow()
 
 	def selectLastRow(self) -> None:
-		lastPath = (len(self.treeModel) - 1,)
-		self.treev.scroll_to_cell(lastPath)
+		lastPath = gtk.TreePath.new_from_indices([len(self.treeModel) - 1])
+		self.treev.scroll_to_cell(
+			path=lastPath,
+			column=None,
+			use_align=False,
+			row_align=0.0,
+			col_align=0.0,
+		)
 		self.treev.set_cursor(lastPath)
 
 	def onDeleteClick(self, _w: gtk.Widget | None = None) -> None:
@@ -239,8 +245,15 @@ class EditDbDialog(gtk.Dialog):
 		self.updateEndDates()
 		# --------
 		if selectIndex is not None:
-			self.treev.scroll_to_cell(str(selectIndex))
-			self.treev.set_cursor(str(selectIndex))
+			path = gtk.TreePath.new_from_indices([selectIndex])
+			self.treev.scroll_to_cell(
+				path=path,
+				column=None,
+				use_align=False,
+				row_align=0.0,
+				col_align=0.0,
+			)
+			self.treev.set_cursor(path)
 
 	def updateEndDates(self) -> None:
 		y, m, d = self.startDateInput.get_value()
@@ -295,7 +308,7 @@ class EditDbDialog(gtk.Dialog):
 		hijri.monthDb.load()
 		self.updateWidget()
 		self.treev.grab_focus()
-		gtk.Dialog.run(self)
+		Dialog.run(self)
 
 	def onResponse(self, _dialog: gtk.Widget, response_id: gtk.ResponseType) -> bool:
 		if response_id == gtk.ResponseType.OK:
@@ -326,7 +339,7 @@ def dbIsExpired() -> bool:
 	return ui.cells.today.jd >= expJd
 
 
-class HijriMonthsExpirationDialog(gtk.Dialog):
+class HijriMonthsExpirationDialog(Dialog):
 	message = _(
 		"""Hijri months are expired.
 Please update StarCalendar.
@@ -334,7 +347,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 	)
 
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Hijri months expired"))
 		self.connect("response", self.onResponse)
 		# ---
@@ -348,9 +361,9 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("Understood"),
-			res=gtk.ResponseType.OK,
 		)
 		# ---
 		self.vbox.show_all()

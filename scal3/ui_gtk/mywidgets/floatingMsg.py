@@ -17,13 +17,12 @@
 from __future__ import annotations
 
 from time import perf_counter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from gi.repository.PangoCairo import show_layout
 
 from scal3.color_utils import black, yellow
 from scal3.ui_gtk import gdk, gtk, timeout_add
-from scal3.ui_gtk.decorators import registerType
 from scal3.ui_gtk.drawing import newTextLayout, setColor
 
 if TYPE_CHECKING:
@@ -45,8 +44,9 @@ screenWidth = rootWin.get_width()
 # FIXME: use ud.workAreaW from gtk_ud.py
 
 
-@registerType
 class FloatingMsg(gtk.DrawingArea):
+	signals: list[tuple[str, list[Any]]] = []
+
 	def on_realize(self, _w: gtk.Widget) -> None:
 		self.animateStart()
 
@@ -56,7 +56,7 @@ class FloatingMsg(gtk.DrawingArea):
 		speed: float = 100,
 		bgColor: ColorType = yellow,
 		textColor: ColorType = black,
-		refreshTime: float = 10,
+		refreshTime: int = 10,  # in milliseconds
 		finishFunc: Callable | None = None,
 		finishOnClick: bool = True,
 		createWindow: bool = True,
@@ -90,18 +90,19 @@ class FloatingMsg(gtk.DrawingArea):
 		self.connect("draw", self.onExposeEvent)
 		self.connect("realize", self.on_realize)
 		# --------
+		self.win: gtk.Window | None = None
 		if createWindow:
-			self.win = gtk.Window(gtk.WindowType.POPUP)
+			self.win = gtk.Window(type=gtk.WindowType.POPUP)
 			# ^ gtk.WindowType.POPUP ?
 			self.win.add(self)
 			self.win.set_decorated(False)
 			self.win.set_property("skip-taskbar-hint", True)
 			self.win.set_keep_above(True)
-		else:
-			self.win = False
 
 	@staticmethod
-	def isRtl(line: str, layout: pango.Layout) -> bool:
+	def isRtl(line: str, layout: pango.Layout | None) -> bool:
+		if layout is None:
+			return False
 		for i in range(len(line)):
 			y = layout.index_to_pos(i).y
 			if y != 0:
@@ -110,6 +111,9 @@ class FloatingMsg(gtk.DrawingArea):
 
 	def updateLine(self) -> None:
 		self.layout = self.layoutList[self.index]
+		if self.layout is None:
+			print(f"self.layout = None, {self.index=}")
+			return
 		self.rtl = self.rtlList[self.index]
 		self.rtlSign = 1 if self.rtl else -1
 		size = self.layout.get_pixel_size()
@@ -127,13 +131,17 @@ class FloatingMsg(gtk.DrawingArea):
 		_genvent: gdk.Event | None = None,
 	) -> None:
 		self.isFinished = True
-		self.win.destroy()
+		if self.win is not None:
+			self.win.destroy()
+			self.win = None
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
 
 	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		win = self.get_window()
+		if win is None:
+			return
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -147,6 +155,8 @@ class FloatingMsg(gtk.DrawingArea):
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: cairo.Context) -> None:
+		if self.layout is None:
+			return
 		cr.rectangle(0, 0, screenWidth, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -164,7 +174,7 @@ class FloatingMsg(gtk.DrawingArea):
 		if self.isFinished:
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
-		self.xpos = self.startXpos + (
+		self.xpos = self.startXpos + int(
 			(perf_counter() - self.startTime) * self.speed * self.rtlSign
 		)
 		if self.xpos > screenWidth or self.xpos < -self.textWidth:
@@ -177,11 +187,13 @@ class FloatingMsg(gtk.DrawingArea):
 
 	def show(self) -> None:
 		gtk.DrawingArea.show(self)
-		self.win.show()
+		if self.win is not None:
+			self.win.show()
 
 
-@registerType
 class MyLabel(gtk.DrawingArea):
+	signals: list[tuple[str, list[Any]]] = []
+
 	def __init__(self, bgColor: ColorType, textColor: ColorType) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
@@ -191,6 +203,8 @@ class MyLabel(gtk.DrawingArea):
 	def set_label(self, text: str) -> None:
 		self.text = text
 		self.layout = newTextLayout(self, text)
+		if self.layout is None:
+			return
 		size = self.layout.get_pixel_size()
 		self.height = size[1]
 		self.width = size[0]
@@ -200,6 +214,8 @@ class MyLabel(gtk.DrawingArea):
 
 	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		win = self.get_window()
+		if win is None:
+			return
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -213,6 +229,8 @@ class MyLabel(gtk.DrawingArea):
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: cairo.Context) -> None:
+		if self.layout is None:
+			return
 		cr.rectangle(0, 0, self.width, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -222,6 +240,8 @@ class MyLabel(gtk.DrawingArea):
 		show_layout(cr, self.layout)
 
 	def isRtl(self) -> bool:
+		if self.layout is None:
+			return False
 		for i in range(len(self.text)):
 			y = self.layout.index_to_pos(i).y
 			if y != 0:
@@ -229,21 +249,22 @@ class MyLabel(gtk.DrawingArea):
 		return False
 
 
-@registerType
 class NoFillFloatingMsgWindow(gtk.Window):
+	signals: list[tuple[str, list[Any]]] = []
+
 	def __init__(
 		self,
 		text: str,
 		speed: float = 100,
 		bgColor: ColorType = yellow,
 		textColor: ColorType = black,
-		refreshTime: float = 10,
+		refreshTime: int = 10,  # in milliseconds
 		finishFunc: Callable | None = None,
 		finishOnClick: bool = True,
 	) -> None:
-		gtk.Window.__init__(self)
-		self.set_type_hint(gtk.WindowType.POPUP)
-		# ^ OR gtk.WindowType.POPUP ?
+		gtk.Window.__init__(self, type=gtk.WindowType.POPUP)
+		# self.set_type_hint(gdk.WindowTypeHint.)
+		# https://docs.gtk.org/gdk3/enum.WindowTypeHint.html
 		self.set_decorated(False)
 		self.set_property("skip-taskbar-hint", True)
 		self.set_keep_above(True)
@@ -294,7 +315,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 	def animateUpdate(self) -> None:
 		if self.isFinished:
 			return
-		timeout_add(self.refreshTime, self.animateUpdate)
+		timeout_add(int(self.refreshTime), self.animateUpdate)
 		xpos = int(
 			self.startXpos  # TODO: time.perf_counter()
 			+ ((perf_counter() - self.startTime) * self.speed * self.label.rtlSign),

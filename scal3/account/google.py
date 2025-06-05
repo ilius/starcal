@@ -557,12 +557,14 @@ class GoogleAccount(Account):
 			if event.remoteIds and event.remoteIds[:2] == (self.id, remoteGroupId):
 				remoteEventId = event.remoteIds[2]
 			# log.debug(f"---------- {remoteEventId = }")
-			if remoteEventId and lastSyncTuple and event.modified < lastSyncTuple:
-				log.info(
-					f"---------- skipping event {event.summary}"
-					f"(modified = {event.modified} < {lastSyncTuple =})",
-				)
-				continue
+			if remoteEventId and lastSyncTuple:
+				_lastSyncStartEpoch, lastSyncEndEpoch = lastSyncTuple
+				if event.modified < lastSyncEndEpoch:
+					log.info(
+						f"---------- skipping event {event.summary}"
+						f"(modified = {event.modified} < {lastSyncEndEpoch =})",
+					)
+					continue
 			bothId = (event.id, remoteEventId)
 			addToDiff(bothId, True, STATUS_MODIFIED, event)
 			"""

@@ -8,7 +8,7 @@ from time import time as now
 from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
-from scal3.ui_gtk import gdk, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
 from scal3.ui_gtk.decorators import registerSignals
 
 if TYPE_CHECKING:
@@ -59,7 +59,7 @@ class ConButtonBase(gtk.Widget):
 
 
 @registerSignals
-class ConButton(gtk.Button, ConButtonBase):
+class ConButton(gtk.Button, ConButtonBase):  # type: ignore[misc]
 	signals: list[tuple[str, list[Any]]] = [
 		("con-clicked", []),
 	]
@@ -70,14 +70,14 @@ class ConButton(gtk.Button, ConButtonBase):
 
 
 if __name__ == "__main__":
-	win = gtk.Dialog()
+	win = Dialog()
 	button = ConButton("Press")
 
 	def con_clicked(_widget: gtk.Widget) -> None:
 		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)
-	pack(win.vbox, button, 1, 1)
-	win.vbox.show_all()
+	pack(win.vbox, button, 1, 1)  # type: ignore[arg-type]
+	win.vbox.show_all()  # type: ignore[attr-defined]
 	win.resize(100, 100)
 	win.run()

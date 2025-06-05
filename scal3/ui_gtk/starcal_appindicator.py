@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import logger
 
 log = logger.get()
@@ -42,13 +44,16 @@ from scal3.ui_gtk.utils import (
 gi.require_version("AppIndicator3", "0.1")
 from gi.repository import AppIndicator3 as appindicator
 
+if TYPE_CHECKING:
+	from scal3.ui_gtk.starcal import MainWin
+
 __all__ = ["IndicatorStatusIconWrapper"]
 
 
 class IndicatorStatusIconWrapper:
 	imNamePrefix = f"{APP_NAME}-indicator-{os.getuid()}-"
 
-	def __init__(self, mainWin: gtk.ApplicationWindow) -> None:
+	def __init__(self, mainWin: MainWin) -> None:
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
 			APP_NAME,  # app id
@@ -80,9 +85,10 @@ class IndicatorStatusIconWrapper:
 
 	def create_menu(self) -> None:
 		menu = Menu()
-		self.menuItems = []
+		self.menuItems: list[gtk.MenuItem] = []
 		# ^ just to prevent GC from removing custom objects for items
 		# ----
+		item: gtk.MenuItem
 		for line in self.mainWin.getStatusIconTooltip().split("\n"):
 			item = CopyLabelMenuItem(line)
 			self.menuItems.append(item)

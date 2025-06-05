@@ -3,27 +3,27 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
+from scal3.ui_gtk.event.group.base import makeGroupWidget
 
 log = logger.get()
 from scal3 import event_lib
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
-from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
 	from scal3.event_lib.pytypes import EventGroupType
+	from scal3.ui_gtk.event.group.base import BaseWidgetClass
 
 __all__ = ["GroupEditorDialog"]
 
 
-class GroupEditorDialog(gtk.Dialog):
+class GroupEditorDialog(Dialog):
 	def __init__(self, group: EventGroupType | None = None, **kwargs) -> None:
 		checkEventsReadOnly()
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.isNew = group is None
 		self.set_title(_("Add New Group") if self.isNew else _("Edit Group"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
@@ -31,19 +31,19 @@ class GroupEditorDialog(gtk.Dialog):
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# -------
-		self.activeWidget = None
+		self.activeWidget: BaseWidgetClass | None = None
 		# -------
 		hbox = HBox()
 		combo = gtk.ComboBoxText()
@@ -61,7 +61,6 @@ class GroupEditorDialog(gtk.Dialog):
 		else:
 			self._group = group
 			combo.set_active(event_lib.classes.group.names.index(group.name))
-		self.activeWidget = None
 		combo.connect("changed", self.typeChanged)
 		self.comboType = combo
 		self.vbox.show_all()
@@ -103,22 +102,24 @@ class GroupEditorDialog(gtk.Dialog):
 		if self.isNew:
 			group.title = self.getNewGroupTitle(group.desc)
 		self._group = group
-		self.activeWidget = makeWidget(group)
+		self.activeWidget = makeGroupWidget(group)
 		assert self.activeWidget is not None
 		pack(self.vbox, self.activeWidget)
 		self.activeWidget.show()
 
-	def run(self) -> EventGroup | None:
+	def run(self) -> EventGroupType | None:
 		if self.activeWidget is None:
 			return None
-		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
+		if Dialog.run(self) != gtk.ResponseType.OK:
 			return None
 		self.activeWidget.updateVars()
-		self._group.save()  # FIXME
+		group = self._group
+		group.save()  # FIXME
+		assert group.id is not None
 		if self.isNew:
 			ev.lastIds.save()
 		else:
-			ev.groups[self._group.id] = self._group  # FIXME
-		ev.notif.checkGroup(self._group)
+			ev.groups[group.id] = group  # FIXME
+		ev.notif.checkGroup(group)
 		self.destroy()
-		return self._group
+		return group

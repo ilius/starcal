@@ -25,8 +25,12 @@ __all__ = [
 
 
 class BaseWidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, account: Account) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
+		self.w = self
 		self.baseAccount = account
 		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -54,7 +58,7 @@ class AccountCombo(IdComboBox):
 		self.set_model(ls)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, 1)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 1)
 		# ---
 		ls.append([-1, _("None")])
@@ -64,17 +68,6 @@ class AccountCombo(IdComboBox):
 		# ---
 		gtk.ComboBox.set_active(self, 0)
 
-	def get_active(self) -> int | None:
-		active = IdComboBox.get_active(self)
-		if active == -1:
-			return None
-		return active
-
-	def set_active(self, active: int | None) -> None:
-		if active is None:
-			active = -1
-		IdComboBox.set_active(self, active)
-
 
 class AccountGroupCombo(IdComboBox):
 	def __init__(self) -> None:
@@ -83,9 +76,10 @@ class AccountGroupCombo(IdComboBox):
 		ls = gtk.ListStore(str, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
+		self._listStore = ls
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, 1)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 1)
 
 	def setAccount(self, account: AccountType) -> None:
@@ -94,7 +88,7 @@ class AccountGroupCombo(IdComboBox):
 
 	def updateList(self) -> None:
 		assert self.account is not None
-		ls = self.get_model()
+		ls = self._listStore
 		ls.clear()
 		if self.account:
 			for groupData in self.account.remoteGroups:

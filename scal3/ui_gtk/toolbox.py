@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.property import Property
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
 
 log = logger.get()
 
@@ -33,7 +33,7 @@ __all__ = [
 ]
 
 
-class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
+class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: ignore[misc]
 	hasOptions = False
 
 	signals = CustomizableCalObj.signals + [
@@ -119,7 +119,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.imageName = ""
 		self.imageNameDynamic = imageNameDynamic
 		# ------
-		self.bigPixbuf = None
+		self.bigPixbuf: GdkPixbuf.Pixbuf | None = None
 		self.image = gtk.Image()
 		self.image.show()
 		self.add(self.image)
@@ -154,10 +154,9 @@ class ToolBoxItem(BaseToolBoxItem):
 			useIconName = False
 
 		if useIconName:
-			self.bigPixbuf = self.render_icon_pixbuf(
-				self.iconName,
-				gtk.IconSize.DIALOG,
-			)
+			pixbuf = self.render_icon_pixbuf(self.iconName, gtk.IconSize.DIALOG)
+			assert pixbuf is not None
+			self.bigPixbuf = pixbuf
 			self._setIconImage(self.iconSize.v)
 		else:
 			self.bigPixbuf = pixbufFromFile(self.imageName, size=self.iconSize.v)
@@ -172,7 +171,7 @@ class ToolBoxItem(BaseToolBoxItem):
 	def setIconFile(self, fname: str) -> None:
 		self.imageName = fname
 
-	def _setIconImage(self, iconSize: float) -> None:
+	def _setIconImage(self, iconSize: int) -> None:
 		if self.bigPixbuf is None:
 			if self.imageName:
 				self.image.set_from_pixbuf(
@@ -268,14 +267,14 @@ class LabelToolBoxItem(BaseToolBoxItem):
 
 
 # @registerSignals
-class BaseToolBox(gtk.EventBox, CustomizableCalObj):
+class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 	# signals = CustomizableCalObj.signals + [
 	# 	("popup-main-menu", [int, int]),
 	# ]
 	def __init__(
 		self,
 		funcOwner: Any,
-		iconSize: float = 0,
+		iconSize: int = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
@@ -289,7 +288,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 		self.add(self.box)
 		self.funcOwner = funcOwner
 		self.preferIconName: Property[bool] = conf.useSystemIcons
-		self.iconSize: Property[float] = Property(iconSize or conf.toolbarIconSize.v)
+		self.iconSize: Property[int] = Property(iconSize or conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
 		self.buttonBorder = Property(buttonBorder)
 		self.buttonPadding = Property(buttonPadding)
@@ -324,7 +323,7 @@ class StaticToolBox(BaseToolBox):
 	def __init__(
 		self,
 		funcOwner: Any,
-		iconSize: float = 0,
+		iconSize: int = 0,
 		continuousClick: bool = True,
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
@@ -369,7 +368,7 @@ class CustomizableToolBox(StaticToolBox):
 	def __init__(
 		self,
 		funcOwner: Any,
-		iconSize: float = 0,
+		iconSize: int = 0,
 		continuousClick: bool = True,
 	) -> None:
 		BaseToolBox.__init__(
@@ -384,7 +383,7 @@ class CustomizableToolBox(StaticToolBox):
 		# set on setDict(), used in getDict() to keep compatibility
 		self.data: CustomizableToolBoxDict = {}  # type: ignore[typeddict-item]
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
 
 		if self.optionsWidget:
@@ -401,10 +400,9 @@ class CustomizableToolBox(StaticToolBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=self.iconSize,
 			bounds=(5, 128),
-			digits=1,
 			step=1,
 			label=_("Icon Size"),
 			live=True,

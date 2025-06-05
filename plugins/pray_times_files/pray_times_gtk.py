@@ -24,7 +24,7 @@ from pray_times_utils import earthDistance
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.about import AboutDialog
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -78,12 +78,11 @@ def showDisclaimer(plug) -> None:  # noqa: ARG001
 			],
 		),
 		# imageName="",
-		parent=None,
 		title=_("Pray Times"),
 	)
 
 
-class LocationDialog(gtk.Dialog):
+class LocationDialog(Dialog):
 	def __init__(
 		self,
 		cityData,
@@ -92,7 +91,7 @@ class LocationDialog(gtk.Dialog):
 		height=600,
 		**kwargs,
 	) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Location"))
 		self.maxResults = maxResults
 		self.resize(width, height)
@@ -100,15 +99,15 @@ class LocationDialog(gtk.Dialog):
 		# ---------------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		okB = dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_OK"),
-			res=gtk.ResponseType.OK,
 		)
 		self.okB = okB
 		# ---------------
@@ -285,7 +284,7 @@ class LocationDialog(gtk.Dialog):
 		self.update_list(entry.get_text())
 
 	def run(self):
-		ex = gtk.Dialog.run(self)
+		ex = Dialog.run(self)
 		self.hide()
 		if ex == gtk.ResponseType.OK:  # noqa: SIM102
 			if (
@@ -319,7 +318,7 @@ class LocationButton(gtk.Button):
 		if self.dialog is None:
 			self.dialog = LocationDialog(
 				self.plugin.getCityData(),
-				parent=self.parentWindow,
+				transient_for=self.parentWindow,
 			)
 		res = self.dialog.run()
 		if res:
@@ -329,7 +328,7 @@ class LocationButton(gtk.Button):
 
 class TextPluginUI:
 	def makeWidget(self) -> None:
-		self.confDialog = gtk.Dialog()
+		self.confDialog = Dialog()
 		self.confDialog.set_title(_("Pray Times") + " - " + _("Configuration"))
 		self.confDialog.connect("delete-event", self.confDialogCancel)
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -460,15 +459,15 @@ class TextPluginUI:
 		# ---
 		cancelB = dialog_add_button(
 			self.confDialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		okB = dialog_add_button(
 			self.confDialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_OK"),
-			res=gtk.ResponseType.OK,
 		)
 		cancelB.connect("clicked", self.confDialogCancel)
 		okB.connect("clicked", self.confDialogOk)

@@ -15,7 +15,7 @@ def colorGraph(g: Graph, vertexSortKey: Callable[[int], Any]) -> None:
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
-	colors = [None] * n
+	colors: list[int | None] = [None] * n
 	for i in sorted(
 		range(n),
 		key=vertexSortKey,

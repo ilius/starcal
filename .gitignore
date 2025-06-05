@@ -31,6 +31,8 @@ imports_from_set.json
 imports_set.json
 module-attrs.json
 
+mypy-analyzer.*
+
 /bson/bson/tests
 /bson/test.py
 /bson/.travis.yml

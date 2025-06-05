@@ -36,7 +36,7 @@ def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
 	with open(path, "rb") as fp:
 		data = fp.read()
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
-	loader.set_size(size, size)
+	loader.set_size(int(size), int(size))
 	try:
 		loader.write(data)
 	finally:
@@ -44,7 +44,9 @@ def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
 			loader.close()
 		except GLibError:
 			log.exception("")
-	return loader.get_pixbuf()
+	pixbuf = loader.get_pixbuf()
+	assert pixbuf is not None
+	return pixbuf
 
 
 def imageFromSvgFile(path: str, size: int) -> gtk.Image:

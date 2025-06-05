@@ -53,7 +53,7 @@ class AlarmNotifier(EventNotifier):
 
 	def __init__(self, event: EventType) -> None:
 		EventNotifier.__init__(self, event)
-		self.alarmSound = ""  # FIXME
+		self.alarmSound: str | None = None  # FIXME
 		self.playerCmd = "mplayer"
 
 	def notify(self, finishFunc: Callable) -> None:

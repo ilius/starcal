@@ -35,7 +35,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	event: MonthlyEvent
+	_event: MonthlyEvent
 
 	def __init__(self, event: MonthlyEvent) -> None:  # FIXME
 		event.setJd(ui.cells.current.jd)
@@ -93,19 +93,19 @@ class WidgetClass(common.WidgetClass):
 		# self.notificationBox = common.NotificationBox(event)
 		# pack(self, self.notificationBox)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
-		calType = self.event.calType
+		calType = self._event.calType
 		# ---
-		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
-		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
+		self.startDateInput.set_value(jd_to(self._event.getStartJd(), calType))
+		self.endDateInput.set_value(jd_to(self._event.getEndJd(), calType))
 		# ---
-		self.daySpin.set_value(self.event.getDay())
+		self.daySpin.set_value(self._event.getDay())
 		# ---
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self._event)
 		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
@@ -114,19 +114,19 @@ class WidgetClass(common.WidgetClass):
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		# --
-		start = StartEventRule.getFrom(self.event)
+		start = StartEventRule.getFrom(self._event)
 		if start is None:
 			raise RuntimeError("no start rule")
 		start.setDate(self.startDateInput.getDate())
 		# --
-		end = EndEventRule.getFrom(self.event)
+		end = EndEventRule.getFrom(self._event)
 		if end is None:
 			raise RuntimeError("no end rule")
 		end.setDate(self.endDateInput.getDate())
 		# --
-		self.event.setDay(self.daySpin.get_value())
+		self._event.setDay(self.daySpin.get_value())
 		# ---
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self._event)
 		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		h1, m1 = self.dayTimeStartInput.get_value()
@@ -140,6 +140,6 @@ class WidgetClass(common.WidgetClass):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
-		self.startDateInput.changeCalType(self.event.calType, newCalType)
-		self.endDateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		self.startDateInput.changeCalType(self._event.calType, newCalType)
+		self.endDateInput.changeCalType(self._event.calType, newCalType)
+		self._event.calType = newCalType

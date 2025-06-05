@@ -12,10 +12,14 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, rule: WeekDayEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w = self
 		self.set_homogeneous(True)
 		ls = [gtk.ToggleButton(label=item) for item in core.weekDayNameAb]
 		start = core.firstWeekDay.v

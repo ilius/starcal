@@ -56,7 +56,7 @@ __all__ = ["YearWheelWindow"]
 
 
 @registerSignals
-class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
+class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "yearWheel"
 	desc = _("Year Wheel")
 	# ---
@@ -138,8 +138,12 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.angleOffset = 0.0
 		self.queue_draw()
 
-	def startResize(self, gevent: gdk.Event) -> None:
-		self.get_parent().begin_resize_drag(
+	def startResize(self, gevent: gdk.EventButton) -> None:
+		win = self.get_parent()
+		if win is None:
+			return
+		assert isinstance(win, gtk.Window)
+		win.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
@@ -153,6 +157,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		_event: gdk.Event | None = None,
 	) -> None:
 		win = self.get_window()
+		if win is None:
+			return
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -289,6 +295,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 					maximizeScale=0.6,
 					# truncate=False,
 				)
+				assert layout is not None
 				layoutW, layoutH = layout.get_pixel_size()
 				lx, ly = goAngle(
 					cx,
@@ -372,6 +379,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			maximizeScale=1.0,
 			# truncate=False,
 		)
+		assert layout is not None
 		_layoutW, layoutH = layout.get_pixel_size()
 		tickX, tickY = goAngle(
 			cx,
@@ -392,7 +400,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		show_layout(cr, layout)
 		cr.rotate(-rotateAngle)
 
-	def onScroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
 		d = getScrollValue(gevent)
 		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
@@ -400,9 +408,12 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		return True
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		k = gdk.keyval_name(gevent.keyval).lower()
+		keyName = gdk.keyval_name(gevent.keyval)
+		if not keyName:
+			return False
+		keyName = keyName.lower()
 		# log.debug("%.3f"%now())
-		if k in {"space", "home"}:
+		if keyName in {"space", "home"}:
 			self.onHomeClick()
 		# elif k=="right":
 		# 	pass
@@ -410,7 +421,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		# 	pass
 		# elif k=="down":
 		# 	self.stopMovingAnim()
-		elif k in {"q", "escape"}:
+		elif keyName in {"q", "escape"}:
 			self.closeFunc()
 		# elif k in ("plus", "equal", "kp_add"):
 		# 	self.keyboardZoom(True)
@@ -422,7 +433,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		x = gevent.x
 		y = gevent.y
 		w = self.get_allocation().width
@@ -445,7 +456,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
 
 @registerSignals
-class YearWheelWindow(gtk.Window, ud.BaseCalObj):
+class YearWheelWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "yearWheelWin"
 	desc = _("Year Wheel")
 
@@ -454,11 +465,11 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		size = min(ud.workAreaW, ud.workAreaH) * 0.9
+		size = int(min(ud.workAreaW, ud.workAreaH) * 0.9)
 		self.resize(size, size)
 		self.move(
-			(ud.workAreaW - size) / 2,
-			(ud.workAreaH - size) / 2,
+			int((ud.workAreaW - size) / 2),
+			int((ud.workAreaH - size) / 2),
 		)
 		self.set_title(self.desc)
 		self.set_decorated(False)
@@ -484,7 +495,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 			gtk.main_quit()
 		return True
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

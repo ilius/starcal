@@ -168,10 +168,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 			timeLine.queue_draw()
 
 		hbox = HBox(spacing=5)
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.basicButtonsSize,
 			bounds=(1, 999),
-			digits=1,
 			step=1,
 			label=_("Buttons Size"),
 			live=True,
@@ -212,10 +211,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = HBox(spacing=5)
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.movementButtonsSize,
 			bounds=(1, 999),
-			digits=1,
 			step=1,
 			label=_("Movement Buttons Size"),
 			live=True,
@@ -888,10 +886,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 				if page_i == 0 and not firstPageDoubleSize:
 					self.defaultWidget = button
 		grid.show_all()
+		pageWidget = VBox()
+		pack(pageWidget, grid, True, True)
 		# ---------------
 		page = StackPage()
 		page.pagePath = rootPagePath
-		page.pageWidget = grid
+		page.pageWidget = pageWidget
 		page.pageExpand = True
 		page.pageExpand = True
 		stack.addPage(page)

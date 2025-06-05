@@ -4,7 +4,7 @@ from typing import Any
 
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gtk
 from scal3.ui_gtk.utils import IdComboBox
 
 __all__ = ["CalTypeCombo"]
@@ -18,7 +18,7 @@ class CalTypeCombo(IdComboBox):
 		self.set_row_separator_func(self._is_separator, None)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 1)
 		# ---
 		# None is converted to 0 for `int` column, so we use -1 and -2

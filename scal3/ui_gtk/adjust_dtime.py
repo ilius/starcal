@@ -36,7 +36,7 @@ from time import localtime
 from scal3 import ui
 from scal3.path import pixDir
 from scal3.time_utils import clockWaitMilliseconds
-from scal3.ui_gtk import HBox, VBox, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, timeout_add
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from scal3.ui_gtk.utils import dialog_add_button
@@ -57,27 +57,28 @@ def error_exit(resCode: int, text: str, **kwargs) -> Never:
 	sys.exit(resCode)
 
 
-class AdjusterDialog(gtk.Dialog):
+class AdjusterDialog(Dialog):
 	xpad = 15
+	vbox: gtk.Box  # type: ignore[assignment]
 
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
 		self.set_icon_from_file(join(pixDir, "preferences-system-time.png"))
 		# ---------
 		self.buttonCancel = dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		# self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
 		self.buttonSet = dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="preferences-system.svg",
 			label=_("Set System Time"),
-			res=gtk.ResponseType.OK,
 		)
 		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
 		# ---------
@@ -136,9 +137,13 @@ class AdjusterDialog(gtk.Dialog):
 		# --
 		pack(hbox, gtk.Label(label=_("Server:") + " "), padding=self.xpad)
 		combo = gtk.ComboBoxText.new_with_entry()
-		combo.get_child().connect("changed", self.updateSetButtonSensitive)
+		comboEntry = combo.get_child()
+		assert isinstance(comboEntry, gtk.Entry)
+		comboEntry.connect("changed", self.updateSetButtonSensitive)
 		pack(hbox, combo, 1, 1)
-		self.ntpServerEntry = combo.get_child()
+		ntpServerEntry = combo.get_child()
+		assert isinstance(ntpServerEntry, gtk.Entry)
+		self.ntpServerEntry: gtk.Entry = ntpServerEntry
 		for s in ui.ntpServers:
 			combo.append_text(s)
 		combo.set_active(0)

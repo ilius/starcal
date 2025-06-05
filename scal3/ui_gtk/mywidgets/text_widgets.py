@@ -24,7 +24,7 @@ class ReadOnlyTextWidget:
 	# 	return False
 
 
-class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
+class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):  # type: ignore[misc]
 	def get_text(self) -> str:
 		return buffer_get_text(self.get_buffer())
 
@@ -58,15 +58,15 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 	def copyText(cls, _item: gtk.MenuItem, text: str) -> None:
 		setClipboard(text)
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button != 3:
 			return False
 		# ----
 		iter_ = None
 		buf_x, buf_y = self.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
-			gevent.x,
-			gevent.y,
+			int(gevent.x),
+			int(gevent.y),
 		)
 		if buf_x is not None and buf_y is not None:
 			# overText, iter_, trailing = ...

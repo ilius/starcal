@@ -20,6 +20,8 @@
 
 from __future__ import annotations
 
+from gi.overrides import GObject
+
 from scal3 import logger
 from scal3.property import Property
 
@@ -103,7 +105,7 @@ def saveConf() -> None:
 # ------------------------------------------------------------
 
 
-class CalObjType(Object):
+class CalObjType(GObject.Object):
 	pass
 
 
@@ -219,8 +221,10 @@ class IntegatedWindowList(BaseCalObj):
 		ui.eventUpdateQueue.registerConsumer(self)
 		# ---
 		self.styleProvider = gtk.CssProvider()
+		screen = gdk.Screen.get_default()
+		assert screen is not None
 		gtk.StyleContext.add_provider_for_screen(
-			gdk.Screen.get_default(),
+			screen,
 			self.styleProvider,
 			gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
 		)
@@ -248,17 +252,17 @@ class IntegatedWindowList(BaseCalObj):
 
 		conf.menuIconSize.v = int(height * 0.7)
 		conf.menuCheckSize.v = int(height * 0.8)
-		conf.menuEventCheckIconSize.v = height * 0.8
-		conf.buttonIconSize.v = height * 0.65
+		conf.menuEventCheckIconSize.v = int(height * 0.8)
+		conf.buttonIconSize.v = int(height * 0.65)
 		conf.stackIconSize.v = int(height * 0.8)
-		conf.eventTreeIconSize.v = height * 0.7
-		conf.eventTreeGroupIconSize.v = height * 0.85
-		conf.imageInputIconSize.v = height * 1.2
-		conf.treeIconSize.v = height * 0.7
-		conf.comboBoxIconSize.v = height * 0.8
-		conf.toolbarIconSize.v = height * 0.9
-		conf.messageDialogIconSize.v = height * 2.0
-		conf.rightPanelEventIconSize.v = height * 0.8
+		conf.eventTreeIconSize.v = int(height * 0.7)
+		conf.eventTreeGroupIconSize.v = int(height * 0.85)
+		conf.imageInputIconSize.v = int(height * 1.2)
+		conf.treeIconSize.v = int(height * 0.7)
+		conf.comboBoxIconSize.v = int(height * 0.8)
+		conf.toolbarIconSize.v = int(height * 0.9)
+		conf.messageDialogIconSize.v = int(height * 2.0)
+		conf.rightPanelEventIconSize.v = int(height * 0.8)
 
 		pixcache.clear()
 		self.lastAlphabetHeight = height
@@ -343,7 +347,7 @@ def getGtkDefaultFont() -> ui.Font:
 	return font
 
 
-def _getLightness(c: gdk.Color) -> float:
+def _getLightness(c: gdk.RGBA) -> float:
 	maxValue = max(c.red, c.green, c.blue)
 	if maxValue > 255:
 		log.warning(f"_getLightness: bad color {c}")
@@ -368,7 +372,25 @@ def hasLightTheme(widget: gtk.Widget) -> bool:
 	return _getLightness(fg) < _getLightness(bg)
 
 
+def getSettings() -> gtk.Settings:
+	settings = gtk.Settings.get_default()
+	if settings is None:
+		# if gdk.Screen.get_default() is None:
+		# 	raise RuntimeError("There is not default screen")
+		# raise RuntimeError("settings is None")
+		settings = gtk.Settings.get_for_screen(gdk.Screen())
+		assert settings is not None
+	return settings
+
+
+def getDisplay() -> gdk.Display:
+	display = gdk.Display.get_default()
+	assert display is not None
+	return display
+
+
 # ----------------------------------------------------
+
 
 windowList = IntegatedWindowList()
 
@@ -389,16 +411,9 @@ if rtl:
 
 gtk.Window.set_default_icon_from_file(ui.appIcon)
 
-display = gdk.Display.get_default()
+display = getDisplay()
 
-settings = gtk.Settings.get_default()
-
-if settings is None:
-	# if gdk.Screen.get_default() is None:
-	# 	raise RuntimeError("There is not default screen")
-	# raise RuntimeError("settings is None")
-	settings = gtk.Settings.get_for_screen(gdk.Screen())
-
+settings = getSettings()
 
 # ui.timeout_initial = settings.get_property("gtk-timeout-initial") # == 200
 # ui.timeout_repeat = settings.get_property("gtk-timeout-repeat") # == 20
@@ -564,6 +579,7 @@ loadConf()
 
 def getMonitor() -> gdk.Monitor:
 	display = gdk.Display.get_default()
+	assert display is not None
 
 	monitor = display.get_monitor_at_point(1, 1)
 	if monitor is not None:
@@ -635,7 +651,9 @@ def screenSizeChanged(_screen: gdk.Screen) -> None:
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return
-	monitor = gdk.Display.get_default().get_monitor_at_window(
+	display = gdk.Display.get_default()
+	assert display is not None
+	monitor = display.get_monitor_at_window(
 		ui.mainWin.get_window(),
 	)
 	screenSize = monitor.get_geometry()
@@ -646,4 +664,6 @@ def screenSizeChanged(_screen: gdk.Screen) -> None:
 	ui.mainWin.screenSizeChanged(screenSize)
 
 
-gdk.Screen.get_default().connect("size-changed", screenSizeChanged)
+screen = gdk.Screen.get_default()
+assert screen is not None
+screen.connect("size-changed", screenSizeChanged)

@@ -8,7 +8,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button, window_set_size_aspect
 
 if TYPE_CHECKING:
@@ -17,23 +17,25 @@ if TYPE_CHECKING:
 __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 
 
-class GroupSortDialog(gtk.Dialog):
+class GroupSortDialog(Dialog):
+	vbox: gtk.Box  # type: ignore[assignment]
+
 	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		self._group = group
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Sort Events"))
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Perform"),
-			res=gtk.ResponseType.OK,
 		)
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
@@ -70,7 +72,7 @@ class GroupSortDialog(gtk.Dialog):
 		self.vbox.show_all()
 
 	def run(self) -> bool | None:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+		if Dialog.run(self) == gtk.ResponseType.OK:
 			self._group.sort(
 				self.sortByNames[self.sortByCombo.get_active()],
 				self.reverseCheck.get_active(),
@@ -81,25 +83,27 @@ class GroupSortDialog(gtk.Dialog):
 		return None
 
 
-class GroupConvertCalTypeDialog(gtk.Dialog):
+class GroupConvertCalTypeDialog(Dialog):
+	vbox: gtk.Box  # type: ignore[assignment]
+
 	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
 		self._group = group
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Convert Calendar Type"))
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Perform"),
-			res=gtk.ResponseType.OK,
 		)
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
@@ -133,7 +137,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		self.resize(100, 50)
 
 	def perform(self) -> bool:
-		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
+		if Dialog.run(self) != gtk.ResponseType.OK:
 			self.destroy()
 			return False
 		calType = self.calTypeCombo.get_active()

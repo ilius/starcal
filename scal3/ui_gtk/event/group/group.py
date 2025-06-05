@@ -101,8 +101,8 @@ class WidgetClass(BaseWidgetClass):
 			aid, gid = self.group.remoteIds
 		else:
 			aid, gid = None, None
-		self.accountCombo.set_active(aid)
-		self.accountGroupCombo.set_active(gid)
+		self.accountCombo.setActive(aid)
+		self.accountGroupCombo.setActive(gid)
 		self.syncCheck.set_active(self.group.remoteSyncEnable)
 		self.syncIntervalInput.set_sensitive(self.group.remoteSyncEnable)
 
@@ -117,7 +117,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.endJd = self.endDateInput.get_jd(self.group.calType)
 		# ---
 		self.group.remoteIds = None
-		aid = self.accountCombo.get_active()
+		aid = self.accountCombo.getActive()
 		if aid:
 			gid = self.accountGroupCombo.get_active()
 			if gid:
@@ -125,7 +125,10 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
 		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
-	def calTypeComboChanged(self, _obj: gtk.ComboBox | None = None) -> None:
+	def calTypeComboChanged(
+		self,
+		widget: gtk.Widget | None = None,  # noqa: ARG002
+	) -> None:
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
 		self.startDateInput.changeCalType(self.group.calType, newCalType)

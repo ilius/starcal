@@ -5,6 +5,8 @@ from os.path import abspath, dirname, isabs, join
 
 import gi
 
+from scal3.ui_gtk import Dialog
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
 
@@ -47,9 +49,7 @@ def pack(
 	padding: int = 0,
 ) -> None:
 	if isinstance(box, gtk.Box):
-		box.pack_start(child, expand=expand, fill=fill, padding=padding)
-	elif isinstance(box, gtk.CellLayout):
-		box.pack_start(child, expand)
+		box.pack_start(child, expand=bool(expand), fill=bool(fill), padding=padding)
 	else:
 		raise TypeError(f"pack: unkown type {type(box)}")
 
@@ -68,14 +68,14 @@ def imageFromIconName(
 
 
 def dialog_add_button(
-	dialog: gtk.Dialog,
+	dialog: Dialog,
 	imageName: str = "",
 	label: str = "",
-	res: gtk.ResponseType | None = None,
+	res: int = 0,
 	onClick: Callable | None = None,
 	tooltip: str = "",
 ) -> gtk.Button:
-	b = dialog.add_button(label, res)
+	b: gtk.Button = dialog.add_button(label, res)  # type: ignore[assignment]
 	if label:
 		b.set_label(label)
 	# FIXME: how to get rid of set_image calls?
@@ -88,7 +88,7 @@ def dialog_add_button(
 	return b
 
 
-def imageFromFile(path: str, size: float = 0) -> gtk.Image:
+def imageFromFile(path: str, size: int = 0) -> gtk.Image:
 	if not isabs(path):
 		if path.endswith(".svg"):
 			path = join(svgDir, path)
@@ -101,7 +101,7 @@ def imageFromFile(path: str, size: float = 0) -> gtk.Image:
 	return gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(path))
 
 
-def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
+def pixbufFromSvgFile(path: str, size: int) -> GdkPixbuf.Pixbuf | None:
 	if size <= 0:
 		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
@@ -120,14 +120,12 @@ def pixbufFromSvgFile(path: str, size: float) -> GdkPixbuf.Pixbuf:
 def showMsg(
 	msg: str,
 	imageName: str = "",
-	parent: gtk.Window | None = None,
 	transient_for: gtk.Window | None = None,
 	title: str = "",
 	borderWidth: int = 10,
 	selectable: bool = False,
 ) -> None:
-	win = gtk.Dialog(
-		parent=parent,
+	win = Dialog(
 		transient_for=transient_for,
 	)
 	# flags=0 makes it skip task bar
@@ -157,9 +155,9 @@ def showMsg(
 	pack(win.vbox, hbox)
 	dialog_add_button(
 		win,
+		res=gtk.ResponseType.OK,
 		imageName="window-close.svg",
 		label=_("_Close"),
-		res=gtk.ResponseType.OK,
 	)
 	win.resize(600, 1)
 	win.run()

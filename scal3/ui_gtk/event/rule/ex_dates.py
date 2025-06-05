@@ -26,7 +26,7 @@ from scal3 import cal_types
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
@@ -49,15 +49,19 @@ def validate(s: str) -> str:
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, rule: ExDatesEventRule) -> None:
 		self.rule = rule
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w = self
 		# ---
 		self.countLabel = gtk.Label()
 		pack(self, self.countLabel)
 		# ---
-		self.treeModel = gtk.ListStore(str)
-		self.dialog: gtk.Dialog | None = None
+		self.listStore = gtk.ListStore(str)
+		self.dialog: Dialog | None = None
 		# ---
 		self.editButton = labelImageButton(
 			label=_("Edit"),
@@ -68,21 +72,23 @@ class WidgetClass(gtk.Box):
 
 	def updateCountLabel(self) -> None:
 		self.countLabel.set_label(
-			" " * 2 + _("{count} items").format(count=_(len(self.treeModel))) + " " * 2,
+			" " * 2 + _("{count} items").format(count=_(len(self.listStore))) + " " * 2,
 		)
 
 	def createDialog(self) -> None:
 		if self.dialog:
 			return
 		# log.debug(f"----- toplevel: {self.get_toplevel()}")
-		self.dialog = gtk.Dialog(
+		toplevel = self.get_toplevel()
+		assert isinstance(toplevel, gtk.Window)
+		self.dialog = dialog = Dialog(
 			title=self.rule.desc,
-			transient_for=self.get_toplevel(),
+			transient_for=toplevel,
 		)
 		# ---
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(True)
-		self.treev.set_model(self.treeModel)
+		self.treev.set_model(self.listStore)
 		# --
 		cell = gtk.CellRendererText()
 		cell.set_property("editable", True)
@@ -129,16 +135,16 @@ class WidgetClass(gtk.Box):
 		dialogHbox = HBox()
 		pack(dialogHbox, self.treev, 1, 1)
 		pack(dialogHbox, toolbar)
-		pack(self.dialog.vbox, dialogHbox, 1, 1)
-		self.dialog.vbox.show_all()
-		self.dialog.resize(200, 300)
-		self.dialog.connect("response", lambda _w, _e: self.dialog.hide())
+		pack(dialog.vbox, dialogHbox, 1, 1)
+		dialog.vbox.show_all()
+		dialog.resize(200, 300)
+		dialog.connect("response", lambda _w, _e: dialog.hide())
 		# --
 		_okButton = dialog_add_button(
-			self.dialog,
+			dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 
 	def showDialog(self, _w: Any = None) -> None:
@@ -154,12 +160,13 @@ class WidgetClass(gtk.Box):
 		newText: str,
 	) -> None:
 		index = int(path)
-		self.treeModel[index][0] = validate(newText)
+		self.listStore[index][0] = validate(newText)
 
 	def getSelectedIndex(self) -> int | None:
-		path = self.treev.get_cursor()[0]
-		if path is None:
+		pathObj = self.treev.get_cursor()[0]
+		if pathObj is None:
 			return None
+		path = pathObj.get_indices()
 		if len(path) < 1:
 			return None
 		return path[0]
@@ -169,10 +176,10 @@ class WidgetClass(gtk.Box):
 		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
 		if index is None:
-			newIter = self.treeModel.append(row)
+			newIter = self.listStore.append(row)
 		else:
-			newIter = self.treeModel.insert(index + 1, row)
-		self.treev.set_cursor(self.treeModel.get_path(newIter))
+			newIter = self.listStore.insert(index + 1, row)
+		self.treev.set_cursor(self.listStore.get_path(newIter))
 		# col = self.treev.get_column(0)
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
@@ -181,40 +188,40 @@ class WidgetClass(gtk.Box):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		del self.treeModel[index]
+		del self.listStore[index]
 
 	def onMoveUpClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.treeModel
-		if index <= 0 or index >= len(t):
+		model = self.listStore
+		if index <= 0 or index >= len(model):
 			gdk.beep()
 			return
-		t.swap(
-			t.get_iter(index - 1),
-			t.get_iter(index),
+		model.swap(
+			model.get_iter(str(index - 1)),
+			model.get_iter(str(index)),
 		)
-		self.treev.set_cursor(index - 1)
+		self.treev.set_cursor(index - 1)  # type: ignore[arg-type]
 
 	def onMoveDownClick(self, _b: gtk.Widget) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.treeModel
+		t = self.listStore
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
 		t.swap(
-			t.get_iter(index),
-			t.get_iter(index + 1),
+			t.get_iter(str(index)),
+			t.get_iter(str(index + 1)),
 		)
-		self.treev.set_cursor(index + 1)
+		self.treev.set_cursor(index + 1)  # type: ignore[arg-type]
 
 	def updateWidget(self) -> None:
 		for date in self.rule.dates:
-			self.treeModel.append([encode(date)])
+			self.listStore.append([encode(date)])
 		self.updateCountLabel()
 
 	def updateVars(self) -> None:
-		self.rule.setDates([decode(row[0]) for row in self.treeModel])
+		self.rule.setDates([decode(row[0]) for row in self.listStore])

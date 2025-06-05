@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 from scal3 import event_lib
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
-from scal3.ui_gtk.event import common, makeWidget
+from scal3.ui_gtk.event import EventWidgetType, common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
 if TYPE_CHECKING:
@@ -48,7 +48,10 @@ class WidgetClass(common.WidgetClass):
 		# ------
 		self.ruleAddBox = HBox()
 		self.warnLabel = gtk.Label()
-		self.warnLabel.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
+		self.warnLabel.modify_fg(
+			gtk.StateType.NORMAL,
+			gdk.Color(65535, 0, 0),  # type: ignore[call-arg]
+		)
 		self.warnLabel.set_xalign(0)
 		# self.warnLabel.set_visible(False)-- FIXME
 		# -----------
@@ -73,7 +76,7 @@ class WidgetClass(common.WidgetClass):
 		self.ruleAddCombo.set_model(self.addRuleModel)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self.ruleAddCombo, cell, True)
+		self.ruleAddCombo.pack_start(cell, expand=True)
 		self.ruleAddCombo.add_attribute(cell, "text", 1)
 		# ---
 		pack(self.ruleAddBox, gtk.Label(label=_("Add Rule") + ":"))
@@ -85,13 +88,15 @@ class WidgetClass(common.WidgetClass):
 		)
 		pack(self.ruleAddBox, self.ruleAddButton)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 		# -------------
 		self.ruleAddCombo.connect("changed", self.onRuleAddComboChanged)
 		self.ruleAddButton.connect("clicked", self.onRuleAddButtonClick)
+		self.inputWidgets: dict[int, EventWidgetType] = {}
+		self.removeButtons: dict[int, gtk.Button] = {}
 
-	def makeRuleHbox(self, rule: EventRuleType) -> gtk.Box:
+	def makeRuleHbox(self, rule: EventRuleType) -> gtk.Box | None:
 		hbox = HBox(spacing=5)
 		lab = gtk.Label(label=rule.desc)
 		lab.set_xalign(0)
@@ -101,12 +106,12 @@ class WidgetClass(common.WidgetClass):
 		inputWidget = makeWidget(rule)
 		if not inputWidget:
 			log.error(f"failed to create inpout widget for rule {rule.name}")
-			return
+			return None
 		if rule.expand:
-			pack(hbox, inputWidget, 1, 1)
+			pack(hbox, inputWidget.w, True, True)
 		else:
-			pack(hbox, inputWidget)
-			pack(hbox, gtk.Label(), 1, 1)
+			pack(hbox, inputWidget.w)
+			pack(hbox, gtk.Label(), True, True)
 		# ----
 		removeButton = labelImageButton(
 			label=_("_Remove"),
@@ -116,15 +121,15 @@ class WidgetClass(common.WidgetClass):
 		# ^ FIXME
 		pack(hbox, removeButton)
 		# ----
-		hbox.inputWidget = inputWidget
-		hbox.removeButton = removeButton
+		self.inputWidgets[id(hbox)] = inputWidget
+		self.removeButtons[id(hbox)] = removeButton
 		return hbox
 
 	def updateRulesWidget(self) -> None:
-		for hbox in self.rulesBox.get_children():
-			hbox.destroy()
+		for child in self.rulesBox.get_children():
+			child.destroy()
 		comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
-		for rule in self.event.rulesDict.values():
+		for rule in self._event.rulesDict.values():
 			hbox = self.makeRuleHbox(rule)
 			if not hbox:
 				continue
@@ -142,10 +147,12 @@ class WidgetClass(common.WidgetClass):
 		self.onRuleAddComboChanged()
 
 	def updateRules(self) -> None:
-		self.event.clearRules()
+		self._event.clearRules()
 		for hbox in self.rulesBox.get_children():
-			hbox.inputWidget.updateVars()
-			self.event.addRule(hbox.inputWidget.rule)
+			inputWidget = self.inputWidgets[id(hbox)]
+			inputWidget.updateVars()
+			rule: EventRuleType = inputWidget.rule  # type: ignore[attr-defined]
+			self._event.addRule(rule)
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
@@ -163,18 +170,19 @@ class WidgetClass(common.WidgetClass):
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
 		for hbox in self.rulesBox.get_children():
-			widget = hbox.inputWidget
-			if hasattr(widget, "changeRuleCalType"):
-				widget.changeRuleCalType(newCalType)
-		self.event.calType = newCalType
+			inputWidget = self.inputWidgets[id(hbox)]
+			if hasattr(inputWidget, "changeRuleCalType"):
+				inputWidget.changeRuleCalType(newCalType)
+		self._event.calType = newCalType
 
 	def onRemoveButtonClick(self, _b: gtk.Button, hbox: gtk.Box) -> None:
-		rule = hbox.inputWidget.rule
-		ok, msg = self.event.checkRulesDependencies(disabledRule=rule)
+		inputWidget = self.inputWidgets[id(hbox)]
+		rule: EventRuleType = inputWidget.rule  # type: ignore[attr-defined]
+		ok, msg = self._event.checkRulesDependencies(disabledRule=rule)
 		self.warnLabel.set_label(msg)
 		if not ok:
 			return
-		self.event.checkAndRemoveRule(rule)
+		self._event.checkAndRemoveRule(rule)
 		# ----
 		self.addRuleModel.append((rule.name, rule.desc))
 		# ----
@@ -187,8 +195,8 @@ class WidgetClass(common.WidgetClass):
 		if ci is None or ci < 0:
 			return
 		newRuleName = self.addRuleModel[ci][0]
-		newRule = self.event.create(newRuleName)
-		_ok, msg = self.event.checkRulesDependencies(newRule=newRule)
+		newRule = self._event.create(newRuleName)
+		_ok, msg = self._event.checkRulesDependencies(newRule=newRule)
 		self.warnLabel.set_label(msg)
 
 	def onRuleAddButtonClick(self, _b: gtk.ComboBox) -> None:
@@ -196,8 +204,8 @@ class WidgetClass(common.WidgetClass):
 		if ci is None or ci < 0:
 			return
 		ruleName = self.addRuleModel[ci][0]
-		rule = self.event.create(ruleName)
-		ok, _msg = self.event.checkAndAddRule(rule)
+		rule = self._event.create(ruleName)
+		ok, _msg = self._event.checkAndAddRule(rule)
 		if not ok:
 			return
 		hbox = self.makeRuleHbox(rule)

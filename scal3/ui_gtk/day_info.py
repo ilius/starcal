@@ -23,7 +23,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
@@ -38,7 +38,7 @@ __all__ = ["DayInfoDialog"]
 
 
 @registerSignals
-class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
+class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "allDateLabels"
 	desc = _("Dates")
 
@@ -72,7 +72,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 
 
 @registerSignals
-class PluginsTextView(gtk.TextView, ud.BaseCalObj):
+class PluginsTextView(gtk.TextView, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "pluginsText"
 	desc = _("Plugins Text")
 
@@ -91,7 +91,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 
 
 @registerSignals
-class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
+class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "jd"
 	desc = _("Julian Day Number")
 
@@ -113,12 +113,12 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 
 
 @registerSignals
-class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
+class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "dayInfo"
 	desc = _("Day Info")
 
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
@@ -128,30 +128,30 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		# ---
 		dialog_add_button(
 			self,
+			res=0,
 			label=_("Close"),
 			imageName="window-close.svg",
-			res=0,
 			onClick=self.onClose,
 		)
 		dialog_add_button(
 			self,
+			res=1,
 			label=_("Previous"),
 			imageName="go-previous.svg",
-			res=1,
 			onClick=self.goBack,
 		)
 		dialog_add_button(
 			self,
+			res=2,
 			label=_("Today"),
 			imageName="go-home.svg",
-			res=2,
 			onClick=self.goToday,
 		)
 		dialog_add_button(
 			self,
+			res=3,
 			label=_("Next"),
 			imageName="go-next.svg",
-			res=3,
 			onClick=self.goNext,
 		)
 		# ---
@@ -169,7 +169,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 	) -> None:
 		self.appendItem(item)
 		# ---
-		widget = item
+		widget: gtk.Widget = item
 		if expander:
 			exp = ExpanderFrame(
 				label=item.desc,
@@ -182,7 +182,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 	def onClose(
 		self,
 		_obj: gtk.Widget | None = None,
-		_gevent: gdk.Event = None,
+		_gevent: gdk.Event | None = None,
 	) -> bool:
 		self.hide()
 		return True

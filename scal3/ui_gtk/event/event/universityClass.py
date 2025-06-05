@@ -48,10 +48,14 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, event: UniversityClassEvent) -> None:  # FIXME
 		assert isinstance(event.parent, UniversityTerm)
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.event = event
+		self.w = self
+		self._event = event
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
 		if not event.parent.courses:
@@ -147,7 +151,7 @@ class WidgetClass(gtk.Box):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		# ------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 		# ------
 		self.courseCombo.set_active(0)
@@ -167,17 +171,17 @@ class WidgetClass(gtk.Box):
 	# 		")"
 	# 	)
 	# 	self.summaryEntry.set_text(summary)
-	# 	self.event.summary = summary
+	# 	self._event.summary = summary
 
 	def updateWidget(self) -> None:  # FIXME
-		assert isinstance(self.event.parent, UniversityTerm)
-		if self.event.courseId is None:
+		assert isinstance(self._event.parent, UniversityTerm)
+		if self._event.courseId is None:
 			pass
 		else:
-			self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
+			self.courseCombo.set_active(self.courseIds.index(self._event.courseId))
 		# --
 		self.weekNumModeCombo.updateWidget()
-		weekDayRule = WeekDayEventRule.getFrom(self.event)
+		weekDayRule = WeekDayEventRule.getFrom(self._event)
 		if weekDayRule is None:
 			raise RuntimeError("no weekDay rule")
 		weekDayList = weekDayRule.weekDayList
@@ -188,19 +192,19 @@ class WidgetClass(gtk.Box):
 		# --
 		self.dayTimeStartCombo.clear_history()
 		self.dayTimeEndCombo.clear_history()
-		for hm in reversed(self.event.parent.classTimeBounds):
+		for hm in reversed(self._event.parent.classTimeBounds):
 			for combo in (self.dayTimeStartCombo, self.dayTimeEndCombo):
 				combo.set_value(hm)
 				combo.add_history()
-		timeRangeRule = DayTimeRangeEventRule.getFrom(self.event)
+		timeRangeRule = DayTimeRangeEventRule.getFrom(self._event)
 		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
 		# ----
-		# self.summaryEntry.set_text(self.event.summary)
-		self.descriptionInput.set_text(self.event.description)
-		self.iconSelect.set_filename(self.event.icon)
+		# self.summaryEntry.set_text(self._event.summary)
+		self.descriptionInput.set_text(self._event.description)
+		self.iconSelect.set_filename(self._event.icon)
 		# ----
 		self.notificationBox.updateWidget()
 		# ----
@@ -211,16 +215,16 @@ class WidgetClass(gtk.Box):
 		if courseIndex is None:
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses is selected")
-		self.event.courseId = self.courseIds[courseIndex]
+		self._event.courseId = self.courseIds[courseIndex]
 		# --
 		self.weekNumModeCombo.updateVars()
 		# --
-		weekDay = WeekDayEventRule.getFrom(self.event)
+		weekDay = WeekDayEventRule.getFrom(self._event)
 		if weekDay is None:
 			raise RuntimeError("no weekDay rule")
 		weekDay.weekDayList = [self.weekDayCombo.getValue()]  # FIXME
 		# --
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self._event)
 		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		h1, m1 = self.dayTimeStartCombo.get_value()
@@ -230,9 +234,9 @@ class WidgetClass(gtk.Box):
 			(h2, m2, 0),
 		)
 		# ----
-		# self.event.summary = self.summaryEntry.get_text()
-		self.event.description = self.descriptionInput.get_text()
-		self.event.icon = self.iconSelect.get_filename()
+		# self._event.summary = self.summaryEntry.get_text()
+		self._event.description = self.descriptionInput.get_text()
+		self._event.icon = self.iconSelect.get_filename()
 		# ----
 		self.notificationBox.updateVars()
-		self.event.updateSummary()
+		self._event.updateSummary()

@@ -17,16 +17,16 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.stack import StackPageButton
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.ui_gtk import gdk, getOrientation, gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.utils import imageFromFile
 
 if TYPE_CHECKING:
 	from scal3.property import Property
@@ -63,7 +63,7 @@ class DummyCalObj(ud.CalObjType):
 		self.desc = desc
 		self.moduleName = f"{pkg}.{name}"
 		self.customizable = customizable
-		self.optionsWidget = None
+		self.optionsWidget: gtk.Widget | None = None
 		self.items: list[CustomizableCalObj] = []
 
 	def getLoadedObj(self) -> ud.BaseCalObj | None:
@@ -109,13 +109,14 @@ class CustomizableCalObj(ud.BaseCalObj):
 	expand = False
 	params = ()
 	myKeys: set[str] = set()
+	objName: str = ""
 
 	def initVars(self) -> None:
 		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
 			log.error(f"Add vertical to {self.__class__}")
 		ud.BaseCalObj.initVars(self)
 		# self.itemWidgets = {}  # for lazy construction of widgets
-		self.optionsWidget = None
+		self.optionsWidget: gtk.Widget | None = None
 		try:
 			self.connect("key-press-event", self.onKeyPress)
 		except TypeError as e:
@@ -131,13 +132,16 @@ class CustomizableCalObj(ud.BaseCalObj):
 				item.updateVars()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		for item in self.items:
 			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
 				return True
 		return False
 
-	def getOptionsWidget(self) -> gtk.Widget:  # noqa: PLR6301
+	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
 		return None
 
 	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
@@ -180,23 +184,23 @@ def newSubPageButton(
 	borderWidth: int = 10,
 	spacing: int = 10,
 	labelAngle: int = 0,
-) -> gtk.Button:
-	hbox = gtk.Box(
-		orientation=getOrientation(vertical),
-		spacing=spacing,
-	)
-	hbox.set_border_width(borderWidth)
+) -> StackPageButton:
 	label = gtk.Label(label=page.pageLabel)
 	label.set_use_markup(True)
 	label.set_use_underline(True)
 	label.set_angle(labelAngle)
-	pack(hbox, gtk.Label(), 1, 1)
+
+	icon: str | None = None
 	if page.pageIcon and conf.buttonIconEnable.v:
-		pack(hbox, imageFromFile(page.pageIcon, size=conf.stackIconSize.v))
-	pack(hbox, label, 0, 0)
-	pack(hbox, gtk.Label(), 1, 1)
-	button = gtk.Button()
-	button.add(hbox)
+		icon = page.pageIcon
+
+	button = StackPageButton(
+		label=label,
+		vertical=vertical,
+		borderWidth=borderWidth,
+		spacing=spacing,
+		icon=icon,
+	)
 
 	def onClick(_b: gtk.Button, page: StackPage) -> None:
 		if not page.pagePath:
@@ -205,5 +209,5 @@ def newSubPageButton(
 
 	button.connect("clicked", onClick, page)
 	button.show_all()
-	button.label = label
+	# button.label = label
 	return button

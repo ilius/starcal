@@ -26,7 +26,7 @@ from scal3.event_lib import ev
 from scal3.event_lib.events import SingleStartEndEvent
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack, pango
+from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -49,7 +49,7 @@ __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
 
 @registerSignals
-class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
+class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 	objName = "eventDayView"
 	desc = _("Events of Day")
 	itemListCustomizable = False
@@ -63,7 +63,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		timeFontEnableParam: Property | None = None,
 		timeFontParam: Property | None = None,
 		styleClass: str = "",
-		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
+		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
 		gtk.TextView.__init__(self)
 		self.set_editable(False)
@@ -96,7 +96,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				raise ValueError(f"{fontParam=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
 		# ---
-		self.occurOffsets: list[tuple[float, DayOccurData]] = []
+		self.occurOffsets: list[tuple[int, DayOccurData]] = []
 		self.eventMenuItemLabelMaxLen = 25
 		self.updateJustification()
 		# ---
@@ -123,7 +123,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		value = self.justificationParam.v
 		self.set_justification(ud.justificationByName[value])
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckFontPrefItem,
 			CheckPrefItem,
@@ -230,13 +230,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			s = s[: maxLen - 3].rstrip(" ") + "..."
 		return s
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		# log.debug(f"DayOccurrenceView: onButtonPress: {gevent.button=}")
 		if gevent.button != 3:
 			return False
 		menu = Menu()
 		# ----
-		occurData = self.findEventByY(gevent.y)
+		occurData = self.findEventByY(int(gevent.y))
 		if occurData is not None:
 			self.addEventMenuItems(menu, occurData)
 		# ----
@@ -307,6 +307,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			icon,
 			size=conf.rightPanelEventIconSize.v,
 		)
+		assert pixbuf is not None
 		self.textbuff.insert_pixbuf(endIter, pixbuf)
 
 	def addTime(self, timeStr: str) -> None:
@@ -543,7 +544,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 
 @registerSignals
-class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
+class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  # type: ignore[misc]
 	itemListCustomizable = False
 	optionsPageSpacing = 20
 	objName = DayOccurrenceView.objName
@@ -572,12 +573,14 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		height = conf.eventViewMaxHeight.v
 		return height, height
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import IntSpinPrefItem
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = self._item.getOptionsWidget()
+		# assert optionsWidget is not None
+		assert isinstance(optionsWidget, gtk.Box)
 		# ---
 		prefItem = IntSpinPrefItem(
 			prop=conf.eventViewMaxHeight,

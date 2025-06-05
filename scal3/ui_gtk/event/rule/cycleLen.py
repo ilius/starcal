@@ -14,10 +14,14 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, rule: CycleLenEventRule) -> None:
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w = self
 		spin = IntSpinButton(0, 9999)
 		pack(self, spin)
 		self.spin = spin

@@ -16,14 +16,12 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.color_utils import RGBA
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
 
 from scal3 import core, ui
-from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
@@ -68,7 +66,7 @@ class CalBase(CustomizableCalObj):
 		if self.doubleClickEnable:
 			self.connect("double-button-press", ui.cells.current.dayOpenEvolution)
 		if self.win:
-			self.connect("popup-cell-menu", self.win.menuCellPopup)
+			self.connect("popup-cell-menu", self.win.menuCellPopup, self.objName)
 			self.connect("popup-main-menu", self.win.menuMainPopup)
 			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
 			self.connect("day-info", self.win.dayInfoShow)
@@ -148,14 +146,15 @@ class CalBase(CustomizableCalObj):
 		# selection.set_pixbuf(pbuf)
 		return True
 
-	def dragLeave(  # noqa: PLR6301
-		self,
-		_obj: gtk.Widget,
-		context: gdk.DragContext,
-		etime: int,
-	) -> bool:
-		context.drop_reply(False, etime)
-		return True
+	# def dragLeave(  # noqa: PLR6301
+	# 	self,
+	# 	_obj: gtk.Widget,
+	# 	context: gdk.DragContext,
+	# 	etime: int,
+	# ) -> bool:
+	# 	print(f"{context = }")
+	# 	context.drop_reply(False, etime)
+	# 	return True
 
 	def dragDataRec(
 		self,
@@ -173,23 +172,27 @@ class CalBase(CustomizableCalObj):
 		dtype = dtypeAtom.name()
 
 		text = selection.get_text()
+		if not text:
+			return True
 		dateM = processDroppedDate(text, dtype)
 		if dateM:
 			self.changeDate(*dateM)
 			return False
 
-		if dtype == "application/x-color":
-			# selection.get_text() is None
-			text = selection.data
-			conf.bgColor.v = RGBA(
-				ord(text[1]),
-				ord(text[3]),
-				ord(text[5]),
-				ord(text[7]),
-			)
-			self.emit("pref-update-bg-color")
-			self.queue_draw()
-			return False
+		# TODO: D&D of color does not seem to work
+		# if dtype == "application/x-color":
+		# 	# selection.get_text() is None
+		# 	sdata = selection.data  # type: ignore[attr-defined]
+		# 	print(f"{sdata = }")
+		# 	conf.bgColor.v = RGBA(
+		# 		ord(sdata[1]),
+		# 		ord(sdata[3]),
+		# 		ord(sdata[5]),
+		# 		ord(sdata[7]),
+		# 	)
+		# 	self.emit("pref-update-bg-color")
+		# 	self.queue_draw()
+		# 	return False
 
 		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
 		return True
@@ -204,7 +207,7 @@ class CalBase(CustomizableCalObj):
 		gtk.drag_set_icon_pixbuf(
 			context,
 			pbuf,
-			w / 2,  # y offset
+			int(w / 2),  # y offset
 			-10,  # x offset FIXME - not to be hidden behind mouse cursor
 		)
 		return True
@@ -214,7 +217,10 @@ class CalBase(CustomizableCalObj):
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		CustomizableCalObj.onKeyPress(self, arg, gevent)
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		if kname in {"space", "home", "t"}:
 			self.goToday()
 		elif kname == "menu":

@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -29,8 +31,7 @@ from scal3.locale_man import (
 	textNumEncode,
 )
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import gdk, gtk
-from scal3.ui_gtk.decorators import registerType
+from scal3.ui_gtk import Dialog, gdk, gtk
 from scal3.utils import (
 	numRangesDecode,
 	numRangesEncode,
@@ -40,8 +41,9 @@ from scal3.utils import (
 __all__ = ["NumRangesEntry"]
 
 
-@registerType
 class NumRangesEntry(gtk.Entry):
+	signals: list[tuple[str, list[Any]]] = []
+
 	def __init__(self, minim: int, maxim: int, page_inc: int = 10) -> None:
 		self.minim = minim
 		self.maxim = maxim
@@ -112,7 +114,10 @@ class NumRangesEntry(gtk.Entry):
 
 	def onKeyPress(self, _obj: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kval = gevent.keyval
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		# log.debug(kval, kname)
 		if kname in {
 			"tab",
@@ -194,8 +199,8 @@ class NumRangesEntry(gtk.Entry):
 if __name__ == "__main__":
 	# ---
 	entry = NumRangesEntry(0, 9999)
-	win = gtk.Dialog()
-	win.vbox.add(entry)
-	win.vbox.show_all()
+	win = Dialog()
+	win.vbox.add(entry)  # type: ignore[attr-defined]
+	win.vbox.show_all()  # type: ignore[attr-defined]
 	win.resize(100, 40)
 	win.run()

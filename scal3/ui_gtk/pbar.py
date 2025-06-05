@@ -1,12 +1,22 @@
 from __future__ import annotations
 
+from typing import Protocol
+
 from scal3.ui import conf
 from scal3.ui_gtk import gtk
 
 __all__ = ["MyProgressBar"]
 
 
-def MyProgressBar() -> gtk.Widget:
+class ProgressBarType(Protocol):
+	w: gtk.Widget
+
+	def set_text(self, text: str) -> None: ...
+
+	def set_fraction(self, frac: float) -> None: ...
+
+
+def MyProgressBar() -> ProgressBarType:
 	if conf.oldStyleProgressBar.v:
 		return OldStyleProgressBar()
 	return NewStyleProgressBar()
@@ -15,12 +25,14 @@ def MyProgressBar() -> gtk.Widget:
 class NewStyleProgressBar(gtk.ProgressBar):
 	def __init__(self) -> None:
 		gtk.ProgressBar.__init__(self)
+		self.w = self
 		self.set_show_text(True)
 
 
 class OldStyleProgressBar(gtk.Overlay):
 	def __init__(self) -> None:
 		gtk.Overlay.__init__(self)
+		self.w = self
 		self.pbar = gtk.ProgressBar()
 		self.pbar.set_show_text(False)
 		self.label = gtk.Label()

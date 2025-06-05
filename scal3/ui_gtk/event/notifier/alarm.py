@@ -29,9 +29,13 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.FileChooserButton):
+	def show(self) -> None:
+		gtk.FileChooserButton.show(self.w)
+
 	def __init__(self, notifier: AlarmNotifier) -> None:
 		self.notifier = notifier
 		gtk.FileChooserButton.__init__(self)
+		self.w = self
 		self.set_title(_("Select Sound"))
 		self.set_local_only(True)
 
@@ -60,6 +64,8 @@ def notify(notifier: AlarmNotifier, finishFunc: Callable[[], None]) -> None:
 	# import thread
 	# thread.start_new_thread(notifyWait, (notifier, finishFunc))
 	finishFunc()
+	if not notifier.alarmSound:
+		return
 	Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
 

@@ -11,9 +11,13 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(NumRangesEntry):
+	def show(self) -> None:
+		NumRangesEntry.show(self.w)
+
 	def __init__(self, rule: DayOfMonthEventRule) -> None:
 		self.rule = rule
 		NumRangesEntry.__init__(self, 1, 31, 10)
+		self.w = self
 
 	def updateWidget(self) -> None:
 		self.setValues(self.rule.values)

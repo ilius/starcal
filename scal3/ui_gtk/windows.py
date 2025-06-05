@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 from __future__ import annotations
 
 from scal3.ui_gtk import gdk, gtk, timeout_add

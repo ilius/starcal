@@ -27,7 +27,7 @@ from scal3.cal_types import calTypes
 from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -42,9 +42,8 @@ __all__ = ["ExportDialog", "ExportToIcsDialog"]
 
 class ExportDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="HTML"))
-		# parent=None FIXME
 		# self.set_has_separator(False)
 		# --------
 		hbox = HBox(spacing=2)
@@ -84,16 +83,16 @@ class ExportDialog(MyDialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onDelete,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
 		# --
@@ -218,9 +217,8 @@ class ExportToIcsDialog(MyDialog):
 		**kwargs,
 	) -> None:
 		self.saveIcsFunc = saveIcsFunc
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="iCalendar"))
-		# parent=None FIXME
 		# self.set_has_separator(False)
 		# --------
 		hbox = HBox(spacing=2)
@@ -243,16 +241,16 @@ class ExportToIcsDialog(MyDialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onDelete,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
 		# --

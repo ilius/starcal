@@ -20,8 +20,14 @@ if TYPE_CHECKING:
 __all__ = ["CalObj"]
 
 
+class LabelWithCalType(SLabel):
+	def __init__(self, calType: int, label: str = "") -> None:
+		SLabel.__init__(self, label=label)
+		self.calType = calType
+
+
 @registerSignals
-class CalObj(gtk.Box, CustomizableCalObj):
+class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 	objName = "statusBar"
 	desc = _("Status Bar")
 	itemListCustomizable = False
@@ -54,8 +60,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			# to not modify calTypes.active
 			activeCalTypes = list(reversed(activeCalTypes))
 		for calType in activeCalTypes:
-			label = SLabel()
-			label.calType = calType
+			label = LabelWithCalType(calType=calType)
 			label.set_direction(gtk.TextDirection.LTR)
 			pack(self.labelBox, label, 1)
 		self.show_all()
@@ -67,6 +72,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
 		for label in labels:
+			assert isinstance(label, LabelWithCalType)
 			text = ui.cells.current.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"
@@ -74,7 +80,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 				text = colorizeSpan(text, conf.statusBarDatesColor.v)
 			label.set_label(text)
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
 			CheckPrefItem,

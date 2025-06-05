@@ -74,6 +74,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	import cairo
+	from gi.repository.GLib import Source
 
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.timeline.box import Box
@@ -83,13 +84,8 @@ if TYPE_CHECKING:
 __all__ = ["TimeLineWindow"]
 
 
-def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	log.info(f"{type(widget)=}, {gevent.type.value_name=}, {gevent.get_value()=}")
-	# gevent.send_event
-
-
 @registerSignals
-class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
+class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "timeLine"
 	desc = _("Time Line")
 
@@ -141,8 +137,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self._lastScrollDir = ""
 		self._lastScrollTime: datetime | None = None
 
-		self.timeUpdateSourceId = None
-		self.animTimerSource = None
+		self.timeUpdateSourceId: int | None = None
+		self.animTimerSource: Source | None = None
 
 	def centerToNow(self) -> None:
 		self.stopMovingAnim()
@@ -350,10 +346,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.currentTimeUpdate,
 		)
 		self.currentTime = int(tm)
+		parent = self.get_parent()
 		if (
 			draw
-			and self.get_parent()
-			and self.get_parent().get_visible()
+			and parent
+			and parent.get_visible()
 			and self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
 		):
 			# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
@@ -517,6 +514,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		_event: gdk.Event | None = None,
 	) -> None:
 		win = self.get_window()
+		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -552,7 +550,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 		return self._lastScrollDir
 
-	def onScroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def onScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
 		smallForce = False
 		if gevent.is_scroll_stop_event():  # or gevent.is_stop == 1
 			smallForce = True
@@ -579,11 +577,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		assert self.data is not None
 		if self.pressingButton is not None:
 			self.pressingButton.onRelease()  # type: ignore[misc]
 			self.pressingButton = None
+		win = self.get_window()
+		assert win is not None
 		x = gevent.x
 		y = gevent.y
 		w = self.get_allocation().width
@@ -615,17 +615,17 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				if top == minA:
 					editType = 0
 					t0 = event.getStartEpoch()
-					self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.FLEUR))
+					win.set_cursor(gdk.Cursor.new(gdk.CursorType.FLEUR))
 				elif right == minA:
 					editType = 1
 					t0 = event.getEndEpoch()
-					self.get_window().set_cursor(
+					win.set_cursor(
 						gdk.Cursor.new(gdk.CursorType.RIGHT_SIDE),
 					)
 				elif left == minA:
 					editType = -1
 					t0 = event.getStartEpoch()
-					self.get_window().set_cursor(
+					win.set_cursor(
 						gdk.Cursor.new(gdk.CursorType.LEFT_SIDE),
 					)
 				if editType is not None:
@@ -691,13 +691,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				menu.popup(None, None, None, None, 3, gevent.time)
 		return False
 
-	def motionNotify(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
+	def motionNotify(self, _w: gtk.Widget, gevent: gdk.EventMotion) -> None:
 		if not self.boxEditing:
 			return
 		editType, event, box, x0, t0 = self.boxEditing
 		# print(f"motionNotify: {self.event=}")
 		assert isinstance(event, TaskEvent | LifetimeEvent)
-		t1 = t0 + (gevent.x - x0) / self.pixelPerSec
+		t1 = int(t0 + (gevent.x - x0) / self.pixelPerSec)
 		if editType == 0:
 			event.modifyPos(t1)
 		elif editType == 1:
@@ -725,7 +725,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		if self.pressingButton is not None:
 			self.pressingButton.onRelease()  # type: ignore[misc]
 			self.pressingButton = None
-		self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
+		win = self.get_window()
+		assert win is not None
+		win.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 		self.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
@@ -784,8 +786,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		ui.moveEventToTrash(group, event, self)
 		self.onConfigChange()
 
-	def startResize(self, gevent: gdk.Event) -> None:
-		self.get_parent().begin_resize_drag(
+	def startResize(self, gevent: gdk.EventButton) -> None:
+		win = self.get_parent()
+		assert isinstance(win, gtk.Window)
+		win.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
@@ -808,14 +812,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.movingUserEvent(
 			direction=1,
 			source="keyboard",
-			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
+			smallForce=bool(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
 	def onKeyMoveLeft(self, gevent: gdk.EventKey) -> None:
 		self.movingUserEvent(
 			direction=-1,
 			source="keyboard",
-			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
+			smallForce=bool(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
 	def onKeyMoveStop(self, _ge: gdk.EventKey) -> None:
@@ -831,9 +835,12 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.keyboardZoom(False)
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		k = gdk.keyval_name(gevent.keyval).lower()
+		keyName = gdk.keyval_name(gevent.keyval)
+		if not keyName:
+			return False
+		keyName = keyName.lower()
 		# log.debug(f"{now():.3f}")
-		action = conf.keys.v.get(k)
+		action = conf.keys.v.get(keyName)
 		if action:
 			func = self.keysActionDict.get(action)
 			if func is not None:
@@ -1011,7 +1018,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 
 @registerSignals
-class TimeLineWindow(gtk.Window, ud.BaseCalObj):
+class TimeLineWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "timeLineWin"
 	desc = _("Time Line")
 
@@ -1046,7 +1053,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 			gtk.main_quit()  # FIXME
 		return True
 
-	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

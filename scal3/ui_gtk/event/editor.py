@@ -6,8 +6,8 @@ from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import ev
 from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
-from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button, showInfo
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 __all__ = ["EventEditorDialog", "addNewEvent"]
 
 
-class EventEditorDialog(gtk.Dialog):
+class EventEditorDialog(Dialog):
 	def __init__(
 		self,
 		event: EventType,
@@ -28,7 +28,7 @@ class EventEditorDialog(gtk.Dialog):
 	) -> None:
 		checkEventsReadOnly()
 		assert event.parent is not None
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		self.isNew = isNew
 		# self.connect("delete-event", lambda obj, e: self.destroy())
@@ -36,15 +36,15 @@ class EventEditorDialog(gtk.Dialog):
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		# ---
 		self.connect("response", lambda _w, _e: self.hide())
@@ -58,7 +58,7 @@ class EventEditorDialog(gtk.Dialog):
 			self.eventTypeOptions.append(event.name)
 		eventTypeIndex = self.eventTypeOptions.index(event.name)
 		# ----
-		self.event = event
+		self._event = event
 		# -------
 		if isNew and not event.timeZone:
 			event.timeZone = str(locale_man.localTz)  # why? FIXME
@@ -93,17 +93,17 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		# -----
 		if useSelectedDate:
-			self.event.setJd(ui.cells.current.jd)
-		self.activeWidget = makeWidget(event)
-		assert self.activeWidget is not None
+			self._event.setJd(ui.cells.current.jd)
+		activeWidget = self.activeWidget = makeWidget(event)
+		assert isinstance(activeWidget, common.WidgetClass)
 		if self.isNew:
-			self.activeWidget.focusSummary()
-		pack(self.vbox, self.activeWidget, 1, 1)
+			activeWidget.focusSummary()
+		pack(self.vbox, activeWidget, 1, 1)
 		self.vbox.show()
 
 	def replaceExistingEvent(self, eventType: str) -> None:
 		assert isinstance(self._group, EventGroup)
-		oldEvent = self.event
+		oldEvent = self._event
 		newEvent = self._group.create(eventType)
 		# ---
 		newEvent.changeCalType(oldEvent.calType)
@@ -111,7 +111,7 @@ class EventEditorDialog(gtk.Dialog):
 		# ---
 		newEvent.setId(oldEvent.id)
 		oldEvent.invalidate()
-		self.event = newEvent
+		self._event = newEvent
 
 	def replaceEventWithType(self, eventType: str) -> None:
 		if not self.isNew:
@@ -119,14 +119,14 @@ class EventEditorDialog(gtk.Dialog):
 			return
 
 		restoreDict = {}
-		if self.event:
-			if self.event.summary and self.event.summary != self.event.desc:
-				restoreDict["summary"] = self.event.summary
-			if self.event.description:
-				restoreDict["description"] = self.event.description
-		self.event = self._group.create(eventType)
+		if self._event:
+			if self._event.summary and self._event.summary != self._event.desc:
+				restoreDict["summary"] = self._event.summary
+			if self._event.description:
+				restoreDict["description"] = self._event.description
+		self._event = self._group.create(eventType)
 		for attr, value in restoreDict.items():
-			setattr(self.event, attr, value)
+			setattr(self._event, attr, value)
 
 	def typeChanged(self, combo: gtk.ComboBox) -> None:
 		if self.activeWidget:
@@ -134,31 +134,32 @@ class EventEditorDialog(gtk.Dialog):
 			self.activeWidget.destroy()
 		eventType = self.eventTypeOptions[combo.get_active()]
 		self.replaceEventWithType(eventType)
-		self._group.updateCache(self.event)  # needed? FIXME
-		self.activeWidget = makeWidget(self.event)
-		assert self.activeWidget is not None
+		self._group.updateCache(self._event)  # needed? FIXME
+		activeWidget = makeWidget(self._event)
+		assert isinstance(activeWidget, common.WidgetClass)
 		if self.isNew:
-			self.activeWidget.focusSummary()
-		pack(self.vbox, self.activeWidget, 1, 1)
-		# self.activeWidget.calTypeComboChanged()-- apearantly not needed
+			activeWidget.focusSummary()
+		pack(self.vbox, activeWidget, 1, 1)
+		# activeWidget.calTypeComboChanged()-- apearantly not needed
+		self.activeWidget = activeWidget
 
 	def run(self) -> EventType | None:
 		assert self.activeWidget is not None
 
 		parentWin = self.get_transient_for()
-		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
-			try:
-				filesBox = self.activeWidget.filesBox  # type: ignore[union-attr]
-			except AttributeError:
-				pass
-			else:
-				filesBox.removeNewFiles()
+		if Dialog.run(self) != gtk.ResponseType.OK:
+			# try:
+			# 	filesBox = self.activeWidget.filesBox  # type: ignore[union-attr]
+			# except AttributeError:
+			# 	pass
+			# else:
+			# 	filesBox.removeNewFiles()
 			if parentWin is not None:
 				parentWin.present()
 			return None
 		self.activeWidget.updateVars()
 
-		event = self.event
+		event = self._event
 		group = event.parent
 		assert isinstance(group, EventGroup)
 		event.afterModifyBasic()

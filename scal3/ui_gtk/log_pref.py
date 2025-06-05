@@ -46,7 +46,7 @@ class LogLevelComboBox(gtk.ComboBox):
 		self.set_model(model)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 1)
 		# ---
 		for num, name in self.levels:
