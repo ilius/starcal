@@ -692,27 +692,29 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		return False
 
 	def motionNotify(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
-		if self.boxEditing:
-			editType, event, box, x0, t0 = self.boxEditing
-			assert isinstance(event, TaskEvent | LifetimeEvent)
-			t1 = t0 + (gevent.x - x0) / self.pixelPerSec
-			if editType == 0:
-				event.modifyPos(t1)
-			elif editType == 1:
-				if t1 - box.t0 > 2 * conf.boxEditBorderWidth.v / self.pixelPerSec:
-					event.modifyEnd(t1)
-			elif editType == -1:  # noqa: SIM102
-				if box.t1 - t1 > 2 * conf.boxEditBorderWidth.v / self.pixelPerSec:
-					event.modifyStart(t1)
-			box.t0 = max(
-				event.getStartEpoch(),
-				self.timeStart - self.borderTm,
-			)
-			box.t1 = min(
-				event.getEndEpoch(),
-				self.timeStart + self.timeWidth + self.borderTm,
-			)
-			self.queue_draw()
+		if not self.boxEditing:
+			return
+		editType, event, box, x0, t0 = self.boxEditing
+		# print(f"motionNotify: {self.event=}")
+		assert isinstance(event, TaskEvent | LifetimeEvent)
+		t1 = t0 + (gevent.x - x0) / self.pixelPerSec
+		if editType == 0:
+			event.modifyPos(t1)
+		elif editType == 1:
+			if t1 - box.t0 > 2 * conf.boxEditBorderWidth.v / self.pixelPerSec:
+				event.modifyEnd(t1)
+		elif editType == -1:  # noqa: SIM102
+			if box.t1 - t1 > 2 * conf.boxEditBorderWidth.v / self.pixelPerSec:
+				event.modifyStart(t1)
+		box.t0 = max(
+			event.getStartEpoch(),
+			self.timeStart - self.borderTm,
+		)
+		box.t1 = min(
+			event.getEndEpoch(),
+			self.timeStart + self.timeWidth + self.borderTm,
+		)
+		self.queue_draw()
 
 	def buttonRelease(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
 		if self.boxEditing:
