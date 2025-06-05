@@ -242,6 +242,11 @@ def removeUnusedObjects(fs: FileSystem) -> None:
 
 ev = Handler()
 
+assert classes.notifier
+assert classes.group
+assert classes.event
+assert classes.rule
+
 defaultGroupTypeIndex = 0  # FIXME
 
 __plugin_api_get__ = [
