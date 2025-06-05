@@ -97,16 +97,16 @@ class SelectDateDialog(gtk.Dialog):
 		# -------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onCancel,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 			onClick=self.ok,
 		)
 		# -------

@@ -51,11 +51,11 @@ class EventTagsAndIconSelect(gtk.Box):
 		combo.set_model(ls)
 		# ---
 		cell = gtk.CellRendererPixbuf()
-		pack(combo, cell)
+		combo.pack_start(cell, expand=False)
 		combo.add_attribute(cell, "pixbuf", 0)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(combo, cell, True)
+		combo.pack_start(cell, expand=True)
 		combo.add_attribute(cell, "text", 1)
 		# ---
 		ls.append([None, _("Custom")])  # first or last FIXME
@@ -105,7 +105,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
-	def scrollEvent(self, _w: gtk.Widget, gevent: gdk.ScrollEvent) -> None:
+	def scrollEvent(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> None:
 		self.swin.get_hscrollbar().emit("scroll-event", gevent)
 
 	def typeComboChanged(self, combo: gtk.ComboBox) -> None:
@@ -262,15 +262,15 @@ class TagEditorDialog(gtk.Dialog):
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		# ----
 		self.vbox.show_all()

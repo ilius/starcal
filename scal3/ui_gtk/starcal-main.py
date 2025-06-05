@@ -157,9 +157,9 @@ def showMsg(
 	pack(win.vbox, hbox)
 	dialog_add_button(
 		win,
+		res=gtk.ResponseType.OK,
 		imageName="window-close.svg",
 		label=_("_Close"),
-		res=gtk.ResponseType.OK,
 	)
 	win.resize(600, 1)
 	win.run()

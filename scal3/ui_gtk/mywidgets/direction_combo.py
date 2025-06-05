@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gtk
 
 __all__ = ["DirectionComboBox"]
 
@@ -20,7 +20,7 @@ class DirectionComboBox(gtk.ComboBox):
 		self.set_model(ls)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 0)
 		# ---
 		for d in self.descs:

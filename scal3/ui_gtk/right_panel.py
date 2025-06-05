@@ -210,19 +210,19 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def onMinimumHeightChange(self) -> None:
 		self.queue_resize()
 
-	def do_get_preferred_width(self) -> tuple[float, float]:  # noqa: PLR6301
+	def do_get_preferred_width(self) -> tuple[int, int]:  # noqa: PLR6301
 		# must return minimum_size, natural_size
 		if conf.mainWinRightPanelWidthRatioEnable.v:
 			if ui.mainWin and ui.mainWin.is_maximized():
 				winWidth = ui.mainWin.get_size()[0]
 			else:
 				winWidth = conf.winWidth.v
-			width = conf.mainWinRightPanelWidthRatio.v * winWidth
+			width = int(conf.mainWinRightPanelWidthRatio.v * winWidth)
 		else:
 			width = conf.mainWinRightPanelWidth.v
 		return width, width
 
-	def do_get_preferred_width_for_height(self, _size: int) -> tuple[float, float]:
+	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
 		return self.do_get_preferred_width()
 
 	def getOptionsWidget(self) -> gtk.Box:

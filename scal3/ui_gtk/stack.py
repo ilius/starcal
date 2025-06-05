@@ -82,7 +82,7 @@ class MyStack(gtk.Stack):
 		self._titleCentered = False
 		# ---
 		self._windowTitleEnable = False
-		self._window = None
+		self._window: gtk.Window | None = None
 		self._windowTitleMain = ""
 		self._windowTitleMainFirst = False
 
@@ -118,7 +118,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -129,16 +129,16 @@ class MyStack(gtk.Stack):
 
 	def _setSlideForward(self) -> None:
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_DOWN
+			gtk.StackTransitionType.SLIDE_DOWN
 			if self._verticalSlide
-			else gtk.RevealerTransitionType.SLIDE_LEFT,
+			else gtk.StackTransitionType.SLIDE_LEFT,
 		)
 
 	def _setSlideBackward(self) -> None:
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_UP
+			gtk.StackTransitionType.SLIDE_UP
 			if self._verticalSlide
-			else gtk.RevealerTransitionType.SLIDE_RIGHT,
+			else gtk.StackTransitionType.SLIDE_RIGHT,
 		)
 
 	def _newHeaderBox(

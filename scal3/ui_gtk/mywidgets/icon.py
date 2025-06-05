@@ -75,21 +75,21 @@ class IconSelectButton(gtk.Button):
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.REJECT,
 			imageName="sweep.svg",
 			label=_("Clear", ctx="window action"),
-			res=gtk.ResponseType.REJECT,
 		)
 
 		dialog.connect("file-activated", self.fileActivated)

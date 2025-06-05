@@ -116,9 +116,9 @@ class CustomizeWindow(gtk.Dialog):
 		self.connect("delete-event", self.onSaveClick)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.onSaveClick,
 		)
 		# should we save on Escape? or when clicking the X (close) button?

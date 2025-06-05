@@ -84,16 +84,16 @@ class ExportDialog(MyDialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onDelete,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
 		# --
@@ -243,16 +243,16 @@ class ExportToIcsDialog(MyDialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onDelete,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.save,
 		)
 		# --

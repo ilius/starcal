@@ -101,7 +101,7 @@ class WidgetClass(BaseWidgetClass):
 			aid, gid = self.group.remoteIds
 		else:
 			aid, gid = None, None
-		self.accountCombo.set_active(aid)
+		self.accountCombo.setActive(aid)
 		self.accountGroupCombo.set_active(gid)
 		self.syncCheck.set_active(self.group.remoteSyncEnable)
 		self.syncIntervalInput.set_sensitive(self.group.remoteSyncEnable)
@@ -117,7 +117,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.endJd = self.endDateInput.get_jd(self.group.calType)
 		# ---
 		self.group.remoteIds = None
-		aid = self.accountCombo.get_active()
+		aid = self.accountCombo.getActive()
 		if aid:
 			gid = self.accountGroupCombo.get_active()
 			if gid:

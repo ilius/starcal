@@ -36,12 +36,9 @@ from scal3.ui_gtk.utils import buffer_get_text
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-__all__ = ["ColorType", "MyColorButton", "MyFontButton", "TextFrame"]
+	from scal3.font import Font
 
-
-def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	log.info(f"{type(widget)}, {gevent.type.value_name}")
-	# , gevent.send_event
+__all__ = ["ColorType", "MyColorButton", "MyFontButton", "TextFrame", "ui"]
 
 
 class MyFontButton(gtk.FontButton):
@@ -69,14 +66,14 @@ class MyFontButton(gtk.FontButton):
 
 	@staticmethod
 	def dragDataGet(
-		fontb: gtk.FontButton,
+		fontb: MyFontButton,
 		_context: gdk.DragContext,
 		selection: gtk.SelectionData,
 		_info: int,  # or _target_id?
 		_etime: int,
 	) -> bool:
-		# log.debug("fontButtonDragDataGet")
-		valueStr = gfontEncode(fontb.get_font())
+		# print(f"fontButtonDragDataGet: {fontb=}, {fontb.getFont()=}")
+		valueStr = gfontEncode(fontb.getFont())
 		valueBytes = valueStr.encode("utf-8")
 		selection.set_text(valueStr, len(valueBytes))
 		return True
@@ -96,7 +93,7 @@ class MyFontButton(gtk.FontButton):
 		text = selection.get_text()
 		log.debug(f"fontButtonDragDataRec    {text=}")
 		if text:
-			pfont = pango.FontDescription(text)
+			pfont = pango.FontDescription.from_string(text)
 			if pfont.get_family() and pfont.get_size() > 0:
 				gtk.FontButton.set_font(fontb, text)
 				self.emit("font-set")
@@ -105,21 +102,24 @@ class MyFontButton(gtk.FontButton):
 	def dragBegin(self, _fontb: gtk.FontButton, context: gdk.DragContext) -> bool:
 		# log.debug("fontBottonDragBegin"-- caled before dragCalDataGet)
 		fontName = gtk.FontButton.get_font(self)
+		if fontName is None:
+			return True
 		pbuf = newDndFontNamePixbuf(fontName)
 		w = pbuf.get_width()
 		# h = pbuf.get_height()
 		gtk.drag_set_icon_pixbuf(
 			context,
 			pbuf,
-			w / 2,
+			int(w // 2),
 			-10,
 		)
 		return True
 
-	def get_font(self) -> ui.Font:
+	def getFont(self) -> Font:
 		return gfontDecode(gtk.FontButton.get_font(self))
 
-	def set_font(self, font: ui.Font) -> None:
+	def setFont(self, font: Font) -> None:
+		# assert isinstance(font, Font)
 		gtk.FontButton.set_font(self, gfontEncode(font))
 
 

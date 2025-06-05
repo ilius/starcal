@@ -100,15 +100,15 @@ class LocationDialog(gtk.Dialog):
 		# ---------------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		okB = dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_OK"),
-			res=gtk.ResponseType.OK,
 		)
 		self.okB = okB
 		# ---------------
@@ -460,15 +460,15 @@ class TextPluginUI:
 		# ---
 		cancelB = dialog_add_button(
 			self.confDialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		okB = dialog_add_button(
 			self.confDialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_OK"),
-			res=gtk.ResponseType.OK,
 		)
 		cancelB.connect("clicked", self.confDialogCancel)
 		okB.connect("clicked", self.confDialogOk)

@@ -63,15 +63,15 @@ def _notify(notifier: EventNotifier) -> None:
 	label = gtk.Label(label=text)
 	label.set_selectable(True)
 	pack(hbox, label, 1, 1)
-	pack(dialog.vbox, hbox)
+	pack(dialog.vbox, hbox)  # type: ignore[arg-type]
 	# ----
 	okB = dialog_add_button(
 		dialog,
+		res=gtk.ResponseType.OK,
 		imageName="dialog-ok.svg",
 		label=_("_Close"),
-		res=gtk.ResponseType.OK,
 	)
 	okB.connect("clicked", lambda _w, _e: dialog.response(gtk.ResponseType.OK))
-	dialog.vbox.show_all()
+	dialog.vbox.show_all()  # type: ignore[attr-defined]
 	dialog.connect("response", response)
 	dialog.present()

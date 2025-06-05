@@ -1044,7 +1044,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _w: gtk.Widget, gevent: gdk.ScrollEvent) -> bool | None:
+	def scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)

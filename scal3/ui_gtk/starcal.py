@@ -555,7 +555,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		_gevent: gdk.Event | None = None,
 		_data: Any = None,
 	) -> None:
-		log.debug("focusIn")
+		# log.debug("focusIn")
 		self.focus = True
 		if self.winCon and self.winCon.enable:
 			self.winCon.windowFocusIn()
@@ -569,7 +569,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# called 0.0004 sec (max) after focusIn
 		# (if switched between two windows)
 		dt = perf_counter() - ui.focusTime
-		log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
+		# log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
 		if dt > 0.05:  # FIXME
 			self.focus = False
 			timeout_add(2, self.focusOutDo)

@@ -77,9 +77,9 @@ class EventHistoryDialog(gtk.Dialog):
 
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("_Close"),
-			res=gtk.ResponseType.OK,
 		)
 
 		self.connect("response", self.onResponse)

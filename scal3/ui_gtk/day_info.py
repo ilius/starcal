@@ -128,30 +128,30 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		# ---
 		dialog_add_button(
 			self,
+			res=0,
 			label=_("Close"),
 			imageName="window-close.svg",
-			res=0,
 			onClick=self.onClose,
 		)
 		dialog_add_button(
 			self,
+			res=1,
 			label=_("Previous"),
 			imageName="go-previous.svg",
-			res=1,
 			onClick=self.goBack,
 		)
 		dialog_add_button(
 			self,
+			res=2,
 			label=_("Today"),
 			imageName="go-home.svg",
-			res=2,
 			onClick=self.goToday,
 		)
 		dialog_add_button(
 			self,
+			res=3,
 			label=_("Next"),
 			imageName="go-next.svg",
-			res=3,
 			onClick=self.goNext,
 		)
 		# ---

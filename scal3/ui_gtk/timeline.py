@@ -83,11 +83,6 @@ if TYPE_CHECKING:
 __all__ = ["TimeLineWindow"]
 
 
-def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	log.info(f"{type(widget)=}, {gevent.type.value_name=}, {gevent.get_value()=}")
-	# gevent.send_event
-
-
 @registerSignals
 class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	objName = "timeLine"

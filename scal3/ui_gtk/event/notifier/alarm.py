@@ -60,6 +60,8 @@ def notify(notifier: AlarmNotifier, finishFunc: Callable[[], None]) -> None:
 	# import thread
 	# thread.start_new_thread(notifyWait, (notifier, finishFunc))
 	finishFunc()
+	if not notifier.alarmSound:
+		return
 	Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
 

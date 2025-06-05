@@ -299,9 +299,9 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # FIXME
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Apply", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		# self.connect("response", lambda w, e: self.hide())
 		self.connect("response", self.onResponse)

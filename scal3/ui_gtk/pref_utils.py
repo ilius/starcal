@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.font import Font
+from scal3.ui_gtk.mywidgets import MyFontButton
 
 log = logger.get()
 
@@ -260,7 +261,7 @@ class FontFamilyPrefItem(PrefItem):
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
 		# ---
-		self.fontButton = gtk.FontButton()
+		self.fontButton = MyFontButton()
 		self.fontButton.set_show_size(False)
 		if gtk.MINOR_VERSION >= 24:
 			self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
@@ -306,7 +307,7 @@ class FontFamilyPrefItem(PrefItem):
 		# now value is not None
 		if self.hasAuto:
 			self.fontRadio.set_active(True)
-		self.fontButton.set_font(gfontEncode(Font(family=value, size=15)))
+		self.fontButton.setFont(Font(family=value, size=15))
 
 	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
@@ -363,7 +364,7 @@ class ComboEntryTextPrefItem(PrefItem):
 	def addDescriptionColumn(self, descByValue: dict) -> None:
 		w = self._widget
 		cell = gtk.CellRendererText()
-		pack(w, cell, True)
+		w.pack_start(cell, expand=True)
 		w.add_attribute(cell, "text", 1)
 		ls = w.get_model()
 		for row in ls:
@@ -387,11 +388,11 @@ class ComboImageTextPrefItem(PrefItem):
 		combo.set_model(ls)
 		# ---
 		cell = gtk.CellRendererPixbuf()
-		pack(combo, cell)
+		combo.pack_start(cell, expand=False)
 		combo.add_attribute(cell, "pixbuf", 0)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(combo, cell, expand=True)
+		combo.pack_start(cell, expand=True)
 		combo.add_attribute(cell, "text", 1)
 		# ---
 		self._widget = combo
@@ -439,12 +440,12 @@ class FontPrefItem(PrefItem):
 			self.setPreviewText(previewText)
 
 	def get(self) -> Font:
-		return self._widget.get_font()
+		return self._widget.getFont()
 
 	def set(self, value: Font | None) -> None:
 		if value is None:
 			return
-		self._widget.set_font(value)
+		self._widget.setFont(value)
 
 	def setPreviewText(self, text: str) -> None:
 		self._widget.set_preview_text(text)
@@ -888,15 +889,15 @@ class FileChooserPrefItem(PrefItem):
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 		)
 		w = gtk.FileChooserButton.new_with_dialog(dialog)
 		w.set_local_only(True)
@@ -905,9 +906,9 @@ class FileChooserPrefItem(PrefItem):
 		# ---
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.NONE,
 			imageName="edit-undo.svg",
 			label=_("_Revert"),
-			res=gtk.ResponseType.NONE,
 			onClick=self.onRevertClick,
 		)
 		# ---

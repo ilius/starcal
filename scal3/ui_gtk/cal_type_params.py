@@ -226,7 +226,7 @@ class TextParamWidget(gtk.Box):
 				self.spinX.get_value(),
 				self.spinY.get_value(),
 			),
-			"font": self.fontb.get_font(),
+			"font": self.fontb.getFont(),
 			"color": self.colorb.get_rgba(),
 		}
 		if self.hasEnable:
@@ -245,7 +245,7 @@ class TextParamWidget(gtk.Box):
 		self.spinY.set_value(params["pos"][1])
 		font = getParamsFont(params)
 		assert font is not None
-		self.fontb.set_font(font)
+		self.fontb.setFont(font)
 		self.colorb.set_rgba(params["color"])
 		if self.hasEnable:
 			self.enableCheck.set_active(params.get("enable", True))

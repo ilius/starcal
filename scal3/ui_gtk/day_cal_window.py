@@ -97,9 +97,9 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.onSaveClick,
 		)
 		# --

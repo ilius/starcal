@@ -64,17 +64,6 @@ class AccountCombo(IdComboBox):
 		# ---
 		gtk.ComboBox.set_active(self, 0)
 
-	def get_active(self) -> int | None:
-		active = IdComboBox.get_active(self)
-		if active == -1:
-			return None
-		return active
-
-	def set_active(self, active: int | None) -> None:
-		if active is None:
-			active = -1
-		IdComboBox.set_active(self, active)
-
 
 class AccountGroupCombo(IdComboBox):
 	def __init__(self) -> None:

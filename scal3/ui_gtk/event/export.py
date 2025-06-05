@@ -27,15 +27,15 @@ class SingleGroupExportDialog(MyDialog):
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
@@ -127,15 +127,15 @@ class MultiGroupExportDialog(MyDialog):
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		# ----
 		hbox = HBox()
@@ -266,15 +266,15 @@ class EventListExportDialog(MyDialog):
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----

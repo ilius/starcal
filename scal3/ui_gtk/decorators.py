@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, Protocol
+
 from scal3 import logger
 
 log = logger.get()
@@ -12,12 +14,16 @@ __all__ = [
 ]
 
 
-def registerType[T: type[GObject]](cls: T) -> T:
+class ObjectType(Protocol):
+	signals: list[tuple[str, list[Any]]]
+
+
+def registerType[T: type[ObjectType]](cls: T) -> T:
 	GObject.type_register(cls)
 	return cls
 
 
-def registerSignals[T: type[GObject]](cls: T) -> T:
+def registerSignals[T: type[ObjectType]](cls: T) -> T:
 	GObject.type_register(cls)
 	for name, args in cls.signals:
 		try:

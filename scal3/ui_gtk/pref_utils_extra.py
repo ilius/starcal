@@ -284,7 +284,7 @@ class LangPrefItem(PrefItem):
 		combo.set_model(ls)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(combo, cell, True)
+		combo.pack_start(cell, expand=True)
 		combo.add_attribute(cell, "text", 0)
 		# ---
 		self._widget = combo

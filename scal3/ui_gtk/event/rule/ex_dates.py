@@ -136,9 +136,9 @@ class WidgetClass(gtk.Box):
 		# --
 		_okButton = dialog_add_button(
 			self.dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 
 	def showDialog(self, _w: Any = None) -> None:

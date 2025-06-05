@@ -239,15 +239,15 @@ class WidgetClass(gtk.Box):
 # 		)
 # 		dialog_add_button(
 # 			fcd,
+# 			res=gtk.ResponseType.OK,
 # 			imageName="dialog-ok.svg",
 # 			label=_("_Choose"),
-# 			res=gtk.ResponseType.OK,
 # 		)
 # 		dialog_add_button(
 # 			fcd,
+# 			res=gtk.ResponseType.CANCEL,
 # 			imageName="dialog-cancel.svg",
 # 			label=_("Cancel"),
-# 			res=gtk.ResponseType.CANCEL,
 # 		)
 # 		fcd.set_local_only(True)
 # 		fcd.connect("response", lambda _w, _e: fcd.hide())
@@ -566,11 +566,11 @@ class SingleGroupComboBox(gtk.ComboBox):
 		self.set_model(ls)
 		# -----
 		cell = gtk.CellRendererPixbuf()
-		pack(self, cell)
+		self.pack_start(cell, expand=False)
 		self.add_attribute(cell, "pixbuf", 1)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, 1)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 2)
 		# -----
 		self.updateItems()

@@ -571,15 +571,15 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		fcd.set_current_name(self.term.title + ".svg")
 		dialog_add_button(
 			fcd,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			fcd,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		if fcd.run() == gtk.ResponseType.OK:
 			self.exportToSvg(fcd.get_filename())

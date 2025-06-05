@@ -115,6 +115,7 @@ def getPixbuf(name: str, size: float) -> GdkPixbuf.Pixbuf | None:
 	fpath = getFilePath(key)
 	if isfile(fpath):
 		pixbuf = GdkPixbuf.Pixbuf.new_from_file(fpath)
+		assert pixbuf is not None
 		pixbufCache[key] = pixbuf
 		return pixbuf
 	return None

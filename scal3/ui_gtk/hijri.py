@@ -133,22 +133,22 @@ class EditDbDialog(gtk.Dialog):
 		# ------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		# --
 		resetB = dialog_add_button(
 			self,
+			res=gtk.ResponseType.NONE,
 			imageName="edit-undo.svg",
 			label=_("_Reset to Defaults"),
-			res=gtk.ResponseType.NONE,
 		)
 		resetB.connect("clicked", self.resetToDefaults)
 		# --
@@ -348,9 +348,9 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("Understood"),
-			res=gtk.ResponseType.OK,
 		)
 		# ---
 		self.vbox.show_all()

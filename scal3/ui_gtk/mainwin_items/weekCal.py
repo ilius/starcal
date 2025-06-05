@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.cell import WeekStatus
+from scal3.font import Font
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 
 log = logger.get()
@@ -75,11 +76,6 @@ if TYPE_CHECKING:
 	from scal3.ui.pytypes import WeekCalDayNumParamsDict
 
 __all__ = ["CalObj"]
-
-
-def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	log.info(f"{type(widget)}, {gevent.type.value_name}")
-	# gevent.get_value()#, gevent.send_event
 
 
 class ColumnBase(CustomizableCalObj):
@@ -224,12 +220,13 @@ class Column(gtk.DrawingArea, ColumnBase):
 			assert expandProp is not None
 			self.expand = expandProp.v
 
-	def do_get_preferred_width(self) -> tuple[float, float]:
+	def do_get_preferred_width(self) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		widthProp = self.getWidthProp()
 		if widthProp is None:
 			return 0, 0
-		return widthProp.v, widthProp.v
+		width = int(widthProp.v)
+		return width, width
 
 	def onExposeEvent(
 		self,
@@ -373,7 +370,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		self,
 		cr: cairo.Context,
 		textData: list[list[tuple[str, ColorType | None]]],
-		font: ui.Font | None = None,
+		font: Font | None = None,
 	) -> None:
 		status = self.wcal.status
 		assert status is not None
@@ -386,7 +383,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		if font is None:
 			fontName = self.getFontFamily()
 			fontSize = ui.getFont().size  # FIXME
-			font = ui.Font(family=fontName, size=fontSize) if fontName else None
+			font = Font(family=fontName, size=fontSize) if fontName else None
 		for i in range(7):
 			data = textData[i]
 			if data:
@@ -1019,7 +1016,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		self.fontCheck.set_active(bool(font))
 		if not font:
 			font = ui.getFont()
-		self.fontb.set_font(font)
+		self.fontb.setFont(font)
 
 	def onChange(
 		self,

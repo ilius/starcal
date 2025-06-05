@@ -68,16 +68,16 @@ class AdjusterDialog(gtk.Dialog):
 		# ---------
 		self.buttonCancel = dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		# self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
 		self.buttonSet = dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="preferences-system.svg",
 			label=_("Set System Time"),
-			res=gtk.ResponseType.OK,
 		)
 		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
 		# ---------

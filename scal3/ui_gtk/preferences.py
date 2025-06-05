@@ -994,16 +994,16 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		dialog_add_button(
 			d,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.plugAddDialogClose,
 		)
 		dialog_add_button(
 			d,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 			onClick=self.plugAddDialogOK,
 		)
 		# ---
@@ -1438,9 +1438,9 @@ class PreferencesWindow(gtk.Window):
 			)
 			dialog_add_button(
 				d,
+				res=gtk.ResponseType.CANCEL,
 				imageName="dialog-cancel.svg",
 				label=_("_No"),
-				res=gtk.ResponseType.CANCEL,
 			)
 			d.set_keep_above(True)
 			label = gtk.Label(
@@ -1457,9 +1457,9 @@ class PreferencesWindow(gtk.Window):
 			pack(d.vbox, vbox)
 			resBut = dialog_add_button(
 				d,
+				res=gtk.ResponseType.OK,
 				imageName="view-refresh.svg",
 				label=_("_Restart"),
-				res=gtk.ResponseType.OK,
 			)
 			resBut.grab_default()
 			d.vbox.set_border_width(5)
