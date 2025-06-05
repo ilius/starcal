@@ -187,6 +187,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		"isha",
 	)
 
+	def open_configure(self) -> None:
+		TextPluginUI.open_configure(self)
+
+	def open_about(self) -> bool:
+		return TextPluginUI.open_about(self)
+
 	def __init__(self, _file: str) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
