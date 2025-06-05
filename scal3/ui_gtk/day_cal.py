@@ -432,9 +432,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		subPages = []
 		prefItem: PrefItem
 		# ---
-		self.buttons1: list[gtk.Button] = []
 		buttons1: list[gtk.Button] = []
 		buttons2: list[gtk.Button] = []
+		self.buttons1 = buttons1
 		# ----
 		if self.backgroundColor:
 			prefItem = ColorPrefItem(
