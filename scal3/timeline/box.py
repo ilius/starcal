@@ -93,8 +93,9 @@ class Box:
 
 def makeIntervalGraph(boxes):
 	try:
-		from scal3.graph_utils import Graph
+		from igraph import Graph
 	except ImportError:
+		log.exception("error importing Graph")
 		return
 	g = Graph()
 	n = len(boxes)
