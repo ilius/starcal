@@ -87,11 +87,10 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		group.parent = None
 		ObjectsHolderTextModel.delete(self, group)
 
-	def setDict(self, data: dict[str, Any]) -> None:
+	def setList(self, data: list[int]) -> None:
 		self.clear()
-		log.info(f"EventGroupsHolder: setDict: {data = }")
 		if data:
-			ObjectsHolderTextModel.setDict(self, data)
+			ObjectsHolderTextModel.setList(self, data)
 			for group in self:
 				assert group.id is not None
 				if group.uuid is None:
