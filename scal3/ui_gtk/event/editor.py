@@ -161,12 +161,12 @@ class EventEditorDialog(gtk.Dialog):
 		event = self.event
 		group = event.parent
 		assert isinstance(group, EventGroup)
-		event.afterModify()
+		event.afterModifyBasic()
 		event.save()
 		if self.isNew:
 			group.add(event)
 			group.save()
-		event.afterAddedToGroup()
+		event.afterModifyInGroup()
 		ev.lastIds.save()
 		ev.notif.checkEvent(group, event)
 
