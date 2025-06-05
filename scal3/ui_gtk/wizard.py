@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from scal3 import logger
 
@@ -22,8 +22,8 @@ class StepType(Protocol):
 	buttons: list[tuple[str, Callable[[gtk.Button], None]]]
 
 	def __init__(self, window: WizardWindow) -> None: ...
-	def run(self) -> None: ...
-	def getWidget(self) -> gtk.Widget: ...
+	def run(self, args: dict[str, Any]) -> None: ...
+	def getWidget(self) -> gtk.Box: ...
 
 
 class WizardWindow(MyWindow):
@@ -68,16 +68,23 @@ class WizardWindow(MyWindow):
 		# log.debug(id(self.get_action_area()))
 
 	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		if kname == "escape":
 			self.destroy()
 		return True
 
-	def showStep(self, stepIndex: int, *args) -> None:
+	def showStep(
+		self,
+		stepIndex: int,
+		args: dict[str, Any] | None = None,
+	) -> None:
 		backward = stepIndex < self.stepIndex
 		self.stack.gotoPage(str(stepIndex), backward=backward)
 		step = self.steps[stepIndex]
-		step.run(*args)
+		step.run(args or {})
 		self.stepIndex = stepIndex
 		# ---
 		bbox = self.buttonBox

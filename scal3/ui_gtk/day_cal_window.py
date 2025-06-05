@@ -31,7 +31,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import confDir
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, Menu, VBox, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
 from scal3.ui_gtk.decorators import registerSignals
@@ -52,6 +52,7 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 	from scal3.ui_gtk.cal_base import CalBase
 	from scal3.ui_gtk.customize import CustomizableCalObj
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["DayCalWindow"]
 
@@ -87,9 +88,9 @@ def liveConfChanged() -> None:
 		lastLiveConfChangeTime = tm
 
 
-class DayCalWindowCustomizeWindow(gtk.Dialog):
+class DayCalWindowCustomizeWindow(Dialog):
 	def __init__(self, dayCal: DayCal, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self._widget = dayCal
 		# --
 		self.set_title(_("Customize") + ": " + dayCal.desc)
@@ -97,9 +98,9 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# --
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.onSaveClick,
 		)
 		# --
@@ -108,11 +109,15 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 			iconSize=conf.stackIconSize.v,
 		)
 		pack(self.vbox, self.stack, 1, 1)
+		pageWidget = VBox()
+		optionsWidget = dayCal.getOptionsWidget()
+		assert optionsWidget is not None
+		pack(pageWidget, optionsWidget, True, True)
 		pageName = "dayCalWin"
 		page = StackPage()
 		page.pageName = pageName
 		page.pagePath = pageName
-		page.pageWidget = dayCal.getOptionsWidget()
+		page.pageWidget = pageWidget
 		page.pageExpand = True
 		page.pageExpand = True
 		self.stack.addPage(page)
@@ -179,7 +184,7 @@ class DayCalWindowWidget(DayCal):
 	def getCell(cls) -> CellType:
 		return ui.cells.today
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
 		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
 		self.menu: gtk.Menu | None = None
@@ -209,7 +214,7 @@ class DayCalWindowWidget(DayCal):
 		self.customizeWindow.move(cx, cy)
 		# should move() after present()
 
-	def onButtonPress(self, obj: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, obj: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		b = gevent.button
 		if b == 1:
 			buttons = self._allButtons
@@ -233,7 +238,7 @@ class DayCalWindowWidget(DayCal):
 	@staticmethod
 	def getMenuPosFunc(
 		menu: gtk.Menu,
-		gevent: gdk.Event,
+		gevent: gdk.EventButton,
 		above: bool,
 	) -> Callable[[], tuple[int, int, bool]] | None:
 		# FIXME: ^^^ *args
@@ -245,8 +250,8 @@ class DayCalWindowWidget(DayCal):
 
 		mw = get_menu_width(menu)
 		mh = get_menu_height(menu)
-		mx = max(0, gevent.x_root - mw) if rtl else gevent.x_root
-		my = max(0, gevent.y_root - mh) if above else gevent.y_root
+		mx = int(max(0, gevent.x_root - mw) if rtl else gevent.x_root)
+		my = int(max(0, gevent.y_root - mh) if above else gevent.y_root)
 
 		if mx == my == 0:
 			log.info(
@@ -284,7 +289,7 @@ class DayCalWindowWidget(DayCal):
 		menu.show_all()
 		return menu
 
-	def popupMenuOnButtonPress(self, _obj: gtk.Widget, gevent: gdk.ButtonEvent) -> None:
+	def popupMenuOnButtonPress(self, _obj: gtk.Widget, gevent: gdk.EventButton) -> None:
 		reverse = gevent.y_root > ud.screenH / 2.0
 		menu = self.getMenu(reverse)
 		menu.popup(
@@ -299,7 +304,7 @@ class DayCalWindowWidget(DayCal):
 
 
 @registerSignals
-class DayCalWindow(gtk.Window, ud.BaseCalObj):
+class DayCalWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "dayCalWin"
 	desc = _("Day Calendar Window")
 
@@ -335,7 +340,9 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
 			)
 		dx, dy = coord
-		_foo, wx, wy = self.get_window().get_origin()
+		win = self.get_window()
+		assert win is not None
+		_foo, wx, wy = win.get_origin()
 		x = wx + dx
 		y = wy + dy
 		if rtl:

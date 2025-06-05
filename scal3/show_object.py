@@ -22,8 +22,7 @@ if __name__ == "__main__":
 	fs = DefaultFileSystem(confDir)
 	for hashStr in sys.argv[1:]:
 		_dpath, fpath = getObjectPath(hashStr)
-		data = SObjBinaryModel.loadBinaryData(hashStr, fs)
-		assert isinstance(data, dict)
+		data = SObjBinaryModel.loadBinaryDict(hashStr, fs)
 		# plog.info(data, indent=4, width=80)
 		print(f"File: {fpath}")
 		print(dataToPrettyJson(data))  # noqa: T201

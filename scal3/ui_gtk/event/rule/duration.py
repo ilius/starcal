@@ -14,6 +14,7 @@ class WidgetClass(common.DurationInputBox):
 	def __init__(self, rule: DurationEventRule) -> None:
 		self.rule = rule
 		common.DurationInputBox.__init__(self)
+		self.w = self
 
 	def updateWidget(self) -> None:
 		self.setDuration(self.rule.value, self.rule.unit)

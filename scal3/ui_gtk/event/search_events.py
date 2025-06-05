@@ -67,7 +67,7 @@ __all__ = ["EventSearchWindow"]
 
 
 @registerSignals
-class EventSearchWindow(MyWindow, ud.BaseCalObj):
+class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 	def __init__(self, showDesc: bool = False) -> None:
 		gtk.Window.__init__(self)
 		self.maximize()
@@ -86,6 +86,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		# ------
 		vboxFilters = self.vboxFilters = VBox()
 		pack(self.vbox, vboxFilters)
+		frame: gtk.Frame
 		# ------
 		frame = TextFrame()
 		frame.set_label(_("Text"))
@@ -258,7 +259,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		pack(self.vbox, bbox)
 		# ------
 		treev = gtk.TreeView()
-		treeModel = gtk.TreeStore(
+		listStore = self.listStore = gtk.TreeStore(
 			int,  # gid
 			int,  # eid
 			str,  # group_name
@@ -267,7 +268,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			str,  # description
 		)
 		# ---
-		treev.set_model(treeModel)
+		treev.set_model(listStore)
 		treev.connect("button-press-event", self.onTreeviewButtonPress)
 		treev.connect("row-activated", self.rowActivated)
 		treev.connect("key-press-event", self.onTreeviewKeyPress)
@@ -313,7 +314,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		self.colDesc.set_property("expand", True)  # FIXME
 		treev.append_column(self.colDesc)
 		# ---
-		treeModel.set_sort_func(2, self.sort_func_group)
+		listStore.set_sort_func(2, self.sort_func_group)
 		# ------
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
@@ -380,7 +381,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		pack(self.vbox, bbox2)
 		# ------
 		self.treev = treev
-		self.treeModel = treeModel
+		self.treeModel = listStore
 		self.vbox.show_all()
 		# self.maximize()-- FIXME
 
@@ -398,9 +399,10 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		iter2: gtk.TreeIter,
 		_user_data: Any = None,
 	) -> int:
+		# model = self.listStore
 		return intcmp(
-			ev.groups.index(model.get(iter1, 0)[0]),
-			ev.groups.index(model.get(iter2, 0)[0]),
+			ev.groups.index(model.get(iter1, ["0"])[0]),
+			ev.groups.index(model.get(iter2, ["0"])[0]),
 		)
 
 	def updateTimeFromSensitive(self, _w: gtk.Widget | None = None) -> None:
@@ -424,7 +426,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 	def _collectConds(self) -> tuple[list[int], dict[str, Any]]:
 		groupIds: list[int]
 		if self.groupCheck.get_active():
-			groupId = self.groupCombo.get_active()
+			groupId = self.groupCombo.getActive()
 			assert groupId is not None
 			groupIds = [groupId]
 		else:
@@ -462,14 +464,14 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 			for event in group.search(conds):
 				self.treeModel.append(
 					None,
-					(
+					[
 						group.id,
 						event.id,
 						group.title,
 						eventTreeIconPixbuf(event.getIcon()),
 						event.summary,
 						event.getShownDescription(),
-					),
+					],
 				)
 		self.resultLabel.set_label(
 			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel))),
@@ -659,7 +661,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
-		self.moveEventToTrash(path)
+		self.moveEventToTrash(path.to_string())
 
 	def getMoveToGroupSubMenu(
 		self,
@@ -785,7 +787,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 	def onTreeviewButtonPress(
 		self,
 		_widget: gtk.Widget,
-		gevent: gdk.ButtonEvent,
+		gevent: gdk.EventButton,
 	) -> bool | None:
 		pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
@@ -795,23 +797,26 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		if not path:
 			return None
 		if gevent.button == 3:
-			self.openRightClickMenu(path, gevent.time)
+			self.openRightClickMenu(path.to_string(), gevent.time)
 		return False
 
 	def onTreeviewKeyPress(
 		self,
 		treev: gtk.TreeView,
-		gevent: gdk.KeyEvent,
+		gevent: gdk.EventKey,
 	) -> bool | None:
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
 		# gdk.CURRENT_TIME == 0
 		# gevent.time == gtk.get_current_event_time() # OK
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		# log.debug("onTreeviewKeyPress", kname)
 		if kname == "menu":  # Simulate right click (key beside Right-Ctrl)
 			path = treev.get_cursor()[0]
 			if path:
-				menu = self.genRightClickMenu(path)
+				menu = self.genRightClickMenu(path.to_string())
 				if not menu:
 					return None
 				rect = treev.get_cell_area(path, treev.get_column(1))
@@ -820,12 +825,16 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 					x -= 100
 				else:
 					x += 50
-				dx, dy = treev.translate_coordinates(
+				dcoord = treev.translate_coordinates(
 					self,
 					x,
 					rect.y + rect.height,
 				)
-				wx, wy = self.get_window().get_origin()
+				assert dcoord is not None
+				dx, dy = dcoord
+				win = self.get_window()
+				assert win is not None
+				_foo, wx, wy = win.get_origin()
 				self.tmpMenu = menu
 				menu.popup(
 					None,
@@ -865,7 +874,10 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):
 		gtk.Window.present(self)
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		if kname == "escape":
 			self.closed()
 			return True

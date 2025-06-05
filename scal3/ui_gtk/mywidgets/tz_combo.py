@@ -5,7 +5,7 @@ from typing import Any
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 
 __all__ = ["TimeZoneComboBoxEntry"]
 
@@ -16,6 +16,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		model = gtk.TreeStore(str, bool)
+		self._listStore = model
 		self.c = gtk.ComboBoxText.new_with_entry()
 		pack(self, self.c, 1, 1)
 		# gtk.ComboBoxText.__init__(self)
@@ -31,8 +32,9 @@ class TimeZoneComboBoxEntry(gtk.Box):
 
 		self.c.add_attribute(first_cell, "sensitive", 1)
 
-		self.c.connect("changed", self.onChanged)
+		# self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
+		assert isinstance(child, gtk.Entry)
 		child.set_text(str(locale_man.localTz))
 		# self.set_text(str(locale_man.localTz)) # FIXME
 		# ---
@@ -55,8 +57,10 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			getZoneInfoTree(),
 		)
 
-	def appendOrderedDict(self, parentIter: gtk.TreeIter, dct: dict[str, Any]) -> None:
-		model = self.c.get_model()
+	def appendOrderedDict(
+		self, parentIter: gtk.TreeIter | None, dct: dict[str, Any]
+	) -> None:
+		model = self._listStore
 		for key, value in dct.items():
 			if isinstance(value, dict):
 				itr = model.append(parentIter, [key, False])
@@ -64,32 +68,33 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			else:
 				itr = model.append(parentIter, [key, True])
 
-	def onChanged(self, _w: gtk.Widget) -> None:
-		model = self.c.get_model()
-		itr = self.c.get_active_iter()
-		if itr is None:
-			return
-		path = model.get_path(itr)
-		if path[0] == 0:
-			self.set_text(model.get(itr, 0)[0])
-			return
+	# def onChanged(self, _w: gtk.Widget) -> None:
+	# 	model = self._listStore
+	# 	itr = self.c.get_active_iter()
+	# 	if itr is None:
+	# 		return
+	# 	path = model.get_path(itr)
+	# 	if path[0] == 0:  # type: ignore[index]
+	# 		print(model.get(itr, 0)[0])
+	# 		self.set_text(model.get(itr, 0)[0])
+	# 		return
 
-		self.set_text(
-			"/".join(
-				[
-					model.get(
-						model.get_iter(path[: i + 1]),
-						0,
-					)[0]
-					for i in range(len(path))
-				],
-			),
-		)
+	# 	self.set_text(
+	# 		"/".join(
+	# 			[
+	# 				model.get(
+	# 					model.get_iter(path[: i + 1]),
+	# 					0,
+	# 				)[0]
+	# 				for i in range(len(path))
+	# 			],
+	# 		),
+	# 	)
 
 
 if __name__ == "__main__":
-	diolog = gtk.Dialog()
+	diolog = Dialog()
 	w = TimeZoneComboBoxEntry()
-	pack(diolog.vbox, w)
-	diolog.vbox.show_all()
+	pack(diolog.vbox, w)  # type: ignore[arg-type]
+	diolog.vbox.show_all()  # type: ignore[attr-defined]
 	diolog.run()

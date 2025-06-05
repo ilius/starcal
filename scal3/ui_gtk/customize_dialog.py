@@ -24,7 +24,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
@@ -33,7 +33,6 @@ from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
 	VerticalStaticToolBox,
 )
-from scal3.ui_gtk.tree_utils import tree_path_split
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	pixbufFromFile,
@@ -95,14 +94,14 @@ class CustomizeWindowItemsToolbar(VerticalStaticToolBox):
 		)
 
 
-class CustomizeWindow(gtk.Dialog):
+class CustomizeWindow(Dialog):
 	def __init__(
 		self,
 		item: WinLayoutBox,
 		scrolled: bool = True,
 		**kwargs,
 	) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
 		# --
 		self.stack = MyStack(
@@ -116,9 +115,9 @@ class CustomizeWindow(gtk.Dialog):
 		self.connect("delete-event", self.onSaveClick)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 			onClick=self.onSaveClick,
 		)
 		# should we save on Escape? or when clicking the X (close) button?
@@ -153,7 +152,7 @@ class CustomizeWindow(gtk.Dialog):
 			self.vbox.set_size_request(300, 450)
 
 	@staticmethod
-	def itemPixbuf(item: CustomizableCalObj) -> gdk.Pixbuf | None:
+	def itemPixbuf(item: CustomizableCalObj) -> GdkPixbuf.Pixbuf | None:
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
@@ -172,20 +171,20 @@ class CustomizeWindow(gtk.Dialog):
 		# column 3: Pixbuf: settings icon
 		model = gtk.ListStore(bool, str, str, GdkPixbuf.Pixbuf)
 		treev = gtk.TreeView(model=model)
+		self._listStore = model
+		pagePath = parentPagePath
 		if parentItem.itemListSeparatePage:
-			treev.pagePath = parentPagePath + ".items"
-		else:
-			treev.pagePath = parentPagePath
-		self.itemByPagePath[treev.pagePath] = parentItem
+			pagePath = parentPagePath + ".items"
+		self.itemByPagePath[pagePath] = parentItem
 		# --
 		treev.set_headers_visible(False)
-		treev.connect("button-press-event", self.onTreeviewButtonPress)
-		treev.connect("row-activated", self.rowActivated)
+		treev.connect("button-press-event", self.onTreeviewButtonPress, pagePath)
+		treev.connect("row-activated", self.rowActivated, pagePath)
 		# ------
 		cell = gtk.CellRendererToggle()
 		col = gtk.TreeViewColumn(title="", cell_renderer=cell, active=0)
 		col.set_property("expand", False)
-		cell.connect("toggled", self.onEnableCellToggle, treev)
+		cell.connect("toggled", self.onEnableCellToggle, pagePath)
 		treev.append_column(col)
 		# -----
 		col = gtk.TreeViewColumn(
@@ -228,7 +227,10 @@ class CustomizeWindow(gtk.Dialog):
 			pack(vbox_l, treev, 1, 1)
 		pack(hbox, vbox_l, 1, 1)
 		# ---
-		toolbar = CustomizeWindowItemsToolbar(parent=self, onClickArgs=(treev,))
+		toolbar = CustomizeWindowItemsToolbar(
+			parent=self,
+			onClickArgs=(treev, pagePath),
+		)
 		# ---
 		pack(hbox, toolbar)
 		# ---
@@ -247,15 +249,16 @@ class CustomizeWindow(gtk.Dialog):
 		# ---
 		return treev, vbox
 
-	def vboxSizeRequest(self, _w: gtk.Widget = None, _req: Any = None) -> None:
+	def vboxSizeRequest(self, _w: gtk.Widget | None = None, _req: Any = None) -> None:
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
-		item = self.itemByPagePath[treev.pagePath]
-		model = treev.get_model()
-		cur = treev.get_cursor()[0]
-		if not cur:
+	def onTopClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+		item = self.itemByPagePath[pagePath]
+		model = self._listStore
+		curObj = treev.get_cursor()[0]
+		if not curObj:
 			return
+		cur = curObj.get_indices()
 		i = cur[-1]
 
 		assert len(cur) == 1, f"unexpected {cur = }"
@@ -265,16 +268,17 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		# ---
 		item.moveItem(i, 0)
-		model.prepend(list(model[i]))
-		model.remove(model.get_iter(i + 1))
-		treev.set_cursor(0)
+		model.prepend(list(model[i]))  # type: ignore[call-overload]
+		model.remove(model.get_iter(str(i + 1)))
+		treev.set_cursor(0)  # type: ignore[arg-type]
 
-	def onUpClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
-		item = self.itemByPagePath[treev.pagePath]
-		model = treev.get_model()
-		cur = treev.get_cursor()[0]
-		if not cur:
+	def onUpClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+		item = self.itemByPagePath[pagePath]
+		model = self._listStore
+		curObj = treev.get_cursor()[0]
+		if not curObj:
 			return
+		cur = curObj.get_indices()
 		i = cur[-1]
 
 		assert len(cur) == 1, f"unexpected {cur = }"
@@ -284,15 +288,16 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		# ---
 		item.moveItem(i, i - 1)
-		model.swap(model.get_iter(i - 1), model.get_iter(i))
-		treev.set_cursor(i - 1)
+		model.swap(model.get_iter(str(i - 1)), model.get_iter(str(i)))
+		treev.set_cursor(i - 1)  # type: ignore[arg-type]
 
-	def onDownClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
-		item = self.itemByPagePath[treev.pagePath]
-		model = treev.get_model()
-		cur = treev.get_cursor()[0]
-		if not cur:
+	def onDownClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+		item = self.itemByPagePath[pagePath]
+		model = self._listStore
+		curObj = treev.get_cursor()[0]
+		if not curObj:
 			return
+		cur = curObj.get_indices()
 		i = cur[-1]
 
 		assert len(cur) == 1, f"unexpected {cur = }"
@@ -302,15 +307,16 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		# ---
 		item.moveItem(i + 1, i)
-		model.swap(model.get_iter(i), model.get_iter(i + 1))
-		treev.set_cursor(i + 1)
+		model.swap(model.get_iter(str(i)), model.get_iter(str(i + 1)))
+		treev.set_cursor(i + 1)  # type: ignore[arg-type]
 
-	def onBottomClick(self, _b: gtk.Button, treev: gtk.TreeView) -> None:
-		item = self.itemByPagePath[treev.pagePath]
-		model = treev.get_model()
-		cur = treev.get_cursor()[0]
-		if not cur:
+	def onBottomClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+		item = self.itemByPagePath[pagePath]
+		model = self._listStore
+		curObj = treev.get_cursor()[0]
+		if not curObj:
 			return
+		cur = curObj.get_indices()
 		i = cur[-1]
 
 		assert len(cur) == 1, f"unexpected {cur = }"
@@ -320,14 +326,15 @@ class CustomizeWindow(gtk.Dialog):
 			return
 		# ---
 		item.moveItem(i, len(model) - 1)
-		model.append(list(model[i]))
-		model.remove(model.get_iter(i))
-		treev.set_cursor(len(model) - 1)
+		model.append(list(model[i]))  # type: ignore[call-overload]
+		model.remove(model.get_iter(str(i)))
+		treev.set_cursor(len(model) - 1)  # type: ignore[arg-type]
 
 	def _addPageItemsTree(self, page: StackPage) -> None:
 		pagePath = page.pagePath
 		item = page.pageItem
 		assert item is not None
+		assert page.pageWidget is not None
 
 		_childrenTreev, childrenBox = self.newItemList(
 			pagePath,
@@ -440,7 +447,8 @@ class CustomizeWindow(gtk.Dialog):
 	def onTreeviewButtonPress(
 		self,
 		treev: gtk.TreeView,
-		gevent: gdk.ButtonEvent,
+		gevent: gdk.EventButton,
+		pagePath: str,
 	) -> bool:
 		if gevent.button != 1:
 			return False
@@ -450,23 +458,26 @@ class CustomizeWindow(gtk.Dialog):
 		# pos_t == path, col, xRel, yRel
 		path = pos_t[0]
 		col = pos_t[1]
+		assert col is not None
+		assert path is not None
 		cell = col.get_cells()[0]
 		if isinstance(cell, gtk.CellRendererPixbuf):
-			self.rowActivated(treev, path, col)
+			self.rowActivated(treev, path, col, pagePath)
 		return False
 
 	def rowActivated(
 		self,
-		treev: gtk.TreeView,
+		_treev: gtk.TreeView,
 		path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
+		pagePath: str,
 	) -> None:
-		parentPagePath = treev.pagePath
-		parentItem = self.itemByPagePath[treev.pagePath]
-		model = treev.get_model()
+		parentPagePath = pagePath
+		parentItem = self.itemByPagePath[pagePath]
+		model = self._listStore
 		itemIter = model.get_iter(path)
 		pagePath = model.get_value(itemIter, 1)
-		itemIndex = tree_path_split(path)[0]
+		itemIndex = path.get_indices()[0]
 		item = parentItem.items[itemIndex]
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
@@ -476,7 +487,7 @@ class CustomizeWindow(gtk.Dialog):
 
 		# if none of the items in list have any settings, we can toggle-enable instead
 		if not parentItem.itemHaveOptions:
-			self.enableCellToggle(treev, item.enable, itemIndex)
+			self.enableCellToggle(item.enable, itemIndex, pagePath)
 			return
 
 		if not item.enable:
@@ -498,7 +509,7 @@ class CustomizeWindow(gtk.Dialog):
 		if not item.loaded:
 			item = item.getLoadedObj()
 			if item is None:
-				return
+				return None
 			parentItem.replaceItem(itemIndex, item)
 			parentItem.insertItemWidget(itemIndex)
 		item.onConfigChange()
@@ -507,25 +518,24 @@ class CustomizeWindow(gtk.Dialog):
 
 	def onEnableCellToggle(
 		self,
-		cell: gtk.CellRenderer,
-		path: str,
-		treev: gtk.TreeView,
+		cell: gtk.CellRendererToggle,
+		pathStr: str,
+		pagePath: str,
 	) -> None:
-		itemIndex = tree_path_split(path)[0]
-		self.enableCellToggle(treev, cell.get_active(), itemIndex)
+		itemIndex = int(pathStr)
+		self.enableCellToggle(cell.get_active(), itemIndex, pagePath)
 
 	def enableCellToggle(
 		self,
-		treev: gtk.TreeView,
 		active: bool,
 		itemIndex: int,
+		pagePath: str,
 	) -> None:
 		active = not active
-		path = (itemIndex,)
-		model = treev.get_model()
-		itr = model.get_iter(path)
+		model = self._listStore
+		itr = model.get_iter(str(itemIndex))
 		model.set_value(itr, 0, active)
-		parentItem = self.itemByPagePath[treev.pagePath]
+		parentItem = self.itemByPagePath[pagePath]
 		item = parentItem.items[itemIndex]
 		assert parentItem.items[itemIndex] == item
 		# ---
@@ -543,7 +553,7 @@ class CustomizeWindow(gtk.Dialog):
 		pass
 		# FIXME: called from MainWin
 		# treev = self.treev_root
-		# model = treev.get_model()
+		# model = self._listStore
 		# for i, item in enumerate(self.mainPanelItem.items):
 		# 	model.set_value(
 		# 		model.get_iter((i,)),
@@ -560,7 +570,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.saveConfCustomize()
 		# data = item.getDict()-- remove? FIXME
 
-	def onSaveClick(self, _b: gtk.Button = None, _ge: Any = None) -> bool:
+	def onSaveClick(self, _b: gtk.Button | None = None, _ge: Any = None) -> bool:
 		self.save()
 		self.hide()
 		return True

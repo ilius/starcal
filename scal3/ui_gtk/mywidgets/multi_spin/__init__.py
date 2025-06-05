@@ -49,7 +49,7 @@ class AutoSizeEntry(gtk.Entry):
 		# ---
 		self.connect("changed", self.onChange)
 
-	def do_get_preferred_width(self) -> tuple[float, float]:
+	def do_get_preferred_width(self) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		text = self.get_text()
 		text = " " + text + " "
@@ -59,7 +59,7 @@ class AutoSizeEntry(gtk.Entry):
 			pixelWidth = self.maxPixelWidth
 		else:
 			self.maxPixelWidth = pixelWidth
-		return pixelWidth, pixelWidth
+		return int(pixelWidth), int(pixelWidth)
 
 	def onChange(self, _entry: gtk.Widget) -> None:
 		self.queue_resize()
@@ -249,9 +249,12 @@ class MultiSpinButton[F: Field, V](gtk.Box):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kval = gevent.keyval
-		kname = gdk.keyval_name(kval).lower()
+		knameUpper = gdk.keyval_name(kval)
+		if knameUpper is None:
+			return False
+		kname = knameUpper.lower()
 		step_inc = self.step_inc
 		page_inc = self.page_inc
 		if kname in {
@@ -320,7 +323,7 @@ class MultiSpinButton[F: Field, V](gtk.Box):
 	def onUpButtonPress(self, _b: gtk.Widget, _ge: gdk.Event) -> None:
 		self._arrow_press(self.step_inc)
 
-	def _scroll(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def _scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
 		d = getScrollValue(gevent)
 		if d in {"up", "down"}:
 			if not self.entry.has_focus():

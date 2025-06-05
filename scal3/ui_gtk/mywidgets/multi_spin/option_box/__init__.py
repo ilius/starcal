@@ -59,9 +59,16 @@ class MultiSpinOptionBox[F: Field, V](gtk.Box):
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
-	def option_pressed(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
+	def option_pressed(self, _w: gtk.Widget, gevent: gdk.EventButton) -> None:
 		# x, y, w, h = self.option.
-		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
+		self.menu.popup(
+			None,
+			None,
+			None,
+			None,
+			gevent.button,
+			gevent.time,
+		)
 
 	def find_text(self, text: str) -> int:
 		for index, item in enumerate(self.menuItems):

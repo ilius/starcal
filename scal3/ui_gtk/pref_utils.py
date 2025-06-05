@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.font import Font
+from scal3.ui_gtk.mywidgets import MyFontButton
 
 log = logger.get()
 
@@ -62,8 +63,6 @@ __all__ = [
 	"IntSpinPrefItem",
 	"JustificationPrefItem",
 	"ListPrefItem",
-	"ModuleOptionButton",
-	"ModuleOptionItem",
 	"PrefItem",
 	"RadioHListPrefItem",
 	"RadioListPrefItem",
@@ -72,95 +71,6 @@ __all__ = [
 	"VListPrefItem",
 	"WidthHeightPrefItem",
 ]
-
-
-# (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 # CheckButton
-# (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
-# (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
-# (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
-class ModuleOptionItem:
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return str(value)
-
-	def __init__(
-		self,
-		prop: Property,
-		opt: tuple,
-		spacing: int = 0,
-	) -> None:
-		self.prop = prop
-		t = opt[1]
-		hbox = HBox(spacing=spacing)
-		if t is bool:
-			w = gtk.CheckButton(label=_(opt[2]))
-			self.get = w.get_active
-			self.set = w.set_active
-		elif t is list:
-			pack(hbox, gtk.Label(label=_(opt[2])))
-			w = gtk.ComboBoxText()  # or RadioButton
-			for s in opt[3]:
-				w.append_text(_(s))
-			self.get = w.get_active
-			self.set = w.set_active
-		elif t is int:
-			pack(hbox, gtk.Label(label=_(opt[2])))
-			w = IntSpinButton(opt[3], opt[4])
-			self.get = w.get_value
-			self.set = w.set_value
-		elif t is float:
-			pack(hbox, gtk.Label(label=_(opt[2])))
-			w = FloatSpinButton(opt[3], opt[4], opt[5])
-			self.get = w.get_value
-			self.set = w.set_value
-		else:
-			raise RuntimeError(f"bad option type {t!r}")
-		pack(hbox, w)
-		self._widget = hbox
-		# ----
-
-	def updateVar(self) -> None:
-		self.prop.v = self.get()
-
-	def updateWidget(self) -> None:
-		self.set(self.prop.v)
-
-	def getWidget(self) -> gtk.Widget:
-		return self._widget
-
-
-# ("button", LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
-class ModuleOptionButton:
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return str(value)
-
-	def __init__(self, opt: tuple) -> None:
-		funcName = opt[2]
-		clickedFunc = getattr(
-			__import__(
-				f"scal3.ui_gtk.{opt[1]}",
-				fromlist=[funcName],
-			),
-			funcName,
-		)
-		hbox = HBox()
-		button = gtk.Button(label=_(opt[0]))
-		button.connect("clicked", clickedFunc)
-		pack(hbox, button)
-		self._widget = hbox
-
-	def get(self) -> Any:  # noqa: PLR6301
-		return None
-
-	def updateVar(self) -> None:
-		pass
-
-	def updateWidget(self) -> None:
-		pass
-
-	def getWidget(self) -> gtk.Widget:
-		return self._widget
 
 
 class PrefItem:
@@ -217,6 +127,7 @@ class ComboTextPrefItem(PrefItem):
 			for s in items:
 				combo.append_text(s)
 
+		self._widget: gtk.Widget
 		if label:
 			hbox = HBox(spacing=3)
 			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
@@ -238,8 +149,8 @@ class ComboTextPrefItem(PrefItem):
 		if self._onChangeFunc:
 			self._onChangeFunc()
 
-	def get(self) -> int:
-		return self._combo.get_active_text()
+	def get(self) -> str:
+		return self._combo.get_active_text() or ""
 
 	def set(self, value: str) -> None:
 		self._combo.set_active(self._items.index(value))
@@ -260,7 +171,7 @@ class FontFamilyPrefItem(PrefItem):
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
 		# ---
-		self.fontButton = gtk.FontButton()
+		self.fontButton = MyFontButton()
 		self.fontButton.set_show_size(False)
 		if gtk.MINOR_VERSION >= 24:
 			self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
@@ -306,7 +217,7 @@ class FontFamilyPrefItem(PrefItem):
 		# now value is not None
 		if self.hasAuto:
 			self.fontRadio.set_active(True)
-		self.fontButton.set_font(gfontEncode(Font(family=value, size=15)))
+		self.fontButton.setFont(Font(family=value, size=15))
 
 	def onChange(self, _w: gtk.Widget) -> None:
 		self.updateVar()
@@ -355,15 +266,19 @@ class ComboEntryTextPrefItem(PrefItem):
 				w.append_text(s)
 
 	def get(self) -> str:
-		return self._widget.get_child().get_text()
+		child = self._widget.get_child()
+		assert isinstance(child, gtk.Entry)
+		return child.get_text()
 
 	def set(self, value: str) -> None:
-		self._widget.get_child().set_text(value)
+		child = self._widget.get_child()
+		assert isinstance(child, gtk.Entry)
+		child.set_text(value)
 
 	def addDescriptionColumn(self, descByValue: dict) -> None:
 		w = self._widget
 		cell = gtk.CellRendererText()
-		pack(w, cell, True)
+		w.pack_start(cell, expand=True)
 		w.add_attribute(cell, "text", 1)
 		ls = w.get_model()
 		for row in ls:
@@ -385,13 +300,14 @@ class ComboImageTextPrefItem(PrefItem):
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
 		combo.set_model(ls)
+		cell: gtk.CellRenderer
 		# ---
 		cell = gtk.CellRendererPixbuf()
-		pack(combo, cell)
+		combo.pack_start(cell, expand=False)
 		combo.add_attribute(cell, "pixbuf", 0)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(combo, cell, expand=True)
+		combo.pack_start(cell, expand=True)
 		combo.add_attribute(cell, "text", 1)
 		# ---
 		self._widget = combo
@@ -439,12 +355,12 @@ class FontPrefItem(PrefItem):
 			self.setPreviewText(previewText)
 
 	def get(self) -> Font:
-		return self._widget.get_font()
+		return self._widget.getFont()
 
 	def set(self, value: Font | None) -> None:
 		if value is None:
 			return
-		self._widget.set_font(value)
+		self._widget.setFont(value)
 
 	def setPreviewText(self, text: str) -> None:
 		self._widget.set_preview_text(text)
@@ -468,6 +384,7 @@ class CheckPrefItem(PrefItem):
 		if tooltip:
 			set_tooltip(checkb, tooltip)
 		self._widget = checkb
+		self._checkButton = checkb
 
 		if live:
 			self._onChangeFunc = onChangeFunc
@@ -494,8 +411,8 @@ class CheckPrefItem(PrefItem):
 		self._widget.connect("show", self.syncSensitiveUpdate)
 		self._widget.connect("clicked", self.syncSensitiveUpdate)
 
-	def syncSensitiveUpdate(self, myWidget: gtk.Widget) -> None:
-		active = myWidget.get_active()
+	def syncSensitiveUpdate(self, _widget: gtk.Widget) -> None:
+		active = self._checkButton.get_active()
 		if self._sensitiveReverse:
 			active = not active
 		self._sensitiveWidget.set_sensitive(active)
@@ -544,12 +461,12 @@ class ColorPrefItem(PrefItem):
 			raise ValueError("onChangeFunc is given without live=True")
 
 	def get(self) -> ColorType:
-		return self._widget.get_rgba()
+		return self._widget.getRGBA()
 
 	def set(self, color: ColorType | None) -> None:
 		if color is None:
 			return
-		self._widget.set_rgba(color)
+		self._widget.setRGBA(color)
 
 	def onColorSet(self, _w: gtk.Widget) -> None:
 		self.updateVar()
@@ -888,15 +805,15 @@ class FileChooserPrefItem(PrefItem):
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 		)
 		w = gtk.FileChooserButton.new_with_dialog(dialog)
 		w.set_local_only(True)
@@ -905,19 +822,20 @@ class FileChooserPrefItem(PrefItem):
 		# ---
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.NONE,
 			imageName="edit-undo.svg",
 			label=_("_Revert"),
-			res=gtk.ResponseType.NONE,
 			onClick=self.onRevertClick,
 		)
 		# ---
 		self._widget = w
+		self._fcb = w
 
 	def get(self) -> str:
-		return self._widget.get_filename()
+		return self._fcb.get_filename() or ""
 
 	def set(self, value: str) -> None:
-		self._widget.set_filename(value)
+		self._fcb.set_filename(value)
 
 	def onRevertClick(self, _b: gtk.Button) -> None:
 		defaultValue = self.prop.default()

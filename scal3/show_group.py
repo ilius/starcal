@@ -18,5 +18,5 @@ if __name__ == "__main__":
 		eventJsonData = json.load(fp)
 
 	lastHash = eventJsonData["history"][0][1]
-	data = SObjBinaryModel.loadBinaryData(lastHash, fs)
+	data = SObjBinaryModel.loadBinaryDict(lastHash, fs)
 	print(dataToPrettyJson(data))  # noqa: T201

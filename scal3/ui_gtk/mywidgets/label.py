@@ -16,7 +16,7 @@ class SLabel(gtk.Label):
 	for right-click, with only 2 menu items: Copy All, Copy.
 	"""
 
-	def __init__(self, label: str | None = None) -> None:
+	def __init__(self, label: str = "") -> None:
 		gtk.Label.__init__(self, label=label)
 		self.set_selectable(True)
 		# self.set_cursor_visible(False)-- FIXME
