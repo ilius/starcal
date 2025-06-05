@@ -219,22 +219,22 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.description.split("\n")[0]
 
 	def afterModify(self) -> None:
+		self.afterModifyBasic()
+		# self.parent.eventsModified = self.modified
+		self.afterModifyInGroup()
+
+	def afterModifyBasic(self) -> None:
 		if self.id is None:
 			self.setId()
 		self.modified = now()  # FIXME
-		# self.parent.eventsModified = self.modified
-		if self.parent and (rulesHash := self.getRulesHash()) != self.rulesHash:
-			self.parent.updateOccurrenceEvent(self)
-			self.rulesHash = rulesHash
 
-	def afterAddedToGroup(self) -> None:
+	def afterModifyInGroup(self) -> None:
 		parent = self.parent
 		if not (parent and self.id in parent.idList):
 			self.rulesHash = None
 			return
 
-		rulesHash = self.getRulesHash()
-		if self.notifiers or rulesHash != self.rulesHash:
+		if self.notifiers or (rulesHash := self.getRulesHash()) != self.rulesHash:
 			parent.updateOccurrenceEvent(self)
 			self.rulesHash = rulesHash
 
