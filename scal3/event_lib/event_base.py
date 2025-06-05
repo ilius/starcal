@@ -223,6 +223,9 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			self.setId()
 		self.modified = now()  # FIXME
 		# self.parent.eventsModified = self.modified
+		if self.parent and (rulesHash := self.getRulesHash()) != self.rulesHash:
+			self.parent.updateOccurrenceEvent(self)
+			self.rulesHash = rulesHash
 
 	def afterAddedToGroup(self) -> None:
 		parent = self.parent
