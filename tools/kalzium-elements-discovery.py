@@ -45,7 +45,7 @@ def createDiscoveryEvent(group, atom):
 	if "discoverers" in atom:
 		description += ", by " + atom["discoverers"].replace(";", ",")
 	event = group.createEvent("largeScale")
-	event.setData(
+	event.setDict(
 		{
 			"calType": "gregorian",
 			"summary": "Element Discovery: " + atom["id"],
@@ -62,7 +62,7 @@ def createDiscoveryEvent(group, atom):
 if __name__ == "__main__":
 	ev.groups.load()
 	group = event_lib.LargeScaleGroup()
-	group.setData(
+	group.setDict(
 		{
 			"calType": "gregorian",
 			"color": [255, 0, 0],
