@@ -71,7 +71,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 
 
 @registerSignals
-class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
+class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 	objName = "rightPanel"
 	desc = _("Right Panel")
 	itemListCustomizable = False
@@ -81,7 +81,6 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		# ---
 		self.initVars()
-		self.optionsWidget = None
 		self.setPosAtHeight = 0
 		# ---
 		self.connect("size-allocate", self.onSizeAllocate)
@@ -119,7 +118,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			return
 		self.enablePrefItem.set(not self.enablePrefItem.get())
 
-	def appendItem(self, item: gtk.MenuItem) -> None:
+	def appendItem(self, item: CustomizableCalObj) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
@@ -131,7 +130,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		item.show_all()
 
 	def addItems(self) -> None:
-		items = [
+		items: list[CustomizableCalObj] = [
 			self.eventItem,
 			self.plugItem,
 		]
@@ -210,22 +209,22 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def onMinimumHeightChange(self) -> None:
 		self.queue_resize()
 
-	def do_get_preferred_width(self) -> tuple[float, float]:  # noqa: PLR6301
+	def do_get_preferred_width(self) -> tuple[int, int]:  # noqa: PLR6301
 		# must return minimum_size, natural_size
 		if conf.mainWinRightPanelWidthRatioEnable.v:
 			if ui.mainWin and ui.mainWin.is_maximized():
 				winWidth = ui.mainWin.get_size()[0]
 			else:
 				winWidth = conf.winWidth.v
-			width = conf.mainWinRightPanelWidthRatio.v * winWidth
+			width = int(conf.mainWinRightPanelWidthRatio.v * winWidth)
 		else:
 			width = conf.mainWinRightPanelWidth.v
 		return width, width
 
-	def do_get_preferred_width_for_height(self, _size: int) -> tuple[float, float]:
+	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
 		return self.do_get_preferred_width()
 
-	def getOptionsWidget(self) -> gtk.Box:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			IntSpinPrefItem,
@@ -273,10 +272,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		frame.set_border_width(0)
 		pack(sizesVBox, frame)
 		# ---
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.mainWinRightPanelBorderWidth,
 			bounds=(1, 999),
-			digits=1,
 			step=1,
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
@@ -297,10 +295,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.rightPanelEventIconSize,
 			bounds=(5, 128),
-			digits=1,
 			step=1,
 			label=_("Event Icon Size"),
 			live=True,
@@ -308,7 +305,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		)
 		pack(eventsVBox, prefItem.getWidget())
 		# ---
-		pack(eventsVBox, self.eventItem.getOptionsWidget())
+		eventOptionsWidget = self.eventItem.getOptionsWidget()
+		assert eventOptionsWidget is not None
+		pack(eventsVBox, eventOptionsWidget)
 		# ------
 		pluginsVBox = gtk.VBox(spacing=10)
 		page = StackPage()
@@ -322,7 +321,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
-		pack(pluginsVBox, self.plugItem.getOptionsWidget())
+		pluginOptionsWidget = self.plugItem.getOptionsWidget()
+		assert pluginOptionsWidget is not None
+		pack(pluginsVBox, pluginOptionsWidget)
 		# ------
 		prefItem = CheckPrefItem(
 			prop=conf.mainWinRightPanelResizeOnToggle,

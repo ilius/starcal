@@ -14,27 +14,31 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, rule: WeekMonthEventRule) -> None:
 		self.rule = rule
 		# -----
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w = self
 		# ---
-		combo = gtk.ComboBoxText()
+		nthCombo = gtk.ComboBoxText()
 		for item in rule.wmIndexNames:
-			combo.append_text(item)
-		pack(self, combo)
-		self.nthCombo = combo
+			nthCombo.append_text(item)
+		pack(self, nthCombo)
+		self.nthCombo = nthCombo
 		# ---
-		combo = WeekDayComboBox()
-		pack(self, combo)
-		self.weekDayCombo = combo
+		weekDayCombo = WeekDayComboBox()
+		pack(self, weekDayCombo)
+		self.weekDayCombo = weekDayCombo
 		# ---
 		pack(self, gtk.Label(label=_(" of ")))
 		# ---
-		combo = MonthComboBox(True)
-		combo.build(rule.getCalType())
-		pack(self, combo)
-		self.monthCombo = combo
+		monthCombo = MonthComboBox(True)
+		monthCombo.build(rule.getCalType())
+		pack(self, monthCombo)
+		self.monthCombo = monthCombo
 
 	def updateVars(self) -> None:
 		self.rule.wmIndex = self.nthCombo.get_active()
@@ -46,7 +50,7 @@ class WidgetClass(gtk.Box):
 		self.weekDayCombo.setValue(self.rule.weekDay)
 		self.monthCombo.setValue(self.rule.month)
 
-	def changeRuleCalType(self, calType: str) -> None:
+	def changeRuleCalType(self, calType: int) -> None:
 		if calType == self.rule.getCalType():
 			return
 		self.monthCombo.build(calType)

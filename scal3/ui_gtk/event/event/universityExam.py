@@ -41,10 +41,14 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, event: UniversityExamEvent) -> None:  # FIXME
 		assert isinstance(event.parent, UniversityTerm)
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.event = event
+		self.w = self
+		self._event = event
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
 		if not event.parent.courses:
@@ -127,7 +131,7 @@ class WidgetClass(gtk.Box):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		# ------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 		# ------
 		self.courseCombo.set_active(0)
@@ -142,29 +146,29 @@ class WidgetClass(gtk.Box):
 	# 		courseName=self.courseNames[courseIndex],
 	# 	)
 	# 	self.summaryEntry.set_text(summary)
-	# 	self.event.summary = summary
+	# 	self._event.summary = summary
 
 	def updateWidget(self) -> None:  # FIXME
-		if self.event.courseId is None:
+		if self._event.courseId is None:
 			pass
 		else:
-			courseIndex = self.courseIds.index(self.event.courseId)
+			courseIndex = self.courseIds.index(self._event.courseId)
 			assert courseIndex >= 0
 			self.courseCombo.set_active(courseIndex)
 		# --
-		date = self.event.getDate()
+		date = self._event.getDate()
 		assert date is not None
 		self.dateInput.setDate(date)
 		# --
-		timeRangeRule = DayTimeRangeEventRule.getFrom(self.event)
+		timeRangeRule = DayTimeRangeEventRule.getFrom(self._event)
 		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
 		# ----
-		# self.summaryEntry.set_text(self.event.summary)
-		self.descriptionInput.set_text(self.event.description)
-		self.iconSelect.set_filename(self.event.icon)
+		# self.summaryEntry.set_text(self._event.summary)
+		self.descriptionInput.set_text(self._event.description)
+		self.iconSelect.set_filename(self._event.icon)
 		# ----
 		self.notificationBox.updateWidget()
 		# ----
@@ -175,11 +179,11 @@ class WidgetClass(gtk.Box):
 		if courseIndex is None:
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses is selected")
-		self.event.courseId = self.courseIds[courseIndex]
+		self._event.courseId = self.courseIds[courseIndex]
 		# --
-		self.event.setDate(*self.dateInput.get_value())
+		self._event.setDate(*self.dateInput.get_value())
 		# --
-		timeRangeRule = DayTimeRangeEventRule.getFrom(self.event)
+		timeRangeRule = DayTimeRangeEventRule.getFrom(self._event)
 		if timeRangeRule is None:
 			raise RuntimeError("no dayTimeRange rule")
 		h1, m1 = self.dayTimeStartCombo.get_value()
@@ -189,15 +193,16 @@ class WidgetClass(gtk.Box):
 			(h2, m2, 0),
 		)
 		# ----
-		# self.event.summary = self.summaryEntry.get_text()
-		self.event.description = self.descriptionInput.get_text()
-		self.event.icon = self.iconSelect.get_filename()
+		# self._event.summary = self.summaryEntry.get_text()
+		self._event.description = self.descriptionInput.get_text()
+		self._event.icon = self.iconSelect.get_filename()
 		# ----
 		self.notificationBox.updateVars()
-		self.event.updateSummary()
+		self._event.updateSummary()
 
-	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(
+		self,
+		widget: gtk.Widget | None = None,
+	) -> None:
 		# overwrite method from common.WidgetClass
-		newCalType = self.calTypeCombo.get_active()
-		self.dateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		pass

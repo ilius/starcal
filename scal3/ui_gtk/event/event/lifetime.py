@@ -42,6 +42,8 @@ class WidgetClass(common.WidgetClass):
 			separateYmd = event.parent.showSeparateYmdInputs
 		else:
 			separateYmd = False
+		self.startDateInput: YearMonthDayBox | DateButton
+		self.endDateInput: YearMonthDayBox | DateButton
 		if separateYmd:
 			self.startDateInput = YearMonthDayBox()
 			self.endDateInput = YearMonthDayBox()
@@ -65,15 +67,15 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
-		start = StartEventRule.getFrom(self.event)
+		start = StartEventRule.getFrom(self._event)
 		if start is None:
 			raise KeyError('rule "start" not found')
-		end = EndEventRule.getFrom(self.event)
+		end = EndEventRule.getFrom(self._event)
 		if end is None:
 			raise KeyError('rule "end" not found')
 		self.startDateInput.setDate(start.date)
@@ -81,10 +83,10 @@ class WidgetClass(common.WidgetClass):
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		start = StartEventRule.getFrom(self.event)
+		start = StartEventRule.getFrom(self._event)
 		if start is None:
 			raise KeyError('rule "start" not found')
-		end = EndEventRule.getFrom(self.event)
+		end = EndEventRule.getFrom(self._event)
 		if end is None:
 			raise KeyError('rule "end" not found')
 		start.setDate(self.startDateInput.getDate())
@@ -94,6 +96,6 @@ class WidgetClass(common.WidgetClass):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
-		self.startDateInput.changeCalType(self.event.calType, newCalType)
-		self.endDateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		self.startDateInput.changeCalType(self._event.calType, newCalType)
+		self.endDateInput.changeCalType(self._event.calType, newCalType)
+		self._event.calType = newCalType

@@ -31,7 +31,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	event: TaskEvent
+	_event: TaskEvent
 
 	def __init__(self, event: TaskEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
@@ -79,7 +79,7 @@ class WidgetClass(common.WidgetClass):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def endTypeComboChanged(self, _combo: gtk.ComboBox | None = None) -> None:
@@ -96,11 +96,11 @@ class WidgetClass(common.WidgetClass):
 	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
 		# ---
-		startDate, startTime = self.event.getStart()
+		startDate, startTime = self._event.getStart()
 		self.startDateInput.set_value(startDate)
 		self.startTimeInput.set_value(startTime)
 		# ---
-		endType, values = self.event.getEnd()
+		endType, values = self._event.getEnd()
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationBox.setDuration(*values)
@@ -116,16 +116,16 @@ class WidgetClass(common.WidgetClass):
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		self.event.setStart(
+		self._event.setStart(
 			self.startDateInput.getDate(),
 			self.startTimeInput.getTime(),
 		)
 		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
-			self.event.setEnd("duration", *self.durationBox.getDuration())
+			self._event.setEnd("duration", *self.durationBox.getDuration())
 		elif active == 1:
-			self.event.setEnd(
+			self._event.setEnd(
 				"date",
 				self.endDateInput.getDate(),
 				self.endTimeInput.getTime(),
@@ -135,6 +135,6 @@ class WidgetClass(common.WidgetClass):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
-		self.startDateInput.changeCalType(self.event.calType, newCalType)
-		self.endDateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		self.startDateInput.changeCalType(self._event.calType, newCalType)
+		self.endDateInput.changeCalType(self._event.calType, newCalType)
+		self._event.calType = newCalType

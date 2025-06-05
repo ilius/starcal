@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gtk
 from scal3.ui_gtk import gtk_ud as ud
 
 __all__ = ["JustificationComboBox"]
@@ -16,7 +16,7 @@ class JustificationComboBox(gtk.ComboBox):
 		self.set_model(ls)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 0)
 		# ---
 		for d in self.descs:

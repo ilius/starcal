@@ -1,6 +1,6 @@
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -11,25 +11,25 @@ from scal3.ui_gtk.utils import (
 __all__ = ["TrashEditorDialog"]
 
 
-class TrashEditorDialog(gtk.Dialog):
+class TrashEditorDialog(Dialog):
 	def __init__(self, **kwargs) -> None:
 		checkEventsReadOnly()
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Trash"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
 		# self.resize(800, 600)
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
@@ -72,7 +72,7 @@ class TrashEditorDialog(gtk.Dialog):
 		self.updateWidget()
 
 	def run(self) -> None:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+		if Dialog.run(self) == gtk.ResponseType.OK:
 			self.updateVars()
 		self.destroy()
 

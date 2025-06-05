@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk.event import getWidgetClass
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -27,18 +28,34 @@ from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
 	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["BaseWidgetClass"]
 
 
+def makeGroupWidget(obj: EventGroupType) -> BaseWidgetClass | None:
+	"""Obj is an instance of Event, EventRule, EventNotifier or EventGroup."""
+	WidgetClass = getWidgetClass(obj)
+	if WidgetClass is None:
+		return None
+	widget: BaseWidgetClass = WidgetClass(obj)  # type: ignore
+	widget.show()
+	widget.updateWidget()
+	return widget
+
+
 class BaseWidgetClass(gtk.Box):
 	userCanAddEvents = True
+
+	def show(self) -> None:
+		gtk.Box.show_all(self)
 
 	def __init__(self, group: EventGroup) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
+		self.w = self
 		self.group = group
 		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -76,10 +93,10 @@ class BaseWidgetClass(gtk.Box):
 		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
-		combo = CalTypeCombo()
-		pack(hbox, combo)
+		typeCombo = CalTypeCombo()
+		pack(hbox, typeCombo)
 		pack(hbox, gtk.Label(), 1, 1)
-		self.calTypeCombo = combo
+		self.calTypeCombo = typeCombo
 		pack(self, hbox)
 		# -----
 		self.addStartEndWidgets()
@@ -88,10 +105,10 @@ class BaseWidgetClass(gtk.Box):
 		self.tzCheck = gtk.CheckButton(label=_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
 		self.sizeGroup.add_widget(self.tzCheck)
-		combo = TimeZoneComboBoxEntry()
-		pack(hbox, combo)
+		tzCombo = TimeZoneComboBoxEntry()
+		pack(hbox, tzCombo)
 		pack(hbox, gtk.Label(), 1, 1)
-		self.tzCombo = combo
+		self.tzCombo = tzCombo
 		pack(self, hbox)
 		self.tzCheck.connect(
 			"clicked",
@@ -191,7 +208,7 @@ class BaseWidgetClass(gtk.Box):
 
 	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.group.title)
-		self.colorButton.set_rgba(self.group.color)
+		self.colorButton.setRGBA(self.group.color)
 		if self.group.icon:
 			self.iconSelect.set_filename(self.group.icon)
 		self.calTypeCombo.set_active(self.group.calType)
@@ -215,7 +232,7 @@ class BaseWidgetClass(gtk.Box):
 
 	def updateVars(self) -> None:
 		self.group.title = self.titleEntry.get_text()
-		self.group.color = self.colorButton.get_rgba()
+		self.group.color = self.colorButton.getRGBA()
 		self.group.icon = self.iconSelect.get_filename()
 		calType = self.calTypeCombo.get_active()
 		assert calType is not None
@@ -239,5 +256,5 @@ class BaseWidgetClass(gtk.Box):
 				self.addEventsToBeginningCheck.get_active()
 			)
 
-	def calTypeComboChanged(self, obj: gtk.Widget | None = None) -> None:
+	def calTypeComboChanged(self, widget: gtk.Widget | None = None) -> None:
 		pass

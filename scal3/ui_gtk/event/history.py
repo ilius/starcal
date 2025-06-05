@@ -14,7 +14,7 @@ from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import getJhmsFromEpoch
-from scal3.ui_gtk import HBox, VBox, gtk, pack, pango
+from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
@@ -47,7 +47,7 @@ def unnest(src: Any) -> dict[str, Any]:
 	return dst
 
 
-class EventHistoryDialog(gtk.Dialog):
+class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
 	textViewTypes = [
 		"Change Table",
 		"Full Table",
@@ -70,16 +70,16 @@ class EventHistoryDialog(gtk.Dialog):
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("History") + ": " + event.summary)
-		self.event = event
+		self._event = event
 		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
 
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("_Close"),
-			res=gtk.ResponseType.OK,
 		)
 
 		self.connect("response", self.onResponse)
@@ -224,7 +224,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 		self.load()
 		self.vbox.show_all()
-		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
+		self.resize(ud.workAreaW, int(ud.workAreaH * 0.9))
 
 	@staticmethod
 	def setColumnWidth(
@@ -247,10 +247,11 @@ class EventHistoryDialog(gtk.Dialog):
 		self.checkoutBeforeButton.set_sensitive(sensitive)
 
 	def updateViewType(self) -> None:
-		path = self.treev.get_cursor()[0]
-		if not path:
+		pathObj = self.treev.get_cursor()[0]
+		if not pathObj:
 			self.setButtonsSensitive(False)
 			return
+		path = pathObj.get_indices()
 		assert len(path) == 1
 		self.setButtonsSensitive(True)
 		index = path[0]
@@ -299,7 +300,7 @@ class EventHistoryDialog(gtk.Dialog):
 		hashBefore: str,
 		hashAfter: str,
 	) -> None:
-		event = self.event
+		event = self._event
 		text = ""
 		if viewType == "After change (Text)":
 			if hashAfter:
@@ -340,21 +341,22 @@ class EventHistoryDialog(gtk.Dialog):
 			new_child.show()
 
 	def switchToRevision(self, revHash: str) -> None:
-		assert isinstance(self.event.parent, EventGroup)
-		assert self.event.id is not None
-		newEvent = self.event.getRevision(revHash)
-		self.event.parent.removeFromCache(self.event.id)
+		assert isinstance(self._event.parent, EventGroup)
+		assert self._event.id is not None
+		newEvent = self._event.getRevision(revHash)
+		self._event.parent.removeFromCache(self._event.id)
 		# newEvent.id is set
-		newEvent.parent = self.event.parent
+		newEvent.parent = self._event.parent
 		newEvent.save()
-		self.event = newEvent
+		self._event = newEvent
 		self.load()
 		ui.eventUpdateQueue.put("e", newEvent, self)
 
 	def onCheckoutAfterClick(self, _button: Any) -> None:
-		path = self.treev.get_cursor()[0]
-		if not path:
+		pathObj = self.treev.get_cursor()[0]
+		if not pathObj:
 			return
+		path = pathObj.get_indices()
 		assert len(path) == 1
 		index = path[0]
 		row = self.treeModel[index]
@@ -362,9 +364,10 @@ class EventHistoryDialog(gtk.Dialog):
 		self.switchToRevision(hashAfter)
 
 	def onCheckoutBeforeClick(self, _button: Any) -> None:
-		path = self.treev.get_cursor()[0]
-		if not path:
+		pathObj = self.treev.get_cursor()[0]
+		if not pathObj:
 			return
+		path = pathObj.get_indices()
 		assert len(path) == 1
 		index = path[0]
 		row = self.treeModel[index]
@@ -401,8 +404,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return {}
 		if hashStr in self.objectCache:
 			return self.objectCache[hashStr]
-		data = SObjBinaryModel.loadBinaryData(hashStr, core.fs)
-		assert isinstance(data, dict)
+		data = SObjBinaryModel.loadBinaryDict(hashStr, core.fs)
 		data = self.normalizeObjectData(data)
 		if len(self.objectCache) > 100:
 			self.objectCache.popitem()
@@ -475,7 +477,7 @@ class EventHistoryDialog(gtk.Dialog):
 	def load(self) -> None:
 		treeModel = self.treeModel
 		treeModel.clear()
-		hist = self.event.loadHistory()
+		hist = self._event.loadHistory()
 		count = len(hist)
 		for index, (epoch, hashAfter) in enumerate(hist):
 			if index == count - 1:

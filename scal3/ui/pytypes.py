@@ -70,8 +70,8 @@ class GenericTypeParamsDict(TypedDict):
 
 class ButtonGeoDict(TypedDict):
 	auto_rtl: bool
-	size: float
-	spacing: float
+	size: int
+	spacing: int
 	pos: tuple[float, float]
 	xalign: str
 	yalign: str
@@ -89,7 +89,7 @@ class PieGeoDict(TypedDict):
 class CustomizableToolBoxDict(TypedDict):
 	items: list[tuple[str, bool]]
 	iconSize: NotRequired[str]  # just for compatibilty
-	iconSizePixel: float
+	iconSizePixel: int
 	buttonBorder: int
 	buttonPadding: int
 	preferIconName: bool
