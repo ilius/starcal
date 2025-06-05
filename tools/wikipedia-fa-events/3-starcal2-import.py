@@ -25,7 +25,7 @@ def getGroupByTitle(title):
 		return newGroupsDict[title]
 	except KeyError:
 		group = event_lib.NoteBook()
-		group.setData(
+		group.setDict(
 			{
 				"calType": "jalali",
 				"color": [255, 255, 0],
