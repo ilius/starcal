@@ -17,7 +17,7 @@ class AboutDialog(gtk.AboutDialog):
 		comments: str = "",
 		license: str = "",  # noqa: A002
 		website: str = "",
-		logo: GdkPixbuf.Pixbuf = None,
+		logo: GdkPixbuf.Pixbuf | None = None,
 		**kwargs,
 	) -> None:
 		gtk.AboutDialog.__init__(self, **kwargs)

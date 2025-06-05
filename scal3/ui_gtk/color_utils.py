@@ -13,11 +13,11 @@ __all__ = [
 
 def rgbToGdkColor(r: int, g: int, b: int, a: int = 255) -> gdk.Color:  # noqa: ARG001
 	"""r, g, b are in range(256)."""
-	return gdk.Color(
-		int(r * 257),
-		int(g * 257),
-		int(b * 257),
-	)
+	c = gdk.Color()
+	c.red = r * 257
+	c.blue = g * 257
+	c.green = b * 257
+	return c
 
 
 def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:

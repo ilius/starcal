@@ -7,11 +7,13 @@ from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.account import BaseWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.accounts import Account
+	from scal3.account.google import GoogleAccount
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, account: Account) -> None:
+	account: GoogleAccount
+
+	def __init__(self, account: GoogleAccount) -> None:
 		BaseWidgetClass.__init__(self, account)
 		# -----
 		hbox = HBox()

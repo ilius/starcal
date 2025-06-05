@@ -36,10 +36,14 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Box):
+	def show(self) -> None:
+		gtk.Box.show_all(self)
+
 	def __init__(self, notifier: FloatingMsgNotifier) -> None:
 		self.notifier = notifier
 		# --
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w = self
 		# [_] Fill Screen Width   Speed [__]   BG Color [__]  Text Color [__]
 		# --
 		self.fillWidthCb = gtk.CheckButton(label=_("Fill Width"))
@@ -64,14 +68,14 @@ class WidgetClass(gtk.Box):
 	def updateWidget(self) -> None:
 		self.fillWidthCb.set_active(self.notifier.fillWidth)
 		self.speedSpin.set_value(self.notifier.speed)
-		self.bgColorButton.set_rgba(self.notifier.bgColor)
-		self.textColorButton.set_rgba(self.notifier.textColor)
+		self.bgColorButton.setRGBA(self.notifier.bgColor)
+		self.textColorButton.setRGBA(self.notifier.textColor)
 
 	def updateVars(self) -> None:
 		self.notifier.fillWidth = self.fillWidthCb.get_active()
 		self.notifier.speed = self.speedSpin.get_value()
-		self.notifier.bgColor = self.bgColorButton.get_rgba()
-		self.notifier.textColor = self.textColorButton.get_rgba()
+		self.notifier.bgColor = self.bgColorButton.getRGBA()
+		self.notifier.textColor = self.textColorButton.getRGBA()
 
 
 def notify(notifier: FloatingMsgNotifier, finishFunc: Callable[[], None]) -> None:

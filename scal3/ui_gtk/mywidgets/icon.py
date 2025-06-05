@@ -34,7 +34,7 @@ class IconSelectButton(gtk.Button):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
-		self._dialog = None
+		self._dialog: gtk.FileChooserDialog | None = None
 		# ---
 		menu = Menu()
 		self.menu = menu
@@ -64,7 +64,7 @@ class IconSelectButton(gtk.Button):
 		# ---
 		self.set_filename(filename)
 
-	def createDialog(self) -> gtk.Dialog:
+	def createDialog(self) -> gtk.FileChooserDialog:
 		if self._dialog:
 			return self._dialog
 
@@ -75,21 +75,21 @@ class IconSelectButton(gtk.Button):
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			dialog,
+			res=gtk.ResponseType.REJECT,
 			imageName="sweep.svg",
 			label=_("Clear", ctx="window action"),
-			res=gtk.ResponseType.REJECT,
 		)
 
 		dialog.connect("file-activated", self.fileActivated)
@@ -98,14 +98,14 @@ class IconSelectButton(gtk.Button):
 
 		return dialog
 
-	def onButtonPressEvent(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
-		b = gevent.button
-		if b == 1:
+	def onButtonPressEvent(self, _w: gtk.Widget, gevent: gdk.EventButton) -> None:
+		button = gevent.button
+		if button == 1:
 			dialog = self.createDialog()
-			dialog.set_filename(self.filename)
+			dialog.set_filename(self.filename or "")
 			dialog.run()
-		elif b == 3:
-			self.menu.popup(None, None, None, None, b, gevent.time)
+		elif button == 3:
+			self.menu.popup(None, None, None, None, button, gevent.time)
 
 	def menuItemActivate(self, _w: gtk.Widget, icon: str) -> None:
 		self.set_filename(icon)
@@ -113,7 +113,7 @@ class IconSelectButton(gtk.Button):
 
 	def dialogResponse(
 		self,
-		dialog: gtk.Dialog,
+		dialog: gtk.FileChooserDialog,
 		response: gtk.ResponseType = gtk.ResponseType.OK,
 	) -> None:
 		dialog.hide()
@@ -134,15 +134,16 @@ class IconSelectButton(gtk.Button):
 			),
 		)
 
-	def fileActivated(self, dialog: gtk.Dialog) -> None:
+	def fileActivated(self, dialog: gtk.FileChooserDialog) -> None:
 		fname = dialog.get_filename()
 		self.filename = fname
-		self._setImage(self.filename)
+		if fname:
+			self._setImage(fname)
 		self.emit("changed", fname)
 		dialog.hide()
 
 	def get_filename(self) -> str:
-		return self.filename
+		return self.filename or ""
 
 	def set_filename(self, filename: str | None) -> None:
 		if filename is None:

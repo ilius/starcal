@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.cal_type_pref_items import ModuleOptionButton, ModuleOptionItem
 
 log = logger.get()
 
@@ -31,7 +32,7 @@ from scal3.locale_man import getLocaleFirstWeekDay, langSh
 from scal3.locale_man import tr as _
 from scal3.path import sourceDir, svgDir
 from scal3.ui import conf
-from scal3.ui_gtk import HBox, Menu, VBox, gdk, gtk, pack, pixcache
+from scal3.ui_gtk import Dialog, HBox, Menu, VBox, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.log_pref import LogLevelPrefItem
 from scal3.ui_gtk.menuitems import ImageMenuItem
@@ -45,8 +46,6 @@ from scal3.ui_gtk.pref_utils import (
 	FontPrefItem,
 	ImageFileChooserPrefItem,
 	IntSpinPrefItem,
-	ModuleOptionButton,
-	ModuleOptionItem,
 	PrefItem,
 	WidthHeightPrefItem,
 )
@@ -251,9 +250,11 @@ class PreferencesWindow(gtk.Window):
 				grid.attach(button, col_i, row_i + 1, 1, 1)
 		grid.show_all()
 		# ---------------
+		pageWidget = VBox()
+		pack(pageWidget, grid, True, True)
 		page = StackPage()
 		page.pagePath = page.pageName = rootPageName
-		page.pageWidget = grid
+		page.pageWidget = pageWidget
 		page.pageExpand = True
 		page.pageExpand = True
 		stack.addPage(page)
@@ -271,7 +272,7 @@ class PreferencesWindow(gtk.Window):
 
 	def _initPageLangCalTypes(self) -> None:
 		vbox = VBox(spacing=self.spacing)
-		vbox.set_border_width(self.spacing / 2)
+		vbox.set_border_width(int(self.spacing / 2))
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "lang_calTypes"
@@ -296,6 +297,7 @@ class PreferencesWindow(gtk.Window):
 		itemCals = ActiveInactiveCalsPrefItem()
 		self.corePrefItems.append(itemCals)
 		itemCalsWidget = itemCals.getWidget()
+		assert isinstance(itemCalsWidget, gtk.Container)
 		itemCalsWidget.set_border_width(10)
 		frame.add(itemCalsWidget)
 		pack(hbox, frame, 1, 1)
@@ -305,7 +307,7 @@ class PreferencesWindow(gtk.Window):
 
 	def _initPageGeneral(self) -> None:
 		vbox = VBox(spacing=self.spacing)
-		vbox.set_border_width(self.spacing / 2)
+		vbox.set_border_width(int(self.spacing / 2))
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "general"
@@ -631,6 +633,7 @@ class PreferencesWindow(gtk.Window):
 		self.corePrefItems.append(item)
 		self.holiWDItem = item  # Holiday Week Days Item
 		itemWidget = item.getWidget()
+		assert isinstance(itemWidget, gtk.Container)
 		itemWidget.set_border_width(10)
 		frame.add(itemWidget)
 		pack(pageVBox, frame)
@@ -694,7 +697,7 @@ class PreferencesWindow(gtk.Window):
 		# grid.set_row_spacing(self.spacing)
 		for index, page in enumerate(regionalSubPages):
 			button = self.newWideButton(page)
-			button.set_border_width(self.spacing * 0.7)
+			button.set_border_width(int(self.spacing * 0.7))
 			grid.attach(button, 0, index, 1, 1)
 		grid.show_all()
 		pack(vbox, grid)
@@ -703,7 +706,7 @@ class PreferencesWindow(gtk.Window):
 
 	def _initPageAdvanced(self) -> None:
 		vbox = VBox(spacing=self.spacing)
-		vbox.set_border_width(self.spacing / 2)
+		vbox.set_border_width(int(self.spacing / 2))
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "advanced"
@@ -819,7 +822,7 @@ class PreferencesWindow(gtk.Window):
 	def _initPagePlugins(self) -> None:
 		vbox = VBox(spacing=self.spacing / 2)
 		page = StackPage()
-		vbox.set_border_width(self.spacing / 2)
+		vbox.set_border_width(int(self.spacing / 2))
 		page.pageWidget = vbox
 		page.pageName = "plugins"
 		page.pageTitle = _("Plugins")
@@ -829,23 +832,23 @@ class PreferencesWindow(gtk.Window):
 		# -----
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		treeModel = gtk.ListStore(
+		listStore = self.plugListStore = gtk.ListStore(
 			int,  # index
 			bool,  # enable
 			bool,  # show_date
 			str,  # title
 		)
-		treev.set_model(treeModel)
+		treev.set_model(listStore)
 		treev.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
-				("row", gtk.TargetFlags.SAME_WIDGET, 0),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_WIDGET, 0),
 			],
 			gdk.DragAction.MOVE,
 		)
 		treev.enable_model_drag_dest(
 			[
-				("row", gtk.TargetFlags.SAME_WIDGET, 0),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_WIDGET, 0),
 			],
 			gdk.DragAction.MOVE,
 		)
@@ -880,6 +883,7 @@ class PreferencesWindow(gtk.Window):
 		#   xx-large	= default * 1.7279
 		# ------
 		size = ui.getFont().size
+		cell: gtk.CellRenderer
 		# ------
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
@@ -981,7 +985,7 @@ class PreferencesWindow(gtk.Window):
 		"""
 		pack(vbox, hbox, 1, 1)
 		# --------------------------
-		d = gtk.Dialog(transient_for=self)
+		d = Dialog(transient_for=self)
 		d.set_transient_for(self)
 		# dialog.set_transient_for(parent) makes the window on top of parent
 		# and at the center point of parent
@@ -994,22 +998,22 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		dialog_add_button(
 			d,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.plugAddDialogClose,
 		)
 		dialog_add_button(
 			d,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 			onClick=self.plugAddDialogOK,
 		)
 		# ---
 		treev = gtk.TreeView()
-		treeModel = gtk.ListStore(str)
-		treev.set_model(treeModel)
+		listStore = gtk.ListStore(str)
+		treev.set_model(listStore)
 		# treev.enable_model_drag_source(
 		# 	gdk.ModifierType.BUTTON1_MASK,
 		# 	[("", 0, 0, 0)],
@@ -1034,7 +1038,7 @@ class PreferencesWindow(gtk.Window):
 		d.vbox.show_all()
 		self.plugAddDialog = d
 		self.plugAddTreeview = treev
-		self.plugAddTreeModel = treeModel
+		self.plugAddTreeModel = listStore
 		# -------------
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
@@ -1165,8 +1169,8 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 
 	def _initPageAccounts(self) -> None:
-		vbox = VBox(spacing=self.spacing / 2)
-		vbox.set_border_width(self.spacing / 2)
+		vbox = VBox(spacing=int(self.spacing / 2))
+		vbox.set_border_width(int(self.spacing / 2))
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "accounts"
@@ -1182,13 +1186,13 @@ class PreferencesWindow(gtk.Window):
 		treev.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
-				("row", gtk.TargetFlags.SAME_WIDGET, 0),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_WIDGET, 0),
 			],
 			gdk.DragAction.MOVE,
 		)
 		treev.enable_model_drag_dest(
 			[
-				("row", gtk.TargetFlags.SAME_WIDGET, 0),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_WIDGET, 0),
 			],
 			gdk.DragAction.MOVE,
 		)
@@ -1198,6 +1202,7 @@ class PreferencesWindow(gtk.Window):
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
+		cell: gtk.CellRenderer
 		# ------
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
@@ -1286,7 +1291,7 @@ class PreferencesWindow(gtk.Window):
 	def onPageButtonClicked(self, _b: gtk.Widget, page: StackPage) -> None:
 		self.stack.gotoPage(page.pagePath)
 
-	def newWideButton(self, page: StackPage) -> gtk.Widget:
+	def newWideButton(self, page: StackPage) -> gtk.Button:
 		hbox = HBox(spacing=self.spacing)
 		hbox.set_border_width(self.spacing)
 		label = gtk.Label(label=page.pageLabel)
@@ -1372,7 +1377,7 @@ class PreferencesWindow(gtk.Window):
 			prefItem.updateVar()
 		# Plugin Manager
 		index = []
-		for row in self.plugTreeview.get_model():
+		for row in self.plugListStore:
 			plugI = row[0]
 			enable = row[1]
 			show_date = row[2]
@@ -1430,7 +1435,7 @@ class PreferencesWindow(gtk.Window):
 		# ----------------------- Updating GUI ---------------------------
 		ud.windowList.onConfigChange()
 		if self.checkNeedRestart():
-			d = gtk.Dialog(
+			d = Dialog(
 				title=_("Restart " + core.APP_DESC),
 				transient_for=self,
 				modal=True,
@@ -1438,9 +1443,9 @@ class PreferencesWindow(gtk.Window):
 			)
 			dialog_add_button(
 				d,
+				res=gtk.ResponseType.CANCEL,
 				imageName="dialog-cancel.svg",
 				label=_("_No"),
-				res=gtk.ResponseType.CANCEL,
 			)
 			d.set_keep_above(True)
 			label = gtk.Label(
@@ -1457,9 +1462,9 @@ class PreferencesWindow(gtk.Window):
 			pack(d.vbox, vbox)
 			resBut = dialog_add_button(
 				d,
+				res=gtk.ResponseType.OK,
 				imageName="view-refresh.svg",
 				label=_("_Restart"),
-				res=gtk.ResponseType.OK,
 			)
 			resBut.grab_default()
 			d.vbox.set_border_width(5)
@@ -1501,7 +1506,7 @@ class PreferencesWindow(gtk.Window):
 		else:
 			self.comboWeekYear.set_active(core.weekNumberMode.v)
 		# Plugin Manager
-		model = self.plugTreeview.get_model()
+		model = self.plugListStore
 		model.clear()
 		for p in core.getPluginsTable():
 			model.append(
@@ -1534,9 +1539,9 @@ class PreferencesWindow(gtk.Window):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		model = self.plugTreeview.get_model()
-		j = model[i][0]
+		index = cur.get_indices()[0]
+		model = self.plugListStore
+		j = model[index][0]
 		plug = core.allPlugList.v[j]
 		self.plugButtonAbout.set_sensitive(bool(plug.about))
 		self.plugButtonConf.set_sensitive(plug.hasConfig)
@@ -1547,10 +1552,10 @@ class PreferencesWindow(gtk.Window):
 		cur: gtk.TreePath = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		model = self.plugTreeview.get_model()
-		j = model[i][0]
-		plug = core.allPlugList.v[j]
+		index = cur.get_indices()[0]
+		model = self.plugListStore
+		pIndex = model[index][0]
+		plug = core.allPlugList.v[pIndex]
 		# open_about returns True only if overriden by external plugin
 		if plug.open_about():
 			return
@@ -1573,10 +1578,10 @@ class PreferencesWindow(gtk.Window):
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		model = self.plugTreeview.get_model()
-		j = model[i][0]
-		plug = core.allPlugList.v[j]
+		index = cur.get_indices()[0]
+		model = self.plugListStore
+		pIndex = model[index][0]
+		plug = core.allPlugList.v[pIndex]
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
@@ -1603,9 +1608,9 @@ class PreferencesWindow(gtk.Window):
 		cur = self.plugTreeview.get_cursor()[0]
 		if not cur:
 			return True
-		i = cur[0]
-		j = self.plugTreeview.get_model()[i][0]
-		plug = core.allPlugList.v[j]
+		index = cur.get_indices()[0]
+		pIndex = self.plugListStore[index][0]
+		plug = core.allPlugList.v[pIndex]
 		menu = Menu()
 		# --
 		item = ImageMenuItem(
@@ -1642,7 +1647,9 @@ class PreferencesWindow(gtk.Window):
 		# FIXME
 		# Reize window to show all texts
 		# self.plugAddTreeview.columns_autosize()  # FIXME
-		_x, _y, w, _h = self.plugAddTreeview.get_column(0).cell_get_size()
+		column = self.plugAddTreeview.get_column(0)
+		assert column is not None
+		_x, _y, w, _h = column.cell_get_size()
 		# log.debug(x, y, w, h)
 		self.plugAddDialog.resize(
 			w + 30,
@@ -1662,15 +1669,15 @@ class PreferencesWindow(gtk.Window):
 
 	def plugTreeviewCellToggled(
 		self,
-		cell: gtk.CellRenderer,
+		cell: gtk.CellRendererToggle,
 		path: gtk.TreePath,
 	) -> None:
-		model = self.plugTreeview.get_model()
+		model = self.plugListStore
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 1, active)
 		if active:
-			plugI = model[path[0]][0]
+			plugI = model[path.get_indices()[0]][0]
 			plug = core.allPlugList.v[plugI]
 			if not plug.loaded:
 				plug = self.loadPlugin(plug, plugI)
@@ -1678,66 +1685,75 @@ class PreferencesWindow(gtk.Window):
 
 	def plugTreeviewCellToggled2(
 		self,
-		cell: gtk.CellRenderer,
+		cell: gtk.CellRendererToggle,
 		path: gtk.TreePath,
 	) -> None:
-		model = self.plugTreeview.get_model()
+		model = self.plugListStore
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 2, active)
+
+	def plugSetCursor(self, index: int) -> None:
+		self.plugTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
 
 	def plugTreeviewTop(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		t = self.plugTreeview.get_model()
-		if i <= 0 or i >= len(t):
+		index = cur.get_indices()[0]
+		listStore = self.plugListStore
+		if index <= 0 or index >= len(listStore):
 			gdk.beep()
 			return
-		t.prepend(list(t[i]))
-		t.remove(t.get_iter(i + 1))
-		self.plugTreeview.set_cursor(0)
+		listStore.prepend(list(listStore[index]))  # type: ignore[call-overload]
+		listStore.remove(listStore.get_iter(str(index + 1)))
+		self.plugSetCursor(0)
 
 	def plugTreeviewBottom(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		t = self.plugTreeview.get_model()
-		if i < 0 or i >= len(t) - 1:
+		index = cur.get_indices()[0]
+		listStore = self.plugListStore
+		if index < 0 or index >= len(listStore) - 1:
 			gdk.beep()
 			return
-		t.append(list(t[i]))
-		t.remove(t.get_iter(i))
-		self.plugTreeview.set_cursor(len(t) - 1)
+		listStore.append(list(listStore[index]))  # type: ignore[call-overload]
+		listStore.remove(listStore.get_iter(str(index)))
+		self.plugSetCursor(len(listStore) - 1)
 
 	def plugTreeviewUp(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		t = self.plugTreeview.get_model()
-		if i <= 0 or i >= len(t):
+		index = cur.get_indices()[0]
+		listStore = self.plugListStore
+		if index <= 0 or index >= len(listStore):
 			gdk.beep()
 			return
-		t.swap(t.get_iter(i - 1), t.get_iter(i))
-		self.plugTreeview.set_cursor(i - 1)
+		listStore.swap(
+			listStore.get_iter(str(index - 1)),
+			listStore.get_iter(str(index)),
+		)
+		self.plugSetCursor(index - 1)
 
 	def plugTreeviewDown(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		t = self.plugTreeview.get_model()
-		if i < 0 or i >= len(t) - 1:
+		index = cur.get_indices()[0]
+		listStore = self.plugListStore
+		if index < 0 or index >= len(listStore) - 1:
 			gdk.beep()
 			return
-		t.swap(t.get_iter(i), t.get_iter(i + 1))
-		self.plugTreeview.set_cursor(i + 1)
+		listStore.swap(
+			listStore.get_iter(str(index)),
+			listStore.get_iter(str(index + 1)),
+		)
+		self.plugSetCursor(index + 1)
 
-	@staticmethod
 	def plugTreevDragReceived(
+		self,
 		treev: gtk.TreeView,
 		_context: gdk.DragContext,
 		x: int,
@@ -1746,43 +1762,43 @@ class PreferencesWindow(gtk.Window):
 		_target_id: int,
 		_etime: int,
 	) -> None:
-		t = treev.get_model()  # self.plugAddTreeModel
+		t = self.plugListStore
 		cur = treev.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
+		index = cur.get_indices()[0]
 		dest = treev.get_dest_row_at_pos(x, y)
 		if dest is None:
 			t.move_after(
-				t.get_iter(i),
-				t.get_iter(len(t) - 1),
+				t.get_iter(str(index)),
+				t.get_iter(str(len(t) - 1)),
 			)
 		elif dest[1] in {
 			gtk.TreeViewDropPosition.BEFORE,
 			gtk.TreeViewDropPosition.INTO_OR_BEFORE,
 		}:
 			t.move_before(
-				t.get_iter(i),
-				t.get_iter(dest[0][0]),
+				t.get_iter(str(index)),
+				t.get_iter(str(dest[0].get_indices()[0])),
 			)
 		else:
 			t.move_after(
-				t.get_iter(i),
-				t.get_iter(dest[0][0]),
+				t.get_iter(str(index)),
+				t.get_iter(str(dest[0].get_indices()[0])),
 			)
 
 	def onPlugDeleteClick(self, _b: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		i = cur[0]
-		t = self.plugTreeview.get_model()
-		n = len(t)
-		if i < 0 or i >= n:
+		index = cur.get_indices()[0]
+		listStore = self.plugListStore
+		n = len(listStore)
+		if index < 0 or index >= n:
 			gdk.beep()
 			return
-		j = t[i][0]
-		t.remove(t.get_iter(i))
+		j = listStore[index][0]
+		listStore.remove(listStore.get_iter(str(index)))
 		# j is index of deleted plugin
 		self.plugAddItems.append(j)
 		title = core.allPlugList.v[j].title
@@ -1790,33 +1806,37 @@ class PreferencesWindow(gtk.Window):
 		log.debug(f"deleting {title}")
 		self.pluginsToolbar.setCanAdd(True)
 		if n > 1:
-			self.plugTreeview.set_cursor(min(n - 2, i))
+			self.plugSetCursor(min(n - 2, index))
 
-	def plugAddDialogOK(self, _w: gtk.Widget) -> None:
+	def plugAddDialogOK(self, _w: gtk.Widget | None) -> None:
 		cur = self.plugAddTreeview.get_cursor()[0]
 		if cur is None:
 			gdk.beep()
 			return
-		i = cur[0]
-		j = self.plugAddItems[i]
+		index = cur.get_indices()[0]
+		j = self.plugAddItems[index]
 		cur2 = self.plugTreeview.get_cursor()[0]
 		if cur2 is None:
-			pos = len(self.plugTreeview.get_model())
+			pos = len(self.plugListStore)
 		else:
-			pos = cur2[0] + 1
-		self.plugTreeview.get_model().insert(
+			pos = cur2.get_indices()[0] + 1
+		plug = core.allPlugList.v[j]
+		if plug is None:
+			log.error("plug is None")
+			return
+		self.plugListStore.insert(
 			pos,
 			[
 				j,
 				True,
 				False,
-				core.allPlugList.v[j].title,
+				plug.title,
 			],
 		)
-		self.plugAddTreeModel.remove(self.plugAddTreeModel.get_iter(i))
-		self.plugAddItems.pop(i)
+		self.plugAddTreeModel.remove(self.plugAddTreeModel.get_iter(str(index)))
+		self.plugAddItems.pop(index)
 		self.plugAddDialog.hide()
-		self.plugTreeview.set_cursor(pos)  # pos == -1 # FIXME
+		self.plugSetCursor(pos)  # pos == -1 # FIXME
 
 	def plugAddTreevRActivate(
 		self,
@@ -1845,7 +1865,7 @@ class PreferencesWindow(gtk.Window):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		index = cur[0]
+		index = cur.get_indices()[0]
 		self.editAccount(index)
 
 	def onAccountsRegisterClick(self, _b: gtk.Widget) -> None:
@@ -1884,7 +1904,7 @@ class PreferencesWindow(gtk.Window):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		index = cur[0]
+		index = cur.get_indices()[0]
 		accountId = self.accountsTreeModel[index][0]
 		account = ev.accounts[accountId]
 		if not confirm(
@@ -1898,11 +1918,14 @@ class PreferencesWindow(gtk.Window):
 		ev.accounts.save()
 		del self.accountsTreeModel[index]
 
+	def accountSetCursor(self, index: int) -> None:
+		self.accountsTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
+
 	def onAccountsUpClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		index = cur[0]
+		index = cur.get_indices()[0]
 		t = self.accountsTreeModel
 		if index <= 0 or index >= len(t):
 			gdk.beep()
@@ -1910,24 +1933,24 @@ class PreferencesWindow(gtk.Window):
 		ev.accounts.moveUp(index)
 		ev.accounts.save()
 		t.swap(
-			t.get_iter(index - 1),
-			t.get_iter(index),
+			t.get_iter(str(index - 1)),
+			t.get_iter(str(index)),
 		)
-		self.accountsTreeview.set_cursor(index - 1)
+		self.accountSetCursor(index - 1)
 
 	def onAccountsDownClick(self, _b: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
-		index = cur[0]
+		index = cur.get_indices()[0]
 		t = self.accountsTreeModel
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
 		ev.accounts.moveDown(index)
 		ev.accounts.save()
-		t.swap(t.get_iter(index), t.get_iter(index + 1))
-		self.accountsTreeview.set_cursor(index + 1)
+		t.swap(t.get_iter(str(index)), t.get_iter(str(index + 1)))
+		self.accountSetCursor(index + 1)
 
 	def accountsTreevRActivate(
 		self,
@@ -1935,7 +1958,7 @@ class PreferencesWindow(gtk.Window):
 		path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
 	) -> None:
-		index = path[0]
+		index = path.get_indices()[0]
 		self.editAccount(index)
 
 	@staticmethod
@@ -1958,10 +1981,10 @@ class PreferencesWindow(gtk.Window):
 
 	def accountsTreeviewCellToggled(
 		self,
-		cell: gtk.CellRenderer,
+		cell: gtk.CellRendererToggle,
 		path: gtk.TreePath,
 	) -> None:
-		index = int(path)
+		index = path.get_indices()[0]
 		active = not cell.get_active()
 		# ---
 		accountId = self.accountsTreeModel[index][0]
@@ -1980,4 +2003,4 @@ class PreferencesWindow(gtk.Window):
 if __name__ == "__main__":
 	dialog = PreferencesWindow()
 	dialog.updatePrefGui()
-	dialog.run()
+	dialog.present()

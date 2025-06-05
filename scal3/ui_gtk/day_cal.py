@@ -18,7 +18,7 @@ from __future__ import annotations
 from scal3 import logger
 from scal3.color_utils import RGBA
 from scal3.ui import conf
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 
 log = logger.get()
 
@@ -77,11 +77,12 @@ if TYPE_CHECKING:
 		DayCalTypeParamsDict,
 		PieGeoDict,
 	)
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["DayCal"]
 
 
-class DayCal(gtk.DrawingArea, CalBase):
+class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	objName = "dayCal"
 	desc = _("Day Calendar")
 	itemListCustomizable = False
@@ -95,7 +96,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	weekdayUppercase: Property[bool] | None = None
 
 	widgetButtonsEnable: Property[bool] | None = None
-	widgetButtonsSize: Property[float] | None = None
+	widgetButtonsSize: Property[int] | None = None
 	widgetButtonsOpacity: Property[float] | None = None
 	widgetButtons: Property[list[dict[str, Any]]] | None = None
 
@@ -103,7 +104,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	navButtonsGeo: Property[ButtonGeoDict] | None = None
 	navButtonsOpacity: Property[float] | None = None
 
-	eventIconSize: Property[float] | None = None
+	eventIconSize: Property[int] | None = None
 	eventTotalSizeRatio: Property[float] | None = None
 
 	seasonPieEnable: Property[bool] | None = None
@@ -399,7 +400,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		return subPages
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
 		gtk.DrawingArea.__init__(self)
 		# FIXME: rename one of these two attrs:
 		self.win = win
@@ -417,9 +418,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.connect("scroll-event", self.scroll)
 
 	def getWindow(self) -> gtk.Window:
+		assert self._window is not None
 		return self._window
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.cal_type_params import TextParamWidget
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
@@ -471,10 +473,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.widgetButtonsSize:
-			prefItem = FloatSpinPrefItem(
+			prefItem = IntSpinPrefItem(
 				prop=self.widgetButtonsSize,
 				bounds=(0, 99),
-				digits=1,
 				step=1,
 				label=_("Widget Buttons Size"),
 				live=True,
@@ -570,10 +571,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		buttons2.append(newSubPageButton(self, page))
 		# ---
 		if self.eventIconSize:
-			prefItem = FloatSpinPrefItem(
+			prefItem = IntSpinPrefItem(
 				prop=self.eventIconSize,
 				bounds=(5, 999),
-				digits=1,
 				step=1,
 				label=_("Icon Size"),
 				live=True,
@@ -633,7 +633,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					live=True,
 					onChangeFunc=self.queue_draw,
 				)
-				row_index = index / 2
+				row_index = int(index / 2)
 				column_index = index % 2 * 3
 				grid.attach(
 					label,
@@ -733,11 +733,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	def drawAll(
 		self,
-		_widget: gtk.Widget = None,
+		_widget: gtk.Widget | None = None,
 		cr: cairo.Context | None = None,
 		cursor: bool = True,
 	) -> None:
 		win = self.get_window()
+		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -772,7 +773,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		sideCount = isqrt(iconsN - 1) + 1
 		iconSize = min(
 			self.eventIconSize.v,
-			maxTotalSize / sideCount,
+			int(maxTotalSize / sideCount),
 		)
 		totalSize = sideCount * iconSize
 		x1 = x0 + w - iconSize / 2
@@ -891,6 +892,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			),
 			maxSize=(textSize, textSize),
 		)
+		assert layout is not None
 		font_w, font_h = layout.get_pixel_size()
 		setColor(cr, textColor)
 		cr.move_to(xc - font_w / 2, yc - font_h / 2)
@@ -928,6 +930,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				_(c.dates[calType][2], calType),
 				getParamsFont(params),
 			)
+			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
 			if calType == calTypes.primary and c.holiday:
 				setColor(cr, conf.holidayColor.v)
@@ -944,6 +947,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				text,
 				getParamsFont(params),
 			)
+			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
 			setColor(cr, params["color"])
 			font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
@@ -970,6 +974,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					text,
 					getParamsFont(params),
 				)
+				assert daynum is not None
 				fontw, fonth = daynum.get_pixel_size()
 				setColor(cr, params["color"])
 				font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
@@ -982,7 +987,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		for button in self._allButtons:
 			button.draw(cr, w, h)
 
-	def onButtonPress(self, _obj: gtk.Widget, gevent: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _obj: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
@@ -1014,7 +1019,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
-		kname = gdk.keyval_name(gevent.keyval).lower()
+		kname = gdk.keyval_name(gevent.keyval)
+		if not kname:
+			return False
+		kname = kname.lower()
 		# if kname.startswith("alt"):
 		# 	return True
 		if kname == "up":
@@ -1045,7 +1053,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return False
 		return True
 
-	def scroll(self, _w: gtk.Widget, gevent: gdk.ScrollEvent) -> bool | None:
+	def scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)

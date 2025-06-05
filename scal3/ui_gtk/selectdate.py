@@ -24,7 +24,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
 from scal3.date_utils import parseDroppedDate
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -36,13 +36,14 @@ __all__ = ["SelectDateDialog"]
 
 
 @registerSignals
-class SelectDateDialog(gtk.Dialog):
+class SelectDateDialog(Dialog):
 	signals = [
 		("response-date", [int, int, int]),
 	]
+	vbox: gtk.Box  # type: ignore[assignment]
 
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Select Date..."))
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
@@ -67,7 +68,7 @@ class SelectDateDialog(gtk.Dialog):
 		# -----------------------
 		hbox = HBox(spacing=5)
 		rb1 = gtk.RadioButton(label="")
-		rb1.num = 1
+		# rb1.num = 1
 		pack(hbox, rb1)
 		self.ymdBox = YearMonthDayBox()
 		pack(hbox, self.ymdBox)
@@ -78,7 +79,7 @@ class SelectDateDialog(gtk.Dialog):
 		dateInput = DateButtonOption(hist_size=16)
 		pack(hb2, dateInput)
 		rb2 = gtk.RadioButton(label="", group=rb1)
-		rb2.num = 2
+		# rb2.num = 2
 		hb2i = HBox(spacing=5)
 		pack(hb2i, rb2)
 		pack(hb2i, hb2)
@@ -89,7 +90,7 @@ class SelectDateDialog(gtk.Dialog):
 		jdInput = IntSpinButton(0, 9999999)
 		pack(hb3, jdInput)
 		rb3 = gtk.RadioButton(label="", group=rb1)
-		rb3.num = 3
+		# rb3.num = 3
 		hb3i = HBox(spacing=5)
 		pack(hb3i, rb3)
 		pack(hb3i, hb3)
@@ -97,16 +98,16 @@ class SelectDateDialog(gtk.Dialog):
 		# -------
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 			onClick=self.onCancel,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK,
 			onClick=self.ok,
 		)
 		# -------

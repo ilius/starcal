@@ -11,9 +11,13 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(TimeButton):
+	def show(self) -> None:
+		TimeButton.show(self.w)
+
 	def __init__(self, rule: DayTimeEventRule) -> None:
 		self.rule = rule
 		TimeButton.__init__(self)
+		self.w = self
 
 	def updateWidget(self) -> None:
 		self.set_value(self.rule.dayTime)

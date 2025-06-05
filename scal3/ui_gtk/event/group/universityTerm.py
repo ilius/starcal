@@ -27,8 +27,7 @@ from scal3.locale_man import numDecode, rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.time_utils import hmDecode, hmEncode
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
-from scal3.ui_gtk.decorators import registerType
+from scal3.ui_gtk import Dialog, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.drawing import (
 	fillColor,
 	newTextLayout,
@@ -125,7 +124,7 @@ class CourseListEditor(gtk.Box):
 		cur = self.treev.get_cursor()
 		try:
 			path, _col = cur
-			return path[0]
+			return path.get_indices()[0]
 		except (ValueError, IndexError):
 			return None
 
@@ -163,10 +162,10 @@ class CourseListEditor(gtk.Box):
 			gdk.beep()
 			return
 		t.swap(
-			t.get_iter(index - 1),
-			t.get_iter(index),
+			t.get_iter(str(index - 1)),
+			t.get_iter(str(index)),
 		)
-		self.treev.set_cursor(index - 1)
+		self.treev.set_cursor(index - 1)  # type: ignore[arg-type]
 
 	def onMoveDownClick(self, _button: Any) -> None:
 		index = self.getSelectedIndex()
@@ -177,10 +176,10 @@ class CourseListEditor(gtk.Box):
 			gdk.beep()
 			return
 		t.swap(
-			t.get_iter(index),
-			t.get_iter(index + 1),
+			t.get_iter(str(index)),
+			t.get_iter(str(index + 1)),
 		)
-		self.treev.set_cursor(index + 1)
+		self.treev.set_cursor(index + 1)  # type: ignore[arg-type]
 
 	def courseNameEdited(
 		self,
@@ -208,7 +207,7 @@ class CourseListEditor(gtk.Box):
 			self.treeModel.append(row)
 
 	def getDict(self) -> list[tuple[int, str, int]]:
-		return [tuple(row) for row in self.treeModel]
+		return [tuple(row) for row in self.treeModel]  # type: ignore
 
 
 class ClassTimeBoundsEditor(gtk.Box):
@@ -255,7 +254,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		cur = self.treev.get_cursor()
 		try:
 			path, _col = cur
-			return path[0]
+			return path.get_indices()[0]
 		except (ValueError, IndexError):
 			return None
 
@@ -283,10 +282,10 @@ class ClassTimeBoundsEditor(gtk.Box):
 			gdk.beep()
 			return
 		t.swap(
-			t.get_iter(index - 1),
-			t.get_iter(index),
+			t.get_iter(str(index - 1)),
+			t.get_iter(str(index)),
 		)
-		self.treev.set_cursor(index - 1)
+		self.treev.set_cursor(index - 1)  # type: ignore[arg-type]
 
 	def onMoveDownClick(self, _button: Any) -> None:
 		index = self.getSelectedIndex()
@@ -297,10 +296,10 @@ class ClassTimeBoundsEditor(gtk.Box):
 			gdk.beep()
 			return
 		t.swap(
-			t.get_iter(index),
-			t.get_iter(index + 1),
+			t.get_iter(str(index)),
+			t.get_iter(str(index + 1)),
 		)
-		self.treev.set_cursor(index + 1)
+		self.treev.set_cursor(index + 1)  # type: ignore[arg-type]
 
 	def timeEdited(
 		self,
@@ -369,7 +368,6 @@ class WidgetClass(NormalWidgetClass):
 		self.group.classTimeBounds = self.classTimeBoundsEditor.getDict()
 
 
-@registerType
 class WeeklyScheduleWidget(gtk.DrawingArea):
 	def __init__(self, term: UniversityTerm) -> None:
 		self.term = term
@@ -386,6 +384,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		_event: Any = None,
 	) -> None:
 		win = self.get_window()
+		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
 		# where is cairo_region_destroy? No region.destroy() method
@@ -418,6 +417,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		weekDayLayoutsWidth = []
 		for j in range(7):
 			layout = newTextLayout(self, core.getWeekDayN(j))
+			assert layout is not None
 			layoutW, layoutH = layout.get_pixel_size()
 			weekDayLayouts.append(layout)
 			weekDayLayoutsWidth.append(layoutW)
@@ -452,6 +452,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		setColor(cr, textColor)
 		for i, title in enumerate(titles):
 			layout = newTextLayout(self, title)
+			assert layout is not None
 			layoutW, layoutH = layout.get_pixel_size()
 			# --
 			dx = (w - leftMargin) * (tmfactors[i + 1] - tmfactors[i])
@@ -501,6 +502,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 					"\n".join(textList),
 					maxSize=(dx, dy),
 				)
+				assert layout is not None
 				layoutW, layoutH = layout.get_pixel_size()
 				# --
 				factor = (tmfactors[i] + tmfactors[i + 1]) / 2
@@ -515,10 +517,10 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 				# (cr, layout)
 
 
-class WeeklyScheduleWindow(gtk.Dialog):
+class WeeklyScheduleWindow(Dialog):
 	def __init__(self, term: UniversityTerm, **kwargs) -> None:
 		self.term = term
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.resize(800, 500)
 		self.set_title(_("View Weekly Schedule"))
 		self.connect("delete-event", self.onDeleteEvent)
@@ -571,18 +573,18 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		fcd.set_current_name(self.term.title + ".svg")
 		dialog_add_button(
 			fcd,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			fcd,
+			res=gtk.ResponseType.OK,
 			imageName="document-save.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		if fcd.run() == gtk.ResponseType.OK:
-			self.exportToSvg(fcd.get_filename())
+			self.exportToSvg(fcd.get_filename() or "")
 		fcd.destroy()
 
 

@@ -35,7 +35,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	event: YearlyEvent
+	_event: YearlyEvent
 
 	def __init__(self, event: YearlyEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
@@ -67,7 +67,7 @@ class WidgetClass(common.WidgetClass):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		# ----
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def onStartYearCheckClick(self, _w: gtk.Widget | None = None) -> None:
@@ -77,30 +77,30 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
-		month = self.event.getMonth()
+		month = self._event.getMonth()
 		assert month is not None
 		self.monthCombo.setValue(month)
-		self.daySpin.set_value(self.event.getDay())
-		startRule = StartEventRule.getFrom(self.event)
+		self.daySpin.set_value(self._event.getDay())
+		startRule = StartEventRule.getFrom(self._event)
 		if startRule is not None:
 			self.startYearCheck.set_active(True)
 			self.startYearSpin.set_value(startRule.date[0])
 		else:
 			self.startYearCheck.set_active(False)
-			self.startYearSpin.set_value(self.event.getSuggestedStartYear())
+			self.startYearSpin.set_value(self._event.getSuggestedStartYear())
 		self.onStartYearCheckClick()
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		self.event.setMonth(self.monthCombo.getValue())
-		self.event.setDay(int(self.daySpin.get_value()))
-		startRule = StartEventRule.getFrom(self.event)
+		self._event.setMonth(self.monthCombo.getValue())
+		self._event.setDay(int(self.daySpin.get_value()))
+		startRule = StartEventRule.getFrom(self._event)
 		if self.startYearCheck.get_active():
 			if startRule is None:
-				startRule = StartEventRule.addOrGetFrom(self.event)
+				startRule = StartEventRule.addOrGetFrom(self._event)
 			startRule.date = (self.startYearSpin.get_value(), 1, 1)
 		elif startRule is not None:
-			del self.event["start"]
+			del self._event["start"]
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
@@ -116,10 +116,10 @@ class WidgetClass(common.WidgetClass):
 			int(self.startYearSpin.get_value()),
 			month,
 			int(self.daySpin.get_value()),
-			self.event.calType,
+			self._event.calType,
 			newCalType,
 		)
 		self.startYearSpin.set_value(y2)
 		monthCombo.setValue(m2)
 		self.daySpin.set_value(d2)
-		self.event.calType = newCalType
+		self._event.calType = newCalType

@@ -82,7 +82,7 @@ confParamsData = [
 	# ---------------------
 	Param(
 		name="",
-		type="float",
+		type="int",
 		v3Name="basicButtonsSize",
 		default=22,
 	),
@@ -107,7 +107,7 @@ confParamsData = [
 	),
 	Param(
 		name="",
-		type="float",
+		type="int",
 		v3Name="movementButtonsSize",
 		default=22,
 	),
@@ -300,7 +300,7 @@ confParamsData = [
 	),
 	Param(
 		name="",
-		type="float",
+		type="int",
 		v3Name="movingUpdateTime",
 		default=10,  # miliseconds
 	),

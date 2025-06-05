@@ -11,9 +11,13 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(IntSpinButton):
+	def show(self) -> None:
+		IntSpinButton.show(self.w)
+
 	def __init__(self, rule: EventRule) -> None:
 		self.rule = rule
 		IntSpinButton.__init__(self, 0, 999999)
+		self.w = self
 
 	def updateWidget(self) -> None:
 		self.set_value(self.rule.getRuleValue())

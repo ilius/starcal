@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from gi.repository import GLib as glib
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button, imageFromFile
 
 if TYPE_CHECKING:
@@ -18,9 +18,13 @@ __all__ = ["WidgetClass", "notify"]
 
 
 class WidgetClass(gtk.Entry):
+	def show(self) -> None:
+		gtk.Entry.show(self.w)
+
 	def __init__(self, notifier: EventNotifierType) -> None:
 		self.notifier = notifier
 		gtk.Entry.__init__(self)
+		self.w = self
 
 	def updateWidget(self) -> None:
 		self.set_text(self.notifier.extraMessage)
@@ -45,7 +49,7 @@ def notify(notifier: EventNotifier, _finishFunc: Callable[[], None]) -> None:
 
 def _notify(notifier: EventNotifier) -> None:
 	event = notifier.event
-	dialog = gtk.Dialog()
+	dialog = Dialog()
 	# ----
 	lines = []
 	lines.append(event.getText())
@@ -63,15 +67,15 @@ def _notify(notifier: EventNotifier) -> None:
 	label = gtk.Label(label=text)
 	label.set_selectable(True)
 	pack(hbox, label, 1, 1)
-	pack(dialog.vbox, hbox)
+	pack(dialog.vbox, hbox)  # type: ignore[arg-type]
 	# ----
 	okB = dialog_add_button(
 		dialog,
+		res=gtk.ResponseType.OK,
 		imageName="dialog-ok.svg",
 		label=_("_Close"),
-		res=gtk.ResponseType.OK,
 	)
 	okB.connect("clicked", lambda _w, _e: dialog.response(gtk.ResponseType.OK))
-	dialog.vbox.show_all()
+	dialog.vbox.show_all()  # type: ignore[attr-defined]
 	dialog.connect("response", response)
 	dialog.present()

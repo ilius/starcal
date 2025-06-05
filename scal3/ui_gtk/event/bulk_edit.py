@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import mytz
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -22,25 +22,25 @@ if TYPE_CHECKING:
 __all__ = ["EventsBulkEditDialog"]
 
 
-class EventsBulkEditDialog(gtk.Dialog):
+class EventsBulkEditDialog(Dialog):
 	def __init__(self, container: EventContainerType, **kwargs) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		self._container = container
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Bulk Edit Events"))
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Perform"),
-			res=gtk.ResponseType.OK,
 		)
 		# --
 		self.connect("response", lambda _w, _e: self.hide())

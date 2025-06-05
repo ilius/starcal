@@ -937,7 +937,7 @@ class UniversityClassEvent(Event):
 	) -> None:
 		# assert parent is not None
 		Event.__init__(self, ident, parent)
-		self.courseId = None  # FIXME
+		self.courseId: int | None = None  # FIXME
 
 	def setDefaults(
 		self,
@@ -1070,7 +1070,7 @@ class UniversityExamEvent(DailyNoteEvent):
 	) -> None:
 		# assert group is not None  # FIXME
 		DailyNoteEvent.__init__(self, ident, parent)
-		self.courseId = None  # FIXME
+		self.courseId: int | None = None  # FIXME
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		DailyNoteEvent.setDefaults(self, group=group)

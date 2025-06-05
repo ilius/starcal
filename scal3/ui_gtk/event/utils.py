@@ -88,7 +88,7 @@ def menuItemFromEventGroup(group: EventGroupType, **kwargs) -> gtk.MenuItem:
 	)
 
 
-def eventTreeIconPixbuf(icon: str | None) -> GdkPixbuf.Pixbuf:
+def eventTreeIconPixbuf(icon: str | None) -> GdkPixbuf.Pixbuf | None:
 	return pixbufFromFile(
 		icon,
 		conf.eventTreeIconSize.v,

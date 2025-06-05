@@ -42,12 +42,13 @@ except ImportError:
 try:
 	from gi.repository.GLib import Error as GLibError
 except ImportError:
-	from gi.repository.GObject import Error as GLibError
+	from gi.repository.GObject import Error as GLibError  # type: ignore[assignment]
 
 
 __all__ = [
 	"TWO_BUTTON_PRESS",
 	"Box",
+	"Dialog",
 	"GLibError",
 	"GdkPixbuf",
 	"HBox",
@@ -78,9 +79,9 @@ def pack(
 	padding: int = 0,
 ) -> None:
 	if isinstance(box, gtk.Box):
-		box.pack_start(child, expand=expand, fill=fill, padding=padding)
+		box.pack_start(child, expand=bool(expand), fill=bool(fill), padding=padding)
 	elif isinstance(box, gtk.CellLayout):
-		box.pack_start(child, expand)
+		raise TypeError("pack: use gtk.CellLayout.pack_start instead")
 	else:
 		raise TypeError(f"pack: unkown type {type(box)}")
 
@@ -106,7 +107,7 @@ def HBox(**kwargs) -> gtk.Box:
 class Menu(gtk.Menu):
 	def __init__(self, **kwargs) -> None:
 		gtk.Menu.__init__(self, **kwargs)
-		self.set_reserve_toggle_size(0)
+		self.set_reserve_toggle_size(False)
 		# self.imageSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
 	# def add(self, item):
@@ -114,7 +115,7 @@ class Menu(gtk.Menu):
 	# 	self.imageSizeGroup.add_widget(item.get_image())
 
 
-def getScrollValue(gevent: gdk.ScrollEvent, last: str = "") -> str:
+def getScrollValue(gevent: gdk.EventScroll, last: str = "") -> str:
 	"""Return value is either "up" or "down"."""
 	value = gevent.direction.value_nick
 	# gevent.delta_x is always 0
@@ -146,5 +147,10 @@ def getOrientation(vertical: bool) -> gtk.Orientation:
 
 class MenuItem(gtk.MenuItem):
 	def __init__(self, label: str = "") -> None:
+		self.text = label
 		gtk.MenuItem.__init__(self, label=label)
 		self.set_use_underline(True)
+
+
+class Dialog(gtk.Dialog):
+	vbox: gtk.Box  # type: ignore[assignment]

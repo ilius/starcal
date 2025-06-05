@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from scal3 import core
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gtk
 
 __all__ = ["WeekDayComboBox"]
 
@@ -14,7 +14,7 @@ class WeekDayComboBox(gtk.ComboBox):
 		self.firstWeekDay = core.firstWeekDay.v
 		# ---
 		cell = gtk.CellRendererText()
-		pack(self, cell, True)
+		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 0)
 		# ---
 		for i in range(7):

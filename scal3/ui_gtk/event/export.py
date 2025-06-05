@@ -8,7 +8,7 @@ from scal3.event_lib import ev
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
@@ -22,20 +22,20 @@ __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExport
 class SingleGroupExportDialog(MyDialog):
 	def __init__(self, group: EventGroupType, **kwargs) -> None:
 		self._group = group
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
@@ -95,6 +95,7 @@ class SingleGroupExportDialog(MyDialog):
 	def save(self) -> None:
 		assert self._group.id is not None
 		fpath = self.fcw.get_filename()
+		assert fpath is not None
 		if self.radioJsonCompact.get_active():
 			text = dataToCompactJson(
 				ev.groups.exportData([self._group.id]),
@@ -114,28 +115,28 @@ class SingleGroupExportDialog(MyDialog):
 			)
 
 	def run(self) -> None:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+		if Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
 
 
 class MultiGroupExportDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export", ctx="window title"))
 		self.vbox.set_spacing(10)
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		# ----
 		hbox = HBox()
@@ -245,7 +246,7 @@ class MultiGroupExportDialog(MyDialog):
 				_file.write(text)
 
 	def run(self) -> None:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+		if Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
 
@@ -261,20 +262,20 @@ class EventListExportDialog(MyDialog):
 		self._idsList = idsList
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export Group"))  # , ctx="window title"
 		# ----
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Export", ctx="window action"),
-			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
@@ -331,6 +332,7 @@ class EventListExportDialog(MyDialog):
 
 	def save(self) -> None:
 		fpath = self.fcw.get_filename()
+		assert fpath is not None
 		# if self.radioIcs.get_active():
 		# 	pass
 
@@ -354,6 +356,6 @@ class EventListExportDialog(MyDialog):
 			_file.write(text)
 
 	def run(self) -> None:
-		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+		if Dialog.run(self) == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()

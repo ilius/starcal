@@ -38,10 +38,10 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 
 __all__ = [
-	"AICalsTreeview",
 	"ActiveCalsTreeView",
 	"ActiveInactiveCalsPrefItem",
 	"ActiveInactiveCalsPrefItemToolbar",
+	"ActiveInactveCalsTreeview",
 	"CalTypePrefItem",
 	"CheckStartupPrefItem",
 	"FixedSizeOrRatioPrefItem",
@@ -171,8 +171,9 @@ class WeekDayCheckListPrefItem(PrefItem):
 		mainBox = self._widget
 		for child in mainBox.get_children():
 			mainBox.remove(child)
-			for child2 in child.get_children():
-				child.remove(child2)
+			if isinstance(child, gtk.Container):
+				for child2 in child.get_children():
+					child.remove(child2)
 		if self.twoRows:
 			box1 = newBox(self.vertical, self.homogeneous)
 			box2 = newBox(self.vertical, self.homogeneous)
@@ -279,16 +280,16 @@ class LangPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self.prop = locale_man.lang
 		# ---
-		ls = gtk.ListStore(str)
+		listStore = self.listStore = gtk.ListStore(str)
 		combo = gtk.ComboBox()
-		combo.set_model(ls)
+		combo.set_model(listStore)
 		# ---
 		cell = gtk.CellRendererText()
-		pack(combo, cell, True)
+		combo.pack_start(cell, expand=True)
 		combo.add_attribute(cell, "text", 0)
 		# ---
 		self._widget = combo
-		self.ls = ls
+		self.ls = listStore
 		self.ls.append([_("System Setting")])
 		for langObj in langDict.values():
 			# isinstance(langObj, locale_man.LangData)
@@ -349,22 +350,26 @@ class CheckStartupPrefItem(PrefItem):  # FIXME
 		)
 
 
-class AICalsTreeview(gtk.TreeView):
+class ActiveInactveCalsTreeview(gtk.TreeView):
+	dragId = 100
+	title = ""
+
 	def __init__(self) -> None:
 		gtk.TreeView.__init__(self)
 		self.set_headers_clickable(False)
-		self.set_model(gtk.ListStore(str, str))
+		self.listStore = gtk.ListStore(str, str)
+		self.set_model(self.listStore)
 		# ---
 		self.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
-				("row", gtk.TargetFlags.SAME_APP, self.dragId),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_APP, self.dragId),
 			],
 			gdk.DragAction.MOVE,
 		)
 		self.enable_model_drag_dest(
 			[
-				("row", gtk.TargetFlags.SAME_APP, self.dragId),
+				gtk.TargetEntry.new("row", gtk.TargetFlags.SAME_APP, self.dragId),
 			],
 			gdk.DragAction.MOVE,
 		)
@@ -402,38 +407,39 @@ class AICalsTreeview(gtk.TreeView):
 		_etime: int,
 	) -> None:
 		srcTreev = gtk.drag_get_source_widget(context)
-		if not isinstance(srcTreev, AICalsTreeview):
+		if not isinstance(srcTreev, ActiveInactveCalsTreeview):
 			return
 		srcDragId = srcTreev.dragId
-		model = treev.get_model()
+		model = self.listStore
 		dest = treev.get_dest_row_at_pos(x, y)
 		if srcDragId == self.dragId:
-			path, _col = treev.get_cursor()
-			if path is None:
+			pathObj, _col = treev.get_cursor()
+			if pathObj is None:
 				return
+			path = pathObj.get_indices()
 			i = path[0]
 			if dest is None:
 				model.move_after(
-					model.get_iter(i),
-					model.get_iter(len(model) - 1),
+					model.get_iter(str(i)),
+					model.get_iter(str(len(model) - 1)),
 				)
 			elif dest[1] in {
 				gtk.TreeViewDropPosition.BEFORE,
 				gtk.TreeViewDropPosition.INTO_OR_BEFORE,
 			}:
 				model.move_before(
-					model.get_iter(i),
-					model.get_iter(dest[0][0]),
+					model.get_iter(str(i)),
+					model.get_iter(str(dest[0].get_indices()[0])),
 				)
 			else:
 				model.move_after(
-					model.get_iter(i),
-					model.get_iter(dest[0][0]),
+					model.get_iter(str(i)),
+					model.get_iter(str(dest[0].get_indices()[0])),
 				)
 		else:
-			smodel = srcTreev.get_model()
+			smodel = srcTreev.listStore
 			sIter = smodel.get_iter(srcTreev.dragPath)
-			row = [smodel.get(sIter, j)[0] for j in range(2)]
+			row = [smodel.get(sIter, [str(j)])[0] for j in range(2)]
 			smodel.remove(sIter)
 			if dest is None:
 				model.append(row)
@@ -459,16 +465,16 @@ class AICalsTreeview(gtk.TreeView):
 		return swin
 
 
-class ActiveCalsTreeView(AICalsTreeview):
+class ActiveCalsTreeView(ActiveInactveCalsTreeview):
 	isActive = True
 	title = _("Active")
-	dragId = 100
+	dragId = 101
 
 
-class InactiveCalsTreeView(AICalsTreeview):
+class InactiveCalsTreeView(ActiveInactveCalsTreeview):
 	isActive = False
 	title = _("Inactive")
-	dragId = 101
+	dragId = 102
 
 
 class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
@@ -543,38 +549,38 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self._widget = HBox()
 		# --------
-		treev = ActiveCalsTreeView()
-		treev.connect("row-activated", self.activeTreevRActivate)
-		treev.connect("focus-in-event", self.activeTreevFocus)
-		treev.connect("cursor-changed", self.activeTreevFocus)
-		treev.get_selection().connect(
+		activeTreev = ActiveCalsTreeView()
+		activeTreev.connect("row-activated", self.activeTreevRActivate)
+		activeTreev.connect("focus-in-event", self.activeTreevFocus)
+		activeTreev.connect("cursor-changed", self.activeTreevFocus)
+		activeTreev.get_selection().connect(
 			"changed",
 			self.activeTreevSelectionChanged,
 		)
 		# ---
-		pack(self._widget, treev.makeSwin(), 1, 1)
+		pack(self._widget, activeTreev.makeSwin(), 1, 1)
 		# ----
-		self.activeTreev = treev
-		self.activeTrees = treev.get_model()
+		self.activeTreev = activeTreev
+		self.activeTrees = activeTreev.listStore
 		# --------
 		toolbar = ActiveInactiveCalsPrefItemToolbar(self)
 		toolbar.show_all()
 		self.toolbar = toolbar
 		pack(self._widget, toolbar)
 		# --------
-		treev = InactiveCalsTreeView()
-		treev.connect("row-activated", self.inactiveTreevRActivate)
-		treev.connect("focus-in-event", self.inactiveTreevFocus)
-		treev.connect("cursor-changed", self.inactiveTreevFocus)
-		treev.get_selection().connect(
+		inactiveTreev = InactiveCalsTreeView()
+		inactiveTreev.connect("row-activated", self.inactiveTreevRActivate)
+		inactiveTreev.connect("focus-in-event", self.inactiveTreevFocus)
+		inactiveTreev.connect("cursor-changed", self.inactiveTreevFocus)
+		inactiveTreev.get_selection().connect(
 			"changed",
 			self.inactiveTreevSelectionChanged,
 		)
 		# ---
-		pack(self._widget, treev.makeSwin(), 1, 1)
+		pack(self._widget, inactiveTreev.makeSwin(), 1, 1)
 		# ----
-		self.inactiveTreev = treev
-		self.inactiveTrees = treev.get_model()
+		self.inactiveTreev = inactiveTreev
+		self.inactiveTrees = inactiveTreev.listStore
 		# --------
 
 	def activeTreevFocus(
@@ -596,12 +602,14 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 	def onLeftRightClick(self, _obj: gtk.Button | None = None) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
-			model, iter_ = self.inactiveTreev.get_selection()
+			selection = self.inactiveTreev.get_selection()
+			model, iter_ = selection.get_selected()
 			if iter_:
 				self.activateIndex(model.get_path(iter_).get_indices()[0])
 		elif action == "inactivate":
 			if len(self.activeTrees) > 1:
-				model, iter_ = self.activeTrees.get_selection()
+				selection = self.inactiveTreev.get_selection()
+				model, iter_ = selection.get_selected()
 				if iter_:
 					self.inactivateIndex(model.get_path(iter_).get_indices()[0])
 
@@ -624,9 +632,9 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		i = model.get_path(iter_).get_indices()[0]
 		if i <= 0:
 			return
-		model.swap(
-			model.get_iter(i - 1),
-			model.get_iter(i),
+		model.swap(  # type: ignore[attr-defined]
+			model.get_iter(str(i - 1)),
+			model.get_iter(str(i)),
 		)
 		selection.select_path(gtk.TreePath.new_from_indices((i - 1,)))
 
@@ -641,9 +649,9 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		i = model.get_path(iter_).get_indices()[0]
 		if i >= len(model) - 1:
 			return
-		model.swap(
-			model.get_iter(i),
-			model.get_iter(i + 1),
+		model.swap(  # type: ignore[attr-defined]
+			model.get_iter(str(i)),
+			model.get_iter(str(i + 1)),
 		)
 		selection.select_path(gtk.TreePath.new_from_indices((i + 1,)))
 
@@ -651,7 +659,7 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		if len(self.activeTrees) < 2:
 			log.warning("You need at least one active calendar type!")
 			return
-		self.inactiveTrees.prepend(list(self.activeTrees[index]))
+		self.inactiveTrees.prepend(list(self.activeTrees[index]))  # type: ignore[call-overload]
 		del self.activeTrees[index]
 		treeviewSelect(self.inactiveTreev, 0)
 		treeviewSelect(
@@ -665,7 +673,7 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		self.inactiveTreevFocus(self.inactiveTreev)
 
 	def activateIndex(self, index: int) -> None:
-		self.activeTrees.append(list(self.inactiveTrees[index]))
+		self.activeTrees.append(list(self.inactiveTrees[index]))  # type: ignore[call-overload]
 		del self.inactiveTrees[index]
 		treeviewSelect(self.activeTreev, len(self.activeTrees) - 1)
 		if len(self.inactiveTrees) > 0:
@@ -749,11 +757,11 @@ class KeyBindingPrefItem(PrefItem):
 		# ------
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		trees = gtk.ListStore(
+		listStore = self.listStore = gtk.ListStore(
 			str,  # key
 			str,  # action
 		)
-		treev.set_model(trees)
+		treev.set_model(listStore)
 		# ---
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Key"), cell_renderer=cell, text=0)
@@ -782,31 +790,32 @@ class KeyBindingPrefItem(PrefItem):
 		self._widget = swin
 
 	def onMenuModifyKeyClick(self, _menu: gtk.Menu, rowI: int) -> None:
-		trees = self.treev.get_model()
+		trees = self.listStore
 		row = trees[rowI]
 		print(f"Modify Key: {row=}")  # noqa: T201
 
 	# def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
-	# 	trees = self.treev.get_model()
+	# 	trees = self.listStore
 	# 	row = trees[rowI]
 	# 	print(f"Default Key: {row=}")
 
 	def onMenuDeleteClick(self, _menu: gtk.Menu, rowI: int) -> None:
-		trees = self.treev.get_model()
-		trees.remove(trees.get_iter(rowI))
+		trees = self.listStore
+		trees.remove(trees.get_iter(str(rowI)))
 
 	def onTreeviewButtonPress(
 		self,
 		_widget: gtk.Widget,
-		gevent: gdk.Event,
+		gevent: gdk.EventButton,
 	) -> bool | None:
 		from scal3.ui_gtk.menuitems import ImageMenuItem
 
 		b = gevent.button
-		cur = self.treeview.get_cursor()[0]
-		if not cur:
+		curObj = self.treeview.get_cursor()[0]
+		if not curObj:
 			return None
-		# cur is gtk.TreePath
+		# curObj is gtk.TreePath
+		cur = curObj.get_indices()
 		rowI = cur[0]
 		if b == 1:
 			pass
@@ -849,17 +858,17 @@ class KeyBindingPrefItem(PrefItem):
 		return False
 
 	def set(self, keys: dict[str, str]) -> None:
-		trees = self.treev.get_model()
+		trees = self.listStore
 		trees.clear()
 		for key, action in keys.items():
 			trees.append([key, action])
 
 	def get(self) -> dict[str, str]:
-		trees = self.treev.get_model()
-		keys = {}
+		trees = self.listStore
+		keys: dict[str, str] = {}
 		for row in trees:
 			if not row[0]:
 				continue
-			key, action = row
+			key, action = row  # type: ignore[misc]
 			keys[key] = action
 		return keys

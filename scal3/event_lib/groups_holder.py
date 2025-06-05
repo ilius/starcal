@@ -283,7 +283,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		for _hash, _fpath in iterObjectFiles(fs):
 			if _hash in eventHashSet:
 				continue
-			data = SObjBinaryModel.loadBinaryData(_hash, fs)
+			data = SObjBinaryModel.loadBinaryDict(_hash, fs)
 			if data.get("type") not in eventTypeSet:
 				continue
 			# newEventHashList.append(_hash)

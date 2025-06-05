@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from os.path import join
+from typing import Protocol
 
 from scal3 import ui
 from scal3.locale_man import rtl
@@ -12,7 +13,7 @@ from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 __all__ = ["CalObj"]
@@ -61,8 +62,21 @@ themeFileSet = {
 }
 
 
+class MainWinType(Protocol):
+	w: gtk.Window
+
+	def childButtonPress(
+		self,
+		widget: gtk.Widget,  # noqa: ARG002
+		gevent: gdk.Event,
+	) -> bool: ...
+	def toggleMinimized(self, gevent: gdk.EventButton) -> None: ...
+	def toggleMaximized(self, _ge: gdk.EventButton) -> None: ...
+	def toggleWidthMaximized(self, _ge: gdk.EventButton) -> None: ...
+
+
 @registerSignals
-class WinConButton(gtk.EventBox, CustomizableCalObj):
+class WinConButton(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 	hasOptions = False
 	expand = False
 
@@ -124,27 +138,27 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("button-release-event", self.onButtonRelease)
 		set_tooltip(self, self.desc)  # FIXME
 
-	def enterNotify(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
+	def enterNotify(self, _w: gtk.Widget, _ge: gdk.EventMotion) -> None:
 		self.setFocus(True)
 
-	def leaveNotify(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
+	def leaveNotify(self, _w: gtk.Widget, _ge: gdk.EventMotion) -> bool:
 		if self.controller.winFocused:
 			self.setFocus(False)
 		else:
 			self.setInactive()
 		return False
 
-	def onButtonPress(self, _w: gtk.Widget, _ge: gdk.ButtonEvent) -> bool:
+	def onButtonPress(self, _w: gtk.Widget, _ge: gdk.EventButton) -> bool:
 		self.setPressed()
 		return True
 
-	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:
+	def onClick(self, win: MainWinType, gevent: gdk.EventButton) -> None:
 		pass
 
-	def onRightClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:
+	def onRightClick(self, win: MainWinType, gevent: gdk.EventButton) -> None:
 		pass
 
-	def onButtonRelease(self, _b: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onButtonRelease(self, _b: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
@@ -162,8 +176,8 @@ class WinConButtonMin(WinConButton):
 	imageNameInactive = "minimize-inactive"
 	imageNamePress = "minimize-press"
 
-	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
-		gWin.toggleMinimized(gevent)
+	def onClick(self, win: MainWinType, gevent: gdk.EventButton) -> None:  # noqa: PLR6301
+		win.toggleMinimized(gevent)
 
 
 class WinConButtonMax(WinConButton):
@@ -174,11 +188,11 @@ class WinConButtonMax(WinConButton):
 	imageNameInactive = "maximize-inactive"
 	imageNamePress = "maximize-press"
 
-	def onClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
-		gWin.toggleMaximized(gevent)
+	def onClick(self, win: MainWinType, gevent: gdk.EventButton) -> None:  # noqa: PLR6301
+		win.toggleMaximized(gevent)
 
-	def onRightClick(self, gWin: gtk.Window, gevent: gdk.Event) -> None:  # noqa: PLR6301
-		gWin.toggleWidthMaximized(gevent)
+	def onRightClick(self, win: MainWinType, gevent: gdk.EventButton) -> None:  # noqa: PLR6301
+		win.toggleWidthMaximized(gevent)
 
 
 class WinConButtonClose(WinConButton):
@@ -189,8 +203,8 @@ class WinConButtonClose(WinConButton):
 	imageNameInactive = "close-inactive"
 	imageNamePress = "close-press"
 
-	def onClick(self, gWin: gtk.Window, _ge: gdk.Event) -> None:  # noqa: PLR6301
-		gWin.emit("delete-event", gdk.Event())
+	def onClick(self, win: MainWinType, _ge: gdk.EventButton) -> None:  # noqa: PLR6301
+		win.w.emit("delete-event", gdk.Event())
 
 
 class WinConButtonRightPanel(WinConButton):
@@ -205,8 +219,8 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNamePress = f"{direc}-press"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin: gtk.Window, _ge: gdk.Event) -> None:  # noqa: PLR6301
-		gWin.emit("toggle-right-panel")
+	def onClick(self, win: MainWinType, _ge: gdk.EventButton) -> None:  # noqa: PLR6301
+		win.w.emit("toggle-right-panel")
 
 
 class WinConButtonSep(WinConButton):
@@ -230,7 +244,7 @@ class WinConButtonSep(WinConButton):
 
 
 @registerSignals
-class CalObj(gtk.Box, CustomizableCalBox):
+class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 	vertical = False
 	hasOptions = True
 	itemHaveOptions = False
@@ -245,7 +259,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 	)
 	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		self.win = win
 		gtk.Box.__init__(
 			self,
@@ -257,7 +271,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
-		self.light = ud.hasLightTheme(win)
+		self.light = ud.hasLightTheme(win.w)
 		# -----------
 		for bname, enable in conf.winControllerButtons.v:
 			button = self.buttonClassDict[bname](self)
@@ -265,8 +279,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			self.appendItem(button)
 		self.set_property("can-focus", True)
 		# ------------------
-		if win:
-			win.winCon = self  # dirty FIXME
+		# if win:
+		# 	win.winCon = self  # dirty FIXME REMOVE
 		# gWin.connect("focus-in-event", self.windowFocusIn)
 		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
@@ -295,7 +309,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		CustomizableCalBox.updateVars(self)
 		conf.winControllerButtons.v = self.getItemsData()
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			ComboTextPrefItem,
@@ -315,10 +329,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		prefItem = FloatSpinPrefItem(
+		prefItem = IntSpinPrefItem(
 			prop=conf.winControllerIconSize,
 			bounds=(5, 128),
-			digits=1,
 			step=1,
 			label=_("Icon Size"),
 			live=True,

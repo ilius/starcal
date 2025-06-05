@@ -39,7 +39,7 @@ __all__ = ["WidgetClass"]
 
 
 class WidgetClass(common.WidgetClass):
-	event: WeeklyEvent
+	_event: WeeklyEvent
 
 	def __init__(self, event: WeeklyEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
@@ -97,23 +97,23 @@ class WidgetClass(common.WidgetClass):
 		# self.notificationBox = common.NotificationBox(event)
 		# pack(self, self.notificationBox)
 		# -------------
-		# self.filesBox = common.FilesBox(self.event)
+		# self.filesBox = common.FilesBox(self._event)
 		# pack(self, self.filesBox)
 
 	def updateWidget(self) -> None:  # FIXME
 		common.WidgetClass.updateWidget(self)
-		calType = self.event.calType
+		calType = self._event.calType
 		# ---
-		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
+		self.startDateInput.set_value(jd_to(self._event.getStartJd(), calType))
 		# ---
-		cycleWeeks = CycleWeeksEventRule.getFrom(self.event)
+		cycleWeeks = CycleWeeksEventRule.getFrom(self._event)
 		if cycleWeeks is None:
 			raise RuntimeError("no cycleWeeks rule")
 		self.weeksSpin.set_value(cycleWeeks.weeks)
 		# ---
-		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
+		self.endDateInput.set_value(jd_to(self._event.getEndJd(), calType))
 		# ---
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self._event)
 		assert dayTimeRange is not None
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
@@ -121,22 +121,22 @@ class WidgetClass(common.WidgetClass):
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		# ---
-		start = StartEventRule.getFrom(self.event)
+		start = StartEventRule.getFrom(self._event)
 		if start is None:
 			raise RuntimeError("no start rule")
 		start.setDate(self.startDateInput.getDate())
 		# ---
-		end = EndEventRule.getFrom(self.event)
+		end = EndEventRule.getFrom(self._event)
 		if end is None:
 			raise RuntimeError("no end rule")
 		end.setDate(self.endDateInput.getDate())
 		# ---
-		cycleWeeks = self.event["cycleWeeks"]
+		cycleWeeks = self._event["cycleWeeks"]
 		if cycleWeeks is None:
 			raise RuntimeError("no cycleWeeks rule")
 		cycleWeeks.setRuleValue(self.weeksSpin.get_value())
 		# ---
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self.event)
+		dayTimeRange = DayTimeRangeEventRule.getFrom(self._event)
 		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")
 		h1, m1 = self.dayTimeStartInput.get_value()
@@ -150,6 +150,6 @@ class WidgetClass(common.WidgetClass):
 		# overwrite method from common.WidgetClass
 		newCalType = self.calTypeCombo.get_active()
 		assert newCalType is not None
-		self.startDateInput.changeCalType(self.event.calType, newCalType)
-		self.endDateInput.changeCalType(self.event.calType, newCalType)
-		self.event.calType = newCalType
+		self.startDateInput.changeCalType(self._event.calType, newCalType)
+		self.endDateInput.changeCalType(self._event.calType, newCalType)
+		self._event.calType = newCalType

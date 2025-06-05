@@ -25,7 +25,7 @@ log = logger.get()
 from scal3 import core, locale_man, ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
@@ -38,7 +38,7 @@ __all__ = ["StarCalendarRegisterDialog"]
 
 class StarCalendarRegisterDialog(MyDialog):
 	def __init__(self, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		# ---
 		self.set_title(_("Register at StarCalendar.net"))
 		self.resize(600, 300)
@@ -49,7 +49,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		self.buttonBox = MyHButtonBox()
 		self.okButton = self.buttonBox.add_ok(self.onOkClick)
 		self.cancelButton = self.buttonBox.add_cancel(self.onCancelClick)
-		self.vbox.pack_end(self.buttonBox, 0, 0, 0)
+		self.vbox.pack_end(self.buttonBox, expand=False, fill=False, padding=0)
 		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
@@ -99,7 +99,8 @@ class StarCalendarRegisterDialog(MyDialog):
 		label = gtk.Label()
 		label.set_xalign(0)
 		# make text color red
-		label.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
+		labelColor = gdk.Color(65535, 0, 0)  # type: ignore[call-arg]
+		label.modify_fg(gtk.StateType.NORMAL, labelColor)
 		pack(hbox, label, 0, 0)
 		pack(self.vbox, hbox, 0, 0, 10)
 		self.errorLabel = label

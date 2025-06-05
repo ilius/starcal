@@ -23,18 +23,18 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.customize import CustomizableCalObj
 
-__all__ = ["MyStack", "StackPage"]
+__all__ = ["MyStack", "StackPage", "StackPageButton"]
 
 
 class StackPage:
 	def __init__(self) -> None:
-		self.pageWidget: gtk.Widget | None = None
+		self.pageWidget: gtk.Box | None = None
 		self.pageParent = ""
 		self.pageName = ""
 		self.pagePath = ""
@@ -82,7 +82,7 @@ class MyStack(gtk.Stack):
 		self._titleCentered = False
 		# ---
 		self._windowTitleEnable = False
-		self._window = None
+		self._window: gtk.Window | None = None
 		self._windowTitleMain = ""
 		self._windowTitleMainFirst = False
 
@@ -118,7 +118,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMain = mainTitle
 		self._windowTitleMainFirst = mainTitleFirst
 
-	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def onKeyPress(self, _w: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
@@ -129,16 +129,16 @@ class MyStack(gtk.Stack):
 
 	def _setSlideForward(self) -> None:
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_DOWN
+			gtk.StackTransitionType.SLIDE_DOWN
 			if self._verticalSlide
-			else gtk.RevealerTransitionType.SLIDE_LEFT,
+			else gtk.StackTransitionType.SLIDE_LEFT,
 		)
 
 	def _setSlideBackward(self) -> None:
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_UP
+			gtk.StackTransitionType.SLIDE_UP
 			if self._verticalSlide
-			else gtk.RevealerTransitionType.SLIDE_RIGHT,
+			else gtk.StackTransitionType.SLIDE_RIGHT,
 		)
 
 	def _newHeaderBox(
@@ -270,3 +270,27 @@ class MyStack(gtk.Stack):
 		self._currentPagePath = path
 		self._setPageWindowTitle(path)
 		return True
+
+
+class StackPageButton(gtk.Button):
+	def __init__(
+		self,
+		label: gtk.Label,
+		vertical: bool,
+		borderWidth: int,
+		spacing: int,
+		icon: str | None,
+	) -> None:
+		gtk.Button.__init__(self)
+		self.label = label
+		hbox = gtk.Box(
+			orientation=getOrientation(vertical),
+			spacing=spacing,
+		)
+		hbox.set_border_width(borderWidth)
+		pack(hbox, gtk.Label(), 1, 1)
+		if icon:
+			pack(hbox, imageFromFile(icon, size=conf.stackIconSize.v))
+		pack(hbox, label, 0, 0)
+		pack(hbox, gtk.Label(), 1, 1)
+		self.add(hbox)

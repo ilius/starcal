@@ -12,7 +12,7 @@ __all__ = ["CalObj"]
 
 
 @registerSignals
-class CalObj(gtk.Frame, CustomizableCalObj):
+class CalObj(gtk.Frame, CustomizableCalObj):  # type: ignore[misc]
 	objName = "yearPBar"
 	desc = _("Year Progress Bar")
 	itemListCustomizable = False
@@ -24,8 +24,8 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
 		self.set_border_width(0)
 		self.pbar = MyProgressBar()
-		self.add(self.pbar)
-		self.pbar.show()
+		self.add(self.pbar.w)
+		self.pbar.w.show()
 		self.initVars()
 
 	def onDateChange(self, *a, **kw) -> None:

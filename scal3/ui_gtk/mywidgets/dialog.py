@@ -17,14 +17,20 @@ __all__ = ["MyDialog", "MyWindow"]
 
 
 def newCursor(cursor_type: gdk.CursorType) -> gdk.Cursor:
-	return gdk.Cursor.new_for_display(ud.display, cursor_type)
+	cur = gdk.Cursor.new_for_display(ud.display, cursor_type)
+	assert cur is not None
+	return cur
 
 
 class MyWindow(gtk.Window):
+	vbox: gtk.Box
+
 	def startWaiting(self) -> None:
 		self.queue_draw()
 		self.vbox.set_sensitive(False)
-		self.get_window().set_cursor(newCursor(gdk.CursorType.WATCH))
+		win = self.get_window()
+		assert win is not None
+		win.set_cursor(newCursor(gdk.CursorType.WATCH))
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 
@@ -51,5 +57,5 @@ class MyWindow(gtk.Window):
 		return result
 
 
-class MyDialog(gtk.Dialog, MyWindow):
-	pass
+class MyDialog(gtk.Dialog, MyWindow):  # type: ignore[misc]
+	vbox: gtk.Box  # type: ignore[assignment]

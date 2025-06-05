@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
 
@@ -26,10 +31,15 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		# self.setIconFile("starcal.svg")
 
 	def getMenuPos(self) -> tuple[int, int]:
-		wcal = self.get_parent().get_parent()
+		parent = self.get_parent()
+		assert parent is not None
+		wcal = parent.get_parent()
+		assert wcal is not None
 		w = self.get_allocation().width
 		h = self.get_allocation().height
-		x0, y0 = self.translate_coordinates(wcal, 0, 0)
+		coords = self.translate_coordinates(wcal, 0, 0)
+		assert coords is not None
+		x0, y0 = coords
 		return (
 			x0 + w // 2,
 			y0 + h // 2,
@@ -38,15 +48,20 @@ class MainMenuToolBoxItem(ToolBoxItem):
 	def onButtonPress(
 		self,
 		_widget: gtk.Widget,
-		gevent: gdk.ButtonEvent,
+		gevent: gdk.EventButton,
 	) -> None:
 		toolbar = self.get_parent()
-		x, y = self.translate_coordinates(
-			toolbar.get_parent(),
-			gevent.x,
-			gevent.y,
+		assert toolbar is not None
+		wcal = toolbar.get_parent()
+		assert wcal is not None
+		coords = self.translate_coordinates(
+			wcal,
+			int(gevent.x),
+			int(gevent.y),
 		)
-		toolbar.get_parent().emit(
+		assert coords is not None
+		x, y = coords
+		wcal.emit(
 			"popup-main-menu",
 			x,
 			y,
@@ -141,7 +156,7 @@ class CalObj(CustomizableToolBox):
 	]
 	defaultItemsDict = {item.objName: item for item in defaultItems}
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
 		self.win = win
 		CustomizableToolBox.__init__(
 			self,

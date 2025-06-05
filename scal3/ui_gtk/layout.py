@@ -24,8 +24,8 @@ from typing import TYPE_CHECKING
 
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.stack import StackPage
-from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
+from scal3.ui_gtk.stack import StackPage, StackPageButton
+from scal3.ui_gtk.utils import imageFromIconName, setImageClassButton
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -54,11 +54,39 @@ class WinLayoutBase(CustomizableCalObj):
 		self.expand: bool = expand
 		self.enableParam = enableParam
 		# ----
-		self.optionsButtonBox: gtk.Widget | None = None
+		self.optionsButtonBox: gtk.Box | None = None
+		self.optionsButton: StackPageButton | None = None
+		self.optionsButtonEnable = True
 		self.subPages: list[StackPage] | None = None
 		# ----
 		CustomizableCalObj.__init__(self)
 		self.initVars()
+
+
+class CustomizableCalWidget(gtk.Widget, CustomizableCalObj):  # type: ignore
+	pass
+
+
+class MoveButton(gtk.Button):
+	def __init__(
+		self,
+		iconName: str,
+		styleClass: str,
+		size: gtk.IconSize,
+		action: str,
+	) -> None:
+		gtk.Button.__init__(self)
+		self.add(
+			imageFromIconName(
+				iconName,
+				size,
+			),
+		)
+		self.get_style_context().add_class("image-button")
+		self.set_can_focus(False)
+		if styleClass:
+			self.get_style_context().add_class(styleClass)
+		self.action = action
 
 
 class WinLayoutObj(WinLayoutBase):
@@ -74,7 +102,7 @@ class WinLayoutObj(WinLayoutBase):
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
-		initializer: Callable[[], CustomizableCalObj] | None = None,
+		initializer: Callable[[], CustomizableCalWidget] | None = None,
 	) -> None:
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")
@@ -92,14 +120,15 @@ class WinLayoutObj(WinLayoutBase):
 		self.buttonBorder = buttonBorder
 		self.labelAngle = labelAngle
 		self.initializer = initializer
-		self._item: CustomizableCalObj | None = None
+		self._item: CustomizableCalWidget | None = None
+		self.moveButton: MoveButton | None = None
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if self._item is None:
 			return False
 		return self._item.onKeyPress(arg, gevent)
 
-	def getWidget(self) -> gtk.Widget:
+	def getWidget(self) -> CustomizableCalWidget:
 		if self._item is not None:
 			return self._item
 		item = self.initializer()
@@ -114,23 +143,28 @@ class WinLayoutObj(WinLayoutBase):
 
 	def showHide(self) -> None:
 		WinLayoutBase.showHide(self)
-		button = self.optionsButtonBox
+		button = self.optionsButton
 		if not button:
 			return
+		enable = self.optionsButtonEnable
 		item = self.getWidget()
-		if button.enable != item.enable:
+		# FIXME: item.enable
+		itemEnable = item.enable  # type: ignore[attr-defined]
+		# buttonLabel = button.label
+		if enable != itemEnable:
 			label = self.desc
-			if not item.enable:
+			if not itemEnable:
 				label = "(" + label + ")"
+			# button.set_la
 			button.label.set_text(label)
-			button.enable = item.enable
+			self.optionsButtonEnable = itemEnable
 
 	def set_visible(self, visible: bool) -> None:
 		# does not need to do anything, because self._item is already
 		# a child, aka a memeber of self.items
 		pass
 
-	def getOptionsButtonBox(self) -> gtk.Widget:
+	def getOptionsButtonBox(self) -> gtk.Box:
 		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
@@ -147,7 +181,7 @@ class WinLayoutObj(WinLayoutBase):
 		page.pageItem = item
 		self.subPages = [page]
 		# assert self.vertical is not None
-		optionsButtonBox = newSubPageButton(
+		button = newSubPageButton(
 			item,
 			page,
 			vertical=self.vertical,
@@ -155,9 +189,12 @@ class WinLayoutObj(WinLayoutBase):
 			spacing=5,
 			labelAngle=self.labelAngle,
 		)
-		optionsButtonBox.enable = item.enable
-		self.optionsButtonBox = optionsButtonBox
-		return optionsButtonBox
+		self.optionsButtonEnable = item.enable
+		self.optionsButton = button
+		vbox = VBox()
+		pack(vbox, button, expand=True, fill=True)
+		self.optionsButtonBox = vbox
+		return vbox
 
 	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
@@ -199,6 +236,7 @@ class WinLayoutBox(WinLayoutBase):
 		for item in items:
 			self.appendItem(item)
 		# ---
+		self.items: list[WinLayoutObj]
 		self.itemsMovable = itemsMovable
 		self.itemsParam = itemsParam
 		self.buttonSpacing = buttonSpacing
@@ -250,38 +288,41 @@ class WinLayoutBox(WinLayoutBase):
 		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in itemNames]
 
-	def getOptionsButtonBox(self) -> gtk.Widget:
+	def getOptionsButtonBox(self) -> gtk.Box:
 		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
 
+		optionsButtonBox = gtk.Box(
+			orientation=getOrientation(self.vertical),
+			spacing=self.buttonSpacing,
+		)
+
 		if self.itemsMovable:
 			if not self.vertical:
 				raise ValueError("horizontal movable buttons are not supported")
-			optionsButtonBox = gtk.ListBox(
+			listBox = gtk.ListBox(
 				# spacing=self.buttonSpacing, # FIXME: does not seem to have it
 			)
 			for index, item in enumerate(self.items):
+				# item is instance of WinLayoutObj
 				childBox = item.getOptionsButtonBox()
 				hbox = HBox(spacing=0)
 				action = "down" if index == 0 else "up"
-				upButton = imageClassButton(
-					f"pan-{action}-symbolic",
-					action,
-					self.arrowSize,
+				moveButton = MoveButton(
+					iconName=f"pan-{action}-symbolic",
+					styleClass=action,
+					size=self.arrowSize,
+					action=action,
 				)
-				upButton.action = action
 				pack(hbox, childBox, 1, 1)
-				pack(hbox, upButton, 0, 0)
-				optionsButtonBox.insert(hbox, -1)
+				pack(hbox, moveButton, 0, 0)
+				listBox.insert(hbox, -1)
 				# ---
-				upButton.connect("clicked", self.onItemMoveClick, item)
-				item.upButton = upButton
+				moveButton.connect("clicked", self.onItemMoveClick, listBox, item)
+				item.moveButton = moveButton
+				pack(optionsButtonBox, listBox, True, True)
 		else:
-			optionsButtonBox = gtk.Box(
-				orientation=getOrientation(self.vertical),
-				spacing=self.buttonSpacing,
-			)
 			for item in self.items:
 				pack(
 					optionsButtonBox,
@@ -295,6 +336,7 @@ class WinLayoutBox(WinLayoutBase):
 	def onItemMoveClick(
 		self,
 		_b: gtk.Button,
+		listBox: gtk.ListBox,
 		item: WinLayoutBox | WinLayoutObj,
 	) -> None:
 		index = self.items.index(item)
@@ -304,21 +346,21 @@ class WinLayoutBox(WinLayoutBase):
 			newIndex = index - 1
 		self.moveItem(index, newIndex)
 		# ---
-		listBox = self.optionsButtonBox
-		assert listBox is not None
 		hbox = listBox.get_row_at_index(index)
+		assert hbox is not None
 		listBox.remove(hbox)
 		listBox.insert(hbox, newIndex)
 		for tmpIndex, tmpItem in enumerate(self.items):
 			action = "down" if tmpIndex == 0 else "up"
-			if tmpItem.upButton.action != action:
+			assert tmpItem.moveButton is not None
+			if tmpItem.moveButton.action != action:
 				setImageClassButton(
-					tmpItem.upButton,
+					tmpItem.moveButton,
 					f"pan-{action}-symbolic",
 					action,
 					self.arrowSize,
 				)
-				tmpItem.upButton.action = action
+				tmpItem.moveButton.action = action
 		self.onConfigChange()
 
 	def getSubPages(self) -> list[StackPage]:

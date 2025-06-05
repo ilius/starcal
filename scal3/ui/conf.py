@@ -241,10 +241,10 @@ mainWinItems: Property[list[tuple[str, bool]]] = Property(
 		("monthPBar", False),
 		("seasonPBar", True),
 		("yearPBar", False),
-	],
+	]
 )
 mainWinFooterItems: Property[list[str]] = Property(
-	["pluginsText", "eventDayView", "statusBar"],
+	["pluginsText", "eventDayView", "statusBar"]
 )
 pluginsTextEnable: Property[bool] = Property(False)
 pluginsTextInsideExpander: Property[bool] = Property(True)
@@ -256,7 +256,7 @@ statusBarEnable: Property[bool] = Property(True)
 statusBarDatesReverseOrder: Property[bool] = Property(False)
 statusBarDatesColorEnable: Property[bool] = Property(False)
 statusBarDatesColor: Property[ColorType] = Property(
-	RGBA(red=255, green=132, blue=255, alpha=255),
+	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 fontCustomEnable: Property[bool] = Property(False)
 fontCustom: Property[Font | None] = Property(None)
@@ -266,21 +266,21 @@ oldStyleProgressBar: Property[bool] = Property(False)
 bgColor: Property[ColorType] = Property(RGBA(red=26, green=0, blue=1, alpha=255))
 borderColor: Property[ColorType] = Property(RGBA(red=123, green=40, blue=0, alpha=255))
 borderTextColor: Property[ColorType] = Property(
-	RGBA(red=255, green=255, blue=255, alpha=255),
+	RGBA(red=255, green=255, blue=255, alpha=255)
 )
 textColor: Property[ColorType] = Property(RGBA(red=255, green=255, blue=255, alpha=255))
 holidayColor: Property[ColorType] = Property(
-	RGBA(red=255, green=160, blue=0, alpha=255),
+	RGBA(red=255, green=160, blue=0, alpha=255)
 )
 inactiveColor: Property[ColorType] = Property(
-	RGBA(red=255, green=255, blue=255, alpha=115),
+	RGBA(red=255, green=255, blue=255, alpha=115)
 )
 todayCellColor: Property[ColorType] = Property(RGBA(red=0, green=255, blue=0, alpha=50))
 cursorOutColor: Property[ColorType] = Property(
-	RGBA(red=213, green=207, blue=0, alpha=255),
+	RGBA(red=213, green=207, blue=0, alpha=255)
 )
 cursorBgColor: Property[ColorType] = Property(
-	RGBA(red=41, green=41, blue=41, alpha=255),
+	RGBA(red=41, green=41, blue=41, alpha=255)
 )
 showDigClockTr: Property[bool] = Property(True)
 statusIconImage: Property[str] = Property("status-icons/dark-green.svg")
@@ -308,9 +308,9 @@ winControllerButtons: Property[list[tuple[str, bool]]] = Property(
 		("sep", False),
 		("sep", False),
 		("sep", False),
-	],
+	]
 )
-winControllerIconSize: Property[float] = Property(24)
+winControllerIconSize: Property[int] = Property(24)
 winControllerBorder: Property[int] = Property(0)
 winControllerSpacing: Property[int] = Property(0)
 winControllerPressState: Property[bool] = Property(False)
@@ -330,22 +330,22 @@ mainWinRightPanelPluginsFontEnable: Property[bool] = Property(False)
 mainWinRightPanelPluginsFont: Property[Font | None] = Property(None)
 mainWinRightPanelPluginsJustification: Property[str] = Property("left")
 mainWinRightPanelResizeOnToggle: Property[bool] = Property(True)
-mainWinRightPanelBorderWidth: Property[float] = Property(7)
-mcalLeftMargin: Property[float] = Property(30)
-mcalTopMargin: Property[float] = Property(30)
+mainWinRightPanelBorderWidth: Property[int] = Property(7)
+mcalLeftMargin: Property[int] = Property(30)
+mcalTopMargin: Property[int] = Property(30)
 mcalTypeParams: Property[list[CalTypeParamsDict]] = Property(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 		{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
 		{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
-	],
+	]
 )
 mcalGrid: Property[bool] = Property(False)
 mcalGridColor: Property[ColorType] = Property(
-	RGBA(red=255, green=252, blue=0, alpha=82),
+	RGBA(red=255, green=252, blue=0, alpha=82)
 )
 mcalCornerMenuTextColor: Property[ColorType] = Property(
-	RGBA(red=255, green=255, blue=255, alpha=255),
+	RGBA(red=255, green=255, blue=255, alpha=255)
 )
 mcalCursorLineWidthFactor: Property[float] = Property(0.12)
 mcalCursorRoundingFactor: Property[float] = Property(0.5)
@@ -358,45 +358,45 @@ wcalItems: Property[list[tuple[str, bool]]] = Property(
 		("eventsIcon", True),
 		("eventsText", True),
 		("daysOfMonth", True),
-	],
+	]
 )
 wcalGrid: Property[bool] = Property(False)
 wcalGridColor: Property[ColorType] = Property(
-	RGBA(red=255, green=252, blue=0, alpha=82),
+	RGBA(red=255, green=252, blue=0, alpha=82)
 )
 wcalUpperGradientEnable: Property[bool] = Property(False)
 wcalUpperGradientColor: Property[ColorType] = Property(
-	RGBA(red=255, green=255, blue=255, alpha=60),
+	RGBA(red=255, green=255, blue=255, alpha=60)
 )
 wcal_eventsText_pastColorEnable: Property[bool] = Property(False)
 wcal_eventsText_pastColor: Property[ColorType] = Property(
-	RGBA(red=100, green=100, blue=100, alpha=50),
+	RGBA(red=100, green=100, blue=100, alpha=50)
 )
 wcal_eventsText_ongoingColorEnable: Property[bool] = Property(False)
 wcal_eventsText_ongoingColor: Property[ColorType] = Property(
-	RGBA(red=80, green=255, blue=80, alpha=255),
+	RGBA(red=80, green=255, blue=80, alpha=255)
 )
 wcal_eventsText_showDesc: Property[bool] = Property(False)
 wcal_eventsText_colorize: Property[bool] = Property(True)
 wcalFont_eventsText: Property[str | None] = Property(None)
 wcal_toolbar_weekNum_negative: Property[bool] = Property(False)
 wcal_toolbar_mainMenu_icon: Property[str] = Property("starcal.png")
-wcal_weekDays_width: Property[float] = Property(80)
+wcal_weekDays_width: Property[int] = Property(80)
 wcal_weekDays_expand: Property[bool] = Property(False)
 wcalFont_weekDays: Property[str | None] = Property(None)
 wcalFont_pluginsText: Property[str | None] = Property(None)
 wcal_pluginsText_firstLineOnly: Property[bool] = Property(False)
-wcal_eventsIcon_width: Property[float] = Property(50)
+wcal_eventsIcon_width: Property[int] = Property(50)
 wcalTypeParams: Property[list[WeekCalDayNumParamsDict]] = Property(
-	[{"font": None}, {"font": None}, {"font": None}],
+	[{"font": None}, {"font": None}, {"font": None}]
 )
 wcal_daysOfMonth_dir: Property[str] = Property("ltr")
-wcal_daysOfMonth_width: Property[float] = Property(30)
+wcal_daysOfMonth_width: Property[int] = Property(30)
 wcal_daysOfMonth_expand: Property[bool] = Property(False)
-wcal_eventsCount_width: Property[float] = Property(80)
+wcal_eventsCount_width: Property[int] = Property(80)
 wcal_eventsCount_expand: Property[bool] = Property(False)
 wcalFont_eventsBox: Property[str | None] = Property(None)
-wcal_moonStatus_width: Property[float] = Property(48)
+wcal_moonStatus_width: Property[int] = Property(48)
 wcal_moonStatus_southernHemisphere: Property[bool] = Property(False)
 wcalCursorLineWidthFactor: Property[float] = Property(0.12)
 wcalCursorRoundingFactor: Property[float] = Property(0.5)
@@ -427,7 +427,7 @@ dcalDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 			"xalign": "center",
 			"yalign": "center",
 		},
-	],
+	]
 )
 dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 	[
@@ -461,7 +461,7 @@ dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 			"abbreviate": False,
 			"uppercase": False,
 		},
-	],
+	]
 )
 dcalWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 	{
@@ -471,33 +471,33 @@ dcalWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 		"enable": False,
 		"xalign": "right",
 		"yalign": "buttom",
-	},
+	}
 )
 dcalNavButtonsEnable: Property[bool] = Property(True)
 dcalNavButtonsGeo: Property[ButtonGeoDict] = Property(
 	{
 		"auto_rtl": True,
-		"size": 64.0,
-		"spacing": 10.0,
+		"size": 64,
+		"spacing": 10,
 		"pos": (0, 20),
 		"xalign": "center",
 		"yalign": "buttom",
-	},
+	}
 )
 dcalNavButtonsOpacity: Property[float] = Property(0.7)
 dcalWeekdayLocalize: Property[bool] = Property(True)
 dcalWeekdayAbbreviate: Property[bool] = Property(False)
 dcalWeekdayUppercase: Property[bool] = Property(False)
-dcalEventIconSize: Property[float] = Property(20.0)
+dcalEventIconSize: Property[int] = Property(20)
 dcalEventTotalSizeRatio: Property[float] = Property(0.3)
 showDesktopWidget: Property[bool] = Property(False)
 dcalWinX: Property[int] = Property(0)
 dcalWinY: Property[int] = Property(0)
-dcalWinWidth: Property[float] = Property(180.0)
-dcalWinHeight: Property[float] = Property(180.0)
+dcalWinWidth: Property[int] = Property(180)
+dcalWinHeight: Property[int] = Property(180)
 dcalWinBackgroundColor: Property[ColorType] = Property(RGB(red=0, green=10, blue=0))
 dcalWinWidgetButtonsEnable: Property[bool] = Property(True)
-dcalWinWidgetButtonsSize: Property[float] = Property(16)
+dcalWinWidgetButtonsSize: Property[int] = Property(16)
 dcalWinWidgetButtonsOpacity: Property[float] = Property(1.0)
 dcalWinWeekdayLocalize: Property[bool] = Property(True)
 dcalWinWeekdayAbbreviate: Property[bool] = Property(False)
@@ -528,7 +528,7 @@ dcalWinDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 			"xalign": "right",
 			"yalign": "buttom",
 		},
-	],
+	]
 )
 dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 	[
@@ -562,7 +562,7 @@ dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 			"abbreviate": False,
 			"uppercase": False,
 		},
-	],
+	]
 )
 dcalWinWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 	{
@@ -572,9 +572,9 @@ dcalWinWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 		"enable": False,
 		"xalign": "right",
 		"yalign": "buttom",
-	},
+	}
 )
-dcalWinEventIconSize: Property[float] = Property(20.0)
+dcalWinEventIconSize: Property[int] = Property(20)
 dcalWinEventTotalSizeRatio: Property[float] = Property(0.3)
 dcalWinSeasonPieEnable: Property[bool] = Property(False)
 dcalWinSeasonPieGeo: Property[PieGeoDict] = Property(
@@ -585,36 +585,36 @@ dcalWinSeasonPieGeo: Property[PieGeoDict] = Property(
 		"xalign": "right",
 		"yalign": "top",
 		"startAngle": 270,
-	},
+	}
 )
 dcalWinSeasonPieSpringColor: Property[ColorType] = Property(
-	RGBA(red=167, green=252, blue=1, alpha=180),
+	RGBA(red=167, green=252, blue=1, alpha=180)
 )
 dcalWinSeasonPieSummerColor: Property[ColorType] = Property(
-	RGBA(red=255, green=254, blue=0, alpha=180),
+	RGBA(red=255, green=254, blue=0, alpha=180)
 )
 dcalWinSeasonPieAutumnColor: Property[ColorType] = Property(
-	RGBA(red=255, green=127, blue=0, alpha=180),
+	RGBA(red=255, green=127, blue=0, alpha=180)
 )
 dcalWinSeasonPieWinterColor: Property[ColorType] = Property(
-	RGBA(red=1, green=191, blue=255, alpha=180),
+	RGBA(red=1, green=191, blue=255, alpha=180)
 )
 dcalWinSeasonPieTextColor: Property[ColorType] = Property(
-	RGBA(red=255, green=255, blue=255, alpha=180),
+	RGBA(red=255, green=255, blue=255, alpha=180)
 )
 monthPBarCalType: Property[int] = Property(-1)
 seasonPBar_southernHemisphere: Property[bool] = Property(False)
 labelBoxBorderWidth: Property[int] = Property(0)
 labelBoxMenuActiveColor: Property[ColorType] = Property(
-	RGBA(red=0, green=255, blue=0, alpha=255),
+	RGBA(red=0, green=255, blue=0, alpha=255)
 )
 labelBoxYearColorEnable: Property[bool] = Property(False)
 labelBoxYearColor: Property[ColorType] = Property(
-	RGBA(red=255, green=132, blue=255, alpha=255),
+	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 labelBoxMonthColorEnable: Property[bool] = Property(False)
 labelBoxMonthColor: Property[ColorType] = Property(
-	RGBA(red=255, green=132, blue=255, alpha=255),
+	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 labelBoxFontEnable: Property[bool] = Property(False)
 labelBoxFont: Property[Font | None] = Property(None)
@@ -628,9 +628,9 @@ customizePagePath: Property[str] = Property("")
 localTzHist: Property[list[str]] = Property([])
 showDigClockTb: Property[bool] = Property(True)
 menuIconPadding: Property[int] = Property(7)
-eventTreeGroupIconSize: Property[float] = Property(24)
-treeIconSize: Property[float] = Property(22)
-labelBoxIconSize: Property[float] = Property(20)
+eventTreeGroupIconSize: Property[int] = Property(24)
+treeIconSize: Property[int] = Property(22)
+labelBoxIconSize: Property[int] = Property(20)
 stackIconSize: Property[int] = Property(22)
 dcalWidgetButtons: Property[list[dict[str, Any]]] = Property(
 	[
@@ -650,7 +650,7 @@ dcalWidgetButtons: Property[list[dict[str, Any]]] = Property(
 			"yalign": "buttom",
 			"autoDir": False,
 		},
-	],
+	]
 )
 dcalWinWidgetButtons: Property[list[dict[str, Any]]] = Property(
 	[
@@ -678,23 +678,23 @@ dcalWinWidgetButtons: Property[list[dict[str, Any]]] = Property(
 			"yalign": "buttom",
 			"autoDir": False,
 		},
-	],
+	]
 )
 menuIconEdgePadding: Property[int] = Property(3)
-rightPanelEventIconSize: Property[float] = Property(20)
-eventTreeIconSize: Property[float] = Property(22)
-menuEventCheckIconSize: Property[float] = Property(20)
-toolbarIconSize: Property[float] = Property(24)
-mcalEventIconSizeMax: Property[float] = Property(26)
-messageDialogIconSize: Property[float] = Property(48)
-menuCheckSize: Property[float] = Property(22)
-menuIconSize: Property[float] = Property(18)
-comboBoxIconSize: Property[float] = Property(20)
-imageInputIconSize: Property[float] = Property(32)
+rightPanelEventIconSize: Property[int] = Property(20)
+eventTreeIconSize: Property[int] = Property(22)
+menuEventCheckIconSize: Property[int] = Property(20)
+toolbarIconSize: Property[int] = Property(24)
+mcalEventIconSizeMax: Property[int] = Property(26)
+messageDialogIconSize: Property[int] = Property(48)
+menuCheckSize: Property[int] = Property(22)
+menuIconSize: Property[int] = Property(18)
+comboBoxIconSize: Property[int] = Property(20)
+imageInputIconSize: Property[int] = Property(32)
 maxWeekCacheSize: Property[int] = Property(12)
 wcalPadding: Property[int] = Property(10)
-buttonIconSize: Property[float] = Property(20)
-wcalEventIconSizeMax: Property[float] = Property(26)
+buttonIconSize: Property[int] = Property(20)
+wcalEventIconSizeMax: Property[int] = Property(26)
 eventWeekViewTimeFormat: Property[str] = Property("HM$")
 
 

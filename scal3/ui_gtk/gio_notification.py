@@ -16,19 +16,21 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from gi.repository import GdkPixbuf
 from gi.repository import Gio as gio
-from gi.repository import Gtk as gtk
 
 from scal3 import core
 
-# from scal3.ui_gtk.starcal import MainWin as MainWinType
+if TYPE_CHECKING:
+	from scal3.ui_gtk.starcal import MainWin
 
-type MainWinType = gtk.ApplicationWindow
+# from scal3.ui_gtk.starcal import MainWin as MainWinType
 
 
 class GioNotificationWrapper(gio.Notification):
-	def __init__(self, mainWin: MainWinType) -> None:
+	def __init__(self, mainWin: MainWin) -> None:
 		self.mainWin = mainWin
 		self.app = mainWin.app
 		# --

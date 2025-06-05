@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 
@@ -15,12 +15,15 @@ from scal3 import ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import HBox, VBox, gdk, pack
-from scal3.ui_gtk.wizard import WizardWindow
+from scal3.ui_gtk import Dialog, HBox, VBox, gdk, pack
+from scal3.ui_gtk.wizard import StepType, WizardWindow
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["EventsImportWindow"]
 
-type EventManagerType = gtk.Dialog
+type EventManagerType = Dialog
 
 
 class EventsImportWindow(WizardWindow):
@@ -37,17 +40,17 @@ class EventsImportWindow(WizardWindow):
 	class FirstStep(gtk.Box):
 		desc = ""
 
-		def getWidget(self) -> gtk.Widget:
+		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, win: gtk.Window) -> None:
+		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
-			self.buttons = (
+			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Cancel"), self.onCancelClick),
 				(_("Next"), self.onNextClick),
-			)
+			]
 			# ----
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
@@ -81,7 +84,7 @@ class EventsImportWindow(WizardWindow):
 			# ----
 			self.show_all()
 
-		def run(self) -> None:
+		def run(self, args: dict[str, Any]) -> None:
 			pass
 
 		def onCancelClick(self, _obj: Any) -> None:
@@ -97,22 +100,23 @@ class EventsImportWindow(WizardWindow):
 			# 	format_ = "ics"
 			else:
 				return
-			self.win.showStep(1, format_, fpath)
+			# setRunArgs()
+			self.win.showStep(1, {"format": format_, "fpath": fpath})
 
 	class SecondStep(gtk.Box):
 		desc = ""
 
-		def getWidget(self) -> gtk.Widget:
+		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, win: gtk.Window) -> None:
+		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
-			self.buttons = (
+			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Back"), self.onBackClick),
 				(_("Close"), self.onCloseClick),
-			)
+			]
 			# ----
 			self.textview = gtk.TextView()
 			pack(self, self.textview, 1, 1)
@@ -138,9 +142,13 @@ class EventsImportWindow(WizardWindow):
 			sys.stdout = sys.__stdout__
 			sys.stderr = sys.__stderr__
 
-		def run(self, format_: str, fpath: str) -> None:
+		def run(self, args: dict[str, Any]) -> None:
 			self.redirectStdOutErr()
-			self.win.waitingDo(self._runAndCleanup, format_, fpath)
+			self.win.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
+
+		def setRunArgs(self, format_: str, fpath: str) -> None:
+			self._format = format_
+			self._fpath = fpath
 
 		def _runAndCleanup(self, format_: str, fpath: str) -> None:
 			try:
@@ -194,6 +202,9 @@ class EventsImportWindow(WizardWindow):
 
 		def onCloseClick(self, _obj: Any) -> None:
 			self.win.destroy()
+
+	if TYPE_CHECKING:
+		_step: StepType = SecondStep(WizardWindow(""))
 
 	stepClasses = [
 		FirstStep,

@@ -42,7 +42,7 @@ class DateChangeListener:
 		# 	int(dayLen - (tm + getUtcOffsetCurrent()) % dayLen) + 1,
 		# 	self.check,
 		# )
-		timeout_add_seconds(self.timeout, self.check)
+		timeout_add_seconds(int(self.timeout), self.check)
 		if ui.mainWin:
 			ui.mainWin.statusIconUpdateTooltip()
 
