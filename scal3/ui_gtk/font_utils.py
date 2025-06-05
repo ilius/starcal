@@ -3,7 +3,7 @@ from __future__ import annotations
 from gi.repository import Gtk as gtk
 from gi.repository import Pango as pango
 
-from scal3 import ui
+from scal3.font import Font
 
 __all__ = [
 	"getFontFamilyList",
@@ -25,8 +25,8 @@ ITALIC = pango.Style.ITALIC
 # ITALIC = pango.STYLE_ITALIC
 
 
-def pfontDecode(pfont: pango.Font) -> ui.Font:
-	return ui.Font(
+def pfontDecode(pfont: pango.FontDescription) -> Font:
+	return Font(
 		family=pfont.get_family(),
 		bold=pfont.get_weight() == BOLD,
 		italic=pfont.get_style() == ITALIC,
@@ -34,21 +34,22 @@ def pfontDecode(pfont: pango.Font) -> ui.Font:
 	)
 
 
-def pfontEncode(font: ui.Font) -> pango.Font:
+def pfontEncode(font: Font) -> pango.FontDescription:
 	pfont = pango.FontDescription()
-	pfont.set_family(font.family)
+	if font.family:
+		pfont.set_family(font.family)
 	pfont.set_weight(BOLD if font.bold else W_NORMAL)
 	pfont.set_style(ITALIC if font.italic else S_NORMAL)
 	pfont.set_size(int(font.size * 1024))
 	return pfont
 
 
-def gfontDecode(gfont: str) -> ui.Font:
+def gfontDecode(gfont: str) -> Font:
 	# gfont is a string like "FreeSans 12"
-	return pfontDecode(pango.FontDescription(gfont))
+	return pfontDecode(pango.FontDescription.from_string(gfont))
 
 
-def gfontEncode(font: ui.Font) -> str:
+def gfontEncode(font: Font) -> str:
 	return pfontEncode(font).to_string()
 
 

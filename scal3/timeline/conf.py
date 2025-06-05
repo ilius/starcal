@@ -72,11 +72,11 @@ changeHolidayBg: Property[bool] = Property(False)
 changeHolidayBgMinDays: Property[int] = Property(1)
 changeHolidayBgMaxDays: Property[int] = Property(60)
 holidayBgBolor: Property[ColorType] = Property(RGB(red=60, green=35, blue=35))
-basicButtonsSize: Property[float] = Property(22)
+basicButtonsSize: Property[int] = Property(22)
 basicButtonsSpacing: Property[float] = Property(3)
 basicButtonsOpacity: Property[float] = Property(1.0)
 movementButtonsEnable: Property[bool] = Property(True)
-movementButtonsSize: Property[float] = Property(22)
+movementButtonsSize: Property[int] = Property(22)
 movementButtonsOpacity: Property[float] = Property(1.0)
 majorStepMin: Property[float] = Property(50)
 minorStepMin: Property[float] = Property(5)
@@ -91,7 +91,7 @@ truncateTickLabel: Property[bool] = Property(False)
 currentTimeMarkerHeightRatio: Property[float] = Property(0.3)
 currentTimeMarkerWidth: Property[float] = Property(2)
 currentTimeMarkerColor: Property[ColorType] = Property(
-	RGB(red=255, green=100, blue=100),
+	RGB(red=255, green=100, blue=100)
 )
 showWeekStart: Property[bool] = Property(True)
 showWeekStartMinDays: Property[int] = Property(1)
@@ -108,7 +108,7 @@ rotateBoxLabel: Property[int] = Property(-1)
 enableAnimation: Property[bool] = Property(False)
 movingStaticStepKeyboard: Property[float] = Property(20)
 movingStaticStepMouse: Property[float] = Property(20)
-movingUpdateTime: Property[float] = Property(10)
+movingUpdateTime: Property[int] = Property(10)
 movingInitialVelocity: Property[float] = Property(0)
 movingHandForceMouse: Property[float] = Property(1100)
 movingHandForceKeyboard: Property[float] = Property(1100)
@@ -134,7 +134,7 @@ keys: Property[dict[str, str]] = Property(
 		"kp_add": "zoomIn",
 		"minus": "zoomOut",
 		"kp_subtract": "zoomOut",
-	},
+	}
 )
 
 

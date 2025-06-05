@@ -2,7 +2,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 
 
 def getDateTimeWidget():
@@ -50,9 +50,9 @@ def getTimerWidget():
 
 
 if __name__ == "__main__":
-	d = gtk.Dialog()
+	d = Dialog()
 	btn = getFloatWidget()
-	pack(d.vbox, btn, 1, 1)
+	pack(d.vbox, btn, True, True)
 	d.vbox.show_all()
 	d.run()
 	log.info(btn.get_value())

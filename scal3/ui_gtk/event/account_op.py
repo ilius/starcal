@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from scal3 import event_lib
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
-from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk.event import EventWidgetType, makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
@@ -16,28 +16,30 @@ if TYPE_CHECKING:
 __all__ = ["AccountEditorDialog"]
 
 
-class AccountEditorDialog(gtk.Dialog):
+class AccountEditorDialog(Dialog):
+	vbox: gtk.Box  # type: ignore[assignment]
+
 	def __init__(self, account: AccountType | None = None, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Account") if account else _("Add New Account"))
 		# ---
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
+			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),
-			res=gtk.ResponseType.OK,
 		)
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
 		# -------
 		self.account = account
-		self.activeWidget = None
+		self.activeWidget: EventWidgetType | None = None
 		# -------
 		hbox = HBox()
 		combo = gtk.ComboBoxText()
@@ -82,12 +84,13 @@ class AccountEditorDialog(gtk.Dialog):
 			account.title = cls.desc  # FIXME
 		self.account = account
 		self.activeWidget = makeWidget(account)
-		pack(self.vbox, self.activeWidget)
+		assert self.activeWidget is not None
+		pack(self.vbox, self.activeWidget.w)
 
 	def run(self) -> AccountType | None:
 		if self.activeWidget is None or self.account is None:
 			return None
-		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
+		if Dialog.run(self) != gtk.ResponseType.OK:
 			return None
 		self.activeWidget.updateVars()
 		self.account.save()
@@ -99,7 +102,7 @@ class AccountEditorDialog(gtk.Dialog):
 		return self.account
 
 
-class FetchRemoteGroupsDialog(gtk.Dialog):
+class FetchRemoteGroupsDialog(Dialog):
 	def __init__(self, account: Account, **kwargs) -> None:
-		gtk.Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, **kwargs)
 		self.account = account

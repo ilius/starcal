@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 from scal3 import logger
 
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import BaseClassType, EventGroupType
 
 __all__ = [
+	"EventWidgetType",
 	"makeWidget",
 	"setActionFuncs",
 ]
@@ -38,17 +39,23 @@ def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 	return WidgetClass
 
 
-def makeWidget(obj: BaseClassType) -> gtk.Widget | None:
+class EventWidgetType(Protocol):
+	w: gtk.Widget
+
+	def updateWidget(self) -> None: ...
+	def updateVars(self) -> None: ...
+	def show(self) -> None: ...
+	def destroy(self) -> None: ...
+
+
+def makeWidget(obj: BaseClassType) -> EventWidgetType | None:
 	"""Obj is an instance of Event, EventRule, EventNotifier or EventGroup."""
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
 		return None
-	widget = WidgetClass(obj)
-	try:
-		widget.show_all()
-	except AttributeError:
-		widget.show()
-	widget.updateWidget()  # FIXME
+	widget: EventWidgetType = WidgetClass(obj)  # type: ignore
+	widget.show()
+	widget.updateWidget()
 	return widget
 
 

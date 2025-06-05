@@ -29,12 +29,12 @@ class SourceEditor(GtkSource.View):
 		if onTextChange is not None:
 			self.textbuffer.connect("changed", onTextChange)
 
-	def _key_press_event(self, _w: gtk.Widget, gevent: gdk.Event) -> None:
-		keyvalobjName = gdk.keyval_name(gevent.keyval)
+	def _key_press_event(self, _w: gtk.Widget, gevent: gdk.EventKey) -> None:
+		keyName = gdk.keyval_name(gevent.keyval)
 		ctrl = gevent.state & gdk.ModifierType.CONTROL_MASK
-		if ctrl and keyvalobjName == "y":  # noqa: SIM102
-			if self.textbuffer.can_redo():
-				self.textbuffer.do_redo(self.textbuffer)
+		if ctrl and keyName == "y":  # noqa: SIM102
+			if self.textbuffer.can_redo():  # type: ignore[attr-defined]
+				self.textbuffer.do_redo(self.textbuffer)  # type: ignore[attr-defined]
 
 
 class SourceEditorWithFrame(gtk.Frame):

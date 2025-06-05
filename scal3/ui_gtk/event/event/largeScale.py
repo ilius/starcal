@@ -7,7 +7,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import Dialog, HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
@@ -21,7 +21,7 @@ maxDur = 99999
 
 
 class WidgetClass(common.WidgetClass):
-	event: LargeScaleEvent
+	_event: LargeScaleEvent
 
 	def __init__(self, event: LargeScaleEvent) -> None:  # FIXME
 		common.WidgetClass.__init__(self, event)
@@ -80,23 +80,23 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self) -> None:
 		common.WidgetClass.updateWidget(self)
-		self.scaleCombo.set_value(self.event.scale)
-		self.startSpin.set_value(self.event.start)
-		self.endRelCombo.set_active(0 if self.event.endRel else 1)
-		self.endSpin.set_value(self.event.end)
+		self.scaleCombo.set_value(self._event.scale)
+		self.startSpin.set_value(self._event.start)
+		self.endRelCombo.set_active(0 if self._event.endRel else 1)
+		self.endSpin.set_value(self._event.end)
 
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
-		self.event.scale = self.scaleCombo.get_value()
-		self.event.start = self.startSpin.get_value()
-		self.event.endRel = self.endRelCombo.get_active() == 0
-		self.event.end = self.endSpin.get_value()
+		self._event.scale = self.scaleCombo.get_value()
+		self._event.start = self.startSpin.get_value()
+		self._event.endRel = self.endRelCombo.get_active() == 0
+		self._event.end = self.endSpin.get_value()
 
 
 if __name__ == "__main__":
 	combo = common.Scale10PowerComboBox()
 	combo.set_value(200)
-	win = gtk.Dialog()
+	win = Dialog()
 	pack(win.vbox, combo)
 	win.vbox.show_all()
 	win.run()
