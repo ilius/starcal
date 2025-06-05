@@ -1596,46 +1596,47 @@ class PreferencesWindow(gtk.Window):
 		if col.get_title() == _("Title"):  # FIXME
 			self.onPlugAboutClick()
 
-	def plugTreevButtonPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def plugTreevButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		b = gevent.button
-		if b == 3:
-			cur = self.plugTreeview.get_cursor()[0]
-			if cur:
-				i = cur[0]
-				j = self.plugTreeview.get_model()[i][0]
-				plug = core.allPlugList.v[j]
-				menu = Menu()
-				# --
-				item = ImageMenuItem(
-					_("_About"),
-					imageName="dialog-information.svg",
-					func=self.onPlugAboutClick,
-				)
-				item.set_sensitive(bool(plug.about))
-				menu.add(item)
-				# --
-				item = ImageMenuItem(
-					_("_Configure"),
-					imageName="preferences-system.svg",
-					func=self.onPlugConfClick,
-				)
-				item.set_sensitive(plug.hasConfig)
-				menu.add(item)
-				# --
-				menu.add(
-					ImageMenuItem(
-						_("Export to {format}").format(format="iCalendar"),
-						imageName="text-calendar-ics.png",
-						func=self.onPlugExportToIcsClick,
-						args=(plug,),
-					),
-				)
-				# --
-				menu.show_all()
-				self.tmpMenu = menu
-				menu.popup(None, None, None, None, 3, gevent.time)
+		if b != 3:
+			return False
+		cur = self.plugTreeview.get_cursor()[0]
+		if not cur:
 			return True
-		return False
+		i = cur[0]
+		j = self.plugTreeview.get_model()[i][0]
+		plug = core.allPlugList.v[j]
+		menu = Menu()
+		# --
+		item = ImageMenuItem(
+			_("_About"),
+			imageName="dialog-information.svg",
+			func=self.onPlugAboutClick,
+		)
+		item.set_sensitive(bool(plug.about))
+		menu.add(item)
+		# --
+		item = ImageMenuItem(
+			_("_Configure"),
+			imageName="preferences-system.svg",
+			func=self.onPlugConfClick,
+		)
+		item.set_sensitive(plug.hasConfig)
+		menu.add(item)
+		# --
+		menu.add(
+			ImageMenuItem(
+				_("Export to {format}").format(format="iCalendar"),
+				imageName="text-calendar-ics.png",
+				func=self.onPlugExportToIcsClick,
+				args=(plug,),
+			),
+		)
+		# --
+		menu.show_all()
+		self.tmpMenu = menu
+		menu.popup(None, None, None, None, 3, gevent.time)
+		return True
 
 	def onPlugAddClick(self, _b: gtk.Widget) -> None:
 		# FIXME
