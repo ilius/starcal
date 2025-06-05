@@ -1543,15 +1543,16 @@ class PreferencesWindow(gtk.Window):
 	def onPlugAboutClick(self, _w: gtk.Widget | None = None) -> None:
 		from scal3.ui_gtk.about import AboutDialog
 
-		cur = self.plugTreeview.get_cursor()[0]
+		cur: gtk.TreePath = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		i = cur[0]
 		model = self.plugTreeview.get_model()
 		j = model[i][0]
 		plug = core.allPlugList.v[j]
-		if hasattr(plug, "open_about"):
-			return plug.open_about()
+		# open_about returns True only if overriden by external plugin
+		if plug.open_about():
+			return
 		if plug.about is None:
 			return
 		about = AboutDialog(
@@ -1566,7 +1567,6 @@ class PreferencesWindow(gtk.Window):
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
-		return None
 
 	def onPlugConfClick(self, _w: gtk.Widget | None = None) -> None:
 		cur = self.plugTreeview.get_cursor()[0]

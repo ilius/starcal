@@ -556,7 +556,7 @@ class TextPluginUI:
 	def open_configure(self) -> None:
 		self.confDialog.run()
 
-	def open_about(self) -> None:
+	def open_about(self) -> bool:
 		about = AboutDialog(
 			name=self.title,
 			title=_("About") + " " + self.title,
@@ -568,3 +568,4 @@ class TextPluginUI:
 		# about.set_skip_taskbar_hint(True)
 		about.run()
 		about.destroy()
+		return True
