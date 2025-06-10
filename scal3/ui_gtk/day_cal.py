@@ -317,6 +317,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page = StackPage()
 			page.pageWidget = monthWidget
 			page.pageName = module.name + "." + "month"
+			page.pageParent = module.name
 			page.pageTitle = _("Month Name") + " - " + calTypeDesc
 			page.pageLabel = _("Month Name")
 			page.pageExpand = False
