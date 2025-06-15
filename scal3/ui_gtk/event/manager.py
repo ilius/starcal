@@ -22,7 +22,7 @@ log = logger.get()
 import typing
 from contextlib import suppress
 from os.path import join
-from typing import Any
+from typing import Any, Final
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
@@ -94,8 +94,8 @@ type EventOrGroup = lib.Event | lib.EventGroup
 confPath = join(confDir, "event", "manager.json")
 
 
-eventManPos = Property((0, 0))
-eventManShowDescription = Property(True)
+eventManPos: Final[Property[tuple[int, int]]] = Property((0, 0))
+eventManShowDescription: Final[Property[bool]] = Property(True)
 confParams: dict[str, Property] = {
 	"eventManPos": eventManPos,
 	"eventManShowDescription": eventManShowDescription,

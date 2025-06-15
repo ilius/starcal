@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from scal3 import logger
 from scal3.property import Property
@@ -39,7 +39,7 @@ name = "jalali"
 desc = "Persian"
 origLang = "fa"
 
-monthNameMode = Property(0)
+monthNameMode: Final[Property[int]] = Property(0)
 options: list[OptionTuple] = [
 	(
 		"monthNameMode",

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import sys
 from os.path import join
-from typing import Protocol
+from typing import Final, Protocol
 
 from scal3.path import confDir
 from scal3.property import Property
@@ -54,7 +54,7 @@ class FallbackLogger:
 
 
 log: LoggerType = FallbackLogger()
-logLevel = Property(logging.INFO)
+logLevel: Final[Property[int]] = Property(logging.INFO)
 
 
 def init() -> None:
