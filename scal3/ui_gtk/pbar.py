@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 from __future__ import annotations
 
 from typing import Protocol
@@ -9,8 +10,9 @@ __all__ = ["MyProgressBar"]
 
 
 class ProgressBarType(Protocol):
-	# w: gtk.Widget  # mypy is sometimes ok with this, sometimes not!!
-	w: gtk.ProgressBar | gtk.Overlay
+	# sometimes dmypy gives error on either following lines!!
+	w: gtk.Widget
+	# w: gtk.ProgressBar | gtk.Overlay
 
 	def set_text(self, text: str) -> None: ...
 
