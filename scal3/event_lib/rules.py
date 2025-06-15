@@ -89,7 +89,7 @@ __all__ = [
 	"WeekNumberModeEventRule",
 	"YearEventRule",
 ]
-dayLen = 24 * 3600
+dayLen = 86400
 
 weekDayNameEnglish = (
 	"Sunday",
@@ -939,8 +939,8 @@ class DurationEventRule(EventRule):
 			1: "seconds",
 			60: "minutes",
 			3600: "hours",
-			3600 * 24: "days",
-			3600 * 24 * 7: "weeks",
+			86400: "days",
+			604800: "weeks",
 		}[self.unit]
 
 	def getServerString(self) -> str:
@@ -951,8 +951,8 @@ class DurationEventRule(EventRule):
 			1: "s",
 			60: "m",
 			3600: "h",
-			3600 * 24: "d",
-			3600 * 24 * 7: "w",
+			86400: "d",
+			604800: "w",
 		}[self.unit]
 
 	def __init__(self, parent: RuleContainerType) -> None:
