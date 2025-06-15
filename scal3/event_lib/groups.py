@@ -84,6 +84,7 @@ if TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.color_utils import ColorType
+	from scal3.event_lib.pytypes import EventSearchConditionDict
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
 
@@ -837,7 +838,7 @@ class EventGroup(EventContainer):
 
 		return res
 
-	def _searchTimeFilter(self, conds: dict[str, Any]) -> Iterator[int]:
+	def _searchTimeFilter(self, conds: EventSearchConditionDict) -> Iterator[int]:
 		if not ("time_from" in conds or "time_to" in conds):
 			yield from self.idList
 			return
@@ -858,8 +859,8 @@ class EventGroup(EventContainer):
 		for item in self.occur.search(time_from, time_to):
 			yield item.eid
 
-	def search(self, conds: dict[str, Any]) -> Iterator[EventType]:
-		conds = dict(conds)  # take a copy, we may modify it
+	def search(self, conds: EventSearchConditionDict) -> Iterator[EventType]:
+		conds = conds.copy()  # because we may modify it
 
 		for eid in self._searchTimeFilter(conds):
 			try:

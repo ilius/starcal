@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Any, Protocol, Self
+from typing import IO, TYPE_CHECKING, Any, NotRequired, Protocol, Self, TypedDict
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator, Sequence
@@ -251,7 +251,7 @@ class EventGroupType(BaseTextModelType, Protocol):
 	def __getitem__(self, ident: int) -> EventType: ...
 	def showInCal(self) -> bool: ...
 	def index(self, ident: int) -> int: ...
-	def search(self, conds: dict[str, Any]) -> Iterator[EventType]: ...
+	def search(self, conds: EventSearchConditionDict) -> Iterator[EventType]: ...
 	def __len__(self) -> int: ...
 	def checkEventToAdd(self, event: EventType) -> bool: ...
 	def isReadOnly(self) -> bool: ...
@@ -280,3 +280,13 @@ class AccountType(BaseTextModelType, Protocol):
 		group: EventGroupType,
 		remoteGroupId: str,
 	) -> None: ...
+
+
+class EventSearchConditionDict(TypedDict):
+	text: NotRequired[str]
+	text_lower: NotRequired[str]
+	time_from: NotRequired[int]
+	time_to: NotRequired[int]
+	modified_from: NotRequired[int]
+	type: NotRequired[str]
+	timezone: NotRequired[str]
