@@ -93,7 +93,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		return 0, int(conf.winHeight.v / 3)
 
 	def updateTypeParamsWidget(self) -> None:
-		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
+		from scal3.ui_gtk.cal_type_params import DayNumListParamsWidget
 
 		try:
 			vbox = self.typeParamsVbox
@@ -117,7 +117,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			module = calTypes[calType]
 			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			pageWidget = CalTypeParamWidget(
+			pageWidget = DayNumListParamsWidget(
 				params=conf.mcalTypeParams,  # type: ignore[arg-type]
 				index=index,
 				cal=self,
