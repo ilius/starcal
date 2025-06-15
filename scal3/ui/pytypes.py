@@ -37,6 +37,16 @@ class CalTypeParamsDict(TypedDict):
 	color: RawColor  # | None?
 
 
+# shared (for day numbers, week day name and month name)
+class DayCalTypeBaseParamsDict(TypedDict):
+	pos: tuple[float, float]
+	font: FontType
+	color: RawColor  # | None?
+	enable: bool
+	xalign: str
+	yalign: str
+
+
 # for day numbers
 class DayCalTypeDayParamsDict(TypedDict):
 	pos: tuple[float, float]
