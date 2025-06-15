@@ -82,7 +82,7 @@ confPath = join(confDir, "ui-gtk.json")
 dateFormat: Final[Property[str]] = Property("%Y/%m/%d")
 # clockFormat: "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 clockFormat: Final[Property[str]] = Property("%X")
-confParams = {
+confParams: Final[dict[str, Property]] = {
 	"dateFormat": dateFormat,
 	"clockFormat": clockFormat,
 	# "adjustTimeCmd": adjustTimeCmd,
