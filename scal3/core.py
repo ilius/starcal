@@ -22,6 +22,7 @@ import subprocess
 import sys
 import typing
 from contextlib import suppress
+from datetime import datetime
 from os.path import isdir, isfile, join, split
 from time import localtime
 from time import time as now
@@ -254,11 +255,18 @@ def jd_to_primary(jd: int) -> tuple[int, int, int]:
 
 
 def getCurrentJd() -> int:
-	# time.time() and mktime(localtime()) both return GMT, not local
-	if GREGORIAN not in calTypes:
-		raise RuntimeError(f"cal type {GREGORIAN=} not found")
-	y, m, d = localtime()[:3]
-	return to_jd(y, m, d, GREGORIAN)
+	tz = locale_man.localTz
+	assert tz is not None
+	epoch = now()
+	return (
+		int(
+			(
+				epoch + int(tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds())  # noqa: DTZ006
+			)
+			/ 86400
+		)
+		+ 2440588
+	)
 
 
 # def getWeekDateHmsFromEpoch(epoch: int) -> tuple[int, int, int, int, int]:
@@ -522,7 +530,7 @@ def compressLongInt(num: int) -> str:
 def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 	return compressLongInt(
 		int(
-			now() % (maxDays * 24 * 3600) / minSec,
+			now() % (maxDays * 86400) / minSec,
 		),
 	)
 

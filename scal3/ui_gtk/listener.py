@@ -13,7 +13,7 @@ from scal3.ui_gtk import timeout_add_seconds
 
 __all__ = ["dateChange"]
 
-dayLen = 24 * 3600
+dayLen = 86400
 
 
 class ReceiverType(Protocol):

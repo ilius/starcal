@@ -312,12 +312,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 
 		tm = now()
 		dt = tm - self.disclaimerLastEpoch.v
-		if dt > 256 * 24 * 3600:
+		if dt > 256 * 86400:
 			return True
 
 		_hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
 		# is it Ramadan?
-		return hmonth == 9 and dt > hday * 24 * 3600
+		return hmonth == 9 and dt > hday * 86400
 
 	def saveConfig(self) -> None:
 		self.lat.v = self.backend.lat
@@ -421,7 +421,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		utcOffset = getUtcOffsetByJd(jd, localTz)
 		tmUtc = now()
 		epochLocal = tmUtc + utcOffset
-		secondsFromMidnight = epochLocal % (24 * 3600)
+		secondsFromMidnight = epochLocal % 86400
 		# midnightUtc = tmUtc - secondsFromMidnight
 		# log.debug("------- hours from midnight", secondsFromMidnight/3600.0)
 		for timeName, azanHour in self.backend.getTimesByJd(

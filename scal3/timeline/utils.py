@@ -27,7 +27,7 @@ __all__ = [
 
 fontFamily = ui.getFont().family
 
-dayLen = 24 * 3600
+dayLen = 86400
 minYearLenSec = 365 * dayLen
 avgMonthLen = 30 * dayLen
 

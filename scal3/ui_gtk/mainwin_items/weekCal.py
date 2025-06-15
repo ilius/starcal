@@ -883,7 +883,7 @@ class EventsBoxColumn(Column):
 	def __init__(self, wcal: CalObj) -> None:
 		self.boxes: list[TimeLineBox] | None = None
 		self.padding = 2
-		self.timeWidth = 7 * 24 * 3600
+		self.timeWidth = 7 * 86400
 		self.boxEditing = None
 		# -----
 		Column.__init__(self, wcal)

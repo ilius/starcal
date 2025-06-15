@@ -259,7 +259,7 @@ class PrayTimes:
 		# if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
 		# log.debug(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
 		self.utcOffset = utcOffset
-		self.jDate = jd - 0.5 - self.lng / (15 * 24)
+		self.jDate = jd - 0.5 - self.lng / 360
 		return self.computeTimes()
 
 	def getFormattedTime(self, tm, timeFormat=None):
