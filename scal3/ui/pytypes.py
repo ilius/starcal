@@ -12,8 +12,8 @@ __all__ = [
 	"ButtonGeoDict",
 	"CalTypeParamsDict",
 	"CustomizableToolBoxDict",
-	"DayCalNameTypeParamsDict",
-	"DayCalTypeParamsDict",
+	"DayCalTypeDayParamsDict",
+	"DayCalTypeWMParamsDict",
 	"DictWithFont",
 	"GenericTypeParamsDict",
 	"PieGeoDict",
@@ -37,7 +37,8 @@ class CalTypeParamsDict(TypedDict):
 	color: RawColor  # | None?
 
 
-class DayCalTypeParamsDict(TypedDict):
+# for day numbers
+class DayCalTypeDayParamsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?
@@ -46,7 +47,8 @@ class DayCalTypeParamsDict(TypedDict):
 	yalign: str
 
 
-class DayCalNameTypeParamsDict(TypedDict):
+# for week day name and month name
+class DayCalTypeWMParamsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?

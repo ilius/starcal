@@ -49,8 +49,8 @@ output.write("""\tfrom scal3.ui.pytypes import (
 		ButtonGeoDict,
 		CalTypeParamsDict,
 		CustomizableToolBoxDict,
-		DayCalNameTypeParamsDict,
-		DayCalTypeParamsDict,
+		DayCalTypeWMParamsDict,
+		DayCalTypeDayParamsDict,
 		WeekCalDayNumParamsDict,
 		PieGeoDict,
 	)\n\n\n""")
