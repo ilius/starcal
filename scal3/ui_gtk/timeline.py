@@ -24,7 +24,7 @@ log = logger.get()
 from datetime import datetime, timedelta
 from time import perf_counter
 from time import time as now
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -40,7 +40,7 @@ from scal3.time_utils import (
 	getUtcOffsetByJd,
 )
 from scal3.timeline import conf
-from scal3.timeline.funcs import calcTimeLineData
+from scal3.timeline.funcs import TimeLineData, calcTimeLineData
 from scal3.timeline.utils import dayLen, fontFamily
 from scal3.ui_gtk import (
 	Menu,
@@ -120,7 +120,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		self.updateBasicButtons()
 		self.updateMovementButtons()
 		# zoom in and zoom out buttons FIXME
-		self.data: dict[str, Any] | None = None
+		self.data: TimeLineData | None = None
 		# --------
 		self.movingLastPress = 0.0
 		self.movingV = 0.0
@@ -455,16 +455,16 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		fillColor(cr, conf.bgColor.v)
 		# -----
 		setColor(cr, conf.holidayBgBolor.v)
-		for x in self.data["holidays"]:
+		for x in self.data.holidays:
 			cr.rectangle(x, 0, dayPixel, height)
 			cr.fill()
 		# -----
-		for tick in self.data["ticks"]:
+		for tick in self.data.ticks:
 			self.drawTick(cr, tick, maxTickHeight)
 		# ------
 		beforeBoxH = maxTickHeight  # FIXME
 		maxBoxH = height - beforeBoxH
-		for box in self.data["boxes"]:
+		for box in self.data.boxes:
 			box.setPixelValues(timeStart, pixelPerSec, beforeBoxH, maxBoxH)
 			self.drawBox(cr, box)
 		self.drawBoxEditingHelperLines(cr)
@@ -596,7 +596,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 						self.pressingButton = button
 					return True
 			# ----
-			for box in self.data["boxes"]:
+			for box in self.data.boxes:
 				if not box.hasBorder:
 					continue
 				if not box.ids:
@@ -633,7 +633,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 					self.queue_draw()
 					return True
 		elif gevent.button == 3:
-			for box in self.data["boxes"]:
+			for box in self.data.boxes:
 				if not box.ids:
 					continue
 				if not box.contains(x, y):
