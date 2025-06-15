@@ -90,7 +90,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	backgroundColor: Property[ColorType] | None = None
 	dayParams: Property[list[DayCalTypeParamsDict]] | None = None
 	monthParams: Property[list[DayCalNameTypeParamsDict]] | None = None
-	weekdayParams: Property[DayCalTypeParamsDict] | None = None
+	weekdayParams: Property[DayCalNameTypeParamsDict] | None = None
 	weekdayLocalize: Property[bool] | None = None
 	weekdayAbbreviate: Property[bool] | None = None
 	weekdayUppercase: Property[bool] | None = None
