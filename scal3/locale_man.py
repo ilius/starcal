@@ -33,7 +33,7 @@ from os.path import (
 	join,
 	splitext,
 )
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import mytz
 from scal3.cal_types import calTypes
@@ -96,8 +96,8 @@ localTzStr = str(localTz)
 
 confPath = join(confDir, "locale.json")
 
-lang = Property("")
-enableNumLocale = Property(True)
+lang: Final[Property[str]] = Property("")
+enableNumLocale: Final[Property[bool]] = Property(True)
 
 confParams: dict[str, Property] = {
 	"lang": lang,

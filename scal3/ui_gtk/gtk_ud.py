@@ -30,7 +30,7 @@ log = logger.get()
 import os
 import sys
 from os.path import join
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from gi.overrides.GObject import Object
 
@@ -79,8 +79,9 @@ sysConfPath = join(sysConfDir, "ui-gtk.json")
 
 confPath = join(confDir, "ui-gtk.json")
 
-dateFormat = Property("%Y/%m/%d")
-clockFormat = Property("%X")  # "%T", "%X" (local), "<b>%T</b>", "%m:%d"
+dateFormat: Final[Property[str]] = Property("%Y/%m/%d")
+# clockFormat: "%T", "%X" (local), "<b>%T</b>", "%m:%d"
+clockFormat: Final[Property[str]] = Property("%X")
 confParams = {
 	"dateFormat": dateFormat,
 	"clockFormat": clockFormat,

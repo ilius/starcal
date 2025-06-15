@@ -24,7 +24,7 @@ import typing
 from contextlib import suppress
 from datetime import datetime
 from os.path import isdir, isfile, join, split
-from typing import Any, NamedTuple
+from typing import Any, Final, NamedTuple
 
 import scal3
 from scal3 import locale_man, logger
@@ -128,19 +128,19 @@ confPath = join(confDir, "core.json")
 # __________________________ Default Configuration __________________________ #
 
 # just for loading from config, not used after loadConf
-version = Property("")
-activeCalTypes: Property[list[str]] = Property([])
-inactiveCalTypes: Property[list[str]] = Property([])
+version: Final[Property[str]] = Property("")
+activeCalTypes: Final[Property[list[str]]] = Property([])
+inactiveCalTypes: Final[Property[list[str]]] = Property([])
 
-allPlugList: Property[list[PluginType | None]] = Property([])
-plugIndex: Property[list[int]] = Property([])
-holidayWeekDays: Property[list[int]] = Property([0])
-firstWeekDayAuto: Property[bool] = Property(False)
-firstWeekDay: Property[int] = Property(0)
-weekNumberModeAuto: Property[bool] = Property(False)
-weekNumberMode: Property[int] = Property(7)
+allPlugList: Final[Property[list[PluginType | None]]] = Property([])
+plugIndex: Final[Property[list[int]]] = Property([])
+holidayWeekDays: Final[Property[list[int]]] = Property([0])
+firstWeekDayAuto: Final[Property[bool]] = Property(False)
+firstWeekDay: Final[Property[int]] = Property(0)
+weekNumberModeAuto: Final[Property[bool]] = Property(False)
+weekNumberMode: Final[Property[int]] = Property(7)
 
-confParams: dict[str, Property] = {
+confParams: Final[dict[str, Property]] = {
 	"version": version,
 	"allPlugList": allPlugList,
 	"plugIndex": plugIndex,
