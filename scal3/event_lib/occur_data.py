@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 __all__ = ["DayOccurData", "getDayOccurrenceData"]
 
-dayLen = 24 * 3600
+dayLen = 86400
 hms_zero = HMS()
 hms_24 = HMS(24)
 keyFuncIndex0 = operator.itemgetter(0)
