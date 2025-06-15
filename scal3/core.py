@@ -24,7 +24,6 @@ import typing
 from contextlib import suppress
 from datetime import datetime
 from os.path import isdir, isfile, join, split
-from time import time as now
 from typing import Any, NamedTuple
 
 import scal3
@@ -252,18 +251,7 @@ def jd_to_primary(jd: int) -> tuple[int, int, int]:
 
 
 def getCurrentJd() -> int:
-	tz = locale_man.localTz
-	assert tz is not None
-	epoch = now()
-	return (
-		int(
-			(
-				epoch + int(tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds())  # noqa: DTZ006
-			)
-			/ 86400
-		)
-		+ 2440588
-	)
+	return datetime.now().toordinal() + 1721425
 
 
 # def getWeekDateHmsFromEpoch(epoch: int) -> tuple[int, int, int, int, int]:

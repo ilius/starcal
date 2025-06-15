@@ -20,7 +20,6 @@
 import json
 import os
 import sys
-import time
 from os.path import dirname, isdir, isfile, join
 from time import time as now
 
@@ -38,6 +37,7 @@ sys.path.insert(0, dataDir)  # FIXME
 sys.path.insert(0, sourceDir)  # FIXME
 
 # from scal3 import event_lib  # needs core!! FIXME
+from datetime import datetime
 from threading import Timer
 
 from pray_times_backend import PrayTimes, timeNames
@@ -79,8 +79,7 @@ timeDescByName = dict(timeNames)
 
 
 def getCurrentJd() -> int:
-	y, m, d = time.localtime()[:3]
-	return gregorian_to_jd(y, m, d)
+	return datetime.now().toordinal() + 1721425
 
 
 def readLocationData() -> list[tuple[str, str, float, float]]:
