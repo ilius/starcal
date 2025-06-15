@@ -57,6 +57,7 @@ from scal3.time_utils import (
 )
 from scal3.utils import numRangesEncode, s_join
 
+from .common import weekDayNameEnglish
 from .exceptions import BadEventFile
 from .occur import IntervalOccurSet, JdOccurSet, OccurSet, TimeListOccurSet
 from .register import classes
@@ -90,16 +91,6 @@ __all__ = [
 	"YearEventRule",
 ]
 dayLen = 86400
-
-weekDayNameEnglish = (
-	"Sunday",
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday",
-)
 
 # def checkTypes() -> None:
 # 	rule: EventRuleType = WeekNumberModeEventRule(Event())  # OK
