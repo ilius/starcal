@@ -869,6 +869,8 @@ class KeyBindingPrefItem(PrefItem):
 		for row in trees:
 			if not row[0]:
 				continue
+			key: str
+			action: str
 			key, action = row  # type: ignore[misc]
 			keys[key] = action
 		return keys
