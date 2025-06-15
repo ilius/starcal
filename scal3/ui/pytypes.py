@@ -55,6 +55,7 @@ class DayCalTypeDayParamsDict(TypedDict):
 	enable: bool
 	xalign: str
 	yalign: str
+	localize: bool
 
 
 # for week day name and month name
