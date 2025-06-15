@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING, Self
 
 import mytz
 from scal3.cal_types import calTypes
-from scal3.core import compressLongInt, eventTextSep, getCompactTime
+from scal3.core import compressLongInt, getCompactTime
 from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
@@ -35,6 +35,7 @@ from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import durationDecode, durationEncode
 
 from . import state
+from .common import eventTextSep
 from .exceptions import BadEventFile
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
