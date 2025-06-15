@@ -245,7 +245,7 @@ class TimeListOccurSet(OccurSet):
 
 	def setRange(self, startEpoch: int, endEpoch: int, stepSeconds: int) -> None:
 		try:
-			from numpy.core.multiarray import arange
+			from numpy.multiarray import arange
 		except ImportError:
 			from scal3.utils import arange  # type: ignore[no-redef]
 		# ------
