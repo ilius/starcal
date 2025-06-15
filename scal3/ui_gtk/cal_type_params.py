@@ -199,6 +199,8 @@ class DayNumParamsWidget(gtk.Box):
 		pack(hbox, fontb)
 		pack(vbox, hbox)
 		# ----
+		self.localizeCheck = gtk.CheckButton(label=_("Localize"))
+		pack(vbox, self.localizeCheck)
 		# ----
 		self.set(params.v)
 		# ----
@@ -210,6 +212,7 @@ class DayNumParamsWidget(gtk.Box):
 			self.enableCheck.connect("clicked", self.onChange)
 		self.xalignCombo.connect("changed", self.onChange)
 		self.yalignCombo.connect("changed", self.onChange)
+		self.localizeCheck.connect("clicked", self.onChange)
 
 	def get(self) -> DayCalTypeDayParamsDict:
 		enable = True
@@ -225,6 +228,7 @@ class DayNumParamsWidget(gtk.Box):
 			"color": self.colorb.getRGBA(),
 			"xalign": self.xalignCombo.get() or "center",
 			"yalign": self.yalignCombo.get() or "center",
+			"localize": self.localizeCheck.get_active(),
 		}
 
 	def set(self, params: DayCalTypeDayParamsDict) -> None:
@@ -238,6 +242,7 @@ class DayNumParamsWidget(gtk.Box):
 			self.enableCheck.set_active(params.get("enable", True))
 		self.xalignCombo.set(params.get("xalign", "center"))
 		self.yalignCombo.set(params.get("yalign", "center"))
+		self.localizeCheck.set_active(params.get("localize", False))
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
 		self.params.v = self.get()
