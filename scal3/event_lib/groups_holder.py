@@ -69,6 +69,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self.parent = None
 		self.idByUuid = {}
 		self.trash: EventTrash | None = None
+		self.calType = 0  # not used? just for group.parent eligibilty
 
 	def setTrash(self, trash: EventTrash) -> None:
 		self.trash = trash
@@ -94,6 +95,9 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			ObjectsHolderTextModel.setList(self, data)
 			for group in self:
 				assert group.id is not None
+				# if TYPE_CHECKING:
+				# 	_parent: ParentSObj = self
+				group.parent = self
 				if group.uuid is None:
 					group.save()
 					log.info(f"saved group {group.id} with uuid = {group.uuid}")
