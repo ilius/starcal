@@ -18,6 +18,10 @@ from __future__ import annotations
 from scal3 import logger
 from scal3.color_utils import RGBA
 from scal3.ui import conf
+from scal3.ui_gtk.cal_type_params import (
+	MonthNameListParamsWidget,
+	WeekDayNameParamsWidget,
+)
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 
 log = logger.get()
@@ -321,7 +325,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		self.jdPlus(1)
 
 	def updateTypeParamsWidget(self) -> list[StackPage]:
-		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
+		from scal3.ui_gtk.cal_type_params import DayNumListParamsWidget
 
 		monthParams = self.getMonthParams(allCalTypes=True)
 		vbox = self.dayMonthParamsVbox
@@ -343,29 +347,25 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			# --
 			pageWidget = VBox(spacing=5)
 			# ---
-			dayWidget = CalTypeParamWidget(
-				params=self.dayParams,  # type: ignore[arg-type]
+			dayWidget = DayNumListParamsWidget(
+				params=self.dayParams,
 				index=index,
 				calType=calType,
 				cal=self,
 				sgroupLabel=sgroupLabel,
 				hasEnable=True,
-				hasAlign=True,
 				enableTitleLabel=_("Day of Month"),
 				useFrame=True,
 			)
 			pack(pageWidget, dayWidget)
 			# ---
-			monthWidget = CalTypeParamWidget(
-				params=self.monthParams,  # type: ignore[arg-type]
+			monthWidget = MonthNameListParamsWidget(
+				params=self.monthParams,
 				index=index,
 				calType=calType,
 				cal=self,
 				sgroupLabel=sgroupLabel,
 				hasEnable=True,
-				hasAlign=True,
-				hasAbbreviate=True,
-				hasUppercase=langHasUppercase,
 				enableTitleLabel=_("Month Name"),
 				useFrame=True,
 			)
@@ -423,7 +423,6 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		return self._window
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.cal_type_params import TextParamWidget
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
 			ColorPrefItem,
@@ -507,13 +506,12 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		if self.weekdayParams:
 			pageWidget = VBox(spacing=5)
 			# ---
-			weekdayWidget = TextParamWidget(
+			weekdayWidget = WeekDayNameParamsWidget(
 				params=self.weekdayParams,  # type: ignore[arg-type]
 				cal=self,
 				# sgroupLabel=None,
 				desc=_("Week Day"),
 				hasEnable=True,
-				hasAlign=True,
 			)
 			pack(pageWidget, weekdayWidget)
 			# ---
