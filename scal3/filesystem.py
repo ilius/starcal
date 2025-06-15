@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from typing import IO
 
-__all__ = ["DefaultFileSystem", "FileSystem"]
+__all__ = ["DefaultFileSystem", "FileSystem", "null_fs"]
 
 
 class FileSystem:
@@ -93,3 +93,6 @@ class DefaultFileSystem(FileSystem):
 		if isabs(fpath):
 			log.warning(f"DefaultFileSystem: removeFile: reading abs path {fpath}")
 		os.remove(self.abspath(fpath))
+
+
+null_fs = FileSystem()

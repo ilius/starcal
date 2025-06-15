@@ -24,20 +24,24 @@ import json
 from time import localtime
 from typing import TYPE_CHECKING, Self
 
-from scal3 import core
 from scal3.cal_types import (
 	convert,
 	getSysDate,
 	jd_to,
 	to_jd,
 )
-from scal3.core import getAbsWeekNumberFromJd
+from scal3.core import (
+	firstWeekDay,
+	getAbsWeekNumberFromJd,
+	weekDayName,
+)
 from scal3.date_utils import (
 	checkDate,
 	dateDecode,
 	dateEncode,
 	jwday,
 )
+from scal3.filesystem import null_fs
 from scal3.interval_utils import simplifyNumList
 from scal3.locale_man import floatEncode, textNumEncode
 from scal3.locale_man import tr as _
@@ -87,6 +91,15 @@ __all__ = [
 ]
 dayLen = 24 * 3600
 
+weekDayNameEnglish = (
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+)
 
 # def checkTypes() -> None:
 # 	rule: EventRuleType = WeekNumberModeEventRule(Event())  # OK
@@ -117,7 +130,7 @@ class EventRule(SObjBase):
 	def __init__(self, parent: RuleContainerType) -> None:
 		"""Parent can be an event for now (maybe later a group too)."""
 		self.parent = parent
-		self.fs = core.fs
+		self.fs = null_fs
 
 	def getRuleValue(self) -> Any:
 		log.warning(f"No implementation for {self.__class__.__name__}.getRuleValue")
@@ -433,7 +446,7 @@ class WeekDayEventRule(AllDayEventRule):
 	def __str__(self) -> str:
 		if self.weekDayList == list(range(7)):
 			return ""
-		return ", ".join([core.weekDayNameEnglish[wd] for wd in self.weekDayList])
+		return ", ".join([weekDayNameEnglish[wd] for wd in self.weekDayList])
 
 	def getInfo(self) -> str:
 		if self.weekDayList == list(range(7)):
@@ -443,9 +456,9 @@ class WeekDayEventRule(AllDayEventRule):
 		return (
 			_("Day of Week")
 			+ ": "
-			+ sep.join([core.weekDayName[wd] for wd in self.weekDayList[:-1]])
+			+ sep.join([weekDayName[wd] for wd in self.weekDayList[:-1]])
 			+ sep2
-			+ core.weekDayName[self.weekDayList[-1]]
+			+ weekDayName[self.weekDayList[-1]]
 		)
 
 
@@ -499,7 +512,7 @@ class WeekMonthEventRule(EventRule):
 		return " ".join(
 			[
 				self.wmIndexNamesEn[self.wmIndex],
-				core.weekDayNameEnglish[self.weekDay],
+				weekDayNameEnglish[self.weekDay],
 				"of",
 				monthDesc,
 			],
@@ -509,7 +522,7 @@ class WeekMonthEventRule(EventRule):
 		EventRule.__init__(self, parent)
 		self.month = 1
 		self.wmIndex = 4
-		self.weekDay = core.firstWeekDay.v
+		self.weekDay = firstWeekDay.v
 
 	def getRuleValue(self) -> Any:
 		return {
@@ -535,7 +548,7 @@ class WeekMonthEventRule(EventRule):
 
 	# usefull? FIXME
 	# def setJd(self, jd) -> None:
-	# 	self.month, self.wmIndex, self.weekDay = core.getMonthWeekNth(
+	# 	self.month, self.wmIndex, self.weekDay = getMonthWeekNth(
 	# 	jd,
 	# 	self.getCalType(),
 	# )
