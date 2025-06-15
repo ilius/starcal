@@ -40,6 +40,15 @@ class BaseClassType(Protocol):
 	def copy(self) -> Self: ...
 
 
+class BaseTextModelType(BaseClassType, Protocol):
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem,
+	) -> Self | None: ...
+
+
 class RuleContainerType(BaseClassType, Protocol):
 	calType: int
 	rulesDict: dict[str, EventRuleType]
@@ -183,7 +192,7 @@ class EventContainerType(BaseClassType, Protocol):
 	def __iter__(self) -> Iterator[EventType]: ...
 
 
-class EventGroupType(BaseClassType, Protocol):
+class EventGroupType(BaseTextModelType, Protocol):
 	id: int | None
 	uuid: str | None
 	file: str
@@ -252,7 +261,7 @@ class EventGroupType(BaseClassType, Protocol):
 	def insert(self, index: int, event: EventType) -> None: ...
 
 
-class AccountType(BaseClassType, Protocol):
+class AccountType(BaseTextModelType, Protocol):
 	id: int
 	uuid: str | None
 	file: str
