@@ -27,12 +27,12 @@ from typing import TYPE_CHECKING, Protocol, Self
 import mytz
 from scal3 import locale_man, logger
 from scal3.cal_types import calTypes
-from scal3.core import eventTextSep
 from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 from scal3.s_object import SObj
 from scal3.time_utils import getEpochFromJd
 
+from .common import eventTextSep
 from .event_base import Event
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel

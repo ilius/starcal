@@ -63,7 +63,6 @@ __all__ = [
 	"VERSION",
 	"allPlugList",
 	"compressLongInt",
-	"eventTextSep",
 	"firstWeekDay",
 	"firstWeekDayAuto",
 	"fs",
@@ -614,7 +613,6 @@ if isdir(libDir):
 
 useCompactJson = False  # TODO: add to Preferences
 useAsciiJson = False
-eventTextSep = ": "  # use to separate summary from description for display
 
 # ___________________________________________________________________________ #
 
