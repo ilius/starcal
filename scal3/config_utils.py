@@ -24,7 +24,7 @@ __all__ = [
 def loadSingleConfig(
 	confPath: str,
 	params: dict[str, Property],
-	decoders: dict | None = None,
+	decoders: dict[str, Callable] | None = None,
 ) -> None:
 	from os.path import isfile
 
@@ -83,7 +83,7 @@ def loadModuleConfig(
 	confPath: str,
 	sysConfPath: str | None,
 	params: dict[str, Property],
-	decoders: dict | None = None,
+	decoders: dict[str, Callable] | None = None,
 ) -> None:
 	if sysConfPath:
 		loadSingleConfig(

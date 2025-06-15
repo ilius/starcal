@@ -99,7 +99,7 @@ confPath = join(confDir, "locale.json")
 lang: Final[Property[str]] = Property("")
 enableNumLocale: Final[Property[bool]] = Property(True)
 
-confParams: dict[str, Property] = {
+confParams: Final[dict[str, Property]] = {
 	"lang": lang,
 	"enableNumLocale": enableNumLocale,
 }

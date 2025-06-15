@@ -48,7 +48,7 @@ options: list[OptionTuple] = [
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 ]
-confParams = {
+confParams: Final[dict[str, Property]] = {
 	"monthNameMode": monthNameMode,
 }
 

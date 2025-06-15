@@ -126,7 +126,9 @@ if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
-confParams = {"hijriUseDB": hijriUseDB}
+confParams: Final[dict[str, Property]] = {
+	"hijriUseDB": hijriUseDB,
+}
 
 # Here load user options (hijriUseDB) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
