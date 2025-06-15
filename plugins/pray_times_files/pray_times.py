@@ -22,6 +22,7 @@ import os
 import sys
 from os.path import dirname, isdir, isfile, join
 from time import time as now
+from typing import Final
 
 from scal3.cell_type import CellType
 from scal3.property import Property
@@ -236,7 +237,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# --
 		self.disclaimerLastEpoch = Property(0)
 		# -------
-		self.confParams: dict[str, Property] = {
+		self.confParams: Final[dict[str, Property]] = {
 			"lat": self.lat,
 			"lng": self.lng,
 			"method": self.method,
