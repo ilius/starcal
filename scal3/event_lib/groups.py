@@ -36,7 +36,7 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.core import firstWeekDay, getAbsWeekNumberFromJd, getCurrentJd
+from scal3.core import firstWeekDay, getAbsWeekNumberFromJd
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.dict_utils import makeOrderedDict
 from scal3.locale_man import textNumEncode
@@ -53,6 +53,7 @@ from scal3.time_utils import (
 from scal3.utils import findNearestIndex
 
 from . import state
+from .common import getCurrentJd
 from .event_container import EventContainer
 from .events import (
 	LargeScaleEvent,
