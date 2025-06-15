@@ -463,7 +463,7 @@ dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalWeekdayParams: Property[DayCalTypeParamsDict] = Property(
+dcalWeekdayParams: Property[DayCalNameTypeParamsDict] = Property(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -471,6 +471,8 @@ dcalWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 		"enable": False,
 		"xalign": "right",
 		"yalign": "buttom",
+		"abbreviate": False,
+		"uppercase": False,
 	}
 )
 dcalNavButtonsEnable: Property[bool] = Property(True)
@@ -564,7 +566,7 @@ dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalWinWeekdayParams: Property[DayCalTypeParamsDict] = Property(
+dcalWinWeekdayParams: Property[DayCalNameTypeParamsDict] = Property(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -572,6 +574,8 @@ dcalWinWeekdayParams: Property[DayCalTypeParamsDict] = Property(
 		"enable": False,
 		"xalign": "right",
 		"yalign": "buttom",
+		"abbreviate": False,
+		"uppercase": False,
 	}
 )
 dcalWinEventIconSize: Property[int] = Property(20)

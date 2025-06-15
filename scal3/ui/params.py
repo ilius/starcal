@@ -1214,7 +1214,7 @@ confParamsData: list[Param] = [
 		name="dayCal.weekday.params",
 		v3Name="dcalWeekdayParams",
 		flags=CUSTOMIZE,
-		type="DayCalTypeParamsDict",
+		type="DayCalNameTypeParamsDict",
 		where="MainWin: Customize: Day Calendar: Week Day",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default={
@@ -1224,6 +1224,8 @@ confParamsData: list[Param] = [
 			"enable": False,
 			"xalign": "right",
 			"yalign": "buttom",
+			"abbreviate": False,
+			"uppercase": False,
 		},
 	),
 	Param(
@@ -1495,7 +1497,7 @@ confParamsData: list[Param] = [
 		name="dayCalWin.weekday.params",
 		v3Name="dcalWinWeekdayParams",
 		flags=CUSTOMIZE,
-		type="DayCalTypeParamsDict",  # TODO: DayCalNameTypeParamsDict
+		type="DayCalNameTypeParamsDict",
 		where="DayCalWin: Customize: Week Day",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		# TODO: add abbreviate and uppercase
@@ -1506,6 +1508,8 @@ confParamsData: list[Param] = [
 			"enable": False,
 			"xalign": "right",
 			"yalign": "buttom",
+			"abbreviate": False,
+			"uppercase": False,
 		},
 	),
 	Param(
