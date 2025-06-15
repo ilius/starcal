@@ -73,8 +73,8 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
-		DayCalNameTypeParamsDict,
-		DayCalTypeParamsDict,
+		DayCalTypeDayParamsDict,
+		DayCalTypeWMParamsDict,
 		PieGeoDict,
 	)
 	from scal3.ui_gtk.starcal import MainWin
@@ -88,9 +88,9 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	itemListCustomizable = False
 
 	backgroundColor: Property[ColorType] | None = None
-	dayParams: Property[list[DayCalTypeParamsDict]] | None = None
-	monthParams: Property[list[DayCalNameTypeParamsDict]] | None = None
-	weekdayParams: Property[DayCalNameTypeParamsDict] | None = None
+	dayParams: Property[list[DayCalTypeDayParamsDict]] | None = None
+	monthParams: Property[list[DayCalTypeWMParamsDict]] | None = None
+	weekdayParams: Property[DayCalTypeWMParamsDict] | None = None
 	weekdayLocalize: Property[bool] | None = None
 	weekdayAbbreviate: Property[bool] | None = None
 	weekdayUppercase: Property[bool] | None = None
@@ -133,7 +133,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			return self.backgroundColor.v
 		return conf.bgColor.v
 
-	def getDayParams(self, allCalTypes: bool = False) -> list[DayCalTypeParamsDict]:
+	def getDayParams(self, allCalTypes: bool = False) -> list[DayCalTypeDayParamsDict]:
 		if not self.dayParams:
 			return []
 		params = self.dayParams.v
@@ -155,7 +155,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def getMonthParams(
 		self,
 		allCalTypes: bool = False,
-	) -> list[DayCalNameTypeParamsDict]:
+	) -> list[DayCalTypeWMParamsDict]:
 		if not self.monthParams:
 			return []
 		params = self.monthParams.v
@@ -694,7 +694,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	@staticmethod
 	def getRenderPos(
-		params: DayCalTypeParamsDict,
+		params: DayCalTypeDayParamsDict,
 		x0: float,
 		y0: float,
 		w: float,
@@ -799,7 +799,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def getMonthName(
 		c: CellType,
 		calType: int,
-		params: DayCalNameTypeParamsDict,
+		params: DayCalTypeWMParamsDict,
 	) -> str:
 		month: int = c.dates[calType][1]
 		abbreviate: bool = params.get("abbreviate", False)
@@ -809,7 +809,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			text = text.upper()
 		return text
 
-	def iterMonthParams(self) -> Iterable[tuple[int, DayCalNameTypeParamsDict]]:
+	def iterMonthParams(self) -> Iterable[tuple[int, DayCalTypeWMParamsDict]]:
 		return (
 			(calType, params)
 			for calType, params in zip(

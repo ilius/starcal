@@ -14,8 +14,8 @@ if typing.TYPE_CHECKING:
 		ButtonGeoDict,
 		CalTypeParamsDict,
 		CustomizableToolBoxDict,
-		DayCalNameTypeParamsDict,
-		DayCalTypeParamsDict,
+		DayCalTypeDayParamsDict,
+		DayCalTypeWMParamsDict,
 		PieGeoDict,
 		WeekCalDayNumParamsDict,
 	)
@@ -401,7 +401,7 @@ wcal_moonStatus_southernHemisphere: Property[bool] = Property(False)
 wcalCursorLineWidthFactor: Property[float] = Property(0.12)
 wcalCursorRoundingFactor: Property[float] = Property(0.5)
 dcalWidgetButtonsEnable: Property[bool] = Property(False)
-dcalDayParams: Property[list[DayCalTypeParamsDict]] = Property(
+dcalDayParams: Property[list[DayCalTypeDayParamsDict]] = Property(
 	[
 		{
 			"pos": (0, -12),
@@ -429,7 +429,7 @@ dcalDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
+dcalMonthParams: Property[list[DayCalTypeWMParamsDict]] = Property(
 	[
 		{
 			"pos": (0, -12),
@@ -463,7 +463,7 @@ dcalMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalWeekdayParams: Property[DayCalNameTypeParamsDict] = Property(
+dcalWeekdayParams: Property[DayCalTypeWMParamsDict] = Property(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -504,7 +504,7 @@ dcalWinWidgetButtonsOpacity: Property[float] = Property(1.0)
 dcalWinWeekdayLocalize: Property[bool] = Property(True)
 dcalWinWeekdayAbbreviate: Property[bool] = Property(False)
 dcalWinWeekdayUppercase: Property[bool] = Property(False)
-dcalWinDayParams: Property[list[DayCalTypeParamsDict]] = Property(
+dcalWinDayParams: Property[list[DayCalTypeDayParamsDict]] = Property(
 	[
 		{
 			"pos": (0, 5),
@@ -532,7 +532,7 @@ dcalWinDayParams: Property[list[DayCalTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
+dcalWinMonthParams: Property[list[DayCalTypeWMParamsDict]] = Property(
 	[
 		{
 			"pos": (0, 5),
@@ -566,7 +566,7 @@ dcalWinMonthParams: Property[list[DayCalNameTypeParamsDict]] = Property(
 		},
 	]
 )
-dcalWinWeekdayParams: Property[DayCalNameTypeParamsDict] = Property(
+dcalWinWeekdayParams: Property[DayCalTypeWMParamsDict] = Property(
 	{
 		"pos": (20, 10),
 		"font": None,
