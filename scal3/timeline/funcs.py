@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from dataclasses import dataclass
 
 from scal3 import logger
 
@@ -38,7 +38,7 @@ from scal3.time_utils import (
 	getUtcOffsetByJd,
 )
 from scal3.timeline import conf
-from scal3.timeline.box import calcEventBoxes
+from scal3.timeline.box import Box, calcEventBoxes
 from scal3.timeline.tick import Tick
 from scal3.timeline.utils import (
 	avgMonthLen,
@@ -50,6 +50,13 @@ from scal3.ui.funcs import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
 __all__ = ["calcTimeLineData"]
+
+
+@dataclass(slots=True)
+class TimeLineData:
+	holidays: list[float]
+	ticks: list[Tick]
+	boxes: list[Box]
 
 
 # ----------------------------------------------------
@@ -137,7 +144,7 @@ def calcTimeLineData(
 	timeWidth: float,
 	pixelPerSec: float,
 	borderTm: float,
-) -> dict[str, Any]:
+) -> TimeLineData:
 	# from time import time as now
 	# funcTimeStart = now()
 	timeEnd = timeStart + timeWidth
@@ -161,8 +168,8 @@ def calcTimeLineData(
 	):
 		holidays = [getJPos(jd) for jd in getHolidaysJdList(ui.cells, jd0, jd1 + 1)]
 	# ---------------------- Ticks
-	ticks = []
-	tickEpochSet = set()
+	ticks: list[Tick] = []
+	tickEpochSet: set[int] = set()
 	minStep = conf.minorStepMin.v / pixelPerSec  # second
 	# -----------------
 	year0, month0, day0 = jd_to_primary(jd0)
@@ -356,18 +363,14 @@ def calcTimeLineData(
 					),
 				)
 				tickEpochSet.add(tmEpoch)
-	# ---------------------- Event Boxes
-	data = {
-		"holidays": holidays,
-		"ticks": ticks,
-		"boxes": [],
-	}
-	# ---
-	data["boxes"] = calcEventBoxes(
-		timeStart,
-		timeEnd,
-		pixelPerSec,
-		borderTm,
+
+	return TimeLineData(
+		holidays=holidays,
+		ticks=ticks,
+		boxes=calcEventBoxes(
+			timeStart,
+			timeEnd,
+			pixelPerSec,
+			borderTm,
+		),
 	)
-	# ---
-	return data
