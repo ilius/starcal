@@ -9,7 +9,8 @@ __all__ = ["MyProgressBar"]
 
 
 class ProgressBarType(Protocol):
-	w: gtk.Widget
+	# w: gtk.Widget  # mypy is sometimes ok with this, sometimes not!!
+	w: gtk.ProgressBar | gtk.Overlay
 
 	def set_text(self, text: str) -> None: ...
 
