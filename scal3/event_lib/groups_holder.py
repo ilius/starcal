@@ -19,24 +19,17 @@ from __future__ import annotations
 import json
 
 from scal3 import logger
-from scal3.color_utils import RGB
-
-from .pytypes import EventGroupType
 
 log = logger.get()
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-	from typing import Any
-
-	from .trash import EventTrash
 
 from collections import OrderedDict
 from contextlib import suppress
 from os.path import join, splitext
+from typing import TYPE_CHECKING
 
-from scal3 import core, ics
+from scal3 import ics
+from scal3.color_utils import RGB
+from scal3.core import APP_NAME, VERSION
 from scal3.locale_man import tr as _
 from scal3.s_object import SObjBinaryModel
 
@@ -48,7 +41,13 @@ from .groups_import import (
 )
 from .holders import ObjectsHolderTextModel
 from .objects import iterObjectFiles
+from .pytypes import EventGroupType
 from .register import classes
+
+if TYPE_CHECKING:
+	from typing import Any
+
+	from .trash import EventTrash
 
 __all__ = ["EventGroupsHolder"]
 
@@ -158,8 +157,8 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		return {
 			"info": OrderedDict(
 				[
-					("appName", core.APP_NAME),
-					("version", core.VERSION),
+					("appName", APP_NAME),
+					("version", VERSION),
 				],
 			),
 			"groups": [self.byId[gid].exportData() for gid in gidList],
@@ -188,8 +187,8 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		return {
 			"info": OrderedDict(
 				[
-					("appName", core.APP_NAME),
-					("version", core.VERSION),
+					("appName", APP_NAME),
+					("version", VERSION),
 				],
 			),
 			"groups": [

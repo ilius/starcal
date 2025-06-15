@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.filesystem import FileSystem
+from scal3.filesystem import null_fs
 
 log = logger.get()
 
@@ -56,8 +56,6 @@ except Exception:
 
 
 __all__ = ["BaseJsonPlugin", "loadPlugin"]
-
-null_fs = FileSystem()
 
 # FIXME
 pluginsTitleByName = {

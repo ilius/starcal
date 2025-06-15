@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from scal3 import core, logger
+from scal3 import logger
 
 log = logger.get()
 
@@ -24,9 +24,9 @@ log = logger.get()
 from os.path import join
 from typing import TYPE_CHECKING
 
+from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 
-# from scal3.interval_utils import
 from . import state
 from .objects import HistoryEventObjBinaryModel
 from .register import classes
@@ -121,7 +121,7 @@ class Account(HistoryEventObjBinaryModel):
 			self.id = None
 		else:
 			self.setId(ident)
-		self.fs = core.fs
+		self.fs = null_fs
 		self.enable = True
 		self.title = "Account"
 
