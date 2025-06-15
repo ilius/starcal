@@ -24,7 +24,7 @@ from os.path import join, splitext
 from time import perf_counter
 from time import time as now
 
-from scal3 import core
+from scal3.core import VERSION
 
 from .object_base import EventObjTextModel
 
@@ -51,7 +51,7 @@ class InfoWrapper(EventObjTextModel):
 		self.last_run = 0
 
 	def update(self) -> None:
-		self.version = core.VERSION
+		self.version = VERSION
 		self.last_run = int(now())
 
 	def updateAndSave(self) -> None:

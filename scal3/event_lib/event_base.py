@@ -26,8 +26,9 @@ from time import time as now
 from typing import TYPE_CHECKING, Self
 
 import mytz
-from scal3 import core
 from scal3.cal_types import calTypes
+from scal3.core import compressLongInt, eventTextSep, getCompactTime
+from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.s_object import SObjBinaryModel
@@ -152,8 +153,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def icsUID(self) -> str:
 		import socket
 
-		event_st = core.compressLongInt(hash(str(self.getDict())))
-		time_st = core.getCompactTime()
+		event_st = compressLongInt(hash(str(self.getDict())))
+		time_st = getCompactTime()
 		host = socket.gethostname()
 		return event_st + "_" + time_st + "@" + host
 
@@ -166,7 +167,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			self.id = None
 		else:
 			self.setId(ident)
-		self.fs = core.fs
+		self.fs = null_fs
 		self.dataIsSet = False
 		self.uuid: str | None = None
 		self.parent: EventContainer | None = parent
@@ -321,7 +322,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			if self.parent is not None:
 				sep = self.parent.eventTextSep
 			else:
-				sep = core.eventTextSep
+				sep = eventTextSep
 			return [summary, sep, description]
 
 		return [summary]
