@@ -153,6 +153,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 						"color": conf.textColor.v,
 						"xalign": "center",
 						"yalign": "center",
+						"localize": False,
 					},
 				)
 		return params
@@ -917,45 +918,50 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		# 	h-1,
 		# )
 		# ----
-		for calType, params in zip(
+		for calType, dparams in zip(
 			calTypes.active,
 			self.getDayParams(),
 			strict=False,
 		):
-			if not params.get("enable", True):
+			if not dparams.get("enable", True):
 				continue
+			dayNum = c.dates[calType][2]
+			if dparams.get("localize", False):
+				dayStr = _(dayNum)
+			else:
+				dayStr = str(dayNum)
 			layout = newTextLayout(
 				self,
-				_(c.dates[calType][2], calType),
-				getParamsFont(params),
+				dayStr,
+				getParamsFont(dparams),
 			)
 			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
 			if calType == calTypes.primary and c.holiday:
 				setColor(cr, conf.holidayColor.v)
 			else:
-				setColor(cr, params["color"])
-			font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
+				setColor(cr, dparams["color"])
+			font_x, font_y = self.getRenderPos(dparams, x0, y0, w, h, fontw, fonth)
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
-		for calType, params in self.iterMonthParams():
-			text = self.getMonthName(c, calType, params)
+		for calType, mparams in self.iterMonthParams():
+			text = self.getMonthName(c, calType, mparams)
 			layout = newTextLayout(
 				self,
 				text,
-				getParamsFont(params),
+				getParamsFont(mparams),
 			)
 			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
-			setColor(cr, params["color"])
-			font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
+			setColor(cr, mparams["color"])
+			font_x, font_y = self.getRenderPos(mparams, x0, y0, w, h, fontw, fonth)
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
 		if self.weekdayParams:
-			params = self.weekdayParams.v
-			if params.get("enable", True):
+			wparams = self.weekdayParams.v
+			if wparams.get("enable", True):
 				text = core.getWeekDayAuto(
 					c.weekDay,
 					localize=self.getWeekdayLocalize(),
@@ -971,12 +977,12 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				daynum = newTextLayout(
 					self,
 					text,
-					getParamsFont(params),
+					getParamsFont(wparams),
 				)
 				assert daynum is not None
 				fontw, fonth = daynum.get_pixel_size()
-				setColor(cr, params["color"])
-				font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
+				setColor(cr, wparams["color"])
+				font_x, font_y = self.getRenderPos(wparams, x0, y0, w, h, fontw, fonth)
 				cr.move_to(font_x, font_y)
 				show_layout(cr, daynum)
 
