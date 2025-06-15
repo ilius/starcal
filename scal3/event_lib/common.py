@@ -1,11 +1,31 @@
 from datetime import datetime
 from time import time as now
 
-__all__ = ["compressLongInt", "eventTextSep", "getCompactTime", "getCurrentJd"]
+from scal3.locale_man import tr as _
+
+__all__ = [
+	"compressLongInt",
+	"eventTextSep",
+	"getCompactTime",
+	"getCurrentJd",
+	"weekDayName",
+	"weekDayNameEnglish",
+]
 
 
 # to separate summary from description for display
 eventTextSep = ": "
+
+weekDayNameEnglish = (
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+)
+weekDayName = tuple(_(name) for name in weekDayNameEnglish)
 
 
 def getCurrentJd() -> int:

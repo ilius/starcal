@@ -30,7 +30,6 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.core import weekDayName
 from scal3.date_utils import jwday
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
@@ -41,7 +40,7 @@ from scal3.time_utils import (
 )
 from scal3.utils import iceil, ifloor
 
-from .common import getCurrentJd
+from .common import getCurrentJd, weekDayName
 from .event_base import Event
 from .occur import IntervalOccurSet, JdOccurSet
 from .register import classes
