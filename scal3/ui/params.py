@@ -1151,6 +1151,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "center",
 				"yalign": "center",
+				"localize": False,
 			},
 			{
 				"pos": (125, 30),
@@ -1159,6 +1160,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "center",
 				"yalign": "center",
+				"localize": False,
 			},
 			{
 				"pos": (-125, 24),
@@ -1167,6 +1169,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "center",
 				"yalign": "center",
+				"localize": False,
 			},
 		],
 	),
@@ -1434,6 +1437,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "left",
 				"yalign": "center",
+				"localize": False,
 			},
 			{
 				"pos": (5, 0),
@@ -1442,6 +1446,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "right",
 				"yalign": "top",
+				"localize": False,
 			},
 			{
 				"pos": (0, 0),
@@ -1450,6 +1455,7 @@ confParamsData: list[Param] = [
 				"enable": True,
 				"xalign": "right",
 				"yalign": "buttom",
+				"localize": False,
 			},
 		],
 	),
