@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
+from scal3.filesystem import FileSystem
 
 log = logger.get()
 
@@ -56,6 +57,7 @@ except Exception:
 
 __all__ = ["BaseJsonPlugin", "loadPlugin"]
 
+null_fs = FileSystem()
 
 # FIXME
 pluginsTitleByName = {
@@ -217,7 +219,7 @@ class BasePlugin(SObjTextModel):
 			log.error("self.calType is None")
 			return
 		currentTimeStamp = strftime(icsTmFormat)
-		self.load(0, fs=None)  # FIXME
+		self.load(0, fs=null_fs)
 		calType = self.calType
 		icsText = icsHeader
 		for jd in range(startJd, endJd):

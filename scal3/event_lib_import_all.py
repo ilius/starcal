@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from scal3.account.google import GoogleAccount
 from scal3.account.starcal import StarCalendarAccount
 from scal3.vcs_modules.git import (
@@ -13,7 +15,7 @@ from scal3.vcs_modules.git import (
 	getTagShortStatLine,
 	prepareObj,
 )
-from scal3.vcs_modules.hg import (  # type: ignore[assignment]
+from scal3.vcs_modules.hg import (
 	clearObj,
 	getCommitInfo,
 	getCommitList,

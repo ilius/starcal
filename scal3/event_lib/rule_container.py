@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 	from typing import Any
 
+	from scal3.filesystem import FileSystem
+
 	from .pytypes import EventRuleType, RuleContainerType
 
 
@@ -58,7 +60,8 @@ class RuleContainer(SObj):
 		"timeZoneEnable",
 		"timeZone",
 	]
-	calType: int
+	WidgetClass: Any
+	fs: FileSystem
 
 	@staticmethod
 	def copyRulesDict(rulesDict: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
@@ -73,6 +76,7 @@ class RuleContainer(SObj):
 		# ---
 		self.clearRules()
 		self.rulesHash: int | None = None
+		self.calType = 0
 
 	def clearRules(self) -> None:
 		self.rulesDict: dict[str, EventRuleType] = {}
@@ -107,6 +111,8 @@ class RuleContainer(SObj):
 		self.rulesDict[rule.name] = rule
 
 	def addNewRule(self, ruleType: str) -> EventRuleType:
+		# if TYPE_CHECKING:
+		# 	_container: RuleContainerType = self
 		rule = classes.rule.byName[ruleType](self)  # type: ignore[arg-type]
 		self.addRule(rule)
 		return rule

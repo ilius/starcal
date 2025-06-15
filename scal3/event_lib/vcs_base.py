@@ -174,7 +174,7 @@ class VcsEpochBaseEvent(Event):
 	def load(
 		cls,
 		ident: int,
-		fs: FileSystem | None,
+		fs: FileSystem,
 	) -> Self | None:
 		pass
 

@@ -185,9 +185,10 @@ class TaskEvent(SingleStartEndEvent):
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
+		tt = localtime()
 		self.setStart(
 			getSysDate(self.calType),
-			tuple(localtime()[3:6]),  # type: ignore[arg-type]
+			(tt.tm_hour, tt.tm_min, tt.tm_sec),
 		)
 		self._setDefaultDuration(group)
 

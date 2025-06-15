@@ -62,10 +62,11 @@ class DummyAccount:
 	def save(self) -> None:
 		pass
 
+	@classmethod
 	def load(
 		cls,
 		ident: int,
-		fs: FileSystem | None = None,
+		fs: FileSystem,
 	) -> None:
 		pass
 
