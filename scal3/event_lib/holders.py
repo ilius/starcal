@@ -167,18 +167,18 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 
 	def setList(self, data: list[int]) -> None:
 		self.clear()
-		for sid in data:
-			if not isinstance(sid, int) or sid == 0:
-				raise RuntimeError(f"unexpected {sid=}, {self=}")
-			idTmp = abs(sid)
+		for signed_id in data:
+			if not isinstance(signed_id, int) or signed_id == 0:
+				raise RuntimeError(f"unexpected {signed_id=}, {self=}")
+			ident = abs(signed_id)
 			cls = self.getMainClass()
 			assert cls is not None
-			obj = cls.load(idTmp, fs=self.fs)
+			obj = cls.load(ident, fs=self.fs)
 			assert obj is not None
-			assert obj.id == idTmp
-			obj.enable = sid > 0
-			self.idList.append(idTmp)
-			self.byId[idTmp] = obj
+			assert obj.id == ident
+			obj.enable = signed_id > 0
+			self.idList.append(ident)
+			self.byId[ident] = obj
 
 	def getList(self) -> list[int]:
 		return [ident if self.byId[ident] else -ident for ident in self.idList]
