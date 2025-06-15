@@ -84,7 +84,7 @@ __all__ = [
 ]
 
 
-dayLen = 24 * 3600
+dayLen = 86400
 icsMinStartYear = 1970
 # icsMaxEndYear = 2050
 

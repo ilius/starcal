@@ -189,7 +189,7 @@ def getUtcOffsetCurrent(tz: TZ = None) -> int:
 
 
 def getFloatJdFromEpoch(epoch: float, tz: TZ = None) -> float:
-	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0 * 3600) + J1970
+	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / 86400 + J1970
 
 
 def getJdFromEpoch(epoch: float, tz: TZ = None) -> int:
@@ -198,7 +198,7 @@ def getJdFromEpoch(epoch: float, tz: TZ = None) -> int:
 
 def getEpochFromJd(jd: int, tz: TZ = None) -> int:
 	assert isinstance(jd, int)
-	localEpoch = (jd - J1970) * 24 * 3600
+	localEpoch = (jd - J1970) * 86400
 	year, month, day = jd_to_g(jd)  # jd or jd-1? FIXME
 	return localEpoch - getUtcOffsetByGDate(year, month, day, tz)
 
@@ -230,7 +230,7 @@ def getJhmsFromEpoch(
 		getUtcOffsetCurrent(tz) if currentOffset else getUtcOffsetByEpoch(epoch, tz)
 	)
 	# ^ FIXME
-	days, second = divmod(ifloor(epoch + offset), 24 * 3600)
+	days, second = divmod(ifloor(epoch + offset), 86400)
 	return days + J1970, getHmsFromSeconds(int(second))
 
 
