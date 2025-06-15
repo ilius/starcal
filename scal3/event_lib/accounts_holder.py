@@ -45,7 +45,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 
 	@classmethod
 	def getMainClass(cls) -> type[AccountType] | None:
-		return classes.account.main  # type: ignore[return-value]
+		return classes.account.main
 
 	def __init__(self, ident: int | None = None) -> None:
 		ObjectsHolderTextModel.__init__(self)

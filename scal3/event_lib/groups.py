@@ -548,8 +548,7 @@ class EventGroup(EventContainer):
 	def copyAs(self, newGroupType: str) -> EventGroupType:
 		newGroup: EventGroupType = classes.group.byName[newGroupType]()
 		newGroup.fs = self.fs
-		# this causes mypy to INTERNAL ERROR
-		newGroup.copyFrom(self)  # type: ignore
+		newGroup.copyFrom(self)
 		newGroup.removeAll()
 		return newGroup
 

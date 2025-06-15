@@ -151,9 +151,8 @@ class SObjTextModel(SObj):
 	def load(
 		cls,
 		ident: int,
-		fs: FileSystem | None,
+		fs: FileSystem,
 	) -> Self | None:
-		assert fs is not None
 		fpath = cls.getFile(ident)
 		data = {}
 		if fs.isfile(fpath):

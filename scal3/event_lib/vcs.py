@@ -255,7 +255,7 @@ class VcsDailyStatEvent(Event):
 	def load(
 		cls,
 		ident: int,
-		fs: FileSystem | None = None,
+		fs: FileSystem,
 	) -> None:  # FIXME
 		pass
 

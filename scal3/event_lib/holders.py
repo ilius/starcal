@@ -47,9 +47,8 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 	def load(
 		cls,
 		ident: int,
-		fs: FileSystem | None,
+		fs: FileSystem,
 	) -> Self | None:
-		assert fs is not None
 		fpath = cls.getFile(ident)
 		data: list[int] = []
 		if fs.isfile(fpath):
@@ -174,11 +173,12 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			idTmp = abs(sid)
 			cls = self.getMainClass()
 			assert cls is not None
-			obj = cls.load(idTmp, fs=self.fs)  # type: ignore[attr-defined]
-			obj.parent = self
+			obj = cls.load(idTmp, fs=self.fs)
+			assert obj is not None
+			assert obj.id == idTmp
 			obj.enable = sid > 0
 			self.idList.append(idTmp)
-			self.byId[obj.id] = obj
+			self.byId[idTmp] = obj
 
 	def getList(self) -> list[int]:
 		return [ident if self.byId[ident] else -ident for ident in self.idList]
