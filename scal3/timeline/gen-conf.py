@@ -27,7 +27,7 @@ output.write(
 	"from scal3.color_utils import RGB, RGBA\n"
 	"from scal3.property import Property\n\n"
 	"if typing.TYPE_CHECKING:\n"
-	"\tfrom typing import Any\n\n"
+	"\tfrom typing import Any, Final\n\n"
 	"\tfrom scal3.color_utils import ColorType\n"
 	"\tfrom scal3.font import Font\n",
 )
@@ -36,7 +36,7 @@ output.write(f"__all__ = {all_names!r}\n\n")
 for p in params.confParamsData:
 	assert p.default is not params.NOT_SET
 	value = p.default
-	output.write(f"{p.v3Name}: Property[{p.type}] = Property({value!r})" + "\n")
+	output.write(f"{p.v3Name}: Final[Property[{p.type}]] = Property({value!r})" + "\n")
 
 
 output.write("\n\n")

@@ -20,7 +20,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from scal3 import logger
 from scal3.property import Property
@@ -91,7 +91,7 @@ minMonthLen = 29
 maxMonthLen = 30
 avgYearLen = 354.3666  # FIXME
 
-hijriUseDB = Property(True)
+hijriUseDB: Final[Property[bool]] = Property(True)
 
 
 options: list[OptionTuple] = [
