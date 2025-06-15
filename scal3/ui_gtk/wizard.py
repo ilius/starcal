@@ -14,7 +14,7 @@ from scal3.ui_gtk.stack import MyStack, StackPage
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-__all__ = ["WizardWindow"]
+__all__ = ["StepType", "WizardWindow"]
 
 
 class StepType(Protocol):

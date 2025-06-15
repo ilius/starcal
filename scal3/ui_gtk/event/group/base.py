@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.groups import EventGroup
 	from scal3.event_lib.pytypes import EventGroupType
 
-__all__ = ["BaseWidgetClass"]
+__all__ = ["BaseWidgetClass", "makeGroupWidget"]
 
 
 def makeGroupWidget(obj: EventGroupType) -> BaseWidgetClass | None:

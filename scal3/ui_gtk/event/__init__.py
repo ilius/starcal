@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"EventWidgetType",
+	"getWidgetClass",
 	"makeWidget",
 	"setActionFuncs",
 ]
