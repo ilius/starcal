@@ -61,7 +61,11 @@ from scal3.utils import intcmp
 if typing.TYPE_CHECKING:
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.event_lib.pytypes import (
+		EventGroupType,
+		EventSearchConditionDict,
+		EventType,
+	)
 
 __all__ = ["EventSearchWindow"]
 
@@ -423,7 +427,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 	def updateTimezoneSensitive(self, _w: gtk.Widget | None = None) -> None:
 		self.timezoneCombo.set_sensitive(self.timezoneCheck.get_active())
 
-	def _collectConds(self) -> tuple[list[int], dict[str, Any]]:
+	def _collectConds(self) -> tuple[list[int], EventSearchConditionDict]:
 		groupIds: list[int]
 		if self.groupCheck.get_active():
 			groupId = self.groupCombo.getActive()
@@ -435,7 +439,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		# TODO: get from input widget
 		calType = self.currentCalType
 		# ---
-		conds: dict[str, Any] = {}
+		conds: EventSearchConditionDict = {}
 		if self.textCSensCheck.get_active():
 			conds["text"] = self.textInput.get_text()
 		else:
@@ -480,7 +484,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 	@staticmethod
 	def searchAndExportToJSON(
 		groupIds: list[int],
-		conds: dict[str, Any],
+		conds: EventSearchConditionDict,
 		fpath: str,
 		# TODO: compact: bool,
 	) -> None:
