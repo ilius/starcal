@@ -73,6 +73,7 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
+		DayCalTypeBaseParamsDict,
 		DayCalTypeDayParamsDict,
 		DayCalTypeWMParamsDict,
 		PieGeoDict,
@@ -694,7 +695,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	@staticmethod
 	def getRenderPos(
-		params: DayCalTypeDayParamsDict,
+		params: DayCalTypeBaseParamsDict,
 		x0: float,
 		y0: float,
 		w: float,
