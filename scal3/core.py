@@ -24,7 +24,6 @@ import typing
 from contextlib import suppress
 from datetime import datetime
 from os.path import isdir, isfile, join, split
-from time import localtime
 from time import time as now
 from typing import Any, NamedTuple
 
