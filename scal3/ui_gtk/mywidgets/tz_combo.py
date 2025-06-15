@@ -58,10 +58,12 @@ class TimeZoneComboBoxEntry(gtk.Box):
 		)
 
 	def appendOrderedDict(
-		self, parentIter: gtk.TreeIter | None, dct: dict[str, Any]
+		self,
+		parentIter: gtk.TreeIter | None,
+		data: dict[str, Any],
 	) -> None:
 		model = self._listStore
-		for key, value in dct.items():
+		for key, value in data.items():
 			if isinstance(value, dict):
 				itr = model.append(parentIter, [key, False])
 				self.appendOrderedDict(itr, value)
