@@ -55,6 +55,7 @@ from scal3.ics import getIcsTimeByEpoch
 from scal3.locale_man import tr as _
 from scal3.os_utils import getUserDisplayName, openUrl
 from scal3.utils import toBytes, toStr
+from scal3.event_lib.common import compressLongInt
 
 __all__ = ['GoogleAccount']
 userDisplayName = getUserDisplayName()
@@ -70,7 +71,7 @@ STATUS_UNCHANCHED, STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED = range(4)
 
 
 def calcEtag(gevent):
-	return core.compressLongInt(abs(hash(repr(gevent))))
+	return compressLongInt(abs(hash(repr(gevent))))
 
 
 def decodeIcsStartEnd(value):

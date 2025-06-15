@@ -62,12 +62,10 @@ __all__ = [
 	"GREGORIAN",
 	"VERSION",
 	"allPlugList",
-	"compressLongInt",
 	"firstWeekDay",
 	"firstWeekDayAuto",
 	"fs",
 	"getAbsWeekNumberFromJd",
-	"getCompactTime",
 	"getCurrentJd",
 	"getDeletedPluginsTable",
 	"getPluginsTable",
@@ -510,28 +508,6 @@ def restart() -> typing.NoReturn:
 
 
 # _____________________________________________________ #
-
-
-def compressLongInt(num: int) -> str:
-	"""Num must be less than 2**64."""
-	from base64 import b64encode
-	from struct import pack
-
-	return (
-		b64encode(
-			pack("L", num % 2**64).rstrip(b"\x00"),
-		)[:-3]
-		.decode("ascii")
-		.replace("/", "_")
-	)
-
-
-def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
-	return compressLongInt(
-		int(
-			now() % (maxDays * 86400) / minSec,
-		),
-	)
 
 
 def stopRunningThreads() -> None:
