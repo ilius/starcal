@@ -46,6 +46,8 @@ from scal3.plugin_man import loadPlugin
 from scal3.property import Property
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.plugin_type import PluginType
 
 try:
@@ -91,17 +93,17 @@ __all__ = [
 	"weekNumberModeAuto",
 ]
 
-VERSION_TAG = "3.2.4"
+VERSION_TAG: Final[str] = "3.2.4"
 
 # BRANCH = join(sourceDir, "branch")
 # FIXME: figure out a policy for updating it
 
-APP_DESC = "StarCalendar"
+APP_DESC: Final[str] = "StarCalendar"
 COMMAND = APP_NAME
-homePage = "http://ilius.github.io/starcal/"
+homePage: Final[str] = "http://ilius.github.io/starcal/"
 
 logger.init()
-log = logger.get()
+log: Final = logger.get()
 
 # __plugin_api_get__ = [
 # 	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
@@ -121,9 +123,9 @@ log = logger.get()
 
 # ________________ Defining user core configuration ________________ #
 
-sysConfPath = join(sysConfDir, "core.json")
+sysConfPath: Final[str] = join(sysConfDir, "core.json")
 
-confPath = join(confDir, "core.json")
+confPath: Final[str] = join(confDir, "core.json")
 
 # __________________________ Default Configuration __________________________ #
 
@@ -153,11 +155,11 @@ confParams: Final[dict[str, Property]] = {
 	"weekNumberMode": weekNumberMode,
 }
 
-confDecoders = {
+confDecoders: Final[dict[str, Callable]] = {
 	"allPlugList": lambda pdataList: [loadPlugin(**pdata) for pdata in pdataList],
 }
 
-confEncoders = {
+confEncoders: Final[dict[str, Callable]] = {
 	"allPlugList": lambda plugList: [
 		plug.getArgs() for plug in plugList if plug is not None
 	],
@@ -547,7 +549,7 @@ log.info(f"Local Time Zone: {locale_man.localTzStr}")
 # 	tr("5th day"), tr("6th day"), tr("Last day"))
 # holidayWeekEnable = True
 
-libDir = join(sourceDir, "lib")
+libDir: Final[str] = join(sourceDir, "lib")
 if isdir(libDir):
 	sys.path.insert(0, libDir)
 	major = sys.version_info.major
@@ -599,7 +601,9 @@ if aboutText in {"aboutText", ""}:
 		aboutText = fp.read()
 
 
-weekDayNameEnglish = (
+type StrTuple7 = tuple[str, str, str, str, str, str, str]
+
+weekDayNameEnglish: Final[StrTuple7] = (
 	"Sunday",
 	"Monday",
 	"Tuesday",
@@ -608,12 +612,33 @@ weekDayNameEnglish = (
 	"Friday",
 	"Saturday",
 )
-weekDayNameAbEnglish = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+weekDayNameAbEnglish: Final[StrTuple7] = (
+	"Sun",
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
+)
 
-weekDayName = tuple(_(name) for name in weekDayNameEnglish)
-weekDayNameAb = tuple(
-	_(name, nums=True, ctx="abbreviation", default=weekDayNameAbEnglish[i])
-	for i, name in enumerate(weekDayNameEnglish)
+weekDayName: Final[StrTuple7] = (
+	_("Sunday"),
+	_("Monday"),
+	_("Tuesday"),
+	_("Wednesday"),
+	_("Thursday"),
+	_("Friday"),
+	_("Saturday"),
+)
+weekDayNameAb: Final[StrTuple7] = (
+	_("Sunday", nums=True, ctx="abbreviation", default="Sun"),
+	_("Monday", nums=True, ctx="abbreviation", default="Mon"),
+	_("Tuesday", nums=True, ctx="abbreviation", default="Tue"),
+	_("Wednesday", nums=True, ctx="abbreviation", default="Wed"),
+	_("Thursday", nums=True, ctx="abbreviation", default="Thu"),
+	_("Friday", nums=True, ctx="abbreviation", default="Fri"),
+	_("Saturday", nums=True, ctx="abbreviation", default="Sat"),
 )
 
 # if firstWeekDayAuto and os.sep=="/":	# only if unix
