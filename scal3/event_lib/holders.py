@@ -16,13 +16,14 @@
 
 from __future__ import annotations
 
-from scal3 import core, logger
+from scal3 import logger
 
 log = logger.get()
 
 import json
 from typing import TYPE_CHECKING, Self
 
+from scal3.filesystem import null_fs
 from scal3.json_utils import dataToPrettyJson
 from scal3.s_object import SObjTextModel
 
@@ -40,7 +41,7 @@ __all__ = ["ObjectsHolderTextModel"]
 
 class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 	# keeps all objects in memory
-	# Only use to keep groups and accounts, but not events
+	# only for keeping groups and accounts, not events or rules
 	skipLoadNoFile = True
 
 	@classmethod
@@ -86,7 +87,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		self,
 		ident: int | None = None,  # noqa: ARG002 # FIXME?
 	) -> None:
-		self.fs = core.fs
+		self.fs = null_fs
 		self.clear()
 		self.byId: dict[int, T] = {}
 		self.idList: list[int] = []

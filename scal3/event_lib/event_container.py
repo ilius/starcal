@@ -25,8 +25,10 @@ from time import time as now
 from typing import TYPE_CHECKING, Protocol, Self
 
 import mytz
-from scal3 import core, locale_man, logger
+from scal3 import locale_man, logger
 from scal3.cal_types import calTypes
+from scal3.core import eventTextSep
+from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 from scal3.s_object import SObj
 from scal3.time_utils import getEpochFromJd
@@ -149,7 +151,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return f"{self.__class__.__name__}(title='{self.title}')"
 
 	def __init__(self, title: str = "Untitled") -> None:
-		self.fs = core.fs
+		self.fs = null_fs
 		self.parent = None
 		self.enable = True
 		self.timeZoneEnable = False
@@ -160,7 +162,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		self.icon: str | None = None
 		self.showFullEventDesc = False
 		self.addEventsToBeginning = False
-		self.eventTextSep = core.eventTextSep
+		self.eventTextSep = eventTextSep
 		self.startJd = 0
 		self.endJd = 0
 		self.occur: EventSearchTree | None = None

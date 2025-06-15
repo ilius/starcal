@@ -32,10 +32,7 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.core import (
-	getAbsWeekNumberFromJd,
-	jd_to_primary,
-)
+from scal3.core import getAbsWeekNumberFromJd
 from scal3.date_utils import (
 	checkDate,
 	dateDecode,
@@ -155,7 +152,6 @@ __all__ = [
 	"init",
 	"intersectionOfTwoIntervalList",
 	"jd_to",
-	"jd_to_primary",
 	"jsonTimeFromEpoch",
 	"jwday",
 	"numRangesEncode",

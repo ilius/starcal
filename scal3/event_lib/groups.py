@@ -29,14 +29,14 @@ from typing import IO, TYPE_CHECKING, NamedTuple, Self
 
 from cachetools import LRUCache
 
-from scal3 import core, ics
+from scal3 import ics
 from scal3.cal_types import (
 	calTypes,
 	getSysDate,
 	jd_to,
 	to_jd,
 )
-from scal3.core import getAbsWeekNumberFromJd
+from scal3.core import firstWeekDay, getAbsWeekNumberFromJd, getCurrentJd
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.dict_utils import makeOrderedDict
 from scal3.locale_man import textNumEncode
@@ -1033,7 +1033,7 @@ class UniversityTerm(EventGroup):
 					if dayTimeRange is None:
 						raise RuntimeError("no dayTimeRange rule")
 					return (
-						(wd - core.firstWeekDay.v) % 7,
+						(wd - firstWeekDay.v) % 7,
 						dayTimeRange.getHourRange(),
 					)
 				if event.name == "universityExam":
@@ -1100,7 +1100,7 @@ class UniversityTerm(EventGroup):
 		]
 		# ---
 		if currentWeekOnly:
-			currentJd = core.getCurrentJd()
+			currentJd = getCurrentJd()
 			if (
 				getAbsWeekNumberFromJd(currentJd) - getAbsWeekNumberFromJd(self.startJd)
 			) % 2 == 1:
@@ -1173,7 +1173,7 @@ class UniversityTerm(EventGroup):
 	def setDefaults(self) -> None:
 		calType = calTypes.names[self.calType]
 		# odd term or even term?
-		jd = core.getCurrentJd()
+		jd = getCurrentJd()
 		year, month, day = jd_to(jd, self.calType)
 		md = (month, day)
 		if calType == "jalali":

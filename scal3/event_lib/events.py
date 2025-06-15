@@ -23,13 +23,14 @@ log = logger.get()
 from time import localtime
 from typing import TYPE_CHECKING
 
-from scal3 import core, ics
+from scal3 import ics
 from scal3.cal_types import (
 	GREGORIAN,
 	getSysDate,
 	jd_to,
 	to_jd,
 )
+from scal3.core import getCurrentJd, weekDayName
 from scal3.date_utils import jwday
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
@@ -381,7 +382,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
-		jd = core.getCurrentJd()
+		jd = getCurrentJd()
 		self.setJd(jd)
 		self.setEnd("duration", 1)
 		# if group and group.name == "taskList":
@@ -696,7 +697,7 @@ class YearlyEvent(Event):
 
 	def getSuggestedStartYear(self) -> int:
 		if self.parent is None:
-			startJd = core.getCurrentJd()
+			startJd = getCurrentJd()
 		else:
 			startJd = self.parent.startJd
 		return jd_to(startJd, self.calType)[0]
@@ -806,7 +807,7 @@ class MonthlyEvent(Event):
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
-		year, month, day = jd_to(core.getCurrentJd(), self.calType)
+		year, month, day = jd_to(getCurrentJd(), self.calType)
 		start = StartEventRule.getFrom(self)
 		if start is not None:
 			start.setDate((year, month, 1))
@@ -877,7 +878,7 @@ class WeeklyEvent(Event):
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
-		jd = core.getCurrentJd()
+		jd = getCurrentJd()
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise RuntimeError("no start rule")
@@ -970,7 +971,7 @@ class UniversityClassEvent(Event):
 		rule = WeekDayEventRule.getFrom(self)
 		if rule is None:
 			raise RuntimeError("no weekDay rule")
-		return core.weekDayName[rule.weekDayList[0]]
+		return weekDayName[rule.weekDayList[0]]
 
 	def updateSummary(self) -> None:
 		self.summary = (
