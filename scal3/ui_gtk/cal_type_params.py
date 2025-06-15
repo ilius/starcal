@@ -24,15 +24,24 @@ from scal3.property import ItemProperty, Property
 log = logger.get()
 
 from scal3.cal_types import calTypes
+from scal3.locale_man import langHasUppercase
 from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import HBox, gtk, pack
 
 if TYPE_CHECKING:
-	from scal3.ui.pytypes import GenericTypeParamsDict
+	from scal3.ui.pytypes import (
+		DayCalTypeDayParamsDict,
+		DayCalTypeWMParamsDict,
+	)
 	from scal3.ui_gtk.cal_base import CalBase
 
-__all__ = ["CalTypeParamWidget", "TextParamWidget"]
+__all__ = [
+	"DayNumListParamsWidget",
+	"DayNumParamsWidget",
+	"MonthNameListParamsWidget",
+	"WeekDayNameParamsWidget",
+]
 
 
 class XAlignComboBox(gtk.ComboBoxText):
@@ -98,17 +107,14 @@ class YAlignComboBox(gtk.ComboBoxText):
 
 
 # only used for Day Cal so far
-class TextParamWidget(gtk.Box):
+class DayNumParamsWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Property[GenericTypeParamsDict],
+		params: Property[DayCalTypeDayParamsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
 		hasEnable: bool = False,
-		hasAlign: bool = False,
-		hasAbbreviate: bool = False,
-		hasUppercase: bool = False,
 		enableTitleLabel: str = "",
 		useFrame: bool = False,
 	) -> None:
@@ -124,9 +130,6 @@ class TextParamWidget(gtk.Box):
 		self.params = params
 		self.cal = cal
 		self.hasEnable = hasEnable
-		self.hasAlign = hasAlign
-		self.hasAbbreviate = hasAbbreviate
-		self.hasUppercase = hasUppercase
 		# ----
 		if sgroupLabel is None:
 			sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -166,20 +169,19 @@ class TextParamWidget(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# ----
-		if hasAlign:
-			hbox = HBox()
-			label = gtk.Label(label=_("Alignment") + ": ")
-			pack(hbox, label)
-			sgroupLabel.add_widget(label)
-			# --
-			self.xalignCombo = XAlignComboBox()
-			pack(hbox, self.xalignCombo)
-			# --
-			self.yalignCombo = YAlignComboBox()
-			pack(hbox, self.yalignCombo)
-			# --
-			pack(hbox, gtk.Label(), 1, 1)
-			pack(vbox, hbox)
+		hbox = HBox()
+		label = gtk.Label(label=_("Alignment") + ": ")
+		pack(hbox, label)
+		sgroupLabel.add_widget(label)
+		# --
+		self.xalignCombo = XAlignComboBox()
+		pack(hbox, self.xalignCombo)
+		# --
+		self.yalignCombo = YAlignComboBox()
+		pack(hbox, self.yalignCombo)
+		# --
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(vbox, hbox)
 		# ----
 		hbox = HBox()
 		label = gtk.Label(label=_("Font") + ": ")
@@ -197,11 +199,180 @@ class TextParamWidget(gtk.Box):
 		pack(hbox, fontb)
 		pack(vbox, hbox)
 		# ----
-		if hasAbbreviate:
-			self.abbreviateCheck = gtk.CheckButton(label=_("Abbreviate"))
-			pack(vbox, self.abbreviateCheck)
-		if hasUppercase:
-			self.uppercaseCheck = gtk.CheckButton(label=_("Uppercase"))
+		# ----
+		self.set(params.v)
+		# ----
+		self.spinX.connect("changed", self.onChange)
+		self.spinY.connect("changed", self.onChange)
+		fontb.connect("font-set", self.onChange)
+		colorb.connect("color-set", self.onChange)
+		if hasEnable:
+			self.enableCheck.connect("clicked", self.onChange)
+		self.xalignCombo.connect("changed", self.onChange)
+		self.yalignCombo.connect("changed", self.onChange)
+
+	def get(self) -> DayCalTypeDayParamsDict:
+		enable = True
+		if self.hasEnable:
+			enable = self.enableCheck.get_active()
+		return {
+			"enable": enable,
+			"pos": (
+				self.spinX.get_value(),
+				self.spinY.get_value(),
+			),
+			"font": self.fontb.getFont(),
+			"color": self.colorb.getRGBA(),
+			"xalign": self.xalignCombo.get() or "center",
+			"yalign": self.yalignCombo.get() or "center",
+		}
+
+	def set(self, params: DayCalTypeDayParamsDict) -> None:
+		self.spinX.set_value(params["pos"][0])
+		self.spinY.set_value(params["pos"][1])
+		font = getParamsFont(params)
+		assert font is not None
+		self.fontb.setFont(font)
+		self.colorb.setRGBA(params["color"])
+		if self.hasEnable:
+			self.enableCheck.set_active(params.get("enable", True))
+		self.xalignCombo.set(params.get("xalign", "center"))
+		self.yalignCombo.set(params.get("yalign", "center"))
+
+	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
+		self.params.v = self.get()
+		self.cal.queue_draw()
+
+	def setFontPreviewText(self, text: str) -> None:
+		self.fontb.set_property("preview-text", text)
+
+
+class DayNumListParamsWidget(DayNumParamsWidget):
+	def __init__(
+		self,
+		params: Property[list[DayCalTypeDayParamsDict]],
+		index: int,
+		calType: int,
+		cal: CalBase,
+		sgroupLabel: gtk.SizeGroup | None = None,
+		hasEnable: bool = False,
+		enableTitleLabel: str = "",
+		useFrame: bool = False,
+	) -> None:
+		self.index = index
+		# ----
+		module = calTypes[calType]
+		if module is None:
+			raise RuntimeError(f"cal type '{calType}' not found")
+		DayNumParamsWidget.__init__(
+			self,
+			params=ItemProperty(params, index),
+			cal=cal,
+			sgroupLabel=sgroupLabel,
+			desc=_(module.desc, ctx="calendar"),
+			hasEnable=hasEnable,
+			enableTitleLabel=enableTitleLabel,
+			useFrame=useFrame,
+		)
+
+
+# only used for Day Cal so far
+class _WeekMonthParamsWidget(gtk.Box):
+	def __init__(
+		self,
+		params: Property[DayCalTypeWMParamsDict],
+		cal: CalBase,
+		sgroupLabel: gtk.SizeGroup | None = None,
+		desc: str | None = None,
+		hasEnable: bool = False,
+		enableTitleLabel: str = "",
+		useFrame: bool = False,
+	) -> None:
+		from scal3.ui_gtk.mywidgets import MyColorButton, MyFontButton
+		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+
+		if desc is None:
+			raise ValueError("desc is None")
+		# ---
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
+		# ---
+		self.set_border_width(5)
+		self.params = params
+		self.cal = cal
+		self.hasEnable = hasEnable
+		# ----
+		if sgroupLabel is None:
+			sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		# ----
+		if not enableTitleLabel and hasEnable:
+			enableTitleLabel = _("Enable")
+		if hasEnable:
+			self.enableCheck = gtk.CheckButton(label=enableTitleLabel)
+		# ---
+		vbox: gtk.Box = self
+		if useFrame:
+			frame = gtk.Frame()
+			vbox = gtk.VBox()
+			vbox.set_border_width(5)
+			frame.add(vbox)
+			pack(self, frame)
+			if hasEnable:
+				frame.set_label_widget(self.enableCheck)
+			else:
+				frame.set_label(enableTitleLabel)
+		elif hasEnable:
+			pack(vbox, self.enableCheck)
+		# ----
+		self.set_border_width(5)
+		# ---
+		hbox = HBox()
+		label = gtk.Label(label=_("Position") + ": ")
+		pack(hbox, label)
+		sgroupLabel.add_widget(label)
+		spin = FloatSpinButton(-999, 999, 1)
+		self.spinX = spin
+		pack(hbox, spin)
+		pack(hbox, gtk.Label(), 1, 1)
+		spin = FloatSpinButton(-999, 999, 1)
+		self.spinY = spin
+		pack(hbox, spin)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(vbox, hbox)
+		# ----
+		hbox = HBox()
+		label = gtk.Label(label=_("Alignment") + ": ")
+		pack(hbox, label)
+		sgroupLabel.add_widget(label)
+		# --
+		self.xalignCombo = XAlignComboBox()
+		pack(hbox, self.xalignCombo)
+		# --
+		self.yalignCombo = YAlignComboBox()
+		pack(hbox, self.yalignCombo)
+		# --
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(vbox, hbox)
+		# ----
+		hbox = HBox()
+		label = gtk.Label(label=_("Font") + ": ")
+		pack(hbox, label)
+		sgroupLabel.add_widget(label)
+		# --
+		fontb = MyFontButton()
+		self.fontb = fontb
+		# --
+		colorb = MyColorButton()
+		self.colorb = colorb
+		# --
+		pack(hbox, colorb)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(hbox, fontb)
+		pack(vbox, hbox)
+		# ----
+		self.abbreviateCheck = gtk.CheckButton(label=_("Abbreviate"))
+		pack(vbox, self.abbreviateCheck)
+		self.uppercaseCheck = gtk.CheckButton(label=_("Uppercase"))
+		if langHasUppercase:
 			pack(vbox, self.uppercaseCheck)
 		# ----
 		self.set(params.v)
@@ -212,35 +383,30 @@ class TextParamWidget(gtk.Box):
 		colorb.connect("color-set", self.onChange)
 		if hasEnable:
 			self.enableCheck.connect("clicked", self.onChange)
-		if hasAlign:
-			self.xalignCombo.connect("changed", self.onChange)
-			self.yalignCombo.connect("changed", self.onChange)
-		if hasAbbreviate:
-			self.abbreviateCheck.connect("clicked", self.onChange)
-		if hasUppercase:
-			self.uppercaseCheck.connect("clicked", self.onChange)
+		self.xalignCombo.connect("changed", self.onChange)
+		self.yalignCombo.connect("changed", self.onChange)
+		self.abbreviateCheck.connect("clicked", self.onChange)
+		self.uppercaseCheck.connect("clicked", self.onChange)
 
-	def get(self) -> GenericTypeParamsDict:
-		params: GenericTypeParamsDict = {
+	def get(self) -> DayCalTypeWMParamsDict:
+		enable = True
+		if self.hasEnable:
+			enable = self.enableCheck.get_active()
+		return {
+			"enable": enable,
 			"pos": (
 				self.spinX.get_value(),
 				self.spinY.get_value(),
 			),
 			"font": self.fontb.getFont(),
 			"color": self.colorb.getRGBA(),
+			"xalign": self.xalignCombo.get() or "center",
+			"yalign": self.yalignCombo.get() or "center",
+			"abbreviate": self.abbreviateCheck.get_active(),
+			"uppercase": self.uppercaseCheck.get_active(),
 		}
-		if self.hasEnable:
-			params["enable"] = self.enableCheck.get_active()
-		if self.hasAlign:
-			params["xalign"] = self.xalignCombo.get() or "center"
-			params["yalign"] = self.yalignCombo.get() or "center"
-		if self.hasAbbreviate:
-			params["abbreviate"] = self.abbreviateCheck.get_active()
-		if self.hasUppercase:
-			params["uppercase"] = self.uppercaseCheck.get_active()
-		return params
 
-	def set(self, params: GenericTypeParamsDict) -> None:
+	def set(self, params: DayCalTypeWMParamsDict) -> None:
 		self.spinX.set_value(params["pos"][0])
 		self.spinY.set_value(params["pos"][1])
 		font = getParamsFont(params)
@@ -249,13 +415,10 @@ class TextParamWidget(gtk.Box):
 		self.colorb.setRGBA(params["color"])
 		if self.hasEnable:
 			self.enableCheck.set_active(params.get("enable", True))
-		if self.hasAlign:
-			self.xalignCombo.set(params.get("xalign", "center"))
-			self.yalignCombo.set(params.get("yalign", "center"))
-		if self.hasAbbreviate:
-			self.abbreviateCheck.set_active(params.get("abbreviate", False))
-		if self.hasUppercase:
-			self.uppercaseCheck.set_active(params.get("uppercase", False))
+		self.xalignCombo.set(params.get("xalign", "center"))
+		self.yalignCombo.set(params.get("yalign", "center"))
+		self.abbreviateCheck.set_active(params.get("abbreviate", False))
+		self.uppercaseCheck.set_active(params.get("uppercase", False))
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
 		self.params.v = self.get()
@@ -265,18 +428,19 @@ class TextParamWidget(gtk.Box):
 		self.fontb.set_property("preview-text", text)
 
 
-class CalTypeParamWidget(TextParamWidget):
+class WeekDayNameParamsWidget(_WeekMonthParamsWidget):
+	pass
+
+
+class MonthNameListParamsWidget(_WeekMonthParamsWidget):
 	def __init__(
 		self,
-		params: Property[list[GenericTypeParamsDict]],
+		params: Property[list[DayCalTypeWMParamsDict]],
 		index: int,
 		calType: int,
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		hasEnable: bool = False,
-		hasAlign: bool = False,
-		hasAbbreviate: bool = False,
-		hasUppercase: bool = False,
 		enableTitleLabel: str = "",
 		useFrame: bool = False,
 	) -> None:
@@ -285,16 +449,13 @@ class CalTypeParamWidget(TextParamWidget):
 		module = calTypes[calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		TextParamWidget.__init__(
+		_WeekMonthParamsWidget.__init__(
 			self,
 			params=ItemProperty(params, index),
 			cal=cal,
 			sgroupLabel=sgroupLabel,
 			desc=_(module.desc, ctx="calendar"),
 			hasEnable=hasEnable,
-			hasAlign=hasAlign,
-			hasAbbreviate=hasAbbreviate,
-			hasUppercase=hasUppercase,
 			enableTitleLabel=enableTitleLabel,
 			useFrame=useFrame,
 		)
