@@ -17,13 +17,14 @@ if isfile(join(rootDir, "VERSION")):
 	with open(join(rootDir, "VERSION"), encoding="utf-8") as _file:
 		print(_file.read().strip())
 		sys.exit(0)
-
 VERSION = ""
 with open(f"{scalDir}/core.py", encoding="utf-8") as _file:
 	while True:
 		line = _file.readline()
-		if line.startswith("VERSION"):
-			exec(line)
+		if line.startswith("VERSION_TAG"):
+			tmpLocals = {}
+			exec(line, {}, tmpLocals)
+			VERSION = tmpLocals["VERSION_TAG"]
 			break
 
 gitDir = os.path.join(rootDir, ".git")

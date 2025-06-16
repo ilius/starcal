@@ -7,8 +7,8 @@ function version_lte() {
 
 function core_version() {
 	while read -r line ; do
-		if [[ "$line" == 'VERSION = '* ]] ; then
-			echo "$line" | sed 's/VERSION\s*=\s*//' | sed s/[\"\']//g
+		if [[ "$line" == 'VERSION_TAG:'* ]] ; then
+			echo "$line" | sed 's/VERSION_TAG: .*=\s*//' | sed s/[\"\']//g
 			return
 		fi
 	done < "$sourceDir/scal3/core.py"
