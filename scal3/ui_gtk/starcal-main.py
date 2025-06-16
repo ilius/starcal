@@ -5,8 +5,6 @@ from os.path import abspath, dirname, isabs, join
 
 import gi
 
-from scal3.ui_gtk import Dialog
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
 
@@ -24,6 +22,7 @@ log = logger.get()
 
 from typing import TYPE_CHECKING
 
+from scal3.ui_gtk import Dialog
 from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
