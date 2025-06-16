@@ -33,7 +33,6 @@ from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	Dialog,
 	HBox,
 	VBox,
 	gdk,
@@ -61,12 +60,13 @@ if TYPE_CHECKING:
 	from scal3.cell_type import CellType
 	from scal3.ui.pytypes import CalTypeParamsDict
 	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
 
 
 @registerSignals
-class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
+class CalObj(CalBase):
 	objName = "monthCal"
 	desc = _("Month Calendar")
 	expand = True
@@ -166,9 +166,9 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
+		self.w = gtk.DrawingArea()
 		self.win = win
-		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.pagePath = f"mainWin.mainPanel.{self.objName}"
@@ -729,14 +729,3 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		self.updateTextWidth()
 		self.updateTypeParamsWidget()
-
-
-if __name__ == "__main__":
-	win = Dialog()
-	cal = CalObj(win)
-	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-	pack(win.vbox, cal, 1, 1)
-	win.vbox.show_all()
-	win.resize(600, 400)
-	win.set_title(cal.desc)
-	win.run()

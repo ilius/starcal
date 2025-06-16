@@ -59,6 +59,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
@@ -85,7 +86,7 @@ __all__ = ["TimeLineWindow"]
 
 
 @registerSignals
-class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
+class TimeLine(gtk.DrawingArea, CalObjWidget):  # type: ignore[misc]
 	objName = "timeLine"
 	desc = _("Time Line")
 
@@ -156,7 +157,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		self.queue_draw()
 
 	def onDateChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **kw)
+		CalObjWidget.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
 	def updateBasicButtons(self) -> None:
@@ -731,7 +732,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		self.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		CalObjWidget.onConfigChange(self, *a, **kw)
 		self.queue_draw()
 
 	def onEditEventClick(
@@ -1018,7 +1019,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 
 
 @registerSignals
-class TimeLineWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
+class TimeLineWindow(gtk.Window, CalObjWidget):  # type: ignore[misc]
 	objName = "timeLineWin"
 	desc = _("Time Line")
 

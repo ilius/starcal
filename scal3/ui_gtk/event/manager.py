@@ -58,6 +58,7 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
@@ -165,7 +166,7 @@ class EventManagerToolbar(VerticalStaticToolBox):
 
 
 @registerSignals
-class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
+class EventManagerDialog(MyDialog, CalObjWidget):  # type: ignore[misc]
 	objName = "eventMan"
 	desc = _("Event Manager")
 
@@ -191,7 +192,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 	# 	groupIndex, eventIndex = path
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		CalObjWidget.onConfigChange(self, *a, **kw)
 		# ---
 		if not self.isLoaded:
 			if self.get_property("visible"):

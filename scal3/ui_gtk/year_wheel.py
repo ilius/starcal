@@ -46,6 +46,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -56,7 +57,7 @@ __all__ = ["YearWheelWindow"]
 
 
 @registerSignals
-class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
+class YearWheel(gtk.DrawingArea, CalObjWidget):  # type: ignore[misc]
 	objName = "yearWheel"
 	desc = _("Year Wheel")
 	# ---
@@ -456,7 +457,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 
 
 @registerSignals
-class YearWheelWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
+class YearWheelWindow(gtk.Window, CalObjWidget):  # type: ignore[misc]
 	objName = "yearWheelWin"
 	desc = _("Year Wheel")
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from os.path import join
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from scal3 import ui
 from scal3.locale_man import rtl
@@ -15,6 +15,9 @@ from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
+
+if TYPE_CHECKING:
+	from collections.abc import Iterator
 
 __all__ = ["CalObj"]
 
@@ -68,7 +71,7 @@ class MainWinType(Protocol):
 	def childButtonPress(
 		self,
 		widget: gtk.Widget,  # noqa: ARG002
-		gevent: gdk.Event,
+		gevent: gdk.EventButton,
 	) -> bool: ...
 	def toggleMinimized(self, gevent: gdk.EventButton) -> None: ...
 	def toggleMaximized(self, _ge: gdk.EventButton) -> None: ...
@@ -244,7 +247,7 @@ class WinConButtonSep(WinConButton):
 
 
 @registerSignals
-class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
+class CalObj(CustomizableCalBox):  # type: ignore[misc]
 	vertical = False
 	hasOptions = True
 	itemHaveOptions = False
@@ -260,14 +263,10 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
 	def __init__(self, win: MainWinType) -> None:
+		CustomizableCalBox.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.win = win
-		gtk.Box.__init__(
-			self,
-			orientation=gtk.Orientation.HORIZONTAL,
-			spacing=conf.winControllerSpacing.v,
-		)
-		self.set_spacing(conf.winControllerSpacing.v)
-		self.set_direction(gtk.TextDirection.LTR)  # FIXME
+		self.w.set_spacing(conf.winControllerSpacing.v)
+		self.w.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
@@ -285,12 +284,18 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
 
+	@property
+	def buttons(self) -> Iterator[WinConButton]:
+		for b in self.items:
+			assert isinstance(b, WinConButton)
+			yield b
+
 	def windowFocusIn(
 		self,
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
-		for b in self.items:
+		for b in self.buttons:
 			b.setFocus(False)
 		self.winFocused = True
 		return False
@@ -300,7 +305,7 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
-		for b in self.items:
+		for b in self.buttons:
 			b.setInactive()
 		self.winFocused = False
 		return False
@@ -385,11 +390,11 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 			print(f"Extra svg files: {extraFiles}")
 
 	def updateButtons(self) -> None:
-		for item in self.items:
+		for item in self.buttons:
 			item.setFocus(False)
 
 	def onButtonBorderChange(self) -> None:
-		for item in self.items:
+		for item in self.buttons:
 			item.set_border_width(conf.winControllerBorder.v)
 		self.updateButtons()
 

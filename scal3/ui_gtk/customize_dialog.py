@@ -123,6 +123,7 @@ class CustomizeWindow(Dialog):
 		# should we save on Escape? or when clicking the X (close) button?
 		# ---
 		self.itemByPagePath: dict[str, CustomizableCalObj] = {}
+		self.enableParamByPagePath: dict[str, CheckPrefItem] = {}
 		self.rootItem = item
 		# ---
 		rootPagePath = "mainWin"
@@ -209,6 +210,7 @@ class CustomizeWindow(Dialog):
 			if not item.customizable:
 				continue
 			assert item.objName, f"{item = }"
+			assert isinstance(item, CustomizableCalObj)
 			model.append(
 				[
 					item.enable,
@@ -392,7 +394,7 @@ class CustomizeWindow(Dialog):
 			)
 			pack(hbox, prefItem.getWidget())
 			pack(page.pageWidget, hbox, 0, 0)
-			item.enablePrefItem = prefItem
+			self.enableParamByPagePath[pagePath] = prefItem
 
 		if item.itemListCustomizable and item.items:
 			self._addPageItemsTree(page)
@@ -428,6 +430,7 @@ class CustomizeWindow(Dialog):
 		itemIndex: int,
 	) -> StackPage:
 		item = parentItem.items[itemIndex]
+		assert isinstance(item, CustomizableCalObj)
 
 		title = item.desc
 		if parentItem.objName != "mainWin":
@@ -488,7 +491,9 @@ class CustomizeWindow(Dialog):
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
 		if parentItem.isWrapper:
-			parentItem = parentItem.getWidget()
+			parentWidget = parentItem.getWidget()
+			assert isinstance(parentWidget, CustomizableCalObj)
+			parentItem = parentWidget
 
 		# if none of the items in list have any settings, we can toggle-enable instead
 		if not parentItem.itemHaveOptions:

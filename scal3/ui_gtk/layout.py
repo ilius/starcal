@@ -23,7 +23,11 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.customize import (
+	CustomizableCalBox,
+	CustomizableCalObj,
+	newSubPageButton,
+)
 from scal3.ui_gtk.stack import StackPage, StackPageButton
 from scal3.ui_gtk.utils import imageFromIconName, setImageClassButton
 
@@ -63,10 +67,6 @@ class WinLayoutBase(CustomizableCalObj):
 		self.initVars()
 
 
-class CustomizableCalWidget(gtk.Widget, CustomizableCalObj):  # type: ignore
-	pass
-
-
 class MoveButton(gtk.Button):
 	def __init__(
 		self,
@@ -102,7 +102,7 @@ class WinLayoutObj(WinLayoutBase):
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
-		initializer: Callable[[], CustomizableCalWidget] | None = None,
+		initializer: Callable[[], CustomizableCalObj] | None = None,
 	) -> None:
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")
@@ -120,7 +120,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.buttonBorder = buttonBorder
 		self.labelAngle = labelAngle
 		self.initializer = initializer
-		self._item: CustomizableCalWidget | None = None
+		self._item: CustomizableCalObj | None = None
 		self.moveButton: MoveButton | None = None
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
@@ -128,12 +128,12 @@ class WinLayoutObj(WinLayoutBase):
 			return False
 		return self._item.onKeyPress(arg, gevent)
 
-	def getWidget(self) -> CustomizableCalWidget:
+	def getItem(self) -> CustomizableCalObj:
 		if self._item is not None:
 			return self._item
 		item = self.initializer()
-		if not isinstance(item, gtk.Widget):
-			raise TypeError(f"initializer returned non-widget: {type(item)}")
+		if not isinstance(item.w, gtk.Widget):
+			raise TypeError(f"initializer returned non-widget: {type(item.w)}")
 		item.enableParam = self.enableParam
 		if item.enableParam:
 			item.enable = item.enableParam.v
@@ -147,7 +147,7 @@ class WinLayoutObj(WinLayoutBase):
 		if not button:
 			return
 		enable = self.optionsButtonEnable
-		item = self.getWidget()
+		item = self.getItem()
 		# FIXME: item.enable
 		itemEnable = item.enable  # type: ignore[attr-defined]
 		# buttonLabel = button.label
@@ -168,7 +168,7 @@ class WinLayoutObj(WinLayoutBase):
 		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
-		item = self.getWidget()
+		item = self.getItem()
 		page = StackPage()
 		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
 		page.pageName = item.objName
@@ -236,13 +236,13 @@ class WinLayoutBox(WinLayoutBase):
 		for item in items:
 			self.appendItem(item)
 		# ---
-		self.items: list[WinLayoutObj]
+		# self.items: list[WinLayoutObj]
 		self.itemsMovable = itemsMovable
 		self.itemsParam = itemsParam
 		self.buttonSpacing = buttonSpacing
 		self.arrowSize = arrowSize
 		# ---
-		self._box: gtk.Box | None = None
+		self._box: CustomizableCalBox | None = None
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		return any(item.enable and item.onKeyPress(arg, gevent) for item in self.items)
@@ -254,35 +254,26 @@ class WinLayoutBox(WinLayoutBase):
 		else:
 			self._box.hide()
 
-	def getWidget(self) -> gtk.Widget:
+	def getItem(self) -> CustomizableCalBox:
 		if self._box is not None:
 			return self._box
 		# assert self.vertical is not None
-		box = gtk.Box(orientation=getOrientation(self.vertical))
+		box = CustomizableCalBox(orientation=getOrientation(self.vertical))
 
 		for item in self.items:
 			if item.loaded:
-				pack(box, item.getWidget(), item.expand, item.expand)
-				item.showHide()
+				box.appendItem(item)
 
 		self._box = box
 		return box
 
 	def onConfigChange(self, *args, **kwargs) -> None:
 		WinLayoutBase.onConfigChange(self, *args, **kwargs)
-		if self._box is None:
-			return
-		box = self._box
-		for child in box.get_children():
-			box.remove(child)
-		itemNames = []
-		for item in self.items:
-			itemNames.append(item.objName)
-			if item.loaded:
-				pack(box, item.getWidget(), item.expand, item.expand)
-				item.showHide()
 		if self.itemsParam:
-			self.itemsParam.v = itemNames
+			self.itemsParam.v = [item.objName for item in self.items if item.enable]
+		if self._box is not None:
+			self._box.w.destroy()
+			self._box = None
 
 	def setItemsOrder(self, itemNames: list[str]) -> None:
 		itemByName = {item.objName: item for item in self.items}
@@ -305,7 +296,7 @@ class WinLayoutBox(WinLayoutBase):
 				# spacing=self.buttonSpacing, # FIXME: does not seem to have it
 			)
 			for index, item in enumerate(self.items):
-				# item is instance of WinLayoutObj
+				assert isinstance(item, WinLayoutObj)
 				childBox = item.getOptionsButtonBox()
 				hbox = HBox(spacing=0)
 				action = "down" if index == 0 else "up"
@@ -324,6 +315,7 @@ class WinLayoutBox(WinLayoutBase):
 				pack(optionsButtonBox, listBox, True, True)
 		else:
 			for item in self.items:
+				assert isinstance(item, WinLayoutObj)
 				pack(
 					optionsButtonBox,
 					item.getOptionsButtonBox(),
@@ -351,6 +343,7 @@ class WinLayoutBox(WinLayoutBase):
 		listBox.remove(hbox)
 		listBox.insert(hbox, newIndex)
 		for tmpIndex, tmpItem in enumerate(self.items):
+			assert isinstance(tmpItem, WinLayoutObj)
 			action = "down" if tmpIndex == 0 else "up"
 			assert tmpItem.moveButton is not None
 			if tmpItem.moveButton.action != action:
@@ -368,6 +361,7 @@ class WinLayoutBox(WinLayoutBase):
 			return self.subPages
 		subPages = []
 		for item in self.items:
+			assert isinstance(item, WinLayoutObj)
 			for page in item.getSubPages():
 				if not page.pageName:
 					raise ValueError(f"pageName empty, pagePath={page.pagePath}")

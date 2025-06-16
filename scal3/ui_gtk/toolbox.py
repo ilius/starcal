@@ -12,7 +12,6 @@ from typing import Any
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, VBox, gtk, pack
-from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
@@ -20,7 +19,7 @@ from scal3.ui_gtk.mywidgets.button import ConButtonBase
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable, Sequence
+	from collections.abc import Callable, Iterable, Iterator, Sequence
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
 
@@ -35,10 +34,19 @@ __all__ = [
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: ignore[misc]
 	hasOptions = False
+	iconSize = Property(0)
+	preferIconName = Property(False)
+	onClick: str | Callable | None = None
+	onPress: str | Callable | None = None
+	args: Sequence[Any] = ()  # for onClick and onPress
+	continuousClick = False
 
 	signals = CustomizableCalObj.signals + [
 		("con-clicked", []),
 	]
+
+	def build(self) -> None:
+		pass
 
 	def show(self) -> None:
 		gtk.Button.show_all(self)
@@ -299,7 +307,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 			return gtk.Orientation.VERTICAL
 		return gtk.Orientation.HORIZONTAL
 
-	def setupItemSignals(self, item: ud.CalObjType) -> None:
+	def setupItemSignals(self, item: BaseToolBoxItem) -> None:
 		if item.onClick:
 			if isinstance(item.onClick, str):
 				onClick = getattr(self.funcOwner, item.onClick)
@@ -311,7 +319,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
-				onPress = getattr(self.funcOwner, item.onClick)
+				onPress = getattr(self.funcOwner, item.onPress)
 			else:
 				onPress = item.onPress
 			item.connect("button-press-event", onPress, *item.args)
@@ -362,8 +370,8 @@ class CustomizableToolBox(StaticToolBox):
 	itemListCustomizable = True
 	objName = "toolbar"
 	desc = _("Toolbar")
-	defaultItems: list[ToolBoxItem] = []
-	defaultItemsDict: dict[str, ToolBoxItem] = {}
+	defaultItems: list[BaseToolBoxItem] = []
+	defaultItemsDict: dict[str, BaseToolBoxItem] = {}
 
 	def __init__(
 		self,
@@ -434,17 +442,23 @@ class CustomizableToolBox(StaticToolBox):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
+	@property
+	def _items(self) -> Iterator[BaseToolBoxItem]:
+		for item in self.items:
+			assert isinstance(item, BaseToolBoxItem)
+			yield item
+
 	# this method is for optimization
 	# otherwide can be replaced with updateItems
 	def onIconSizeChange(self) -> None:
-		for item in self.items:
+		for item in self._items:
 			item.build()
 
 	def repackAll(self) -> None:
-		for item in self.items:
+		for item in self._items:
 			if item.loaded:
 				self.box.remove(item)
-		for item in self.items:
+		for item in self._items:
 			if item.loaded:
 				pack(self.box, item, item.expand, item.expand)
 
@@ -453,6 +467,7 @@ class CustomizableToolBox(StaticToolBox):
 		self.repackAll()
 
 	def appendItem(self, item: BaseToolBoxItem) -> None:
+		# assert isinstance(item, BaseToolBoxItem)
 		CustomizableCalObj.appendItem(self, item)
 		self.append(item)
 		if item.enable:
@@ -467,7 +482,7 @@ class CustomizableToolBox(StaticToolBox):
 		"""
 		buttonBorder = self.buttonBorder.v
 		buttonPadding = self.buttonPadding.v
-		for item in self.items:
+		for item in self._items:
 			item.set_border_width(buttonBorder)
 			self.box.set_child_packing(
 				child=item,

@@ -28,7 +28,7 @@ log = logger.get()
 
 
 from math import isqrt
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from gi.repository.PangoCairo import show_layout
 
@@ -82,9 +82,18 @@ if TYPE_CHECKING:
 		DayCalTypeWMParamsDict,
 		PieGeoDict,
 	)
-	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["DayCal"]
+
+
+class ParentWindowType(Protocol):
+	w: gtk.Window
+
+	def customizeShow(
+		self,
+		_widget: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> None: ...
 
 
 class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
@@ -132,6 +141,23 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		"f10",
 		"m",
 	}
+
+	def __init__(self, win: ParentWindowType) -> None:
+		gtk.DrawingArea.__init__(self)
+		# FIXME: rename one of these two attrs:
+		self.win = win
+		self._window: gtk.Window | None = None
+		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.initCal()
+		self.subPages: list[StackPage] | None = None
+		self._allButtons: list[BaseButton] = []
+		# ----------------------
+		# self.kTime = 0
+		# ----------------------
+		self.connect("draw", self.drawAll)
+		self.connect("button-press-event", self.onButtonPress)
+		# self.connect("screen-changed", self.screenChanged)
+		self.connect("scroll-event", self.scroll)
 
 	def getBackgroundColor(self) -> ColorType:
 		if self.backgroundColor:
@@ -296,7 +322,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		win = self.getWindow()
 		if not win:
 			return
-		win.begin_move_drag(
+		win.w.begin_move_drag(
 			button,
 			int(gevent.x_root),
 			int(gevent.y_root),
@@ -307,7 +333,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		win = self.getWindow()
 		if not win:
 			return
-		win.begin_resize_drag(
+		win.w.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
@@ -401,23 +427,6 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		# ---
 		vbox.show_all()
 		return subPages
-
-	def __init__(self, win: MainWin) -> None:
-		gtk.DrawingArea.__init__(self)
-		# FIXME: rename one of these two attrs:
-		self.win = win
-		self._window: gtk.Window | None = None
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.initCal()
-		self.subPages: list[StackPage] | None = None
-		self._allButtons: list[BaseButton] = []
-		# ----------------------
-		# self.kTime = 0
-		# ----------------------
-		self.connect("draw", self.drawAll)
-		self.connect("button-press-event", self.onButtonPress)
-		# self.connect("screen-changed", self.screenChanged)
-		self.connect("scroll-event", self.scroll)
 
 	def getWindow(self) -> gtk.Window:
 		assert self._window is not None

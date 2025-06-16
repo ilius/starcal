@@ -62,6 +62,7 @@ from scal3.ui.params import (
 	confParamsData,
 	getParamNamesWithFlag,
 )
+from scal3.ui_gtk import gtk_ud
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
@@ -69,7 +70,7 @@ if typing.TYPE_CHECKING:
 	from scal3.cell_type import CellCacheType
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui.pytypes import CalTypeParamsDict
-	from scal3.ui_gtk import gtk_ud
+	from scal3.ui_gtk.gtk_ud import CalObjType
 
 
 __all__ = [
@@ -105,6 +106,7 @@ __all__ = [
 	"getEvent",
 	"getFont",
 	"getParamNamesWithFlag",
+	"gtk_ud",
 	"init",
 	"initFonts",
 	"iterAllEvents",
@@ -333,7 +335,7 @@ def checkWinControllerButtons() -> None:
 def moveEventToTrash(
 	group: EventGroupType,
 	event: EventType,
-	sender: gtk_ud.CalObjType,
+	sender: CalObjType,
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
@@ -443,8 +445,8 @@ winControllerThemeList = [
 
 # --------------------
 
-fontDefault = Font(family="Sans", size=12)
-fontDefaultInit = fontDefault
+fontDefault: Font = Font(family="Sans", size=12)
+fontDefaultInit: Font = fontDefault
 
 # ---------------------
 

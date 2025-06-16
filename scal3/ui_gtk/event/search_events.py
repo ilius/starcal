@@ -43,6 +43,7 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
@@ -71,7 +72,7 @@ __all__ = ["EventSearchWindow"]
 
 
 @registerSignals
-class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
+class EventSearchWindow(MyWindow, CalObjWidget):  # type: ignore[misc]
 	def __init__(self, showDesc: bool = False) -> None:
 		gtk.Window.__init__(self)
 		self.maximize()
@@ -390,7 +391,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		# self.maximize()-- FIXME
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		CalObjWidget.onConfigChange(self, *a, **kw)
 		if self.currentCalType != calTypes.primary:
 			for dateTimeInput in self.dateTimeInputs:
 				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)

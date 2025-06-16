@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.cell import WeekStatus
 from scal3.font import Font
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 
@@ -25,7 +24,7 @@ log = logger.get()
 
 from math import pi
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import cairo
 from gi.repository.PangoCairo import show_layout
@@ -38,7 +37,6 @@ from scal3.ui import conf
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	Dialog,
 	VBox,
 	gdk,
 	getScrollValue,
@@ -63,6 +61,7 @@ from scal3.ui_gtk.drawing import (
 from scal3.ui_gtk.mywidgets import MyFontButton
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
+	BaseToolBoxItem,
 	CustomizableToolBox,
 	LabelToolBoxItem,
 	ToolBoxItem,
@@ -70,13 +69,31 @@ from scal3.ui_gtk.toolbox import (
 from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 if TYPE_CHECKING:
+	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
 	from scal3.property import Property
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumParamsDict
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
+
+
+class ColumnParent(Protocol):
+	def set_child_packing(
+		self,
+		child: gtk.Widget,
+		expand: bool,
+		fill: bool,
+		padding: int,
+		pack_type: gtk.PackType,
+	) -> None: ...
+
+
+# class WeekCalType(Protocol, ColumnParent):
+# 	status
+# 	def updateStatus(self)
 
 
 class ColumnBase(CustomizableCalObj):
@@ -88,7 +105,8 @@ class ColumnBase(CustomizableCalObj):
 	# --
 
 	def __init__(self) -> None:
-		pass
+		self.colParent: ColumnParent | None = None
+		self.calType = 0
 
 	@classmethod
 	def getWidthAttr(cls) -> str:
@@ -183,6 +201,8 @@ class ColumnBase(CustomizableCalObj):
 		pass
 
 	def updatePacking(self) -> None:
+		if self.colParent is None:
+			return
 		self.colParent.set_child_packing(
 			self,
 			self.expand,
@@ -215,7 +235,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 		# self.connect("button-press-event", self.onButtonPress)
 		# self.connect("event", show_event)
 		self.wcal = wcal
-		self.colParent = wcal
+		self.colParent: ColumnParent = wcal  # type: ignore[assignment]
 		if self.customizeExpand:
 			expandProp = self.getExpandProp()
 			assert expandProp is not None
@@ -475,7 +495,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		wcal = self._wcal
 		w = self.get_allocation().width
 		h = self.get_allocation().height
-		coords = self.translate_coordinates(wcal, 0, 0)
+		coords = self.translate_coordinates(wcal.w, 0, 0)
 		assert coords is not None
 		x0, y0 = coords
 		return (
@@ -489,7 +509,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		_gevent: gdk.Event | None = None,
 	) -> None:
 		x, y = self.getMenuPos()
-		self._wcal.emit(
+		self._wcal.w.emit(
 			"popup-main-menu",
 			x,
 			y,
@@ -534,7 +554,7 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 	def __init__(self, wcal: CalObj) -> None:
 		CustomizableToolBox.__init__(self, wcal)
 		ColumnBase.__init__(self)
-		self.defaultItems = [
+		self.defaultItems: list[BaseToolBoxItem] = [
 			MainMenuToolBoxItem(wcal),
 			WeekNumToolBoxItem(),
 			ToolBoxItem(
@@ -1031,7 +1051,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		_event: gdk.Event | None = None,
 	) -> None:
 		conf.wcalTypeParams.v[self.index] = self.get()
-		self.wcal.queue_draw()
+		self.wcal.w.queue_draw()
 
 
 @registerSignals
@@ -1079,12 +1099,22 @@ class DaysOfMonthColumn(Column):
 
 
 @registerSignals
-class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: ignore[misc]
+class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 	objName = "daysOfMonth"
 	desc = _("Days of Month")
 	customizeWidth = True
 	customizeExpand = True
 	optionsPageSpacing = 15
+
+	def __init__(self, wcal: CalObj) -> None:
+		CustomizableCalBox.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		ColumnBase.__init__(self)
+		self.initVars()
+		self.wcal = wcal
+		self.colParent: ColumnParent = wcal.w
+		self.updateCols()
+		self.updateDirection()
+		self.show()
 
 	def updateDirection(self) -> None:
 		self.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
@@ -1095,16 +1125,6 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 			self.remove(col)
 		for col in columns:
 			pack(self, col, 1, 1)
-
-	def __init__(self, wcal: CalObj) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		ColumnBase.__init__(self)
-		self.initVars()
-		self.wcal = wcal
-		self.colParent = wcal
-		self.updateCols()
-		self.updateDirection()
-		self.show()
 
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
@@ -1362,7 +1382,7 @@ class MoonStatusColumn(Column):
 
 
 @registerSignals
-class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
+class CalObj(CustomizableCalBox, CalBase):  # type: ignore
 	objName = "weekCal"
 	desc = _("Week Calendar")
 	vertical = False
@@ -1395,10 +1415,11 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 	def getCellPagePlus(cell: CellType, plus: int) -> CellType:
 		return ui.cells.getCell(cell.jd + 7 * plus)
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
+		CustomizableCalBox.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.win = win
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.items: list[ColumnBase] = []
 		self.initCal()
 		# ----------------------
 		self.connect("scroll-event", self.scroll)
@@ -1575,7 +1596,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 					return True
 		return False
 
-	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> Column | None:
+	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> ColumnBase | None:
 		for item in self.items:
 			if isinstance(item, gtk.Box):
 				# right now only DaysOfMonthColumnGroup
@@ -1583,6 +1604,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 					if self.itemContainsGdkWindow(child, col_win):
 						return child
 			elif self.itemContainsGdkWindow(item, col_win):
+				# assert isinstance(item, Column)
 				return item
 		return None
 
@@ -1664,7 +1686,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 
 	def getToolbar(self) -> ToolbarColumn | None:
 		for item in self.items:
-			if item.enable and item.objName == "toolbar":
+			if item.enable and isinstance(item.objName, ToolbarColumn):
 				return item
 		return None
 
@@ -1672,25 +1694,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		toolbar = self.getToolbar()
 		if toolbar:
 			for item in toolbar.items:
-				if item.enable and item.objName == "mainMenu":
+				if item.enable and isinstance(item, MainMenuToolBoxItem):
 					return item.getMenuPos()
 		if rtl:
 			return self.get_allocation().width, 0
 
 		return 0, 0
-
-
-if __name__ == "__main__":
-	from scal3.cell import init as initCell
-
-	ui.init()
-	initCell()
-	win = Dialog()
-	cal = CalObj(win)
-	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-	pack(win.vbox, cal, 1, 1)
-	win.vbox.show_all()
-	win.resize(600, 400)
-	win.set_title(cal.desc)
-	cal.onConfigChange()
-	win.run()

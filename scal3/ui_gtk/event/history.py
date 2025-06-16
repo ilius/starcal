@@ -17,6 +17,7 @@ from scal3.time_utils import getJhmsFromEpoch
 from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
@@ -47,7 +48,7 @@ def unnest(src: Any) -> dict[str, Any]:
 	return dst
 
 
-class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
+class EventHistoryDialog(Dialog, CalObjWidget):  # type: ignore[misc]
 	textViewTypes = [
 		"Change Table",
 		"Full Table",

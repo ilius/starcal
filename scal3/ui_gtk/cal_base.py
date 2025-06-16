@@ -29,6 +29,7 @@ from scal3.ui_gtk.drawing import newDndDatePixbuf
 if TYPE_CHECKING:
 	from scal3.cell_type import CellType
 	from scal3.ui_gtk.stack import StackPage
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalBase"]
 
@@ -50,12 +51,7 @@ class CalBase(CustomizableCalObj):
 		"menu",
 		"i",
 	}
-
-	def connect(self, sigName: str, *a, **ka) -> None:
-		try:
-			CustomizableCalObj.connect(self, sigName, *a, **ka)
-		except Exception:
-			log.exception(f"{sigName=}")
+	win: MainWin
 
 	def initCal(self) -> None:
 		self.initVars()

@@ -66,6 +66,7 @@ from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, DummyCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.layout_utils import moduleObjectInitializer
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
@@ -115,7 +116,7 @@ def liveConfChanged() -> None:
 
 
 @registerSignals
-class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
+class MainWinVbox(CustomizableCalBox):
 	vertical = True
 	objName = "mainPanel"
 	desc = _("Main Panel")
@@ -142,8 +143,8 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 	}
 
 	def __init__(self, win: gtk.Window) -> None:
+		CustomizableCalBox.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.win = win
-		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
 
 	def createItems(self) -> None:
@@ -219,11 +220,11 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 
 
 @registerSignals
-class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
+class MainWin(gtk.ApplicationWindow, CalObjWidget):  # type: ignore[misc]
 	objName = "mainWin"
 	desc = _("Main Window")
 	timeout = 1  # second
-	signals = ud.BaseCalObj.signals + [
+	signals = CalObjWidget.signals + [
 		("toggle-right-panel", []),
 	]
 
@@ -729,7 +730,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 		plugIndex = core.plugIndex.v
 		allPlugList = core.allPlugList.v
 		# log.debug("MainWin.onDateChange")
-		ud.BaseCalObj.onDateChange(self, *a, **kw)
+		CalObjWidget.onDateChange(self, *a, **kw)
 		for idx in plugIndex:
 			plug = allPlugList[idx]
 			if plug is None:
@@ -1796,7 +1797,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 		if self.menuCell:
 			self.menuCell.destroy()
 			self.menuCell = None
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		CalObjWidget.onConfigChange(self, *a, **kw)
 		self.autoResize()
 		# self.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
 		# self.set_skip_taskbar_hint  # FIXME

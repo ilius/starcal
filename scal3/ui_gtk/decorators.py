@@ -17,7 +17,7 @@ class ObjectType(Protocol):
 	signals: list[tuple[str, list[Any]]]
 
 
-def registerSignals[T: ObjectType](cls: type[T]) -> type[T]:
+def registerSignals[T: type[ObjectType]](cls: T) -> T:
 	for name, args in cls.signals:
 		try:
 			GObject.signal_new(

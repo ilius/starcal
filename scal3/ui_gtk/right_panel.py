@@ -21,6 +21,7 @@ from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
 
 if TYPE_CHECKING:
+	from scal3.ui_gtk.gtk_ud import CalObjWidget
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["MainWinRightPanel"]
@@ -118,7 +119,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 			return
 		self.enablePrefItem.set(not self.enablePrefItem.get())
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
+	def appendItem(self, item: CalObjWidget) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
@@ -141,7 +142,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 
 	def resetItems(self) -> None:
 		for item in self.items:
-			item.get_parent().remove(item)
+			parent = item.get_parent()
+			assert isinstance(parent, gtk.Container)
+			parent.remove(item)
 		for child in self.get_children():
 			# child is Frame, containing a ScrolledWindow, containing item
 			self.remove(child)
