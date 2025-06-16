@@ -315,7 +315,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
-				onPress = getattr(self.funcOwner, item.onClick)
+				onPress = getattr(self.funcOwner, item.onPress)
 			else:
 				onPress = item.onPress
 			item.connect("button-press-event", onPress, *item.args)
