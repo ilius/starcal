@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 log = logger.get()
 import typing
@@ -38,7 +39,6 @@ from scal3.path import confDir
 from scal3.property import Property
 from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event import common, setActionFuncs
 from scal3.ui_gtk.event.editor import addNewEvent
 from scal3.ui_gtk.event.export import (
@@ -58,8 +58,8 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
@@ -119,8 +119,8 @@ def saveConf() -> None:
 
 
 class EventManagerToolbar(VerticalStaticToolBox):
-	def __init__(self, parent: gtk.Window) -> None:
-		VerticalStaticToolBox.__init__(self, parent)
+	def __init__(self, dialog: EventManagerDialog) -> None:
+		VerticalStaticToolBox.__init__(self, dialog)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
 		# self.append(ToolBoxItem(
@@ -164,119 +164,14 @@ class EventManagerToolbar(VerticalStaticToolBox):
 		)
 
 
-@registerSignals
-class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
+class EventManagerDialog(CalObjWidget):
 	objName = "eventMan"
 	desc = _("Event Manager")
-
-	def onShow(self, _w: gtk.Widget) -> None:
-		self.move(*eventManPos.v)
-		self.onConfigChange()
-
-	@staticmethod
-	def onDeleteEvent(_dialog: Dialog, _ge: gdk.Event) -> bool:
-		# onResponse is called before onDeleteEvent
-		# just return True, no need to do anything else
-		# without this signal handler, the window will be distroyed
-		# and can not be opened again
-		return True
-
-	def onResponse(self, _dialog: Dialog, _response_id: int) -> None:
-		eventManPos.v = self.get_position()
-		saveConf()
-		# ---
-		self.hide()
-
-	# def findEventByPath(self, eid: int, path: "list[int]""):
-	# 	groupIndex, eventIndex = path
-
-	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
-		# ---
-		if not self.isLoaded:
-			if self.get_property("visible"):
-				self.waitingDo(self.reloadEvents)  # FIXME
-			return
-
-	def onEventUpdate(self, record: EventUpdateRecord) -> None:
-		action = record.action
-
-		if action == "r":  # reload group or trash
-			if isinstance(record.obj, lib.EventTrash):
-				if self.trashIter:
-					self.treeModel.remove(self.trashIter)
-				self.appendTrash()
-				return
-			assert record.obj.id is not None
-			self.reloadGroupEvents(record.obj.id)
-
-		elif action == "+g":  # new group with events inside it (imported)
-			assert isinstance(record.obj, EventGroup)
-			self.appendGroupTree(record.obj)
-
-		elif action == "-g":
-			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
-
-		elif action == "eg":  # edit group
-			group = record.obj
-			assert isinstance(group, EventGroup)
-			assert group.id is not None
-			groupIter = self.groupIterById[group.id]
-			for i, value in enumerate(self.getGroupRow(group)):
-				self.treeModel.set_value(groupIter, i, value)
-
-		elif action == "-":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert record.obj.id is not None
-			eventIter = self.eventsIter.get(record.obj.id)
-			if eventIter is None:
-				if record.obj.parent.id in self.loadedGroupIds:
-					log.error(
-						f"trying to delete non-existing event row, eid={record.obj.id}",
-					)
-				self.addEventRowToTrash(record.obj)
-				return
-			path = self.treeModel.get_path(eventIter)
-			parentPathObj = gtk.TreePath.new_from_indices(path.get_indices()[:1])
-			expanded = self.treev.row_expanded(parentPathObj)
-			# log.debug(f"{path=}, {parentPathObj=}, {expanded=}")
-			self.treeModel.remove(eventIter)
-			self.addEventRowToTrash(record.obj)
-			if expanded:
-				# FIXME: does not work!
-				self.treev.expand_row(parentPathObj, False)
-
-		elif action == "+":
-			group2 = record.obj.parent
-			assert isinstance(group2, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert group2.id is not None
-			if group2.id not in self.loadedGroupIds:
-				return
-			parentIter = self.groupIterById[group2.id]
-			# event is always added to the end of group (at least from
-			# outside Event Manager dialog), unless we add a bool global option
-			# to add all created events to the beginning of group (prepend)
-			self.appendEventRow(parentIter, record.obj)
-
-		elif action == "e":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert record.obj.id is not None
-			eventIter = self.eventsIter.get(record.obj.id)
-			if eventIter is None:
-				if record.obj.parent.id in self.loadedGroupIds:
-					log.error(
-						f"trying to edit non-existing event row, eid={record.obj.id}",
-					)
-			else:
-				self.updateEventRowByIter(record.obj, eventIter)
 
 	def __init__(self, **kwargs) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
-		Dialog.__init__(self, **kwargs)
+		self.w: MyDialog = MyDialog(**kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
@@ -292,21 +187,21 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.multiSelectPathDict: dict[int, dict[int, object]] = {}
 		self.multiSelectToPaste: tuple[bool, list[gtk.TreeIter]] | None = None
 		# ----
-		self.set_title(_("Event Manager"))
-		self.resize(800, 600)
-		self.connect("delete-event", self.onDeleteEvent)
-		self.set_transient_for(None)
-		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
+		self.w.set_title(_("Event Manager"))
+		self.w.resize(800, 600)
+		self.w.connect("delete-event", self.onDeleteEvent)
+		self.w.set_transient_for(None)
+		self.w.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		# --
 		dialog_add_button(
-			self,
+			self.w,
 			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Apply", ctx="window action"),
 		)
 		# self.connect("response", lambda w, e: self.hide())
-		self.connect("response", self.onResponse)
-		self.connect("show", self.onShow)
+		self.w.connect("response", self.onResponse)
+		self.w.connect("show", self.onShow)
 		# -------
 		menubar = self.menubar = gtk.MenuBar()
 		# ----
@@ -469,7 +364,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			multiSelectMenu.append(item)
 		# ----
 		menubar.show_all()
-		pack(self.vbox, menubar)
+		pack(self.w.vbox, menubar)
 		# -------
 		# multi-select bar
 		self.multiSelectHBox = hbox = HBox(spacing=3)
@@ -525,7 +420,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			),
 		)
 		# ---
-		pack(self.vbox, hbox)
+		pack(self.w.vbox, hbox)
 		# -------
 		treeBox = HBox()
 		# -----
@@ -546,7 +441,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		)  # FIXME
 		self.treev.connect("button-press-event", self.onTreeviewButtonPress)
 		self.treev.connect("row-activated", self.rowActivated)
-		self.connect("key-press-event", self.onKeyPress)
+		self.w.connect("key-press-event", self.onKeyPress)
 		self.treev.connect("key-press-event", self.onTreeviewKeyPress)
 		# -----
 		swin = gtk.ScrolledWindow()
@@ -556,9 +451,9 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		# ---
 		self.toolbar = EventManagerToolbar(self)
 		# ---
-		pack(treeBox, self.toolbar)
+		pack(treeBox, self.toolbar.w)
 		# -----
-		pack(self.vbox, treeBox, 1, 1)
+		pack(self.w.vbox, treeBox, 1, 1)
 		# -------
 		self.treeModel = gtk.TreeStore(
 			bool,  # multi-select mode checkbox
@@ -632,11 +527,115 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.sbar = gtk.Statusbar()
 		self.sbar.set_direction(gtk.TextDirection.LTR)
 		pack(hbox, self.sbar, 1, 1)
-		pack(hbox, ResizeButton(self))
-		pack(self.vbox, hbox)
+		pack(hbox, ResizeButton(self.w))
+		pack(self.w.vbox, hbox)
 		# -----
-		self.vbox.show_all()
+		self.w.vbox.show_all()
 		self.multiSelectHBox.hide()
+
+	def onShow(self, _w: gtk.Widget) -> None:
+		self.w.move(*eventManPos.v)
+		self.onConfigChange()
+
+	@staticmethod
+	def onDeleteEvent(_dialog: Dialog, _ge: gdk.Event) -> bool:
+		# onResponse is called before onDeleteEvent
+		# just return True, no need to do anything else
+		# without this signal handler, the window will be distroyed
+		# and can not be opened again
+		return True
+
+	def onResponse(self, _dialog: Dialog, _response_id: int) -> None:
+		eventManPos.v = self.w.get_position()
+		saveConf()
+		# ---
+		self.hide()
+
+	# def findEventByPath(self, eid: int, path: "list[int]""):
+	# 	groupIndex, eventIndex = path
+
+	def onConfigChange(self, *a, **kw) -> None:
+		CalObjWidget.onConfigChange(self, *a, **kw)
+		# ---
+		if not self.isLoaded:
+			if self.w.get_property("visible"):
+				self.w.waitingDo(self.reloadEvents)  # FIXME
+			return
+
+	def onEventUpdate(self, record: EventUpdateRecord) -> None:
+		action = record.action
+
+		if action == "r":  # reload group or trash
+			if isinstance(record.obj, lib.EventTrash):
+				if self.trashIter:
+					self.treeModel.remove(self.trashIter)
+				self.appendTrash()
+				return
+			assert record.obj.id is not None
+			self.reloadGroupEvents(record.obj.id)
+
+		elif action == "+g":  # new group with events inside it (imported)
+			assert isinstance(record.obj, EventGroup)
+			self.appendGroupTree(record.obj)
+
+		elif action == "-g":
+			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
+
+		elif action == "eg":  # edit group
+			group = record.obj
+			assert isinstance(group, EventGroup)
+			assert group.id is not None
+			groupIter = self.groupIterById[group.id]
+			for i, value in enumerate(self.getGroupRow(group)):
+				self.treeModel.set_value(groupIter, i, value)
+
+		elif action == "-":
+			assert isinstance(record.obj.parent, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert record.obj.id is not None
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						f"trying to delete non-existing event row, eid={record.obj.id}",
+					)
+				self.addEventRowToTrash(record.obj)
+				return
+			path = self.treeModel.get_path(eventIter)
+			parentPathObj = gtk.TreePath.new_from_indices(path.get_indices()[:1])
+			expanded = self.treev.row_expanded(parentPathObj)
+			# log.debug(f"{path=}, {parentPathObj=}, {expanded=}")
+			self.treeModel.remove(eventIter)
+			self.addEventRowToTrash(record.obj)
+			if expanded:
+				# FIXME: does not work!
+				self.treev.expand_row(parentPathObj, False)
+
+		elif action == "+":
+			group2 = record.obj.parent
+			assert isinstance(group2, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert group2.id is not None
+			if group2.id not in self.loadedGroupIds:
+				return
+			parentIter = self.groupIterById[group2.id]
+			# event is always added to the end of group (at least from
+			# outside Event Manager dialog), unless we add a bool global option
+			# to add all created events to the beginning of group (prepend)
+			self.appendEventRow(parentIter, record.obj)
+
+		elif action == "e":
+			assert isinstance(record.obj.parent, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert record.obj.id is not None
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						f"trying to edit non-existing event row, eid={record.obj.id}",
+					)
+			else:
+				self.updateEventRowByIter(record.obj, eventIter)
 
 	def multiSelectTreeviewToggleStatus(
 		self,
@@ -696,7 +695,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.multiSelectColumn.set_visible(enable)
 		self.editItem.set_sensitive(not enable)
 		self.fileItem.set_sensitive(not enable)
-		self.toolbar.set_sensitive(not enable)
+		self.toolbar.w.set_sensitive(not enable)
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(enable)
 		self.multiSelect = enable
@@ -983,7 +982,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		if not confirmEventsTrash(toTrashCount, deleteCount):
 			return
 
-		self.waitingDo(self._do_multiSelectDelete, iterList)
+		self.w.waitingDo(self._do_multiSelectDelete, iterList)
 
 		msgs = []
 		if toTrashCount:
@@ -1062,7 +1061,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		dialog = EventsBulkEditDialog(container, transient_for=self)
 
 		if dialog.run() == gtk.ResponseType.OK:
-			self.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
+			self.w.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
 
 	def _do_multiSelectBulkEdit(
 		self,
@@ -1319,7 +1318,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 
 	def historyOfEventFromMenu(self, _menu: gtk.Menu, path: list[int]) -> None:
 		event = self.getEventByPath(path)
-		EventHistoryDialog(event, transient_for=self).run()
+		EventHistoryDialog(event, transient_for=self.w).w.run()
 
 	def trashAddRightClickMenuItems(
 		self,
@@ -1739,7 +1738,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		menu = self.genRightClickMenu(path)
 		if not menu:
 			return
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		rect = treev.get_cell_area(
 			gtk.TreePath.new_from_indices(path),
@@ -1750,7 +1749,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			x -= get_menu_width(menu) + 40
 		else:
 			x += 40
-		dcord = treev.translate_coordinates(self, x, rect.y + 2 * rect.height)
+		dcord = treev.translate_coordinates(self.w, x, rect.y + 2 * rect.height)
 		assert dcord is not None
 		dx, dy = dcord
 		_foo, wx, wy = win.get_origin()
@@ -1820,7 +1819,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		MultiGroupExportDialog(transient_for=self).run()
 
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
-		EventsImportWindow(self).present()
+		EventsImportWindow(self.w).present()
 
 	@staticmethod
 	def onMenuBarSearchClick(_menuItem: gtk.MenuItem) -> None:
@@ -1833,7 +1832,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			self.appendGroupTree(newGroup)
 
 	def onMenuBarOrphanClick(self, _menuItem: gtk.MenuItem) -> None:
-		self.waitingDo(self._do_checkForOrphans)
+		self.w.waitingDo(self._do_checkForOrphans)
 
 	def getSelectedPath(self) -> list[int] | None:
 		iter_ = self.treev.get_selection().get_selected()[1]
@@ -1902,7 +1901,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			self.treev.remove_column(self.colDesc)
 
 	def showDescItemToggled(self, _menuItem: gtk.MenuItem) -> None:
-		self.waitingDo(self._do_showDescItemToggled)
+		self.w.waitingDo(self._do_showDescItemToggled)
 
 	def treeviewCursorChangedPath(self, path: list[int]) -> None:
 		text = ""
@@ -1962,7 +1961,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			elif hasattr(self, "sbar"):
 				self.sbar.push(0, "")
 
-		self.toolbar.set_sensitive(bool(path))
+		self.toolbar.w.set_sensitive(bool(path))
 
 		return True
 
@@ -1987,7 +1986,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			log.exception("")
 
 	def onGroupModify(self, group: EventGroupType) -> None:
-		self.waitingDo(self._do_onGroupModify, group)
+		self.w.waitingDo(self._do_onGroupModify, group)
 
 	def setGroupEnable(
 		self,
@@ -2179,7 +2178,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		account.showError = showError  # type: ignore[attr-defined]
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		error = self.waitingDo(account.sync, group, remoteGid)
+		error = self.w.waitingDo(account.sync, group, remoteGid)
 		if error:
 			log.error(error)
 		"""
@@ -2277,7 +2276,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			transient_for=self,
 		):
 			return
-		self.waitingDo(self._do_deleteGroup, path, group)
+		self.w.waitingDo(self._do_deleteGroup, path, group)
 
 	def deleteGroupFromMenu(self, _menu: gtk.Menu, path: list[int]) -> None:
 		self.deleteGroup(path)
@@ -2625,7 +2624,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		group: EventGroupType,
 		newGroupType: str,
 	) -> None:
-		self.waitingDo(self._do_groupConvertTo, group, newGroupType)
+		self.w.waitingDo(self._do_groupConvertTo, group, newGroupType)
 
 	def _do_groupBulkEdit(
 		self,
@@ -2654,7 +2653,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 
 		dialog = EventsBulkEditDialog(group, transient_for=self)
 		if dialog.run() == gtk.ResponseType.OK:
-			self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
+			self.w.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 
 	def onGroupActionClick(
 		self,
@@ -2666,7 +2665,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		if func is None:
 			setActionFuncs(group)
 			func = getattr(group, actionFuncName)
-		self.waitingDo(func, parentWin=self)
+		self.w.waitingDo(func, parentWin=self)
 
 	def cutEvent(self, _menuItem: gtk.MenuItem, path: list[int]) -> None:
 		self.toPasteEvent = (self.iterFromPath(path), True)

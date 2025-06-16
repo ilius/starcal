@@ -46,7 +46,6 @@ class ClockLabel(gtk.Label):
 		self.bold = bold
 		self.seconds = seconds
 		self.running = False
-		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
 	def start(self) -> None:
@@ -92,7 +91,6 @@ class FClockLabel(gtk.Label):
 		self.format = clockFormat
 		self.local = local
 		self.running = False
-		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
 	def start(self) -> None:
@@ -129,7 +127,6 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		self.text = ""
 		self.running = False
 		self.connect("draw", self.onDraw)
-		# self.connect("button-press-event", self.onButtonPress)
 		self.start()  # ???
 
 	def start(self) -> None:

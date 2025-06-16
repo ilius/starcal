@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.cell import WeekStatus
 from scal3.font import Font
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 
@@ -25,7 +24,7 @@ log = logger.get()
 
 from math import pi
 from time import time as now
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import cairo
 from gi.repository.PangoCairo import show_layout
@@ -38,7 +37,6 @@ from scal3.ui import conf
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	Dialog,
 	VBox,
 	gdk,
 	getScrollValue,
@@ -52,7 +50,6 @@ from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
 	newSubPageButton,
 )
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	drawOutlineRoundedRect,
 	drawRoundedRect,
@@ -63,6 +60,7 @@ from scal3.ui_gtk.drawing import (
 from scal3.ui_gtk.mywidgets import MyFontButton
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
+	BaseToolBoxItem,
 	CustomizableToolBox,
 	LabelToolBoxItem,
 	ToolBoxItem,
@@ -70,13 +68,31 @@ from scal3.ui_gtk.toolbox import (
 from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 if TYPE_CHECKING:
+	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
 	from scal3.property import Property
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumParamsDict
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
+
+
+class ColumnParent(Protocol):
+	def set_child_packing(
+		self,
+		child: gtk.Widget,
+		expand: bool,
+		fill: bool,
+		padding: int,
+		pack_type: gtk.PackType,
+	) -> None: ...
+
+
+# class WeekCalType(Protocol, ColumnParent):
+# 	status
+# 	def updateStatus(self)
 
 
 class ColumnBase(CustomizableCalObj):
@@ -88,7 +104,9 @@ class ColumnBase(CustomizableCalObj):
 	# --
 
 	def __init__(self) -> None:
-		pass
+		super().__init__()
+		self.colParent: ColumnParent | None = None
+		self.calType = 0
 
 	@classmethod
 	def getWidthAttr(cls) -> str:
@@ -118,7 +136,7 @@ class ColumnBase(CustomizableCalObj):
 	def onWidthChange(self) -> None:
 		# if self.objName:
 		# 	self.updatePacking()
-		self.queue_resize()
+		self.w.queue_resize()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
@@ -183,8 +201,10 @@ class ColumnBase(CustomizableCalObj):
 		pass
 
 	def updatePacking(self) -> None:
+		if self.colParent is None:
+			return
 		self.colParent.set_child_packing(
-			self,
+			self.w,
 			self.expand,
 			self.expand,
 			0,
@@ -196,26 +216,26 @@ class ColumnBase(CustomizableCalObj):
 		assert prop is not None
 		self.expand = prop.v
 		self.updatePacking()
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def getFontPreviewText(self) -> str:  # noqa: PLR6301
 		return ""
 
 
-class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
+class Column(ColumnBase):
 	colorizeHolidayText = False
 	showCursor = False
 	truncateText = False
 
 	def __init__(self, wcal: CalObj) -> None:
-		gtk.DrawingArea.__init__(self)
-		ColumnBase.__init__(self)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		super().__init__()
+		self.w: gtk.DrawingArea = gtk.DrawingArea()
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
-		# self.connect("button-press-event", self.onButtonPress)
-		# self.connect("event", show_event)
+		# self.w.connect("button-press-event", self.onButtonPress)
+		# self.w.connect("event", show_event)
 		self.wcal = wcal
-		self.colParent = wcal
+		self.colParent: ColumnParent = wcal  # type: ignore[assignment]
 		if self.customizeExpand:
 			expandProp = self.getExpandProp()
 			assert expandProp is not None
@@ -238,7 +258,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 			return
 		if self.wcal.status is None:
 			self.wcal.updateStatus()
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -257,7 +277,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 	def drawBg(self, cr: cairo.Context) -> None:
 		status = self.wcal.status
 		assert status is not None
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		w = alloc.width
 		h = alloc.height
 		cr.rectangle(0, 0, w, h)
@@ -355,7 +375,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 	def drawCursorFg(self, cr: cairo.Context) -> None:
 		if not self.showCursor:
 			return
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		w = alloc.width
 		h = alloc.height
 		rowH = h / 7
@@ -376,7 +396,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 	) -> None:
 		status = self.wcal.status
 		assert status is not None
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		w = alloc.width
 		h = alloc.height
 		# ---
@@ -396,7 +416,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 					log.info(self.objName)
 				for line, color in data:
 					layout = newTextLayout(
-						self,
+						self.w,
 						text=line,
 						font=font,
 						maxSize=(itemW, lineH),
@@ -422,7 +442,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 
 	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def drawColumn(self, cr: cairo.Context) -> None:
 		pass
@@ -473,9 +493,10 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 	def getMenuPos(self) -> tuple[int, int]:
 		wcal = self._wcal
-		w = self.get_allocation().width
-		h = self.get_allocation().height
-		coords = self.translate_coordinates(wcal, 0, 0)
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
+		coords = self.w.translate_coordinates(wcal.w, 0, 0)
 		assert coords is not None
 		x0, y0 = coords
 		return (
@@ -489,7 +510,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		_gevent: gdk.Event | None = None,
 	) -> None:
 		x, y = self.getMenuPos()
-		self._wcal.emit(
+		self._wcal.w.emit(
 			"popup-main-menu",
 			x,
 			y,
@@ -524,7 +545,9 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		ui.saveLiveConf()
 
 
-@registerSignals
+# FIXME: multi-inheritance
+
+
 class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 	vertical = True
 	desc = _("Toolbar (Vertical)")
@@ -534,7 +557,7 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 	def __init__(self, wcal: CalObj) -> None:
 		CustomizableToolBox.__init__(self, wcal)
 		ColumnBase.__init__(self)
-		self.defaultItems = [
+		self.defaultItems: list[BaseToolBoxItem] = [
 			MainMenuToolBoxItem(wcal),
 			WeekNumToolBoxItem(),
 			ToolBoxItem(
@@ -581,7 +604,6 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 		ud.wcalToolbarData = self.getDict()
 
 
-@registerSignals
 class WeekDaysColumn(Column):
 	objName = "weekDays"
 	desc = _("Week Days")
@@ -594,7 +616,7 @@ class WeekDaysColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	def drawColumn(self, cr: cairo.Context) -> None:
 		self.drawBg(cr)
@@ -613,7 +635,6 @@ class WeekDaysColumn(Column):
 		return _(", ").join([_(core.getWeekDayN(i)) for i in range(7)])
 
 
-@registerSignals
 class PluginsTextColumn(Column):
 	objName = "pluginsText"
 	desc = _("Plugins Text")
@@ -624,7 +645,7 @@ class PluginsTextColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	def getTextListByIndex(self, i: int) -> list[tuple[str, ColorType | None]]:
 		status = self.wcal.status
@@ -653,7 +674,7 @@ class PluginsTextColumn(Column):
 			prop=conf.wcal_pluginsText_firstLineOnly,
 			label=_("Only first line of text"),
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 
@@ -663,7 +684,6 @@ class PluginsTextColumn(Column):
 		return ""
 
 
-@registerSignals
 class EventsIconColumn(Column):
 	objName = "eventsIcon"
 	desc = _("Events Icon")
@@ -672,15 +692,16 @@ class EventsIconColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	def drawColumn(self, cr: cairo.Context) -> None:
 		status = self.wcal.status
 		assert status is not None
 		self.drawBg(cr)
 		# ---
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		# ---
 		# rowH = h / 7
 		# itemW = w - conf.wcalPadding.v
@@ -720,7 +741,6 @@ class EventsIconColumn(Column):
 				cr.scale(1 / scaleFact, 1 / scaleFact)
 
 
-@registerSignals
 class EventsCountColumn(Column):
 	objName = "eventsCount"
 	desc = _("Events Count")
@@ -731,7 +751,7 @@ class EventsCountColumn(Column):
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
 		# --
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	def getDayTextData(self, i: int) -> list[tuple[str, ColorType | None]]:
 		status = self.wcal.status
@@ -758,7 +778,6 @@ class EventsCountColumn(Column):
 		)
 
 
-@registerSignals
 class EventsTextColumn(Column):
 	objName = "eventsText"
 	desc = _("Events Text")
@@ -769,7 +788,7 @@ class EventsTextColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	def getDayTextData(self, i: int) -> list[tuple[str, ColorType | None]]:
 		from scal3.xml_utils import escape
@@ -857,7 +876,7 @@ class EventsTextColumn(Column):
 				prop=conf.wcal_eventsText_colorize,
 				label=_("Use color of event group\nfor event text"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			).getWidget(),
 		)
 
@@ -867,12 +886,11 @@ class EventsTextColumn(Column):
 				prop=conf.wcal_eventsText_showDesc,
 				label=_("Show Description"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			).getWidget(),
 		)
 
 
-@registerSignals
 class EventsBoxColumn(Column):
 	objName = "eventsBox"
 	desc = _("Events Box")
@@ -888,8 +906,8 @@ class EventsBoxColumn(Column):
 		# -----
 		Column.__init__(self, wcal)
 		# -----
-		self.connect("realize", lambda _w: self.updateData())
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("realize", lambda _w: self.updateData())
+		self.w.connect("draw", self.onExposeEvent)
 
 	def updateData(self) -> None:
 		from scal3.time_utils import getEpochFromJd
@@ -897,7 +915,7 @@ class EventsBoxColumn(Column):
 
 		assert self.wcal.status is not None
 		self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
-		self.pixelPerSec = self.get_allocation().height / self.timeWidth
+		self.pixelPerSec = self.w.get_allocation().height / self.timeWidth
 		# ^^^ unit: pixel / second
 		self.borderTm = 0
 		# tbox.boxEditBorderWidth / self.pixelPerSec # second
@@ -911,12 +929,12 @@ class EventsBoxColumn(Column):
 	def onDateChange(self, *a, **kw) -> None:
 		Column.onDateChange(self, *a, **kw)
 		self.updateData()
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
 		Column.onConfigChange(self, *a, **kw)
 		self.updateData()
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def drawBox(self, cr: cairo.Context, box: TimeLineBox) -> None:
 		from scal3.ui_gtk import timeline_box as tbox
@@ -928,14 +946,14 @@ class EventsBoxColumn(Column):
 		h = box.w
 		# ---
 		tbox.drawBoxBG(cr, box, x, y, w, h)
-		tbox.drawBoxText(cr, box, x, y, w, h, self)
+		tbox.drawBoxText(cr, box, x, y, w, h, self.w)
 
 	def drawColumn(self, cr: cairo.Context) -> None:
 		self.drawBg(cr)
 		if not self.boxes:
 			return
 		# ---
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		w = alloc.width
 		# h = alloc.height
 		# ---
@@ -1031,10 +1049,9 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		_event: gdk.Event | None = None,
 	) -> None:
 		conf.wcalTypeParams.v[self.index] = self.get()
-		self.wcal.queue_draw()
+		self.wcal.w.queue_draw()
 
 
-@registerSignals
 class DaysOfMonthColumn(Column):
 	colorizeHolidayText = True
 	showCursor = True
@@ -1051,7 +1068,7 @@ class DaysOfMonthColumn(Column):
 		self.calType = calType
 		self.index = index
 		# ---
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 
 	@classmethod
 	def getWidthAttr(cls) -> str:
@@ -1078,37 +1095,36 @@ class DaysOfMonthColumn(Column):
 		self.drawCursorFg(cr)
 
 
-@registerSignals
-class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: ignore[misc]
+class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 	objName = "daysOfMonth"
 	desc = _("Days of Month")
 	customizeWidth = True
 	customizeExpand = True
 	optionsPageSpacing = 15
 
-	def updateDirection(self) -> None:
-		self.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
-		# set_direction does not apply to existing children.
-		# that's why we remove children(columns) and add them again
-		columns = self.get_children()
-		for col in columns:
-			self.remove(col)
-		for col in columns:
-			pack(self, col, 1, 1)
-
 	def __init__(self, wcal: CalObj) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		CustomizableCalBox.__init__(self, vertical=False)
 		ColumnBase.__init__(self)
 		self.initVars()
 		self.wcal = wcal
-		self.colParent = wcal
+		self.colParent: ColumnParent = wcal.w
 		self.updateCols()
 		self.updateDirection()
 		self.show()
 
+	def updateDirection(self) -> None:
+		self.w.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
+		# set_direction does not apply to existing children.
+		# that's why we remove children(columns) and add them again
+		columns = self.w.get_children()
+		for col in columns:
+			self.w.remove(col)
+		for col in columns:
+			pack(self.w, col, 1, 1)
+
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
-		for child in self.get_children():
+		for child in self.w.get_children():
 			assert isinstance(child, Column)
 			child.onWidthChange()
 
@@ -1134,7 +1150,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 	# overwrites method from ColumnBase
 	def updatePacking(self) -> None:
 		ColumnBase.updatePacking(self)
-		for child in self.get_children():
+		for child in self.w.get_children():
 			assert isinstance(child, Column)
 			child.expand = self.expand
 			child.updatePacking()
@@ -1143,7 +1159,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		childWidthProp = self.getWidthProp()
 		if childWidthProp is None:
 			raise ValueError("childWidth is None")
-		count = len(self.get_children())
+		count = len(self.w.get_children())
 		width = int(count * childWidthProp.v)
 		return width, width
 
@@ -1153,7 +1169,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		# self.foreach(lambda child: self.remove(child))
 		# ^^^ Couses tray icon crash in gnome3
 		# --------
-		columns = self.get_children()
+		columns = self.items
 		n = len(columns)
 		n2 = len(calTypes.active)
 
@@ -1168,12 +1184,12 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 
 		if n > n2:
 			for i in range(n2, n):
-				columns[i].destroy()
+				columns[i].w.destroy()
 		elif n < n2:
 			for i in range(n, n2):
 				col = DaysOfMonthColumn(self.wcal, self, 0, i)
-				col.colParent = self
-				pack(self, col, 1, 1)
+				col.colParent = self.w
+				pack(self.w, col.w, 1, 1)
 				columns.append(col)
 		for i, calType in enumerate(calTypes.active):
 			col2 = columns[i]
@@ -1220,7 +1236,6 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		self.updateTypeParamsWidget()
 
 
-@registerSignals
 class MoonStatusColumn(Column):
 	objName = "moonStatus"
 	desc = _("Moon Status")
@@ -1230,7 +1245,7 @@ class MoonStatusColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.connect("draw", self.onExposeEvent)
+		self.w.connect("draw", self.onExposeEvent)
 		self.showPhaseNumber = False
 
 	def drawColumn(self, cr: cairo.Context) -> None:
@@ -1241,7 +1256,7 @@ class MoonStatusColumn(Column):
 		status = self.wcal.status
 		assert status is not None
 
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		w = alloc.width
 		h = alloc.height
 		itemW = w - conf.wcalPadding.v
@@ -1334,7 +1349,7 @@ class MoonStatusColumn(Column):
 
 			if self.showPhaseNumber:
 				layout = newTextLayout(
-					self,
+					self.w,
 					text=f"{bigPhase:.1f}",
 					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
 				)
@@ -1361,8 +1376,7 @@ class MoonStatusColumn(Column):
 		pack(optionsWidget, prefItem.getWidget())
 
 
-@registerSignals
-class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
+class CalObj(CalBase):
 	objName = "weekCal"
 	desc = _("Week Calendar")
 	vertical = False
@@ -1395,15 +1409,16 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 	def getCellPagePlus(cell: CellType, plus: int) -> CellType:
 		return ui.cells.getCell(cell.jd + 7 * plus)
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
+		super().__init__()
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.win = win
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		# self.items: list[ColumnBase] = []
 		self.initCal()
 		# ----------------------
-		self.connect("scroll-event", self.scroll)
-		# ---
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.connect("scroll-event", self.scroll)
+		self.w.connect("button-press-event", self.onButtonPress)
 		# -----
 		# set in self.updateStatus
 		self.status: WeekStatus | None = None
@@ -1455,7 +1470,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 			step=0.1,
 			label=_("Text Size Scale"),
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
@@ -1463,7 +1478,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 			CheckPrefItem(prop=conf.wcalGrid, label=_("Grid")),
 			ColorPrefItem(prop=conf.wcalGridColor, useAlpha=True),
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ---
@@ -1474,7 +1489,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 			),
 			ColorPrefItem(prop=conf.wcalUpperGradientColor, useAlpha=True),
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ------------
@@ -1490,7 +1505,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 			label=_("Line Width Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
@@ -1502,7 +1517,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 			label=_("Rounding Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
@@ -1545,12 +1560,12 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 	def onConfigChange(self, *a, **kw) -> None:
 		self.updateStatus()
 		CalBase.onConfigChange(self, *a, **kw)
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def onDateChange(self, *a, **kw) -> None:
 		self.updateStatus()
 		CustomizableCalBox.onDateChange(self, *a, **kw)
-		self.queue_draw()
+		self.w.queue_draw()
 		# for item in self.items:
 		# 	item.queue_draw()
 
@@ -1575,14 +1590,15 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 					return True
 		return False
 
-	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> Column | None:
+	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> ColumnBase | None:
 		for item in self.items:
 			if isinstance(item, gtk.Box):
 				# right now only DaysOfMonthColumnGroup
 				for child in item.get_children():
 					if self.itemContainsGdkWindow(child, col_win):
 						return child
-			elif self.itemContainsGdkWindow(item, col_win):
+			elif self.itemContainsGdkWindow(item.w, col_win):
+				assert isinstance(item, ColumnBase)
 				return item
 		return None
 
@@ -1601,16 +1617,16 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		# y_col is relative to the column, but also to the weekCal,
 		# 		because we have nothing above columns
 		# ---
-		i = int(y_col * 7.0 / self.get_allocation().height)
+		i = int(y_col * 7.0 / self.w.get_allocation().height)
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
 		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("double-button-press")
+			self.s.emit("double-button-press")
 		if gevent.button == 3:
-			coords = col.translate_coordinates(self, x_col, y_col)
+			coords = col.w.translate_coordinates(self.w, x_col, y_col)
 			assert coords is not None
 			x, y = coords
-			self.emit("popup-cell-menu", x, y)
+			self.s.emit("popup-cell-menu", x, y)
 		return True
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
@@ -1638,9 +1654,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		elif kname in {"f10", "m"}:
 			if gevent.state & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit("popup-cell-menu", *self.getCellPos())
+				self.s.emit("popup-cell-menu", *self.getCellPos())
 			else:
-				self.emit("popup-main-menu", *self.getMainMenuPos())
+				self.s.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True
@@ -1656,7 +1672,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		return False
 
 	def getCellPos(self, *_args) -> tuple[int, int]:
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		return (
 			int(alloc.width / 2),
 			int((ui.cells.current.weekDayIndex + 1) * alloc.height / 7),
@@ -1664,7 +1680,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 
 	def getToolbar(self) -> ToolbarColumn | None:
 		for item in self.items:
-			if item.enable and item.objName == "toolbar":
+			if item.enable and isinstance(item.objName, ToolbarColumn):
 				return item
 		return None
 
@@ -1672,25 +1688,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		toolbar = self.getToolbar()
 		if toolbar:
 			for item in toolbar.items:
-				if item.enable and item.objName == "mainMenu":
+				if item.enable and isinstance(item, MainMenuToolBoxItem):
 					return item.getMenuPos()
 		if rtl:
-			return self.get_allocation().width, 0
+			return self.w.get_allocation().width, 0
 
 		return 0, 0
-
-
-if __name__ == "__main__":
-	from scal3.cell import init as initCell
-
-	ui.init()
-	initCell()
-	win = Dialog()
-	cal = CalObj(win)
-	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-	pack(win.vbox, cal, 1, 1)
-	win.vbox.show_all()
-	win.resize(600, 400)
-	win.set_title(cal.desc)
-	cal.onConfigChange()
-	win.run()

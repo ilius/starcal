@@ -28,7 +28,7 @@ log = logger.get()
 
 
 from math import isqrt
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from gi.repository.PangoCairo import show_layout
 
@@ -82,12 +82,21 @@ if TYPE_CHECKING:
 		DayCalTypeWMParamsDict,
 		PieGeoDict,
 	)
-	from scal3.ui_gtk.starcal import MainWin
 
-__all__ = ["DayCal"]
+__all__ = ["DayCal", "ParentWindowType"]
 
 
-class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
+class ParentWindowType(Protocol):
+	w: gtk.Window
+
+	def customizeShow(
+		self,
+		_widget: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> None: ...
+
+
+class DayCal(CalBase):
 	objName = "dayCal"
 	desc = _("Day Calendar")
 	itemListCustomizable = False
@@ -132,6 +141,24 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		"f10",
 		"m",
 	}
+
+	def __init__(self, win: ParentWindowType) -> None:
+		super().__init__()
+		self.w: gtk.DrawingArea = gtk.DrawingArea()
+		# FIXME: rename one of these two attrs:
+		self.parentWin = win
+		self._window: gtk.Window | None = None
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.initCal()
+		self.subPages: list[StackPage] | None = None
+		self._allButtons: list[BaseButton] = []
+		# ----------------------
+		# self.kTime = 0
+		# ----------------------
+		self.w.connect("draw", self.drawAll)
+		self.w.connect("button-press-event", self.onButtonPress)
+		# self.connect("screen-changed", self.screenChanged)
+		self.w.connect("scroll-event", self.scroll)
 
 	def getBackgroundColor(self) -> ColorType:
 		if self.backgroundColor:
@@ -316,8 +343,8 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		)
 
 	def openCustomize(self, _ge: gdk.EventButton | None = None) -> None:
-		if self.win:
-			self.win.customizeShow()
+		if self.parentWin:
+			self.parentWin.customizeShow()
 
 	def prevDayClicked(self, _ge: gdk.EventButton | None = None) -> None:
 		self.jdPlus(-1)
@@ -402,23 +429,6 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		vbox.show_all()
 		return subPages
 
-	def __init__(self, win: MainWin) -> None:
-		gtk.DrawingArea.__init__(self)
-		# FIXME: rename one of these two attrs:
-		self.win = win
-		self._window: gtk.Window | None = None
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.initCal()
-		self.subPages: list[StackPage] | None = None
-		self._allButtons: list[BaseButton] = []
-		# ----------------------
-		# self.kTime = 0
-		# ----------------------
-		self.connect("draw", self.drawAll)
-		self.connect("button-press-event", self.onButtonPress)
-		# self.connect("screen-changed", self.screenChanged)
-		self.connect("scroll-event", self.scroll)
-
 	def getWindow(self) -> gtk.Window:
 		assert self._window is not None
 		return self._window
@@ -443,7 +453,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			prefItem = ColorPrefItem(
 				prop=self.backgroundColor,
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			hbox = HBox()
 			pack(hbox, gtk.Label(label=_("Background") + ": "))
@@ -470,7 +480,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				prop=self.widgetButtonsEnable,
 				label=_("Widget Buttons"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.widgetButtonsSize:
@@ -480,7 +490,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				step=1,
 				label=_("Widget Buttons Size"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.widgetButtonsOpacity:
@@ -491,7 +501,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				step=0.1,
 				label=_("Widget Buttons Opacity"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
 		if self.navButtonsEnable:
@@ -499,7 +509,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				prop=self.navButtonsEnable,
 				label=_("Navigation buttons"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
 		pageWidget.show_all()
@@ -521,7 +531,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 					prop=self.weekdayLocalize,
 					label=_("Localize"),
 					live=True,
-					onChangeFunc=self.queue_draw,
+					onChangeFunc=self.w.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
 			if self.weekdayAbbreviate:
@@ -529,7 +539,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 					prop=self.weekdayAbbreviate,
 					label=_("Abbreviate"),
 					live=True,
-					onChangeFunc=self.queue_draw,
+					onChangeFunc=self.w.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
 			if langHasUppercase and self.weekdayUppercase:
@@ -537,7 +547,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 					prop=self.weekdayUppercase,
 					label=_("Uppercase"),
 					live=True,
-					onChangeFunc=self.queue_draw,
+					onChangeFunc=self.w.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
 			# ---
@@ -577,7 +587,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				step=1,
 				label=_("Icon Size"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(vbox, prefItem.getWidget())
 		# ---
@@ -589,7 +599,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				step=0.01,
 				label=_("Total Size Ratio"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(vbox, prefItem.getWidget())
 		# ----
@@ -608,7 +618,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				prop=self.seasonPieEnable,
 				label=_("Season Pie"),
 				live=True,
-				onChangeFunc=self.queue_draw,
+				onChangeFunc=self.w.queue_draw,
 			)
 			pack(pageWidget, prefItem.getWidget())
 			# ---
@@ -631,7 +641,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 					prop=self.seasonPieColors[season],
 					useAlpha=True,
 					live=True,
-					onChangeFunc=self.queue_draw,
+					onChangeFunc=self.w.queue_draw,
 				)
 				row_index = int(index / 2)
 				column_index = index % 2 * 3
@@ -737,7 +747,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		cr: cairo.Context | None = None,
 		cursor: bool = True,
 	) -> None:
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -885,7 +895,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 		textSize = size * (1 - geo["thickness"])
 		layout = newTextLayout(
-			self,
+			self.w,
 			textNumEncode(
 				f"%{int(seasonFrac * 100)}",
 				# changeSpecialChars=True,
@@ -900,8 +910,8 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def drawWithContext(self, cr: cairo.Context, _cursor: bool) -> None:
 		# gevent = gtk.get_current_event()
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		w = self.w.get_allocation().width
+		h = self.w.get_allocation().height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, self.getBackgroundColor())
 		# -----
@@ -931,7 +941,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			else:
 				dayStr = str(dayNum)
 			layout = newTextLayout(
-				self,
+				self.w,
 				dayStr,
 				getParamsFont(dparams),
 			)
@@ -948,7 +958,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		for calType, mparams in self.iterMonthParams():
 			text = self.getMonthName(c, calType, mparams)
 			layout = newTextLayout(
-				self,
+				self.w,
 				text,
 				getParamsFont(mparams),
 			)
@@ -975,7 +985,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				):
 					text = text.upper()
 				daynum = newTextLayout(
-					self,
+					self.w,
 					text,
 					getParamsFont(wparams),
 				)
@@ -1001,8 +1011,8 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		if b == 1:
 			buttons = self._allButtons
 			if buttons:
-				w = self.get_allocation().width
-				h = self.get_allocation().height
+				w = self.w.get_allocation().width
+				h = self.w.get_allocation().height
 				for button in buttons:
 					if button.contains(x, y, w, h):
 						if not double:
@@ -1010,10 +1020,10 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 						return True
 
 		if b == 3:
-			self.emit("popup-cell-menu", x, y)
+			self.s.emit("popup-cell-menu", x, y)
 
 		if double:
-			self.emit("double-button-press")
+			self.s.emit("double-button-press")
 
 		return True
 
@@ -1051,9 +1061,9 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		# elif kname in ("f10", "m"):  # FIXME
 		# 	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		# 		# Simulate right click (key beside Right-Ctrl)
-		# 		self.emit("popup-cell-menu", *self.getCellPos())
+		# 		self.s.emit("popup-cell-menu", *self.getCellPos())
 		# 	else:
-		# 		self.emit("popup-main-menu", *self.getMainMenuPos())
+		# 		self.s.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True
@@ -1069,7 +1079,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		return False
 
 	def getCellPos(self, *_args) -> tuple[int, int]:
-		alloc = self.get_allocation()
+		alloc = self.w.get_allocation()
 		return (
 			int(alloc.width / 2),
 			int(alloc.height / 2),
@@ -1077,7 +1087,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onConfigChange(self, *a, **kw)

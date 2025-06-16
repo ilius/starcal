@@ -33,7 +33,6 @@ from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import GdkPixbuf, HBox, Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.common import SingleGroupComboBox
 from scal3.ui_gtk.event.export import EventListExportDialog
 from scal3.ui_gtk.event.utils import (
@@ -43,6 +42,7 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
@@ -70,23 +70,22 @@ if typing.TYPE_CHECKING:
 __all__ = ["EventSearchWindow"]
 
 
-@registerSignals
-class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
+class EventSearchWindow(CalObjWidget):
 	def __init__(self, showDesc: bool = False) -> None:
-		gtk.Window.__init__(self)
-		self.maximize()
+		self.w: MyWindow = MyWindow()
+		self.w.maximize()
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
 		self.dateTimeInputs = []
 		self.currentCalType = calTypes.primary
 		# --
-		self.set_title(_("Search Events"))
-		self.connect("delete-event", self.closed)
-		self.connect("key-press-event", self.onKeyPress)
+		self.w.set_title(_("Search Events"))
+		self.w.connect("delete-event", self.closed)
+		self.w.connect("key-press-event", self.onKeyPress)
 		# ---
 		self.vbox = VBox()
-		self.add(self.vbox)
+		self.w.add(self.vbox)
 		# ------
 		vboxFilters = self.vboxFilters = VBox()
 		pack(self.vbox, vboxFilters)
@@ -390,7 +389,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		# self.maximize()-- FIXME
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		CalObjWidget.onConfigChange(self, *a, **kw)
 		if self.currentCalType != calTypes.primary:
 			for dateTimeInput in self.dateTimeInputs:
 				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)
@@ -519,7 +518,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 			_file.write("]}]}")
 
 	def onSearchClick(self, _w: gtk.Widget | None = None) -> None:
-		self.waitingDo(self._do_search)
+		self.w.waitingDo(self._do_search)
 
 	def onExportClick(self, _w: gtk.Widget | None = None) -> None:
 		idsList = []
@@ -560,7 +559,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 			)
 
 	def onDirectExportClick(self, _w: gtk.Widget | None = None) -> None:
-		self.waitingDo(self._do_directExport)
+		self.w.waitingDo(self._do_directExport)
 
 	def onHideShowFiltersClick(self, _w: gtk.Widget | None = None) -> None:
 		visible = not self.vboxFilters.get_visible()
@@ -734,7 +733,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		eid = self.treeModel[path][1]
 		group = ev.groups[gid]
 		event = group[eid]
-		EventHistoryDialog(event, transient_for=self).run()
+		EventHistoryDialog(event, transient_for=self.w).w.run()
 
 	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]
@@ -830,13 +829,13 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 				else:
 					x += 50
 				dcoord = treev.translate_coordinates(
-					self,
+					self.w,
 					x,
 					rect.y + rect.height,
 				)
 				assert dcoord is not None
 				dx, dy = dcoord
-				win = self.get_window()
+				win = self.w.get_window()
 				assert win is not None
 				_foo, wx, wy = win.get_origin()
 				self.tmpMenu = menu
@@ -875,7 +874,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 
 	def present(self) -> None:
 		self.groupCombo.updateItems()
-		gtk.Window.present(self)
+		self.w.present()
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval)

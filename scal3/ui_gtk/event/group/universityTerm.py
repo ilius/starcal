@@ -118,7 +118,7 @@ class CourseListEditor(gtk.Box):
 			],
 		)
 		# -------
-		pack(self, toolbar)
+		pack(self, toolbar.w)
 
 	def getSelectedIndex(self) -> int | None:
 		cur = self.treev.get_cursor()
@@ -248,7 +248,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 			],
 		)
 		# -------
-		pack(self, toolbar)
+		pack(self, toolbar.w)
 
 	def getSelectedIndex(self) -> int | None:
 		cur = self.treev.get_cursor()
@@ -374,9 +374,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.data: list[list[list[WeeklyScheduleItem]]] = []
 		# ----
 		gtk.DrawingArea.__init__(self)
-		# self.connect("button-press-event", self.onButtonPress)
 		self.connect("draw", self.onExposeEvent)
-		# self.connect("event", show_event)
 
 	def onExposeEvent(
 		self,

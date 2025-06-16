@@ -7,8 +7,8 @@ from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.ui import conf
 from scal3.ui_gtk import Menu, gdk, gtk
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	getGtkWindow,
@@ -25,10 +25,14 @@ __all__ = ["IconSelectButton"]
 
 
 @registerSignals
-class IconSelectButton(gtk.Button):
+class SignalHandler(SignalHandlerBase):
 	signals = [
 		("changed", [str]),
 	]
+
+
+class IconSelectButton(gtk.Button):
+	Sig = SignalHandler
 
 	def __init__(self, filename: str = "") -> None:
 		gtk.Button.__init__(self)

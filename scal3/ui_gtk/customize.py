@@ -24,9 +24,8 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.ui_gtk import gdk, gtk, pack
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk import gdk, getOrientation, gtk, pack
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
 	from scal3.property import Property
@@ -40,15 +39,13 @@ __all__ = [
 ]
 
 
-@registerSignals
-class DummyCalObj(ud.CalObjType):
+class DummyCalObj(CalObjWidget):
 	loaded = False
 	itemListCustomizable = False
 	hasOptions = False
 	isWrapper = False
-	enableParam = ""
+	enableParam: Property[bool] | None = None
 	itemListSeparatePage = False
-	signals = ud.BaseCalObj.signals
 
 	def __init__(
 		self,
@@ -57,7 +54,8 @@ class DummyCalObj(ud.CalObjType):
 		pkg: str,
 		customizable: bool,
 	) -> None:
-		ud.CalObjType.__init__(self)
+		super().__init__()
+		self.initVars()
 		self.enable = False
 		self.objName = name
 		self.desc = desc
@@ -66,16 +64,12 @@ class DummyCalObj(ud.CalObjType):
 		self.optionsWidget: gtk.Widget | None = None
 		self.items: list[CustomizableCalObj] = []
 
-	def getLoadedObj(self) -> ud.BaseCalObj | None:
-		try:
-			module = __import__(
-				self.moduleName,
-				fromlist=["CalObj"],
-			)
-			CalObj = module.CalObj
-		except Exception:
-			log.exception("")
-			return None
+	def getLoadedObj(self) -> CustomizableCalObj:
+		module = __import__(
+			self.moduleName,
+			fromlist=["CalObj"],
+		)
+		CalObj = module.CalObj
 		obj = CalObj(ui.mainWin)
 		obj.enable = self.enable
 		return obj
@@ -93,7 +87,7 @@ class DummyCalObj(ud.CalObjType):
 		pass
 
 
-class CustomizableCalObj(ud.BaseCalObj):
+class CustomizableCalObj(CalObjWidget):
 	customizable = True
 	hasOptions = True
 	itemListCustomizable = True
@@ -106,22 +100,30 @@ class CustomizableCalObj(ud.BaseCalObj):
 	itemListSeparatePage = False
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
-	expand = False
 	params = ()
-	myKeys: set[str] = set()
-	objName: str = ""
+	# enablePrefItem = None
 
 	def initVars(self) -> None:
 		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
 			log.error(f"Add vertical to {self.__class__}")
-		ud.BaseCalObj.initVars(self)
+		CalObjWidget.initVars(self)
 		# self.itemWidgets = {}  # for lazy construction of widgets
 		self.optionsWidget: gtk.Widget | None = None
 		try:
-			self.connect("key-press-event", self.onKeyPress)
+			self.w.connect("key-press-event", self.onKeyPress)
 		except TypeError as e:
 			if "unknown signal name" not in str(e):
 				log.exception("")
+
+	# def connectItem(self, item: CustomizableCalObj) -> None:
+	# 	# try:
+	# 	item.s.connect("config-change", self.onConfigChange)
+	# 	item.s.connect("date-change", self.onDateChange)
+	# 	# except Exception:
+	# 	# 	log.exception(f"{item=}")
+
+	def getLoadedObj(self) -> CustomizableCalObj:
+		return self
 
 	def getItemsData(self) -> list[tuple[str, bool]]:
 		return [(item.objName, item.enable) for item in self.items]
@@ -141,29 +143,46 @@ class CustomizableCalObj(ud.BaseCalObj):
 				return True
 		return False
 
+	def onEnableCheckClick(self) -> None:
+		assert self.enableParam is not None
+		enable = self.enableParam.v
+		self.enable = enable
+		self.onConfigChange()
+		self.showHide()
+
 	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
 		return None
 
 	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
 		return []
 
+	def insertItemWidget(self, _i: int) -> None:
+		raise NotImplementedError
+
 
 class CustomizableCalBox(CustomizableCalObj):
 	"""for GtkBox (HBox and VBox)."""
 
+	def __init__(self, vertical: bool) -> None:
+		super().__init__()
+		self.w: gtk.Box = gtk.Box(orientation=getOrientation(vertical))
+		self.initVars()
+		self.vertical = vertical
+
 	def appendItem(self, item: CustomizableCalObj) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		if item.loaded:
-			pack(self, item, item.expand, item.expand)
+			pack(self.w, item.w, item.expand, item.expand)
 			item.showHide()
 
 	def repackAll(self) -> None:
 		for item in self.items:
-			if item.loaded:
-				self.remove(item)
+			if item.enable:
+				self.w.remove(item.w)
 		for item in self.items:
-			if item.loaded:
-				pack(self, item, item.expand, item.expand)
+			if item.enable:
+				pack(self.w, item.w, item.expand, item.expand)
+				item.show()
 
 	# Disabled the old implementation (with reorder_child) because it was
 	# very buggy with Gtk3. Removing all (active) items from gtk.Box and
@@ -205,7 +224,7 @@ def newSubPageButton(
 	def onClick(_b: gtk.Button, page: StackPage) -> None:
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
-		item.emit("goto-page", page.pagePath)
+		item.s.emit("goto-page", page.pagePath)
 
 	button.connect("clicked", onClick, page)
 	button.show_all()

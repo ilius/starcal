@@ -125,7 +125,7 @@ class PreferencesPluginsToolbar(VerticalStaticToolBox):
 				continuousClick=False,
 			),
 		)
-		self.buttonAdd.set_sensitive(False)
+		self.buttonAdd.w.set_sensitive(False)
 		self.append(
 			ToolBoxItem(
 				name="delete",
@@ -137,7 +137,7 @@ class PreferencesPluginsToolbar(VerticalStaticToolBox):
 		)
 
 	def setCanAdd(self, canAdd: bool) -> None:
-		self.buttonAdd.set_sensitive(canAdd)
+		self.buttonAdd.w.set_sensitive(canAdd)
 
 
 class PreferencesWindow(gtk.Window):
@@ -971,7 +971,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vboxPlug, hboxBut)
 		# ---
 		toolbar = PreferencesPluginsToolbar(self)
-		pack(hbox, toolbar)
+		pack(hbox, toolbar.w)
 		self.pluginsToolbar = toolbar
 		# -----
 		"""
@@ -1276,7 +1276,7 @@ class PreferencesWindow(gtk.Window):
 			],
 		)
 		# -----------
-		pack(hbox, toolbar)
+		pack(hbox, toolbar.w)
 		pack(vbox, hbox, 1, 1)
 
 	@staticmethod

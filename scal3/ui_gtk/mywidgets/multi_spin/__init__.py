@@ -29,8 +29,8 @@ from time import perf_counter
 from scal3 import locale_man, ui
 from scal3.mywidgets.multi_spin import ContainerField, Field
 from scal3.ui_gtk import gdk, getScrollValue, gtk, pack, timeout_add
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelWidth
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import imageClassButton
 from scal3.utils import toStr
 
@@ -195,9 +195,6 @@ class MultiSpinButton[F: Field, V](gtk.Box):
 		for widget in (self, self.entry, self.down_button, self.up_button):
 			widget.connect("key-press-event", self.onKeyPress)
 		self.entry.connect("scroll-event", self._scroll)
-		# self.connect("button-press-event", self.onButtonPress) # FIXME
-		# self.connect("button-release-event", self.onButtonRelease) # FIXME
-		# ----
 		# self.select_region(0, 0)
 
 	def _entry_changed(self, _w: gtk.Widget) -> None:

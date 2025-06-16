@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING
 
 from scal3.ui import conf
 from scal3.ui_gtk.day_cal import DayCal
-from scal3.ui_gtk.decorators import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk import gtk
@@ -28,7 +27,6 @@ if TYPE_CHECKING:
 __all__ = ["CalObj"]
 
 
-@registerSignals
 class CalObj(DayCal):
 	expand = True
 
@@ -53,4 +51,4 @@ class CalObj(DayCal):
 		return 0, int(conf.winHeight.v // 3)
 
 	def getWindow(self) -> gtk.Window:
-		return self.win
+		return self.win.w

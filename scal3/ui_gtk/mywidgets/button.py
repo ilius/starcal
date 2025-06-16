@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.signals import registerSignals
 
 log = logger.get()
 
@@ -9,7 +10,6 @@ from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
-from scal3.ui_gtk.decorators import registerSignals
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -17,14 +17,16 @@ if TYPE_CHECKING:
 __all__ = ["ConButton", "ConButtonBase"]
 
 
-class ConButtonBase(gtk.Widget):
-	def __init__(self, button: int | None = None) -> None:
+class ConButtonBase(gtk.Button):
+	def __init__(self, continuousClick: bool, button: int = 1) -> None:
+		gtk.Button.__init__(self)
 		self.pressTm = 0.0
 		self.counter = 0
 		self._button = button
 		# ---
-		self.connect("button-press-event", self._onConPress)
-		self.connect("button-release-event", self._onRelease)
+		if continuousClick:
+			self.connect("button-press-event", self._onConPress)
+			self.connect("button-release-event", self._onRelease)
 
 	def _doTrigger(self) -> None:
 		self.emit("con-clicked")
@@ -59,19 +61,16 @@ class ConButtonBase(gtk.Widget):
 
 
 @registerSignals
-class ConButton(gtk.Button, ConButtonBase):  # type: ignore[misc]
+class ConButton(ConButtonBase):
 	signals: list[tuple[str, list[Any]]] = [
 		("con-clicked", []),
 	]
 
-	def __init__(self, *args, **kwargs) -> None:
-		gtk.Button.__init__(self, *args, **kwargs)
-		ConButtonBase.__init__(self)
-
 
 if __name__ == "__main__":
 	win = Dialog()
-	button = ConButton("Press")
+	button = ConButton(True)
+	button.set_label("Press")
 
 	def con_clicked(_widget: gtk.Widget) -> None:
 		log.info(f"{now():.4f}\tcon-clicked")

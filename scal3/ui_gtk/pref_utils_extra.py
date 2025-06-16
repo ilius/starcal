@@ -527,7 +527,7 @@ class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
 			)
 			self._leftRightAction = "inactivate" if isRight else "activate"
 		tb.build()
-		tb.show_all()
+		tb.w.show_all()
 
 
 def treeviewSelect(treev: gtk.TreeView, index: int) -> None:
@@ -564,9 +564,9 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		self.activeTrees = activeTreev.listStore
 		# --------
 		toolbar = ActiveInactiveCalsPrefItemToolbar(self)
-		toolbar.show_all()
+		toolbar.w.show_all()
 		self.toolbar = toolbar
-		pack(self._widget, toolbar)
+		pack(self._widget, toolbar.w)
 		# --------
 		inactiveTreev = InactiveCalsTreeView()
 		inactiveTreev.connect("row-activated", self.inactiveTreevRActivate)

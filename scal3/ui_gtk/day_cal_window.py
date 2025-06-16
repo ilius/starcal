@@ -33,8 +33,8 @@ from scal3.path import confDir
 from scal3.ui import conf
 from scal3.ui_gtk import Dialog, Menu, VBox, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.day_cal import DayCal
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.day_cal import DayCal, ParentWindowType
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
@@ -52,7 +52,6 @@ if TYPE_CHECKING:
 	from scal3.property import Property
 	from scal3.ui_gtk.cal_base import CalBase
 	from scal3.ui_gtk.customize import CustomizableCalObj
-	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["DayCalWindow"]
 
@@ -126,7 +125,7 @@ class DayCalWindowCustomizeWindow(Dialog):
 				page.pageParent = pageName  # FIXME: or pagePath?
 			page.pagePath = page.pageName
 			self.stack.addPage(page)
-		dayCal.connect("goto-page", self.gotoPageCallback)
+		dayCal.s.connect("goto-page", self.gotoPageCallback)
 		# --
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
@@ -135,7 +134,7 @@ class DayCalWindowCustomizeWindow(Dialog):
 		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
-	# 	self.resize(self.get_size()[0], 1)
+	# 	self.resize(self.w.get_size()[0], 1)
 
 	def save(self) -> None:
 		self._widget.updateVars()
@@ -151,7 +150,6 @@ class DayCalWindowCustomizeWindow(Dialog):
 		return True
 
 
-@registerSignals
 class DayCalWindowWidget(DayCal):
 	dragAndDropEnable = False
 	doubleClickEnable = False
@@ -180,15 +178,15 @@ class DayCalWindowWidget(DayCal):
 	}
 	seasonPieTextColor = conf.dcalWinSeasonPieTextColor
 
+	def __init__(self, win: ParentWindowType) -> None:
+		DayCal.__init__(self, win)
+		self.w.set_size_request(50, 50)
+		self.menu: gtk.Menu | None = None
+		self.customizeWindow: DayCalWindowCustomizeWindow | None = None
+
 	@classmethod
 	def getCell(cls) -> CellType:
 		return ui.cells.today
-
-	def __init__(self, win: MainWin) -> None:
-		DayCal.__init__(self, win)
-		self.set_size_request(50, 50)
-		self.menu: gtk.Menu | None = None
-		self.customizeWindow: DayCalWindowCustomizeWindow | None = None
 
 	def customizeWindowCreate(self) -> None:
 		if not self.customizeWindow:
@@ -197,7 +195,11 @@ class DayCalWindowWidget(DayCal):
 				transient_for=self._window,
 			)
 
-	def openCustomize(self, _ge: gdk.EventButton | None = None) -> None:
+	def customizeShow(
+		self,
+		_widget: gtk.Widget | None = None,
+		_gevent: gdk.Event | None = None,
+	) -> None:
 		self.customizeWindowCreate()
 		assert self._window is not None
 		assert self.customizeWindow is not None
@@ -220,8 +222,8 @@ class DayCalWindowWidget(DayCal):
 			buttons = self._allButtons
 			if buttons:
 				x, y = gevent.x, gevent.y
-				w = self.get_allocation().width
-				h = self.get_allocation().height
+				w = self.w.get_allocation().width
+				h = self.w.get_allocation().height
 				for button in buttons:
 					if button.contains(x, y, w, h):
 						button.onPress(gevent)
@@ -278,7 +280,7 @@ class DayCalWindowWidget(DayCal):
 			ImageMenuItem(
 				_("Customize This Window"),
 				imageName="document-edit.svg",
-				func=self.openCustomize,
+				func=self.customizeShow,
 			),
 		)
 		if reverse:
@@ -303,44 +305,44 @@ class DayCalWindowWidget(DayCal):
 		ui.updateFocusTime()
 
 
-@registerSignals
-class DayCalWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
+class DayCalWindow(CalObjWidget):
 	objName = "dayCalWin"
 	desc = _("Day Calendar Window")
 
 	def __init__(self) -> None:
-		gtk.Window.__init__(self)
+		super().__init__()
+		self.w: gtk.Window = gtk.Window()
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		self.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
-		self.move(conf.dcalWinX.v, conf.dcalWinY.v)
-		self.set_skip_taskbar_hint(True)
-		self.set_decorated(False)
-		self.set_keep_below(True)
-		self.stick()
+		self.w.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
+		self.w.move(conf.dcalWinX.v, conf.dcalWinY.v)
+		self.w.set_skip_taskbar_hint(True)
+		self.w.set_decorated(False)
+		self.w.set_keep_below(True)
+		self.w.stick()
 		# ---
 		self._widget = DayCalWindowWidget(self)
-		self._widget._window = self  # noqa: SLF001
+		self._widget._window = self.w  # noqa: SLF001
 
-		self.connect("key-press-event", self._widget.onKeyPress)
-		self.connect("delete-event", self.onDeleteEvent)
-		self.connect("configure-event", self.configureEvent)
+		self.w.connect("key-press-event", self._widget.onKeyPress)
+		self.w.connect("delete-event", self.onDeleteEvent)
+		self.w.connect("configure-event", self.configureEvent)
 
-		self.add(self._widget)
+		self.w.add(self._widget.w)
 		self._widget.show()
 		self.appendItem(self._widget)
 
 	def menuCellPopup(self, widget: gtk.Widget, etime: int, x: int, y: int) -> None:
 		reverse = False
 		menu = self._widget.getMenu(reverse)
-		coord = widget.translate_coordinates(self, x, y)
+		coord = widget.translate_coordinates(self.w, x, y)
 		if coord is None:
 			raise RuntimeError(
 				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
 			)
 		dx, dy = coord
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		_foo, wx, wy = win.get_origin()
 		x = wx + dx
@@ -387,12 +389,19 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 		return True
 
 	def configureEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool | None:
-		if not self.get_property("visible"):
+		if not self.w.get_property("visible"):
 			return None
-		wx, wy = self.get_position()
-		ww, wh = self.get_size()
+		wx, wy = self.w.get_position()
+		ww, wh = self.w.get_size()
 		conf.dcalWinX.v, conf.dcalWinY.v = (wx, wy)
 		conf.dcalWinWidth.v = ww
 		conf.dcalWinHeight.v = wh
 		liveConfChanged()
 		return False
+
+	def customizeShow(
+		self,
+		widget: gtk.Widget | None = None,
+		gevent: gdk.Event | None = None,
+	) -> None:
+		self._widget.customizeShow(widget, gevent)

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.color_utils import RGBA
+from scal3.ui_gtk.customize import CustomizableCalObj
 
 log = logger.get()
 
@@ -35,7 +36,6 @@ from scal3.season import getSpringJdAfter
 from scal3.ui_gtk import gdk, getScrollValue, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	drawArcOutline,
 	drawCircle,
@@ -46,6 +46,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -55,8 +56,7 @@ if TYPE_CHECKING:
 __all__ = ["YearWheelWindow"]
 
 
-@registerSignals
-class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
+class YearWheel(CustomizableCalObj):
 	objName = "yearWheel"
 	desc = _("Year Wheel")
 	# ---
@@ -84,21 +84,22 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 	# ---
 
 	def __init__(self, closeFunc: Callable) -> None:
-		gtk.DrawingArea.__init__(self)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		super().__init__()
+		self.w = gtk.DrawingArea()
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		# ---
 		self.closeFunc = closeFunc
 		self.angleOffset = 0.0
 		# ---
 		# self.closeFunc = closeFunc
-		self.connect("draw", self.onDraw)
-		self.connect("scroll-event", self.onScroll)
-		self.connect("button-press-event", self.onButtonPress)
-		# self.connect("motion-notify-event", self.onMotionNotify)
-		# self.connect("button-release-event", self.onButtonRelease)
-		self.connect("key-press-event", self.onKeyPress)
-		# self.connect("event", show_event)
+		self.w.connect("draw", self.onDraw)
+		self.w.connect("scroll-event", self.onScroll)
+		self.w.connect("button-press-event", self.onButtonPress)
+		# self.w.connect("motion-notify-event", self.onMotionNotify)
+		# self.w.connect("button-release-event", self.onButtonRelease)
+		self.w.connect("key-press-event", self.onKeyPress)
+		# self.w.connect("event", show_event)
 
 		iconSize = 20
 		self.buttons = [
@@ -136,10 +137,10 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 
 	def onHomeClick(self, _w: gtk.Widget | None = None) -> None:
 		self.angleOffset = 0.0
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def startResize(self, gevent: gdk.EventButton) -> None:
-		win = self.get_parent()
+		win = self.w.get_parent()
 		if win is None:
 			return
 		assert isinstance(win, gtk.Window)
@@ -156,7 +157,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> None:
-		win = self.get_window()
+		win = self.w.get_window()
 		if win is None:
 			return
 		region = win.get_visible_region()
@@ -172,8 +173,9 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: cairo.Context) -> None:
-		width = float(self.get_allocation().width)
-		height = float(self.get_allocation().height)
+		alloc = self.w.get_allocation()
+		width = float(alloc.width)
+		height = float(alloc.height)
 		dia = min(width, height)
 		maxR = dia / 2
 		minR = self.innerCircleRatio * maxR
@@ -289,7 +291,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 				layoutMaxW = (r - deltaR) * 2.0 * pi / 12.0
 				layoutMaxH = deltaR
 				layout = newTextLayout(
-					self,
+					self.w,
 					text=getMonthName(calType, month, year),
 					maxSize=(layoutMaxW, layoutMaxH),
 					maximizeScale=0.6,
@@ -370,7 +372,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		deltaR: float,
 	) -> None:
 		layout = newTextLayout(
-			self,
+			self.w,
 			text=_(year),
 			maxSize=(
 				deltaR * 0.50,
@@ -404,7 +406,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		d = getScrollValue(gevent)
 		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
-		self.queue_draw()
+		self.w.queue_draw()
 		return True
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
@@ -430,14 +432,15 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		else:
 			# log.debug(k)
 			return False
-		self.queue_draw()
+		self.w.queue_draw()
 		return True
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		x = gevent.x
 		y = gevent.y
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		if gevent.button == 1:
 			for button in self.buttons:
 				if button.contains(x, y, w, h):
@@ -455,32 +458,31 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		return False
 
 
-@registerSignals
-class YearWheelWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
+class YearWheelWindow(CalObjWidget):
 	objName = "yearWheelWin"
 	desc = _("Year Wheel")
 
 	def __init__(self) -> None:
-		gtk.Window.__init__(self)
+		self.w: gtk.Window = gtk.Window()
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
 		size = int(min(ud.workAreaW, ud.workAreaH) * 0.9)
-		self.resize(size, size)
-		self.move(
+		self.w.resize(size, size)
+		self.w.move(
 			int((ud.workAreaW - size) / 2),
 			int((ud.workAreaH - size) / 2),
 		)
-		self.set_title(self.desc)
-		self.set_decorated(False)
-		self.connect("delete-event", self.onCloseClick)
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.set_title(self.desc)
+		self.w.set_decorated(False)
+		self.w.connect("delete-event", self.onCloseClick)
+		self.w.connect("button-press-event", self.onButtonPress)
 		# ---
-		self._widget = YearWheel(self.onCloseClick)
-		self.connect("key-press-event", self._widget.onKeyPress)
-		self.add(self._widget)
-		self._widget.show()
-		self.appendItem(self._widget)
+		self._widget = yearWheel = YearWheel(self.onCloseClick)
+		self.w.connect("key-press-event", yearWheel.onKeyPress)
+		self.w.add(yearWheel.w)
+		yearWheel.show()
+		self.appendItem(yearWheel)
 
 	def onCloseClick(
 		self,
@@ -490,14 +492,14 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 		if ui.mainWin:
 			self.hide()
 		else:
-			self.destroy()
+			self.w.destroy()
 			core.stopRunningThreads()
 			gtk.main_quit()
 		return True
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
-			self.begin_move_drag(
+			self.w.begin_move_drag(
 				gevent.button,
 				int(gevent.x_root),
 				int(gevent.y_root),

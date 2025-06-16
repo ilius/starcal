@@ -33,7 +33,6 @@ from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	Dialog,
 	HBox,
 	VBox,
 	gdk,
@@ -43,7 +42,6 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	drawOutlineRoundedRect,
 	drawRoundedRect,
@@ -61,12 +59,12 @@ if TYPE_CHECKING:
 	from scal3.cell_type import CellType
 	from scal3.ui.pytypes import CalTypeParamsDict
 	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
 
 
-@registerSignals
-class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
+class CalObj(CalBase):
 	objName = "monthCal"
 	desc = _("Month Calendar")
 	expand = True
@@ -88,6 +86,23 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		"f10",
 		"m",
 	}
+
+	def __init__(self, win: MainWin) -> None:
+		super().__init__()
+		self.w = gtk.DrawingArea()
+		self.win = win
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.initCal()
+		self.pagePath = f"mainWin.mainPanel.{self.objName}"
+		# ----------------------
+		# self.kTime = 0
+		# ----------------------
+		self.w.connect("draw", self.drawAll)
+		self.w.connect("button-press-event", self.onButtonPress)
+		# self.w.connect("screen-changed", self.screenChanged)
+		self.w.connect("scroll-event", self.scroll)
+		# ----------------------
+		# self.updateTextWidth()
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
@@ -166,22 +181,6 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def __init__(self, win: gtk.Window) -> None:
-		self.win = win
-		gtk.DrawingArea.__init__(self)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.initCal()
-		self.pagePath = f"mainWin.mainPanel.{self.objName}"
-		# ----------------------
-		# self.kTime = 0
-		# ----------------------
-		self.connect("draw", self.drawAll)
-		self.connect("button-press-event", self.onButtonPress)
-		# self.connect("screen-changed", self.screenChanged)
-		self.connect("scroll-event", self.scroll)
-		# ----------------------
-		# self.updateTextWidth()
-
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
@@ -204,7 +203,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			label=_("Left Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
@@ -215,7 +214,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			label=_("Top Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# --------
@@ -223,7 +222,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			CheckPrefItem(prop=conf.mcalGrid, label=_("Grid")),
 			ColorPrefItem(prop=conf.mcalGridColor, useAlpha=True),
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		hbox = prefItem.getWidget()
 		pack(optionsWidget, hbox)
@@ -234,7 +233,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			prop=conf.mcalCornerMenuTextColor,
 			useAlpha=True,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -252,7 +251,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			label=_("Line Width Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
@@ -264,7 +263,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			label=_("Rounding Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
-			onChangeFunc=self.queue_draw,
+			onChangeFunc=self.w.queue_draw,
 		)
 		pack(pageVBox, prefItem.getWidget())
 		# ---
@@ -297,7 +296,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		return self.subPages
 
 	def drawAll(self, _w: gtk.Widget | None = None, cursor: bool = True) -> None:
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -328,7 +327,8 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			wdayAb = self.wdaysWidth > w
 			for i in range(7):
 				weekDayLayout = newTextLayout(
-					self, core.getWeekDayAuto(i, abbreviate=wdayAb)
+					self.w,
+					core.getWeekDayAuto(i, abbreviate=wdayAb),
 				)
 				assert weekDayLayout is not None
 				try:
@@ -343,7 +343,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				show_layout(cr, weekDayLayout)
 			# ------ Drawing "Menu" label
 			setColor(cr, conf.mcalCornerMenuTextColor.v)
-			menuLayout = newTextLayout(self, _("Menu"))
+			menuLayout = newTextLayout(self.w, _("Menu"))
 			assert menuLayout is not None
 			fontw, fonth = menuLayout.get_pixel_size()
 			if rtl:
@@ -377,7 +377,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			# Drawing week numbers
 			setColor(cr, conf.borderTextColor.v)
 			for i in range(6):
-				layout = newTextLayout(self, _(status.weekNum[i]))
+				layout = newTextLayout(self.w, _(status.weekNum[i]))
 				assert layout is not None
 				fontw, fonth = layout.get_pixel_size()
 				if rtl:
@@ -451,7 +451,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			if not params.get("enable", True):
 				continue
 			dayNumLayout = newTextLayout(
-				self,
+				self.w,
 				_(cell.dates[calType][2], calType),
 				getParamsFont(params),
 			)
@@ -478,8 +478,9 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		# gevent = gtk.get_current_event()
 		# FIXME: must enhance (only draw few cells, not all cells)
 		self.calcCoord()
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, conf.bgColor.v)
 		status = ui.cells.getCurrentMonthStatus()
@@ -518,7 +519,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				calType = calTypes.primary
 				params = conf.mcalTypeParams.v[0]
 				dayNumLayout = newTextLayout(
-					self,
+					self.w,
 					_(c.dates[calType][2], calType),
 					getParamsFont(params),
 				)
@@ -570,7 +571,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def updateTextWidth(self) -> None:
 		# update width of week days names to be able to find out
 		# whether or not they should be shortened for the UI
-		layout = newTextLayout(self)
+		layout = newTextLayout(self.w)
 		assert layout is not None
 		wm = 0  # max width
 		for i in range(7):
@@ -587,10 +588,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		# self.winActivate() #?????????
 		b = gevent.button
-		(
-			x,
-			y,
-		) = self.get_pointer()
+		x, y = self.w.get_pointer()
 		# foo, x, y, flags = self.get_window().get_pointer()
 		self.pointer = (x, y)
 		if b == 2:
@@ -607,22 +605,23 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 				break
 		status = ui.cells.getCurrentMonthStatus()
 		if -1 in {yPos, xPos}:
-			self.emit("popup-main-menu", gevent.x, gevent.y)
+			self.s.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
-				self.emit("double-button-press")
+				self.s.emit("double-button-press")
 			if (
 				b == 3 and cell.month == ui.cells.current.month
 			):  # right click on a normal cell
 				# self.emit("popup-cell-menu", *self.getCellPos())
-				self.emit("popup-cell-menu", gevent.x, gevent.y)
+				self.s.emit("popup-cell-menu", gevent.x, gevent.y)
 		return True
 
 	def calcCoord(self) -> None:  # calculates coordidates (x and y of cells centers)
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		# self.cx is centers x, self.cy is centers y
 		if rtl:
 			self.cx = [
@@ -687,9 +686,9 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		elif kname in {"f10", "m"}:
 			if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit("popup-cell-menu", *self.getCellPos())
+				self.s.emit("popup-cell-menu", *self.getCellPos())
 			else:
-				self.emit("popup-main-menu", *self.getMainMenuPos())
+				self.s.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True
@@ -713,7 +712,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def getMainMenuPos(self, *_args) -> tuple[int, int]:  # FIXME
 		if rtl:
 			return (
-				int(self.get_allocation().width - conf.mcalLeftMargin.v / 2),
+				int(self.w.get_allocation().width - conf.mcalLeftMargin.v / 2),
 				int(conf.mcalTopMargin.v / 2),
 			)
 		return (
@@ -723,20 +722,9 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def onDateChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.queue_draw()
+		self.w.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		self.updateTextWidth()
 		self.updateTypeParamsWidget()
-
-
-if __name__ == "__main__":
-	win = Dialog()
-	cal = CalObj(win)
-	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-	pack(win.vbox, cal, 1, 1)
-	win.vbox.show_all()
-	win.resize(600, 400)
-	win.set_title(cal.desc)
-	win.run()
