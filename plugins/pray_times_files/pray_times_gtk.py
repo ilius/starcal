@@ -521,7 +521,7 @@ class TextPluginUI:
 		self.locName.v = self.locButton.locName
 		self.backend.lat = self.locButton.lat
 		self.backend.lng = self.locButton.lng
-		self.backend.method = methodsList[self.methodCombo.get_active()]
+		self.backend.method = methodsList[self.methodCombo.getActive()]
 		self.shownTimeNames.v = [
 			cb.name for cb in self.timeNamesButtons if cb.get_active()
 		]

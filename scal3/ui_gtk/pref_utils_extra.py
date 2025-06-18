@@ -259,7 +259,7 @@ class CalTypePrefItem(PrefItem):
 			raise ValueError("onChangeFunc is given without live=True")
 
 	def get(self) -> int:
-		value = self._combo.get_active()
+		value = self._combo.getActive()
 		assert value is not None
 		return value
 
