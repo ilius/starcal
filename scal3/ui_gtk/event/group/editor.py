@@ -87,7 +87,8 @@ class GroupEditorDialog(Dialog):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
-		group = event_lib.classes.group[self.comboType.get_active()]()
+		groupType: str = event_lib.classes.group.names[self.comboType.get_active()]
+		group = ev.groups.create(groupType)
 		log.info(
 			f"GroupEditorDialog: typeChanged: {self.activeWidget=}"
 			f", new class: {group.name}",
