@@ -155,7 +155,7 @@ class WidgetClass(gtk.Box):
 
 	def updateWidget(self) -> None:
 		# log.debug("updateWidget", self._event.files)
-		self.calTypeCombo.set_active(self._event.calType)
+		self.calTypeCombo.setActive(self._event.calType)
 		if self.tzCheck:
 			if self._event.timeZone:
 				self.tzCheck.set_active(self._event.timeZoneEnable)
