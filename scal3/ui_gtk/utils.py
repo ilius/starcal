@@ -632,6 +632,10 @@ def newAlignLabel(sgroup: gtk.SizeGroup | None = None, label: str = "") -> gtk.L
 	return glabel
 
 
+# class TextComboBox(gtk.ComboBox):
+# 	def setActive(self, ident: int | None) -> None:
+
+
 class IdComboBox(gtk.ComboBox):
 	def setActive(self, ident: int | None) -> None:
 		if ident is None:

@@ -161,13 +161,13 @@ class WidgetClass(gtk.Box):
 		pass
 
 	# def updateSummary(self, widget=None):
-	# 	courseIndex = self.courseCombo.get_active()
+	# 	courseIndex = self.courseCombo.getActive()
 	# 	summary = (
 	# 		_("{courseName} Class").format(
 	# 			courseName=self.courseNames[courseIndex],
 	# 		) +
 	# 		" (" +
-	# 		self.weekDayCombo.get_active_text() +
+	# 		self.weekDayCombo.getActive_text() +
 	# 		")"
 	# 	)
 	# 	self.summaryEntry.set_text(summary)

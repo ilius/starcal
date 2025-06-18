@@ -167,7 +167,7 @@ class WidgetClass(common.WidgetClass):
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
-		newCalType = self.calTypeCombo.get_active()
+		newCalType = self.calTypeCombo.getActive()
 		assert newCalType is not None
 		for hbox in self.rulesBox.get_children():
 			inputWidget = self.inputWidgets[id(hbox)]

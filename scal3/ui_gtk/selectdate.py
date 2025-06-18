@@ -148,7 +148,7 @@ class SelectDateDialog(Dialog):
 			log.info(f"selectDateDialog: dropped text {text!r}")
 			return None
 		log.info(f"selectDateDialog: dropped date: {date!r}")
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		if calType is not None and calType != ui.dragGetCalType:
 			date = convert(
 				date[0],
@@ -195,7 +195,7 @@ class SelectDateDialog(Dialog):
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		if calType is None:
 			return
 
@@ -215,7 +215,7 @@ class SelectDateDialog(Dialog):
 		self.calType = calType
 
 	def get(self) -> tuple[int, int, int]:
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		assert calType is not None
 		if self.radio1.get_active():
 			y0, m0, d0 = self.ymdBox.get_value()
@@ -227,7 +227,7 @@ class SelectDateDialog(Dialog):
 		return (y0, m0, d0)
 
 	def ok(self, _w: gtk.Widget) -> None:
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		if calType is None:
 			return
 		date = self.get()
