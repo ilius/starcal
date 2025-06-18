@@ -177,7 +177,7 @@ class WidgetClass(gtk.Box):
 		self.calTypeComboChanged()
 
 	def updateVars(self) -> None:
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		assert calType is not None
 		self._event.calType = calType
 		if self.tzCheck:

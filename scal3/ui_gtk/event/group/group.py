@@ -119,7 +119,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteIds = None
 		aid = self.accountCombo.getActive()
 		if aid:
-			gid = self.accountGroupCombo.get_active()
+			gid = self.accountGroupCombo.getActive()
 			if gid:
 				self.group.remoteIds = aid, gid
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
@@ -129,7 +129,7 @@ class WidgetClass(BaseWidgetClass):
 		self,
 		widget: gtk.Widget | None = None,  # noqa: ARG002
 	) -> None:
-		newCalType = self.calTypeCombo.get_active()
+		newCalType = self.calTypeCombo.getActive()
 		assert newCalType is not None
 		self.startDateInput.changeCalType(self.group.calType, newCalType)
 		self.endDateInput.changeCalType(self.group.calType, newCalType)

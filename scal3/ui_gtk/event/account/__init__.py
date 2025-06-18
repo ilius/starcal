@@ -125,8 +125,8 @@ class AccountGroupBox(gtk.Box):
 		if accountCombo:
 			accountCombo.connect("changed", self.accountComboChanged)
 
-	def accountComboChanged(self, combo: gtk.ComboBox) -> None:
-		aid = combo.get_active()
+	def accountComboChanged(self, _combo: gtk.ComboBox) -> None:
+		aid = self.combo.getActive()
 		if aid is None:
 			return
 		account = ev.accounts[aid]
