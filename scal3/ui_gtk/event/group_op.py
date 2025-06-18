@@ -140,7 +140,7 @@ class GroupConvertCalTypeDialog(Dialog):
 		if Dialog.run(self) != gtk.ResponseType.OK:
 			self.destroy()
 			return False
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		if calType is None:
 			log.error("GroupConvertCalTypeDialog: calType is None")
 			return False

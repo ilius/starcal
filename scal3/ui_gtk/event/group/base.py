@@ -234,7 +234,7 @@ class BaseWidgetClass(gtk.Box):
 		self.group.title = self.titleEntry.get_text()
 		self.group.color = self.colorButton.getRGBA()
 		self.group.icon = self.iconSelect.get_filename()
-		calType = self.calTypeCombo.get_active()
+		calType = self.calTypeCombo.getActive()
 		assert calType is not None
 		self.group.calType = calType
 		# --

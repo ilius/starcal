@@ -121,7 +121,7 @@ class WidgetClass(common.WidgetClass):
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		# overwrite method from common.WidgetClass
-		newCalType = self.calTypeCombo.get_active()
+		newCalType = self.calTypeCombo.getActive()
 		assert newCalType is not None
 		self.startDateInput.changeCalType(self._event.calType, newCalType)
 		self.endDateInput.changeCalType(self._event.calType, newCalType)
