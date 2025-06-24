@@ -412,6 +412,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 							expand=False,
 							labelAngle=90 if rtl else -90,
 							initializer=self.createRightPanel,
+							buttonBorder=ui.getFont().size,
 						),
 					],
 				),
