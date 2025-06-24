@@ -2045,7 +2045,6 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		col: gtk.TreeViewColumn,
 	) -> None:
 		if len(path) != 1:
-			log.error(f"onTreeviewLeftButtonPress: unexpected {path=}")
 			return
 
 		groupId = self.getRowId(self.iterFromPath(path))
