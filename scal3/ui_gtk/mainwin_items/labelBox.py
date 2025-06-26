@@ -433,7 +433,12 @@ class YearLabel(IntLabel):
 
 
 class SmallNoFocusButton(ConButton):
-	def __init__(self, imageName: str, func: Callable, tooltip: str = "") -> None:
+	def __init__(
+		self,
+		imageName: str,
+		func: Callable[[gtk.Widget], None],
+		tooltip: str = "",
+	) -> None:
 		ConButton.__init__(self, continuousClick=True)
 		self.set_relief(gtk.ReliefStyle.NONE)
 		self.set_can_focus(False)

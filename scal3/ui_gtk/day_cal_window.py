@@ -49,9 +49,10 @@ if TYPE_CHECKING:
 	from gi.repository import Gdk as gdk
 
 	from scal3.cell_type import CellType
+	from scal3.color_utils import ColorType
 	from scal3.property import Property
 	from scal3.ui_gtk.cal_base import CalBase
-	from scal3.ui_gtk.customize import CustomizableCalObj
+	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["DayCalWindow"]
 
@@ -93,7 +94,7 @@ class DayCalWindowCustomizeWindow(Dialog):
 		self._widget = dayCal
 		# --
 		self.set_title(_("Customize") + ": " + dayCal.desc)
-		self.connect("delete-event", self.onSaveClick)
+		self.connect("delete-event", self.onDeleteEvent)
 		# --
 		dialog_add_button(
 			self,
@@ -140,14 +141,14 @@ class DayCalWindowCustomizeWindow(Dialog):
 		self._widget.updateVars()
 		ui.saveConfCustomize()
 
-	def onSaveClick(
-		self,
-		_b: gtk.Button | None = None,
-		_gevent: Any = None,
-	) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.save()
 		self.hide()
 		return True
+
+	def onSaveClick(self, _w: gtk.Widget) -> None:
+		self.save()
+		self.hide()
 
 
 class DayCalWindowWidget(DayCal):
@@ -170,7 +171,7 @@ class DayCalWindowWidget(DayCal):
 
 	seasonPieEnable = conf.dcalWinSeasonPieEnable
 	seasonPieGeo = conf.dcalWinSeasonPieGeo
-	seasonPieColors: dict[str, Property] = {
+	seasonPieColors: dict[str, Property[ColorType]] = {
 		"Spring": conf.dcalWinSeasonPieSpringColor,
 		"Summer": conf.dcalWinSeasonPieSummerColor,
 		"Autumn": conf.dcalWinSeasonPieAutumnColor,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from os.path import join
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -15,6 +16,9 @@ from scal3.ui_gtk.utils import (
 	pixbufFromFile,
 	resolveImagePath,
 )
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = ["IconSelectButton"]
 # FIXME
@@ -42,11 +46,17 @@ class IconSelectButton(gtk.Button):
 		# ---
 		menu = Menu()
 		self.menu = menu
+
+		def setIcon(icon: str) -> Callable[[gtk.Widget], None]:
+			def func(w: gtk.Widget) -> None:
+				self.menuItemActivate(w, icon)
+
+			return func
+
 		menu.add(
 			ImageMenuItem(
 				_("None"),
-				func=self.menuItemActivate,
-				args=("",),
+				func=setIcon(""),
 			),
 		)
 		for item in ui.eventTags:
@@ -57,8 +67,7 @@ class IconSelectButton(gtk.Button):
 				ImageMenuItem(
 					_(item.desc),
 					imageName=icon,
-					func=self.menuItemActivate,
-					args=(icon,),
+					func=setIcon(icon),
 				),
 			)
 		menu.show_all()

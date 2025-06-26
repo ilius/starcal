@@ -117,7 +117,7 @@ class DayInfoDialog(CustomizableCalObj):
 		ud.windowList.appendItem(self)
 		# ---
 		self.w.set_title(_("Day Info"))
-		self.w.connect("delete-event", self.onClose)
+		self.w.connect("delete-event", self.onDeleteEvent)
 		self.w.vbox.set_spacing(15)
 		# ---
 		dialog_add_button(
@@ -173,13 +173,12 @@ class DayInfoDialog(CustomizableCalObj):
 			widget = exp
 		pack(self.w.vbox, widget)
 
-	def onClose(
-		self,
-		_obj: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
-	) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.hide()
 		return True
+
+	def onClose(self, _w: gtk.Widget) -> None:
+		self.hide()
 
 	def goBack(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(-1)

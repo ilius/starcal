@@ -41,6 +41,7 @@ try:
 except Exception as e:
 	log.error(f"error loading google account module: {e}")
 
+
 from scal3 import cal_types, core, event_lib, locale_man, ui
 from scal3.cal_types import calTypes, convert
 from scal3.cell import init as initCell
@@ -83,6 +84,7 @@ from scal3.ui_gtk.utils import (
 )
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Callable
 	from types import FrameType
 	from typing import Any
 
@@ -760,59 +762,67 @@ class MainWin(CalObjWidget):
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
 		# )
 
-	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
+	def _getEventAddToMenuItem(self, menu2: gtk.Menu, group: EventGroupType) -> None:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
+		if not group.enable:
+			return
+		if not group.showInCal():  # FIXME
+			return
+		eventTypes = group.acceptsEventTypes
+		if not eventTypes:
+			return
+		item2_kwargs: dict[str, Any] = {}
+		if group.icon:
+			item2_kwargs["imageName"] = group.icon
+		else:
+			item2_kwargs["pixbuf"] = newColorCheckPixbuf(
+				group.color.rgb(),
+				20,
+				True,
+			)
+
+		def addToGroupFromMenu(eventType: str) -> Callable[[gtk.Widget], None]:
+			def func(w: gtk.Widget) -> None:
+				self.addToGroupFromMenu(w, group, eventType)
+
+			return func
+
+		# --
+		if len(eventTypes) == 1:
+			menu2.add(
+				ImageMenuItem(
+					group.title,
+					func=addToGroupFromMenu(eventTypes[0]),
+					**item2_kwargs,
+				),
+			)
+		else:
+			menu3 = Menu()
+			for eventType in eventTypes:
+				eventClass = event_lib.classes.event.byName[eventType]
+				menu3.add(
+					ImageMenuItem(
+						eventClass.desc,
+						imageName=eventClass.getDefaultIcon(),
+						func=addToGroupFromMenu(eventType),
+					),
+				)
+			menu3.show_all()
+			item2 = ImageMenuItem(
+				group.title,
+				**item2_kwargs,  # type: ignore[arg-type]
+			)
+			item2.set_submenu(menu3)
+			menu2.add(item2)
+
+	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
 		if ev.allReadOnly:
 			return None
 		menu2 = Menu()
 		# --
 		for group in ev.groups:
-			if not group.enable:
-				continue
-			if not group.showInCal():  # FIXME
-				continue
-			eventTypes = group.acceptsEventTypes
-			if not eventTypes:
-				continue
-			item2_kwargs: dict[str, Any] = {}
-			if group.icon:
-				item2_kwargs["imageName"] = group.icon
-			else:
-				item2_kwargs["pixbuf"] = newColorCheckPixbuf(
-					group.color.rgb(),
-					20,
-					True,
-				)
-			# --
-			if len(eventTypes) == 1:
-				menu2.add(
-					ImageMenuItem(
-						group.title,
-						func=self.addToGroupFromMenu,
-						args=(group, eventTypes[0]),
-						**item2_kwargs,
-					),
-				)
-			else:
-				menu3 = Menu()
-				for eventType in eventTypes:
-					eventClass = event_lib.classes.event.byName[eventType]
-					menu3.add(
-						ImageMenuItem(
-							eventClass.desc,
-							imageName=eventClass.getDefaultIcon(),
-							func=self.addToGroupFromMenu,
-							args=(group, eventType),
-						),
-					)
-				menu3.show_all()
-				item2 = ImageMenuItem(
-					group.title,
-					**item2_kwargs,  # type: ignore[arg-type]
-				)
-				item2.set_submenu(menu3)
-				menu2.add(item2)
+			self._getEventAddToMenuItem(menu2, group)
 		# --
 		if not menu2.get_children():
 			return None
@@ -850,6 +860,13 @@ class MainWin(CalObjWidget):
 		eventsData = ui.cells.current.getEventsData()
 		if not eventsData:
 			return
+
+		def editEvent(groupId: int, eventId: int) -> Callable[[gtk.Widget], None]:
+			def func(w: gtk.Widget) -> None:
+				self.editEventFromMenu(w, groupId, eventId)
+
+			return func
+
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
 				groupId, eventId = eData.ids
@@ -859,29 +876,28 @@ class MainWin(CalObjWidget):
 						+ ": "
 						+ self.trimMenuItemLabel(eData.text[0], 25),
 						imageName=eData.icon,
-						func=self.editEventFromMenu,
-						args=(groupId, eventId),
+						func=editEvent(groupId, eventId),
 					),
 				)
-		else:
-			subMenu = Menu()
-			subMenuItem = ImageMenuItem(
-				label=_("_Edit Event"),
-				imageName="list-add.svg",
+			return
+
+		subMenu = Menu()
+		subMenuItem = ImageMenuItem(
+			label=_("_Edit Event"),
+			imageName="list-add.svg",
+		)
+		for eData in eventsData:
+			groupId, eventId = eData.ids
+			subMenu.add(
+				ImageMenuItem(
+					eData.text[0],
+					imageName=eData.icon,
+					func=editEvent(groupId, eventId),
+				),
 			)
-			for eData in eventsData:
-				groupId, eventId = eData.ids
-				subMenu.add(
-					ImageMenuItem(
-						eData.text[0],
-						imageName=eData.icon,
-						func=self.editEventFromMenu,
-						args=(groupId, eventId),
-					),
-				)
-			subMenu.show_all()
-			subMenuItem.set_submenu(subMenu)
-			menu.add(subMenuItem)
+		subMenu.show_all()
+		subMenuItem.set_submenu(subMenu)
+		menu.add(subMenuItem)
 
 	def menuCellPopup(
 		self,
@@ -903,7 +919,6 @@ class MainWin(CalObjWidget):
 					),
 					imageName="edit-copy.svg",
 					func=self.copyDateGetCallback(calType),
-					# args=(calType,),
 				),
 			)
 		menu.add(
@@ -1167,10 +1182,9 @@ class MainWin(CalObjWidget):
 	@staticmethod
 	def copyDateGetCallback(
 		calType: int,
-	) -> typing.Callable[[gtk.Widget, gdk.Event], None]:
+	) -> Callable[[gtk.Widget], None]:
 		def callback(
 			_widget: gtk.Widget,
-			_event: gdk.Event,
 		) -> None:
 			assert ud.dateFormatBin is not None
 			setClipboard(

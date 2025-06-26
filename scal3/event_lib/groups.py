@@ -183,6 +183,11 @@ class EventGroup(EventContainer):
 	)
 	WidgetClass: Any
 
+	@property
+	def mustId(self) -> int:
+		assert self.id is not None
+		return self.id
+
 	@staticmethod
 	def _timezoneFilter(event: EventType, tz: str) -> bool:
 		return event.timeZone == tz if tz else not event.timeZoneEnable

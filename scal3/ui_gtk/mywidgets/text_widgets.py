@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, gdk, gtk
@@ -17,7 +19,7 @@ class ReadOnlyTextView(gtk.TextView):
 		self.set_cursor_visible(False)
 		self.connect("button-press-event", self.onButtonPress)
 
-	def copyAll(self, _item: gtk.MenuItem) -> None:
+	def copyAll(self, _w: gtk.Widget, *_args: Any) -> None:
 		setClipboard(self.get_text())
 
 	# def cursorIsOnURL(self):
@@ -38,7 +40,7 @@ class ReadOnlyTextView(gtk.TextView):
 		else:
 			return True
 
-	def copy(self, _item: gtk.MenuItem) -> None:
+	def copy(self, _w: gtk.Widget, *_args: Any) -> None:
 		buf = self.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
@@ -53,7 +55,7 @@ class ReadOnlyTextView(gtk.TextView):
 	# 	setClipboard(word)
 
 	@classmethod
-	def copyText(cls, _item: gtk.MenuItem, text: str) -> None:
+	def copyText(cls, _w: gtk.Widget, text: str, *_args: Any) -> None:
 		setClipboard(text)
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
@@ -94,14 +96,18 @@ class ReadOnlyTextView(gtk.TextView):
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
 		menu.add(itemCopy)
+
 		# ----
+
+		def copyWord(w: gtk.Widget) -> None:
+			self.copyText(w, word)
+
 		if "://" in word:
 			menu.add(
 				ImageMenuItem(
 					_("Copy _URL"),
 					imageName="edit-copy.svg",
-					func=self.copyText,
-					args=(word,),
+					func=copyWord,
 				),
 			)
 		# ----

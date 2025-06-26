@@ -37,6 +37,7 @@ from scal3.ui_gtk import gdk, getScrollValue, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
 from scal3.ui_gtk.drawing import (
+	ImageContext,
 	drawArcOutline,
 	drawCircle,
 	drawCircleOutline,
@@ -51,7 +52,6 @@ from scal3.ui_gtk.gtk_ud import CalObjWidget
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	import cairo
 
 __all__ = ["YearWheelWindow"]
 
@@ -83,7 +83,7 @@ class YearWheel(CustomizableCalObj):
 	winterColor = RGBA(0, 0, 255, 15)
 	# ---
 
-	def __init__(self, closeFunc: Callable) -> None:
+	def __init__(self, closeFunc: Callable[[], None]) -> None:
 		super().__init__()
 		self.w = gtk.DrawingArea()
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -124,7 +124,7 @@ class YearWheel(CustomizableCalObj):
 				yalign="buttom",
 			),
 			Button(
-				onPress=closeFunc,
+				onPress=self.onCloseClick,
 				imageName="application-exit.svg",
 				x=1,
 				y=1,
@@ -135,7 +135,10 @@ class YearWheel(CustomizableCalObj):
 			),
 		]
 
-	def onHomeClick(self, _w: gtk.Widget | None = None) -> None:
+	def onCloseClick(self, _e: gdk.EventButton) -> None:
+		self.closeFunc()
+
+	def onHomeClick(self, _e: gdk.EventButton | None = None) -> None:
 		self.angleOffset = 0.0
 		self.w.queue_draw()
 
@@ -172,7 +175,7 @@ class YearWheel(CustomizableCalObj):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context) -> None:
+	def drawWithContext(self, cr: ImageContext) -> None:
 		alloc = self.w.get_allocation()
 		width = float(alloc.width)
 		height = float(alloc.height)
@@ -363,7 +366,7 @@ class YearWheel(CustomizableCalObj):
 		self,
 		year: int,
 		direction: int,
-		cr: cairo.Context,
+		cr: ImageContext,
 		cx: float,
 		cy: float,
 		angle: float,
@@ -475,7 +478,7 @@ class YearWheelWindow(CalObjWidget):
 		)
 		self.w.set_title(self.desc)
 		self.w.set_decorated(False)
-		self.w.connect("delete-event", self.onCloseClick)
+		self.w.connect("delete-event", self.onDeleteEvent)
 		self.w.connect("button-press-event", self.onButtonPress)
 		# ---
 		self._widget = yearWheel = YearWheel(self.onCloseClick)
@@ -484,18 +487,21 @@ class YearWheelWindow(CalObjWidget):
 		yearWheel.show()
 		self.appendItem(yearWheel)
 
-	def onCloseClick(
+	def onDeleteEvent(
 		self,
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
+		self.onCloseClick()
+		return True
+
+	def onCloseClick(self) -> None:
 		if ui.mainWin:
 			self.hide()
 		else:
 			self.w.destroy()
 			core.stopRunningThreads()
 			gtk.main_quit()
-		return True
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:

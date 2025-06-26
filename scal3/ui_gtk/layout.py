@@ -50,7 +50,7 @@ class WinLayoutBase(CustomizableCalObj):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 	) -> None:
 		super().__init__()
 		self.objName = name
@@ -102,7 +102,7 @@ class WinLayoutObj(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
@@ -138,6 +138,7 @@ class WinLayoutObj(WinLayoutBase):
 		if self._item is not None:
 			return self._item
 		item = self.initializer()
+		print(f"{item=}")
 		if not isinstance(item.w, gtk.Widget):
 			raise TypeError(f"initializer returned non-widget: {type(item.w)}")
 		item.enableParam = self.enableParam
@@ -222,9 +223,9 @@ class WinLayoutBox(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 		itemsMovable: bool = False,
-		itemsParam: Property | None = None,
+		itemsParam: Property[list[str]] | None = None,
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,

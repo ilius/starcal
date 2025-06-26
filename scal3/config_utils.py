@@ -23,8 +23,8 @@ __all__ = [
 
 def loadSingleConfig(
 	confPath: str,
-	params: dict[str, Property],
-	decoders: dict[str, Callable] | None = None,
+	params: dict[str, Property[Any]],
+	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	from os.path import isfile
 
@@ -59,7 +59,7 @@ def loadSingleConfig(
 
 def saveSingleConfig(
 	confPath: str,
-	params: dict[str, Property],
+	params: dict[str, Property[Any]],
 	encoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	data = {}
@@ -82,8 +82,8 @@ def saveSingleConfig(
 def loadModuleConfig(
 	confPath: str,
 	sysConfPath: str | None,
-	params: dict[str, Property],
-	decoders: dict[str, Callable] | None = None,
+	params: dict[str, Property[Any]],
+	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	if sysConfPath:
 		loadSingleConfig(
