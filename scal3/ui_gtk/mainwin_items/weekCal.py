@@ -69,6 +69,8 @@ from scal3.ui_gtk.toolbox import (
 from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
@@ -223,6 +225,17 @@ class ColumnBase(CustomizableCalObj):
 		return ""
 
 
+class ColumnDrawingArea(gtk.DrawingArea):
+	def __init__(self, getWidth: Callable[[], int]) -> None:
+		gtk.DrawingArea.__init__(self)
+		self.getWidth = getWidth
+
+	def do_get_preferred_width(self) -> tuple[int, int]:
+		# must return minimum_size, natural_size
+		width = self.getWidth()
+		return width, width
+
+
 class Column(ColumnBase):
 	colorizeHolidayText = False
 	showCursor = False
@@ -230,9 +243,10 @@ class Column(ColumnBase):
 
 	def __init__(self, wcal: CalObj) -> None:
 		super().__init__()
-		self.w: gtk.DrawingArea = gtk.DrawingArea()
+		self.w: ColumnDrawingArea = ColumnDrawingArea(self.getWidth)
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
+		self.w.connect("draw", self.onExposeEvent)
 		# self.w.connect("button-press-event", self.onButtonPress)
 		# self.w.connect("event", show_event)
 		self.wcal = wcal
@@ -242,13 +256,11 @@ class Column(ColumnBase):
 			assert expandProp is not None
 			self.expand = expandProp.v
 
-	def do_get_preferred_width(self) -> tuple[int, int]:
-		# must return minimum_size, natural_size
+	def getWidth(self) -> int:
 		widthProp = self.getWidthProp()
 		if widthProp is None:
-			return 0, 0
-		width = int(widthProp.v)
-		return width, width
+			return 0
+		return int(widthProp.v)
 
 	def onExposeEvent(
 		self,
@@ -615,10 +627,6 @@ class WeekDaysColumn(Column):
 	customizeFont = True
 	optionsPageSpacing = 20
 
-	def __init__(self, wcal: CalObj) -> None:
-		Column.__init__(self, wcal)
-		self.w.connect("draw", self.onExposeEvent)
-
 	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		self.drawTextList(
@@ -643,10 +651,6 @@ class PluginsTextColumn(Column):
 	customizeFont = True
 	truncateText = False
 	optionsPageSpacing = 20
-
-	def __init__(self, wcal: CalObj) -> None:
-		Column.__init__(self, wcal)
-		self.w.connect("draw", self.onExposeEvent)
 
 	def getTextListByIndex(self, i: int) -> list[tuple[str, ColorType | None]]:
 		status = self.wcal.status
@@ -690,10 +694,6 @@ class EventsIconColumn(Column):
 	desc = _("Events Icon")
 	customizeWidth = True
 	optionsPageSpacing = 20
-
-	def __init__(self, wcal: CalObj) -> None:
-		Column.__init__(self, wcal)
-		self.w.connect("draw", self.onExposeEvent)
 
 	def drawColumn(self, cr: ImageContext) -> None:
 		status = self.wcal.status
@@ -749,11 +749,6 @@ class EventsCountColumn(Column):
 	customizeExpand = True
 	optionsPageSpacing = 40
 
-	def __init__(self, wcal: CalObj) -> None:
-		Column.__init__(self, wcal)
-		# --
-		self.w.connect("draw", self.onExposeEvent)
-
 	def getDayTextData(self, i: int) -> list[tuple[str, ColorType | None]]:
 		status = self.wcal.status
 		assert status is not None
@@ -786,10 +781,6 @@ class EventsTextColumn(Column):
 	customizeFont = True
 	truncateText = False
 	optionsPageSpacing = 20
-
-	def __init__(self, wcal: CalObj) -> None:
-		Column.__init__(self, wcal)
-		self.w.connect("draw", self.onExposeEvent)
 
 	def getDayTextData(self, i: int) -> list[tuple[str, ColorType | None]]:
 		from scal3.xml_utils import escape
@@ -908,7 +899,6 @@ class EventsBoxColumn(Column):
 		Column.__init__(self, wcal)
 		# -----
 		self.w.connect("realize", lambda _w: self.updateData())
-		self.w.connect("draw", self.onExposeEvent)
 
 	def updateData(self) -> None:
 		from scal3.time_utils import getEpochFromJd
@@ -1068,8 +1058,6 @@ class DaysOfMonthColumn(Column):
 		self.cgroup = cgroup
 		self.calType = calType
 		self.index = index
-		# ---
-		self.w.connect("draw", self.onExposeEvent)
 
 	@classmethod
 	def getWidthAttr(cls) -> str:
@@ -1125,9 +1113,9 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
-		for child in self.w.get_children():
-			assert isinstance(child, Column)
-			child.onWidthChange()
+		for item in self.items:
+			assert isinstance(item, Column)
+			item.onWidthChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
 		from scal3.ui_gtk.pref_utils import DirectionPrefItem
@@ -1151,18 +1139,17 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 	# overwrites method from ColumnBase
 	def updatePacking(self) -> None:
 		ColumnBase.updatePacking(self)
-		for child in self.w.get_children():
-			assert isinstance(child, Column)
-			child.expand = self.expand
-			child.updatePacking()
+		for item in self.items:
+			assert isinstance(item, Column)
+			item.expand = self.expand
+			item.updatePacking()
 
-	def do_get_preferred_width(self) -> tuple[int, int]:
-		childWidthProp = self.getWidthProp()
-		if childWidthProp is None:
-			raise ValueError("childWidth is None")
+	def getWidth(self) -> int:
+		widthProp = self.getWidthProp()
+		if widthProp is None:
+			raise ValueError("widthProp is None")
 		count = len(self.w.get_children())
-		width = int(count * childWidthProp.v)
-		return width, width
+		return int(count * widthProp.v)
 
 	def updateCols(self) -> None:
 		# self.foreach(gtk.DrawingArea.destroy)
@@ -1246,7 +1233,6 @@ class MoonStatusColumn(Column):
 
 	def __init__(self, wcal: CalObj) -> None:
 		Column.__init__(self, wcal)
-		self.w.connect("draw", self.onExposeEvent)
 		self.showPhaseNumber = False
 
 	def drawColumn(self, cr: ImageContext) -> None:
@@ -1450,6 +1436,28 @@ class CalObj(CalBase):
 			item = defaultItemsDict[name]
 			item.enable = False
 			self.appendItem(item)
+
+	def appendItem(self, item: CustomizableCalObj) -> None:
+		super().appendItem(item)
+		if item.loaded:
+			pack(self.w, item.w, item.expand, item.expand)
+			item.showHide()
+
+	def repackAll(self) -> None:
+		for item in self.items:
+			if item.enable:
+				self.w.remove(item.w)
+		for item in self.items:
+			if item.enable:
+				pack(self.w, item.w, item.expand, item.expand)
+				item.show()
+
+	def moveItem(self, i: int, j: int) -> None:
+		CustomizableCalObj.moveItem(self, i, j)
+		self.repackAll()
+
+	def insertItemWidget(self, _i: int) -> None:
+		self.repackAll()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (

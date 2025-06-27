@@ -45,7 +45,7 @@ from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.ui_gtk.gtk_ud import CalObjWidget, commonSignals
 from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.utils import (
 	get_menu_width,
 	imageFromIconName,
@@ -412,7 +412,7 @@ class YearLabel(IntLabel):
 		# ---
 		self.s.connect("changed", self.onChanged)
 
-	def onChanged(self, _label: gtk.Widget, year: int) -> None:
+	def onChanged(self, _sig: SignalHandlerType, year: int) -> None:
 		calType = self.calType
 		_y, m, d = ui.cells.current.dates[calType]
 		ui.cells.changeDate(year, m, d, calType)

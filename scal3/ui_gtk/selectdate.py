@@ -16,8 +16,6 @@
 
 from __future__ import annotations
 
-from gi.overrides import GObject
-
 from scal3 import logger
 
 log = logger.get()
@@ -38,14 +36,10 @@ __all__ = ["SelectDateDialog"]
 
 
 @registerSignals
-class Signals(GObject.Object):
+class SelectDateDialog(Dialog):
 	signals = [
 		("response-date", [int, int, int]),
 	]
-
-
-class SelectDateDialog(Dialog):
-	Sig = Signals
 	vbox: gtk.Box  # type: ignore[assignment]
 
 	def __init__(self, **kwargs) -> None:

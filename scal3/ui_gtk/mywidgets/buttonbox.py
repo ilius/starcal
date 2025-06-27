@@ -77,8 +77,7 @@ class MyHButtonBox(gtk.Box):
 		)
 
 	def add_cancel(
-		self,
-		onClick: Callable[[gtk.Widget], None] | None = None
+		self, onClick: Callable[[gtk.Widget], None] | None = None
 	) -> gtk.Button:
 		return self.add_button(
 			imageName="dialog-cancel.svg",

@@ -115,12 +115,11 @@ class CustomizableCalObj(CalObjWidget):
 			if "unknown signal name" not in str(e):
 				log.exception("")
 
-	# def connectItem(self, item: CustomizableCalObj) -> None:
-	# 	# try:
-	# 	item.s.connect("config-change", self.onConfigChange)
-	# 	item.s.connect("date-change", self.onDateChange)
-	# 	# except Exception:
-	# 	# 	log.exception(f"{item=}")
+	@property
+	def enable2(self) -> bool:
+		if self.enableParam is not None:
+			return self.enableParam.v
+		return self.enable
 
 	def getLoadedObj(self) -> CustomizableCalObj:
 		return self

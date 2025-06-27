@@ -14,10 +14,15 @@ from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-__all__ = ["ConButton", "ConButtonBase"]
+__all__ = ["ConButton"]
 
 
-class ConButtonBase(gtk.Button):
+@registerSignals
+class ConButton(gtk.Button):
+	signals: list[tuple[str, list[Any]]] = [
+		("con-clicked", []),
+	]
+
 	def __init__(self, continuousClick: bool, button: int = 1) -> None:
 		gtk.Button.__init__(self)
 		self.pressTm = 0.0
@@ -58,13 +63,6 @@ class ConButtonBase(gtk.Button):
 				self._doTrigger,
 				self.counter,
 			)
-
-
-@registerSignals
-class ConButton(ConButtonBase):
-	signals: list[tuple[str, list[Any]]] = [
-		("con-clicked", []),
-	]
 
 
 if __name__ == "__main__":

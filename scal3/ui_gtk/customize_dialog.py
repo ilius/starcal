@@ -42,6 +42,7 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.layout import WinLayoutBox
+	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CustomizeWindow"]
 
@@ -471,7 +472,7 @@ class CustomizeWindow(Dialog):
 
 		return page
 
-	def gotoPageCallback(self, _item: CustomizableCalObj, pagePath: str) -> None:
+	def gotoPageCallback(self, _sig: SignalHandlerType, pagePath: str) -> None:
 		self.stack.gotoPage(pagePath)
 
 	def onTreeviewButtonPress(

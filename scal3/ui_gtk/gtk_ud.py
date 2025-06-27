@@ -125,11 +125,13 @@ class CalObjType(Protocol):
 	def showHide(self) -> None: ...
 	def onConfigChange(
 		self,
+		sig: SignalHandlerType | None = None,
 		sender: CalObjType | None = None,
 		toParent: bool = True,
 	) -> None: ...
 	def onDateChange(
 		self,
+		sig: SignalHandlerType | None = None,
 		sender: CalObjType | None = None,
 		toParent: bool = True,
 	) -> None: ...
@@ -229,8 +231,8 @@ class CalObjBase:
 		return None
 
 	def connectItem(self, item: CalObjType) -> None:
-		item.s.connect("config-change", self.onConfigChange)
-		item.s.connect("date-change", self.onDateChange)
+		item.s.connect("config-change", self.onConfigChange, item)
+		item.s.connect("date-change", self.onDateChange, item)
 
 	def appendItem(self, item: CalObjType) -> None:
 		self.items.append(item)
@@ -308,6 +310,7 @@ class CalObjWidget:
 
 	def onConfigChange(
 		self,
+		_sig: SignalHandlerType | None = None,
 		sender: CalObjType | None = None,
 		toParent: bool = True,
 	) -> None:
@@ -329,6 +332,7 @@ class CalObjWidget:
 
 	def onDateChange(
 		self,
+		_sig: SignalHandlerType | None = None,
 		sender: CalObjType | None = None,
 		toParent: bool = True,
 	) -> None:

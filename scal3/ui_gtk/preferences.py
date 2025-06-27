@@ -1678,14 +1678,14 @@ class PreferencesWindow(gtk.Window):
 	def plugTreeviewCellToggled(
 		self,
 		cell: gtk.CellRendererToggle,
-		path: gtk.TreePath,
+		path: str,
 	) -> None:
 		model = self.plugListStore
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 1, active)
 		if active:
-			plugI = model[path.get_indices()[0]][0]
+			plugI = model[path][0]
 			plug = core.allPlugList.v[plugI]
 			if not plug.loaded:
 				plug = self.loadPlugin(plug, plugI)
@@ -1694,7 +1694,7 @@ class PreferencesWindow(gtk.Window):
 	def plugTreeviewCellToggled2(
 		self,
 		cell: gtk.CellRendererToggle,
-		path: gtk.TreePath,
+		path: str,
 	) -> None:
 		model = self.plugListStore
 		active = not cell.get_active()

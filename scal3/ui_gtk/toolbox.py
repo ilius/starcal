@@ -17,7 +17,7 @@ from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.gtk_ud import commonSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
-from scal3.ui_gtk.mywidgets.button import ConButtonBase
+from scal3.ui_gtk.mywidgets.button import ConButton
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
@@ -59,7 +59,7 @@ class BaseToolBoxItem(CustomizableCalObj):
 
 	def __init__(self, continuousClick: bool) -> None:
 		super().__init__()
-		self.w: ConButtonBase = ConButtonBase(continuousClick=continuousClick)
+		self.w: ConButton = ConButton(continuousClick=continuousClick)
 
 	def build(self) -> None:
 		pass

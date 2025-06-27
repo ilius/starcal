@@ -21,7 +21,6 @@ import os
 import os.path
 import signal
 import sys
-import typing
 from os.path import dirname, join
 from time import localtime, perf_counter
 
@@ -41,6 +40,8 @@ try:
 except Exception as e:
 	log.error(f"error loading google account module: {e}")
 
+
+from typing import TYPE_CHECKING
 
 from scal3 import cal_types, core, event_lib, locale_man, ui
 from scal3.cal_types import calTypes, convert
@@ -66,7 +67,7 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk.gtk_ud import CalObjWidget
+from scal3.ui_gtk.gtk_ud import CalObjType, CalObjWidget
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
@@ -83,7 +84,7 @@ from scal3.ui_gtk.utils import (
 	showError,
 )
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
 	from collections.abc import Callable
 	from types import FrameType
 	from typing import Any
@@ -183,11 +184,11 @@ class MainWinVbox(CustomizableCalBox):
 			# 	raise
 			item.enable = enable
 			self.appendItem(item)
-			signalNames = {sig[0] for sig in item.s.signals}
+			signalNames = {sigTup[0] for sigTup in item.s.signals}
 			if "popup-cell-menu" in signalNames:
-				item.s.connect("popup-cell-menu", win.menuCellPopup, item.objName)
+				item.s.connect("popup-cell-menu", win.menuCellPopup, item)
 			if "popup-main-menu" in signalNames:
-				item.s.connect("popup-main-menu", win.menuMainPopup)
+				item.s.connect("popup-main-menu", win.menuMainPopup, item)
 			if "pref-update-bg-color" in signalNames:
 				item.s.connect("pref-update-bg-color", win.prefUpdateBgColor)
 			if "day-info" in signalNames:
@@ -429,7 +430,7 @@ class MainWin(CalObjWidget):
 		)
 
 		self.appendItem(self.layout)
-		self.vbox = self.layout.w
+		self.vbox = self.layout.getWidget()
 		self.vbox.show()
 		self.w.add(self.vbox)
 		# --------------------
@@ -519,7 +520,7 @@ class MainWin(CalObjWidget):
 				self.w.move(wx, wy)
 			self.w.resize(ww, wh)
 
-	def onToggleRightPanel(self, _w: gtk.Widget) -> None:
+	def onToggleRightPanel(self, _sig: SignalHandlerType) -> None:
 		self.ignoreConfigureEvent = True
 		ui.disableRedraw = True
 		try:
@@ -901,11 +902,13 @@ class MainWin(CalObjWidget):
 
 	def menuCellPopup(
 		self,
-		widget: gtk.Widget,
+		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		calObjName: str,
+		item: CustomizableCalObj,
 	) -> None:
+		widget = item.w
+		calObjName = item.objName
 		# calObjName is in ("weekCal", "monthCal", ...)
 		menu = Menu()
 		# ----
@@ -925,7 +928,7 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("Day Info"),
 				imageName="info.svg",
-				func=self.dayInfoShow,
+				func=self.dayInfoShowFromMenu,
 			),
 		)
 		addToItem = self.getEventAddToMenuItem()
@@ -1093,10 +1096,12 @@ class MainWin(CalObjWidget):
 	# handler for "popup-main-menu" signal
 	def menuMainPopup(
 		self,
-		widget: gtk.Widget,
+		_sig: SignalHandlerType,
 		x: int,
 		y: int,
+		item: CustomizableCalObj,
 	) -> None:
+		widget = item.w
 		menu = self.menuMainCreate()
 		dcoord = widget.translate_coordinates(self.w, x, y)
 		assert dcoord is not None
@@ -1152,7 +1157,7 @@ class MainWin(CalObjWidget):
 		self.onConfigChange()
 
 	@staticmethod
-	def prefUpdateBgColor(_cal: CustomizableCalObj) -> None:
+	def prefUpdateBgColor(_sig: SignalHandlerType) -> None:
 		if ui.prefWindow:
 			ui.prefWindow.colorbBg.setRGBA(conf.bgColor.v)
 		# else:  # FIXME
@@ -1774,7 +1779,15 @@ class MainWin(CalObjWidget):
 			)
 		self.selectDateDialog.show()
 
-	def dayInfoShow(self, _w: gtk.Widget | None = None) -> None:
+	def dayInfoShow(self, _sig: SignalHandlerType | None = None) -> None:
+		if not self.dayInfoDialog:
+			from scal3.ui_gtk.day_info import DayInfoDialog
+
+			self.dayInfoDialog = DayInfoDialog(transient_for=self.w)
+			self.s.emit("date-change")
+		openWindow(self.dayInfoDialog.w)
+
+	def dayInfoShowFromMenu(self, _w: gtk.Widget) -> None:
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
 
@@ -1922,6 +1935,8 @@ def main() -> None:
 	ev.info.updateAndSave()
 	# -------------------------------
 	mainWin = MainWin(statusIconMode=statusIconMode)
+	if TYPE_CHECKING:
+		_mainWin: CalObjType = mainWin
 	if os.getenv("STARCAL_FULL_IMPORT"):
 		doFullImport(mainWin)
 	# -------------------------------

@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.signals import SignalHandlerType
 
 log = logger.get()
 
@@ -131,7 +132,7 @@ class DayCalWindowCustomizeWindow(Dialog):
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
-	def gotoPageCallback(self, _item: CustomizableCalObj, pagePath: str) -> None:
+	def gotoPageCallback(self, _sig: SignalHandlerType, pagePath: str) -> None:
 		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
@@ -378,9 +379,9 @@ class DayCalWindow(CalObjWidget):
 		pass
 
 	@staticmethod
-	def dayInfoShow(widget: gtk.Widget | None = None) -> None:
+	def dayInfoShow(_w: gtk.Widget | None = None) -> None:
 		assert ui.mainWin is not None
-		ui.mainWin.dayInfoShow(widget)
+		ui.mainWin.dayInfoShow()
 
 	def onDeleteEvent(self, _arg: Any = None, _ge: Any = None) -> bool:
 		if ui.mainWin:
