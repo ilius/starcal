@@ -789,12 +789,12 @@ class KeyBindingPrefItem(PrefItem):
 			pass
 		elif b == 3:
 			menu = gtk.Menu()
-			menu.add(ImageMenuItem(
-				label=_("Modify Key"),
-				imageName="document-edit.svg",
-				func=self.onMenuModifyKeyClick,
-				args=(rowI,),
-			))
+			# menu.add(ImageMenuItem(
+			# 	label=_("Modify Key"),
+			# 	imageName="document-edit.svg",
+			# 	func=self.onMenuModifyKeyClick,
+			# 	args=(rowI,),
+			# ))
 			#menu.add(ImageMenuItem(
 			#	label=_("Default Key"),
 			#	imageName="edit-undo.svg",
