@@ -363,7 +363,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 				),
 			],
 		)
-		layoutFooter.setItemsOrder(conf.mainWinFooterItems.v)
+		layoutFooter.setItemsOrder(conf.mainWinFooterItems)
 
 		def x_large(text: str) -> str:
 			return "<span size='x-large'>" + text + "</span>"
