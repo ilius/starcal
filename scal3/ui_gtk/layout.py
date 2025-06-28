@@ -284,9 +284,12 @@ class WinLayoutBox(WinLayoutBase):
 		if self.itemsParam:
 			self.itemsParam.v = itemNames
 
-	def setItemsOrder(self, itemNames: list[str]) -> None:
+	def setItemsOrder(self, prop: Property[list[str]]) -> None:
 		itemByName = {item.objName: item for item in self.items}
-		self.items = [itemByName[name] for name in itemNames]
+		self.items = [itemByName[name] for name in prop.v]
+		for name in prop.default:
+			if name not in prop.v:
+				self.items.append(itemByName[name])
 
 	def getOptionsButtonBox(self) -> gtk.Box:
 		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self.objName}")
