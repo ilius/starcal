@@ -67,7 +67,6 @@ from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, Dummy
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
-from scal3.ui_gtk.layout_utils import moduleObjectInitializer
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
 	CheckMenuItem,
@@ -350,11 +349,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 					expand=False,
 					movable=True,
 					buttonBorder=0,
-					initializer=moduleObjectInitializer(
-						"scal3.ui_gtk.pluginsText",
-						"PluginsTextBox",
-						insideExpanderParam=conf.pluginsTextInsideExpander,
-					),
+					initializer=self.createPluginsText,
 				),
 				WinLayoutObj(
 					name="eventDayView",
@@ -364,11 +359,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 					expand=False,
 					movable=True,
 					buttonBorder=0,
-					initializer=moduleObjectInitializer(
-						"scal3.ui_gtk.event.occurrence_view",
-						"LimitedHeightDayOccurrenceView",
-						eventSepParam=conf.eventDayViewEventSep,
-					),
+					initializer=self.createEventDayView,
 				),
 			],
 		)
@@ -528,6 +519,18 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 			return self.statusBar
 		self.statusBar = StatusBar(self)
 		return self.statusBar
+
+	@staticmethod
+	def createPluginsText() -> CustomizableCalObj:
+		from scal3.ui_gtk.pluginsText import PluginsTextBox
+
+		return PluginsTextBox(insideExpanderParam=conf.pluginsTextInsideExpander)
+
+	@staticmethod
+	def createEventDayView() -> CustomizableCalObj:
+		from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
+
+		return LimitedHeightDayOccurrenceView(eventSepParam=conf.eventDayViewEventSep)
 
 	def selectDateResponse(self, _w: gtk.Widget, y: int, m: int, d: int) -> None:
 		ui.cells.changeDate(y, m, d)
