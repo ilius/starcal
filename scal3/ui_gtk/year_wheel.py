@@ -83,7 +83,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 	winterColor = RGBA(0, 0, 255, 15)
 	# ---
 
-	def __init__(self, closeFunc: Callable) -> None:
+	def __init__(self, closeFunc: Callable[[], None]) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
