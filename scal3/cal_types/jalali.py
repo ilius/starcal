@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from scal3 import logger
 from scal3.property import Property
@@ -48,7 +48,7 @@ options: list[OptionTuple] = [
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 ]
-confParams: Final[dict[str, Property]] = {
+confParams: Final[dict[str, Property[Any]]] = {
 	"monthNameMode": monthNameMode,
 }
 

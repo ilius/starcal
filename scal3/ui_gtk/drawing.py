@@ -41,6 +41,7 @@ if TYPE_CHECKING:
 
 
 __all__ = [
+	"ImageContext",
 	"calcTextPixelSize",
 	"calcTextPixelWidth",
 	"drawArcOutline",
@@ -62,6 +63,9 @@ __all__ = [
 if not conf.fontCustom.v:
 	conf.fontCustom.v = ui.fontDefault.copy()
 
+type ImageContext = cairo.Context[cairo.ImageSurface]
+type BothContext = cairo.Context[cairo.ImageSurface] | cairo.Context[cairo.SVGSurface]
+
 with open(join(sourceDir, "svg", "special", "color-check.svg"), encoding="utf-8") as fp:
 	colorCheckSvgTextChecked = fp.read()
 colorCheckSvgTextUnchecked = re.sub(
@@ -72,7 +76,7 @@ colorCheckSvgTextUnchecked = re.sub(
 )
 
 
-def setColor(cr: cairo.Context, color: RGB | RGBA | RawColor) -> None:
+def setColor(cr: BothContext, color: RGB | RGBA | RawColor) -> None:
 	# arguments to set_source_rgb and set_source_rgba must be between 0 and 1
 	if len(color) == 3:
 		cr.set_source_rgb(
@@ -91,7 +95,7 @@ def setColor(cr: cairo.Context, color: RGB | RGBA | RawColor) -> None:
 		raise ValueError(f"bad color {color}")
 
 
-def fillColor(cr: cairo.Context, color: ColorType) -> None:
+def fillColor(cr: BothContext, color: ColorType) -> None:
 	setColor(cr, color)
 	cr.fill()
 
@@ -283,7 +287,7 @@ def newDndFontNamePixbuf(name: str) -> GdkPixbuf.Pixbuf:
 
 
 def drawRoundedRect(
-	cr: cairo.Context,
+	cr: ImageContext,
 	cx0: float,
 	cy0: float,
 	cw: float,
@@ -352,7 +356,7 @@ def drawRoundedRect(
 
 
 def drawOutlineRoundedRect(
-	cr: cairo.Context,
+	cr: ImageContext,
 	cx0: float,
 	cy0: float,
 	cw: float,
@@ -495,12 +499,12 @@ def drawOutlineRoundedRect(
 	cr.close_path()
 
 
-def drawCircle(cr: cairo.Context, cx: float, cy: float, radius: float) -> None:
+def drawCircle(cr: ImageContext, cx: float, cy: float, radius: float) -> None:
 	cr.arc(cx, cy, radius, 0, 2 * pi)
 
 
 def drawCircleOutline(
-	cr: cairo.Context,
+	cr: ImageContext,
 	cx: float,
 	cy: float,
 	r: float,
@@ -513,7 +517,7 @@ def drawCircleOutline(
 
 
 def drawPieOutline(
-	cr: cairo.Context,
+	cr: ImageContext,
 	cx: float,
 	cy: float,
 	r: float,
@@ -549,7 +553,7 @@ def goAngle(x0: float, y0: float, angle: float, length: float) -> tuple[float, f
 
 
 def drawLineLengthAngle(
-	cr: cairo.Context,
+	cr: ImageContext,
 	xs: float,
 	ys: float,
 	length: float,
@@ -571,7 +575,7 @@ def drawLineLengthAngle(
 
 
 def drawArcOutline(
-	cr: cairo.Context,
+	cr: ImageContext,
 	xc: float,
 	yc: float,
 	r: float,

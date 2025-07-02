@@ -14,7 +14,7 @@ from .pytypes import (
 __all__ = ["classes"]
 
 
-class ClassGroup[T: BaseClassType](list):
+class ClassGroup[T: BaseClassType](list[type[Any]]):
 	def __init__(self, tname: str) -> None:
 		list.__init__(self)
 		self.tname = tname

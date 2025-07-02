@@ -15,18 +15,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
 from scal3 import logger
-from scal3.ui import conf
 
 log = logger.get()
+
+from typing import TYPE_CHECKING, Any
 
 from scal3 import core
 from scal3.locale_man import numDecode, rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.time_utils import hmDecode, hmEncode
+from scal3.ui import conf
 from scal3.ui_gtk import Dialog, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.drawing import (
 	fillColor,
@@ -39,6 +39,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
 	import cairo
+	from cairo import ImageSurface, SVGSurface
 
 	from scal3.event_lib.groups import UniversityTerm, WeeklyScheduleItem
 
@@ -397,7 +398,10 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawCairo(self, cr: cairo.Context) -> None:
+	def drawCairo(
+		self,
+		cr: cairo.Context[ImageSurface] | cairo.Context[SVGSurface],
+	) -> None:
 		if not self.data:
 			return
 		# t0 = now()

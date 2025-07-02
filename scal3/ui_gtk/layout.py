@@ -46,7 +46,7 @@ class WinLayoutBase(CustomizableCalObj):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 	) -> None:
 		self.objName = name
 		self.desc = desc
@@ -98,7 +98,7 @@ class WinLayoutObj(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
@@ -211,9 +211,9 @@ class WinLayoutBox(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property | None = None,
+		enableParam: Property[bool] | None = None,
 		itemsMovable: bool = False,
-		itemsParam: Property | None = None,
+		itemsParam: Property[list[str]] | None = None,
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,

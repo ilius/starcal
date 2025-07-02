@@ -54,6 +54,7 @@ from scal3.ui_gtk.customize import (
 )
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
+	ImageContext,
 	drawOutlineRoundedRect,
 	drawRoundedRect,
 	fillColor,
@@ -254,7 +255,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawBg(self, cr: cairo.Context) -> None:
+	def drawBg(self, cr: ImageContext) -> None:
 		status = self.wcal.status
 		assert status is not None
 		alloc = self.get_allocation()
@@ -331,7 +332,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 
 	@staticmethod
 	def drawCursorOutline(
-		cr: cairo.Context,
+		cr: ImageContext,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -343,7 +344,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 
 	@staticmethod
 	def drawCursorBg(
-		cr: cairo.Context,
+		cr: ImageContext,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -352,7 +353,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 		cursorRadius = conf.wcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def drawCursorFg(self, cr: cairo.Context) -> None:
+	def drawCursorFg(self, cr: ImageContext) -> None:
 		if not self.showCursor:
 			return
 		alloc = self.get_allocation()
@@ -370,7 +371,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 
 	def drawTextList(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		textData: list[list[tuple[str, ColorType | None]]],
 		font: Font | None = None,
 	) -> None:
@@ -424,7 +425,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		pass
 
 
@@ -596,7 +597,7 @@ class WeekDaysColumn(Column):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
@@ -638,7 +639,7 @@ class PluginsTextColumn(Column):
 			.split("\n")
 		]
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
@@ -674,7 +675,7 @@ class EventsIconColumn(Column):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		status = self.wcal.status
 		assert status is not None
 		self.drawBg(cr)
@@ -746,7 +747,7 @@ class EventsCountColumn(Column):
 			(line, None),
 		]
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		# ---
 		# w = self.get_allocation().width
@@ -798,7 +799,7 @@ class EventsTextColumn(Column):
 			data.append((line, color))
 		return data
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
@@ -918,7 +919,7 @@ class EventsBoxColumn(Column):
 		self.updateData()
 		self.queue_draw()
 
-	def drawBox(self, cr: cairo.Context, box: TimeLineBox) -> None:
+	def drawBox(self, cr: ImageContext, box: TimeLineBox) -> None:
 		from scal3.ui_gtk import timeline_box as tbox
 
 		# ---
@@ -930,7 +931,7 @@ class EventsBoxColumn(Column):
 		tbox.drawBoxBG(cr, box, x, y, w, h)
 		tbox.drawBoxText(cr, box, x, y, w, h, self)
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
 		if not self.boxes:
 			return
@@ -1057,7 +1058,7 @@ class DaysOfMonthColumn(Column):
 	def getWidthAttr(cls) -> str:
 		return "wcal_daysOfMonth_width"
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		status = self.wcal.status
 		assert status is not None
 		self.drawBg(cr)
@@ -1233,7 +1234,7 @@ class MoonStatusColumn(Column):
 		self.connect("draw", self.onExposeEvent)
 		self.showPhaseNumber = False
 
-	def drawColumn(self, cr: cairo.Context) -> None:
+	def drawColumn(self, cr: ImageContext) -> None:
 		from math import cos
 
 		from scal3.moon import getMoonPhase

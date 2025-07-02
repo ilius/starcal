@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
@@ -49,10 +51,10 @@ class SLabel(gtk.Label):
 		# --
 		ui.updateFocusTime()
 
-	def copy(self, _item: gtk.MenuItem) -> None:
+	def copy(self, _w: gtk.Widget, *_args: Any) -> None:
 		start = self.get_property("selection-bound")
 		end = self.get_property("cursor-position")
 		setClipboard(toStr(self.get_text())[start:end])
 
-	def copyAll(self, _label: gtk.Label) -> None:
+	def copyAll(self, _label: gtk.Widget, *_args: Any) -> None:
 		setClipboard(self.get_text())

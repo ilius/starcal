@@ -327,7 +327,7 @@ class SObjBinaryModel(SObj):
 	def getDictOrdered(self) -> dict[str, Any]:
 		return makeOrderedDict(self.getDict(), self.paramsOrder)
 
-	def loadBasicData(self) -> dict[str, Any] | list:
+	def loadBasicData(self) -> dict[str, Any] | list[Any]:
 		if not self.fs.isfile(self.file):
 			return {}
 		with self.fs.open(self.file) as fp:
