@@ -66,13 +66,14 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.gtk_ud import CalObjType, CalObjWidget
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
 	CheckMenuItem,
 	ImageMenuItem,
 )
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
 	get_menu_height,
@@ -92,7 +93,6 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
-	from scal3.ui_gtk.gtk_ud import CalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
 	from scal3.ui_gtk.statusBar import CalObj as StatusBar
@@ -116,8 +116,7 @@ def liveConfChanged() -> None:
 		ui.lastLiveConfChangeTime = tm
 
 
-@registerSignals
-class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
+class MainWinVbox(CustomizableCalBox):
 	vertical = True
 	objName = "mainPanel"
 	desc = _("Main Panel")
@@ -144,10 +143,21 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 	}
 
 	def __init__(self, win: MainWin) -> None:
+		CustomizableCalBox.__init__(self, vertical=True)
 		self.win = win
-		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.w: gtk.Box = self
 		self.initVars()
+
+	def connectItem(self, item: CustomizableCalObj) -> None:
+		win = self.win
+		signalNames = {sigTup[0] for sigTup in item.s.signals}
+		if "popup-cell-menu" in signalNames:
+			item.s.connect("popup-cell-menu", win.menuCellPopup, item)
+		if "popup-main-menu" in signalNames:
+			item.s.connect("popup-main-menu", win.menuMainPopup, item)
+		if "pref-update-bg-color" in signalNames:
+			item.s.connect("pref-update-bg-color", win.prefUpdateBgColor)
+		if "day-info" in signalNames:
+			item.s.connect("day-info", win.dayInfoShow)
 
 	def createItems(self) -> None:
 		win = self.win
@@ -185,15 +195,6 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 			# 	raise
 			item.enable = enable
 			self.appendItem(item)
-			signalNames = {sigTup[0] for sigTup in item.signals}
-			if "popup-cell-menu" in signalNames:
-				item.connect("popup-cell-menu", win.menuCellPopup)
-			if "popup-main-menu" in signalNames:
-				item.connect("popup-main-menu", win.menuMainPopup)
-			if "pref-update-bg-color" in signalNames:
-				item.connect("pref-update-bg-color", win.prefUpdateBgColor)
-			if "day-info" in signalNames:
-				item.connect("day-info", win.dayInfoShow)
 
 	def updateVars(self) -> None:
 		CustomizableCalBox.updateVars(self)
@@ -203,27 +204,30 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 		CustomizableCalBox.onKeyPress(self, arg, gevent)
 		return True  # FIXME
 
-	def switchWcalMcal(self, customizeWindow: CustomizeWindow) -> None:
-		wi = None
-		mi = None
-		for i, item in enumerate(self.items):
-			if item.objName == "weekCal":
-				wi = i
-			elif item.objName == "monthCal":
-				mi = i
-		if wi is None or mi is None:
-			log.error(f"weekCal index: {wi}, monthCal index: {mi}")
-			return
-		for itemIndex in (wi, mi):
-			customizeWindow.loadItem(self, itemIndex)
-		wcal, mcal = self.items[wi], self.items[mi]
-		wcal.enable, mcal.enable = mcal.enable, wcal.enable
-		# FIXME
-		# self.reorder_child(wcal, mi)
-		# self.reorder_child(mcal, wi)
-		# self.items[wi], self.items[mi] = mcal, wcal
-		self.showHide()
-		self.onDateChange()
+	# def switchWcalMcal(self, customizeWindow: CustomizeWindow) -> None:
+	# 	wi = None
+	# 	mi = None
+	# 	wcalEnabled = True
+	# 	for i, item in enumerate(self.items):
+	# 		if item.objName == "weekCal":
+	# 			wi = i
+	# 			wcalEnabled = item.enable
+	# 		elif item.objName == "monthCal":
+	# 			mi = i
+	# 			wcalEnabled = False
+	# 	if wi is None or mi is None:
+	# 		log.error(f"weekCal index: {wi}, monthCal index: {mi}")
+	# 		return
+
+	# 	customizeWindow.loadItem(self, wi, enable=not wcalEnabled)
+	# 	customizeWindow.loadItem(self, mi, enable=wcalEnabled)
+
+	# 	# FIXME
+	# 	# self.reorder_child(wcal, mi)
+	# 	# self.reorder_child(mcal, wi)
+	# 	# self.items[wi], self.items[mi] = mcal, wcal
+	# 	self.showHide()
+	# 	self.onDateChange()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		if self.optionsWidget is not None:
@@ -233,13 +237,17 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 
 
 @registerSignals
-class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
-	objName = "mainWin"
-	desc = _("Main Window")
-	timeout = 1  # second
-	signals = ud.BaseCalObj.signals + [
+class SignalHandler(SignalHandlerBase):
+	signals = ud.commonSignals + [
 		("toggle-right-panel", []),
 	]
+
+
+class MainWin(CalObjWidget):
+	objName = "mainWin"
+	desc = _("Main Window")
+	Sig: type[SignalHandlerType] = SignalHandler
+	timeout = 1  # second
 
 	def autoResize(self) -> None:
 		self.w.resize(conf.winWidth.v, conf.winHeight.v)
@@ -256,8 +264,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 			appId += "2"
 		self.app = gtk.Application(application_id=appId)
 		self.app.register(gio.Cancellable.new())
-		gtk.ApplicationWindow.__init__(self, application=self.app)
-		self.w: gtk.Window = self
+		self.w: gtk.ApplicationWindow = gtk.ApplicationWindow(application=self.app)
 		# ---
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
@@ -306,7 +313,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 		self.w.connect("focus-out-event", self.focusOut, "Main")
 		self.w.connect("key-press-event", self.onKeyPress)
 		self.w.connect("configure-event", self.onConfigureEvent)
-		self.connect("toggle-right-panel", self.onToggleRightPanel)
+		self.s.connect("toggle-right-panel", self.onToggleRightPanel)
 		# -------------------------------------------------------------
 		"""
 		#self.w.add_events(gdk.EventMask.VISIBILITY_NOTIFY_MASK)
@@ -518,7 +525,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 				self.w.move(wx, wy)
 			self.w.resize(ww, wh)
 
-	def onToggleRightPanel(self, _sig: Any) -> None:
+	def onToggleRightPanel(self, _sig: SignalHandlerType) -> None:
 		self.ignoreConfigureEvent = True
 		ui.disableRedraw = True
 		try:
@@ -724,7 +731,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 	def begin_resize_drag(self, *args) -> None:
 		conf.winMaximized.v = False
 		ui.updateFocusTime()
-		gtk.Window.begin_resize_drag(self, *args)
+		gtk.Window.begin_resize_drag(self.w, *args)
 
 	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if self.menuMain:
@@ -900,12 +907,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 
 	def menuCellPopup(
 		self,
-		widget: gtk.Widget,
+		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		calObjName: str,
+		item: CustomizableCalObj,
 	) -> None:
-		# calObjName is in ("weekCal", "monthCal", ...)
+		widget = item.w
+		# item.objName is in ("weekCal", "monthCal", ...)
 		menu = Menu()
 		# ----
 		for calType in calTypes.active:
@@ -946,16 +954,16 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 				func=self.selectDateShow,
 			),
 		)
-		if calObjName in {"weekCal", "monthCal"}:
-			isWeek = calObjName == "weekCal"
-			calDesc = "Month Calendar" if isWeek else "Week Calendar"
-			menu.add(
-				ImageMenuItem(
-					label=_("Switch to " + calDesc),
-					imageName="" if isWeek else "week-calendar.svg",
-					func=self.switchWcalMcal,
-				),
-			)
+		# if item.objName in {"weekCal", "monthCal"}:
+		# 	isWeek = item.objName == "weekCal"
+		# 	calDesc = "Month Calendar" if isWeek else "Week Calendar"
+		# 	menu.add(
+		# 		ImageMenuItem(
+		# 			label=_("Switch to " + calDesc),
+		# 			imageName="" if isWeek else "week-calendar.svg",
+		# 			func=self.switchWcalMcal,
+		# 		),
+		# 	)
 		menu.add(
 			ImageMenuItem(
 				label=_("In Time Line"),
@@ -1092,10 +1100,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 	# handler for "popup-main-menu" signal
 	def menuMainPopup(
 		self,
-		widget: gtk.Widget,
+		_sig: SignalHandlerType,
 		x: int,
 		y: int,
+		item: CustomizableCalObj,
 	) -> None:
+		widget = item.w
 		menu = self.menuMainCreate()
 		dcoord = widget.translate_coordinates(self.w, x, y)
 		assert dcoord is not None
@@ -1151,7 +1161,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 		self.onConfigChange()
 
 	@staticmethod
-	def prefUpdateBgColor(_cal: CustomizableCalObj) -> None:
+	def prefUpdateBgColor(_sig: SignalHandlerType) -> None:
 		if ui.prefWindow:
 			ui.prefWindow.colorbBg.setRGBA(conf.bgColor.v)
 		# else:  # FIXME
@@ -1773,12 +1783,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 			)
 		self.selectDateDialog.show()
 
-	def dayInfoShow(self, _w: gtk.Widget | None = None) -> None:
+	def dayInfoShow(self, _sig: SignalHandlerType | None = None) -> None:
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
 
 			self.dayInfoDialog = DayInfoDialog(transient_for=self.w)
-			self.emit("date-change")
+			self.s.emit("date-change")
 		openWindow(self.dayInfoDialog.w)
 
 	def dayInfoShowFromMenu(self, _w: gtk.Widget) -> None:
@@ -1786,7 +1796,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 			from scal3.ui_gtk.day_info import DayInfoDialog
 
 			self.dayInfoDialog = DayInfoDialog(transient_for=self.w)
-			self.emit("date-change")
+			self.s.emit("date-change")
 		openWindow(self.dayInfoDialog.w)
 
 	def customizeWindowCreate(self) -> CustomizeWindow:
@@ -1801,12 +1811,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 
 		return self.customizeWindow
 
-	def switchWcalMcal(self, _w: gtk.Widget | None = None) -> None:
-		assert self.mainVBox is not None
-		customizeWindow = self.customizeWindowCreate()
-		self.mainVBox.switchWcalMcal(customizeWindow)
-		customizeWindow.updateMainPanelTreeEnableChecks()
-		customizeWindow.save()
+	# def switchWcalMcal(self, _w: gtk.Widget | None = None) -> None:
+	# 	assert self.mainVBox is not None
+	# 	customizeWindow = self.customizeWindowCreate()
+	# 	self.mainVBox.switchWcalMcal(customizeWindow)
+	# 	customizeWindow.updateMainPanelTreeEnableChecks()
+	# 	customizeWindow.save()
 
 	def customizeShow(
 		self,

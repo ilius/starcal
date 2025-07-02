@@ -15,16 +15,16 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.gtk_ud import commonSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
-from scal3.ui_gtk.mywidgets.button import ConButtonBase
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.mywidgets.button import ConButton
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable, Iterator
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
-	from scal3.ui_gtk.gtk_ud import CalObjType
 
 __all__ = [
 	"BaseToolBoxItem",
@@ -40,15 +40,31 @@ type ButtonClickCallback = Callable[[GObject.Object], None]
 type ButtonPressCallback = Callable[[gtk.Widget, gdk.EventButton], None]
 
 
-class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: ignore[misc]
-	hasOptions = False
-
-	signals = CustomizableCalObj.signals + [
+@registerSignals
+class SignalHandler(SignalHandlerBase):
+	signals = commonSignals + [
 		("con-clicked", []),
 	]
 
+
+class BaseToolBoxItem(CustomizableCalObj):
+	Sig = SignalHandler
+	hasOptions = False
+	iconSize = Property(0)
+	preferIconName = Property(False)
+	onClick: str | ButtonClickCallback | None = None
+	onPress: str | ButtonPressCallback | None = None
+	continuousClick = False
+
+	def __init__(self, continuousClick: bool) -> None:
+		super().__init__()
+		self.w: ConButton = ConButton(continuousClick=continuousClick)
+
+	def build(self) -> None:
+		pass
+
 	def show(self) -> None:
-		gtk.Button.show_all(self)
+		self.w.show_all()
 
 	def setVertical(self, vertical: bool) -> None:
 		self.vertical = vertical
@@ -73,7 +89,6 @@ class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: i
 		return size, size
 
 
-@registerSignals
 class ToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
@@ -89,11 +104,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		continuousClick: bool = True,
 		enable: bool = True,
 	) -> None:
-		gtk.Button.__init__(self)
-		self.w = self
-		self.s = self
-		if continuousClick:
-			ConButtonBase.__init__(self, button=1)  # only left-click
+		BaseToolBoxItem.__init__(self, continuousClick=continuousClick)
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
@@ -199,7 +210,6 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.image.set_from_pixbuf(pixbuf)
 
 
-@registerSignals
 class LabelToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
@@ -211,10 +221,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
 	) -> None:
-		gtk.Button.__init__(self)
-		self.w: gtk.Button = self
-		if continuousClick:
-			ConButtonBase.__init__(self, button=1)
+		BaseToolBoxItem.__init__(self, continuousClick=continuousClick)
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
@@ -268,11 +275,12 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		return size, size
 
 
-# @registerSignals
-class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
-	# signals = CustomizableCalObj.signals + [
-	# 	("popup-main-menu", [int, int]),
-	# ]
+# signals = CustomizableCalObj.signals + [
+# 	("popup-main-menu", [int, int]),
+# ]
+
+
+class BaseToolBox(CustomizableCalObj):
 	def __init__(
 		self,
 		funcOwner: Any,
@@ -281,14 +289,14 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 		buttonBorder: int = 0,
 		buttonPadding: int = 0,
 	) -> None:
+		super().__init__()
 		assert self.vertical is not None
-		gtk.EventBox.__init__(self)
+		self.w: gtk.EventBox = gtk.EventBox()
 		self.box = gtk.Box()
 		self.box.set_orientation(self.get_orientation())
 		self.box.set_homogeneous(homogeneous=False)
 		self.box.show()
-		self.w = self
-		self.add(self.box)
+		self.w.add(self.box)
 		self.funcOwner = funcOwner
 		self.preferIconName: Property[bool] = conf.useSystemIcons
 		self.iconSize: Property[int] = Property(iconSize or conf.toolbarIconSize.v)
@@ -302,7 +310,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 			return gtk.Orientation.VERTICAL
 		return gtk.Orientation.HORIZONTAL
 
-	def setupItemSignals(self, item: CalObjType) -> None:
+	def setupItemSignals(self, item: BaseToolBoxItem) -> None:
 		if item.onClick:
 			if isinstance(item.onClick, str):
 				onClick = getattr(self.funcOwner, item.onClick)
@@ -365,8 +373,8 @@ class CustomizableToolBox(StaticToolBox):
 	itemListCustomizable = True
 	objName = "toolbar"
 	desc = _("Toolbar")
-	defaultItems: list[ToolBoxItem] = []
-	defaultItemsDict: dict[str, ToolBoxItem] = {}
+	defaultItems: list[BaseToolBoxItem] = []
+	defaultItemsDict: dict[str, BaseToolBoxItem] = {}
 
 	def __init__(
 		self,
@@ -374,14 +382,12 @@ class CustomizableToolBox(StaticToolBox):
 		iconSize: int = 0,
 		continuousClick: bool = True,
 	) -> None:
-		BaseToolBox.__init__(
+		StaticToolBox.__init__(
 			self,
 			funcOwner,
 			iconSize=iconSize,
 			continuousClick=continuousClick,
 		)
-
-		# self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
 
 		# set on setDict(), used in getDict() to keep compatibility
 		self.data: CustomizableToolBoxDict = {}  # type: ignore[typeddict-item]
@@ -450,12 +456,13 @@ class CustomizableToolBox(StaticToolBox):
 			item.build()
 
 	def repackAll(self) -> None:
-		for item in self._items:
-			if item.loaded:
-				self.box.remove(item.w)
-		for item in self._items:
-			if item.loaded:
-				pack(self.box, item.w, item.expand, item.expand)
+		box = self.box
+		for child in box.get_children():
+			box.remove(child)
+		for item in self.items:
+			if item.enable:
+				pack(box, item.w, item.expand, item.expand)
+				item.show()
 
 	def moveItem(self, i: int, j: int) -> None:
 		CustomizableCalObj.moveItem(self, i, j)

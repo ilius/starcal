@@ -9,25 +9,23 @@ from scal3.ui import conf
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.pbar import MyProgressBar
-from scal3.ui_gtk.signals import registerSignals
 
 __all__ = ["CalObj"]
 
 
-@registerSignals
-class CalObj(gtk.Frame, CustomizableCalObj):  # type: ignore[misc]
+class CalObj(CustomizableCalObj):
 	objName = "monthPBar"
 	desc = _("Month Progress Bar")
 	itemListCustomizable = False
 	hasOptions = True
 
 	def __init__(self, win: gtk.Window) -> None:
+		self.w: gtk.Frame = gtk.Frame()
 		self.win = win
-		gtk.Frame.__init__(self)
-		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
-		self.set_border_width(0)
+		self.w.set_shadow_type(gtk.ShadowType.ETCHED_IN)
+		self.w.set_border_width(0)
 		self.pbar = MyProgressBar()
-		self.add(self.pbar.w)
+		self.w.add(self.pbar.w)
 		self.pbar.w.show()
 		self.initVars()
 

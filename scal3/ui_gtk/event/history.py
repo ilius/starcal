@@ -17,6 +17,7 @@ from scal3.time_utils import getJhmsFromEpoch
 from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
@@ -47,7 +48,7 @@ def unnest(src: Any) -> dict[str, Any]:
 	return dst
 
 
-class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
+class EventHistoryDialog(CalObjWidget):
 	textViewTypes = [
 		"Change Table",
 		"Full Table",
@@ -60,29 +61,25 @@ class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
 		"Change (JSON Diff)",
 	]
 
-	def onResponse(self, _w: Any, _e: Any) -> None:
-		self.hide()
-		ud.windowList.onConfigChange()
-
 	def __init__(
 		self,
 		event: EventType,
 		**kwargs,
 	) -> None:
 		checkEventsReadOnly()
-		Dialog.__init__(self, **kwargs)
-		self.set_title(_("History") + ": " + event.summary)
+		self.w: Dialog = Dialog(**kwargs)
+		self.w.set_title(_("History") + ": " + event.summary)
 		self._event = event
 		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
 
 		dialog_add_button(
-			self,
+			self.w,
 			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("_Close"),
 		)
 
-		self.connect("response", self.onResponse)
+		self.w.connect("response", self.onResponse)
 
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
@@ -111,7 +108,7 @@ class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
 		leftVbox = VBox()
 		hpan.add2(leftVbox)
 		hpan.set_position(600)
-		pack(self.vbox, hpan, expand=True, fill=True)
+		pack(self.w.vbox, hpan, expand=True, fill=True)
 
 		actionBox = VBox(spacing=5)
 		pack(leftVbox, actionBox, padding=30)
@@ -223,8 +220,12 @@ class EventHistoryDialog(Dialog, ud.CalObjType):  # type: ignore[misc]
 		col.set_property("expand", True)
 
 		self.load()
-		self.vbox.show_all()
-		self.resize(ud.workAreaW, int(ud.workAreaH * 0.9))
+		self.w.vbox.show_all()
+		self.w.resize(ud.workAreaW, int(ud.workAreaH * 0.9))
+
+	def onResponse(self, _w: Any, _e: Any) -> None:
+		self.hide()
+		ud.windowList.onConfigChange()
 
 	@staticmethod
 	def setColumnWidth(

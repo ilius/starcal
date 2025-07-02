@@ -27,7 +27,7 @@ from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.customize import CustomizableCalObj, DummyCalObj, newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
@@ -42,6 +42,7 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.layout import WinLayoutBox
+	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CustomizeWindow"]
 
@@ -143,6 +144,7 @@ class CustomizeWindow(Dialog):
 		# should we save on Escape? or when clicking the X (close) button?
 		# ---
 		self.itemByPagePath: dict[str, CustomizableCalObj] = {}
+		self.enableParamByPagePath: dict[str, CheckPrefItem] = {}
 		self.rootItem = item
 		# ---
 		rootPagePath = "mainWin"
@@ -229,6 +231,7 @@ class CustomizeWindow(Dialog):
 			if not item.customizable:
 				continue
 			assert item.objName, f"{item = }"
+			assert isinstance(item, CustomizableCalObj | DummyCalObj), f"{item = }"
 			model.append(
 				[
 					item.enable,
@@ -255,7 +258,7 @@ class CustomizeWindow(Dialog):
 			pagePath=pagePath,
 		)
 		# ---
-		pack(hbox, toolbar)
+		pack(hbox, toolbar.w)
 		# ---
 		vbox = VBox(spacing=10)
 		if parentItem.itemHaveOptions:
@@ -413,7 +416,7 @@ class CustomizeWindow(Dialog):
 			)
 			pack(hbox, prefItem.getWidget())
 			pack(page.pageWidget, hbox, 0, 0)
-			item.enablePrefItem = prefItem
+			self.enableParamByPagePath[pagePath] = prefItem
 
 		if item.itemListCustomizable and item.items:
 			self._addPageItemsTree(page)
@@ -439,7 +442,7 @@ class CustomizeWindow(Dialog):
 
 			page2.pageTitle = page2.pageTitle + " - " + title
 			self.stack.addPage(page2)
-		item.connect("goto-page", self.gotoPageCallback)
+		item.s.connect("goto-page", self.gotoPageCallback)
 
 	def _addPage(
 		self,
@@ -449,6 +452,7 @@ class CustomizeWindow(Dialog):
 		itemIndex: int,
 	) -> StackPage:
 		item = parentItem.items[itemIndex]
+		assert isinstance(item, CustomizableCalObj)
 
 		title = item.desc
 		if parentItem.objName != "mainWin":
@@ -468,7 +472,7 @@ class CustomizeWindow(Dialog):
 
 		return page
 
-	def gotoPageCallback(self, _item: CustomizableCalObj, pagePath: str) -> None:
+	def gotoPageCallback(self, _sig: SignalHandlerType, pagePath: str) -> None:
 		self.stack.gotoPage(pagePath)
 
 	def onTreeviewButtonPress(
@@ -509,7 +513,9 @@ class CustomizeWindow(Dialog):
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
 		if isinstance(parentItem, WinLayoutObj):  # if parentItem.isWrapper
-			parentItem = parentItem.getWidget()
+			parentWidget = parentItem.getItem()
+			assert isinstance(parentWidget, CustomizableCalObj)
+			parentItem = parentWidget
 
 		# if none of the items in list have any settings, we can toggle-enable instead
 		if not parentItem.itemHaveOptions:
@@ -530,12 +536,18 @@ class CustomizeWindow(Dialog):
 	def loadItem(
 		parentItem: CustomizableCalObj,
 		itemIndex: int,
+		enable: bool | None = None,
 	) -> CustomizableCalObj | None:
 		item = parentItem.items[itemIndex]
-		if not item.loaded:
+		if item.loaded:
+			if enable is not None:
+				item.enable = enable
+		else:
 			item = item.getLoadedObj()
 			if item is None:
 				return None
+			if enable is not None:
+				item.enable = enable
 			parentItem.replaceItem(itemIndex, item)
 			parentItem.insertItemWidget(itemIndex)
 		item.onConfigChange()
@@ -569,7 +581,7 @@ class CustomizeWindow(Dialog):
 		assert parentItem.items[itemIndex] == item
 		# ---
 		if active:
-			itemNew = self.loadItem(parentItem, itemIndex)
+			itemNew = self.loadItem(parentItem, itemIndex, enable=active)
 			if itemNew is None:
 				return
 			item = itemNew
