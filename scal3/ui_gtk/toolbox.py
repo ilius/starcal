@@ -27,6 +27,7 @@ if typing.TYPE_CHECKING:
 	from scal3.ui.pytypes import CustomizableToolBoxDict
 
 __all__ = [
+	"BaseToolBoxItem",
 	"CustomizableToolBox",
 	"LabelToolBoxItem",
 	"StaticToolBox",
