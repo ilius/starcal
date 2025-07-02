@@ -194,15 +194,13 @@ class StarCalendarRegisterDialog(MyDialog):
 		account.save()
 		return None
 
-	def onOkClick(self, _w: gtk.Widget) -> bool:
+	def onOkClick(self, _w: gtk.Widget) -> None:
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
-		return True
 
-	def onCancelClick(self, _w: gtk.Widget) -> bool:
+	def onCancelClick(self, _w: gtk.Widget) -> None:
 		self.destroy()
-		return True
 
 	def onDeleteEvent(self, _w: gtk.Widget, _ge: Any) -> bool:
 		self.destroy()

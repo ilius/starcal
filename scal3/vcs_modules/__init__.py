@@ -30,7 +30,7 @@ def getCommitListFromEst(
 	obj: VcsBaseEventGroup,
 	startJd: int,
 	endJd: int,
-	format_rev_id: Callable | None = None,
+	format_rev_id: Callable[[Any, tuple[int, float, float]], Any] | None = None,
 ) -> list[tuple[int, int | str]]:
 	"""Returns a list of (epoch, rev_id) tuples."""
 	startEpoch = getEpochFromJd(startJd)

@@ -59,6 +59,7 @@ from scal3.ui_gtk.button_drawing import BaseButton, Button, SVGButton
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.drawing import (
+	ImageContext,
 	drawPieOutline,
 	fillColor,
 	newTextLayout,
@@ -69,8 +70,6 @@ from scal3.ui_gtk.utils import pixbufFromFile
 
 if TYPE_CHECKING:
 	from collections.abc import Iterable
-
-	import cairo
 
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
@@ -114,7 +113,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	seasonPieEnable: Property[bool] | None = None
 	seasonPieGeo: Property[PieGeoDict] | None = None
-	seasonPieColors: dict[str, Property] | None = None
+	seasonPieColors: dict[str, Property[ColorType]] | None = None
 	seasonPieTextColor: Property[ColorType] | None = None
 
 	myKeys = CalBase.myKeys | {
@@ -315,7 +314,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			gevent.time,
 		)
 
-	def openCustomize(self, _ge: gdk.EventButton | None = None) -> None:
+	def openCustomize(self, _w: gtk.Widget) -> None:
 		if self.win:
 			self.win.customizeShow()
 
@@ -734,7 +733,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	def drawAll(
 		self,
 		_widget: gtk.Widget | None = None,
-		cr: cairo.Context | None = None,
+		cr: ImageContext | None = None,
 		cursor: bool = True,
 	) -> None:
 		win = self.get_window()
@@ -754,7 +753,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def drawEventIcons(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		c: CellType,
 		w: int,
 		h: int,
@@ -830,7 +829,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			return self.weekdayAbbreviate.v
 		return False
 
-	def drawSeasonPie(self, cr: cairo.Context, w: float, h: float) -> None:
+	def drawSeasonPie(self, cr: ImageContext, w: float, h: float) -> None:
 		if not self.seasonPieEnable:
 			return
 
@@ -898,7 +897,7 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		cr.move_to(xc - font_w / 2, yc - font_h / 2)
 		show_layout(cr, layout)
 
-	def drawWithContext(self, cr: cairo.Context, _cursor: bool) -> None:
+	def drawWithContext(self, cr: ImageContext, _cursor: bool) -> None:
 		# gevent = gtk.get_current_event()
 		w = self.get_allocation().width
 		h = self.get_allocation().height

@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from scal3 import logger
 
 log = logger.get()
@@ -76,7 +78,7 @@ class Field[T]:
 	def getMaxWidth(self) -> int:
 		raise NotImplementedError
 
-	def getFieldAt(self, text: str, pos: int) -> Field:  # noqa: ARG002
+	def getFieldAt(self, text: str, pos: int) -> Field[Any]:  # noqa: ARG002
 		raise NotImplementedError
 
 
@@ -116,6 +118,9 @@ class IntField(NumField[int]):
 		self.fill = fill
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
+
+	def setMax(self, maxim: int) -> None:
+		self.maxim = maxim
 
 	def setText(self, text: str) -> None:
 		if not text:
@@ -183,34 +188,24 @@ class FloatField(NumField[float]):
 		)
 
 
-class YearField(IntField):
-	def __init__(self) -> None:
-		IntField.__init__(self, -9999, 9999)
+def YearField() -> IntField:
+	return IntField(-9999, 9999)
 
 
-class MonthField(IntField):
-	def __init__(self) -> None:
-		IntField.__init__(self, 1, 12, 2)
+def MonthField() -> IntField:
+	return IntField(1, 12, 2)
 
 
-class DayField(IntField):
-	def __init__(self, pad: int = 2) -> None:
-		IntField.__init__(self, 1, 31, pad)
-
-	def setMax(self, maxim: int) -> None:
-		self.maxim = maxim
-		# if self.value > maxim:
-		# 	self.value = maxim
+def DayField(fill: int = 2) -> IntField:
+	return IntField(1, 31, fill)
 
 
-class HourField(IntField):
-	def __init__(self) -> None:
-		IntField.__init__(self, 0, 24, 2)
+def HourField() -> IntField:
+	return IntField(0, 24, 2)
 
 
-class Z60Field(IntField):
-	def __init__(self) -> None:
-		IntField.__init__(self, 0, 59, 2)
+def Z60Field() -> IntField:
+	return IntField(0, 59, 2)
 
 
 class StrConField(Field[str]):

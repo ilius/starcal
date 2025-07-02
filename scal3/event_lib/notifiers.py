@@ -56,7 +56,7 @@ class AlarmNotifier(EventNotifier):
 		self.alarmSound: str | None = None  # FIXME
 		self.playerCmd = "mplayer"
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		from scal3.ui_gtk.event.notifier.alarm import notify
 
 		notify(self, finishFunc)
@@ -81,7 +81,7 @@ class FloatingMsgNotifier(EventNotifier):
 		self.bgColor: ColorType = RGB(255, 255, 0)
 		self.textColor: ColorType = RGB(0, 0, 0)
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		from scal3.ui_gtk.event.notifier.floatingMsg import notify
 
 		notify(self, finishFunc)
@@ -97,7 +97,7 @@ class WindowMsgNotifier(EventNotifier):
 		EventNotifier.__init__(self, event)
 		# window icon, FIXME
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		from scal3.ui_gtk.event.notifier.windowMsg import notify
 
 		notify(self, finishFunc)
@@ -117,7 +117,7 @@ class CommandNotifier(EventNotifier):
 		self.command = ""
 		self.pyEval = False
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		raise NotImplementedError
 		# from scal3.ui_gtk.event.command.alarm import notify
 

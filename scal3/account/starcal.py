@@ -104,7 +104,7 @@ remoteEventTypeDecoders = {
 
 
 def decodeRemoteEvent(
-	remoteEventFull: dict,
+	remoteEventFull: dict[str, Any],
 	accountId: int,
 	_group: EventGroupType,
 ) -> tuple[EventType | None, str | None]:

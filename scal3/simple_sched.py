@@ -79,7 +79,7 @@ class scheduler:
 	def enterabs(
 		self,
 		time: int,
-		action: Callable,
+		action: Callable,  # type: ignore[type-arg]
 		argument: Sequence[Any] = (),
 		kwargs: dict[str, Any] | None = None,
 	) -> SchedEvent:

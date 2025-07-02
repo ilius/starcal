@@ -6,7 +6,7 @@ from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 __all__ = ["FloatSpinButton"]
 
 
-class FloatSpinButton(SingleSpinButton):
+class FloatSpinButton(SingleSpinButton[FloatField, float]):
 	def __init__(
 		self,
 		minim: float,
@@ -28,5 +28,5 @@ class FloatSpinButton(SingleSpinButton):
 		)
 
 	def set_range(self, minim: float, maxim: float) -> None:
-		self.field.children[0].setRange(minim, maxim)
+		self.field.setRange(minim, maxim)
 		self.set_text(self.field.getText())

@@ -138,7 +138,7 @@ fontParams = ["fontDefault"] + [
 	p.v3Name for p in confParamsData if p.type.startswith("Font")
 ]
 
-confDecoders = dict.fromkeys(fontParams, Font.fromList)
+confDecoders: dict[str, Callable[[Any], Any]] = dict.fromkeys(fontParams, Font.fromList)
 confEncoders: dict[str, Callable[[Any], Any]] = {
 	# param: Font.to_json for param in fontParams
 }
@@ -487,7 +487,7 @@ if updateLocalTimezoneHistory():
 	saveConf()
 
 
-needRestartList: list[tuple[Property, Any]] = [
+needRestartList: list[tuple[Property[Any], Any]] = [
 	(prop, prop.v) for prop in conf.needRestartList + locale_man.getNeedRestartParams()
 ]
 

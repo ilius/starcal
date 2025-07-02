@@ -23,12 +23,11 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.color_utils import black, yellow
 from scal3.ui_gtk import gdk, gtk, timeout_add
-from scal3.ui_gtk.drawing import newTextLayout, setColor
+from scal3.ui_gtk.drawing import ImageContext, newTextLayout, setColor
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	import cairo
 	from gi.repository import Pango as pango
 
 	from scal3.color_utils import ColorType
@@ -57,7 +56,7 @@ class FloatingMsg(gtk.DrawingArea):
 		bgColor: ColorType = yellow,
 		textColor: ColorType = black,
 		refreshTime: int = 10,  # in milliseconds
-		finishFunc: Callable | None = None,
+		finishFunc: Callable[[], None] | None = None,
 		finishOnClick: bool = True,
 		createWindow: bool = True,
 	) -> None:
@@ -154,7 +153,7 @@ class FloatingMsg(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context) -> None:
+	def drawWithContext(self, cr: ImageContext) -> None:
 		if self.layout is None:
 			return
 		cr.rectangle(0, 0, screenWidth, self.height)
@@ -228,7 +227,7 @@ class MyLabel(gtk.DrawingArea):
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context) -> None:
+	def drawWithContext(self, cr: ImageContext) -> None:
 		if self.layout is None:
 			return
 		cr.rectangle(0, 0, self.width, self.height)
@@ -259,7 +258,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		bgColor: ColorType = yellow,
 		textColor: ColorType = black,
 		refreshTime: int = 10,  # in milliseconds
-		finishFunc: Callable | None = None,
+		finishFunc: Callable[[], None] | None = None,
 		finishOnClick: bool = True,
 	) -> None:
 		gtk.Window.__init__(self, type=gtk.WindowType.POPUP)

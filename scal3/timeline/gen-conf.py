@@ -41,7 +41,7 @@ for p in params.confParamsData:
 
 output.write("\n\n")
 
-output.write("confParams: dict[str, Property] = " + genParamDict(confParams))
+output.write("confParams: dict[str, Property[Any]] = " + genParamDict(confParams))
 
 output.write("\n")
 

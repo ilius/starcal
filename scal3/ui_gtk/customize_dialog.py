@@ -15,10 +15,11 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.layout import WinLayoutObj
 
 log = logger.get()
 
@@ -40,55 +41,74 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
-
 	from scal3.ui_gtk.layout import WinLayoutBox
 
 __all__ = ["CustomizeWindow"]
 
 
+class CustomizeToolbarOwner(Protocol):
+	def onTopClick(self, w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None: ...
+	def onUpClick(self, w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None: ...
+	def onDownClick(
+		self, w: gtk.Widget, treev: gtk.TreeView, pagePath: str
+	) -> None: ...
+	def onBottomClick(
+		self, w: gtk.Widget, treev: gtk.TreeView, pagePath: str
+	) -> None: ...
+
+
 class CustomizeWindowItemsToolbar(VerticalStaticToolBox):
 	def __init__(
 		self,
-		parent: gtk.Widget,
-		onClickArgs: Sequence[Any],
+		owner: CustomizeToolbarOwner,
+		treeview: gtk.TreeView,
+		pagePath: str,
 	) -> None:
-		VerticalStaticToolBox.__init__(self, parent)
+		VerticalStaticToolBox.__init__(self, owner)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
+
+		def onTopClick(w: gtk.Widget) -> None:
+			owner.onTopClick(w, treeview, pagePath)
+
+		def onUpClick(w: gtk.Widget) -> None:
+			owner.onUpClick(w, treeview, pagePath)
+
+		def onDownClick(w: gtk.Widget) -> None:
+			owner.onDownClick(w, treeview, pagePath)
+
+		def onBottomClick(w: gtk.Widget) -> None:
+			owner.onBottomClick(w, treeview, pagePath)
+
 		self.extend(
 			[
 				ToolBoxItem(
 					name="goto-top",
 					imageName="go-top.svg",
-					onClick="onTopClick",
+					onClick=onTopClick,
 					desc=_("Move to top"),
 					continuousClick=False,
-					args=onClickArgs,
 				),
 				ToolBoxItem(
 					name="go-up",
 					imageName="go-up.svg",
-					onClick="onUpClick",
+					onClick=onUpClick,
 					desc=_("Move up"),
 					continuousClick=False,
-					args=onClickArgs,
 				),
 				ToolBoxItem(
 					name="go-down",
 					imageName="go-down.svg",
-					onClick="onDownClick",
+					onClick=onDownClick,
 					desc=_("Move down"),
 					continuousClick=False,
-					args=onClickArgs,
 				),
 				ToolBoxItem(
 					name="goto-bottom",
 					imageName="go-bottom.svg",
-					onClick="onBottomClick",
+					onClick=onBottomClick,
 					desc=_("Move to bottom"),
 					continuousClick=False,
-					args=onClickArgs,
 				),
 			],
 		)
@@ -112,7 +132,7 @@ class CustomizeWindow(Dialog):
 		# --
 		self.set_title(_("Customize"))
 		# self.set_has_separator(False)-- not in gtk3
-		self.connect("delete-event", self.onSaveClick)
+		self.connect("delete-event", self.onDeleteEvent)
 		dialog_add_button(
 			self,
 			res=gtk.ResponseType.OK,
@@ -230,8 +250,9 @@ class CustomizeWindow(Dialog):
 		pack(hbox, vbox_l, 1, 1)
 		# ---
 		toolbar = CustomizeWindowItemsToolbar(
-			parent=self,
-			onClickArgs=(treev, pagePath),
+			owner=self,
+			treeview=treev,
+			pagePath=pagePath,
 		)
 		# ---
 		pack(hbox, toolbar)
@@ -254,7 +275,7 @@ class CustomizeWindow(Dialog):
 	def vboxSizeRequest(self, _w: gtk.Widget | None = None, _req: Any = None) -> None:
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+	def onTopClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
 		assert isinstance(model, gtk.ListStore)
@@ -275,7 +296,7 @@ class CustomizeWindow(Dialog):
 		model.remove(model.get_iter(str(i + 1)))
 		treev.set_cursor(0)  # type: ignore[arg-type]
 
-	def onUpClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+	def onUpClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
 		assert isinstance(model, gtk.ListStore)
@@ -295,7 +316,7 @@ class CustomizeWindow(Dialog):
 		model.swap(model.get_iter(str(i - 1)), model.get_iter(str(i)))
 		treev.set_cursor(i - 1)  # type: ignore[arg-type]
 
-	def onDownClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+	def onDownClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
 		assert isinstance(model, gtk.ListStore)
@@ -315,7 +336,7 @@ class CustomizeWindow(Dialog):
 		model.swap(model.get_iter(str(i)), model.get_iter(str(i + 1)))
 		treev.set_cursor(i + 1)  # type: ignore[arg-type]
 
-	def onBottomClick(self, _b: gtk.Button, treev: gtk.TreeView, pagePath: str) -> None:
+	def onBottomClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
 		assert isinstance(model, gtk.ListStore)
@@ -487,7 +508,7 @@ class CustomizeWindow(Dialog):
 		item = parentItem.items[itemIndex]
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
-		if parentItem.isWrapper:
+		if isinstance(parentItem, WinLayoutObj):  # if parentItem.isWrapper
 			parentItem = parentItem.getWidget()
 
 		# if none of the items in list have any settings, we can toggle-enable instead
@@ -578,7 +599,11 @@ class CustomizeWindow(Dialog):
 		ui.saveConfCustomize()
 		# data = item.getDict()-- remove? FIXME
 
-	def onSaveClick(self, _b: gtk.Button | None = None, _ge: Any = None) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.save()
 		self.hide()
 		return True
+
+	def onSaveClick(self, _w: gtk.Widget) -> None:
+		self.save()
+		self.hide()

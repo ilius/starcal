@@ -33,7 +33,7 @@ from os.path import (
 	join,
 	splitext,
 )
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Protocol
 
 import mytz
 from scal3.cal_types import calTypes
@@ -50,7 +50,6 @@ from scal3.utils import toStr
 
 if TYPE_CHECKING:
 	import subprocess
-	from collections.abc import Callable
 	from typing import Any
 
 __all__ = [
@@ -99,7 +98,7 @@ confPath = join(confDir, "locale.json")
 lang: Final[Property[str]] = Property("")
 enableNumLocale: Final[Property[bool]] = Property(True)
 
-confParams: Final[dict[str, Property]] = {
+confParams: Final[dict[str, Property[Any]]] = {
 	"lang": lang,
 	"enableNumLocale": enableNumLocale,
 }
@@ -356,13 +355,28 @@ def prepareLanguage() -> str:
 
 def fallbackTranslate(
 	s: str | float,
-	*_a,  # noqa: ANN002
-	**_ka,  # noqa: ANN003
+	*a: Any,  # noqa: ARG001
+	nums: bool = False,  # noqa: ARG001
+	ctx: str | None = None,  # noqa: ARG001
+	default: str | None = None,  # noqa: ARG001
+	**ka: Any,  # noqa: ARG001
 ) -> str:
 	return str(s)
 
 
-def loadTranslator() -> Callable:
+class TranslateFunc(Protocol):
+	def __call__(
+		self,
+		s: str | float,
+		*a: Any,
+		nums: bool = False,
+		ctx: str | None = None,
+		default: str | None = None,
+		**ka: Any,
+	) -> str: ...
+
+
+def loadTranslator() -> TranslateFunc:
 	global tr
 	transObj = None
 	langObj = langDict[langActive]
@@ -378,11 +392,11 @@ def loadTranslator() -> Callable:
 
 	def tr(
 		s: str | float,
-		*a,  # noqa: ANN002
+		*a: Any,
 		nums: bool = False,
 		ctx: str | None = None,
 		default: str | None = None,
-		**ka,  # noqa: ANN003
+		**ka: Any,
 	) -> str:
 		orig = s
 		if isinstance(s, int):
@@ -407,7 +421,7 @@ def loadTranslator() -> Callable:
 				s = textNumEncode(s)
 		return s
 
-	return tr
+	return tr  # type: ignore[return-value]
 
 
 def rtlSgn() -> int:
@@ -634,7 +648,7 @@ def addLRM(text: str) -> str:
 def popenDefaultLang(
 	*args,  # noqa: ANN002
 	**kwargs,  # noqa: ANN003
-) -> subprocess.Popen:
+) -> subprocess.Popen[str]:
 	from subprocess import Popen
 
 	os.environ["LANG"] = sysLangDefault
@@ -643,7 +657,7 @@ def popenDefaultLang(
 	return p
 
 
-def getNeedRestartParams() -> list[Property]:
+def getNeedRestartParams() -> list[Property[Any]]:
 	return [
 		lang,
 		enableNumLocale,

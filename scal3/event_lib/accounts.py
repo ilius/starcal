@@ -153,7 +153,7 @@ class Account(HistoryEventObjBinaryModel):
 	def fetchGroups(self) -> None:
 		raise NotImplementedError
 
-	def fetchAllEventsInGroup(self, _remoteGroupId: Any) -> list[dict]:
+	def fetchAllEventsInGroup(self, _remoteGroupId: Any) -> list[dict[str, Any]]:
 		raise NotImplementedError
 
 	def sync(
@@ -163,7 +163,7 @@ class Account(HistoryEventObjBinaryModel):
 	) -> None:
 		raise NotImplementedError
 
-	def getDict(self) -> dict:
+	def getDict(self) -> dict[str, Any]:
 		data = HistoryEventObjBinaryModel.getDict(self)
 		data["type"] = self.name
 		return data

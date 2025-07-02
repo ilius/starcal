@@ -155,7 +155,7 @@ class TimeLineTree:
 	def clear(self) -> None:
 		self.right = Node(self.base, 1, self.offset, True)
 		self.left = Node(self.base, 1, self.offset, False)
-		self.byEvent: dict[int, list[tuple[Node, tuple]]] = {}
+		self.byEvent: dict[int, list[tuple[Node, tuple[int, int, int]]]] = {}
 
 	def search(self, t0: int, t1: int) -> Iterable[tuple[int, int, int, int]]:
 		if self.offset < t1:

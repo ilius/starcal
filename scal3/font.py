@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 __all__ = ["Font", "FontTuple"]
 
@@ -16,7 +17,7 @@ class Font:
 	size: float = 0
 
 	@classmethod
-	def fromList(cls, lst: list | tuple | None) -> Font | None:
+	def fromList(cls, lst: list[Any] | FontTuple | None) -> Font | None:
 		if lst is None:
 			return None
 		return Font(*lst)

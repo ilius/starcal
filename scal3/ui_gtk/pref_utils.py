@@ -74,7 +74,7 @@ __all__ = [
 
 
 class PrefItem:
-	prop: Property
+	prop: Property[Any]
 	# def __new__(cls, *args, **kwargs):
 	# print("PrefItem:", args, kwargs)
 	# obj = object.__new__(cls)
@@ -117,7 +117,7 @@ class ComboTextPrefItem(PrefItem):
 		label: str = "",
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		self.prop = prop
 		combo = gtk.ComboBoxText()
@@ -165,7 +165,7 @@ class FontFamilyPrefItem(PrefItem):
 		prop: Property[str] | Property[str | None],
 		hasAuto: bool = False,
 		label: str = "",
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		self.prop = prop
 		self.hasAuto = hasAuto
@@ -275,7 +275,7 @@ class ComboEntryTextPrefItem(PrefItem):
 		assert isinstance(child, gtk.Entry)
 		child.set_text(value)
 
-	def addDescriptionColumn(self, descByValue: dict) -> None:
+	def addDescriptionColumn(self, descByValue: dict[str, str]) -> None:
 		w = self._widget
 		cell = gtk.CellRendererText()
 		w.pack_start(cell, expand=True)
@@ -377,7 +377,7 @@ class CheckPrefItem(PrefItem):
 		label: str = "",
 		tooltip: str = "",
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		self.prop = prop
 		checkb = gtk.CheckButton(label=label)
@@ -442,7 +442,7 @@ class ColorPrefItem(PrefItem):
 		prop: Property[ColorType] | Property[ColorType | None],
 		useAlpha: bool = False,
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton
 
@@ -496,7 +496,7 @@ class CheckColorPrefItem(PrefItem):
 		colorItem: ColorPrefItem,
 		checkSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		self._checkItem = checkItem
 		self._colorItem = colorItem
@@ -553,7 +553,7 @@ class CheckFontPrefItem(PrefItem):
 		vertical: bool = False,
 		spacing: int = 3,
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		self._checkItem = checkItem
 		self._fontItem = fontItem
@@ -610,7 +610,7 @@ class IntSpinPrefItem(PrefItem):
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		unitLabel: str = "",
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		minim, maxim = bounds
 		self.prop = prop
@@ -666,7 +666,7 @@ class FloatSpinPrefItem(PrefItem):
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		unitLabel: str = "",
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		minim, maxim = bounds
 		self.prop = prop
@@ -717,7 +717,7 @@ class TextPrefItem(PrefItem):
 		prop: Property[str],
 		label: str = "",
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import TextFrame
 
@@ -837,7 +837,7 @@ class FileChooserPrefItem(PrefItem):
 	def set(self, value: str) -> None:
 		self._fcb.set_filename(value)
 
-	def onRevertClick(self, _b: gtk.Button) -> None:
+	def onRevertClick(self, _w: gtk.Widget) -> None:
 		defaultValue = self.prop.default()
 		self.prop.v = defaultValue
 		self.set(defaultValue)
@@ -868,7 +868,7 @@ class IconChooserPrefItem(PrefItem):
 		prop: Property[str],
 		label: str = "",
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
@@ -1009,7 +1009,7 @@ class DirectionPrefItem(PrefItem):
 	def __init__(
 		self,
 		prop: Property[str],
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
 
@@ -1049,7 +1049,7 @@ class JustificationPrefItem(PrefItem):
 		self,
 		prop: Property[str],
 		label: str = "",
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
 

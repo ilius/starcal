@@ -161,7 +161,9 @@ class MyColorButton(gtk.ColorButton):
 
 
 class TextFrame(gtk.Frame):
-	def __init__(self, onTextChange: Callable | None = None) -> None:
+	def __init__(
+		self, onTextChange: Callable[[gtk.Widget], None] | None = None
+	) -> None:
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
 		# ----

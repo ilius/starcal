@@ -126,7 +126,7 @@ if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
-confParams: Final[dict[str, Property]] = {
+confParams: Final[dict[str, Property[Any]]] = {
 	"hijriUseDB": hijriUseDB,
 }
 

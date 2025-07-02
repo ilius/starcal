@@ -42,6 +42,7 @@ from scal3.utils import toStr
 if TYPE_CHECKING:
 	from scal3.event_lib.occur_data import DayOccurData
 	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.font import Font
 	from scal3.property import Property
 	from scal3.ui_gtk.pref_utils import PrefItem
 
@@ -56,12 +57,12 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 
 	def __init__(
 		self,
-		eventSepParam: Property | None = None,
-		justificationParam: Property | None = None,
-		fontEnableParam: Property | None = None,
-		fontParam: Property | None = None,
-		timeFontEnableParam: Property | None = None,
-		timeFontParam: Property | None = None,
+		eventSepParam: Property[str] | None = None,
+		justificationParam: Property[str] | None = None,
+		fontEnableParam: Property[bool] | None = None,
+		fontParam: Property[Font | None] | None = None,
+		timeFontEnableParam: Property[bool] | None = None,
+		timeFontParam: Property[Font | None] | None = None,
 		styleClass: str = "",
 		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
@@ -108,7 +109,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		font = ui.getFont(bold=True)  # bold by default
 		if self.timeFontParam:
 			assert self.timeFontEnableParam
-			if self.timeFontEnableParam.v:
+			if self.timeFontEnableParam.v and self.timeFontParam.v:
 				font = self.timeFontParam.v
 		self.timeTag.set_property("font", gfontEncode(font))
 
@@ -401,16 +402,15 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 
 		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.summary)
 		winTitle = _("Edit") + ": " + event.summary
+
+		def editEvent(w: gtk.Widget) -> None:
+			self.onEditEventClick(w, winTitle, event, group.mustId)
+
 		menu.add(
 			ImageMenuItem(
 				label,
 				imageName="document-edit.svg",
-				func=self.onEditEventClick,
-				args=(
-					winTitle,
-					event,
-					group.id,
-				),
+				func=editEvent,
 			),
 		)
 		# ---
@@ -473,15 +473,15 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 			# ---
 			menu.add(gtk.SeparatorMenuItem())
 		# ---
+
+		def moveToTrash(w: gtk.Widget) -> None:
+			self.moveEventToTrash(w, event, group.mustId)
+
 		menu.add(
 			ImageMenuItem(
 				_("Move to {title}").format(title=ev.trash.title),
 				imageName=ev.trash.getIconRel(),
-				func=self.moveEventToTrash,
-				args=(
-					event,
-					group.id,
-				),
+				func=moveToTrash,
 			),
 		)
 
@@ -493,12 +493,15 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		event = ui.getEvent(groupId, eventId)
 		group = ev.groups[groupId]
 		# ----
+
+		def copyEventText(w: gtk.Widget) -> None:
+			self.copyEventText(w, event)
+
 		menu.add(
 			ImageMenuItem(
 				_("Copy Event Text"),
 				imageName="edit-copy.svg",
-				func=self.copyEventText,
-				args=(event,),
+				func=copyEventText,
 			),
 		)
 		# ----

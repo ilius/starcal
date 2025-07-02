@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Protocol
+from typing import Any, Protocol
 
 __all__ = ["CalTypeModule", "OptionTuple", "TranslateFunc"]
 
@@ -14,7 +14,7 @@ class TranslateFunc(Protocol):
 
 type OptionTuple = (
 	tuple[str, type[bool], str]
-	| tuple[str, type[list], str, Sequence[str]]
+	| tuple[str, type[list[Any]], str, Sequence[str]]
 	| tuple[str, str, str, str]
 )
 

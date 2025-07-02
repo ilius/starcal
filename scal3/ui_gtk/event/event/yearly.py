@@ -80,7 +80,7 @@ class WidgetClass(common.WidgetClass):
 		month = self._event.getMonth()
 		assert month is not None
 		self.monthCombo.setValue(month)
-		self.daySpin.set_value(self._event.getDay())
+		self.daySpin.setValue(self._event.getDay())
 		startRule = StartEventRule.getFrom(self._event)
 		if startRule is not None:
 			self.startYearCheck.set_active(True)

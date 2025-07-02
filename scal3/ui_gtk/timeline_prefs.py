@@ -929,10 +929,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.hide()
 		return True
 
-	def onSaveClick(self, _w: gtk.Widget | None = None) -> bool:
+	def onSaveClick(self, _w: gtk.Widget) -> None:
 		self.hide()
 		timeline.saveConf()
-		return True
 
 	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if gdk.keyval_name(gevent.keyval) == "Escape":

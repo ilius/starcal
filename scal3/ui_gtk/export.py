@@ -86,7 +86,7 @@ class ExportDialog(MyDialog):
 			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			onClick=self.onDelete,
+			onClick=self.onCancelClick,
 		)
 		dialog_add_button(
 			self,
@@ -96,7 +96,7 @@ class ExportDialog(MyDialog):
 			onClick=self.save,
 		)
 		# --
-		self.connect("delete-event", self.onDelete)
+		self.connect("delete-event", self.onDeleteEvent)
 		self.fcw.set_current_folder(homeDir)
 
 	def comboChanged(
@@ -118,7 +118,7 @@ class ExportDialog(MyDialog):
 			self.hbox2.show()
 		# select_region(0, -4) # FIXME
 
-	def onDelete(
+	def onDeleteEvent(
 		self,
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
@@ -126,6 +126,13 @@ class ExportDialog(MyDialog):
 		# hide(close) File Chooser Dialog
 		self.hide()
 		return True
+
+	def onCancelClick(
+		self,
+		_widget: gtk.Widget,
+	) -> None:
+		# hide(close) File Chooser Dialog
+		self.hide()
 
 	def _save(self, path: str) -> None:
 		comboItem = self.combo.get_active()
@@ -193,7 +200,7 @@ class ExportDialog(MyDialog):
 		w = aloc.width
 		h = n * aloc.height + (n - 1) * hspace
 		surface = cairo.SVGSurface(f"{path}.svg", w, h)
-		cr = cairo.Context(surface)
+		cr = ImageContext(surface)
 		year = ui.cells.current.year
 		month = ui.cells.current.month
 		day = self.mcal.day
@@ -244,7 +251,7 @@ class ExportToIcsDialog(MyDialog):
 			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			onClick=self.onDelete,
+			onClick=self.onCancelClick,
 		)
 		dialog_add_button(
 			self,
@@ -254,7 +261,7 @@ class ExportToIcsDialog(MyDialog):
 			onClick=self.save,
 		)
 		# --
-		self.connect("delete-event", self.onDelete)
+		self.connect("delete-event", self.onDeleteEvent)
 		self.fcw.connect("file-activated", self.save)  # not working FIXME
 		# --
 		self.fcw.set_current_folder(homeDir)
@@ -262,14 +269,13 @@ class ExportToIcsDialog(MyDialog):
 			defaultFileName += ".ics"
 		self.fcw.set_current_name(defaultFileName)
 
-	def onDelete(
-		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
-	) -> bool:
-		# hide(close) File Chooser Dialog
+	def onDeleteEvent(self, _widget: gtk.Button, _e: gdk.Event) -> bool:
 		self.destroy()
 		return True
+
+	def onCancelClick(self, _widget: gtk.Widget) -> None:
+		# hide(close) File Chooser Dialog
+		self.destroy()
 
 	def _save(self, path: str, startJd: int, endJd: int) -> None:
 		self.saveIcsFunc(path, startJd, endJd)
