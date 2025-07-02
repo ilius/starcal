@@ -22,7 +22,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.ui_gtk import gdk, gtk
-from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
 	from scal3.property import Property
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 __all__ = ["CustomizableCalObj"]
 
 
-class CustomizableCalObj(ud.BaseCalObj):
+class CustomizableCalObj(CalObjWidget):
 	customizable = True
 	hasOptions = True
 	itemListCustomizable = True
@@ -44,22 +44,29 @@ class CustomizableCalObj(ud.BaseCalObj):
 	itemListSeparatePage = False
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
-	expand = False
 	params = ()
-	myKeys: set[str] = set()
-	objName: str = ""
+	# enablePrefItem = None
 
 	def initVars(self) -> None:
 		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
 			log.error(f"Add vertical to {self.__class__}")
-		ud.BaseCalObj.initVars(self)
+		super().initVars()
 		# self.itemWidgets = {}  # for lazy construction of widgets
 		self.optionsWidget: gtk.Widget | None = None
 		try:
-			self.connect("key-press-event", self.onKeyPress)
+			self.w.connect("key-press-event", self.onKeyPress)
 		except TypeError as e:
 			if "unknown signal name" not in str(e):
 				log.exception("")
+
+	@property
+	def enable2(self) -> bool:
+		if self.enableParam is not None:
+			return self.enableParam.v
+		return self.enable
+
+	def getLoadedObj(self) -> CustomizableCalObj:
+		return self
 
 	def getItemsData(self) -> list[tuple[str, bool]]:
 		return [(item.objName, item.enable) for item in self.items]
@@ -79,8 +86,17 @@ class CustomizableCalObj(ud.BaseCalObj):
 				return True
 		return False
 
+	def onEnableCheckClick(self) -> None:
+		assert self.enableParam is not None
+		self.enable = self.enableParam.v
+		self.onConfigChange()
+		self.showHide()
+
 	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
 		return None
 
 	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
 		return []
+
+	def insertItemWidget(self, _i: int) -> None:
+		raise NotImplementedError

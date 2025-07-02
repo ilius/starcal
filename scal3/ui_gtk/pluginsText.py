@@ -14,7 +14,6 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import (
 	buffer_get_text,
 	openWindow,
@@ -31,15 +30,15 @@ if TYPE_CHECKING:
 __all__ = ["PluginsTextBox"]
 
 
-@registerSignals
-class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
+class PluginsTextView(CustomizableCalObj):
 	itemListCustomizable = False
 
-	def __init__(self, *args, **kwargs) -> None:
-		gtk.TextView.__init__(self, *args, **kwargs)
-		self.set_editable(False)
-		self.set_cursor_visible(False)
-		self.connect("button-press-event", self.onButtonPress)
+	def __init__(self) -> None:
+		super().__init__()
+		self.w: gtk.TextView = gtk.TextView()
+		self.w.set_editable(False)
+		self.w.set_cursor_visible(False)
+		self.w.connect("button-press-event", self.onButtonPress)
 		self.occurOffsets: list[tuple[int, tuple[PluginType, str]]] = []
 		self.initVars()
 
@@ -50,10 +49,10 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 	# 	return False
 
 	def get_text(self) -> str:
-		return buffer_get_text(self.get_buffer())
+		return buffer_get_text(self.w.get_buffer())
 
 	def has_selection(self) -> bool:
-		buf = self.get_buffer()
+		buf = self.w.get_buffer()
 		try:
 			buf.get_selection_bounds()
 		except ValueError:
@@ -62,7 +61,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 			return True
 
 	def copy(self, _item: gtk.Widget) -> None:
-		buf = self.get_buffer()
+		buf = self.w.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
 			return
@@ -75,7 +74,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 
 	def onDateChange(self, *a, **kw) -> None:
 		super().onDateChange(*a, **kw)
-		textbuff = self.get_buffer()
+		textbuff = self.w.get_buffer()
 		textbuff.set_text("")
 		occurOffsets = []
 		eventSep = "\n"
@@ -90,7 +89,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		self.occurOffsets = occurOffsets
 
 	def findPluginByY(self, y: int) -> tuple[PluginType, str] | None:
-		lineIter, _lineTop = self.get_line_at_y(y)
+		lineIter, _lineTop = self.w.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
 		for lastEndOffset, occurData in reversed(self.occurOffsets):
@@ -166,7 +165,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 			authors=plug.authors,
 			comments=plug.about,
 		)
-		about.set_transient_for(self.get_toplevel())  # type: ignore[arg-type]
+		about.set_transient_for(self.w.get_toplevel())  # type: ignore[arg-type]
 		about.connect("delete-event", lambda w, _e: w.destroy())
 		about.connect("response", lambda w, _e: w.destroy())
 		# about.set_resizable(True)
@@ -174,7 +173,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		openWindow(about)  # FIXME
 
 	def addText(self, text: str) -> None:
-		textbuff = self.get_buffer()
+		textbuff = self.w.get_buffer()
 		endIter = textbuff.get_bounds()[1]
 
 		text = text.replace("&", "&amp;")
@@ -193,7 +192,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 			return False
 		# ----
 		iter_ = None
-		buf_x, buf_y = self.window_to_buffer_coords(
+		buf_x, buf_y = self.w.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
 			int(gevent.x),
 			int(gevent.y),
@@ -202,7 +201,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		word = ""
 		if buf_x is not None and buf_y is not None:
 			# overText, iter_, trailing = ...
-			iter_ = self.get_iter_at_position(buf_x, buf_y)[1]
+			iter_ = self.w.get_iter_at_position(buf_x, buf_y)[1]
 			pos = iter_.get_offset()
 			word = findWordByPos(text, pos)[0]
 		# ----
@@ -258,8 +257,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		return True
 
 
-@registerSignals
-class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
+class PluginsTextBox(CustomizableCalObj):
 	objName = "pluginsText"
 	desc = _("Plugins Text")
 	itemListCustomizable = False
@@ -275,21 +273,22 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		fontParam: Property[Font | None] | None = None,
 		styleClass: str = "",
 	) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
+		super().__init__()
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
 		# ----
 		self.styleClass = styleClass
 		if styleClass:
-			self.get_style_context().add_class(styleClass)
+			self.w.get_style_context().add_class(styleClass)
 		# ----
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.connect("button-press-event", self.onButtonPress)
 		# ----
 		self.hideIfEmpty = hideIfEmpty
 		self.tabToNewline = tabToNewline
 		# ----
 		self.textview = PluginsTextView()
-		self.textview.set_wrap_mode(gtk.WrapMode.WORD)
-		self.textbuff = self.textview.get_buffer()
+		self.textview.w.set_wrap_mode(gtk.WrapMode.WORD)
+		self.textbuff = self.textview.w.get_buffer()
 		# ---
 		self.insideExpanderParam = insideExpanderParam
 		self.justificationParam = justificationParam
@@ -304,7 +303,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		if justificationParam:
 			self.updateJustification()
 		else:
-			self.textview.set_justification(gtk.Justification.CENTER)
+			self.textview.w.set_justification(gtk.Justification.CENTER)
 		# ---
 		self.appendItem(self.textview)
 		# ---
@@ -314,13 +313,13 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 			self.expanderEnable = insideExpanderParam.v
 			if self.expanderEnable:
 				self.textview.show()
-				self.expander.add(self.textview)
-				pack(self, self.expander)
+				self.expander.add(self.textview.w)
+				pack(self.w, self.expander)
 				self.expander.set_expanded(conf.pluginsTextIsExpanded.v)
 			else:
-				pack(self, self.textview, 1, 1)
+				pack(self.w, self.textview.w, 1, 1)
 		else:
-			pack(self, self.textview, 1, 1)
+			pack(self.w, self.textview.w, 1, 1)
 
 	def getCSS(self) -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
@@ -338,7 +337,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		if not self.justificationParam:
 			return
 		value = self.justificationParam.v
-		self.textview.set_justification(ud.justificationByName[value])
+		self.textview.w.set_justification(ud.justificationByName[value])
 
 	@staticmethod
 	def onButtonPress(_widget: gtk.Widget, _ge: gdk.Event) -> bool:
@@ -397,14 +396,14 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		self.expanderEnable = enable
 		if enable:
 			if not prevEnable:
-				self.remove(self.textview)
-				self.expander.add(self.textview)
-				pack(self, self.expander)
+				self.w.remove(self.textview.w)
+				self.expander.add(self.textview.w)
+				pack(self.w, self.expander)
 				self.expander.show_all()
 		elif prevEnable:
-			self.expander.remove(self.textview)
-			self.remove(self.expander)
-			pack(self, self.textview)
+			self.expander.remove(self.textview.w)
+			self.w.remove(self.expander)
+			pack(self.w, self.textview.w)
 			self.textview.show()
 		self.onDateChange()
 
@@ -414,7 +413,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		ui.saveLiveConf()
 
 	def getWidget(self) -> gtk.Widget:
-		return self.expander if self.expanderEnable else self.textview
+		return self.expander if self.expanderEnable else self.textview.w
 
 	def setText(self, text: str) -> None:
 		if self.tabToNewline:

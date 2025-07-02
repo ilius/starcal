@@ -31,7 +31,6 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.font_utils import gfontEncode
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import (
 	buffer_get_text,
 	pixbufFromFile,
@@ -49,8 +48,7 @@ if TYPE_CHECKING:
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
 
-@registerSignals
-class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
+class DayOccurrenceView(CustomizableCalObj):
 	objName = "eventDayView"
 	desc = _("Events of Day")
 	itemListCustomizable = False
@@ -66,18 +64,19 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		styleClass: str = "",
 		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
-		gtk.TextView.__init__(self)
-		self.set_editable(False)
-		self.set_cursor_visible(False)
-		self.set_wrap_mode(wrapMode)
+		super().__init__()
+		self.w: gtk.TextView = gtk.TextView()
+		self.w.set_editable(False)
+		self.w.set_cursor_visible(False)
+		self.w.set_wrap_mode(wrapMode)
 		# ---
 		self.styleClass = styleClass
 		if styleClass:
-			self.get_style_context().add_class(styleClass)
+			self.w.get_style_context().add_class(styleClass)
 		# ---
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.connect("button-press-event", self.onButtonPress)
 		# ---
-		self.textbuff = self.get_buffer()
+		self.textbuff = self.w.get_buffer()
 		# Gtk.ScrolledWindow.add_with_viewport is Deprecated since version 3.8:
 		# Gtk.Container.add() will automatically add a Gtk.Viewport if the
 		# child doesn't implement Gtk.Scrollable.
@@ -122,7 +121,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		if not self.justificationParam:
 			return
 		value = self.justificationParam.v
-		self.set_justification(ud.justificationByName[value])
+		self.w.set_justification(ud.justificationByName[value])
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
@@ -194,7 +193,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		self.onDateChange(toParent=False)
 
 	def has_selection(self) -> bool:
-		buf = self.get_buffer()
+		buf = self.w.get_buffer()
 		try:
 			buf.get_selection_bounds()
 		except ValueError:
@@ -203,10 +202,10 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 			return True
 
 	def get_text(self) -> str:
-		return buffer_get_text(self.get_buffer())
+		return buffer_get_text(self.w.get_buffer())
 
 	def copy(self, _w: gtk.Widget) -> None:
-		buf = self.get_buffer()
+		buf = self.w.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
 			return
@@ -217,7 +216,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		setClipboard(toStr(self.get_text()))
 
 	def findEventByY(self, y: int) -> DayOccurData | None:
-		lineIter, _lineTop = self.get_line_at_y(y)
+		lineIter, _lineTop = self.w.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.textbuff.get_iter_at_line(lineNum)
 		for lastEndOffset, occurData in reversed(self.occurOffsets):
@@ -522,7 +521,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		eventNew = EventEditorDialog(
 			event,
 			title=winTitle,
-			transient_for=self.get_toplevel(),
+			transient_for=self.w.get_toplevel(),
 		).run()
 		if eventNew is None:
 			return
@@ -546,23 +545,23 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		pass
 
 
-@registerSignals
-class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  # type: ignore[misc]
+class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 	itemListCustomizable = False
 	optionsPageSpacing = 20
 	objName = DayOccurrenceView.objName
 	desc = DayOccurrenceView.desc
 
 	def __init__(self, **kwargs) -> None:
-		gtk.ScrolledWindow.__init__(self)
-		self.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
+		super().__init__()
+		self.w: gtk.ScrolledWindow = gtk.ScrolledWindow()
+		self.w.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
 		# ---
 		self.initVars()
 		# ---
 		item = DayOccurrenceView(**kwargs)
 		item.show()
 		self._item = item
-		self.add(item)
+		self.w.add(item.w)
 		self.appendItem(item)
 
 	def onDateChange(self, *a, **kw) -> None:
@@ -570,7 +569,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  #
 		self.showHide()
 
 	def showHide(self) -> None:
-		self.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
+		self.w.set_visible(self.enable and bool(ui.cells.current.getEventsData()))
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		height = conf.eventViewMaxHeight.v
@@ -600,12 +599,12 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  #
 		return optionsWidget
 
 	def onMaximumHeightChange(self) -> None:
-		self.queue_resize()
+		self.w.queue_resize()
 		assert ui.mainWin is not None
 		ui.mainWin.autoResize()
 
 
-# @registerSignals
+#
 # class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 # 	# def updateData(self):
 # 	# 	return self.updateDataByGroups(ev.groups)
