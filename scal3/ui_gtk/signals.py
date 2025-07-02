@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from scal3 import logger
 
@@ -8,16 +8,37 @@ log = logger.get()
 
 from gi.repository import GObject
 
+if TYPE_CHECKING:
+	from collections.abc import Callable
+
 __all__ = [
+	"EmptySignalHandler",
+	"SignalHandlerBase",
+	"SignalHandlerType",
 	"registerSignals",
 ]
 
 
-class ObjectType(Protocol):
+class SignalHandlerType(Protocol):
 	signals: list[tuple[str, list[Any]]]
 
+	def emit(self, signal_name: str, *args: Any) -> Any: ...
 
-def registerSignals[T: ObjectType](cls: type[T]) -> type[T]:
+	def connect(
+		self,
+		signal_name: str,
+		handler: Callable[..., Any],
+		*args: Any,
+	) -> int: ...
+
+
+class SignalHandlerBase(GObject.Object):
+	pass
+
+
+def registerSignals[T: type[SignalHandlerType]](cls: T) -> T:
+	GObject.type_register(cls)
+	# log.error(f"\nregisterSignals: {cls.__module__}.{cls.__name__}")
 	for name, args in cls.signals:
 		try:
 			GObject.signal_new(
@@ -29,7 +50,11 @@ def registerSignals[T: ObjectType](cls: type[T]) -> type[T]:
 			)
 		except Exception:  # noqa: PERF203
 			log.error(
-				f"Failed to create signal {name} "
-				f"for class {cls.__name__} in {cls.__module__}",
+				f"Failed to create signal {name} for {cls.__module__}.{cls.__name__}",
 			)
 	return cls
+
+
+@registerSignals
+class EmptySignalHandler(SignalHandlerBase):
+	signals: list[tuple[str, list[Any]]] = []

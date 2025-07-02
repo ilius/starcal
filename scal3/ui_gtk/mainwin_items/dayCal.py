@@ -53,4 +53,4 @@ class CalObj(DayCal):
 		return 0, int(conf.winHeight.v // 3)
 
 	def getWindow(self) -> gtk.Window:
-		return self.win
+		return self.win.w

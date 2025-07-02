@@ -195,9 +195,6 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 		for widget in (self, self.entry, self.down_button, self.up_button):
 			widget.connect("key-press-event", self.onKeyPress)
 		self.entry.connect("scroll-event", self._scroll)
-		# self.connect("button-press-event", self.onButtonPress) # FIXME
-		# self.connect("button-release-event", self.onButtonRelease) # FIXME
-		# ----
 		# self.select_region(0, 0)
 
 	def _entry_changed(self, _w: gtk.Widget) -> None:

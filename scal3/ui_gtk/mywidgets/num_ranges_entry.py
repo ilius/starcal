@@ -18,8 +18,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from scal3 import logger
 
 log = logger.get()
@@ -42,8 +40,6 @@ __all__ = ["NumRangesEntry"]
 
 
 class NumRangesEntry(gtk.Entry):
-	signals: list[tuple[str, list[Any]]] = []
-
 	def __init__(self, minim: int, maxim: int, page_inc: int = 10) -> None:
 		self.minim = minim
 		self.maxim = maxim
