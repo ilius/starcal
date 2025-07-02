@@ -170,110 +170,6 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 	objName = "eventMan"
 	desc = _("Event Manager")
 
-	def onShow(self, _w: gtk.Widget) -> None:
-		self.move(*eventManPos.v)
-		self.onConfigChange()
-
-	@staticmethod
-	def onDeleteEvent(_dialog: Dialog, _ge: gdk.Event) -> bool:
-		# onResponse is called before onDeleteEvent
-		# just return True, no need to do anything else
-		# without this signal handler, the window will be distroyed
-		# and can not be opened again
-		return True
-
-	def onResponse(self, _dialog: Dialog, _response_id: int) -> None:
-		eventManPos.v = self.get_position()
-		saveConf()
-		# ---
-		self.hide()
-
-	# def findEventByPath(self, eid: int, path: "list[int]""):
-	# 	groupIndex, eventIndex = path
-
-	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
-		# ---
-		if not self.isLoaded:
-			if self.get_property("visible"):
-				self.waitingDo(self.reloadEvents)  # FIXME
-			return
-
-	def onEventUpdate(self, record: EventUpdateRecord) -> None:
-		action = record.action
-
-		if action == "r":  # reload group or trash
-			if isinstance(record.obj, lib.EventTrash):
-				if self.trashIter:
-					self.treeModel.remove(self.trashIter)
-				self.appendTrash()
-				return
-			assert record.obj.id is not None
-			self.reloadGroupEvents(record.obj.id)
-
-		elif action == "+g":  # new group with events inside it (imported)
-			assert isinstance(record.obj, EventGroup)
-			self.appendGroupTree(record.obj)
-
-		elif action == "-g":
-			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
-
-		elif action == "eg":  # edit group
-			group = record.obj
-			assert isinstance(group, EventGroup)
-			assert group.id is not None
-			groupIter = self.groupIterById[group.id]
-			for i, value in enumerate(self.getGroupRow(group)):
-				self.treeModel.set_value(groupIter, i, value)
-
-		elif action == "-":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert record.obj.id is not None
-			eventIter = self.eventsIter.get(record.obj.id)
-			if eventIter is None:
-				if record.obj.parent.id in self.loadedGroupIds:
-					log.error(
-						f"trying to delete non-existing event row, eid={record.obj.id}",
-					)
-				self.addEventRowToTrash(record.obj)
-				return
-			path = self.treeModel.get_path(eventIter)
-			parentPathObj = gtk.TreePath.new_from_indices(path.get_indices()[:1])
-			expanded = self.treev.row_expanded(parentPathObj)
-			# log.debug(f"{path=}, {parentPathObj=}, {expanded=}")
-			self.treeModel.remove(eventIter)
-			self.addEventRowToTrash(record.obj)
-			if expanded:
-				# FIXME: does not work!
-				self.treev.expand_row(parentPathObj, False)
-
-		elif action == "+":
-			group2 = record.obj.parent
-			assert isinstance(group2, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert group2.id is not None
-			if group2.id not in self.loadedGroupIds:
-				return
-			parentIter = self.groupIterById[group2.id]
-			# event is always added to the end of group (at least from
-			# outside Event Manager dialog), unless we add a bool global option
-			# to add all created events to the beginning of group (prepend)
-			self.appendEventRow(parentIter, record.obj)
-
-		elif action == "e":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
-			assert record.obj.id is not None
-			eventIter = self.eventsIter.get(record.obj.id)
-			if eventIter is None:
-				if record.obj.parent.id in self.loadedGroupIds:
-					log.error(
-						f"trying to edit non-existing event row, eid={record.obj.id}",
-					)
-			else:
-				self.updateEventRowByIter(record.obj, eventIter)
-
 	def __init__(self, **kwargs) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
@@ -638,6 +534,110 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		# -----
 		self.vbox.show_all()
 		self.multiSelectHBox.hide()
+
+	def onShow(self, _w: gtk.Widget) -> None:
+		self.move(*eventManPos.v)
+		self.onConfigChange()
+
+	@staticmethod
+	def onDeleteEvent(_dialog: Dialog, _ge: gdk.Event) -> bool:
+		# onResponse is called before onDeleteEvent
+		# just return True, no need to do anything else
+		# without this signal handler, the window will be distroyed
+		# and can not be opened again
+		return True
+
+	def onResponse(self, _dialog: Dialog, _response_id: int) -> None:
+		eventManPos.v = self.get_position()
+		saveConf()
+		# ---
+		self.hide()
+
+	# def findEventByPath(self, eid: int, path: "list[int]""):
+	# 	groupIndex, eventIndex = path
+
+	def onConfigChange(self, *a, **kw) -> None:
+		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		# ---
+		if not self.isLoaded:
+			if self.get_property("visible"):
+				self.waitingDo(self.reloadEvents)  # FIXME
+			return
+
+	def onEventUpdate(self, record: EventUpdateRecord) -> None:
+		action = record.action
+
+		if action == "r":  # reload group or trash
+			if isinstance(record.obj, lib.EventTrash):
+				if self.trashIter:
+					self.treeModel.remove(self.trashIter)
+				self.appendTrash()
+				return
+			assert record.obj.id is not None
+			self.reloadGroupEvents(record.obj.id)
+
+		elif action == "+g":  # new group with events inside it (imported)
+			assert isinstance(record.obj, EventGroup)
+			self.appendGroupTree(record.obj)
+
+		elif action == "-g":
+			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
+
+		elif action == "eg":  # edit group
+			group = record.obj
+			assert isinstance(group, EventGroup)
+			assert group.id is not None
+			groupIter = self.groupIterById[group.id]
+			for i, value in enumerate(self.getGroupRow(group)):
+				self.treeModel.set_value(groupIter, i, value)
+
+		elif action == "-":
+			assert isinstance(record.obj.parent, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert record.obj.id is not None
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						f"trying to delete non-existing event row, eid={record.obj.id}",
+					)
+				self.addEventRowToTrash(record.obj)
+				return
+			path = self.treeModel.get_path(eventIter)
+			parentPathObj = gtk.TreePath.new_from_indices(path.get_indices()[:1])
+			expanded = self.treev.row_expanded(parentPathObj)
+			# log.debug(f"{path=}, {parentPathObj=}, {expanded=}")
+			self.treeModel.remove(eventIter)
+			self.addEventRowToTrash(record.obj)
+			if expanded:
+				# FIXME: does not work!
+				self.treev.expand_row(parentPathObj, False)
+
+		elif action == "+":
+			group2 = record.obj.parent
+			assert isinstance(group2, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert group2.id is not None
+			if group2.id not in self.loadedGroupIds:
+				return
+			parentIter = self.groupIterById[group2.id]
+			# event is always added to the end of group (at least from
+			# outside Event Manager dialog), unless we add a bool global option
+			# to add all created events to the beginning of group (prepend)
+			self.appendEventRow(parentIter, record.obj)
+
+		elif action == "e":
+			assert isinstance(record.obj.parent, EventGroup)
+			assert isinstance(record.obj, Event)
+			assert record.obj.id is not None
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						f"trying to edit non-existing event row, eid={record.obj.id}",
+					)
+			else:
+				self.updateEventRowByIter(record.obj, eventIter)
 
 	def multiSelectTreeviewToggleStatus(
 		self,
