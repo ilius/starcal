@@ -50,7 +50,6 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 
@@ -64,8 +63,7 @@ if TYPE_CHECKING:
 __all__ = ["CalObj"]
 
 
-@registerSignals
-class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
+class CalObj(CalBase):
 	objName = "monthCal"
 	desc = _("Month Calendar")
 	expand = True
@@ -89,11 +87,10 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	}
 
 	def __init__(self, win: MainWin) -> None:
-		gtk.DrawingArea.__init__(self)
-		self.w: gtk.DrawingArea = self
-		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.s = self
+		super().__init__()
+		self.w = gtk.DrawingArea()
 		self.win = win
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.pagePath = f"mainWin.mainPanel.{self.objName}"
 		# ----------------------

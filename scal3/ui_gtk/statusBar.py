@@ -12,7 +12,7 @@ from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.mywidgets.label import SLabel
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.pref_utils import PrefItem
@@ -26,8 +26,7 @@ class LabelWithCalType(SLabel):
 		self.calType = calType
 
 
-@registerSignals
-class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
+class CalObj(CustomizableCalObj):
 	objName = "statusBar"
 	desc = _("Status Bar")
 	itemListCustomizable = False
@@ -35,18 +34,18 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 	optionsPageSpacing = 15
 
 	def __init__(self, win: gtk.Window) -> None:
+		super().__init__()
 		self.win = win
-		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ----
 		self.labelBox = HBox()
-		pack(self, self.labelBox, 1, 1)
+		pack(self.w, self.labelBox, 1, 1)
 		resizeB = ResizeButton(win)
-		pack(self, resizeB, 0, 0)
+		pack(self.w, resizeB, 0, 0)
 		if rtl:
-			self.set_direction(gtk.TextDirection.LTR)
+			self.w.set_direction(gtk.TextDirection.LTR)
 			self.labelBox.set_direction(gtk.TextDirection.LTR)
 
 	def onConfigChange(self, *a, **kw) -> None:
@@ -63,7 +62,7 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 			label = LabelWithCalType(calType=calType)
 			label.set_direction(gtk.TextDirection.LTR)
 			pack(self.labelBox, label, 1)
-		self.show_all()
+		self.w.show_all()
 		# ---
 		self.onDateChange()
 
