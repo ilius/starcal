@@ -17,6 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.signals import registerSignals
 
 log = logger.get()
 import typing
@@ -57,10 +59,9 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
+from scal3.ui_gtk.gtk_ud import BaseCalObj
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
 	confirm,
@@ -120,8 +121,8 @@ def saveConf() -> None:
 
 
 class EventManagerToolbar(VerticalStaticToolBox):
-	def __init__(self, parent: gtk.Window) -> None:
-		VerticalStaticToolBox.__init__(self, parent)
+	def __init__(self, dialog: EventManagerDialog) -> None:
+		VerticalStaticToolBox.__init__(self, dialog)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
 		# self.append(ToolBoxItem(
@@ -166,14 +167,15 @@ class EventManagerToolbar(VerticalStaticToolBox):
 
 
 @registerSignals
-class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
+class EventManagerDialog(MyDialog, BaseCalObj):  # type: ignore[misc]
 	objName = "eventMan"
 	desc = _("Event Manager")
 
 	def __init__(self, **kwargs) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
-		Dialog.__init__(self, **kwargs)
+		MyDialog.__init__(self, **kwargs)
+		self.w: MyDialog = self
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
@@ -189,21 +191,21 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.multiSelectPathDict: dict[int, dict[int, object]] = {}
 		self.multiSelectToPaste: tuple[bool, list[gtk.TreeIter]] | None = None
 		# ----
-		self.set_title(_("Event Manager"))
-		self.resize(800, 600)
-		self.connect("delete-event", self.onDeleteEvent)
-		self.set_transient_for(None)
-		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
+		self.w.set_title(_("Event Manager"))
+		self.w.resize(800, 600)
+		self.w.connect("delete-event", self.onDeleteEvent)
+		self.w.set_transient_for(None)
+		self.w.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		# --
 		dialog_add_button(
-			self,
+			self.w,
 			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Apply", ctx="window action"),
 		)
 		# self.connect("response", lambda w, e: self.hide())
-		self.connect("response", self.onResponse)
-		self.connect("show", self.onShow)
+		self.w.connect("response", self.onResponse)
+		self.w.connect("show", self.onShow)
 		# -------
 		menubar = self.menubar = gtk.MenuBar()
 		# ----
@@ -366,7 +368,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			multiSelectMenu.append(item)
 		# ----
 		menubar.show_all()
-		pack(self.vbox, menubar)
+		pack(self.w.vbox, menubar)
 		# -------
 		# multi-select bar
 		self.multiSelectHBox = hbox = HBox(spacing=3)
@@ -422,7 +424,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			),
 		)
 		# ---
-		pack(self.vbox, hbox)
+		pack(self.w.vbox, hbox)
 		# -------
 		treeBox = HBox()
 		# -----
@@ -443,7 +445,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		)  # FIXME
 		self.treev.connect("button-press-event", self.onTreeviewButtonPress)
 		self.treev.connect("row-activated", self.rowActivated)
-		self.connect("key-press-event", self.onKeyPress)
+		self.w.connect("key-press-event", self.onKeyPress)
 		self.treev.connect("key-press-event", self.onTreeviewKeyPress)
 		# -----
 		swin = gtk.ScrolledWindow()
@@ -453,9 +455,9 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		# ---
 		self.toolbar = EventManagerToolbar(self)
 		# ---
-		pack(treeBox, self.toolbar)
+		pack(treeBox, self.toolbar.w)
 		# -----
-		pack(self.vbox, treeBox, 1, 1)
+		pack(self.w.vbox, treeBox, 1, 1)
 		# -------
 		self.treeModel = gtk.TreeStore(
 			bool,  # multi-select mode checkbox
@@ -529,14 +531,14 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.sbar = gtk.Statusbar()
 		self.sbar.set_direction(gtk.TextDirection.LTR)
 		pack(hbox, self.sbar, 1, 1)
-		pack(hbox, ResizeButton(self))
-		pack(self.vbox, hbox)
+		pack(hbox, ResizeButton(self.w))
+		pack(self.w.vbox, hbox)
 		# -----
-		self.vbox.show_all()
+		self.w.vbox.show_all()
 		self.multiSelectHBox.hide()
 
-	def onShow(self, _w: gtk.Widget) -> None:
-		self.move(*eventManPos.v)
+	def onShow(self, _w: W) -> None:
+		self.w.move(*eventManPos.v)
 		self.onConfigChange()
 
 	@staticmethod
@@ -548,7 +550,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		return True
 
 	def onResponse(self, _dialog: Dialog, _response_id: int) -> None:
-		eventManPos.v = self.get_position()
+		eventManPos.v = self.w.get_position()
 		saveConf()
 		# ---
 		self.hide()
@@ -557,11 +559,11 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 	# 	groupIndex, eventIndex = path
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		# ---
 		if not self.isLoaded:
-			if self.get_property("visible"):
-				self.waitingDo(self.reloadEvents)  # FIXME
+			if self.w.get_property("visible"):
+				self.w.waitingDo(self.reloadEvents)  # FIXME
 			return
 
 	def onEventUpdate(self, record: EventUpdateRecord) -> None:
@@ -697,7 +699,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.multiSelectColumn.set_visible(enable)
 		self.editItem.set_sensitive(not enable)
 		self.fileItem.set_sensitive(not enable)
-		self.toolbar.set_sensitive(not enable)
+		self.toolbar.w.set_sensitive(not enable)
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(enable)
 		self.multiSelect = enable
@@ -984,7 +986,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		if not confirmEventsTrash(toTrashCount, deleteCount):
 			return
 
-		self.waitingDo(self._do_multiSelectDelete, iterList)
+		self.w.waitingDo(self._do_multiSelectDelete, iterList)
 
 		msgs = []
 		if toTrashCount:
@@ -1063,7 +1065,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		dialog = EventsBulkEditDialog(container, transient_for=self)
 
 		if dialog.run() == gtk.ResponseType.OK:
-			self.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
+			self.w.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
 
 	def _do_multiSelectBulkEdit(
 		self,
@@ -1709,7 +1711,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		menu = self.genRightClickMenu(path)
 		if not menu:
 			return
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		rect = treev.get_cell_area(
 			gtk.TreePath.new_from_indices(path),
@@ -1720,7 +1722,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			x -= get_menu_width(menu) + 40
 		else:
 			x += 40
-		dcord = treev.translate_coordinates(self, x, rect.y + 2 * rect.height)
+		dcord = treev.translate_coordinates(self.w, x, rect.y + 2 * rect.height)
 		assert dcord is not None
 		dx, dy = dcord
 		_foo, wx, wy = win.get_origin()
@@ -1790,7 +1792,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		MultiGroupExportDialog(transient_for=self).run()
 
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
-		EventsImportWindow(self).present()
+		EventsImportWindow(self.w).present()
 
 	@staticmethod
 	def onMenuBarSearchClick(_menuItem: gtk.MenuItem) -> None:
@@ -1803,7 +1805,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			self.appendGroupTree(newGroup)
 
 	def onMenuBarOrphanClick(self, _menuItem: gtk.MenuItem) -> None:
-		self.waitingDo(self._do_checkForOrphans)
+		self.w.waitingDo(self._do_checkForOrphans)
 
 	def getSelectedPath(self) -> list[int] | None:
 		iter_ = self.treev.get_selection().get_selected()[1]
@@ -1872,7 +1874,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			self.treev.remove_column(self.colDesc)
 
 	def showDescItemToggled(self, _menuItem: gtk.MenuItem) -> None:
-		self.waitingDo(self._do_showDescItemToggled)
+		self.w.waitingDo(self._do_showDescItemToggled)
 
 	def treeviewCursorChangedPath(self, path: list[int]) -> None:
 		text = ""
@@ -1932,7 +1934,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			elif hasattr(self, "sbar"):
 				self.sbar.push(0, "")
 
-		self.toolbar.set_sensitive(bool(path))
+		self.toolbar.w.set_sensitive(bool(path))
 
 		return True
 
@@ -1957,7 +1959,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			log.exception("")
 
 	def onGroupModify(self, group: EventGroupType) -> None:
-		self.waitingDo(self._do_onGroupModify, group)
+		self.w.waitingDo(self._do_onGroupModify, group)
 
 	def setGroupEnable(
 		self,
@@ -2260,7 +2262,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			transient_for=self,
 		):
 			return
-		self.waitingDo(self._do_deleteGroup, path, group)
+		self.w.waitingDo(self._do_deleteGroup, path, group)
 
 	def deleteGroupFromMenu(self, path: list[int]) -> Callable[[W], None]:
 		def func(_w: W) -> None:
@@ -2631,7 +2633,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 		newGroupType: str,
 	) -> Callable[[W], None]:
 		def func(_w: W) -> None:
-			self.waitingDo(self._do_groupConvertTo, group, newGroupType)
+			self.w.waitingDo(self._do_groupConvertTo, group, newGroupType)
 
 		return func
 
@@ -2662,7 +2664,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 
 			dialog = EventsBulkEditDialog(group, transient_for=self)
 			if dialog.run() == gtk.ResponseType.OK:
-				self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
+				self.w.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 
 		return func
 
@@ -2676,7 +2678,7 @@ class EventManagerDialog(MyDialog, ud.BaseCalObj):  # type: ignore[misc]
 			if actionFunc is None:
 				setActionFuncs(group)
 				actionFunc = getattr(group, actionFuncName)
-			self.waitingDo(actionFunc, parentWin=self)
+			self.w.waitingDo(actionFunc, parentWin=self)
 
 		return func
 
