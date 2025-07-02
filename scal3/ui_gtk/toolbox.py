@@ -16,9 +16,9 @@ from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButtonBase
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:

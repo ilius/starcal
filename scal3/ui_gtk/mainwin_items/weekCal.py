@@ -52,7 +52,6 @@ from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
 	newSubPageButton,
 )
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawOutlineRoundedRect,
@@ -62,6 +61,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
 	CustomizableToolBox,

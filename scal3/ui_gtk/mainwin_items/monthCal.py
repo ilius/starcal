@@ -43,7 +43,6 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawOutlineRoundedRect,
@@ -52,6 +51,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 

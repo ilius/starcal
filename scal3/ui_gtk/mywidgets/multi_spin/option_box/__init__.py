@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import Menu, MenuItem, gdk, gtk, pack
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import imageClassButton
 
 if TYPE_CHECKING:

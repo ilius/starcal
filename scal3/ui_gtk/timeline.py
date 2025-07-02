@@ -53,7 +53,6 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import SVGButton
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	fillColor,
@@ -63,6 +62,7 @@ from scal3.ui_gtk.drawing import (
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.timeline_box import (
 	drawBoxBG,
 	drawBoxBorder,

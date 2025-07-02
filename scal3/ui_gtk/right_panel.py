@@ -13,12 +13,12 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import VBox, gtk, pack, timeout_add
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.occurrence_view import (
 	DayOccurrenceView,
 )
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.stack import StackPage

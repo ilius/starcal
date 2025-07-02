@@ -12,8 +12,8 @@ from scal3.ui import conf
 from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 __all__ = ["CalObj"]

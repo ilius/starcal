@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Any
 
 from scal3.ui_gtk import HBox, VBox, gtk, pack
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.signals import registerSignals
 
 __all__ = ["ExpanderFrame"]
 

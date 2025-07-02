@@ -25,11 +25,11 @@ from scal3.cal_types import calTypes, convert, jd_to
 from scal3.date_utils import parseDroppedDate
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
 __all__ = ["SelectDateDialog"]
