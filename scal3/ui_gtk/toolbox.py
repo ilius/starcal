@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from gi.overrides import GObject
+
 from scal3 import logger
 from scal3.property import Property
 from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
@@ -11,7 +13,7 @@ from typing import Any
 
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import GdkPixbuf, VBox, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import registerSignals
@@ -20,7 +22,7 @@ from scal3.ui_gtk.mywidgets.button import ConButtonBase
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable, Sequence
+	from collections.abc import Callable, Iterable
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
 
@@ -31,6 +33,10 @@ __all__ = [
 	"ToolBoxItem",
 	"VerticalStaticToolBox",
 ]
+
+type ButtonClickCallback = Callable[[GObject.Object], None]
+
+type ButtonPressCallback = Callable[[gtk.Widget, gdk.EventButton], None]
 
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: ignore[misc]
@@ -74,13 +80,12 @@ class ToolBoxItem(BaseToolBoxItem):
 		iconName: str = "",
 		imageName: str = "",
 		imageNameDynamic: bool = False,
-		onClick: str | Callable | None = None,
+		onClick: str | ButtonClickCallback | None = None,
+		onPress: str | ButtonPressCallback | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: str | Callable | None = None,
-		args: Sequence[Any] | None = None,  # for onClick and onPress
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
@@ -98,9 +103,6 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
-		if args is None:
-			args = ()
-		self.args = args
 		self.preferIconName = Property(False)
 		self.iconSize = Property(conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
@@ -199,13 +201,12 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
 		name: str = "",
-		onClick: str | Callable | None = None,
+		onClick: str | ButtonClickCallback | None = None,
+		onPress: str | ButtonPressCallback | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: str | Callable | None = None,
-		args: list[Any] | None = None,  # for onClick and onPress
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
@@ -222,9 +223,6 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
-		if args is None:
-			args = []
-		self.args = args
 		self.continuousClick = continuousClick
 		self.vertical = False
 		# ------
@@ -305,16 +303,16 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 				onClick = getattr(self.funcOwner, item.onClick)
 			else:
 				onClick = item.onClick
-			item.connect("clicked", onClick, *item.args)
+			item.connect("clicked", onClick)
 			if self.continuousClick and item.continuousClick:
-				item.connect("con-clicked", onClick, *item.args)
+				item.connect("con-clicked", onClick)
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
 				onPress = getattr(self.funcOwner, item.onPress)
 			else:
 				onPress = item.onPress
-			item.connect("button-press-event", onPress, *item.args)
+			item.connect("button-press-event", onPress)
 
 
 class StaticToolBox(BaseToolBox):
@@ -349,7 +347,7 @@ class StaticToolBox(BaseToolBox):
 		item.show()
 		return item
 
-	def extend(self, items: Iterable) -> None:
+	def extend(self, items: Iterable[BaseToolBoxItem]) -> None:
 		for item in items:
 			self.append(item)
 

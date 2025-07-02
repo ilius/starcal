@@ -47,7 +47,7 @@ class ConButtonBase(gtk.Widget):
 		self.counter += 1
 		return True
 
-	def _onPressRemain(self, func: Callable, counter: int) -> None:
+	def _onPressRemain(self, func: Callable[[], None], counter: int) -> None:
 		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
 			func()
 			timeout_add(

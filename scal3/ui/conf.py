@@ -716,7 +716,7 @@ wcalEventIconSizeMax: Final[Property[int]] = Property(26)
 eventWeekViewTimeFormat: Final[Property[str]] = Property("HM$")
 
 
-confParams: dict[str, Property] = {
+confParams: dict[str, Property[Any]] = {
 	"showMain": showMain,
 	"winTaskbar": winTaskbar,
 	"useAppIndicator": useAppIndicator,
@@ -752,7 +752,7 @@ confParams: dict[str, Property] = {
 	"preferencesPagePath": preferencesPagePath,
 	"localTzHist": localTzHist,
 }
-confParamsLive: dict[str, Property] = {
+confParamsLive: dict[str, Property[Any]] = {
 	"winX": winX,
 	"winY": winY,
 	"winWidth": winWidth,
@@ -765,7 +765,7 @@ confParamsLive: dict[str, Property] = {
 	"mainWinRightPanelRatio": mainWinRightPanelRatio,
 	"wcal_toolbar_weekNum_negative": wcal_toolbar_weekNum_negative,
 }
-confParamsCustomize: dict[str, Property] = {
+confParamsCustomize: dict[str, Property[Any]] = {
 	"mainWinItems": mainWinItems,
 	"mainWinFooterItems": mainWinFooterItems,
 	"pluginsTextEnable": pluginsTextEnable,
@@ -887,7 +887,7 @@ confParamsCustomize: dict[str, Property] = {
 	"ud__mainToolbarData": ud__mainToolbarData,
 	"customizePagePath": customizePagePath,
 }
-dayCalWinParamsLive: dict[str, Property] = {
+dayCalWinParamsLive: dict[str, Property[Any]] = {
 	"dcalWinX": dcalWinX,
 	"dcalWinY": dcalWinY,
 	"dcalWinWidth": dcalWinWidth,

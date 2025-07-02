@@ -69,13 +69,17 @@ confParamsLive = params.getParamNamesWithFlag(params.LIVE)
 confParamsCustomize = params.getParamNamesWithFlag(params.CUSTOMIZE)
 dayCalWinParamsLive = params.getParamNamesWithFlag(params.DAYCAL_WIN_LIVE)
 
-output.write("confParams: dict[str, Property] = " + genParamDict(confParams))
-output.write("confParamsLive: dict[str, Property] = " + genParamDict(confParamsLive))
+output.write("confParams: dict[str, Property[Any]] = " + genParamDict(confParams))
 output.write(
-	"confParamsCustomize: dict[str, Property] = " + genParamDict(confParamsCustomize),
+	"confParamsLive: dict[str, Property[Any]] = " + genParamDict(confParamsLive)
 )
 output.write(
-	"dayCalWinParamsLive: dict[str, Property] = " + genParamDict(dayCalWinParamsLive),
+	"confParamsCustomize: dict[str, Property[Any]] = "
+	+ genParamDict(confParamsCustomize),
+)
+output.write(
+	"dayCalWinParamsLive: dict[str, Property[Any]] = "
+	+ genParamDict(dayCalWinParamsLive),
 )
 
 output.write("\n")

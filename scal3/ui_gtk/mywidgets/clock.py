@@ -20,17 +20,13 @@ from __future__ import annotations
 
 import time
 from time import localtime, strftime
-from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui import conf
 from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
-from scal3.ui_gtk.drawing import fillColor, setColor
-
-if TYPE_CHECKING:
-	import cairo
+from scal3.ui_gtk.drawing import ImageContext, fillColor, setColor
 
 
 class ClockLabel(gtk.Label):
@@ -167,7 +163,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		finally:
 			win.end_draw_frame(dctx)
 
-	def drawWithContext(self, cr: cairo.Context) -> None:
+	def drawWithContext(self, cr: ImageContext) -> None:
 		text = self.text
 		fillColor(cr, conf.bgColor.v)
 		setColor(cr, conf.textColor.v)
