@@ -43,8 +43,9 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
+from scal3.ui_gtk.gtk_ud import CalObjWidget, commonSignals
 from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.utils import (
 	get_menu_width,
 	imageFromIconName,
@@ -63,16 +64,16 @@ __all__ = ["CalObj"]
 primaryCalStyleClass = "primarycal"
 
 
-class BaseLabel(gtk.EventBox):
+class BaseLabel(CustomizableCalObj):
+	vertical = False
+
 	def __init__(self, calType: int) -> None:
 		super().__init__()
-		self.w: gtk.EventBox = self
-		self.s = self
+		self.w: gtk.EventBox = gtk.EventBox()
 		self.calType = calType
 
 
-@registerSignals
-class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
+class MonthLabel(BaseLabel):
 	styleClass = "monthlabel"
 
 	@staticmethod
@@ -214,10 +215,14 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
 
 
 @registerSignals
-class IntLabel(BaseLabel):
-	signals = [
+class IntLabelSignalHandler(SignalHandlerBase):
+	signals = commonSignals + [
 		("changed", [int]),
 	]
+
+
+class IntLabel(BaseLabel):
+	Sig = IntLabelSignalHandler
 
 	@classmethod
 	def getActiveStr(cls, s: str) -> str:
@@ -377,9 +382,7 @@ class IntLabel(BaseLabel):
 		return False
 
 
-@registerSignals
-class YearLabel(IntLabel, ud.BaseCalObj):  # type: ignore[misc]
-	signals = ud.BaseCalObj.signals
+class YearLabel(IntLabel):
 	styleClass = "yearlabel"
 
 	@staticmethod
@@ -409,7 +412,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):  # type: ignore[misc]
 		# ---
 		self.s.connect("changed", self.onChanged)
 
-	def onChanged(self, _label: gtk.Widget, year: int) -> None:
+	def onChanged(self, _sig: SignalHandlerType, year: int) -> None:
 		calType = self.calType
 		_y, m, d = ui.cells.current.dates[calType]
 		ui.cells.changeDate(year, m, d, calType)
@@ -436,7 +439,7 @@ class SmallNoFocusButton(ConButton):
 		func: Callable[[gtk.Widget], None],
 		tooltip: str = "",
 	) -> None:
-		ConButton.__init__(self)
+		ConButton.__init__(self, continuousClick=True)
 		self.set_relief(gtk.ReliefStyle.NONE)
 		self.set_can_focus(False)
 		self._imageName = imageName
@@ -456,10 +459,9 @@ class SmallNoFocusButton(ConButton):
 		)
 
 
-class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
+class YearLabelButtonBox(CalObjWidget):
 	def __init__(self, calType: int, **kwargs) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.w: gtk.Box = self
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ---
 		self.removeButton = SmallNoFocusButton(
@@ -495,10 +497,9 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 		self.addButton.updateIcon()
 
 
-class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
+class MonthLabelButtonBox(CalObjWidget):
 	def __init__(self, calType: int, **kwargs) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.w: gtk.Box = self
+		self.w = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.removeButton = SmallNoFocusButton(
 			"list-remove.svg",
@@ -534,8 +535,7 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 		self.addButton.updateIcon()
 
 
-@registerSignals
-class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
+class CalObj(CustomizableCalObj):
 	objName = "labelBox"
 	desc = _("Year & Month Bar")
 	itemListCustomizable = False
@@ -553,9 +553,9 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		return font
 
 	def __init__(self, win: MainWin) -> None:
+		super().__init__()
 		self.win = win
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		self.w: gtk.Box = self
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.w.get_style_context().add_class(self.styleClass)
 		# self.set_border_width(2)

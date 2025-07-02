@@ -17,39 +17,34 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.label import SLabel
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import dialog_add_button
-
-if TYPE_CHECKING:
-	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = ["DayInfoDialog"]
 
 
-@registerSignals
-class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
+class AllDateLabelsVBox(CustomizableCalObj):
 	objName = "allDateLabels"
 	desc = _("Dates")
 
 	def __init__(self) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=5)
+		super().__init__()
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		self.initVars()
 
 	def onDateChange(self, *a, **ka) -> None:
 		super().onDateChange(*a, **ka)
 		assert ud.dateFormatBin is not None
-		for child in self.get_children():
+		for child in self.w.get_children():
 			child.destroy()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		sgroupDate = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -67,89 +62,87 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 			pack(hbox, dateLabel)
 			sgroupDate.add_widget(dateLabel)
 			# ---
-			pack(self, hbox)
-		self.show_all()
+			pack(self.w, hbox)
+		self.w.show_all()
 
 
-@registerSignals
-class PluginsTextView(gtk.TextView, ud.BaseCalObj):  # type: ignore[misc]
+class PluginsTextView(CustomizableCalObj):
 	objName = "pluginsText"
 	desc = _("Plugins Text")
 
 	def __init__(self) -> None:
-		gtk.TextView.__init__(self)
+		super().__init__()
+		self.w: gtk.TextView = gtk.TextView()
 		self.initVars()
 		# ---
-		self.set_wrap_mode(gtk.WrapMode.WORD)
-		self.set_editable(False)
-		self.set_cursor_visible(False)
-		self.set_justification(gtk.Justification.CENTER)
+		self.w.set_wrap_mode(gtk.WrapMode.WORD)
+		self.w.set_editable(False)
+		self.w.set_cursor_visible(False)
+		self.w.set_justification(gtk.Justification.CENTER)
 
 	def onDateChange(self, *a, **ka) -> None:
 		super().onDateChange(*a, **ka)
-		self.get_buffer().set_text(ui.cells.current.getPluginsText())
+		self.w.get_buffer().set_text(ui.cells.current.getPluginsText())
 
 
-@registerSignals
-class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
+class DayInfoJulianDayHBox(CustomizableCalObj):
 	objName = "jd"
 	desc = _("Julian Day Number")
 
 	def __init__(self) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		super().__init__()
+		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ---
-		pack(self, gtk.Label(label=_("Julian Day Number") + ":  "))
+		pack(self.w, gtk.Label(label=_("Julian Day Number") + ":  "))
 		self.jdLabel = SLabel()
 		self.jdLabel.set_selectable(True)
-		pack(self, self.jdLabel)
-		pack(self, gtk.Label(), 1, 1)
+		pack(self.w, self.jdLabel)
+		pack(self.w, gtk.Label(), 1, 1)
 		# ---
-		self.show_all()
+		self.w.show_all()
 
 	def onDateChange(self, *a, **ka) -> None:
 		super().onDateChange(*a, **ka)
 		self.jdLabel.set_label(str(ui.cells.current.jd))
 
 
-@registerSignals
-class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
+class DayInfoDialog(CustomizableCalObj):
 	objName = "dayInfo"
 	desc = _("Day Info")
 
 	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
-		self.w: Dialog = self
+		self.w: Dialog = Dialog(**kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		self.set_title(_("Day Info"))
-		self.connect("delete-event", self.onDeleteEvent)
-		self.vbox.set_spacing(15)
+		self.w.set_title(_("Day Info"))
+		self.w.connect("delete-event", self.onDeleteEvent)
+		self.w.vbox.set_spacing(15)
 		# ---
 		dialog_add_button(
-			self,
+			self.w,
 			res=0,
 			label=_("Close"),
 			imageName="window-close.svg",
 			onClick=self.onClose,
 		)
 		dialog_add_button(
-			self,
+			self.w,
 			res=1,
 			label=_("Previous"),
 			imageName="go-previous.svg",
 			onClick=self.goBack,
 		)
 		dialog_add_button(
-			self,
+			self.w,
 			res=2,
 			label=_("Today"),
 			imageName="go-home.svg",
 			onClick=self.goToday,
 		)
 		dialog_add_button(
-			self,
+			self.w,
 			res=3,
 			label=_("Next"),
 			imageName="go-next.svg",
@@ -161,7 +154,7 @@ class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 		self.appendDayInfoItem(PluginsTextView())
 		self.appendDayInfoItem(DayOccurrenceView())
 		# ---
-		self.vbox.show_all()
+		self.w.vbox.show_all()
 
 	def appendDayInfoItem(
 		self,
@@ -170,15 +163,15 @@ class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 	) -> None:
 		self.appendItem(item)
 		# ---
-		widget: gtk.Widget = item
+		widget: gtk.Widget = item.w
 		if expander:
 			exp = ExpanderFrame(
 				label=item.desc,
 				# expanded=True,
 			)
-			exp.add(item)
+			exp.add(item.w)
 			widget = exp
-		pack(self.vbox, widget)
+		pack(self.w.vbox, widget)
 
 	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.hide()

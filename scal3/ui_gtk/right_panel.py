@@ -18,7 +18,6 @@ from scal3.ui_gtk.event.occurrence_view import (
 )
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
-from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.stack import StackPage
@@ -70,20 +69,20 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 		self.rightPanel.swapItems()
 
 
-@registerSignals
-class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
+class MainWinRightPanel(CustomizableCalObj):
 	objName = "rightPanel"
 	desc = _("Right Panel")
 	itemListCustomizable = False
 	optionsPageSpacing = 5
 
 	def __init__(self) -> None:
-		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
+		super().__init__()
+		self.w: gtk.Paned = gtk.Paned(orientation=gtk.Orientation.VERTICAL)
 		# ---
 		self.initVars()
 		self.setPosAtHeight = 0
 		# ---
-		self.connect("size-allocate", self.onSizeAllocate)
+		self.w.connect("size-allocate", self.onSizeAllocate)
 		# ---
 		self.eventItem = RightPanelDayOccurrenceView(
 			rightPanel=self,
@@ -110,7 +109,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 		# ---
 		self.addItems()
 		# ---
-		self.show_all()
+		self.w.show_all()
 		self.onBorderWidthChange()
 
 	def onToggleFromMainWin(self) -> None:
@@ -122,12 +121,12 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
-		swin.add(item)
+		swin.add(item.w)
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.ShadowType.IN)
 		frame.add(swin)
-		self.add(frame)
-		item.show_all()
+		self.w.add(frame)
+		item.show()
 
 	def addItems(self) -> None:
 		items: list[CustomizableCalObj] = [
@@ -141,17 +140,19 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 
 	def resetItems(self) -> None:
 		for item in self.items:
-			item.get_parent().remove(item)
-		for child in self.get_children():
+			parent = item.w.get_parent()
+			assert isinstance(parent, gtk.Container)
+			parent.remove(item.w)
+		for child in self.w.get_children():
 			# child is Frame, containing a ScrolledWindow, containing item
-			self.remove(child)
+			self.w.remove(child)
 		self.items = []
 		self.addItems()
 
 	def swapItems(self) -> None:
 		conf.mainWinRightPanelSwap.v = not conf.mainWinRightPanelSwap.v
 		self.resetItems()
-		self.show_all()
+		self.w.show_all()
 		ui.saveConfCustomize()
 
 	def getSubPages(self) -> list[StackPage]:
@@ -164,29 +165,29 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 		self.eventItem.onDateChange(toParent=False)
 
 	def onBorderWidthChange(self) -> None:
-		self.set_border_width(conf.mainWinRightPanelBorderWidth.v)
+		self.w.set_border_width(conf.mainWinRightPanelBorderWidth.v)
 
 	def updatePosition(self, height: int) -> None:
 		log.debug(
 			f"updatePosition: {height=}, {self.setPosAtHeight=}, "
-			f"pos={self.get_position()}",
+			f"pos={self.w.get_position()}",
 		)
 		if height <= 1:
 			return
 		if height != self.setPosAtHeight:
 			pos = int(height * conf.mainWinRightPanelRatio.v)
-			self.set_position(pos)
+			self.w.set_position(pos)
 			self.setPosAtHeight = height
-			timeout_add(10, self.queue_resize)
+			timeout_add(10, self.w.queue_resize)
 			return
-		conf.mainWinRightPanelRatio.v = self.get_position() / height
+		conf.mainWinRightPanelRatio.v = self.w.get_position() / height
 		ui.saveLiveConf()
 
 	def onSizeAllocate(self, _w: gtk.Widget, requisition: gtk.Requisition) -> None:
 		self.updatePosition(requisition.height)
 
 	def onWindowSizeChange(self, *_a, **_kw) -> None:
-		self.queue_resize()
+		self.w.queue_resize()
 
 	"""
 	gtk_widget_queue_resize:
@@ -207,13 +208,13 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 	"""
 
 	def onMinimumHeightChange(self) -> None:
-		self.queue_resize()
+		self.w.queue_resize()
 
 	def do_get_preferred_width(self) -> tuple[int, int]:  # noqa: PLR6301
 		# must return minimum_size, natural_size
 		if conf.mainWinRightPanelWidthRatioEnable.v:
-			if ui.mainWin and ui.mainWin.is_maximized():
-				winWidth = ui.mainWin.get_size()[0]
+			if ui.mainWin and ui.mainWin.w.is_maximized():
+				winWidth = ui.mainWin.w.get_size()[0]
 			else:
 				winWidth = conf.winWidth.v
 			width = int(conf.mainWinRightPanelWidthRatio.v * winWidth)
@@ -263,7 +264,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):  # type: ignore[misc]
 				bounds=(0, 1),
 				digits=3,
 			),
-			onChangeFunc=self.queue_resize,
+			onChangeFunc=self.w.queue_resize,
 			vspacing=3,
 			# hspacing=0,
 		)
