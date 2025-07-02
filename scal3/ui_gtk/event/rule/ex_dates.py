@@ -134,7 +134,7 @@ class WidgetClass(gtk.Box):
 		# --
 		dialogHbox = HBox()
 		pack(dialogHbox, self.treev, 1, 1)
-		pack(dialogHbox, toolbar)
+		pack(dialogHbox, toolbar.w)
 		pack(dialog.vbox, dialogHbox, 1, 1)
 		dialog.vbox.show_all()
 		dialog.resize(200, 300)

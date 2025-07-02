@@ -12,21 +12,19 @@ from scal3.utils import findWordByPos, toStr
 __all__ = ["ReadOnlyTextView"]
 
 
-class ReadOnlyTextWidget:
-	def copyAll(self, _item: gtk.Widget) -> None:
+class ReadOnlyTextView(gtk.TextView):
+	def __init__(self, *args, **kwargs) -> None:
+		gtk.TextView.__init__(self, *args, **kwargs)
+		self.set_editable(False)
+		self.set_cursor_visible(False)
+		self.connect("button-press-event", self.onButtonPress)
+
+	def copyAll(self, _w: gtk.Widget) -> None:
 		setClipboard(self.get_text())
-
-	def has_selection(self) -> bool:
-		raise NotImplementedError
-
-	def get_text(self) -> str:
-		raise NotImplementedError
 
 	# def cursorIsOnURL(self):
 	# 	return False
 
-
-class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):  # type: ignore[misc]
 	def get_text(self) -> str:
 		return buffer_get_text(self.get_buffer())
 
@@ -125,9 +123,3 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):  # type: ignore[misc]
 		)
 		ui.updateFocusTime()
 		return True
-
-	def __init__(self, *args, **kwargs) -> None:
-		gtk.TextView.__init__(self, *args, **kwargs)
-		self.set_editable(False)
-		self.set_cursor_visible(False)
-		self.connect("button-press-event", self.onButtonPress)
