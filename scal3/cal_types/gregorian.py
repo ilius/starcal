@@ -24,8 +24,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from scal3 import logger
+
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
+
+
+log = logger.get()
 
 __all__ = ["J1970", "J0001_epoch", "getMonthLen", "isLeap", "jd_to", "to_jd"]
 
@@ -99,7 +104,10 @@ def isLeap(y: int) -> bool:
 
 def to_jd(year: int, month: int, day: int) -> int:
 	if 0 < year < 10000:  # > 1.5x faster
-		return datetime(year, month, day).toordinal() + 1721425
+		try:
+			return datetime(year, month, day).toordinal() + 1721425
+		except ValueError:
+			log.exception(f"{year=}, {month=}, {day=}")
 
 	if month <= 2:
 		tm = 0
