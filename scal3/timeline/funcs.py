@@ -49,7 +49,7 @@ from scal3.timeline.utils import (
 from scal3.ui.funcs import getHolidaysJdList
 from scal3.utils import iceil, ifloor
 
-__all__ = ["calcTimeLineData"]
+__all__ = ["TimeLineData", "calcTimeLineData"]
 
 
 @dataclass(slots=True)

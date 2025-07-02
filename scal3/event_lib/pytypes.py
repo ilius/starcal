@@ -23,6 +23,7 @@ __all__ = [
 	"EventGroupType",
 	"EventNotifierType",
 	"EventRuleType",
+	"EventSearchConditionDict",
 	"EventType",
 	"RuleContainerType",
 ]
