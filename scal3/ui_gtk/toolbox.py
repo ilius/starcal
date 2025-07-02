@@ -89,6 +89,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
+		self.w = self
 		if continuousClick:
 			ConButtonBase.__init__(self, button=1)  # only left-click
 		# ------
@@ -283,6 +284,7 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 		self.box.set_orientation(self.get_orientation())
 		self.box.set_homogeneous(homogeneous=False)
 		self.box.show()
+		self.w = self
 		self.add(self.box)
 		self.funcOwner = funcOwner
 		self.preferIconName: Property[bool] = conf.useSystemIcons

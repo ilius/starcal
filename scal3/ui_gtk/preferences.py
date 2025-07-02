@@ -125,7 +125,7 @@ class PreferencesPluginsToolbar(VerticalStaticToolBox):
 				continuousClick=False,
 			),
 		)
-		self.buttonAdd.set_sensitive(False)
+		self.buttonAdd.w.set_sensitive(False)
 		self.append(
 			ToolBoxItem(
 				name="delete",
@@ -137,7 +137,7 @@ class PreferencesPluginsToolbar(VerticalStaticToolBox):
 		)
 
 	def setCanAdd(self, canAdd: bool) -> None:
-		self.buttonAdd.set_sensitive(canAdd)
+		self.buttonAdd.w.set_sensitive(canAdd)
 
 
 class PreferencesWindow(gtk.Window):
@@ -971,7 +971,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vboxPlug, hboxBut)
 		# ---
 		toolbar = PreferencesPluginsToolbar(self)
-		pack(hbox, toolbar)
+		pack(hbox, toolbar.w)
 		self.pluginsToolbar = toolbar
 		# -----
 		"""
@@ -1276,7 +1276,7 @@ class PreferencesWindow(gtk.Window):
 			],
 		)
 		# -----------
-		pack(hbox, toolbar)
+		pack(hbox, toolbar.w)
 		pack(vbox, hbox, 1, 1)
 
 	@staticmethod
@@ -1678,14 +1678,14 @@ class PreferencesWindow(gtk.Window):
 	def plugTreeviewCellToggled(
 		self,
 		cell: gtk.CellRendererToggle,
-		path: gtk.TreePath,
+		path: str,
 	) -> None:
 		model = self.plugListStore
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 1, active)
 		if active:
-			plugI = model[path.get_indices()[0]][0]
+			plugI = model[path][0]
 			plug = core.allPlugList.v[plugI]
 			if not plug.loaded:
 				plug = self.loadPlugin(plug, plugI)
@@ -1694,7 +1694,7 @@ class PreferencesWindow(gtk.Window):
 	def plugTreeviewCellToggled2(
 		self,
 		cell: gtk.CellRendererToggle,
-		path: gtk.TreePath,
+		path: str,
 	) -> None:
 		model = self.plugListStore
 		active = not cell.get_active()

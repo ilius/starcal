@@ -38,7 +38,7 @@ mainWin = starcal.MainWin(statusIconMode=2)
 
 doFullImport(mainWin)
 
-mainWin.present()
+mainWin.w.present()
 
 
 def tick() -> None:

@@ -30,7 +30,6 @@ from scal3.color_utils import RGB, RGBA, ColorType, RawColor, rgbToHtmlColor
 from scal3.font import Font
 from scal3.locale_man import cutText
 from scal3.path import sourceDir
-from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.utils import toBytes
@@ -60,11 +59,9 @@ __all__ = [
 	"setColor",
 ]
 
-if not conf.fontCustom.v:
-	conf.fontCustom.v = ui.fontDefault.copy()
-
 type ImageContext = cairo.Context[cairo.ImageSurface]
 type BothContext = cairo.Context[cairo.ImageSurface] | cairo.Context[cairo.SVGSurface]
+
 
 with open(join(sourceDir, "svg", "special", "color-check.svg"), encoding="utf-8") as fp:
 	colorCheckSvgTextChecked = fp.read()

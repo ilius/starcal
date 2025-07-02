@@ -128,7 +128,7 @@ class EditDbDialog(Dialog):
 		# -----
 		mainHbox = HBox()
 		pack(mainHbox, swin, 1, 1)
-		pack(mainHbox, toolbar)
+		pack(mainHbox, toolbar.w)
 		pack(self.vbox, mainHbox, 1, 1)
 		# ------
 		dialog_add_button(

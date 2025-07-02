@@ -15,7 +15,7 @@ from scal3 import ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import Dialog, HBox, VBox, gdk, pack
+from scal3.ui_gtk import HBox, VBox, gdk, pack
 from scal3.ui_gtk.wizard import StepType, WizardWindow
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 __all__ = ["EventsImportWindow"]
 
-type EventManagerType = Dialog
+type EventManagerType = gtk.Window
 
 
 class EventsImportWindow(WizardWindow):
