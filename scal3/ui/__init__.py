@@ -69,7 +69,8 @@ if typing.TYPE_CHECKING:
 	from scal3.cell_type import CellCacheType
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui.pytypes import CalTypeParamsDict
-	from scal3.ui_gtk import gtk_ud
+	from scal3.ui_gtk.gtk_ud import CalObjType
+	from scal3.ui_gtk.starcal import MainWin
 
 
 __all__ = [
@@ -260,7 +261,7 @@ def initFonts(fontDefaultNew: Font) -> None:
 	global fontDefault
 	fontDefault = fontDefaultNew
 	if not conf.fontCustom.v:
-		conf.fontCustom.v = fontDefault
+		conf.fontCustom.v = fontDefault.copy()
 	# --------
 	# ---
 	if conf.mcalTypeParams.v[0]["font"] is None:
@@ -333,7 +334,7 @@ def checkWinControllerButtons() -> None:
 def moveEventToTrash(
 	group: EventGroupType,
 	event: EventType,
-	sender: gtk_ud.CalObjType,
+	sender: CalObjType,
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
@@ -443,8 +444,8 @@ winControllerThemeList = [
 
 # --------------------
 
-fontDefault = Font(family="Sans", size=12)
-fontDefaultInit = fontDefault
+fontDefault: Font = Font(family="Sans", size=12)
+fontDefaultInit: Font = fontDefault
 
 # ---------------------
 
@@ -494,7 +495,7 @@ needRestartList: list[tuple[Property[Any], Any]] = [
 # ----------------------------------
 
 # move to gtk_ud ? FIXME
-mainWin: Any = None
+mainWin: MainWin = None  # type: ignore[assignment]
 prefWindow: Any = None
 eventManDialog: Any = None
 eventSearchWin: Any = None
