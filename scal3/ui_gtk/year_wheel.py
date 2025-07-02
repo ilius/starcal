@@ -35,7 +35,6 @@ from scal3.season import getSpringJdAfter
 from scal3.ui_gtk import gdk, getScrollValue, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawArcOutline,
@@ -47,6 +46,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

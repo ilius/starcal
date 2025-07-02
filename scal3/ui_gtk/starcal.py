@@ -65,7 +65,6 @@ from scal3.ui_gtk import (
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, DummyCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
@@ -73,6 +72,7 @@ from scal3.ui_gtk.menuitems import (
 	CheckMenuItem,
 	ImageMenuItem,
 )
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
 	get_menu_height,

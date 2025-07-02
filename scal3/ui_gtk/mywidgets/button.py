@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

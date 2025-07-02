@@ -34,8 +34,8 @@ from scal3.ui import conf
 from scal3.ui_gtk import Dialog, Menu, VBox, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
 	dialog_add_button,

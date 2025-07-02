@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 
 from scal3.ui import conf
 from scal3.ui_gtk.day_cal import DayCal
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk import gtk
