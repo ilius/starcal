@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from time import perf_counter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -44,8 +44,6 @@ screenWidth = rootWin.get_width()
 
 
 class FloatingMsg(gtk.DrawingArea):
-	signals: list[tuple[str, list[Any]]] = []
-
 	def on_realize(self, _w: gtk.Widget) -> None:
 		self.animateStart()
 
@@ -191,8 +189,6 @@ class FloatingMsg(gtk.DrawingArea):
 
 
 class MyLabel(gtk.DrawingArea):
-	signals: list[tuple[str, list[Any]]] = []
-
 	def __init__(self, bgColor: ColorType, textColor: ColorType) -> None:
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
@@ -249,8 +245,6 @@ class MyLabel(gtk.DrawingArea):
 
 
 class NoFillFloatingMsgWindow(gtk.Window):
-	signals: list[tuple[str, list[Any]]] = []
-
 	def __init__(
 		self,
 		text: str,
