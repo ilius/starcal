@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 __all__ = ["escape"]
 
 
-def escape(data: str, entities: dict | None = None) -> str:  # noqa: ARG001
+def escape(data: str, entities: dict[str, Any] | None = None) -> str:  # noqa: ARG001
 	"""
 	Escape &, <, and > in a string of data.
 
@@ -22,7 +24,7 @@ def escape(data: str, entities: dict | None = None) -> str:  # noqa: ARG001
 	# 	data = __dict_replace(data, entities) # FIXME
 
 
-def unescape(data: str, entities: dict | None = None) -> str:  # noqa: ARG001
+def unescape(data: str, entities: dict[str, Any] | None = None) -> str:  # noqa: ARG001
 	"""
 	Unescape &amp;, &lt;, and &gt; in a string of data.
 

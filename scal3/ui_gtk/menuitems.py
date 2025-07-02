@@ -20,7 +20,8 @@ from scal3.ui import conf
 
 log = logger.get()
 
-from typing import TYPE_CHECKING, Any
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
@@ -31,8 +32,6 @@ from scal3.ui_gtk.utils import (
 )
 
 if TYPE_CHECKING:
-	from collections.abc import Callable, Sequence
-
 	from gi.repository import GdkPixbuf
 
 __all__ = ["CheckMenuItem", "ImageMenuItem"]
@@ -49,6 +48,8 @@ Documentation says:
 	“actions” (or “verbs”) should not have icons.
 """
 
+type ItemCallback = Callable[[gtk.Widget], None]
+
 
 class ImageMenuItem(gtk.MenuItem):
 	def __init__(
@@ -56,13 +57,10 @@ class ImageMenuItem(gtk.MenuItem):
 		label: str = "",
 		imageName: str | None = None,
 		pixbuf: GdkPixbuf.Pixbuf | None = None,
-		func: Callable | None = None,
+		func: ItemCallback | None = None,
 		signalName: str = "activate",
-		args: tuple | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
-		if args is not None and not isinstance(args, tuple):
-			raise TypeError("args must be None or tuple")
 		image = None
 		if imageName:
 			iconName = ""
@@ -101,9 +99,7 @@ class ImageMenuItem(gtk.MenuItem):
 		self.add(hbox)
 		self._image = image
 		if func:
-			if args is None:
-				args = ()
-			self.connect(signalName, func, *args)
+			self.connect(signalName, func)
 
 	def get_image(self) -> gtk.Image:
 		return self._image
@@ -114,8 +110,7 @@ class CheckMenuItem(gtk.MenuItem):
 		self,
 		label: str = "",
 		active: bool = False,
-		func: Callable | None = None,
-		args: Sequence[Any] | None = None,
+		func: ItemCallback | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
@@ -136,15 +131,12 @@ class CheckMenuItem(gtk.MenuItem):
 		self.set_active(active)
 		# ---
 		self._func = func
-		if args is None:
-			args = ()
-		self._args = args
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
 		assert self._func is not None
 		self.set_active(not self._active)
-		self._func(menuItem, *self._args)
+		self._func(menuItem)
 
 	def set_active(self, active: bool) -> None:
 		self._active = active
@@ -159,8 +151,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self,
 		label: str = "",
 		active: bool = False,
-		func: Callable | None = None,
-		args: Sequence[Any] | None = None,
+		func: ItemCallback | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
@@ -188,15 +179,12 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self.set_active(active)
 		# ---
 		self._func = func
-		if args is None:
-			args = ()
-		self._args = args
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
 		assert self._func is not None
 		self.set_active(not self._active)
-		self._func(menuItem, *self._args)
+		self._func(menuItem)
 
 	def set_active(self, active: bool) -> None:
 		self._active = active

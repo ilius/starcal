@@ -6,7 +6,7 @@ from scal3.color_utils import RGB
 from scal3.property import Property
 
 if typing.TYPE_CHECKING:
-	from typing import Final
+	from typing import Any, Final
 
 	from scal3.color_utils import ColorType
 __all__ = [
@@ -140,7 +140,7 @@ keys: Final[Property[dict[str, str]]] = Property(
 )
 
 
-confParams: dict[str, Property] = {
+confParams: dict[str, Property[Any]] = {
 	"baseFontSize": baseFontSize,
 	"baseTickHeight": baseTickHeight,
 	"baseTickWidth": baseTickWidth,

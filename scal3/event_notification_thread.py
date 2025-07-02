@@ -107,7 +107,7 @@ class EventGroupNotificationThread(Thread):
 
 		self.sent: set[int] = set()
 		self._stop_event = threading.Event()
-		self._new_events: Queue = Queue()
+		self._new_events: Queue[EventType] = Queue()
 
 		# self.sch: sched.scheduler | None = None
 		# threading.Timer is a subclass of threading.Thread

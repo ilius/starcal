@@ -481,7 +481,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	# FIXME: too tricky!
 	# def calcFirstOccurrenceAfterJd(self, startJd):
 
-	def checkNotify(self, finishFunc: Callable) -> None:
+	def checkNotify(self, finishFunc: Callable[[], None]) -> None:
 		"""To be called from notification scheduler."""
 		if self.parent is None:
 			return
@@ -500,7 +500,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			return
 		self.notify(finishFunc)
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		# FIXME: get rid of self.n ??
 		self.n = len(self.notifiers)
 

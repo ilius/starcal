@@ -82,7 +82,7 @@ confPath = join(confDir, "ui-gtk.json")
 dateFormat: Final[Property[str]] = Property("%Y/%m/%d")
 # clockFormat: "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 clockFormat: Final[Property[str]] = Property("%X")
-confParams: Final[dict[str, Property]] = {
+confParams: Final[dict[str, Property[Any]]] = {
 	"dateFormat": dateFormat,
 	"clockFormat": clockFormat,
 	# "adjustTimeCmd": adjustTimeCmd,
@@ -396,7 +396,7 @@ def getDisplay() -> gdk.Display:
 windowList = IntegatedWindowList()
 
 
-def cssFunc(func: Callable) -> Callable:
+def cssFunc(func: Callable[[], str]) -> Callable[[], str]:
 	"""Decorator for global functions or static methods."""
 	windowList.addCSSFunc(func)
 	return func

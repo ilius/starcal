@@ -7,7 +7,7 @@ log = logger.get()
 import os
 import os.path
 from os.path import isabs, join
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
 	from typing import IO
@@ -21,7 +21,7 @@ class FileSystem:
 		fpath: str,
 		mode: str = "r",
 		encoding: str | None = None,
-	) -> IO:
+	) -> IO[Any]:
 		raise NotImplementedError
 
 	def abspath(self, path: str) -> str:
@@ -64,7 +64,7 @@ class DefaultFileSystem(FileSystem):
 		fpath: str,
 		mode: str = "r",
 		encoding: str | None = None,
-	) -> IO:
+	) -> IO[Any]:
 		if isabs(fpath):
 			log.warning(f"DefaultFileSystem: open: reading abs path {fpath}")
 		fpath = self.abspath(fpath)

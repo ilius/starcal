@@ -41,7 +41,12 @@ class MyWindow(gtk.Window):
 		if self.vbox:
 			self.vbox.set_sensitive(True)
 
-	def waitingDo(self, func: Callable, *args, **kwargs) -> Any:
+	def waitingDo(
+		self,
+		func: Callable,  # type: ignore[type-arg]
+		*args,
+		**kwargs,
+	) -> Any:
 		result = None
 		self.startWaiting()
 		if log.level >= logging.DEBUG:

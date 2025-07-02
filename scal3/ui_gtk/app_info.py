@@ -26,7 +26,7 @@ def getDefaultAppCommand(fpath: str) -> str | None:
 	return app.get_executable()
 
 
-def popenFile(fpath: str) -> subprocess.Popen | None:
+def popenFile(fpath: str) -> subprocess.Popen[str] | None:
 	command = getDefaultAppCommand(fpath)
 	if not command:
 		return None

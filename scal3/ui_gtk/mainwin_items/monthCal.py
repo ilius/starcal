@@ -45,6 +45,7 @@ from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
+	ImageContext,
 	drawOutlineRoundedRect,
 	drawRoundedRect,
 	fillColor,
@@ -55,8 +56,6 @@ from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 
 if TYPE_CHECKING:
-	import cairo
-
 	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
 	from scal3.ui.pytypes import CalTypeParamsDict
@@ -145,7 +144,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	@staticmethod
 	def drawCursorOutline(
-		cr: cairo.Context,
+		cr: ImageContext,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -157,7 +156,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	@staticmethod
 	def drawCursorBg(
-		cr: cairo.Context,
+		cr: ImageContext,
 		cx0: float,
 		cy0: float,
 		cw: float,
@@ -313,7 +312,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def _drawBorder(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		w: float,
 		h: float,
 		status: MonthStatus,
@@ -392,7 +391,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 					)
 				show_layout(cr, layout)
 
-	def _drawTodayMarker(self, cr: cairo.Context) -> None:
+	def _drawTodayMarker(self, cr: ImageContext) -> None:
 		tx, ty = ui.cells.today.monthPos  # today x and y
 		x0 = self.cx[tx] - self.dx / 2
 		y0 = self.cy[ty] - self.dy / 2
@@ -401,7 +400,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def _drawEventIcons(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		cell: CellType,
 		x0: float,
 		y0: float,
@@ -440,7 +439,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 
 	def _drawCellSecondaryCalNumbers(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		cell: CellType,
 		x0: float,
 		y0: float,
@@ -474,7 +473,7 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 			fillColor(cr, conf.cursorOutColor.v)
 			# end of Drawing Cursor Outline
 
-	def drawWithContext(self, cr: cairo.Context, cursor: bool) -> bool:
+	def drawWithContext(self, cr: ImageContext, cursor: bool) -> bool:
 		# gevent = gtk.get_current_event()
 		# FIXME: must enhance (only draw few cells, not all cells)
 		self.calcCoord()

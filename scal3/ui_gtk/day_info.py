@@ -123,7 +123,7 @@ class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 		ud.windowList.appendItem(self)
 		# ---
 		self.set_title(_("Day Info"))
-		self.connect("delete-event", self.onClose)
+		self.connect("delete-event", self.onDeleteEvent)
 		self.vbox.set_spacing(15)
 		# ---
 		dialog_add_button(
@@ -179,13 +179,12 @@ class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 			widget = exp
 		pack(self.vbox, widget)
 
-	def onClose(
-		self,
-		_obj: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
-	) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
 		self.hide()
 		return True
+
+	def onClose(self, _w: gtk.Widget) -> None:
+		self.hide()
 
 	def goBack(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(-1)

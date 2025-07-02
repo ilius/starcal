@@ -29,11 +29,10 @@ from gi.repository.PangoCairo import show_layout
 from scal3 import ui
 from scal3.timeline import conf
 from scal3.ui import conf as uiConf
-from scal3.ui_gtk.drawing import fillColor
+from scal3.ui_gtk.drawing import ImageContext, fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
 
 if TYPE_CHECKING:
-	import cairo
 	from gi.repository import Gtk as gtk
 
 	from scal3.timeline.box import Box
@@ -42,7 +41,7 @@ __all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
 
 
 def drawBoxBG(
-	cr: cairo.Context,
+	cr: ImageContext,
 	box: Box,
 	x: float,
 	y: float,
@@ -84,7 +83,7 @@ def drawBoxBG(
 
 
 def drawBoxBorder(
-	cr: cairo.Context,
+	cr: ImageContext,
 	box: Box,
 	x: float,
 	y: float,
@@ -128,7 +127,7 @@ def drawBoxBorder(
 
 
 def drawBoxText(
-	cr: cairo.Context,
+	cr: ImageContext,
 	box: Box,
 	x: float,
 	y: float,

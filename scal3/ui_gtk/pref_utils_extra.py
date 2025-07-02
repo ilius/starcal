@@ -28,6 +28,7 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import set_tooltip
@@ -78,7 +79,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		vspacing: int = 0,
 		hspacing: int = 0,
 		borderWidth: int = 2,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		if not ratioEnableProp:
 			raise ValueError("ratioEnableVarName is not given")
@@ -238,7 +239,7 @@ class CalTypePrefItem(PrefItem):
 		self,
 		prop: Property[int],
 		live: bool = False,
-		onChangeFunc: Callable | None = None,
+		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
@@ -789,9 +790,9 @@ class KeyBindingPrefItem(PrefItem):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		self._widget = swin
 
-	def onMenuModifyKeyClick(self, _menu: gtk.Menu, rowI: int) -> None:
+	def onMenuModifyKeyClick(self, _w: gtk.Widget, rowIndex: int) -> None:
 		trees = self.listStore
-		row = trees[rowI]
+		row = trees[rowIndex]
 		print(f"Modify Key: {row=}")  # noqa: T201
 
 	# def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
@@ -799,60 +800,69 @@ class KeyBindingPrefItem(PrefItem):
 	# 	row = trees[rowI]
 	# 	print(f"Default Key: {row=}")
 
-	def onMenuDeleteClick(self, _menu: gtk.Menu, rowI: int) -> None:
+	def onMenuDeleteClick(self, _w: gtk.Widget, rowI: int) -> None:
 		trees = self.listStore
 		trees.remove(trees.get_iter(str(rowI)))
+
+	def onTreeviewRighButtonPress(
+		self,
+		rowIndex: int,
+		gevent: gdk.EventButton,
+	) -> None:
+		menu = gtk.Menu()
+
+		# def onModifyKey(w: gtk.Widget) -> None:
+		# 	self.onMenuModifyKeyClick(w, rowIndex)
+
+		# menu.add(
+		# 	ImageMenuItem(
+		# 		label=_("Modify Key"),
+		# 		imageName="document-edit.svg",
+		# 		func=onModifyKey,
+		# 	),
+		# )
+		# menu.add(ImageMenuItem(
+		# 	label=_("Default Key"),
+		# 	imageName="edit-undo.svg",
+		# 	func=onSetDefaultKey,
+		# ))
+		# menu.add(gtk.SeparatorMenuItem())
+		def onDelete(w: gtk.Widget) -> None:
+			self.onMenuDeleteClick(w, rowIndex)
+
+		menu.add(
+			ImageMenuItem(
+				label=_("Delete", ctx="menu"),
+				imageName="edit-delete.svg",
+				func=onDelete,
+			),
+		)
+		menu.show_all()
+		menu.popup(
+			None,
+			None,
+			None,
+			None,
+			3,
+			gevent.time,
+		)
 
 	def onTreeviewButtonPress(
 		self,
 		_widget: gtk.Widget,
 		gevent: gdk.EventButton,
 	) -> bool | None:
-		from scal3.ui_gtk.menuitems import ImageMenuItem
-
 		b = gevent.button
 		curObj = self.treeview.get_cursor()[0]
 		if not curObj:
 			return None
 		# curObj is gtk.TreePath
 		cur = curObj.get_indices()
-		rowI = cur[0]
+		rowIndex = cur[0]
 		if b == 1:
 			pass
 		elif b == 3:
-			menu = gtk.Menu()
-			# menu.add(
-			# 	ImageMenuItem(
-			# 		label=_("Modify Key"),
-			# 		imageName="document-edit.svg",
-			# 		func=self.onMenuModifyKeyClick,
-			# 		args=(rowI,),
-			# 	),
-			# )
-			# menu.add(ImageMenuItem(
-			# 	label=_("Default Key"),
-			# 	imageName="edit-undo.svg",
-			# 	func=self.onMenuDefaultKeyClick,
-			# 	args=(rowI,),
-			# ))
-			menu.add(gtk.SeparatorMenuItem())
-			menu.add(
-				ImageMenuItem(
-					label=_("Delete", ctx="menu"),
-					imageName="edit-delete.svg",
-					func=self.onMenuDeleteClick,
-					args=(rowI,),
-				),
-			)
-			menu.show_all()
-			menu.popup(
-				None,
-				None,
-				None,
-				None,
-				3,
-				gevent.time,
-			)
+			self.onTreeviewRighButtonPress(rowIndex, gevent)
 			return True
 
 		return False

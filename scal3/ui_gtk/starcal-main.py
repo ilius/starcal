@@ -71,7 +71,7 @@ def dialog_add_button(
 	imageName: str = "",
 	label: str = "",
 	res: int = 0,
-	onClick: Callable | None = None,
+	onClick: Callable[[gtk.Widget], None] | None = None,
 	tooltip: str = "",
 ) -> gtk.Button:
 	b: gtk.Button = dialog.add_button(label, res)  # type: ignore[assignment]

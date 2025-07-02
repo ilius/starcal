@@ -20,9 +20,9 @@ from scal3 import logger
 
 log = logger.get()
 
-import typing
 from os.path import join
 from time import localtime
+from typing import TYPE_CHECKING
 
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes
@@ -58,7 +58,8 @@ from scal3.ui_gtk.utils import (
 )
 from scal3.utils import intcmp
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
+	from collections.abc import Callable
 	from typing import Any
 
 	from scal3.event_lib.pytypes import (
@@ -605,45 +606,51 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 	) -> None:
 		self.editEventByPath(path)
 
-	def editEventFromMenu(self, _menu: gtk.Widget | None, path: str) -> None:
-		self.editEventByPath(path)
+	def editEventFromMenu(self, path: str) -> Callable[[gtk.Widget], None]:
+		def func(_w: gtk.Widget) -> None:
+			self.editEventByPath(path)
+
+		return func
 
 	def moveEventToGroupFromMenu(
 		self,
-		_menu: gtk.Widget | None,
 		eventPath: str,
 		event: EventType,
 		old_group: EventGroupType,
 		new_group: EventGroupType,
-	) -> None:
-		old_group.remove(event)
-		old_group.save()
-		new_group.append(event)
-		new_group.save()
-		# ---
-		ui.eventUpdateQueue.put("v", event, self)
-		# FIXME
-		# ---
-		eventIter = self.treeModel.get_iter(eventPath)
-		self.treeModel.set_value(eventIter, 0, new_group.id)
-		self.treeModel.set_value(eventIter, 2, new_group.title)
+	) -> Callable[[gtk.Widget], None]:
+		def func(_w: gtk.Widget) -> None:
+			old_group.remove(event)
+			old_group.save()
+			new_group.append(event)
+			new_group.save()
+			# ---
+			ui.eventUpdateQueue.put("v", event, self)
+			# FIXME
+			# ---
+			eventIter = self.treeModel.get_iter(eventPath)
+			self.treeModel.set_value(eventIter, 0, new_group.id)
+			self.treeModel.set_value(eventIter, 2, new_group.title)
+
+		return func
 
 	def copyEventToGroupFromMenu(
 		self,
-		_menu: gtk.Widget,
-		_eventPath: str,
 		event: EventType,
 		new_group: EventGroupType,
-	) -> None:
-		new_event = event.copy()
-		new_event.save()
-		new_group.append(new_event)
-		new_group.save()
-		# ---
-		ui.eventUpdateQueue.put("+", new_event, self)
-		# FIXME
-		# ---
-		# eventIter = self.treeModel.get_iter(eventPath)
+	) -> Callable[[gtk.Widget], None]:
+		def func(_w: gtk.Widget) -> None:
+			new_event = event.copy()
+			new_event.save()
+			new_group.append(new_event)
+			new_group.save()
+			# ---
+			ui.eventUpdateQueue.put("+", new_event, self)
+			# FIXME
+			# ---
+			# eventIter = self.treeModel.get_iter(eventPath)
+
+		return func
 
 	def moveEventToTrash(self, path: str) -> None:
 		try:
@@ -688,8 +695,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 				subMenu.add(
 					menuItemFromEventGroup(
 						new_group,
-						func=self.moveEventToGroupFromMenu,
-						args=(
+						func=self.moveEventToGroupFromMenu(
 							path,
 							event,
 							group,
@@ -701,7 +707,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		item.set_submenu(subMenu)
 		return item
 
-	def getCopyToGroupSubMenu(self, path: str, event: EventType) -> gtk.MenuItem:
+	def getCopyToGroupSubMenu(self, event: EventType) -> gtk.MenuItem:
 		item = ImageMenuItem(
 			_("Copy to {title}").format(title="..."),
 			# imageName="",  # FIXME
@@ -715,26 +721,24 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 				subMenu.add(
 					menuItemFromEventGroup(
 						new_group,
-						func=self.copyEventToGroupFromMenu,
-						args=(
-							path,
-							event,
-							new_group,
-						),
+						func=self.copyEventToGroupFromMenu(event, new_group),
 					),
 				)
 		# --
 		item.set_submenu(subMenu)
 		return item
 
-	def historyOfEventFromMenu(self, _menu: gtk.Widget, path: str) -> None:
-		from scal3.ui_gtk.event.history import EventHistoryDialog
+	def historyOfEventFromMenu(self, path: str) -> Callable[[gtk.Widget], None]:
+		def func(_w: gtk.Widget) -> None:
+			from scal3.ui_gtk.event.history import EventHistoryDialog
 
-		gid = self.treeModel[path][0]
-		eid = self.treeModel[path][1]
-		group = ev.groups[gid]
-		event = group[eid]
-		EventHistoryDialog(event, transient_for=self).run()
+			gid = self.treeModel[path][0]
+			eid = self.treeModel[path][1]
+			group = ev.groups[gid]
+			event = group[eid]
+			EventHistoryDialog(event, transient_for=self).run()
+
+		return func
 
 	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]
@@ -748,8 +752,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 			eventWriteMenuItem(
 				_("Edit"),
 				imageName="document-edit.svg",
-				func=self.editEventFromMenu,
-				args=(path,),
+				func=self.editEventFromMenu(path),
 			),
 		)
 		# --
@@ -757,22 +760,24 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 			eventWriteImageMenuItem(
 				_("History"),
 				"history.svg",
-				func=self.historyOfEventFromMenu,
-				args=(path,),
+				func=self.historyOfEventFromMenu(path),
 			),
 		)
 		# --
 		menu.add(self.getMoveToGroupSubMenu(path, group, event))
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(self.getCopyToGroupSubMenu(path, event))
+		menu.add(self.getCopyToGroupSubMenu(event))
 		# --
 		menu.add(gtk.SeparatorMenuItem())
+
+		def moveToTrash(w: gtk.Widget) -> None:
+			self.moveEventToTrashFromMenu(w, path)
+
 		menu.add(
 			ImageMenuItem(
 				_("Move to {title}").format(title=ev.trash.title),
 				imageName=ev.trash.getIconRel(),
-				func=self.moveEventToTrashFromMenu,
-				args=(path,),
+				func=moveToTrash,
 			),
 		)
 		# --

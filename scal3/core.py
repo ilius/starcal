@@ -142,7 +142,7 @@ firstWeekDay: Final[Property[int]] = Property(0)
 weekNumberModeAuto: Final[Property[bool]] = Property(False)
 weekNumberMode: Final[Property[int]] = Property(7)
 
-confParams: Final[dict[str, Property]] = {
+confParams: Final[dict[str, Property[Any]]] = {
 	"version": version,
 	"allPlugList": allPlugList,
 	"plugIndex": plugIndex,
@@ -155,11 +155,11 @@ confParams: Final[dict[str, Property]] = {
 	"weekNumberMode": weekNumberMode,
 }
 
-confDecoders: Final[dict[str, Callable]] = {
+confDecoders: Final[dict[str, Callable[[Any], Any]]] = {
 	"allPlugList": lambda pdataList: [loadPlugin(**pdata) for pdata in pdataList],
 }
 
-confEncoders: Final[dict[str, Callable]] = {
+confEncoders: Final[dict[str, Callable[[Any], Any]]] = {
 	"allPlugList": lambda plugList: [
 		plug.getArgs() for plug in plugList if plug is not None
 	],

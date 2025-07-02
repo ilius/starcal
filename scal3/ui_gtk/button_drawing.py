@@ -22,13 +22,11 @@ from typing import TYPE_CHECKING
 from scal3.drawing import getAbsPos
 from scal3.path import svgDir
 from scal3.ui_gtk import GdkPixbuf, gdk
-from scal3.ui_gtk.drawing import drawOutlineRoundedRect
+from scal3.ui_gtk.drawing import ImageContext, drawOutlineRoundedRect
 from scal3.ui_gtk.utils import pixbufFromFile, pixbufFromFileMust, pixbufFromIconName
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
-
-	import cairo
 
 	from scal3.color_utils import ColorType
 
@@ -38,8 +36,8 @@ __all__ = ["BaseButton", "Button", "SVGButton"]
 class BaseButton:
 	def __init__(
 		self,
-		onPress: Callable,
-		onRelease: Callable | None = None,
+		onPress: Callable[[gdk.EventButton], None],
+		onRelease: Callable[[gdk.EventButton], None] | None = None,
 		x: float | None = None,
 		y: float | None = None,
 		xalign: str = "left",
@@ -94,14 +92,14 @@ class BaseButton:
 		x, y = self.getAbsPos(w, h)
 		return x <= px < x + self.width and y <= py < y + self.height
 
-	def draw(self, cr: cairo.Context, w: float, h: float) -> None:
+	def draw(self, cr: ImageContext, w: float, h: float) -> None:
 		raise NotImplementedError
 
 
 class SVGButton(BaseButton):
 	def __init__(
 		self,
-		onPress: Callable,
+		onPress: Callable[[gdk.EventButton], None],
 		imageName: str = "",
 		iconSize: int = 16,
 		rectangleColor: ColorType | None = None,
@@ -134,7 +132,7 @@ class SVGButton(BaseButton):
 
 	def draw(
 		self,
-		cr: cairo.Context,
+		cr: ImageContext,
 		w: float,
 		h: float,
 	) -> None:
@@ -195,7 +193,7 @@ class SVGButton(BaseButton):
 class Button(BaseButton):
 	def __init__(
 		self,
-		onPress: Callable,
+		onPress: Callable[[gdk.EventButton], None],
 		imageName: str = "",
 		iconName: str = "",
 		iconSize: int = 0,
@@ -221,7 +219,7 @@ class Button(BaseButton):
 		self.iconSize = iconSize
 		self.pixbuf = pixbuf
 
-	def draw(self, cr: cairo.Context, w: float, h: float) -> None:
+	def draw(self, cr: ImageContext, w: float, h: float) -> None:
 		x, y = self.getAbsPos(w, h)
 		gdk.cairo_set_source_pixbuf(
 			cr,

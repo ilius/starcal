@@ -16,7 +16,7 @@ __all__ = ["MaxHeap"]
 
 
 # list has .copy() since Python 3.3
-class MaxHeap[T](list):
+class MaxHeap[T](list[tuple[float, T]]):
 	# __slots__ = []  # causes mypy to give internal error
 
 	def exch(self, i: int, j: int) -> None:
@@ -47,7 +47,7 @@ class MaxHeap[T](list):
 	def push(self, key: float, value: T) -> None:
 		heappush(self, (-key, value))
 
-	def popIndex(self, index: int | None = None) -> tuple[int, T]:
+	def popIndex(self, index: int | None = None) -> tuple[float, T]:
 		if index is None:
 			mkey, value = heappop(self)
 		else:
@@ -62,10 +62,10 @@ class MaxHeap[T](list):
 			self.swim(index)
 		return -mkey, value
 
-	def moreThan(self, key: float) -> Iterable[tuple[int, T]]:
+	def moreThan(self, key: float) -> Iterable[tuple[float, T]]:
 		return self.moreThanStep(key, 0)
 
-	def moreThanStep(self, key: float, index: int) -> Iterable[tuple[int, T]]:
+	def moreThanStep(self, key: float, index: int) -> Iterable[tuple[float, T]]:
 		if index < 0:
 			return
 		try:

@@ -75,7 +75,7 @@ class AutoSizeEntry(gtk.Entry):
 
 
 @registerSignals
-class MultiSpinButton[F: Field, V](gtk.Box):
+class MultiSpinButton[F: Field[Any], V](gtk.Box):
 	signals: list[tuple[str, list[Any]]] = [
 		("changed", []),
 		("activate", []),
@@ -374,7 +374,7 @@ class MultiSpinButton[F: Field, V](gtk.Box):
 	#"""
 
 
-class SingleSpinButton[T: Field, V](MultiSpinButton[T, V]):
+class SingleSpinButton[T: Field[Any], V](MultiSpinButton[T, V]):
 	def __init__(self, field: T | None = None, **kwargs) -> None:
 		if field is None:
 			raise ValueError("SingleSpinButton: field is None")

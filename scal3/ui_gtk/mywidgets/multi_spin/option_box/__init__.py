@@ -14,7 +14,7 @@ __all__ = ["MultiSpinOptionBox"]
 
 
 @registerSignals
-class MultiSpinOptionBox[F: Field, V](gtk.Box):
+class MultiSpinOptionBox[F: Field[Any], V](gtk.Box):
 	signals: list[tuple[str, list[Any]]] = [
 		("activate", []),
 	]

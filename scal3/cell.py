@@ -340,7 +340,7 @@ class WeekStatus(list[CellType]):
 			self.append(cells.getCell(jd))
 
 
-class MonthStatus(list):  # FIXME
+class MonthStatus(list[list[CellType]]):  # FIXME
 	__slots__ = [
 		"month",
 		"offset",

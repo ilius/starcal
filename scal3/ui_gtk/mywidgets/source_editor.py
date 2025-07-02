@@ -17,7 +17,9 @@ __all__ = ["SourceEditorWithFrame"]
 
 
 class SourceEditor(GtkSource.View):
-	def __init__(self, onTextChange: Callable | None = None) -> None:
+	def __init__(
+		self, onTextChange: Callable[[gtk.Widget], None] | None = None
+	) -> None:
 		self.textbuffer = GtkSource.Buffer()
 		GtkSource.View.__init__(self, buffer=self.textbuffer)
 		self.set_editable(True)
@@ -38,7 +40,9 @@ class SourceEditor(GtkSource.View):
 
 
 class SourceEditorWithFrame(gtk.Frame):
-	def __init__(self, onTextChange: Callable | None = None) -> None:
+	def __init__(
+		self, onTextChange: Callable[[gtk.Widget], None] | None = None
+	) -> None:
 		gtk.Frame.__init__(self)
 		self.set_border_width(4)
 		# ----

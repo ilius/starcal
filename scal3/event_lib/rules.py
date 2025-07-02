@@ -1251,7 +1251,7 @@ class ExDatesEventRule(EventRule):
 
 	def setRuleValue(
 		self,
-		datesConf: str | list[str | tuple | list],
+		datesConf: str | list[str | tuple[int, int, int] | list[int]],
 	) -> None:
 		dates: list[tuple[int, int, int]] = []
 		try:

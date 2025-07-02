@@ -41,7 +41,7 @@ class ConsumerType(Protocol):
 
 class EventUpdateQueue:
 	def __init__(self) -> None:
-		self.q: Queue = Queue()
+		self.q: Queue[EventUpdateRecord | None] = Queue()
 		self._consumers: list[ConsumerType] = []
 		self._thread: Thread | None = None
 		self._paused: bool = False

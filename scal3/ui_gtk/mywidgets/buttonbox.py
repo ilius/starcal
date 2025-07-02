@@ -48,7 +48,7 @@ class MyHButtonBox(gtk.Box):
 		self,
 		imageName: str = "",
 		label: str = "",
-		onClick: Callable | None = None,
+		onClick: Callable[[gtk.Widget], None] | None = None,
 		tooltip: str = "",
 	) -> gtk.Button:
 		if imageName:
@@ -66,14 +66,19 @@ class MyHButtonBox(gtk.Box):
 		self.add(b)
 		return b
 
-	def add_ok(self, onClick: Callable | None = None) -> gtk.Button:
+	def add_ok(
+		self,
+		onClick: Callable[[gtk.Widget], None] | None = None,
+	) -> gtk.Button:
 		return self.add_button(
 			imageName="dialog-ok.svg",
 			label=_("_Confirm"),
 			onClick=onClick,
 		)
 
-	def add_cancel(self, onClick: Callable | None = None) -> gtk.Button:
+	def add_cancel(
+		self, onClick: Callable[[gtk.Widget], None] | None = None
+	) -> gtk.Button:
 		return self.add_button(
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),

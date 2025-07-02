@@ -993,7 +993,7 @@ class PreferencesWindow(gtk.Window):
 		# still active(clickabel widgets) before closing child "dialog"
 		# you may call dialog.run() to realy make it transient for parent
 		# d.set_has_separator(False)
-		d.connect("delete-event", self.plugAddDialogClose)
+		d.connect("delete-event", self.plugAddDialogDeleteEvent)
 		d.set_title(_("Add Plugin"))
 		# ---
 		dialog_add_button(
@@ -1335,10 +1335,9 @@ class PreferencesWindow(gtk.Window):
 
 		self.apply()
 
-	def cancel(self, _w: gtk.Widget | None = None) -> bool:
+	def cancel(self, _w: gtk.Widget) -> None:
 		self.hide()
 		self.updatePrefGui()
-		return True
 
 	def iterAllPrefItems(self) -> typing.Iterable[PrefItem]:
 		import itertools
@@ -1587,7 +1586,7 @@ class PreferencesWindow(gtk.Window):
 		plug.open_configure()
 
 	@staticmethod
-	def onPlugExportToIcsClick(_menu: gtk.Menu, plug: PluginType) -> None:
+	def onPlugExportToIcsClick(_w: gtk.Widget, plug: PluginType) -> None:
 		from scal3.ui_gtk.export import ExportToIcsDialog
 
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
@@ -1628,13 +1627,16 @@ class PreferencesWindow(gtk.Window):
 		)
 		item.set_sensitive(plug.hasConfig)
 		menu.add(item)
+
 		# --
+		def onPlugExportToIcsClick(w: gtk.Widget) -> None:
+			self.onPlugExportToIcsClick(w, plug)
+
 		menu.add(
 			ImageMenuItem(
 				_("Export to {format}").format(format="iCalendar"),
 				imageName="text-calendar-ics.png",
-				func=self.onPlugExportToIcsClick,
-				args=(plug,),
+				func=onPlugExportToIcsClick,
 			),
 		)
 		# --
@@ -1659,13 +1661,19 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddDialog.run()
 		self.pluginsToolbar.setCanAdd(len(self.plugAddItems) > 0)
 
-	def plugAddDialogClose(
+	def plugAddDialogDeleteEvent(
 		self,
 		_widget: gtk.Widget,
-		_gevent: gdk.Event | None = None,
+		_gevent: gdk.Event,
 	) -> bool:
 		self.plugAddDialog.hide()
 		return True
+
+	def plugAddDialogClose(
+		self,
+		_widget: gtk.Widget,
+	) -> None:
+		self.plugAddDialog.hide()
 
 	def plugTreeviewCellToggled(
 		self,

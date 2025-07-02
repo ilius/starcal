@@ -308,7 +308,7 @@ def labelImageButton(
 	label: str = "",
 	imageName: str = "",
 	size: int = 0,
-	func: Callable | None = None,
+	func: Callable[[gtk.Button], None] | None = None,
 	tooltip: str = "",
 	spacing: int = 10,
 ) -> gtk.Button:
@@ -403,7 +403,7 @@ def dialog_add_button(
 	res: int,
 	iconName: str = "",
 	label: str = "",
-	onClick: Callable | None = None,
+	onClick: Callable[[gtk.Widget], None] | None = None,
 	tooltip: str = "",
 	imageName: str = "",
 ) -> gtk.Button:

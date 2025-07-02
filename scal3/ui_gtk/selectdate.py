@@ -47,7 +47,7 @@ class SelectDateDialog(Dialog):
 		self.set_title(_("Select Date..."))
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
-		self.connect("delete-event", self.onCancel)
+		self.connect("delete-event", self.onDeleteEvent)
 		self.calType = calTypes.primary
 		# Receiving dropped day!
 		self.drag_dest_set(
@@ -101,7 +101,7 @@ class SelectDateDialog(Dialog):
 			res=gtk.ResponseType.CANCEL,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
-			onClick=self.onCancel,
+			onClick=self.onCancelClick,
 		)
 		dialog_add_button(
 			self,
@@ -176,9 +176,12 @@ class SelectDateDialog(Dialog):
 		if parentWin is not None:
 			parentWin.present()
 
-	def onCancel(self, _w: gtk.Widget, _ge: gdk.Event | None = None) -> bool:
+	def onDeleteEvent(self, _w: gtk.Widget, _ge: gdk.Event | None = None) -> bool:
 		self.onResponse()
 		return True
+
+	def onCancelClick(self, _w: gtk.Widget) -> None:
+		self.onResponse()
 
 	def set(self, y: int, m: int, d: int) -> None:
 		self.ymdBox.set_value((y, m, d))

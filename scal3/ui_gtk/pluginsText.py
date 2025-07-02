@@ -23,6 +23,7 @@ from scal3.ui_gtk.utils import (
 from scal3.utils import findWordByPos, toStr
 
 if TYPE_CHECKING:
+	from scal3.font import Font
 	from scal3.plugin_type import PluginType
 	from scal3.property import Property
 	from scal3.ui_gtk.pref_utils import PrefItem
@@ -60,7 +61,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		else:
 			return True
 
-	def copy(self, _item: gtk.MenuItem) -> None:
+	def copy(self, _item: gtk.Widget) -> None:
 		buf = self.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
@@ -105,20 +106,28 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		plug, text = occurData
 		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
 		# ----
+
+		def copyText(_w: gtk.Widget) -> None:
+			setClipboard(text)
+
+		def configure(_w: gtk.Widget) -> None:
+			self.onPlugConfClick(plug)
+
+		def about(_w: gtk.Widget) -> None:
+			self.onPlugAboutClick(plug)
+
 		menu.add(
 			ImageMenuItem(
 				_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
 				imageName="edit-copy.svg",
-				func=self.copyTextFromMenu,
-				args=(text,),
+				func=copyText,
 			),
 		)
 		# ----
 		item = ImageMenuItem(
 			_("C_onfigure Plugin"),
 			imageName="preferences-system.svg",
-			func=self.onPlugConfClick,
-			args=(plug,),
+			func=configure,
 		)
 		item.set_sensitive(plug.hasConfig)
 		menu.add(item)
@@ -126,8 +135,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		item = ImageMenuItem(
 			_("_About Plugin"),
 			imageName="dialog-information.svg",
-			func=self.onPlugAboutClick,
-			args=(plug,),
+			func=about,
 		)
 		item.set_sensitive(bool(plug.about))
 		menu.add(item)
@@ -138,13 +146,13 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		pass
 
 	@staticmethod
-	def onPlugConfClick(_item: gtk.MenuItem, plug: PluginType) -> None:
+	def onPlugConfClick(plug: PluginType) -> None:
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
 		ud.windowList.onConfigChange()
 
-	def onPlugAboutClick(self, _item: gtk.MenuItem, plug: PluginType) -> None:
+	def onPlugAboutClick(self, plug: PluginType) -> None:
 		from scal3.ui_gtk.about import AboutDialog
 
 		if hasattr(plug, "open_about"):
@@ -164,10 +172,6 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
-
-	@staticmethod
-	def copyTextFromMenu(_item: gtk.MenuItem, text: str) -> None:
-		setClipboard(text)
 
 	def addText(self, text: str) -> None:
 		textbuff = self.get_buffer()
@@ -226,12 +230,15 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		menu.add(itemCopy)
 		# ----
 		if "://" in word:
+
+			def copyWord(_w: gtk.Widget) -> None:
+				setClipboard(word)
+
 			menu.add(
 				ImageMenuItem(
 					_("Copy _URL"),
 					imageName="edit-copy.svg",
-					func=self.copyText,
-					args=(word,),
+					func=copyWord,
 				),
 			)
 		# ----
@@ -262,10 +269,10 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		self,
 		hideIfEmpty: bool = True,
 		tabToNewline: bool = False,
-		insideExpanderParam: Property | None = None,
-		justificationParam: Property | None = None,
-		fontEnableParam: Property | None = None,
-		fontParam: Property | None = None,
+		insideExpanderParam: Property[bool] | None = None,
+		justificationParam: Property[str] | None = None,
+		fontEnableParam: Property[bool] | None = None,
+		fontParam: Property[Font | None] | None = None,
 		styleClass: str = "",
 	) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)

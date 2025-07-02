@@ -47,5 +47,5 @@ class EventNotifier(SObj):
 	def getCalType(self) -> int:
 		return self.event.calType
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: Callable[[], None]) -> None:
 		pass
