@@ -38,7 +38,6 @@ from scal3.path import confDir
 from scal3.property import Property
 from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event import common, setActionFuncs
 from scal3.ui_gtk.event.editor import addNewEvent
 from scal3.ui_gtk.event.export import (
@@ -61,6 +60,7 @@ from scal3.ui_gtk.event.utils import (
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import (
 	confirm,

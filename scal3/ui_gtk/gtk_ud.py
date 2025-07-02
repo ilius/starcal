@@ -42,9 +42,9 @@ from scal3.locale_man import tr as _
 from scal3.path import confDir, sourceDir, sysConfDir
 from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

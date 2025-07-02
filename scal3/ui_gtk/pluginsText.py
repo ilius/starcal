@@ -12,9 +12,9 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import (
 	buffer_get_text,
 	openWindow,

@@ -33,7 +33,6 @@ from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import GdkPixbuf, HBox, Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.common import SingleGroupComboBox
 from scal3.ui_gtk.event.export import EventListExportDialog
 from scal3.ui_gtk.event.utils import (
@@ -49,6 +48,7 @@ from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyWindow
 from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import (
 	labelImageButton,
 	newHSep,

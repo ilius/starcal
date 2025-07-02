@@ -11,8 +11,8 @@ from scal3.ui import conf
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.label import SLabel
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.pref_utils import PrefItem

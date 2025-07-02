@@ -6,8 +6,8 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.pbar import MyProgressBar
+from scal3.ui_gtk.signals import registerSignals
 
 __all__ = ["CalObj"]
 
