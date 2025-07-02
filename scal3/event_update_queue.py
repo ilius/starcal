@@ -32,7 +32,7 @@ Usage:
 class EventUpdateRecord:
 	action: str
 	obj: EventType | EventGroupType | EventTrash
-	sender: CalObjType | None  # gtk_ud.BaseCalObj
+	sender: CalObjType | None
 
 
 class ConsumerType(Protocol):
