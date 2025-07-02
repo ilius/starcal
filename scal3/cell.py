@@ -187,7 +187,7 @@ class Cell:
 	# How do this with KOrginizer? FIXME
 	def dayOpenEvolution(
 		self,
-		arg: object = None,  # noqa: ARG002
+		_arg: object = None,  # noqa: ARG002
 	) -> None:
 		from subprocess import Popen
 
