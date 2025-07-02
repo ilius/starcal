@@ -654,9 +654,9 @@ def screenSizeChanged(_screen: gdk.Screen) -> None:
 		return
 	display = gdk.Display.get_default()
 	assert display is not None
-	monitor = display.get_monitor_at_window(
-		ui.mainWin.get_window(),
-	)
+	win = ui.mainWin.get_window()
+	assert win is not None
+	monitor = display.get_monitor_at_window(win)
 	screenSize = monitor.get_geometry()
 	workAreaSize = monitor.get_workarea()
 	screenW, screenH = screenSize.width, screenSize.height

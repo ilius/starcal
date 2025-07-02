@@ -13,20 +13,20 @@ if TYPE_CHECKING:
 __all__ = ["WidgetClass"]
 
 
-class WidgetClass(gtk.ComboBox):
-	def show(self) -> None:
-		gtk.ComboBox.show(self.w)
+class WidgetClass(gtk.Box):
+	# def show(self) -> None:
+	# 	gtk.ComboBox.show(self.w)
 
 	def __init__(self, rule: DateAndTimeEventRule) -> None:
 		self.rule = rule
 		# ---
-		gtk.ComboBox.__init__(self)
-		self.w = self
+		gtk.Box.__init__(self)
+		self.w: gtk.Box = self
 		# ---
 		self.dateInput = DateButton()
-		pack(self, self.dateInput)
+		pack(self.w, self.dateInput)
 		# ---
-		pack(self, gtk.Label(label="   " + _("Time")))
+		pack(self.w, gtk.Label(label="   " + _("Time")))
 		self.timeInput = TimeButton()
 		pack(self, self.timeInput)
 

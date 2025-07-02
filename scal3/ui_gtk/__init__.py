@@ -72,7 +72,7 @@ TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
 
 
 def pack(
-	box: gtk.Box | gtk.CellLayout,
+	box: gtk.Box,
 	child: gtk.Widget,
 	expand: bool | int = False,
 	fill: bool | int = False,
