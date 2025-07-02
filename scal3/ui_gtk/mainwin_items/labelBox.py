@@ -42,10 +42,10 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.ui_gtk.mywidgets.button import ConButton
+from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import (
 	get_menu_width,
 	imageFromIconName,

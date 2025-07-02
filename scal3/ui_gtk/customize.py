@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 from scal3 import ui
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
 	from scal3.property import Property
