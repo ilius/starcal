@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.event_lib.events import LifetimeEvent, TaskEvent
+from scal3.ui_gtk.customize import CustomizableCalObj
 
 log = logger.get()
 
@@ -59,10 +60,10 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.timeline_box import (
 	drawBoxBG,
 	drawBoxBorder,
@@ -84,14 +85,13 @@ if TYPE_CHECKING:
 __all__ = ["TimeLineWindow"]
 
 
-@registerSignals
-class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
+class TimeLine(CustomizableCalObj):
 	objName = "timeLine"
 	desc = _("Time Line")
 
 	def __init__(self, closeFunc: Callable[[], None]) -> None:
-		gtk.DrawingArea.__init__(self)
-		self.w: gtk.DrawingArea = self
+		super().__init__()
+		self.w = gtk.DrawingArea()
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		self.prefWindow: TimeLinePreferencesWindow | None = None
@@ -1041,15 +1041,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):  # type: ignore[misc]
 		self.movingV = 0
 
 
-@registerSignals
-class TimeLineWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
+class TimeLineWindow(CalObjWidget):
 	objName = "timeLineWin"
 	desc = _("Time Line")
 
 	def __init__(self) -> None:
-		gtk.Window.__init__(self)
-		self.w: gtk.Window = self
-		win: gtk.Window = self
+		win = gtk.Window()
+		self.w: gtk.Window = win
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from os.path import join
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from scal3 import ui
 from scal3.locale_man import rtl
@@ -13,8 +13,12 @@ from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
-from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
+
+if TYPE_CHECKING:
+	from collections.abc import Iterator
+
+	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CalObj"]
 
@@ -63,20 +67,20 @@ themeFileSet = {
 
 
 class MainWinType(Protocol):
-	w: gtk.Window
+	w: gtk.ApplicationWindow
+	s: SignalHandlerType
 
 	def childButtonPress(
 		self,
 		widget: gtk.Widget,  # noqa: ARG002
-		gevent: gdk.Event,
+		gevent: gdk.EventButton,
 	) -> bool: ...
 	def toggleMinimized(self, gevent: gdk.EventButton) -> None: ...
 	def toggleMaximized(self, _ge: gdk.EventButton) -> None: ...
 	def toggleWidthMaximized(self, _ge: gdk.EventButton) -> None: ...
 
 
-@registerSignals
-class WinConButton(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
+class WinConButton(CustomizableCalObj):
 	hasOptions = False
 	expand = False
 
@@ -86,18 +90,18 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 	imageNamePress = ""
 
 	def __init__(self, controller: CalObj) -> None:
-		gtk.EventBox.__init__(self)
-		self.set_border_width(conf.winControllerBorder.v)
+		super().__init__()
+		self.w: gtk.EventBox = gtk.EventBox()
+		self.w.set_border_width(conf.winControllerBorder.v)
 		self.initVars()
 		# ---
 		self.controller = controller
-		CustomizableCalObj.initVars(self)
 		self.build()
 		# ---
 		if controller.win:
-			self.connect("button-press-event", controller.win.childButtonPress)
+			self.w.connect("button-press-event", controller.win.childButtonPress)
 		# ---
-		self.show_all()
+		self.w.show_all()
 
 	def setImage(self, imName: str) -> None:
 		if self.controller.light:
@@ -131,12 +135,12 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 	def build(self) -> None:
 		self.im = gtk.Image()
 		self.setFocus(False)
-		self.add(self.im)
-		self.connect("enter-notify-event", self.enterNotify)
-		self.connect("leave-notify-event", self.leaveNotify)
-		self.connect("button-press-event", self.onButtonPress)
-		self.connect("button-release-event", self.onButtonRelease)
-		set_tooltip(self, self.desc)  # FIXME
+		self.w.add(self.im)
+		self.w.connect("enter-notify-event", self.enterNotify)
+		self.w.connect("leave-notify-event", self.leaveNotify)
+		self.w.connect("button-press-event", self.onButtonPress)
+		self.w.connect("button-release-event", self.onButtonRelease)
+		set_tooltip(self.w, self.desc)  # FIXME
 
 	def enterNotify(self, _w: gtk.Widget, _ge: gdk.EventMotion) -> None:
 		self.setFocus(True)
@@ -220,7 +224,7 @@ class WinConButtonRightPanel(WinConButton):
 		WinConButton.__init__(self, controller)
 
 	def onClick(self, win: MainWinType, _ge: gdk.EventButton) -> None:  # noqa: PLR6301
-		win.w.emit("toggle-right-panel")
+		win.s.emit("toggle-right-panel")
 
 
 class WinConButtonSep(WinConButton):
@@ -243,8 +247,7 @@ class WinConButtonSep(WinConButton):
 # Below
 
 
-@registerSignals
-class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
+class CalObj(CustomizableCalBox):
 	vertical = False
 	hasOptions = True
 	itemHaveOptions = False
@@ -260,14 +263,10 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
 	def __init__(self, win: MainWinType) -> None:
+		CustomizableCalBox.__init__(self, vertical=False)
 		self.win = win
-		gtk.Box.__init__(
-			self,
-			orientation=gtk.Orientation.HORIZONTAL,
-			spacing=conf.winControllerSpacing.v,
-		)
-		self.set_spacing(conf.winControllerSpacing.v)
-		self.set_direction(gtk.TextDirection.LTR)  # FIXME
+		self.w.set_spacing(conf.winControllerSpacing.v)
+		self.w.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
@@ -277,7 +276,7 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 			button = self.buttonClassDict[bname](self)
 			button.enable = enable
 			self.appendItem(button)
-		self.set_property("can-focus", True)
+		self.w.set_property("can-focus", True)
 		# ------------------
 		# if win:
 		# 	win.winCon = self  # dirty FIXME REMOVE
@@ -285,12 +284,18 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
 
+	@property
+	def buttons(self) -> Iterator[WinConButton]:
+		for b in self.items:
+			assert isinstance(b, WinConButton)
+			yield b
+
 	def windowFocusIn(
 		self,
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
-		for b in self.items:
+		for b in self.buttons:
 			b.setFocus(False)
 		self.winFocused = True
 		return False
@@ -300,7 +305,7 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
-		for b in self.items:
+		for b in self.buttons:
 			b.setInactive()
 		self.winFocused = False
 		return False
@@ -385,14 +390,14 @@ class CalObj(gtk.Box, CustomizableCalBox):  # type: ignore[misc]
 			print(f"Extra svg files: {extraFiles}")
 
 	def updateButtons(self) -> None:
-		for item in self.items:
+		for item in self.buttons:
 			item.setFocus(False)
 
 	def onButtonBorderChange(self) -> None:
-		for item in self.items:
-			item.set_border_width(conf.winControllerBorder.v)
+		for item in self.buttons:
+			item.w.set_border_width(conf.winControllerBorder.v)
 		self.updateButtons()
 
 	def onButtonPaddingChange(self) -> None:
-		self.set_spacing(conf.winControllerSpacing.v)
+		self.w.set_spacing(conf.winControllerSpacing.v)
 		self.updateButtons()

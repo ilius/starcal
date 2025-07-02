@@ -246,7 +246,7 @@ class DayNumParamsWidget(gtk.Box):
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
 		self.params.v = self.get()
-		self.cal.queue_draw()
+		self.cal.w.queue_draw()
 
 	def setFontPreviewText(self, text: str) -> None:
 		self.fontb.set_property("preview-text", text)
@@ -427,7 +427,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
 		self.params.v = self.get()
-		self.cal.queue_draw()
+		self.cal.w.queue_draw()
 
 	def setFontPreviewText(self, text: str) -> None:
 		self.fontb.set_property("preview-text", text)

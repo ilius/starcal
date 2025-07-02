@@ -6,7 +6,8 @@ from scal3 import core
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.gtk_ud import commonSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
 
 if TYPE_CHECKING:
@@ -31,13 +32,14 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		# self.setIconFile("starcal.svg")
 
 	def getMenuPos(self) -> tuple[int, int]:
-		parent = self.get_parent()
+		parent = self.w.get_parent()
 		assert parent is not None
 		wcal = parent.get_parent()
 		assert wcal is not None
-		w = self.get_allocation().width
-		h = self.get_allocation().height
-		coords = self.translate_coordinates(wcal, 0, 0)
+		alloc = self.w.get_allocation()
+		w = alloc.width
+		h = alloc.height
+		coords = self.w.translate_coordinates(wcal, 0, 0)
 		assert coords is not None
 		x0, y0 = coords
 		return (
@@ -50,11 +52,11 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		_widget: gtk.Widget,
 		gevent: gdk.EventButton,
 	) -> None:
-		toolbar = self.get_parent()
+		toolbar = self.w.get_parent()
 		assert toolbar is not None
 		wcal = toolbar.get_parent()
 		assert wcal is not None
-		coords = self.translate_coordinates(
+		coords = self.w.translate_coordinates(
 			wcal,
 			int(gevent.x),
 			int(gevent.y),
@@ -69,12 +71,16 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 
 @registerSignals
-class CalObj(CustomizableToolBox):
-	itemHaveOptions = False
-	desc = _("Toolbar (Horizontal)")
-	signals = CustomizableToolBox.signals + [
+class SignalHandler(SignalHandlerBase):
+	signals = commonSignals + [
 		("popup-main-menu", [int, int]),
 	]
+
+
+class CalObj(CustomizableToolBox):
+	Sig = SignalHandler
+	itemHaveOptions = False
+	desc = _("Toolbar (Horizontal)")
 
 	defaultItems = [
 		MainMenuToolBoxItem(),
@@ -157,12 +163,12 @@ class CalObj(CustomizableToolBox):
 	defaultItemsDict = {item.objName: item for item in defaultItems}
 
 	def __init__(self, win: MainWin) -> None:
-		self.win = win
 		CustomizableToolBox.__init__(
 			self,
 			win,
 			continuousClick=False,
 		)
+		self.win = win
 		if not ud.mainToolbarData["items"]:
 			ud.mainToolbarData["items"] = [
 				(item.objName, True) for item in self.defaultItems
@@ -175,8 +181,8 @@ class CalObj(CustomizableToolBox):
 
 		self.setDict(ud.mainToolbarData)
 		if win:
-			self.connect("button-press-event", win.childButtonPress)
-			self.connect("popup-main-menu", win.menuMainPopup)
+			self.w.connect("button-press-event", win.childButtonPress)
+			self.s.connect("popup-main-menu", win.menuMainPopup)
 
 	def updateVars(self) -> None:
 		CustomizableToolBox.updateVars(self)

@@ -1,19 +1,24 @@
 from time import localtime
 from time import time as now
+from typing import Any
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui_gtk import timeout_add
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
-from scal3.ui_gtk.signals import registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 
 __all__ = ["TimerButton"]
 
 
 @registerSignals
-class TimerButton(TimeButton):
-	signals = [
+class SignalHandler(SignalHandlerBase):
+	signals: list[tuple[str, list[Any]]] = [
 		("time-elapse", []),
 	]
+
+
+class TimerButton(TimeButton):
+	Sig = SignalHandler
 
 	def __init__(self, **kwargs) -> None:
 		TimeButton.__init__(self, **kwargs)

@@ -39,7 +39,7 @@ __all__ = ["TimeLinePreferencesWindow"]
 
 
 class TimeLineType(typing.Protocol):
-	def queue_draw(self) -> None: ...
+	w: gtk.Widget
 
 	def updateBasicButtons(self) -> None: ...
 
@@ -103,7 +103,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = ColorPrefItem(
 			prop=conf.bgColor,
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -113,7 +113,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = ColorPrefItem(
 			prop=conf.fgColor,
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -126,7 +126,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Base Font Size"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -144,7 +144,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 				# useAlpha=False,
 			),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -165,7 +165,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		def updateBasicButtons() -> None:
 			timeLine.updateBasicButtons()
-			timeLine.queue_draw()
+			timeLine.w.queue_draw()
 
 		hbox = HBox(spacing=5)
 		prefItem = IntSpinPrefItem(
@@ -198,7 +198,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		def updateMovementButtons() -> None:
 			timeLine.updateMovementButtons()
-			timeLine.queue_draw()
+			timeLine.w.queue_draw()
 
 		hbox = HBox(spacing=5)
 		prefItem = CheckPrefItem(
@@ -268,7 +268,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Major Indicator Step (Minimum)"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -283,7 +283,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Minor Indicator Step (Minimum)"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -309,7 +309,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Base Height"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -323,7 +323,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Base Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -337,7 +337,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Maximum Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -351,7 +351,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=0.1,
 			label=_("Maximum Height"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
@@ -365,7 +365,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Maximum Label Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -398,7 +398,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=0.1,
 			label=_("Maximum Height"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
@@ -412,7 +412,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -424,7 +424,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			prop=conf.currentTimeMarkerColor,
 			# useAlpha=False,
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -446,7 +446,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			prop=conf.showWeekStart,
 			label=_("Show Week Start"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -457,7 +457,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			prop=conf.weekStartTickColor,
 			# useAlpha=False,
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -469,7 +469,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Minimum Interval"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
@@ -482,7 +482,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Maximum Interval"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
@@ -506,7 +506,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Border Line Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -520,7 +520,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=0.1,
 			label=_("Inner Opacity"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -533,7 +533,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Editing Border Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -547,7 +547,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Editing Inner Line Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -561,7 +561,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Editing Helper Line Width"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -572,7 +572,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			prop=conf.boxReverseGravity,
 			label=_("Reverse Gravity"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -602,7 +602,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		def enableAnimationChanged() -> None:
 			noAnimVBox.set_sensitive(not animation)
 			animVBox.set_sensitive(animation)
-			timeLine.queue_draw()
+			timeLine.w.queue_draw()
 
 		prefItem = CheckPrefItem(
 			prop=conf.enableAnimation,
@@ -627,7 +627,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Step with mouse scroll"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -641,7 +641,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Step with keyboard"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
@@ -669,7 +669,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Initial Velocity"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
@@ -683,7 +683,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Maximum Velocity"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
@@ -697,7 +697,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Acceleration with mouse"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(
@@ -717,7 +717,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Acceleration with keyboard"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(
@@ -737,7 +737,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Acceleration with keyboard (with Shift)"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(
@@ -757,7 +757,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Acceleration with buttons"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(
@@ -777,7 +777,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=1,
 			label=_("Friction Acceleration"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(
@@ -810,7 +810,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=0.1,
 			label=_("Zoom Factor by Mouse Scroll"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
@@ -823,7 +823,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			step=0.1,
 			label=_("Zoom Factor by Keyboard"),
 			live=True,
-			onChangeFunc=timeLine.queue_draw,
+			onChangeFunc=timeLine.w.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)

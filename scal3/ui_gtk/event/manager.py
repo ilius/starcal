@@ -18,7 +18,6 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
-from scal3.ui_gtk.signals import registerSignals
 
 log = logger.get()
 import typing
@@ -59,7 +58,7 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
-from scal3.ui_gtk.gtk_ud import BaseCalObj
+from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
@@ -166,16 +165,14 @@ class EventManagerToolbar(VerticalStaticToolBox):
 		)
 
 
-@registerSignals
-class EventManagerDialog(MyDialog, BaseCalObj):  # type: ignore[misc]
+class EventManagerDialog(CalObjWidget):
 	objName = "eventMan"
 	desc = _("Event Manager")
 
 	def __init__(self, **kwargs) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
-		MyDialog.__init__(self, **kwargs)
-		self.w: MyDialog = self
+		self.w: MyDialog = MyDialog(**kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)

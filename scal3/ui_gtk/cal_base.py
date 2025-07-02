@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 
 log = logger.get()
 
@@ -25,24 +26,31 @@ from scal3 import core, ui
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
+from scal3.ui_gtk.gtk_ud import commonSignals
 
 if TYPE_CHECKING:
 	from scal3.cell_type import CellType
 	from scal3.ui_gtk.stack import StackPage
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalBase"]
 
 
-class CalBase(CustomizableCalObj):
-	dragAndDropEnable = True
-	doubleClickEnable = True
-	signals = CustomizableCalObj.signals + [
+@registerSignals
+class SignalHandler(SignalHandlerBase):
+	signals = commonSignals + [
 		("popup-cell-menu", [int, int]),
 		("popup-main-menu", [int, int]),
 		("double-button-press", []),
 		("pref-update-bg-color", []),
 		("day-info", []),
 	]
+
+
+class CalBase(CustomizableCalObj):
+	Sig = SignalHandler
+	dragAndDropEnable = True
+	doubleClickEnable = True
 	myKeys: set[str] = {
 		"space",
 		"home",
@@ -50,12 +58,7 @@ class CalBase(CustomizableCalObj):
 		"menu",
 		"i",
 	}
-
-	def connect(self, sigName: str, *a, **ka) -> None:
-		try:
-			CustomizableCalObj.connect(self, sigName, *a, **ka)
-		except Exception:
-			log.exception(f"{sigName=}")
+	win: MainWin
 
 	def initCal(self) -> None:
 		self.initVars()
@@ -64,12 +67,7 @@ class CalBase(CustomizableCalObj):
 		if self.dragAndDropEnable:
 			self.defineDragAndDrop()
 		if self.doubleClickEnable:
-			self.connect("double-button-press", ui.cells.current.dayOpenEvolution)
-		if self.win:
-			self.connect("popup-cell-menu", self.win.menuCellPopup, self.objName)
-			self.connect("popup-main-menu", self.win.menuMainPopup)
-			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
-			self.connect("day-info", self.win.dayInfoShow)
+			self.s.connect("double-button-press", ui.cells.current.dayOpenEvolution)
 		# ---
 		self.subPages: list[StackPage] | None = None
 
@@ -95,31 +93,31 @@ class CalBase(CustomizableCalObj):
 		self.onDateChange()
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: ARG002
-		self.queue_draw()
+		self.w.queue_draw()
 
 	@staticmethod
 	def getCellPagePlus(cell: CellType, plus: int) -> CellType:  # use for sliding
 		raise NotImplementedError
 
 	def defineDragAndDrop(self) -> None:
-		self.drag_source_set(
+		self.w.drag_source_set(
 			gdk.ModifierType.MODIFIER_MASK,
 			[],
 			gdk.DragAction.COPY,  # FIXME
 		)
-		self.drag_source_add_text_targets()
+		self.w.drag_source_add_text_targets()
 		# ---
-		self.connect("drag-data-get", self.dragDataGet)
-		self.connect("drag-begin", self.dragBegin)
-		self.connect("drag-data-received", self.dragDataRec)
+		self.w.connect("drag-data-get", self.dragDataGet)
+		self.w.connect("drag-begin", self.dragBegin)
+		self.w.connect("drag-data-received", self.dragDataRec)
 		# ---
-		self.drag_dest_set(
+		self.w.drag_dest_set(
 			gtk.DestDefaults.ALL,
 			[],
 			gdk.DragAction.COPY,  # FIXME
 		)
-		self.drag_dest_add_text_targets()
-		self.drag_dest_add_uri_targets()
+		self.w.drag_dest_add_text_targets()
+		self.w.drag_dest_add_uri_targets()
 		# ACTION_MOVE, FIXME
 		# if source ACTION was ACTION_COPY, calendar recieves its own
 		# dragged day just like gnome-calendar-applet
@@ -190,7 +188,7 @@ class CalBase(CustomizableCalObj):
 		# 		ord(sdata[5]),
 		# 		ord(sdata[7]),
 		# 	)
-		# 	self.emit("pref-update-bg-color")
+		# 	self.s.emit("pref-update-bg-color")
 		# 	self.queue_draw()
 		# 	return False
 
@@ -224,9 +222,9 @@ class CalBase(CustomizableCalObj):
 		if kname in {"space", "home", "t"}:
 			self.goToday()
 		elif kname == "menu":
-			self.emit("popup-cell-menu", *self.getCellPos())
+			self.s.emit("popup-cell-menu", *self.getCellPos())
 		elif kname == "i":
-			self.emit("day-info")
+			self.s.emit("day-info")
 		else:
 			return False
 		return True
