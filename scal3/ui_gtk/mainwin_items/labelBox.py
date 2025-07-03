@@ -29,7 +29,6 @@ from scal3.color_utils import colorizeSpan
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
-	Dialog,
 	HBox,
 	Menu,
 	MenuItem,
@@ -57,6 +56,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
 
@@ -65,7 +65,9 @@ primaryCalStyleClass = "primarycal"
 
 class BaseLabel(gtk.EventBox):
 	def __init__(self, calType: int) -> None:
-		gtk.EventBox.__init__(self)
+		super().__init__()
+		self.w: gtk.EventBox = self
+		self.s = self
 		self.calType = calType
 
 
@@ -100,22 +102,22 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
 
 	def __init__(self, calType: int, active: int = 0) -> None:
 		BaseLabel.__init__(self, calType)
-		self.get_style_context().add_class(self.styleClass)
+		self.w.get_style_context().add_class(self.styleClass)
 		# ---
 		self.objName = f"monthLabel({calType})"
 		# self.set_border_width(1)#???????????
 		self.initVars()
 		# ---
 		if calType == calTypes.primary:
-			self.get_style_context().add_class(primaryCalStyleClass)
+			self.w.get_style_context().add_class(primaryCalStyleClass)
 		# ---
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
-		self.add(self.label)
+		self.w.add(self.label)
 		self.menu = Menu()
 		self.menu.set_border_width(0)
 		self.menuLabels: list[gtk.Label] = []
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.connect("button-press-event", self.onButtonPress)
 		self.active = active
 		self.setActive(active)
 
@@ -184,14 +186,14 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 3:
 			self.createMenuLabels()
-			win = self.get_window()
+			win = self.w.get_window()
 			assert win is not None
 			_foo, x, y = win.get_origin()
 			# foo == 1, doc says "not meaningful, ignore"
-			y += self.get_allocation().height
+			y += self.w.get_allocation().height
 			# align menu to center:
 			x -= int(
-				(get_menu_width(self.menu) - self.get_allocation().width) // 2,
+				(get_menu_width(self.menu) - self.w.get_allocation().width) // 2,
 			)
 			self.menu.popup(
 				None,
@@ -207,7 +209,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):  # type: ignore[misc]
 		return False
 
 	def onDateChange(self, *a, **ka) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		self.setActive(ui.cells.current.dates[self.calType][1] - 1)
 
 
@@ -228,9 +230,9 @@ class IntLabel(BaseLabel):
 		# self.delay = delay
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
-		self.add(self.label)
+		self.w.add(self.label)
 		self.menu: Menu | None = None
-		self.connect("button-press-event", self.onButtonPress)
+		self.w.connect("button-press-event", self.onButtonPress)
 		self.active = active
 		self.setActive(active)
 		self.start = 0
@@ -309,16 +311,16 @@ class IntLabel(BaseLabel):
 
 	def itemActivate(self, _item: MenuItem, index: int) -> None:
 		self.setActive(self.start + index)
-		self.emit("changed", self.start + index)
+		self.s.emit("changed", self.start + index)
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 3:
 			self.updateMenu()
 			assert self.menu is not None
-			win = self.get_window()
+			win = self.w.get_window()
 			assert win is not None
 			_foo, x, y = win.get_origin()
-			y += self.get_allocation().height
+			y += self.w.get_allocation().height
 			x -= 6  # FIXME: because of menu padding
 			self.menu.popup(
 				None,
@@ -401,11 +403,11 @@ class YearLabel(IntLabel, ud.BaseCalObj):  # type: ignore[misc]
 		self.objName = f"yearLabel({calType})"
 		self.initVars()
 		# ---
-		self.get_style_context().add_class(self.styleClass)
+		self.w.get_style_context().add_class(self.styleClass)
 		if calType == calTypes.primary:
-			self.get_style_context().add_class(primaryCalStyleClass)
+			self.w.get_style_context().add_class(primaryCalStyleClass)
 		# ---
-		self.connect("changed", self.onChanged)
+		self.s.connect("changed", self.onChanged)
 
 	def onChanged(self, _label: gtk.Widget, year: int) -> None:
 		calType = self.calType
@@ -418,7 +420,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):  # type: ignore[misc]
 		# self.onDateChange()
 
 	def onDateChange(self, *a, **ka) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		self.setActive(ui.cells.current.dates[self.calType][0])
 
 	def setActive(self, active: int) -> None:
@@ -457,6 +459,7 @@ class SmallNoFocusButton(ConButton):
 class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	def __init__(self, calType: int, **kwargs) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Box = self
 		self.initVars()
 		# ---
 		self.removeButton = SmallNoFocusButton(
@@ -469,12 +472,12 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 			self.onNextClick,
 			_("Next Year"),
 		)
-		pack(self, self.removeButton)
+		pack(self.w, self.removeButton)
 		# ---
 		self.label = YearLabel(calType, **kwargs)
-		pack(self, self.label)
+		pack(self.w, self.label.w)
 		# ---
-		pack(self, self.addButton)
+		pack(self.w, self.addButton)
 
 	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(-1)
@@ -495,6 +498,7 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 	def __init__(self, calType: int, **kwargs) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Box = self
 		self.initVars()
 		self.removeButton = SmallNoFocusButton(
 			"list-remove.svg",
@@ -507,12 +511,12 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 			_("Next Month"),
 		)
 		# ---
-		pack(self, self.removeButton)
+		pack(self.w, self.removeButton)
 		# ---
 		self.label = MonthLabel(calType, **kwargs)
-		pack(self, self.label)
+		pack(self.w, self.label.w)
 		# ---
-		pack(self, self.addButton)
+		pack(self.w, self.addButton)
 
 	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.monthPlus(-1)
@@ -548,11 +552,12 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 			font.bold = True
 		return font
 
-	def __init__(self, win: gtk.Window) -> None:
+	def __init__(self, win: MainWin) -> None:
 		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Box = self
 		self.initVars()
-		self.get_style_context().add_class(self.styleClass)
+		self.w.get_style_context().add_class(self.styleClass)
 		# self.set_border_width(2)
 		self.ybox: YearLabelButtonBox | None = None
 		self.mbox: MonthLabelButtonBox | None = None
@@ -566,13 +571,13 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 
 	def updateIconSize(self) -> None:
 		alphabet = locale_man.getAlphabet()
-		height = calcTextPixelSize(self.win, alphabet, font=self.getFont())[1]
+		height = calcTextPixelSize(self.win.w, alphabet, font=self.getFont())[1]
 		conf.labelBoxIconSize.v = int(height * 0.6)
 
 	def updateTextWidth(self) -> None:
 		font = self.getFont()
 		pfont = pfontEncode(font)
-		lay = self.create_pango_layout("")
+		lay = self.w.create_pango_layout("")
 		lay.set_font_description(pfont)
 		for label in self.monthLabels:
 			wm = 0
@@ -585,7 +590,7 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 				# OR lay.set_markup
 				w = lay.get_pixel_size()[0]
 				wm = max(w, wm)
-			label.set_property("width-request", wm)
+			label.w.set_property("width-request", wm)
 
 	@staticmethod
 	def getFontPreviewText(calType: int) -> str:
@@ -600,44 +605,45 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		)
 
 	def onConfigChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		# -----
 		self.updateIconSize()
 		# ----
-		for child in self.get_children():
+		for child in self.w.get_children():
 			child.destroy()
 		# ---
 		monthLabels = []
 		calType = calTypes.primary
 		# --
-		box = YearLabelButtonBox(calType)
-		pack(self, box)
-		self.appendItem(box.label)
-		self.ybox = box
+		ybox = YearLabelButtonBox(calType)
+		pack(self.w, ybox.w)
+		self.appendItem(ybox.label)
+		self.ybox = ybox
 		# --
-		pack(self, self.newSeparator(), 1, 1)
+		pack(self.w, self.newSeparator(), 1, 1)
 		# --
-		box = MonthLabelButtonBox(calType)
-		pack(self, box)
-		self.appendItem(box.label)
-		monthLabels.append(box.label)
-		self.mbox = box
+		mbox = MonthLabelButtonBox(calType)
+		pack(self.w, mbox.w)
+		self.appendItem(mbox.label)
+		monthLabels.append(mbox.label)
+		self.mbox = mbox
 		# ----
+		label: CustomizableCalObj
 		for _i, calType in list(enumerate(calTypes.active))[1:]:
-			pack(self, self.newSeparator(), 1, 1)
+			pack(self.w, self.newSeparator(), 1, 1)
 			label = YearLabel(calType)
-			pack(self, label)
+			pack(self.w, label.w)
 			self.appendItem(label)
 			# ---------------
 			label = MonthLabel(calType)
-			pack(self, label, padding=5)
+			pack(self.w, label.w, padding=5)
 			monthLabels.append(label)
 			self.appendItem(label)
 		# ----
 		self.monthLabels = monthLabels
 		self.updateTextWidth()
 		# -----
-		self.show_all()
+		self.w.show_all()
 		# -----
 		self.onDateChange()
 
@@ -682,7 +688,7 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		self.updateTextWidth()
 
 	def onBorderWidthChange(self) -> None:
-		self.set_border_width(conf.labelBoxBorderWidth.v)
+		self.w.set_border_width(conf.labelBoxBorderWidth.v)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
@@ -775,25 +781,3 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return self.optionsWidget
-
-
-if __name__ == "__main__":
-	win = Dialog()
-	box = CalObj(win)
-	win.add_events(
-		gdk.EventMask.POINTER_MOTION_MASK
-		| gdk.EventMask.FOCUS_CHANGE_MASK
-		| gdk.EventMask.BUTTON_MOTION_MASK
-		| gdk.EventMask.BUTTON_PRESS_MASK
-		| gdk.EventMask.BUTTON_RELEASE_MASK
-		| gdk.EventMask.SCROLL_MASK
-		| gdk.EventMask.KEY_PRESS_MASK
-		| gdk.EventMask.VISIBILITY_NOTIFY_MASK
-		| gdk.EventMask.EXPOSURE_MASK,
-	)
-	pack(win.vbox, box, 1, 1)
-	win.vbox.show_all()
-	win.resize(600, 50)
-	win.set_title(box.desc)
-	box.onConfigChange()
-	win.run()
