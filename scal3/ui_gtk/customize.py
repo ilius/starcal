@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.customize_base import CustomizableCalObj
 from scal3.ui_gtk.stack import StackPageButton
 
 log = logger.get()
@@ -24,12 +25,11 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.ui_gtk import gdk, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.signals import registerSignals
 
 if TYPE_CHECKING:
-	from scal3.property import Property
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = [
@@ -91,61 +91,6 @@ class DummyCalObj(ud.CalObjType):
 
 	def showHide(self) -> None:  # noqa: PLR6301
 		pass
-
-
-class CustomizableCalObj(ud.BaseCalObj):
-	customizable = True
-	hasOptions = True
-	itemListCustomizable = True
-	vertical: bool | None = None
-	# vertical: only set (non-None) when `hasOptions and itemListCustomizable`
-	# vertical: True if items are on top of each other
-	isWrapper = False
-	enableParam: Property[bool] | None = None
-	optionsPageSpacing = 0
-	itemListSeparatePage = False
-	itemsPageTitle = ""
-	itemsPageButtonBorder = 5
-	expand = False
-	params = ()
-	myKeys: set[str] = set()
-	objName: str = ""
-
-	def initVars(self) -> None:
-		if self.hasOptions and self.itemListCustomizable and self.vertical is None:
-			log.error(f"Add vertical to {self.__class__}")
-		ud.BaseCalObj.initVars(self)
-		# self.itemWidgets = {}  # for lazy construction of widgets
-		self.optionsWidget: gtk.Widget | None = None
-		try:
-			self.connect("key-press-event", self.onKeyPress)
-		except TypeError as e:
-			if "unknown signal name" not in str(e):
-				log.exception("")
-
-	def getItemsData(self) -> list[tuple[str, bool]]:
-		return [(item.objName, item.enable) for item in self.items]
-
-	def updateVars(self) -> None:
-		for item in self.items:
-			if item.customizable:
-				item.updateVars()
-
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
-		kname = gdk.keyval_name(gevent.keyval)
-		if not kname:
-			return False
-		kname = kname.lower()
-		for item in self.items:
-			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
-				return True
-		return False
-
-	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
-		return None
-
-	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
-		return []
 
 
 class CustomizableCalBox(CustomizableCalObj):
