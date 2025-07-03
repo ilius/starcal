@@ -70,6 +70,8 @@ from scal3.ui_gtk.toolbox import (
 from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
@@ -205,7 +207,7 @@ class ColumnBase(CustomizableCalObj):
 		if self.colParent is None:
 			return
 		self.colParent.set_child_packing(
-			self,
+			self.w,
 			self.expand,
 			self.expand,
 			0,
@@ -223,15 +225,26 @@ class ColumnBase(CustomizableCalObj):
 		return ""
 
 
-class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
+class ColumnDrawingArea(gtk.DrawingArea):
+	def __init__(self, getWidth: Callable[[], int]) -> None:
+		gtk.DrawingArea.__init__(self)
+		self.getWidth = getWidth
+
+	def do_get_preferred_width(self) -> tuple[int, int]:
+		# must return minimum_size, natural_size
+		width = self.getWidth()
+		return width, width
+
+
+class Column(ColumnDrawingArea, ColumnBase):  # type: ignore[misc]
 	colorizeHolidayText = False
 	showCursor = False
 	truncateText = False
 
 	def __init__(self, wcal: CalObj) -> None:
-		gtk.DrawingArea.__init__(self)
+		ColumnDrawingArea.__init__(self, self.getWidth)
 		ColumnBase.__init__(self)
-		self.w: gtk.DrawingArea = self
+		self.w: ColumnDrawingArea = self
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.w.connect("draw", self.onExposeEvent)
 		self.initVars()
@@ -250,11 +263,6 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 			return 0
 		return int(widthProp.v)
 
-	def do_get_preferred_width(self) -> tuple[int, int]:
-		# must return minimum_size, natural_size
-		width = self.getWidth()
-		return width, width
-
 	def onExposeEvent(
 		self,
 		_widget: gtk.Widget | None = None,
@@ -264,7 +272,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 			return
 		if self.wcal.status is None:
 			self.wcal.updateStatus()
-		win = self.get_window()
+		win = self.w.get_window()
 		assert win is not None
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -422,7 +430,7 @@ class Column(gtk.DrawingArea, ColumnBase):  # type: ignore[misc]
 					log.info(self.objName)
 				for line, color in data:
 					layout = newTextLayout(
-						self,
+						self.w,
 						text=line,
 						font=font,
 						maxSize=(itemW, lineH),
@@ -516,7 +524,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		_gevent: gdk.Event | None = None,
 	) -> None:
 		x, y = self.getMenuPos()
-		self._wcal.emit(
+		self._wcal.s.emit(
 			"popup-main-menu",
 			x,
 			y,
@@ -934,7 +942,7 @@ class EventsBoxColumn(Column):
 		h = box.w
 		# ---
 		tbox.drawBoxBG(cr, box, x, y, w, h)
-		tbox.drawBoxText(cr, box, x, y, w, h, self)
+		tbox.drawBoxText(cr, box, x, y, w, h, self.w)
 
 	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)
@@ -1037,7 +1045,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		_event: gdk.Event | None = None,
 	) -> None:
 		conf.wcalTypeParams.v[self.index] = self.get()
-		self.wcal.queue_draw()
+		self.wcal.w.queue_draw()
 
 
 @registerSignals
@@ -1090,16 +1098,6 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 	customizeExpand = True
 	optionsPageSpacing = 15
 
-	def updateDirection(self) -> None:
-		self.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
-		# set_direction does not apply to existing children.
-		# that's why we remove children(columns) and add them again
-		columns = self.get_children()
-		for col in columns:
-			self.remove(col)
-		for col in columns:
-			pack(self, col, 1, 1)
-
 	def __init__(self, wcal: CalObj) -> None:
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		ColumnBase.__init__(self)
@@ -1110,11 +1108,21 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		self.updateDirection()
 		self.show()
 
+	def updateDirection(self) -> None:
+		self.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
+		# set_direction does not apply to existing children.
+		# that's why we remove children(columns) and add them again
+		columns = self.get_children()
+		for col in columns:
+			self.remove(col)
+		for col in columns:
+			pack(self, col, 1, 1)
+
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
-		for child in self.get_children():
-			assert isinstance(child, Column)
-			child.onWidthChange()
+		for item in self.items:
+			assert isinstance(item, Column)
+			item.onWidthChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
 		from scal3.ui_gtk.pref_utils import DirectionPrefItem
@@ -1138,17 +1146,17 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 	# overwrites method from ColumnBase
 	def updatePacking(self) -> None:
 		ColumnBase.updatePacking(self)
-		for child in self.get_children():
-			assert isinstance(child, Column)
-			child.expand = self.expand
-			child.updatePacking()
+		for item in self.items:
+			assert isinstance(item, Column)
+			item.expand = self.expand
+			item.updatePacking()
 
 	def getWidth(self) -> int:
-		childWidthProp = self.getWidthProp()
-		if childWidthProp is None:
-			raise ValueError("childWidth is None")
-		count = len(self.get_children())
-		return int(count * childWidthProp.v)
+		widthProp = self.getWidthProp()
+		if widthProp is None:
+			raise ValueError("widthProp is None")
+		count = len(self.w.get_children())
+		return int(count * widthProp.v)
 
 	def updateCols(self) -> None:
 		# self.foreach(gtk.DrawingArea.destroy)
@@ -1156,7 +1164,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		# self.foreach(lambda child: self.remove(child))
 		# ^^^ Couses tray icon crash in gnome3
 		# --------
-		columns = self.get_children()
+		columns = self.items
 		n = len(columns)
 		n2 = len(calTypes.active)
 
@@ -1336,7 +1344,7 @@ class MoonStatusColumn(Column):
 
 			if self.showPhaseNumber:
 				layout = newTextLayout(
-					self,
+					self.w,
 					text=f"{bigPhase:.1f}",
 					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
 				)
@@ -1401,11 +1409,11 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.w: gtk.Box = self
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.s = self
+		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		# ----------------------
 		self.w.connect("scroll-event", self.scroll)
-		# ---
 		self.w.connect("button-press-event", self.onButtonPress)
 		# -----
 		# set in self.updateStatus
@@ -1578,14 +1586,15 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 					return True
 		return False
 
-	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> Column | None:
+	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> ColumnBase | None:
 		for item in self.items:
 			if isinstance(item, gtk.Box):
 				# right now only DaysOfMonthColumnGroup
 				for child in item.get_children():
 					if self.itemContainsGdkWindow(child, col_win):
 						return child
-			elif self.itemContainsGdkWindow(item, col_win):
+			elif self.itemContainsGdkWindow(item.w, col_win):
+				assert isinstance(item, ColumnBase)
 				return item
 		return None
 
@@ -1608,12 +1617,12 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
 		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("double-button-press")
+			self.s.emit("double-button-press")
 		if gevent.button == 3:
 			coords = col.w.translate_coordinates(self.w, x_col, y_col)
 			assert coords is not None
 			x, y = coords
-			self.emit("popup-cell-menu", x, y)
+			self.s.emit("popup-cell-menu", x, y)
 		return True
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
@@ -1641,9 +1650,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 		elif kname in {"f10", "m"}:
 			if gevent.state & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit("popup-cell-menu", *self.getCellPos())
+				self.s.emit("popup-cell-menu", *self.getCellPos())
 			else:
-				self.emit("popup-main-menu", *self.getMainMenuPos())
+				self.s.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True
