@@ -119,6 +119,7 @@ class DayInfoDialog(Dialog, ud.BaseCalObj):  # type: ignore[misc]
 
 	def __init__(self, **kwargs) -> None:
 		Dialog.__init__(self, **kwargs)
+		self.w: Dialog = self
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---

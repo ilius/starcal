@@ -311,6 +311,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):  # type: ignore[misc]
 
 	def __init__(self) -> None:
 		gtk.Window.__init__(self)
+		self.w: gtk.Window = self
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
