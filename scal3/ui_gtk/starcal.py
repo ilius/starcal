@@ -724,7 +724,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):  # type: ignore[misc]
 	def begin_resize_drag(self, *args) -> None:
 		conf.winMaximized.v = False
 		ui.updateFocusTime()
-		self.w.begin_resize_drag(*args)
+		gtk.Window.begin_resize_drag(self, *args)
 
 	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if self.menuMain:
