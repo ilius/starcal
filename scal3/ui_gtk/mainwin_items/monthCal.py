@@ -88,6 +88,22 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		"m",
 	}
 
+	def __init__(self, win: gtk.Window) -> None:
+		self.win = win
+		gtk.DrawingArea.__init__(self)
+		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.initCal()
+		self.pagePath = f"mainWin.mainPanel.{self.objName}"
+		# ----------------------
+		# self.kTime = 0
+		# ----------------------
+		self.connect("draw", self.drawAll)
+		self.connect("button-press-event", self.onButtonPress)
+		# self.connect("screen-changed", self.screenChanged)
+		self.connect("scroll-event", self.scroll)
+		# ----------------------
+		# self.updateTextWidth()
+
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
 
@@ -164,22 +180,6 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 	) -> None:
 		cursorRadius = conf.mcalCursorRoundingFactor.v * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
-
-	def __init__(self, win: gtk.Window) -> None:
-		self.win = win
-		gtk.DrawingArea.__init__(self)
-		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.initCal()
-		self.pagePath = f"mainWin.mainPanel.{self.objName}"
-		# ----------------------
-		# self.kTime = 0
-		# ----------------------
-		self.connect("draw", self.drawAll)
-		self.connect("button-press-event", self.onButtonPress)
-		# self.connect("screen-changed", self.screenChanged)
-		self.connect("scroll-event", self.scroll)
-		# ----------------------
-		# self.updateTextWidth()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
