@@ -32,7 +32,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):  # type: ignore[misc]
 		self.initVars()
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 
 		calType = conf.monthPBarCalType.v
 		if calType == -1:

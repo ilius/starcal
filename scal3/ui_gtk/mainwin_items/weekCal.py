@@ -134,7 +134,7 @@ class ColumnBase(CustomizableCalObj):
 		return ""
 
 	def onConfigChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 
 	def onWidthChange(self) -> None:
 		# if self.objName:
@@ -455,7 +455,7 @@ class Column(ColumnDrawingArea, ColumnBase):  # type: ignore[misc]
 		return False
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.w.queue_draw()
 
 	def drawColumn(self, cr: ImageContext) -> None:
@@ -478,7 +478,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		self._wcal = wcal
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ToolBoxItem.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
@@ -550,7 +550,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		self.label.set_label(_(n))
 
 	def onDateChange(self, *a, **ka) -> None:
-		LabelToolBoxItem.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		self.updateLabel()
 
 	def onClick(self, *_a) -> None:
@@ -923,12 +923,12 @@ class EventsBoxColumn(Column):
 		)
 
 	def onDateChange(self, *a, **kw) -> None:
-		Column.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.updateData()
 		self.w.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
-		Column.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		self.updateData()
 		self.w.queue_draw()
 
@@ -1226,7 +1226,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):  # type: 
 		vbox.show_all()
 
 	def onConfigChange(self, *a, **ka) -> None:
-		ColumnBase.onConfigChange(self, *a, **ka)
+		super().onConfigChange(*a, **ka)
 		self.updateCols()
 		self.updateTypeParamsWidget()
 
@@ -1555,12 +1555,12 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):  # type: ignore[misc]
 
 	def onConfigChange(self, *a, **kw) -> None:
 		self.updateStatus()
-		CalBase.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		self.w.queue_draw()
 
 	def onDateChange(self, *a, **kw) -> None:
 		self.updateStatus()
-		CustomizableCalBox.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.w.queue_draw()
 		# for item in self.items:
 		# 	item.queue_draw()

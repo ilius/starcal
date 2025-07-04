@@ -1075,11 +1075,11 @@ class DayCal(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		)
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		# TODO: if active cal types are changed, we should re-order buttons
 		# hide extra buttons, and possibly add new buttons with their pages
 		# in Customize window
