@@ -316,7 +316,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		self.textbuff.insert_with_tags(endIter, timeStr, self.timeTag)
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		cell = ui.cells.current
 		self.textbuff.set_text("")
 		occurOffsets = []
@@ -566,7 +566,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  #
 		self.appendItem(item)
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.showHide()
 
 	def showHide(self) -> None:
@@ -677,7 +677,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):  #
 
 
 # 	def onDateChange(self, *a, **kw) -> None:
-# 		CustomizableCalObj.onDateChange(self, *a, **kw)
+# 		super().onDateChange(*a, **kw)
 # 		self.absWeekNumber = ui.cells.current.absWeekNumber
 # 		_cells, wEventData = self.getWeekData(self.absWeekNumber)
 # 		self.ls.clear()

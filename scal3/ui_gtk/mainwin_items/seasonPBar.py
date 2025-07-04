@@ -31,7 +31,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):  # type: ignore[misc]
 	def onDateChange(self, *a, **kw) -> None:
 		from scal3.season import getSeasonNamePercentFromJd
 
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		name, frac = getSeasonNamePercentFromJd(
 			ui.cells.current.jd,
 			conf.seasonPBar_southernHemisphere.v,

@@ -47,7 +47,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 		self.initVars()
 
 	def onDateChange(self, *a, **ka) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		assert ud.dateFormatBin is not None
 		for child in self.get_children():
 			child.destroy()
@@ -86,7 +86,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):  # type: ignore[misc]
 		self.set_justification(gtk.Justification.CENTER)
 
 	def onDateChange(self, *a, **ka) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		self.get_buffer().set_text(ui.cells.current.getPluginsText())
 
 
@@ -108,7 +108,7 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):  # type: ignore[misc]
 		self.show_all()
 
 	def onDateChange(self, *a, **ka) -> None:
-		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		super().onDateChange(*a, **ka)
 		self.jdLabel.set_label(str(ui.cells.current.jd))
 
 
