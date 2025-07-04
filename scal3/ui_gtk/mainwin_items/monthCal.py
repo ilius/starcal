@@ -723,10 +723,10 @@ class CalObj(gtk.DrawingArea, CalBase):  # type: ignore[misc]
 		)
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.w.queue_draw()
 
 	def onConfigChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		self.updateTextWidth()
 		self.updateTypeParamsWidget()

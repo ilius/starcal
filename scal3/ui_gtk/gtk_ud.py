@@ -284,7 +284,7 @@ class IntegatedWindowList(BaseCalObj):
 		# ----
 		self.updateCSS()
 		# ----
-		BaseCalObj.onConfigChange(self, *a, **ka)
+		super().onConfigChange(*a, **ka)
 		self.onDateChange()
 
 	# override_color and override_font are deprecated since version 3.16

@@ -391,7 +391,7 @@ class EventSearchWindow(MyWindow, ud.BaseCalObj):  # type: ignore[misc]
 		# self.maximize()-- FIXME
 
 	def onConfigChange(self, *a, **kw) -> None:
-		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		if self.currentCalType != calTypes.primary:
 			for dateTimeInput in self.dateTimeInputs:
 				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)

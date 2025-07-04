@@ -74,7 +74,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):  # type: ignore[misc]
 		setClipboard(text)
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		textbuff = self.get_buffer()
 		textbuff.set_text("")
 		occurOffsets = []
@@ -429,5 +429,5 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 	def onDateChange(self, *a, **kw) -> None:
 		pluginsText = ui.cells.current.getPluginsText()
 		log.debug(f"PluginsText.onDateChange: {pluginsText}")
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		self.setText(pluginsText)

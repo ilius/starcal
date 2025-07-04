@@ -50,7 +50,7 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 			self.labelBox.set_direction(gtk.TextDirection.LTR)
 
 	def onConfigChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onConfigChange(self, *a, **kw)
+		super().onConfigChange(*a, **kw)
 		# ---
 		for label in self.labelBox.get_children():
 			label.destroy()
@@ -69,7 +69,7 @@ class CalObj(gtk.Box, CustomizableCalObj):  # type: ignore[misc]
 
 	def onDateChange(self, *a, **kw) -> None:
 		assert ud.dateFormatBin is not None
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 		labels = self.labelBox.get_children()
 		for label in labels:
 			assert isinstance(label, LabelWithCalType)

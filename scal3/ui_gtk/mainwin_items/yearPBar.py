@@ -29,7 +29,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):  # type: ignore[misc]
 		self.initVars()
 
 	def onDateChange(self, *a, **kw) -> None:
-		CustomizableCalObj.onDateChange(self, *a, **kw)
+		super().onDateChange(*a, **kw)
 
 		year = ui.cells.current.year
 		jd0 = core.primary_to_jd(year, 1, 1)
