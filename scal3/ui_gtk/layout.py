@@ -269,7 +269,7 @@ class WinLayoutBox(WinLayoutBase):
 		return box
 
 	def onConfigChange(self, *args, **kwargs) -> None:
-		WinLayoutBase.onConfigChange(self, *args, **kwargs)
+		super().onConfigChange(*args, **kwargs)
 		if self._box is None:
 			return
 		box = self._box
