@@ -14,7 +14,6 @@ from typing import Any
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
-from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButtonBase
@@ -22,9 +21,10 @@ from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Callable, Iterable
+	from collections.abc import Callable, Iterable, Iterator
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
+	from scal3.ui_gtk.gtk_ud import CalObjType
 
 __all__ = [
 	"BaseToolBoxItem",
@@ -69,7 +69,7 @@ class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):  # type: i
 	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		if self.vertical:
-			return self.get_preferred_width()
+			return self.w.get_preferred_width()
 		return size, size
 
 
@@ -91,14 +91,15 @@ class ToolBoxItem(BaseToolBoxItem):
 	) -> None:
 		gtk.Button.__init__(self)
 		self.w = self
+		self.s = self
 		if continuousClick:
 			ConButtonBase.__init__(self, button=1)  # only left-click
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
-		self.set_relief(gtk.ReliefStyle.NONE)
+		self.w.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.set_focus_on_click(False)
+		self.w.set_focus_on_click(False)
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -126,7 +127,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.bigPixbuf: GdkPixbuf.Pixbuf | None = None
 		self.image = gtk.Image()
 		self.image.show()
-		self.add(self.image)
+		self.w.add(self.image)
 		# ---
 		if imageName and not iconName:
 			iconName = iconNameByImageName.get(imageName, "")
@@ -135,7 +136,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		# ------
 		self.initVars()
 		if enableTooltip:
-			set_tooltip(self, desc)
+			set_tooltip(self.w, desc)
 		# ------
 		self.enable = enable
 
@@ -158,7 +159,7 @@ class ToolBoxItem(BaseToolBoxItem):
 			useIconName = False
 
 		if useIconName:
-			pixbuf = self.render_icon_pixbuf(self.iconName, gtk.IconSize.DIALOG)
+			pixbuf = self.w.render_icon_pixbuf(self.iconName, gtk.IconSize.DIALOG)
 			assert pixbuf is not None
 			self.bigPixbuf = pixbuf
 			self._setIconImage(self.iconSize.v)
@@ -211,14 +212,15 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		continuousClick: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
+		self.w: gtk.Button = self
 		if continuousClick:
 			ConButtonBase.__init__(self, button=1)
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
-		self.set_relief(gtk.ReliefStyle.NONE)
+		self.w.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.set_focus_on_click(False)
+		self.w.set_focus_on_click(False)
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -239,11 +241,11 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		# self.shortDesc = shortDesc  # FIXME
 		# ------
 		self.label = gtk.Label()
-		self.add(self.label)
+		self.w.add(self.label)
 		# ------
 		self.initVars()
 		if enableTooltip:
-			set_tooltip(self, desc)
+			set_tooltip(self.w, desc)
 
 	def build(self) -> None:
 		pass
@@ -300,22 +302,22 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):  # type: ignore[misc]
 			return gtk.Orientation.VERTICAL
 		return gtk.Orientation.HORIZONTAL
 
-	def setupItemSignals(self, item: ud.CalObjType) -> None:
+	def setupItemSignals(self, item: CalObjType) -> None:
 		if item.onClick:
 			if isinstance(item.onClick, str):
 				onClick = getattr(self.funcOwner, item.onClick)
 			else:
 				onClick = item.onClick
-			item.connect("clicked", onClick)
+			item.w.connect("clicked", onClick)
 			if self.continuousClick and item.continuousClick:
-				item.connect("con-clicked", onClick)
+				item.s.connect("con-clicked", onClick)
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
 				onPress = getattr(self.funcOwner, item.onPress)
 			else:
 				onPress = item.onPress
-			item.connect("button-press-event", onPress)
+			item.w.connect("button-press-event", onPress)
 
 
 class StaticToolBox(BaseToolBox):
@@ -342,11 +344,11 @@ class StaticToolBox(BaseToolBox):
 		item.setVertical(self.vertical)
 		item.iconSize = self.iconSize
 		item.preferIconName = self.preferIconName
-		item.set_border_width(self.buttonBorder.v)
+		item.w.set_border_width(self.buttonBorder.v)
 		item.build()
 		item.onConfigChange(toParent=False)
 		self.setupItemSignals(item)
-		pack(self.box, item, padding=self.buttonPadding.v)
+		pack(self.box, item.w, padding=self.buttonPadding.v)
 		item.show()
 		return item
 
@@ -435,25 +437,32 @@ class CustomizableToolBox(StaticToolBox):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
+	@property
+	def _items(self) -> Iterator[BaseToolBoxItem]:
+		for item in self.items:
+			assert isinstance(item, BaseToolBoxItem)
+			yield item
+
 	# this method is for optimization
 	# otherwide can be replaced with updateItems
 	def onIconSizeChange(self) -> None:
-		for item in self.items:
+		for item in self._items:
 			item.build()
 
 	def repackAll(self) -> None:
-		for item in self.items:
+		for item in self._items:
 			if item.loaded:
-				self.box.remove(item)
-		for item in self.items:
+				self.box.remove(item.w)
+		for item in self._items:
 			if item.loaded:
-				pack(self.box, item, item.expand, item.expand)
+				pack(self.box, item.w, item.expand, item.expand)
 
 	def moveItem(self, i: int, j: int) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
-	def appendItem(self, item: BaseToolBoxItem) -> None:
+	def appendItem(self, item: CustomizableCalObj) -> None:
+		assert isinstance(item, BaseToolBoxItem)
 		CustomizableCalObj.appendItem(self, item)
 		self.append(item)
 		if item.enable:
@@ -468,10 +477,10 @@ class CustomizableToolBox(StaticToolBox):
 		"""
 		buttonBorder = self.buttonBorder.v
 		buttonPadding = self.buttonPadding.v
-		for item in self.items:
-			item.set_border_width(buttonBorder)
+		for item in self._items:
+			item.w.set_border_width(buttonBorder)
 			self.box.set_child_packing(
-				child=item,
+				child=item.w,
 				expand=False,
 				fill=False,
 				padding=buttonPadding,
