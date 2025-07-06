@@ -57,7 +57,7 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk.button_drawing import BaseButton, Button, SVGButton
 from scal3.ui_gtk.cal_base import CalBase
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawPieOutline,

@@ -41,7 +41,7 @@ from scal3.ui_gtk import (
 	pack,
 )
 from scal3.ui_gtk.cal_base import CalBase
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawOutlineRoundedRect,
