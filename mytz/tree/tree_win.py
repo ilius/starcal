@@ -1,12 +1,12 @@
-from collections import OrderedDict
+from typing import Any
 
 from dateutil.tz.win import tzwin
 
 __all__ = ["getZoneInfoTree"]
 
 
-def getZoneInfoTree():
-	zoneTree = OrderedDict()
+def getZoneInfoTree() -> dict[str, Any]:
+	zoneTree = {}
 	for name in tzwin.list():
 		zoneTree[name] = ""
 	# FIXME: this is long list, find a way to group them
