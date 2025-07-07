@@ -12,8 +12,13 @@ log = logging.getLogger("root")
 import datetime
 import os
 from os.path import isfile, islink
+from typing import TYPE_CHECKING
 
 import dateutil.tz
+
+if TYPE_CHECKING:
+	from dateutil.tz.tz import tzfile
+
 
 __all__ = ["UTC", "gettz"]
 defaultTZ: TimeZone | None = None
@@ -21,7 +26,7 @@ tzErrCount = 0
 
 
 class TimeZone(datetime.tzinfo):
-	def __init__(self, tz) -> None:
+	def __init__(self, tz: tzfile) -> None:
 		self._tz = tz
 		if os.sep == "\\":
 			self._name = tz.tzname(datetime.datetime.now())
@@ -33,17 +38,17 @@ class TimeZone(datetime.tzinfo):
 		# This is the only function that we needed to override on dateutil.tz.tzfile
 		return self._name
 
-	def utcoffset(self, dt):
+	def utcoffset(self, dt: datetime.datetime | None) -> datetime.timedelta | None:
 		return self._tz.utcoffset(dt)
 
-	def dst(self, dt):
+	def dst(self, dt: datetime.datetime | None) -> bool:
 		return self._tz.dst(dt)
 
-	def tzname(self, dt):
+	def tzname(self, dt: datetime.datetime | None) -> str:
 		return self._tz.tzname(dt)
 
 
-def readEtcLocaltime():
+def readEtcLocaltime() -> datetime.tzinfo | None:
 	# TODO: maybe use tzlocal -> unix.py -> _get_localzone_name:
 	# https://github.com/regebro/tzlocal/blob/master/tzlocal/unix.py
 	if not islink("/etc/localtime"):
