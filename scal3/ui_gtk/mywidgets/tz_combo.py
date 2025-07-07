@@ -97,6 +97,6 @@ class TimeZoneComboBoxEntry(gtk.Box):
 if __name__ == "__main__":
 	diolog = Dialog()
 	w = TimeZoneComboBoxEntry()
-	pack(diolog.vbox, w)  # type: ignore[arg-type]
-	diolog.vbox.show_all()  # type: ignore[attr-defined]
+	pack(diolog.vbox, w)
+	diolog.vbox.show_all()
 	diolog.run()

@@ -61,4 +61,4 @@ if __name__ == "__main__":
 			log.info(f"current date changed to {gdate!r}")
 
 	dateChange.add(TestRec())
-	glib.MainLoop().run()
+	glib.MainLoop().run()  # type: ignore[no-untyped-call]

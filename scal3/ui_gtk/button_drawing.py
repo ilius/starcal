@@ -103,9 +103,25 @@ class SVGButton(BaseButton):
 		imageName: str = "",
 		iconSize: int = 16,
 		rectangleColor: ColorType | None = None,
-		**kwargs,
+		onRelease: Callable[[gdk.EventButton], None] | None = None,
+		x: float | None = None,
+		y: float | None = None,
+		xalign: str = "left",
+		yalign: str = "top",
+		autoDir: bool = True,
+		opacity: float = 1.0,
 	) -> None:
-		BaseButton.__init__(self, onPress=onPress, **kwargs)
+		BaseButton.__init__(
+			self,
+			onPress=onPress,
+			onRelease=onRelease,
+			x=x,
+			y=y,
+			xalign=xalign,
+			yalign=yalign,
+			autoDir=autoDir,
+			opacity=opacity,
+		)
 
 		if not imageName:
 			raise ValueError("imageName is given")
@@ -197,9 +213,25 @@ class Button(BaseButton):
 		imageName: str = "",
 		iconName: str = "",
 		iconSize: int = 0,
-		**kwargs,
+		onRelease: Callable[[gdk.EventButton], None] | None = None,
+		x: float | None = None,
+		y: float | None = None,
+		xalign: str = "left",
+		yalign: str = "top",
+		autoDir: bool = True,
+		opacity: float = 1.0,
 	) -> None:
-		BaseButton.__init__(self, onPress=onPress, **kwargs)
+		BaseButton.__init__(
+			self,
+			onPress=onPress,
+			onRelease=onRelease,
+			x=x,
+			y=y,
+			xalign=xalign,
+			yalign=yalign,
+			autoDir=autoDir,
+			opacity=opacity,
+		)
 
 		pixbuf: GdkPixbuf.Pixbuf
 		if iconName:

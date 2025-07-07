@@ -5,11 +5,19 @@ from typing import Any, Protocol
 
 __all__ = ["CalTypeModule", "OptionTuple", "TranslateFunc"]
 
-# type TranslateFunc = Callable[[str, str]]
-
 
 class TranslateFunc(Protocol):
-	def __call__(self, s: str, ctx: str | None = None) -> str: ...
+	def __call__(
+		self,
+		s: str | float,
+		nums: bool = False,
+		ctx: str | None = None,
+		default: str | None = None,
+		localeMode: str | None = None,
+		calType: int | None = None,
+		fillZero: int = 0,
+		negEnd: bool = False,
+	) -> str: ...
 
 
 type OptionTuple = (

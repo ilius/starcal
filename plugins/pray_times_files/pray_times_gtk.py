@@ -24,7 +24,7 @@ from pray_times_utils import earthDistance
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.about import AboutDialog
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -111,7 +111,7 @@ class LocationDialog(Dialog):
 		)
 		self.okB = okB
 		# ---------------
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Search Cities:")))
 		entry = gtk.Entry()
 		pack(hbox, entry, 1, 1)
@@ -150,17 +150,17 @@ class LocationDialog(Dialog):
 		checkb.connect("clicked", self.edit_checkb_clicked)
 		frame.set_label_widget(checkb)
 		self.checkbEdit = checkb
-		vbox = gtk.VBox()
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Name:")))
 		entry = gtk.Entry()
 		pack(hbox, entry, 1, 1)
 		pack(vbox, hbox)
 		self.entry_edit_name = entry
 		# ----
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Latitude:")))
 		spin = gtk.SpinButton()
 		spin.set_increments(1, 10)
@@ -171,7 +171,7 @@ class LocationDialog(Dialog):
 		pack(vbox, hbox)
 		self.spin_lat = spin
 		# ----
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, newAlignLabel(sgroup=group, label=_("Longitude:")))
 		spin = gtk.SpinButton()
 		spin.set_increments(1, 10)
@@ -182,7 +182,7 @@ class LocationDialog(Dialog):
 		pack(vbox, hbox)
 		self.spin_lng = spin
 		# ----
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.lowerLabel = newAlignLabel(sgroup=None, label="")
 		pack(hbox, self.lowerLabel, 1, 1)
 		button = gtk.Button(label=_("Calculate Nearest City"))
@@ -333,7 +333,7 @@ class TextPluginUI:
 		self.confDialog.connect("delete-event", self.confDialogCancel)
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = newAlignLabel(sgroup=group, label=_("Location"))
 		pack(hbox, label)
 		self.locButton = LocationButton(
@@ -346,7 +346,7 @@ class TextPluginUI:
 		pack(hbox, self.locButton)
 		pack(self.confDialog.vbox, hbox)
 		# ---
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = newAlignLabel(sgroup=group, label=_("Calculation Method"))
 		pack(hbox, label)
 		self.methodCombo = gtk.ComboBoxText()
@@ -360,15 +360,15 @@ class TextPluginUI:
 			cb = gtk.CheckButton(label=_(desc))
 			cb.name = name
 			self.timeNamesButtons.append(cb)
-		vbox = VBox()
-		rowHbox = HBox()
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		rowHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		perRowCount = 3
 		cbCount = len(self.timeNamesButtons)
 		for index, cb in enumerate(self.timeNamesButtons):
 			if index > 0 and index % perRowCount == 0:
 				pack(vbox, rowHbox)
-				rowHbox = HBox()
+				rowHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			pack(rowHbox, cb)
 			if index < cbCount - 1:
 				sgroup.add_widget(cb)
@@ -380,7 +380,7 @@ class TextPluginUI:
 		frame.set_border_width(5)
 		pack(self.confDialog.vbox, frame)
 		# ------
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Imsak")))
 		spin = gtk.SpinButton()
 		spin.set_increments(1, 5)
@@ -392,7 +392,7 @@ class TextPluginUI:
 		pack(hbox, gtk.Label(label=_("minutes before fajr")))
 		pack(self.confDialog.vbox, hbox)
 		# ------
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Separator")))
 		textview = gtk.TextView()
 		textview.set_wrap_mode(gtk.WrapMode.CHAR)
@@ -408,14 +408,14 @@ class TextPluginUI:
 		# ------
 		frame = gtk.Frame()
 		frame.set_label(_("Azan"))
-		vboxFrame = gtk.VBox()
+		vboxFrame = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		vboxFrame.set_border_width(5)
 		frame.set_border_width(5)
 		# -----
 		# ----
-		hbox1 = gtk.HBox()
+		hbox1 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.preAzanEnableCheck = gtk.CheckButton(label=_("Play Pre-Azan Sound"))
-		hbox2 = gtk.HBox()
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.preAzanEnableCheck.connect(
 			"clicked",
 			self.updateAzanSensitiveWidgets,
@@ -438,9 +438,9 @@ class TextPluginUI:
 		pack(vboxFrame, hbox1)
 		pack(vboxFrame, hbox2, 1, 1)
 		# -----
-		hbox1 = gtk.HBox()
+		hbox1 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.azanEnableCheck = gtk.CheckButton(label=_("Play Azan Sound"))
-		hbox2 = gtk.HBox()
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.azanEnableCheck.connect(
 			"clicked",
 			self.updateAzanSensitiveWidgets,

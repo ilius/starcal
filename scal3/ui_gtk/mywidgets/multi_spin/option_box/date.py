@@ -15,7 +15,11 @@ __all__ = ["DateButtonOption"]
 
 
 class DateButtonOption(MultiSpinOptionBox[ContainerField[int], tuple[int, int, int]]):
-	def __init__(self, date: tuple[int, int, int] | None = None, **kwargs) -> None:
+	def __init__(
+		self,
+		date: tuple[int, int, int] | None = None,
+		hist_size: int = 10,
+	) -> None:
 		MultiSpinOptionBox.__init__(
 			self,
 			field=ContainerField[int](
@@ -24,7 +28,7 @@ class DateButtonOption(MultiSpinOptionBox[ContainerField[int], tuple[int, int, i
 				MonthField(),
 				DayField(),
 			),
-			**kwargs,
+			hist_size=hist_size,
 		)
 		if date is None:
 			date = localtime()[:3]

@@ -13,7 +13,6 @@ class FloatSpinButton(SingleSpinButton[FloatField, float]):
 		maxim: float,
 		digits: int,
 		step: float = 0.0,
-		**kwargs,
 	) -> None:
 		if digits < 1:
 			raise ValueError(f"FloatSpinButton: invalid {digits=}")
@@ -24,7 +23,6 @@ class FloatSpinButton(SingleSpinButton[FloatField, float]):
 			field=FloatField(minim, maxim, digits),
 			step_inc=step,
 			page_inc=step * 10,
-			**kwargs,
 		)
 
 	def set_range(self, minim: float, maxim: float) -> None:

@@ -27,7 +27,7 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import langHasUppercase
 from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 
 if TYPE_CHECKING:
 	from scal3.ui.pytypes import (
@@ -142,7 +142,7 @@ class DayNumParamsWidget(gtk.Box):
 		vbox: gtk.Box = self
 		if useFrame:
 			frame = gtk.Frame()
-			vbox = gtk.VBox()
+			vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 			vbox.set_border_width(5)
 			frame.add(vbox)
 			pack(self, frame)
@@ -155,7 +155,7 @@ class DayNumParamsWidget(gtk.Box):
 		# ----
 		self.set_border_width(5)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Position") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
@@ -169,7 +169,7 @@ class DayNumParamsWidget(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Alignment") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
@@ -183,7 +183,7 @@ class DayNumParamsWidget(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Font") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
@@ -317,7 +317,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		vbox: gtk.Box = self
 		if useFrame:
 			frame = gtk.Frame()
-			vbox = gtk.VBox()
+			vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 			vbox.set_border_width(5)
 			frame.add(vbox)
 			pack(self, frame)
@@ -330,7 +330,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		# ----
 		self.set_border_width(5)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Position") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
@@ -344,7 +344,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Alignment") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
@@ -358,7 +358,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Font") + ": ")
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)

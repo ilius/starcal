@@ -156,8 +156,8 @@ class TimeLine(CustomizableCalObj):
 		self.centerToNow()
 		self.w.queue_draw()
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.w.queue_draw()
 
 	def updateBasicButtons(self) -> None:
@@ -752,8 +752,8 @@ class TimeLine(CustomizableCalObj):
 		win.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 		self.w.queue_draw()
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		self.w.queue_draw()
 
 	def onEditEventClick(
@@ -765,11 +765,14 @@ class TimeLine(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
+		window = self.w.get_toplevel()
+		assert isinstance(window, gtk.Window)
+
 		eventNew = EventEditorDialog(
 			event,
 			title=winTitle,
-			transient_for=self.w.get_toplevel(),
-		).run()
+			transient_for=window,
+		).run2()
 		if eventNew is None:
 			return
 		ui.eventUpdateQueue.put("e", eventNew, self)
@@ -783,10 +786,13 @@ class TimeLine(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
+		window = self.w.get_toplevel()
+		assert isinstance(window, gtk.Window)
+
 		groupNew = GroupEditorDialog(
 			group,
-			transient_for=self.w.get_toplevel(),
-		).run()
+			transient_for=window,
+		).run2()
 		if groupNew is None:
 			return
 		groupNew.afterModify()

@@ -25,7 +25,7 @@ import typing
 from typing import Any
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
@@ -56,7 +56,7 @@ class ModuleOptionItem:
 	) -> None:
 		self.prop = prop
 		t = opt[1]
-		hbox = HBox(spacing=spacing)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		w: gtk.Widget
 		if t is bool:
 			w = gtk.CheckButton(label=_(opt[2]))
@@ -110,7 +110,7 @@ class ModuleOptionButton:
 			),
 			funcName,
 		)
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		button = gtk.Button(label=_(opt[0]))
 		button.connect("clicked", clickedFunc)
 		pack(hbox, button)

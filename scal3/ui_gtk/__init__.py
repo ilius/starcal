@@ -47,14 +47,11 @@ except ImportError:
 
 __all__ = [
 	"TWO_BUTTON_PRESS",
-	"Box",
 	"Dialog",
 	"GLibError",
 	"GdkPixbuf",
-	"HBox",
 	"Menu",
 	"MenuItem",
-	"VBox",
 	"gdk",
 	"getOrientation",
 	"getScrollValue",
@@ -86,27 +83,9 @@ def pack(
 		raise TypeError(f"pack: unkown type {type(box)}")
 
 
-def Box(vertical: bool | None = None, **kwargs) -> gtk.Box:
-	if vertical is None:
-		raise ValueError("vertical argument is missing")
-	if vertical:
-		orientation = gtk.Orientation.VERTICAL
-	else:
-		orientation = gtk.Orientation.HORIZONTAL
-	return gtk.Box(orientation=orientation, **kwargs)
-
-
-def VBox(**kwargs) -> gtk.Box:
-	return gtk.Box(orientation=gtk.Orientation.VERTICAL, **kwargs)
-
-
-def HBox(**kwargs) -> gtk.Box:
-	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
-
-
 class Menu(gtk.Menu):
-	def __init__(self, **kwargs) -> None:
-		gtk.Menu.__init__(self, **kwargs)
+	def __init__(self) -> None:
+		gtk.Menu.__init__(self)
 		self.set_reserve_toggle_size(False)
 		# self.imageSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
@@ -154,3 +133,6 @@ class MenuItem(gtk.MenuItem):
 
 class Dialog(gtk.Dialog):
 	vbox: gtk.Box  # type: ignore[assignment]
+
+	def run(self) -> gtk.ResponseType:
+		return gtk.Dialog.run(self)  # type: ignore[no-any-return, no-untyped-call]

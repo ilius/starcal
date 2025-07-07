@@ -41,7 +41,6 @@ from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 from scal3.ui_gtk.signals import (
-	EmptySignalHandler,
 	SignalHandlerBase,
 	SignalHandlerType,
 	registerSignals,
@@ -56,7 +55,6 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize import CustomizableCalObj
 
 __all__ = [
-	"CalObjBase",
 	"CalObjType",
 	"CalObjWidget",
 	"adjustTimeCmd",
@@ -123,17 +121,17 @@ class CalObjType(Protocol):
 	def show(self) -> None: ...
 	def hide(self) -> None: ...
 	def showHide(self) -> None: ...
-	def onConfigChange(
+	def onConfigChange(self) -> None: ...
+	def onDateChange(self) -> None: ...
+	def broadcastConfigChange(
 		self,
 		sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
+		emit: bool = True,
 	) -> None: ...
-	def onDateChange(
+	def broadcastDateChange(
 		self,
 		sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
+		emit: bool = True,
 	) -> None: ...
 	def updateVars(self) -> None: ...
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool: ...
@@ -152,20 +150,52 @@ class CommonSignalHandler(SignalHandlerBase):
 
 
 class CalObjBase:
-	objName = ""
-	desc = ""
-	loaded = True
-	customizable = False
-	itemHaveOptions = True
+	objName: str = ""
+	desc: str = ""
+	loaded: bool = True
+	customizable: bool = False
+	itemHaveOptions: bool = True
+	Sig: type[SignalHandlerType] = CommonSignalHandler
 	myKeys: set[str] = set()
-	expand = False
+	expand: bool = False
 
-	Sig: type[SignalHandlerType] = EmptySignalHandler
+	s: SignalHandlerType  # FIXME: instance
+	items: list[CalObjType]  # FIXME: instance
+	enable: bool  # FIXME: instance
 
-	def initVars(self) -> None:
-		self.s = self.Sig()
-		self.items: list[CalObjType] = []
-		self.enable = True
+	def broadcastConfigChange(
+		self,
+		sig: SignalHandlerType | None = None,
+		emit: bool = True,
+	) -> None:
+		self.onConfigChange()
+		if emit:
+			self.s.emit("config-change")
+		if sig is None:
+			sig = self.s
+		for item in self.items:
+			if item.enable and item.s is not sig:
+				item.broadcastConfigChange(sig=sig, emit=False)
+
+	def broadcastDateChange(
+		self,
+		sig: SignalHandlerType | None = None,
+		emit: bool = True,
+	) -> None:
+		self.onDateChange()
+		if emit:
+			self.s.emit("date-change")
+		if sig is None:
+			sig = self.s
+		for item in self.items:
+			if item.enable and item.s is not sig:
+				item.broadcastDateChange(sig=sig, emit=False)
+
+	def onConfigChange(self) -> None:
+		log.debug(f"onConfigChange: name={self.objName}")
+
+	def onDateChange(self) -> None:
+		log.debug(f"onDateChange: name={self.objName}")
 
 	def updateVars(self) -> None:
 		pass
@@ -176,75 +206,6 @@ class CalObjBase:
 	def hide(self) -> None:
 		raise NotImplementedError
 
-	def onConfigChange(
-		self,
-		_sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
-	) -> None:
-		if sender is self:
-			return
-		if TYPE_CHECKING:
-			_sender: CalObjType = self
-		if sender is None:
-			sender = self
-		log.debug(
-			f"onConfigChange: name={self.objName}, toParent={toParent}, "
-			f"sender={sender}",
-		)
-		if toParent:
-			self.s.emit("config-change")
-		for item in self.items:
-			if item.enable and item is not sender:
-				item.onConfigChange(sender=sender, toParent=False)
-
-	def onDateChange(
-		self,
-		_sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
-	) -> None:
-		if sender is self:
-			return
-		if sender is None:
-			sender = self
-		log.debug(
-			f"onDateChange: name={self.objName}, toParent={toParent}, sender={sender}",
-		)
-		if toParent:
-			self.s.emit("date-change")
-		for item in self.items:
-			if item.enable and item is not sender:
-				item.onDateChange(sender=sender, toParent=False)
-
-	def onKeyPress(  # noqa: PLR6301
-		self,
-		arg: gtk.Widget,  # noqa: ARG002
-		gevent: gdk.EventKey,  # noqa: ARG002
-	) -> bool:
-		return False
-
-	def __getitem__(self, key: str) -> CalObjType | None:
-		for item in self.items:
-			if item.objName == key:
-				return item
-		return None
-
-	def connectItem(self, item: CalObjType) -> None:
-		item.s.connect("config-change", self.onConfigChange, item)
-		item.s.connect("date-change", self.onDateChange, item)
-
-	def appendItem(self, item: CalObjType) -> None:
-		self.items.append(item)
-		self.connectItem(item)
-
-	def replaceItem(self, itemIndex: int, item: CalObjType) -> None:
-		self.items[itemIndex] = item
-		self.connectItem(item)
-
-	def moveItem(self, i: int, j: int) -> None:
-		self.items.insert(j, self.items.pop(i))
-
 	def showHide(self) -> None:
 		if self.enable:
 			self.show()
@@ -253,25 +214,29 @@ class CalObjBase:
 		for item in self.items:
 			item.showHide()
 
+	def connectItem(self, item: CalObjType) -> None:
+		# log.info(f"connectItem: {item.objName}")
+		item.s.connect("config-change", self.broadcastConfigChange)
+		item.s.connect("date-change", self.broadcastDateChange)
 
-class CalObjWidget:
-	objName: str = ""
-	desc: str = ""
-	loaded: bool = True
-	customizable: bool = False
-	itemHaveOptions: bool = True
-	Sig: type[SignalHandlerType] = CommonSignalHandler
-	myKeys: set[str] = set()
-	expand = False
+	def onKeyPress(  # noqa: PLR6301
+		self,
+		arg: gtk.Widget,  # noqa: ARG002
+		gevent: gdk.EventKey,  # noqa: ARG002
+	) -> bool:
+		return False
+
+	def moveItem(self, i: int, j: int) -> None:
+		self.items.insert(j, self.items.pop(i))
+
+
+class CalObjWidget(CalObjBase):
 	w: gtk.Widget
 
 	def initVars(self) -> None:
 		self.s = self.Sig()
-		self.items: list[CustomizableCalObj] = []
+		self.items: list[CustomizableCalObj] = []  # type: ignore[assignment]
 		self.enable = True
-
-	def updateVars(self) -> None:
-		pass
 
 	def __getitem__(self, key: str) -> CustomizableCalObj | None:
 		for item in self.items:
@@ -287,74 +252,11 @@ class CalObjWidget:
 		self.items[itemIndex] = item
 		self.connectItem(item)
 
-	def moveItem(self, i: int, j: int) -> None:
-		self.items.insert(j, self.items.pop(i))
-
-	def connectItem(self, item: CustomizableCalObj) -> None:
-		item.s.connect("config-change", self.onConfigChange)
-		item.s.connect("date-change", self.onDateChange)
-
 	def show(self) -> None:
 		self.w.show()
 
 	def hide(self) -> None:
 		self.w.hide()
-
-	def showHide(self) -> None:
-		if self.enable:
-			self.show()
-		else:
-			self.hide()
-		for item in self.items:
-			item.showHide()
-
-	def onConfigChange(
-		self,
-		_sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
-	) -> None:
-		if sender is self:
-			return
-		if TYPE_CHECKING:
-			_sender: CalObjType = self
-		if sender is None:
-			sender = self
-		log.debug(
-			f"onConfigChange: name={self.objName}, toParent={toParent}, "
-			f"sender={sender}",
-		)
-		if toParent:
-			self.s.emit("config-change")
-		for item in self.items:
-			if item.enable and item is not sender:
-				item.onConfigChange(sender=sender, toParent=False)
-
-	def onDateChange(
-		self,
-		_sig: SignalHandlerType | None = None,
-		sender: CalObjType | None = None,
-		toParent: bool = True,
-	) -> None:
-		if sender is self:
-			return
-		if sender is None:
-			sender = self
-		log.debug(
-			f"onDateChange: name={self.objName}, toParent={toParent}, sender={sender}",
-		)
-		if toParent:
-			self.s.emit("date-change")
-		for item in self.items:
-			if item.enable and item is not sender:
-				item.onDateChange(sender=sender, toParent=False)
-
-	def onKeyPress(  # noqa: PLR6301
-		self,
-		arg: gtk.Widget,  # noqa: ARG002
-		gevent: gdk.EventKey,  # noqa: ARG002
-	) -> bool:
-		return False
 
 
 class IntegatedWindowList(CalObjBase):
@@ -378,6 +280,25 @@ class IntegatedWindowList(CalObjBase):
 		self.cssFuncList: list[Callable[[], str]] = []
 		# ---
 		self.lastAlphabetHeight = 0.0
+
+	def initVars(self) -> None:
+		self.s = self.Sig()
+		self.items: list[CalObjType] = []
+		self.enable = True
+
+	def __getitem__(self, key: str) -> CalObjType | None:
+		for item in self.items:
+			if item.objName == key:
+				return item
+		return None
+
+	def appendItem(self, item: CalObjType) -> None:
+		self.items.append(item)
+		self.connectItem(item)
+
+	def replaceItem(self, itemIndex: int, item: CalObjType) -> None:
+		self.items[itemIndex] = item
+		self.connectItem(item)
 
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
 		self.cssFuncList.append(func)
@@ -416,9 +337,9 @@ class IntegatedWindowList(CalObjBase):
 	def onEventUpdate(self, _record: EventUpdateRecord) -> None:
 		# ui.cells.clear()  # causes crash, no idea why!
 		ui.cells.clearEventsData()
-		self.onDateChange()
+		self.broadcastDateChange()
 
-	def onConfigChange(self, *a, **ka) -> None:
+	def onConfigChange(self) -> None:
 		ui.cells.clear()
 		settings.set_property(
 			"gtk-font-name",
@@ -428,9 +349,6 @@ class IntegatedWindowList(CalObjBase):
 		self.updateIconSizes()
 		# ----
 		self.updateCSS()
-		# ----
-		super().onConfigChange(*a, **ka)
-		self.onDateChange()
 
 	# override_color and override_font are deprecated since version 3.16
 	# override_color:

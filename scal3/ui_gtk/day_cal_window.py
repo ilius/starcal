@@ -32,7 +32,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import confDir
 from scal3.ui import conf
-from scal3.ui_gtk import Dialog, Menu, VBox, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal, ParentWindowType
 from scal3.ui_gtk.gtk_ud import CalObjWidget
@@ -90,8 +90,12 @@ def liveConfChanged() -> None:
 
 
 class DayCalWindowCustomizeWindow(Dialog):
-	def __init__(self, dayCal: DayCal, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(
+		self,
+		dayCal: DayCal,
+		transient_for: gtk.Window | None = None,
+	) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self._widget = dayCal
 		# --
 		self.set_title(_("Customize") + ": " + dayCal.desc)
@@ -110,7 +114,7 @@ class DayCalWindowCustomizeWindow(Dialog):
 			iconSize=conf.stackIconSize.v,
 		)
 		pack(self.vbox, self.stack, 1, 1)
-		pageWidget = VBox()
+		pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		optionsWidget = dayCal.getOptionsWidget()
 		assert optionsWidget is not None
 		pack(pageWidget, optionsWidget, True, True)
@@ -388,7 +392,7 @@ class DayCalWindow(CalObjWidget):
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool | None:
+	def configureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
 		if not self.w.get_property("visible"):
 			return None
 		wx, wy = self.w.get_position()

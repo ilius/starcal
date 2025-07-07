@@ -22,7 +22,7 @@ from scal3.ui_gtk.pref_utils import IntSpinPrefItem
 log = logger.get()
 
 from math import sqrt
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from gi.repository.PangoCairo import show_layout
 
@@ -33,8 +33,6 @@ from scal3.locale_man import tr as _
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	HBox,
-	VBox,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -102,6 +100,7 @@ class CalObj(CalBase):
 		self.w.connect("scroll-event", self.scroll)
 		# ----------------------
 		# self.updateTextWidth()
+		# self.onConfigChange()
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
@@ -191,7 +190,10 @@ class CalObj(CalBase):
 		if self.optionsWidget:
 			return self.optionsWidget
 
-		optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=self.optionsPageSpacing,
+		)
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		prefItem: PrefItem
 		# -------
@@ -226,7 +228,7 @@ class CalObj(CalBase):
 		hbox = prefItem.getWidget()
 		pack(optionsWidget, hbox)
 		# ---
-		hbox = HBox(spacing=10)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		pack(hbox, newAlignLabel(label=_("Corner Menu Text Color")))
 		prefItem = ColorPrefItem(
 			prop=conf.mcalCornerMenuTextColor,
@@ -238,7 +240,7 @@ class CalObj(CalBase):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(optionsWidget, hbox)
 		# ------------
-		pageVBox = VBox(spacing=20)
+		pageVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=20)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
@@ -281,7 +283,7 @@ class CalObj(CalBase):
 		# --------
 		self.optionsWidget = optionsWidget
 		# ----
-		self.typeParamsVbox = VBox()
+		self.typeParamsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(optionsWidget, self.typeParamsVbox, padding=5)
 		optionsWidget.show_all()
 		self.updateTypeParamsWidget()  # FIXME
@@ -451,7 +453,7 @@ class CalObj(CalBase):
 				continue
 			dayNumLayout = newTextLayout(
 				self.w,
-				_(cell.dates[calType][2], calType),
+				_(cell.dates[calType][2], calType=calType),
 				getParamsFont(params),
 			)
 			assert dayNumLayout is not None
@@ -519,7 +521,7 @@ class CalObj(CalBase):
 				params = conf.mcalTypeParams.v[0]
 				dayNumLayout = newTextLayout(
 					self.w,
-					_(c.dates[calType][2], calType),
+					_(c.dates[calType][2], calType=calType),
 					getParamsFont(params),
 				)
 				assert dayNumLayout is not None
@@ -575,7 +577,7 @@ class CalObj(CalBase):
 		wm = 0  # max width
 		for i in range(7):
 			wday = core.weekDayName[i]
-			layout.set_markup(text=wday, length=-1)
+			layout.set_markup(text=wday, length=-1)  # type: ignore[no-untyped-call]
 			w = layout.get_pixel_size()[0]  # FIXME
 			# w = lay.get_pixel_extents()[0]  # FIXME
 			# log.debug(w,)
@@ -643,7 +645,7 @@ class CalObj(CalBase):
 
 	def monthPlus(self, plus: int) -> None:
 		ui.cells.monthPlus(plus)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
@@ -702,13 +704,13 @@ class CalObj(CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *_args) -> tuple[int, int]:
+	def getCellPos(self, *_args: Any) -> tuple[int, int]:
 		return (
 			int(self.cx[ui.cells.current.monthPos[0]]),
 			int(self.cy[ui.cells.current.monthPos[1]] + self.dy / 2),
 		)
 
-	def getMainMenuPos(self, *_args) -> tuple[int, int]:  # FIXME
+	def getMainMenuPos(self) -> tuple[int, int]:  # FIXME
 		if rtl:
 			return (
 				int(self.w.get_allocation().width - conf.mcalLeftMargin.v / 2),
@@ -719,11 +721,11 @@ class CalObj(CalBase):
 			int(conf.mcalTopMargin.v / 2),
 		)
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.w.queue_draw()
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		self.updateTextWidth()
 		self.updateTypeParamsWidget()

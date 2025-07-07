@@ -28,7 +28,7 @@ from typing import Any
 
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
-from scal3.ui_gtk import Box, GdkPixbuf, HBox, VBox, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, getOrientation, gtk, pack
 from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -129,7 +129,7 @@ class ComboTextPrefItem(PrefItem):
 
 		self._widget: gtk.Widget
 		if label:
-			hbox = HBox(spacing=3)
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=3)
 			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
 			pack(hbox, combo)
 			self._widget = hbox
@@ -178,7 +178,7 @@ class FontFamilyPrefItem(PrefItem):
 		# set_level: FAMILY, STYLE, SIZE
 		self.fontButton.connect("font-set", self.onChange)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		if label:
 			pack(hbox, gtk.Label(label=label))
 		if hasAuto:
@@ -509,7 +509,7 @@ class CheckColorPrefItem(PrefItem):
 		if checkSizeGroup:
 			checkSizeGroup.add_widget(checkb)
 
-		hbox = HBox(spacing=3)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=3)
 		pack(hbox, checkb)
 		pack(hbox, colorb)
 		self._widget = hbox
@@ -566,7 +566,7 @@ class CheckFontPrefItem(PrefItem):
 		if checkSizeGroup:
 			checkSizeGroup.add_widget(checkb)
 
-		box = Box(vertical=vertical, spacing=spacing)
+		box = gtk.Box(orientation=getOrientation(vertical), spacing=spacing)
 		pack(box, checkb)
 		pack(box, fontb)
 		self._widget = box
@@ -623,7 +623,7 @@ class IntSpinPrefItem(PrefItem):
 			raise ValueError("labelSizeGroup= is passed without label=")
 
 		if label or unitLabel:
-			hbox = HBox(spacing=3)
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=3)
 			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
 			pack(hbox, spinb)
 			if unitLabel:
@@ -679,7 +679,7 @@ class FloatSpinPrefItem(PrefItem):
 			raise ValueError("labelSizeGroup= is passed without label=")
 
 		if label or unitLabel:
-			hbox = HBox(spacing=3)
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=3)
 			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
 			pack(hbox, spinb)
 			if unitLabel:
@@ -731,7 +731,7 @@ class TextPrefItem(PrefItem):
 			raise ValueError("onChangeFunc is given without live=True")
 		self.textInput = TextFrame(**kwargs)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		if label:
 			pack(hbox, gtk.Label(label=label))
 		pack(hbox, self.textInput, 1, 1)
@@ -768,7 +768,7 @@ class WidthHeightPrefItem(PrefItem):
 		self.widthItem = IntSpinButton(minim, maxim)
 		self.heightItem = IntSpinButton(minim, maxim)
 		# ---
-		hbox = self._widget = HBox()
+		hbox = self._widget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Width") + ":"))
 		pack(hbox, self.widthItem)
 		pack(hbox, gtk.Label(label="  "))
@@ -847,8 +847,18 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
-	def __init__(self, *args, **kwargs) -> None:
-		FileChooserPrefItem.__init__(self, *args, **kwargs)
+	def __init__(
+		self,
+		prop: Property[str],
+		title: str = "Select File",
+		currentFolder: str = "",
+	) -> None:
+		FileChooserPrefItem.__init__(
+			self,
+			prop=prop,
+			title=title,
+			currentFolder=currentFolder,
+		)
 		self._preview = gtk.Image()
 		self._widget.set_preview_widget(self._preview)
 		self._widget.set_preview_widget_active(True)
@@ -874,7 +884,7 @@ class IconChooserPrefItem(PrefItem):
 
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		if label:
 			pack(hbox, gtk.Label(label=label + "  "))
 		self.iconSelect = IconSelectButton()
@@ -921,9 +931,9 @@ class RadioListPrefItem(PrefItem):
 		self.num = len(texts)
 		self.prop = prop
 		if vertical:
-			box = VBox()
+			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		else:
-			box = HBox()
+			box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self._widget = box
 		self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
 		first = self.radios[0]
@@ -948,13 +958,35 @@ class RadioListPrefItem(PrefItem):
 
 
 class RadioHListPrefItem(RadioListPrefItem):
-	def __init__(self, *args, **kwargs) -> None:
-		RadioListPrefItem.__init__(self, False, *args, **kwargs)
+	def __init__(
+		self,
+		prop: Property[int | None],
+		texts: list[str],
+		label: str | None = None,
+	) -> None:
+		RadioListPrefItem.__init__(
+			self,
+			vertical=False,
+			prop=prop,
+			texts=texts,
+			label=label,
+		)
 
 
 class RadioVListPrefItem(RadioListPrefItem):
-	def __init__(self, *args, **kwargs) -> None:
-		RadioListPrefItem.__init__(self, True, *args, **kwargs)
+	def __init__(
+		self,
+		prop: Property[int | None],
+		texts: list[str],
+		label: str | None = None,
+	) -> None:
+		RadioListPrefItem.__init__(
+			self,
+			vertical=True,
+			prop=prop,
+			texts=texts,
+			label=label,
+		)
 
 
 class ListPrefItem(PrefItem):
@@ -969,9 +1001,9 @@ class ListPrefItem(PrefItem):
 	) -> None:
 		self.prop = prop
 		if vertical:
-			box = VBox()
+			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		else:
-			box = HBox()
+			box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		if items is None:
 			items = []
 		for item in items:
@@ -993,13 +1025,31 @@ class ListPrefItem(PrefItem):
 
 
 class HListPrefItem(ListPrefItem):
-	def __init__(self, *args, **kwargs) -> None:
-		ListPrefItem.__init__(self, False, *args, **kwargs)
+	def __init__(
+		self,
+		prop: Property[list[Any]],
+		items: list[PrefItem] | None = None,
+	) -> None:
+		ListPrefItem.__init__(
+			self,
+			vertical=False,
+			prop=prop,
+			items=items,
+		)
 
 
 class VListPrefItem(ListPrefItem):
-	def __init__(self, *args, **kwargs) -> None:
-		ListPrefItem.__init__(self, True, *args, **kwargs)
+	def __init__(
+		self,
+		prop: Property[list[Any]],
+		items: list[PrefItem] | None = None,
+	) -> None:
+		ListPrefItem.__init__(
+			self,
+			vertical=True,
+			prop=prop,
+			items=items,
+		)
 
 
 class DirectionPrefItem(PrefItem):
@@ -1017,7 +1067,7 @@ class DirectionPrefItem(PrefItem):
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Direction")))
 		combo = DirectionComboBox()
 		self._combo = combo
@@ -1057,7 +1107,7 @@ class JustificationPrefItem(PrefItem):
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
-		hbox = HBox(spacing=10)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		if label:
 			pack(hbox, gtk.Label(label=label))
 		combo = JustificationComboBox()

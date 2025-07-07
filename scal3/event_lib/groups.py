@@ -71,6 +71,7 @@ from .occur import (
 	OccurSet,
 	TimeListOccurSet,
 )
+from .pytypes import EventGroupType
 from .register import classes
 from .rules import (
 	DateEventRule,
@@ -88,7 +89,7 @@ if TYPE_CHECKING:
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
 
-	from .pytypes import EventGroupType, EventType
+	from .pytypes import EventType
 
 
 __all__ = [
@@ -108,7 +109,7 @@ groupsDir = join("event", "groups")
 
 @classes.group.register
 @classes.group.setMain
-class EventGroup(EventContainer):
+class EventGroup(EventContainer, EventGroupType):
 	name = "group"
 	nameAlias = ""
 	tname = ""

@@ -7,15 +7,21 @@ __all__ = ["IntSpinButton"]
 
 
 class IntSpinButton(SingleSpinButton[IntField, int]):
-	def __init__(self, minim: int, maxim: int, step: int = 0, **kwargs) -> None:
+	def __init__(
+		self,
+		minim: int,
+		maxim: int,
+		step: int = 0,
+		arrow_select: bool = True,
+	) -> None:
 		if step == 0:
 			step = 1
 		SingleSpinButton.__init__(
 			self,
 			field=IntField(minim, maxim),
+			arrow_select=arrow_select,
 			step_inc=step,
 			page_inc=step * 10,
-			**kwargs,
 		)
 
 	def set_range(self, minim: int, maxim: int) -> None:

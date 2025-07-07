@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Menu, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.menuitems import ImageMenuItem
@@ -72,8 +72,8 @@ class PluginsTextView(CustomizableCalObj):
 	def copyText(cls, _item: gtk.MenuItem, text: str) -> None:
 		setClipboard(text)
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		textbuff = self.w.get_buffer()
 		textbuff.set_text("")
 		occurOffsets = []
@@ -340,7 +340,7 @@ class PluginsTextBox(CustomizableCalObj):
 		self.textview.w.set_justification(ud.justificationByName[value])
 
 	@staticmethod
-	def onButtonPress(_widget: gtk.Widget, _ge: gdk.Event) -> bool:
+	def onButtonPress(_widget: gtk.Widget, _ge: gdk.EventButton) -> bool:
 		# log.debug("PluginsText: onButtonPress")
 		# without this, it will switch to begin_move_drag on button-press
 		return True
@@ -355,7 +355,10 @@ class PluginsTextBox(CustomizableCalObj):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		optionsWidget = VBox(spacing=20)
+		optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=20,
+		)
 		prefItem: PrefItem
 		# ----
 		if self.insideExpanderParam:
@@ -405,7 +408,7 @@ class PluginsTextBox(CustomizableCalObj):
 			self.w.remove(self.expander)
 			pack(self.w, self.textview.w)
 			self.textview.show()
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	@staticmethod
 	def expanderExpanded(exp: gtk.Expander) -> None:
@@ -425,8 +428,8 @@ class PluginsTextBox(CustomizableCalObj):
 			else:
 				self.getWidget().hide()
 
-	def onDateChange(self, *a, **kw) -> None:
+	def onDateChange(self) -> None:
 		pluginsText = ui.cells.current.getPluginsText()
 		log.debug(f"PluginsText.onDateChange: {pluginsText}")
-		super().onDateChange(*a, **kw)
+		super().onDateChange()
 		self.setText(pluginsText)

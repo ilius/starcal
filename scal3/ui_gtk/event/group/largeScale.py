@@ -1,6 +1,6 @@
 from scal3.event_lib.groups import LargeScaleGroup
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -15,7 +15,7 @@ class WidgetClass(BaseWidgetClass):
 	def addStartEndWidgets(self) -> None:
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Scale"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -26,7 +26,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -37,7 +37,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)

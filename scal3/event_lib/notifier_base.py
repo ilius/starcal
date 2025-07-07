@@ -17,6 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.pytypes import EventNotifierType
+from scal3.event_lib.register import classes
 
 log = logger.get()
 
@@ -33,7 +35,8 @@ __all__ = ["EventNotifier"]
 
 
 # Should not be registered, or instantiate directly
-class EventNotifier(SObj):
+@classes.notifier.setMain
+class EventNotifier(SObj, EventNotifierType):
 	name = ""
 	tname = ""
 	nameAlias = ""

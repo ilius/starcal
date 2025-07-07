@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
@@ -19,7 +19,7 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event: DailyNoteEvent) -> None:
 		common.WidgetClass.__init__(self, event)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Date")))
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)

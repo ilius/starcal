@@ -31,7 +31,7 @@ from scal3.event_lib import ev
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import GdkPixbuf, HBox, Menu, VBox, gdk, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, Menu, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.common import SingleGroupComboBox
 from scal3.ui_gtk.event.export import EventListExportDialog
@@ -85,10 +85,11 @@ class EventSearchWindow(CalObjWidget):
 		self.w.connect("delete-event", self.closed)
 		self.w.connect("key-press-event", self.onKeyPress)
 		# ---
-		self.vbox = VBox()
+		self.vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self.w.vbox = self.vbox  # FIXNE: make sure it can't be missed
 		self.w.add(self.vbox)
 		# ------
-		vboxFilters = self.vboxFilters = VBox()
+		vboxFilters = self.vboxFilters = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(self.vbox, vboxFilters)
 		frame: gtk.Frame
 		# ------
@@ -98,14 +99,14 @@ class EventSearchWindow(CalObjWidget):
 		pack(vboxFilters, frame)
 		self.textInput = frame
 		# ------
-		hboxDouble = HBox()
+		hboxDouble = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(vboxFilters, hboxDouble)
 		# --
-		vboxHalf = VBox()
+		vboxHalf = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(hboxDouble, vboxHalf)
 		pack(hboxDouble, newHSep(), padding=5)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.textCSensCheck = gtk.CheckButton(label=_("Case Sensitive"))
 		self.textCSensCheck.set_active(False)  # FIXME
 		pack(hbox, self.textCSensCheck)
@@ -114,14 +115,14 @@ class EventSearchWindow(CalObjWidget):
 		jd = core.getCurrentJd()
 		year, _month, _day = jd_to_primary(jd)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		frame = gtk.Frame()
 		frame.set_label(_("Time"))
 		frame.set_border_width(5)
-		vboxIn = VBox()
+		vboxIn = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		hboxIn = HBox()
+		hboxIn = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		self.timeFromCheck = gtk.CheckButton(label=_("From", ctx="time range"))
 		sgroup.add_widget(self.timeFromCheck)
@@ -135,7 +136,7 @@ class EventSearchWindow(CalObjWidget):
 		# --
 		pack(vboxIn, hboxIn)
 		# ----
-		hboxIn = HBox()
+		hboxIn = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		self.timeToCheck = gtk.CheckButton(label=_("To", ctx="time range"))
 		sgroup.add_widget(self.timeToCheck)
@@ -165,10 +166,10 @@ class EventSearchWindow(CalObjWidget):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vboxHalf, hbox)
 		# ------
-		vboxHalf = VBox()
+		vboxHalf = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(hboxDouble, vboxHalf, 1, 1)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		hbox.set_border_width(5)
 		self.modifiedFromCheck = gtk.CheckButton(label=_("Modified From"))
 		pack(hbox, self.modifiedFromCheck)
@@ -182,7 +183,7 @@ class EventSearchWindow(CalObjWidget):
 		self.updateModifiedFromSensitive()
 		pack(vboxHalf, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		hbox.set_border_width(5)
 		self.typeCheck = gtk.CheckButton(label=_("Event Type"))
 		pack(hbox, self.typeCheck)
@@ -199,7 +200,7 @@ class EventSearchWindow(CalObjWidget):
 		self.updateTypeSensitive()
 		pack(vboxHalf, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		hbox.set_border_width(5)
 		self.groupCheck = gtk.CheckButton(label=_("Group"))
 		pack(hbox, self.groupCheck)
@@ -211,7 +212,7 @@ class EventSearchWindow(CalObjWidget):
 		self.updateGroupSensitive()
 		pack(vboxHalf, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		hbox.set_border_width(5)
 		self.timezoneCheck = gtk.CheckButton(label=_("Time Zone"))
 		pack(hbox, self.timezoneCheck)
@@ -324,16 +325,16 @@ class EventSearchWindow(CalObjWidget):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		swin.add(treev)
 		# ----
-		vbox = VBox(spacing=5)
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		vbox.set_border_width(5)
 		# ---
-		topHbox = HBox()
+		topHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.resultLabel = gtk.Label()
 		pack(topHbox, self.resultLabel)
 		pack(topHbox, gtk.Label(), 1, 1)
 		pack(vbox, topHbox)
 		# ----
-		columnBox = HBox(spacing=5)
+		columnBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(columnBox, gtk.Label(label=_("Columns") + ":    "))
 		# --
 		check = gtk.CheckButton(label=_("Group"))
@@ -389,8 +390,8 @@ class EventSearchWindow(CalObjWidget):
 		self.vbox.show_all()
 		# self.maximize()-- FIXME
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		if self.currentCalType != calTypes.primary:
 			for dateTimeInput in self.dateTimeInputs:
 				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)
@@ -532,7 +533,7 @@ class EventSearchWindow(CalObjWidget):
 			idsList=idsList,
 			defaultFileName=f"search-events-{y:04d}-{m:02d}-{d:02d}",
 			groupTitle=f"Search Results ({y:04d}-{m:02d}-{d:02d})",
-			transient_for=self,
+			transient_for=self.w,
 		).run()
 
 	def _do_directExport(self) -> None:
@@ -572,9 +573,10 @@ class EventSearchWindow(CalObjWidget):
 	def editEventByPath(self, path: str) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
+		model = self.treeModel
 		try:
-			gid = self.treeModel[path][0]
-			eid = self.treeModel[path][1]
+			gid = model[path][0]
+			eid = model[path][1]
 		except IndexError:
 			# IndexError: could not find tree path 'N'
 			# IndexError: column index is out of bounds: N
@@ -584,18 +586,19 @@ class EventSearchWindow(CalObjWidget):
 		eventNew = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			transient_for=self,
-		).run()
+			transient_for=self.w,
+		).run2()
 		if eventNew is None:
 			return
 		event = eventNew
 		# ---
 		ui.eventUpdateQueue.put("e", event, self)
 		# ---
-		eventIter = self.treeModel.get_iter(path)
-		self.treeModel.set_value(eventIter, 3, eventTreeIconPixbuf(event.icon))
-		self.treeModel.set_value(eventIter, 4, event.summary)
-		self.treeModel.set_value(eventIter, 5, event.getShownDescription())
+		eventIter = model.get_iter(path)
+
+		model.set_value(eventIter, 3, eventTreeIconPixbuf(event.icon))  # type: ignore[no-untyped-call]
+		model.set_value(eventIter, 4, event.summary)  # type: ignore[no-untyped-call]
+		model.set_value(eventIter, 5, event.getShownDescription())  # type: ignore[no-untyped-call]
 
 	def rowActivated(
 		self,
@@ -619,6 +622,7 @@ class EventSearchWindow(CalObjWidget):
 		new_group: EventGroupType,
 	) -> Callable[[gtk.Widget], None]:
 		def func(_w: gtk.Widget) -> None:
+			model = self.treeModel
 			old_group.remove(event)
 			old_group.save()
 			new_group.append(event)
@@ -627,9 +631,9 @@ class EventSearchWindow(CalObjWidget):
 			ui.eventUpdateQueue.put("v", event, self)
 			# FIXME
 			# ---
-			eventIter = self.treeModel.get_iter(eventPath)
-			self.treeModel.set_value(eventIter, 0, new_group.id)
-			self.treeModel.set_value(eventIter, 2, new_group.title)
+			eventIter = model.get_iter(eventPath)
+			model.set_value(eventIter, 0, new_group.id)  # type: ignore[no-untyped-call]
+			model.set_value(eventIter, 2, new_group.title)  # type: ignore[no-untyped-call]
 
 		return func
 

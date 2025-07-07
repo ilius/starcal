@@ -129,7 +129,6 @@ lint.ignore = [
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
-	"scal3/account/google.py",
 	"libs",
 	# "setup.py",
 ]
@@ -185,7 +184,6 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"ANN",     # annotations
 ]
 "*_test.py" = [
-	"ANN",     # annotations
 	"T201",    # `print` found
 	"T203",    # `pprint` found
 	"S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes

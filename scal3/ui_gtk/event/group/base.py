@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import getWidgetClass
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
@@ -60,7 +60,7 @@ class BaseWidgetClass(gtk.Box):
 		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -69,7 +69,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Color"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -79,7 +79,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.colorButton)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Default Icon"))  # FIXME
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -88,7 +88,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.iconSelect)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Default Calendar Type"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -101,7 +101,7 @@ class BaseWidgetClass(gtk.Box):
 		# -----
 		self.addStartEndWidgets()
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.tzCheck = gtk.CheckButton(label=_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
 		self.sizeGroup.add_widget(self.tzCheck)
@@ -115,7 +115,7 @@ class BaseWidgetClass(gtk.Box):
 			lambda check: self.tzCombo.set_sensitive(check.get_active()),
 		)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Show in Calendar"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -131,7 +131,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Show in"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -144,7 +144,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Event Cache Size"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -153,7 +153,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.cacheSizeSpin)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Event Text Separator"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -168,7 +168,7 @@ class BaseWidgetClass(gtk.Box):
 			),
 		)
 		# -----
-		# hbox = HBox()
+		# hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# label = gtk.Label(label=_("Enable Notifications"))
 		# label.set_xalign(0)
 		# pack(hbox, label)
@@ -177,7 +177,7 @@ class BaseWidgetClass(gtk.Box):
 		# pack(hbox, self.notificationEnabledCheck)
 		# pack(self, hbox)
 		# -----
-		# hbox = HBox()
+		# hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# label = gtk.Label(label=_("Show Full Event Description"))
 		# label.set_xalign(0)
 		# pack(hbox, label)
@@ -192,7 +192,7 @@ class BaseWidgetClass(gtk.Box):
 		)  # right place? before updateWidget? FIXME
 		# -----
 		if self.userCanAddEvents:
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			self.addEventsToBeginningCheck = gtk.CheckButton(
 				label=_("Add New Events to Beginning"),
 			)

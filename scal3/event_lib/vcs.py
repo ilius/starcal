@@ -27,7 +27,7 @@ from .vcs_base import (
 log = logger.get()
 
 from time import perf_counter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import mytz
 from scal3.locale_man import tr as _
@@ -233,7 +233,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		tag: str,  # type: ignore[override]
 	) -> EventType:
 		tag = toStr(tag)
-		if tag not in self.vcsIds:
+		if tag not in self.vcsIds:  # type: ignore[comparison-overlap]
 			raise ValueError(f"No tag {tag!r}")
 		data = {}
 		data["summary"] = self.title + " " + tag
@@ -256,8 +256,8 @@ class VcsDailyStatEvent(Event):
 		cls,
 		ident: int,
 		fs: FileSystem,
-	) -> None:  # FIXME
-		pass
+	) -> Self:  # FIXME
+		raise NotImplementedError
 
 	def __bool__(self) -> bool:
 		return True

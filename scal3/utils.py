@@ -122,7 +122,7 @@ class NullObj:
 	def __getattr__(self, attr: str) -> NullObj:
 		return self
 
-	def __call__(self, *_a, **_kw) -> NullObj:
+	def __call__(self, *_args: Any, **_kwargs: Any) -> NullObj:
 		return self
 
 	def __str__(self) -> str:

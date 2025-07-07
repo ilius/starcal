@@ -27,7 +27,7 @@ from scal3 import core, locale_man, startup
 from scal3.cal_types import calTypes
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
@@ -58,9 +58,9 @@ __all__ = [
 
 def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 	if vertical:
-		box = VBox()
+		box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 	else:
-		box = HBox()
+		box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 	box.set_homogeneous(homogeneous)
 	return box
 
@@ -98,17 +98,17 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self.ratioRadio = gtk.RadioButton(label=ratioLabel, group=self.fixedRadio)
 		self._onChangeFunc = onChangeFunc
 		# -----
-		vbox = VBox(spacing=vspacing)
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=vspacing)
 		vbox.set_border_width(borderWidth)
 		# --
-		hbox = HBox(spacing=hspacing)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=hspacing)
 		pack(hbox, self.fixedRadio)
 		pack(hbox, fixedItem.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox)
 		# --
-		hbox = HBox(spacing=hspacing)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=hspacing)
 		pack(hbox, self.ratioRadio)
 		pack(hbox, ratioItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -246,7 +246,7 @@ class CalTypePrefItem(PrefItem):
 		self.prop = prop
 		self._onChangeFunc = onChangeFunc
 		# ---
-		hbox = gtk.HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Calendar Type") + " "))
 		self._combo = CalTypeCombo(hasDefault=True)
 		pack(hbox, self._combo)
@@ -448,12 +448,12 @@ class ActiveInactveCalsTreeview(gtk.TreeView):
 				gtk.TreeViewDropPosition.BEFORE,
 				gtk.TreeViewDropPosition.INTO_OR_BEFORE,
 			}:
-				model.insert_before(
+				model.insert_before(  # type: ignore[no-untyped-call]
 					model.get_iter(dest[0]),
 					row,
 				)
 			else:
-				model.insert_after(
+				model.insert_after(  # type: ignore[no-untyped-call]
 					model.get_iter(dest[0]),
 					row,
 				)
@@ -479,7 +479,7 @@ class InactiveCalsTreeView(ActiveInactveCalsTreeview):
 
 
 class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
-	def __init__(self, parent: PrefItem) -> None:
+	def __init__(self, parent: ActiveInactiveCalsPrefItem) -> None:
 		VerticalStaticToolBox.__init__(self, parent)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
@@ -490,7 +490,7 @@ class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
 		self.leftRightItem = ToolBoxItem(
 			name="left-right",
 			imageNameDynamic=True,
-			onClick="onLeftRightClick",
+			onClick=parent.onLeftRightClick,
 			desc=_("Activate/Inactivate"),
 			continuousClick=False,
 		)
@@ -500,14 +500,14 @@ class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
 				ToolBoxItem(
 					name="go-up",
 					imageName="go-up.svg",
-					onClick="onUpClick",
+					onClick=parent.onUpClick,
 					desc=_("Move up"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="go-down",
 					imageName="go-down.svg",
-					onClick="onDownClick",
+					onClick=parent.onDownClick,
 					desc=_("Move down"),
 					continuousClick=False,
 				),
@@ -548,7 +548,7 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		return self._widget
 
 	def __init__(self) -> None:
-		self._widget = HBox()
+		self._widget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --------
 		activeTreev = ActiveCalsTreeView()
 		activeTreev.connect("row-activated", self.activeTreevRActivate)

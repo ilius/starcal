@@ -23,7 +23,7 @@ log = logger.get()
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.utils import (
 	imageFromFile,
@@ -34,7 +34,7 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from gi.repository import GdkPixbuf
 
-__all__ = ["CheckMenuItem", "ImageMenuItem"]
+__all__ = ["CheckMenuItem", "ImageMenuItem", "ItemCallback"]
 
 """
 Documentation says:
@@ -84,7 +84,7 @@ class ImageMenuItem(gtk.MenuItem):
 			image = gtk.Image()
 			image.set_pixel_size(conf.menuIconSize.v)
 
-		hbox = HBox(spacing=0)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		pack(hbox, image, padding=conf.menuIconEdgePadding.v)
 		labelWidget = gtk.Label(label=label)
 		labelWidget.set_xalign(0)

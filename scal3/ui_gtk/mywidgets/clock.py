@@ -194,6 +194,6 @@ if __name__ == "__main__":
 	d = Dialog()
 	widget = FClockWidget()
 	# widget = ClockLabel()
-	pack(d.vbox, widget, 1, 1)  # type: ignore[arg-type]
-	d.vbox.show_all()  # type: ignore[attr-defined]
+	pack(d.vbox, widget, 1, 1)
+	d.vbox.show_all()
 	d.run()

@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 
 from scal3.cal_types import jd_to
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -39,7 +39,7 @@ class WidgetClass(common.WidgetClass):
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -49,7 +49,7 @@ class WidgetClass(common.WidgetClass):
 		# --
 		pack(self, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
@@ -57,7 +57,7 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
 		# ----
-		self.durationBox = HBox()
+		self.durationBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.durationSpin = IntSpinButton(1, 999)
 		pack(self.durationBox, self.durationSpin)
 		pack(self.durationBox, gtk.Label(label=_(" days")))
@@ -112,11 +112,11 @@ class WidgetClass(common.WidgetClass):
 		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
-			self._event.setEnd("duration", self.durationSpin.get_value())
+			self._event.setEndDurationDays(self.durationSpin.get_value())
 		elif active == 1:
-			self._event.setEnd(
-				"date",
+			self._event.setEndDateTime(
 				self.endDateInput.getDate(),
+				(0, 0, 0),
 			)
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:

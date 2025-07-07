@@ -5,7 +5,7 @@
 # 		self.ValueWidgetClass = ValueWidgetClass
 # 		# --
 # 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-# 		self.widgetsBox = HBox()
+# 		self.widgetsBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 # 		pack(self, self.widgetsBox)
 # 		# --
 # 		self.removeButton = labelImageButton(

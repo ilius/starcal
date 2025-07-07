@@ -26,7 +26,7 @@ from scal3.event_lib import ev
 from scal3.event_lib.events import SingleStartEndEvent
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Menu, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.font_utils import gfontEncode
@@ -134,7 +134,7 @@ class DayOccurrenceView(CustomizableCalObj):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		optionsWidget = VBox(spacing=10)
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		prefItem: PrefItem
 		# ---
 		if self.justificationParam:
@@ -190,7 +190,7 @@ class DayOccurrenceView(CustomizableCalObj):
 		return "." + self.styleClass + " " + cssTextStyle(font=font)
 
 	def onEventSepChange(self) -> None:
-		self.onDateChange(toParent=False)
+		self.broadcastDateChange()
 
 	def has_selection(self) -> bool:
 		buf = self.w.get_buffer()
@@ -312,10 +312,10 @@ class DayOccurrenceView(CustomizableCalObj):
 
 	def addTime(self, timeStr: str) -> None:
 		endIter = self.textbuff.get_bounds()[1]
-		self.textbuff.insert_with_tags(endIter, timeStr, self.timeTag)
+		self.textbuff.insert_with_tags(endIter, timeStr, self.timeTag)  # type: ignore[no-untyped-call]
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		cell = ui.cells.current
 		self.textbuff.set_text("")
 		occurOffsets = []
@@ -518,11 +518,14 @@ class DayOccurrenceView(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
+		window = self.w.get_toplevel()
+		assert isinstance(window, gtk.Window)
+
 		eventNew = EventEditorDialog(
 			event,
 			title=winTitle,
-			transient_for=self.w.get_toplevel(),
-		).run()
+			transient_for=window,
+		).run2()
 		if eventNew is None:
 			return
 		ui.eventUpdateQueue.put("e", eventNew, self)
@@ -536,7 +539,7 @@ class DayOccurrenceView(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
-		if not confirmEventTrash(event, transient_for=ui.mainWin):
+		if not confirmEventTrash(event, transient_for=ui.mainWin.w):
 			return
 		ui.moveEventToTrash(ev.groups[groupId], event, self)
 		self.onConfigChange()
@@ -551,21 +554,24 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 	objName = DayOccurrenceView.objName
 	desc = DayOccurrenceView.desc
 
-	def __init__(self, **kwargs) -> None:
+	def __init__(
+		self,
+		eventSepParam: Property[str] | None = None,
+	) -> None:
 		super().__init__()
 		self.w: gtk.ScrolledWindow = gtk.ScrolledWindow()
 		self.w.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
 		# ---
 		self.initVars()
 		# ---
-		item = DayOccurrenceView(**kwargs)
+		item = DayOccurrenceView(eventSepParam=eventSepParam)
 		item.show()
 		self._item = item
 		self.w.add(item.w)
 		self.appendItem(item)
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.showHide()
 
 	def showHide(self) -> None:
@@ -675,8 +681,8 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 # 		return cell_list, wEventData
 
 
-# 	def onDateChange(self, *a, **kw) -> None:
-# 		super().onDateChange(*a, **kw)
+# 	def onDateChange(self) -> None:
+# 		super().onDateChange()
 # 		self.absWeekNumber = ui.cells.current.absWeekNumber
 # 		_cells, wEventData = self.getWeekData(self.absWeekNumber)
 # 		self.ls.clear()

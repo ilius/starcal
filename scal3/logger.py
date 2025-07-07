@@ -115,4 +115,4 @@ def init() -> None:
 def get() -> LoggerType:
 	if log is None:
 		init()
-	return log  # type: ignore[return-value]
+	return log

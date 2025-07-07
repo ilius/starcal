@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from scal3.interval_utils import intersectionOfTwoIntervalList
 
@@ -34,6 +34,8 @@ from scal3.time_utils import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Iterable
+
 	from .pytypes import EventType
 
 __all__ = ["IntervalOccurSet", "JdOccurSet", "OccurSet", "TimeListOccurSet"]
@@ -209,20 +211,23 @@ class TimeListOccurSet(OccurSet):
 
 	def __init__(
 		self,
-		*args,  # noqa: ANN002
+		epochList: Iterable[int] | None = None,
 	) -> None:
 		OccurSet.__init__(self)
-		if not args:
-			self.startEpoch = 0
-			self.endEpoch = 0
-			self.stepSeconds = -1
+		self.startEpoch = 0
+		self.endEpoch = 0
+		self.stepSeconds = -1
+		self.epochList: set[int]
+		if epochList is None:
 			self.epochList = set()
-		elif len(args) == 1:
-			self.epochList = set(args[0])
-		elif len(args) == 3:
-			self.setRange(*args)
 		else:
-			raise ValueError
+			self.epochList = set(epochList)
+
+	@classmethod
+	def fromRange(cls, startEpoch: int, endEpoch: int, stepSeconds: int) -> Self:
+		obj = cls()
+		obj.setRange(startEpoch, endEpoch, stepSeconds)
+		return obj
 
 	def __repr__(self) -> str:
 		return r"TimeListOccurSet({self.epochList!r})"
@@ -247,7 +252,7 @@ class TimeListOccurSet(OccurSet):
 		try:
 			from numpy.multiarray import arange
 		except ImportError:
-			from scal3.utils import arange  # type: ignore[no-redef]
+			from scal3.utils import arange
 		# ------
 		self.startEpoch = startEpoch
 		self.endEpoch = endEpoch

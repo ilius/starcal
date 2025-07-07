@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import VBox, gdk, gtk, pack, timeout_add
+from scal3.ui_gtk import gdk, gtk, pack, timeout_add
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.event.occurrence_view import (
 	DayOccurrenceView,
@@ -22,6 +22,8 @@ from scal3.ui_gtk.pluginsText import PluginsTextBox
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.font import Font
+	from scal3.property import Property
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["MainWinRightPanel"]
@@ -31,9 +33,26 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 	def __init__(
 		self,
 		rightPanel: MainWinRightPanel | None = None,
-		**kwargs,
+		eventSepParam: Property[str] | None = None,
+		justificationParam: Property[str] | None = None,
+		fontEnableParam: Property[bool] | None = None,
+		fontParam: Property[Font | None] | None = None,
+		timeFontEnableParam: Property[bool] | None = None,
+		timeFontParam: Property[Font | None] | None = None,
+		styleClass: str = "",
+		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
-		DayOccurrenceView.__init__(self, **kwargs)
+		DayOccurrenceView.__init__(
+			self,
+			eventSepParam=eventSepParam,
+			justificationParam=justificationParam,
+			fontEnableParam=fontEnableParam,
+			fontParam=fontParam,
+			timeFontEnableParam=timeFontEnableParam,
+			timeFontParam=timeFontParam,
+			styleClass=styleClass,
+			wrapMode=wrapMode,
+		)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 
@@ -56,9 +75,24 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 	def __init__(
 		self,
 		rightPanel: MainWinRightPanel | None = None,
-		**kwargs,
+		hideIfEmpty: bool = True,
+		tabToNewline: bool = False,
+		insideExpanderParam: Property[bool] | None = None,
+		justificationParam: Property[str] | None = None,
+		fontEnableParam: Property[bool] | None = None,
+		fontParam: Property[Font | None] | None = None,
+		styleClass: str = "",
 	) -> None:
-		PluginsTextBox.__init__(self, **kwargs)
+		PluginsTextBox.__init__(
+			self,
+			hideIfEmpty=hideIfEmpty,
+			tabToNewline=tabToNewline,
+			insideExpanderParam=insideExpanderParam,
+			justificationParam=justificationParam,
+			fontEnableParam=fontEnableParam,
+			fontParam=fontParam,
+			styleClass=styleClass,
+		)
 		self.rightPanel = rightPanel
 		self.updateJustification()
 		self.textview.addExtraMenuItems = self.addExtraMenuItems  # type: ignore[method-assign]
@@ -189,7 +223,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		return self.subPages
 
 	def onEventIconSizeChange(self) -> None:
-		self.eventItem.onDateChange(toParent=False)
+		self.eventItem.onDateChange()
 
 	def onBorderWidthChange(self) -> None:
 		self.w.set_border_width(conf.mainWinRightPanelBorderWidth.v)
@@ -217,7 +251,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		self.w.queue_resize()  # does not work!
 		# self.eventItem.w.queue_resize()
 
-	def onWindowSizeChange(self, *_a, **_kw) -> None:
+	def onWindowSizeChange(self) -> None:
 		self.updateWidth()
 
 	def onMinimumHeightChange(self) -> None:
@@ -261,10 +295,10 @@ class MainWinRightPanel(CustomizableCalObj):
 
 		if self.optionsWidget is not None:
 			return self.optionsWidget
-		optionsWidget = VBox(spacing=10)
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		subPages = []
 		# ---
-		sizesVBox = gtk.VBox(spacing=10)
+		sizesVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()
 		page.pageWidget = sizesVBox
 		page.pageName = "sizes"
@@ -310,7 +344,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		)
 		pack(sizesVBox, prefItem.getWidget())
 		# ------
-		eventsVBox = gtk.VBox(spacing=10)
+		eventsVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()
 		page.pageWidget = eventsVBox
 		page.pageName = "events"
@@ -336,7 +370,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		assert eventOptionsWidget is not None
 		pack(eventsVBox, eventOptionsWidget)
 		# ------
-		pluginsVBox = gtk.VBox(spacing=10)
+		pluginsVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()
 		page.pageWidget = pluginsVBox
 		page.pageName = "plugins"

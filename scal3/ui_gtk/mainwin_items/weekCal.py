@@ -17,27 +17,25 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.font import Font
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 
 log = logger.get()
 
 from math import pi
 from time import time as now
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 import cairo
 from gi.repository.PangoCairo import show_layout
 
 from scal3 import core, ui
 from scal3.cal_types import calTypes
+from scal3.font import Font
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
-	VBox,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -59,6 +57,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
+from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
 	BaseToolBoxItem,
@@ -70,6 +69,8 @@ from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from gi.repository import GObject
 
 	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
@@ -133,9 +134,6 @@ class ColumnBase(CustomizableCalObj):
 			return prop.v
 		return ""
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
-
 	def onWidthChange(self) -> None:
 		# if self.objName:
 		# 	self.updatePacking()
@@ -151,7 +149,10 @@ class ColumnBase(CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 
-		optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=self.optionsPageSpacing,
+		)
 		prefItem: PrefItem
 		# ----
 		if self.customizeWidth:
@@ -186,7 +187,7 @@ class ColumnBase(CustomizableCalObj):
 				prop=fontProp,
 				hasAuto=True,
 				label=_("Font Family"),
-				onChangeFunc=self.onDateChange,
+				onChangeFunc=self.onFontChange,
 			)
 			prefItem.updateWidget()  # done inside Live*PrefItem classes
 			pack(optionsWidget, prefItem.getWidget())
@@ -199,6 +200,9 @@ class ColumnBase(CustomizableCalObj):
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def onFontChange(self) -> None:
+		self.onDateChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
 		pass
@@ -453,8 +457,8 @@ class Column(ColumnBase):
 	def onButtonPress(self, _w: gtk.Widget, _ge: gdk.EventButton) -> bool:  # noqa: PLR6301
 		return False
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.w.queue_draw()
 
 	def drawColumn(self, cr: ImageContext) -> None:
@@ -476,8 +480,8 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		)
 		self._wcal = wcal
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
@@ -485,7 +489,10 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=self.optionsPageSpacing,
+		)
 		# ---
 		prefItem = IconChooserPrefItem(
 			prop=conf.wcal_toolbar_mainMenu_icon,
@@ -548,11 +555,11 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 			n = ui.cells.current.weekNum
 		self.label.set_label(_(n))
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.updateLabel()
 
-	def onClick(self, *_a) -> None:
+	def onClick(self, _w: gtk.Widget) -> None:
 		conf.wcal_toolbar_weekNum_negative.v = not conf.wcal_toolbar_weekNum_negative.v
 		self.updateLabel()
 		ui.saveLiveConf()
@@ -561,7 +568,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 # FIXME: multi-inheritance
 
 
-class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
+class ToolbarColumn(CustomizableToolBox, ColumnBase):
 	vertical = True
 	desc = _("Toolbar (Vertical)")
 	autoButtonPressHandler = False
@@ -576,32 +583,32 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 			ToolBoxItem(
 				name="backward4",
 				imageName="go-top.svg",
-				onClick="goBackward4",
+				onClick=wcal.goBackward4,
 				desc="Backward 4 Weeks",
 			),
 			ToolBoxItem(
 				name="backward",
 				imageName="go-up.svg",
-				onClick="goBackward",
+				onClick=wcal.goBackward,
 				desc="Previous Week",
 			),
 			ToolBoxItem(
 				name="today",
 				imageName="go-home.svg",
-				onClick="goToday",
+				onClick=wcal.goToday,
 				desc="Today",
 				continuousClick=False,
 			),
 			ToolBoxItem(
 				name="forward",
 				imageName="go-down.svg",
-				onClick="goForward",
+				onClick=wcal.goForward,
 				desc="Next Week",
 			),
 			ToolBoxItem(
 				name="forward4",
 				imageName="go-bottom.svg",
-				onClick="goForward4",
+				onClick=wcal.goForward4,
 				desc="Forward 4 Weeks",
 			),
 		]
@@ -613,7 +620,7 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):  # type: ignore[misc]
 		self.setDict(ud.wcalToolbarData)
 
 	def updateVars(self) -> None:
-		CustomizableToolBox.updateVars(self)
+		super().updateVars()
 		ud.wcalToolbarData = self.getDict()
 
 
@@ -819,6 +826,9 @@ class EventsTextColumn(Column):
 	def getFontPreviewText(self) -> str:  # noqa: PLR6301
 		return ""  # TODO
 
+	def onEventColorChange(self) -> None:
+		self.onDateChange()
+
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
@@ -840,7 +850,7 @@ class EventsTextColumn(Column):
 					useAlpha=True,
 				),
 				live=True,
-				onChangeFunc=self.onDateChange,
+				onChangeFunc=self.onEventColorChange,
 				checkSizeGroup=sizeGroup,
 			).getWidget(),
 		)
@@ -857,7 +867,7 @@ class EventsTextColumn(Column):
 					useAlpha=True,
 				),
 				live=True,
-				onChangeFunc=self.onDateChange,
+				onChangeFunc=self.onEventColorChange,
 				checkSizeGroup=sizeGroup,
 			).getWidget(),
 		)
@@ -917,13 +927,13 @@ class EventsBoxColumn(Column):
 			self.borderTm,
 		)
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.updateData()
 		self.w.queue_draw()
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		self.updateData()
 		self.w.queue_draw()
 
@@ -1073,7 +1083,7 @@ class DaysOfMonthColumn(Column):
 			[
 				[
 					(
-						_(status[i].dates[self.calType][2], self.calType),
+						_(status[i].dates[self.calType][2], calType=self.calType),
 						None,
 					),
 				]
@@ -1085,7 +1095,7 @@ class DaysOfMonthColumn(Column):
 
 
 # FIXME: multi-inheritance!
-class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
+class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 	objName = "daysOfMonth"
 	desc = _("Days of Month")
 	customizeWidth = True
@@ -1130,7 +1140,10 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 		# ----
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
-		self.typeParamsVbox = VBox(spacing=self.optionsPageSpacing // 2)
+		self.typeParamsVbox = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=self.optionsPageSpacing // 2,
+		)
 		self.typeParamsVbox.set_border_width(5)
 		frame.add(self.typeParamsVbox)
 		frame.show_all()
@@ -1219,8 +1232,8 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):  # type: ignore
 		# ---
 		vbox.show_all()
 
-	def onConfigChange(self, *a, **ka) -> None:
-		super().onConfigChange(*a, **ka)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		self.updateCols()
 		self.updateTypeParamsWidget()
 
@@ -1359,9 +1372,12 @@ class MoonStatusColumn(Column):
 			prop=conf.wcal_moonStatus_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
-			onChangeFunc=self.onDateChange,
+			onChangeFunc=self.onSouthernHemisphereChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
+
+	def onSouthernHemisphereChange(self) -> None:
+		self.onDateChange()
 
 
 class CalObj(CalBase):
@@ -1388,7 +1404,6 @@ class CalObj(CalBase):
 		"f10",
 		"m",
 	}
-	# signals = CalBase.signals
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
@@ -1470,7 +1485,10 @@ class CalObj(CalBase):
 		if self.optionsWidget:
 			return self.optionsWidget
 
-		optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=self.optionsPageSpacing,
+		)
 		prefItem: PrefItem
 		# -----
 		prefItem = FloatSpinPrefItem(
@@ -1503,7 +1521,7 @@ class CalObj(CalBase):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ------------
-		pageVBox = VBox(spacing=20)
+		pageVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=20)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
@@ -1567,28 +1585,28 @@ class CalObj(CalBase):
 			return
 		self.cellIndex = index
 
-	def onConfigChange(self, *a, **kw) -> None:
+	def onConfigChange(self) -> None:
 		self.updateStatus()
-		super().onConfigChange(*a, **kw)
+		super().onConfigChange()
 		self.w.queue_draw()
 
-	def onDateChange(self, *a, **kw) -> None:
+	def onDateChange(self) -> None:
 		self.updateStatus()
-		super().onDateChange(*a, **kw)
+		super().onDateChange()
 		self.w.queue_draw()
 		# for item in self.items:
 		# 	item.queue_draw()
 
-	def goBackward4(self, _w: gtk.Widget | None = None) -> None:
+	def goBackward4(self, _obj: GObject.Object) -> None:
 		self.jdPlus(-28)
 
-	def goBackward(self, _w: gtk.Widget | None = None) -> None:
+	def goBackward(self, _obj: GObject.Object) -> None:
 		self.jdPlus(-7)
 
-	def goForward(self, _w: gtk.Widget | None = None) -> None:
+	def goForward(self, _obj: GObject.Object) -> None:
 		self.jdPlus(7)
 
-	def goForward4(self, _w: gtk.Widget | None = None) -> None:
+	def goForward4(self, _obj: GObject.Object) -> None:
 		self.jdPlus(28)
 
 	def itemContainsGdkWindow(self, item: gtk.Widget, col_win: gdk.Window) -> bool:
@@ -1681,7 +1699,7 @@ class CalObj(CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *_args) -> tuple[int, int]:
+	def getCellPos(self, *_args: Any) -> tuple[int, int]:
 		alloc = self.w.get_allocation()
 		return (
 			int(alloc.width / 2),
@@ -1694,7 +1712,7 @@ class CalObj(CalBase):
 				return item
 		return None
 
-	def getMainMenuPos(self, *_args) -> tuple[int, int]:
+	def getMainMenuPos(self) -> tuple[int, int]:
 		toolbar = self.getToolbar()
 		if toolbar:
 			for item in toolbar.items:

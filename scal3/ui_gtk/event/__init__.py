@@ -27,7 +27,7 @@ def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 	cls = obj.__class__
 
 	if hasattr(cls, "WidgetClass"):
-		return cls.WidgetClass
+		return cls.WidgetClass  # type: ignore[no-any-return]
 
 	modulePath = f"{modPrefix}.{cls.tname}.{cls.name}"
 	try:
@@ -37,7 +37,7 @@ def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 		return None
 	WidgetClass = cls.WidgetClass = module.WidgetClass
 	log.info(f"getWidgetClass: {cls.__name__} -> {modulePath} -> {WidgetClass}")
-	return WidgetClass
+	return WidgetClass  # type: ignore[no-any-return]
 
 
 class EventWidgetType(Protocol):

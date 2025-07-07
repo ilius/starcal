@@ -40,8 +40,8 @@ __all__ = ["ContainerField", "MultiSpinButton", "SingleSpinButton"]
 class AutoSizeEntry(gtk.Entry):
 	extra_width = 10  # optimal value depends on theme
 
-	def __init__(self, *args, maxChars: int = 0, **kwargs) -> None:
-		gtk.Entry.__init__(self, *args, **kwargs)
+	def __init__(self, maxChars: int = 0) -> None:
+		gtk.Entry.__init__(self)
 		self.set_width_chars(maxChars)
 		# ---
 		self.maxChars = maxChars
@@ -209,7 +209,7 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 
 	def get_value(self) -> V:
 		self.field.setText(self.entry.get_text())
-		return self.field.getValue()
+		return self.field.getValue()  # type: ignore[no-any-return]
 
 	def set_value(self, value: V) -> None:
 		pos = self.entry.get_position()
@@ -233,7 +233,7 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 			self.entry.set_position(start + len(s))
 		else:
 			pos = self.entry.get_position()
-			self.entry.insert_text(s, pos)
+			self.entry.insert_text(s, pos)  # type: ignore[no-untyped-call]
 			self.entry.set_position(pos + len(s))
 
 	def entry_plus(self, p: float) -> None:
@@ -314,10 +314,10 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 		# log.debug(kname, kval)
 		return False
 
-	def onDownButtonPress(self, _b: gtk.Widget, _ge: gdk.Event) -> None:
+	def onDownButtonPress(self, _b: gtk.Widget, _ge: gdk.EventButton) -> None:
 		self._arrow_press(-self.step_inc)
 
-	def onUpButtonPress(self, _b: gtk.Widget, _ge: gdk.Event) -> None:
+	def onUpButtonPress(self, _b: gtk.Widget, _ge: gdk.EventButton) -> None:
 		self._arrow_press(self.step_inc)
 
 	def _scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
@@ -355,7 +355,7 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 				plus,
 			)
 
-	def onButtonRelease(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
+	def onButtonRelease(self, _w: gtk.Widget, _ge: gdk.EventButton) -> None:
 		self._remain = False
 
 	"""-- ????????????????????????????????
@@ -371,14 +371,22 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 	#"""
 
 
-class SingleSpinButton[T: Field[Any], V](MultiSpinButton[T, V]):
-	def __init__(self, field: T | None = None, **kwargs) -> None:
+class SingleSpinButton[F: Field[Any], V](MultiSpinButton[F, V]):
+	def __init__(
+		self,
+		field: F | None = None,
+		arrow_select: bool = True,
+		step_inc: float = 1,
+		page_inc: float = 10,
+	) -> None:
 		if field is None:
 			raise ValueError("SingleSpinButton: field is None")
 		MultiSpinButton.__init__(
 			self,
 			field=field,
-			**kwargs,
+			arrow_select=arrow_select,
+			step_inc=step_inc,
+			page_inc=page_inc,
 		)
 		# if isinstance(field, NumField):
 		# 	gtk.SpinButton.set_range(self, field.minim, field.maxim)

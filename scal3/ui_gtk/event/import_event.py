@@ -15,7 +15,7 @@ from scal3 import ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import HBox, VBox, gdk, pack
+from scal3.ui_gtk import gdk, pack
 from scal3.ui_gtk.wizard import StepType, WizardWindow
 
 if TYPE_CHECKING:
@@ -52,11 +52,11 @@ class EventsImportWindow(WizardWindow):
 				(_("Next"), self.onNextClick),
 			]
 			# ----
-			hbox = HBox(spacing=10)
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
 			# frame.set_border_width(10)
-			radioBox = VBox(spacing=10)
+			radioBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 			radioBox.set_border_width(10)
 			# --
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
@@ -74,7 +74,7 @@ class EventsImportWindow(WizardWindow):
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(self, hbox)
 			# ----
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			pack(hbox, gtk.Label(label=_("File") + ":"))
 			self.fcb = gtk.FileChooserButton(title=_("Import: Select File"))
 			self.fcb.set_local_only(True)

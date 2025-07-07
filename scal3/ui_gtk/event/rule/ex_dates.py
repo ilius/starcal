@@ -26,7 +26,7 @@ from scal3 import cal_types
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
@@ -104,35 +104,35 @@ class WidgetClass(gtk.Box):
 				ToolBoxItem(
 					name="add",
 					imageName="list-add.svg",
-					onClick="onAddClick",
+					onClick=self.onAddClick,
 					desc=_("Add"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="delete",
 					imageName="edit-delete.svg",
-					onClick="onDeleteClick",
+					onClick=self.onDeleteClick,
 					desc=_("Delete", ctx="button"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="moveUp",
 					imageName="go-up.svg",
-					onClick="onMoveUpClick",
+					onClick=self.onMoveUpClick,
 					desc=_("Move up"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="moveDown",
 					imageName="go-down.svg",
-					onClick="onMoveDownClick",
+					onClick=self.onMoveDownClick,
 					desc=_("Move down"),
 					continuousClick=False,
 				),
 			],
 		)
 		# --
-		dialogHbox = HBox()
+		dialogHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(dialogHbox, self.treev, 1, 1)
 		pack(dialogHbox, toolbar.w)
 		pack(dialog.vbox, dialogHbox, 1, 1)
@@ -178,7 +178,7 @@ class WidgetClass(gtk.Box):
 		if index is None:
 			newIter = self.listStore.append(row)
 		else:
-			newIter = self.listStore.insert(index + 1, row)
+			newIter = self.listStore.insert(index + 1, row)  # type: ignore[no-untyped-call]
 		self.treev.set_cursor(self.listStore.get_path(newIter))
 		# col = self.treev.get_column(0)
 		# cell = col.get_cell_renderers()[0]

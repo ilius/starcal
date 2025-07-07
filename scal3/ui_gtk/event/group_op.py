@@ -8,7 +8,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button, window_set_size_aspect
 
 if TYPE_CHECKING:
@@ -18,11 +18,13 @@ __all__ = ["GroupConvertCalTypeDialog", "GroupSortDialog"]
 
 
 class GroupSortDialog(Dialog):
-	vbox: gtk.Box  # type: ignore[assignment]
-
-	def __init__(self, group: EventGroupType, **kwargs) -> None:
+	def __init__(
+		self,
+		group: EventGroupType,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		self._group = group
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Sort Events"))
 		# ----
 		dialog_add_button(
@@ -40,7 +42,7 @@ class GroupSortDialog(Dialog):
 		# --
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(
 			hbox,
 			gtk.Label(
@@ -52,7 +54,7 @@ class GroupSortDialog(Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Based on") + " "))
 		self.sortByNames = []
 		self.sortByCombo = gtk.ComboBoxText()
@@ -71,7 +73,7 @@ class GroupSortDialog(Dialog):
 		# ----
 		self.vbox.show_all()
 
-	def run(self) -> bool | None:
+	def run2(self) -> bool | None:
 		if Dialog.run(self) == gtk.ResponseType.OK:
 			self._group.sort(
 				self.sortByNames[self.sortByCombo.get_active()],
@@ -84,13 +86,15 @@ class GroupSortDialog(Dialog):
 
 
 class GroupConvertCalTypeDialog(Dialog):
-	vbox: gtk.Box  # type: ignore[assignment]
-
-	def __init__(self, group: EventGroupType, **kwargs) -> None:
+	def __init__(
+		self,
+		group: EventGroupType,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
 		self._group = group
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Convert Calendar Type"))
 		# ----
 		dialog_add_button(
@@ -120,7 +124,7 @@ class GroupConvertCalTypeDialog(Dialog):
 		label.set_yalign(0.5)
 		pack(self.vbox, label, 1, 1)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Calendar Type") + ":"))
 		combo = CalTypeCombo()
 		combo.set_active(group.calType)

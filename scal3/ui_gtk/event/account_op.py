@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from scal3 import event_lib
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event import EventWidgetType, makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
 
@@ -17,10 +17,12 @@ __all__ = ["AccountEditorDialog"]
 
 
 class AccountEditorDialog(Dialog):
-	vbox: gtk.Box  # type: ignore[assignment]
-
-	def __init__(self, account: AccountType | None = None, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(
+		self,
+		account: AccountType | None = None,
+		transient_for: gtk.Window | None = None,
+	) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Edit Account") if account else _("Add New Account"))
 		# ---
 		dialog_add_button(
@@ -41,7 +43,7 @@ class AccountEditorDialog(Dialog):
 		self.account = account
 		self.activeWidget: EventWidgetType | None = None
 		# -------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.account:
 			combo.append_text(cls.desc)
@@ -87,22 +89,24 @@ class AccountEditorDialog(Dialog):
 		assert self.activeWidget is not None
 		pack(self.vbox, self.activeWidget.w)
 
-	def run(self) -> AccountType | None:
+	def run2(self) -> AccountType | None:
 		if self.activeWidget is None or self.account is None:
 			return None
 		if Dialog.run(self) != gtk.ResponseType.OK:
 			return None
 		self.activeWidget.updateVars()
 		self.account.save()
+		ident = self.account.id
+		assert ident is not None
 		if self.isNew:
 			ev.lastIds.save()
 		else:
-			ev.accounts[self.account.id] = self.account
+			ev.accounts[ident] = self.account
 		self.destroy()
 		return self.account
 
 
 class FetchRemoteGroupsDialog(Dialog):
-	def __init__(self, account: Account, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, account: Account) -> None:
+		Dialog.__init__(self)
 		self.account = account

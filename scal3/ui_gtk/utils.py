@@ -32,7 +32,6 @@ from scal3.ui_gtk import (
 	Dialog,
 	GdkPixbuf,
 	GLibError,
-	HBox,
 	MenuItem,
 	gdk,
 	gtk,
@@ -272,8 +271,8 @@ Date:   Fri Oct 14 17:31:56 2016
 """
 
 
-def newButtonImageBox(label: str, image: gtk.Image, spacing: float = 0) -> gtk.Box:
-	hbox = HBox(spacing=spacing)
+def newButtonImageBox(label: str, image: gtk.Image, spacing: int = 0) -> gtk.Box:
+	hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 	pack(hbox, image, 0, 0)
 	if label:
 		labelObj = gtk.Label(label=label)
@@ -295,7 +294,7 @@ def labelIconButton(
 			newButtonImageBox(
 				label,
 				imageFromIconName(iconName, size),
-				spacing=size / 2,
+				spacing=int(size / 2),
 			),
 		)
 		return button
@@ -439,14 +438,16 @@ def confirm(
 	msg: str,
 	title: str = "Confirmation",
 	border_width: int = 15,
-	**kwargs,
+	transient_for: gtk.Window | None = None,
+	use_markup: bool = False,
 ) -> bool:
 	win = gtk.MessageDialog(
 		message_type=gtk.MessageType.INFO,
 		buttons=gtk.ButtonsType.NONE,
 		text=msg,
 		title=_(title),
-		**kwargs,
+		transient_for=transient_for,
+		use_markup=use_markup,
 	)
 	button = dialog_add_button(
 		win,
@@ -464,7 +465,7 @@ def confirm(
 	)
 	button.set_border_width(border_width)
 	button.get_style_context().add_class("bigger")
-	ok = win.run() == gtk.ResponseType.OK
+	ok: bool = win.run() == gtk.ResponseType.OK  # type: ignore[no-untyped-call]
 	win.destroy()
 	return ok
 
@@ -483,7 +484,7 @@ def showMsg(
 	# flags=0 makes it skip task bar
 	if title:
 		win.set_title(title)
-	hbox = HBox(spacing=10)
+	hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 	hbox.set_border_width(borderWidth)
 	# win.set_icon(...)
 	if imageName:
@@ -504,7 +505,7 @@ def showMsg(
 		label.set_selectable(True)
 	pack(hbox, label)
 	hbox.show_all()
-	pack(win.vbox, hbox)  # type: ignore[arg-type]
+	pack(win.vbox, hbox)
 	dialog_add_button(
 		win,
 		res=gtk.ResponseType.OK,
@@ -516,16 +517,55 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg: str, **kwargs) -> None:
-	showMsg(msg, imageName="dialog-error.svg", **kwargs)
+def showError(
+	msg: str,
+	transient_for: gtk.Window | None = None,
+	title: str = "",
+	borderWidth: int = 10,
+	selectable: bool = False,
+) -> None:
+	showMsg(
+		msg,
+		imageName="dialog-error.svg",
+		transient_for=transient_for,
+		title=title,
+		borderWidth=borderWidth,
+		selectable=selectable,
+	)
 
 
-def showWarning(msg: str, **kwargs) -> None:
-	showMsg(msg, imageName="dialog-warning.svg", **kwargs)
+def showWarning(
+	msg: str,
+	transient_for: gtk.Window | None = None,
+	title: str = "",
+	borderWidth: int = 10,
+	selectable: bool = False,
+) -> None:
+	showMsg(
+		msg,
+		imageName="dialog-warning.svg",
+		transient_for=transient_for,
+		title=title,
+		borderWidth=borderWidth,
+		selectable=selectable,
+	)
 
 
-def showInfo(msg: str, **kwargs) -> None:
-	showMsg(msg, imageName="dialog-information.svg", **kwargs)
+def showInfo(
+	msg: str,
+	transient_for: gtk.Window | None = None,
+	title: str = "",
+	borderWidth: int = 10,
+	selectable: bool = False,
+) -> None:
+	showMsg(
+		msg,
+		imageName="dialog-information.svg",
+		transient_for=transient_for,
+		title=title,
+		borderWidth=borderWidth,
+		selectable=selectable,
+	)
 
 
 def openWindow(win: gtk.Window) -> None:
@@ -655,7 +695,7 @@ class IdComboBox(gtk.ComboBox):
 		if model is None:
 			log.info("IdComboBox.get_active: model is None")
 		try:
-			return model[i][0]
+			return model[i][0]  # type: ignore[no-any-return]
 		except IndexError:
 			return None
 

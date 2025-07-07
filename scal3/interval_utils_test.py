@@ -96,7 +96,7 @@ def testnormalizeIntervalList() -> None:
 		ansList = parseIntervalList(ansStr, False)
 		resList = normalizeIntervalList(inpList)  # type: ignore[arg-type]
 		resList = humanizeIntervalList(resList)  # type: ignore[assignment]
-		if resList == ansList:
+		if resList == ansList:  # type: ignore[comparison-overlap]
 			log.info("OK")
 		else:
 			log.error(f"Failed: {resList!r} != {ansList!r}")

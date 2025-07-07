@@ -18,9 +18,9 @@ class AboutDialog(gtk.AboutDialog):
 		license: str = "",  # noqa: A002
 		website: str = "",
 		logo: GdkPixbuf.Pixbuf | None = None,
-		**kwargs,
+		transient_for: gtk.Window | None = None,
 	) -> None:
-		gtk.AboutDialog.__init__(self, **kwargs)
+		gtk.AboutDialog.__init__(self, transient_for=transient_for)
 		self.set_name(name)
 		self.set_program_name(name)
 		self.set_version("Version: <b>" + version + "</b>")

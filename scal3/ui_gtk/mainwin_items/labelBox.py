@@ -29,10 +29,8 @@ from scal3.color_utils import colorizeSpan
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
-	HBox,
 	Menu,
 	MenuItem,
-	VBox,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -182,7 +180,7 @@ class MonthLabel(BaseLabel):
 		y, m, d = ui.cells.current.dates[self.calType]
 		m = index + 1
 		ui.cells.changeDate(y, m, d, self.calType)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 3:
@@ -209,8 +207,8 @@ class MonthLabel(BaseLabel):
 
 		return False
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.setActive(ui.cells.current.dates[self.calType][1] - 1)
 
 
@@ -416,14 +414,14 @@ class YearLabel(IntLabel):
 		calType = self.calType
 		_y, m, d = ui.cells.current.dates[calType]
 		ui.cells.changeDate(year, m, d, calType)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def changeCalType(self, calType: int) -> None:
 		self.calType = calType
-		# self.onDateChange()
+		# self.broadcastDateChange()
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.setActive(ui.cells.current.dates[self.calType][0])
 
 	def setActive(self, active: int) -> None:
@@ -460,7 +458,7 @@ class SmallNoFocusButton(ConButton):
 
 
 class YearLabelButtonBox(CalObjWidget):
-	def __init__(self, calType: int, **kwargs) -> None:
+	def __init__(self, calType: int) -> None:
 		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ---
@@ -476,18 +474,21 @@ class YearLabelButtonBox(CalObjWidget):
 		)
 		pack(self.w, self.removeButton)
 		# ---
-		self.label = YearLabel(calType, **kwargs)
+		self.label = YearLabel(calType)
 		pack(self.w, self.label.w)
+		self.appendItem(self.label)
 		# ---
 		pack(self.w, self.addButton)
 
 	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(-1)
-		self.label.onDateChange()
+		self.label.broadcastDateChange()
+		# self.label.s.emit("date-change")
 
 	def onNextClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(1)
-		self.label.onDateChange()
+		self.label.broadcastDateChange()
+		# self.label.s.emit("date-change")
 
 	def changeCalType(self, calType: int) -> None:
 		self.label.changeCalType(calType)
@@ -498,7 +499,7 @@ class YearLabelButtonBox(CalObjWidget):
 
 
 class MonthLabelButtonBox(CalObjWidget):
-	def __init__(self, calType: int, **kwargs) -> None:
+	def __init__(self, calType: int) -> None:
 		self.w = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.removeButton = SmallNoFocusButton(
@@ -514,18 +515,19 @@ class MonthLabelButtonBox(CalObjWidget):
 		# ---
 		pack(self.w, self.removeButton)
 		# ---
-		self.label = MonthLabel(calType, **kwargs)
+		self.label = MonthLabel(calType)
 		pack(self.w, self.label.w)
+		self.appendItem(self.label)
 		# ---
 		pack(self.w, self.addButton)
 
 	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.monthPlus(-1)
-		self.label.onDateChange()
+		self.label.broadcastDateChange()
 
 	def onNextClick(self, _b: gtk.Widget) -> None:
 		ui.cells.monthPlus(1)
-		self.label.onDateChange()
+		self.label.broadcastDateChange()
 
 	def changeCalType(self, calType: int) -> None:
 		self.label.changeCalType(calType)
@@ -563,6 +565,7 @@ class CalObj(CustomizableCalObj):
 		self.mbox: MonthLabelButtonBox | None = None
 		self.monthLabels: list[MonthLabel] = []
 		self.onBorderWidthChange()
+		# self.onConfigChange()
 
 	@staticmethod
 	def newSeparator() -> gtk.Widget:
@@ -604,11 +607,12 @@ class CalObj(CustomizableCalObj):
 			[self.getFontPreviewText(calType) for calType in calTypes.active],
 		)
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		# -----
 		self.updateIconSize()
 		# ----
+		self.items = []
 		for child in self.w.get_children():
 			child.destroy()
 		# ---
@@ -617,6 +621,7 @@ class CalObj(CustomizableCalObj):
 		# --
 		ybox = YearLabelButtonBox(calType)
 		pack(self.w, ybox.w)
+		# FIXME: self.appendItem(ybox)  and self.appendItem(mbox)
 		self.appendItem(ybox.label)
 		self.ybox = ybox
 		# --
@@ -645,7 +650,7 @@ class CalObj(CustomizableCalObj):
 		# -----
 		self.w.show_all()
 		# -----
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	@staticmethod
 	@ud.cssFunc
@@ -690,6 +695,9 @@ class CalObj(CustomizableCalObj):
 	def onBorderWidthChange(self) -> None:
 		self.w.set_border_width(conf.labelBoxBorderWidth.v)
 
+	def onMenuColorChange(self) -> None:
+		self.onDateChange()
+
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.pref_utils import (
 			CheckColorPrefItem,
@@ -703,7 +711,7 @@ class CalObj(CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
-		optionsWidget = VBox(spacing=5)
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		prefItem: PrefItem
 		# ----
 		prefItem = IntSpinPrefItem(
@@ -717,12 +725,12 @@ class CalObj(CustomizableCalObj):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
 		prefItem = ColorPrefItem(
 			prop=conf.labelBoxMenuActiveColor,
 			live=True,
-			onChangeFunc=self.onDateChange,
+			onChangeFunc=self.onMenuColorChange,
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(optionsWidget, hbox)

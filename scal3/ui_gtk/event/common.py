@@ -30,7 +30,7 @@ from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
 from scal3.ui import conf
-from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, gtk, pack
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.event import EventWidgetType, makeWidget
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
@@ -46,7 +46,7 @@ try:
 except (ImportError, ValueError):
 	log.exception("")
 	from scal3.ui_gtk.mywidgets import (  # type: ignore[assignment]
-		TextFrame as SourceEditorWithFrame,  # type: ignore[assignment]
+		TextFrame as SourceEditorWithFrame,
 	)
 
 __all__ = [
@@ -91,7 +91,7 @@ class WidgetClass(gtk.Box):
 		self.w = self
 		self._event = event
 		# -----------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# ---
 		pack(hbox, gtk.Label(label=_("Calendar Type")))
 		combo = CalTypeCombo()
@@ -105,7 +105,7 @@ class WidgetClass(gtk.Box):
 		if event.isAllDay:
 			self.tzCheck = None
 		else:
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			self.tzCheck = gtk.CheckButton(label=_("Time Zone"))
 			set_tooltip(self.tzCheck, _("For input times of event"))
 			pack(hbox, self.tzCheck)
@@ -121,7 +121,7 @@ class WidgetClass(gtk.Box):
 				),
 			)
 		# -----------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Summary")))
 		self.summaryEntry = gtk.Entry()
 		pack(hbox, self.summaryEntry, 1, 1)
@@ -137,7 +137,7 @@ class WidgetClass(gtk.Box):
 		frame.add(swin)
 		pack(self, frame, self.expandDescription, self.expandDescription)
 		# -----------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Icon") + ":"))
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
@@ -203,9 +203,9 @@ class WidgetClass(gtk.Box):
 # 	def __init__(self, event: EventType) -> None:
 # 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 # 		self._event = event
-# 		self.vbox = VBox()
+# 		self.vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 # 		pack(self, self.vbox)
-# 		hbox = HBox()
+# 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 # 		pack(hbox, gtk.Label(), 1, 1)
 # 		addButton = labelImageButton(
 # 			label=_("_Add File"),
@@ -218,7 +218,7 @@ class WidgetClass(gtk.Box):
 # 		self.newFiles: list[str] = []
 
 # 	def showFile(self, fname: str) -> None:
-# 		hbox = HBox()
+# 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 # 		link = gtk.LinkButton(
 # 			self._event.getUrlForFile(fname),
 # 			_("File") + ": " + fname,
@@ -295,9 +295,9 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 		self.hboxDict: dict[str, gtk.Box] = {}
 		self.checkButtonDict: dict[str, gtk.CheckButton] = {}
 		self.inputWidgetDict: dict[str, EventWidgetType] = {}
-		totalVbox = VBox()
+		totalVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Notify") + " "))
 		self.notifyBeforeInput = DurationInputBox()
 		pack(hbox, self.notifyBeforeInput, 0, 0)
@@ -311,7 +311,7 @@ class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 			if not inputWidget:
 				log.error(f"notifier {cls.name}, {inputWidget = }")
 				continue
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			cb = gtk.CheckButton(label=notifier.desc)
 			cb.connect(
 				"clicked",
@@ -410,7 +410,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		self.set_active(0)
 
 	def get_value(self) -> int:
-		return self.get_model()[self.get_active()][0]
+		return self.get_model()[self.get_active()][0]  # type: ignore[no-any-return]
 
 	def set_value(self, value: int) -> None:
 		model = self.listStore
@@ -522,11 +522,11 @@ class SingleGroupComboBox(gtk.ComboBox):
 		index = gtk.ComboBox.get_active(self)
 		if index in {None, -1}:
 			return None
-		return self.get_model()[index][0]
+		return self.get_model()[index][0]  # type: ignore[no-any-return]
 
 	def setActive(self, gid: int) -> None:
 		listStore = self.listStore
-		for i, row in enumerate(listStore):  # type: ignore
+		for i, row in enumerate(listStore):  # type: ignore[var-annotated, arg-type]
 			if row[0] == gid:
 				gtk.ComboBox.set_active(self, i)
 				break
