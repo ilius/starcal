@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from scal3.core import jd_to
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
@@ -19,7 +19,7 @@ __all__ = ["WidgetClass"]
 
 class WidgetClass(BaseWidgetClass):
 	def addStartEndWidgets(self) -> None:
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -28,7 +28,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.startDateInput)
 		pack(self, hbox)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -43,12 +43,12 @@ class WidgetClass(BaseWidgetClass):
 		exp = ExpanderFrame(
 			label=_("Online Service"),
 		)
-		vbox = VBox()
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		exp.add(vbox)
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		self.onlineServiceExpander = exp
 		# --
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Account"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -57,7 +57,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.accountCombo)
 		pack(vbox, hbox)
 		# --
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Remote Group"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -67,7 +67,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(vbox, hbox)
 		self.accountGroupCombo = accountGroupBox.combo
 		# --
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.syncCheck = gtk.CheckButton(label=_("Synchronization Interval"))
 		pack(hbox, self.syncCheck)
 		sizeGroup.add_widget(self.syncCheck)

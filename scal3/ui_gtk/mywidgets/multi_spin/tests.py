@@ -3,36 +3,34 @@ from scal3 import logger
 log = logger.get()
 
 from scal3.ui_gtk import Dialog, gtk, pack
+from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
+from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.timer import TimerButton
 
 
-def getDateTimeWidget():
-	from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
-
+def getDateTimeWidget() -> DateTimeButton:
 	btn = DateTimeButton()
-	btn.set_value((2011, 1, 1))
+	btn.set_value([(2011, 1, 1)])
 	btn.set_editable(True)
 	return btn
 
 
-def getIntWidget():
-	from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-
+def getIntWidget() -> IntSpinButton:
 	btn = IntSpinButton(0, 99)
 	btn.set_value(12)
 	btn.set_editable(True)
 	return btn
 
 
-def getFloatWidget():
-	from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-
+def getFloatWidget() -> FloatSpinButton:
 	btn = FloatSpinButton(-10, 10, 1)
 	btn.set_value(-3)
 	btn.set_editable(True)
 	return btn
 
 
-def getFloatBuiltinWidget():
+def getFloatBuiltinWidget() -> gtk.SpinButton:
 	btn = gtk.SpinButton()
 	btn.set_range(0, 90)
 	btn.set_digits(2)
@@ -41,9 +39,7 @@ def getFloatBuiltinWidget():
 	return btn
 
 
-def getTimerWidget():
-	from scal3.ui_gtk.mywidgets.multi_spin.timer import TimerButton
-
+def getTimerWidget() -> TimerButton:
 	btn = TimerButton()
 	btn.clock_start()
 	return btn
@@ -55,4 +51,4 @@ if __name__ == "__main__":
 	pack(d.vbox, btn, True, True)
 	d.vbox.show_all()
 	d.run()
-	log.info(btn.get_value())
+	log.info(f"Value: {btn.get_value()}")

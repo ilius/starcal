@@ -16,7 +16,7 @@ __all__ = ["DateButton"]
 
 
 class DateButton(MultiSpinButton[ContainerField[int], Sequence[int]]):
-	def __init__(self, date: tuple[int, int, int] | None = None, **kwargs) -> None:
+	def __init__(self, date: tuple[int, int, int] | None = None) -> None:
 		self.dayField = DayField()
 		MultiSpinButton.__init__(
 			self,
@@ -26,7 +26,6 @@ class DateButton(MultiSpinButton[ContainerField[int], Sequence[int]]):
 				MonthField(),
 				self.dayField,
 			),
-			**kwargs,
 		)
 		if date is None:
 			date = localtime()[:3]

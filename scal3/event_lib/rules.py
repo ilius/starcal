@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import locale_man, logger
+from scal3.event_lib.pytypes import EventRuleType
 
 log = logger.get()
 
@@ -99,7 +100,7 @@ dayLen = 86400
 
 # Should not be registered, or instantiate directly
 @classes.rule.setMain
-class EventRule(SObjBase):
+class EventRule(SObjBase, EventRuleType):
 	name = ""
 	tname = ""
 	nameAlias = ""
@@ -766,7 +767,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		event: EventType,  # noqa: ARG002
 	) -> OccurSet:
 		mySec = getSecondsFromHms(*self.dayTime)
-		return TimeListOccurSet(  # FIXME
+		return TimeListOccurSet.fromRange(  # FIXME
 			self.getEpochFromJd(startJd) + mySec,
 			self.getEpochFromJd(endJd) + mySec + 1,
 			dayLen,
@@ -1169,7 +1170,7 @@ class CycleLenEventRule(EventRule):
 				(startEpoch - eventStartEpoch - 1) // cycleSec + 1
 			)
 		# --
-		return TimeListOccurSet(
+		return TimeListOccurSet.fromRange(
 			startEpoch,
 			self.getEpochFromJd(endJd),
 			cycleSec,

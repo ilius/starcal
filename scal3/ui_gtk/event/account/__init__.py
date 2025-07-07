@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from scal3 import ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.utils import (
 	IdComboBox,
 	labelImageButton,
@@ -35,7 +35,7 @@ class BaseWidgetClass(gtk.Box):
 		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
 		pack(hbox, label)

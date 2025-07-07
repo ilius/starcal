@@ -116,7 +116,7 @@ class IconSelectButton(gtk.Button):
 		if button == 1:
 			dialog = self.createDialog()
 			dialog.set_filename(self.filename or "")
-			dialog.run()
+			dialog.run()  # type: ignore[no-untyped-call]
 		elif button == 3:
 			self.menu.popup(None, None, None, None, button, gevent.time)
 

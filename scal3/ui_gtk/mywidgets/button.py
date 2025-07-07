@@ -36,7 +36,7 @@ class ConButton(gtk.Button):
 	def _doTrigger(self) -> None:
 		self.emit("con-clicked")
 
-	def _onConPress(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
+	def _onConPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if self._button is not None and gevent.button != self._button:
 			return False
 		self.pressTm = now()
@@ -50,7 +50,7 @@ class ConButton(gtk.Button):
 		)
 		return True
 
-	def _onRelease(self, _w: gtk.Widget, _ge: gdk.Event) -> bool:
+	def _onRelease(self, _w: gtk.Widget, _ge: gdk.EventButton) -> bool:
 		self.counter += 1
 		return True
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)
-	pack(win.vbox, button, 1, 1)  # type: ignore[arg-type]
-	win.vbox.show_all()  # type: ignore[attr-defined]
+	pack(win.vbox, button, 1, 1)
+	win.vbox.show_all()
 	win.resize(100, 100)
 	win.run()

@@ -10,7 +10,7 @@ __all__ = ["HourMinuteButtonOption"]
 
 
 class HourMinuteButtonOption(MultiSpinOptionBox[ContainerField[int], Sequence[int]]):
-	def __init__(self, hm: tuple[int, int] | None = None, **kwargs) -> None:
+	def __init__(self, hm: tuple[int, int] | None = None) -> None:
 		MultiSpinOptionBox.__init__(
 			self,
 			ContainerField(
@@ -18,7 +18,6 @@ class HourMinuteButtonOption(MultiSpinOptionBox[ContainerField[int], Sequence[in
 				HourField(),
 				Z60Field(),
 			),
-			**kwargs,
 		)
 		if hm is None:
 			hm = localtime()[3:5]

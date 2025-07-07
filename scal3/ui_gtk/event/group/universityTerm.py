@@ -27,7 +27,7 @@ from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.time_utils import hmDecode, hmEncode
 from scal3.ui import conf
-from scal3.ui_gtk import Dialog, HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.drawing import (
 	fillColor,
 	newTextLayout,
@@ -91,28 +91,28 @@ class CourseListEditor(gtk.Box):
 				ToolBoxItem(
 					name="add",
 					imageName="list-add.svg",
-					onClick="onAddClick",
+					onClick=self.onAddClick,
 					desc=_("Add"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="delete",
 					imageName="edit-delete.svg",
-					onClick="onDeleteClick",
+					onClick=self.onDeleteClick,
 					desc=_("Delete", ctx="button"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="moveUp",
 					imageName="go-up.svg",
-					onClick="onMoveUpClick",
+					onClick=self.onMoveUpClick,
 					desc=_("Move up"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="moveDown",
 					imageName="go-down.svg",
-					onClick="onMoveDownClick",
+					onClick=self.onMoveDownClick,
 					desc=_("Move down"),
 					continuousClick=False,
 				),
@@ -142,7 +142,7 @@ class CourseListEditor(gtk.Box):
 		if index is None:
 			newIter = self.treeModel.append(row)
 		else:
-			newIter = self.treeModel.insert(index + 1, row)
+			newIter = self.treeModel.insert(index + 1, row)  # type: ignore[no-untyped-call]
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
 		# col = self.treev.get_column(0)
 		# cell = col.get_cell_renderers()[0]
@@ -235,14 +235,14 @@ class ClassTimeBoundsEditor(gtk.Box):
 				ToolBoxItem(
 					name="add",
 					imageName="list-add.svg",
-					onClick="onAddClick",
+					onClick=self.onAddClick,
 					desc=_("Add"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="delete",
 					imageName="edit-delete.svg",
-					onClick="onDeleteClick",
+					onClick=self.onDeleteClick,
 					desc=_("Delete"),
 					continuousClick=False,
 				),
@@ -265,7 +265,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		if index is None:
 			newIter = self.treeModel.append(row)
 		else:
-			newIter = self.treeModel.insert(index + 1, row)
+			newIter = self.treeModel.insert(index + 1, row)  # type: ignore[no-untyped-call]
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
 
 	def onDeleteClick(self, _button: Any) -> None:
@@ -333,9 +333,11 @@ class WidgetClass(NormalWidgetClass):
 		# -----
 		totalFrame = gtk.Frame()
 		totalFrame.set_label(group.desc)
-		totalVbox = VBox()
+		totalVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# ---
-		expandHbox = HBox()  # for courseList and classTimeBounds
+		expandHbox = gtk.Box(
+			orientation=gtk.Orientation.HORIZONTAL
+		)  # for courseList and classTimeBounds
 		# --
 		frame = gtk.Frame()
 		frame.set_label(_("Course List"))
@@ -520,14 +522,18 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 
 
 class WeeklyScheduleWindow(Dialog):
-	def __init__(self, term: UniversityTerm, **kwargs) -> None:
+	def __init__(
+		self,
+		term: UniversityTerm,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		self.term = term
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.resize(800, 500)
 		self.set_title(_("View Weekly Schedule"))
 		self.connect("delete-event", self.onDeleteEvent)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.currentWOnlyCheck = gtk.CheckButton(label=_("Current Week Only"))
 		self.currentWOnlyCheck.connect("clicked", lambda _w: self.updateWidget())
 		pack(hbox, self.currentWOnlyCheck)
@@ -585,7 +591,7 @@ class WeeklyScheduleWindow(Dialog):
 			imageName="document-save.svg",
 			label=_("_Save"),
 		)
-		if fcd.run() == gtk.ResponseType.OK:
+		if fcd.run() == gtk.ResponseType.OK:  # type: ignore[no-untyped-call]
 			self.exportToSvg(fcd.get_filename() or "")
 		fcd.destroy()
 

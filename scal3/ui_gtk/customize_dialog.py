@@ -25,7 +25,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, GdkPixbuf, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj, DummyCalObj, newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
@@ -120,9 +120,9 @@ class CustomizeWindow(Dialog):
 		self,
 		item: WinLayoutBox,
 		scrolled: bool = True,
-		**kwargs,
+		transient_for: gtk.Window | None = None,
 	) -> None:
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.vbox.set_border_width(10)
 		# --
 		self.stack = MyStack(
@@ -241,8 +241,8 @@ class CustomizeWindow(Dialog):
 				],
 			)
 		# ---
-		hbox = HBox()
-		vbox_l = VBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		vbox_l = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		if scrolled:
 			swin = gtk.ScrolledWindow()
 			swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
@@ -260,7 +260,7 @@ class CustomizeWindow(Dialog):
 		# ---
 		pack(hbox, toolbar.w)
 		# ---
-		vbox = VBox(spacing=10)
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		if parentItem.itemHaveOptions:
 			label = gtk.Label(
 				label=(
@@ -407,7 +407,7 @@ class CustomizeWindow(Dialog):
 			return
 
 		if item.enableParam:
-			hbox = HBox(spacing=10)
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 			prefItem = CheckPrefItem(
 				prop=item.enableParam,
 				label=_("Enable"),
@@ -462,7 +462,10 @@ class CustomizeWindow(Dialog):
 		page.pageName = pagePath.split(".", maxsplit=1)[-1]
 		page.pagePath = pagePath
 		page.pageParent = parentPagePath
-		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
+		page.pageWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=item.optionsPageSpacing,
+		)
 		page.pageTitle = title
 		page.pageExpand = True
 		page.pageExpand = True
@@ -551,7 +554,7 @@ class CustomizeWindow(Dialog):
 			parentItem.replaceItem(itemIndex, item)
 			parentItem.insertItemWidget(itemIndex)
 		item.onConfigChange()
-		item.onDateChange()
+		item.broadcastDateChange()
 		return item
 
 	def onEnableCellToggle(

@@ -10,7 +10,7 @@ __all__ = ["TimeButton"]
 
 
 class TimeButton(MultiSpinButton[ContainerField[int], Sequence[int]]):
-	def __init__(self, hms: tuple[int, int, int] | None = None, **kwargs) -> None:
+	def __init__(self, hms: tuple[int, int, int] | None = None) -> None:
 		MultiSpinButton.__init__(
 			self,
 			field=ContainerField(
@@ -19,7 +19,6 @@ class TimeButton(MultiSpinButton[ContainerField[int], Sequence[int]]):
 				Z60Field(),
 				Z60Field(),
 			),
-			**kwargs,
 		)
 		if hms is None:
 			hms = localtime()[3:6]

@@ -9,7 +9,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
 from scal3.ui import conf
-from scal3.ui_gtk import VBox, gdk, gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
 from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
@@ -322,7 +322,7 @@ class CalObj(CustomizableCalBox):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		optionsWidget = VBox()
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		prefItem: PrefItem
 		# ----
 		prefItem = ComboTextPrefItem(

@@ -25,7 +25,7 @@ from typing import TypedDict
 from cachetools import LRUCache
 
 from scal3 import cal_types, core, event_lib, ui
-from scal3.cal_types import calTypes, jd_to
+from scal3.cal_types import calTypes, jd_to, to_jd
 from scal3.cell_type import CellType
 from scal3.date_utils import getJdRangeForMonth
 from scal3.date_utils import monthPlus as lowMonthPlus
@@ -289,7 +289,7 @@ class CellCache:
 	) -> None:
 		if calType is None:
 			calType = calTypes.primary
-		self.current = self.getCell(core.to_jd(year, month, day, calType))
+		self.current = self.getCell(to_jd(year, month, day, calType))
 
 	def gotoJd(self, jd: int) -> None:
 		self.current = self.getCell(jd)

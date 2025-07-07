@@ -23,7 +23,7 @@ log = logger.get()
 
 from scal3.json_utils import dataToCompactJson
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.pref_utils import PrefItem
 
 __all__ = ["LogLevelPrefItem"]
@@ -74,7 +74,7 @@ class LogLevelPrefItem(PrefItem):
 		# ---
 		self.combo = LogLevelComboBox()
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Log Level")))
 		pack(hbox, self.combo)
 		pack(hbox, gtk.Label(), 1, 1)

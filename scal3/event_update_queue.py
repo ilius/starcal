@@ -120,7 +120,7 @@ class EventUpdateQueue:
 			if record is None:
 				return
 			for consumer in self._consumers:
-				if consumer is record.sender:
+				if consumer is record.sender:  # type: ignore[comparison-overlap]
 					continue
 				consumer.onEventUpdate(record)
 

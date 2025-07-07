@@ -20,7 +20,7 @@ from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import core, ui
 from scal3.ui_gtk import gdk, gtk, listener
@@ -29,6 +29,8 @@ from scal3.ui_gtk.drawing import newDndDatePixbuf
 from scal3.ui_gtk.gtk_ud import commonSignals
 
 if TYPE_CHECKING:
+	from gi.overrides import GObject
+
 	from scal3.cell_type import CellType
 	from scal3.ui_gtk.stack import StackPage
 	from scal3.ui_gtk.starcal import MainWin
@@ -73,14 +75,14 @@ class CalBase(CustomizableCalObj):
 
 	def gotoJd(self, jd: int) -> None:
 		ui.cells.gotoJd(jd)
-		self.onDateChange()
+		self.broadcastDateChange()
 
-	def goToday(self, _w: gtk.Widget | None = None) -> None:
+	def goToday(self, _w: GObject.Object | None = None) -> None:
 		self.gotoJd(core.getCurrentJd())
 
 	def jdPlus(self, p: int) -> None:
 		ui.cells.jdPlus(p)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def changeDate(
 		self,
@@ -90,7 +92,7 @@ class CalBase(CustomizableCalObj):
 		calType: int | None = None,
 	) -> None:
 		ui.cells.changeDate(year, month, day, calType)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: ARG002
 		self.w.queue_draw()
@@ -210,7 +212,7 @@ class CalBase(CustomizableCalObj):
 		)
 		return True
 
-	def getCellPos(self, *_args) -> tuple[int, int]:
+	def getCellPos(self, *_args: Any) -> tuple[int, int]:
 		raise NotImplementedError
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:

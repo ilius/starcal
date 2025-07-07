@@ -32,7 +32,7 @@ def formatTime(
 
 
 class TestJalali(unittest.TestCase):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
 		unittest.TestCase.__init__(self, *args, **kwargs)
 		initCells()
 

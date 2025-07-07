@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 from os.path import join
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3.s_object import (
 	SObjBinaryModel,
@@ -49,7 +49,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 
 	def save(
 		self,
-		*args,  # noqa: ANN002
+		*args: Any,  # noqa: ANN002
 	) -> tuple[int, str] | None:
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")

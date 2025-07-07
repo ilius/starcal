@@ -73,6 +73,7 @@ class DummyCalObj(CalObjWidget):
 		CalObj = module.CalObj
 		obj = CalObj(ui.mainWin)
 		obj.enable = self.enable
+		assert isinstance(obj, CustomizableCalObj)
 		return obj
 
 	def updateVars(self) -> None:

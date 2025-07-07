@@ -36,10 +36,6 @@ pixDir = join(sourceDir, "pixmaps")
 svgDir = join(sourceDir, "svg")
 
 
-def HBox(**kwargs) -> gtk.Box:
-	return gtk.Box(orientation=gtk.Orientation.HORIZONTAL, **kwargs)
-
-
 def pack(
 	box: gtk.Box | gtk.CellLayout,
 	child: gtk.Widget,
@@ -130,7 +126,7 @@ def showMsg(
 	# flags=0 makes it skip task bar
 	if title:
 		win.set_title(title)
-	hbox = HBox(spacing=10)
+	hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 	hbox.set_border_width(borderWidth)
 	# win.set_icon(...)
 	if imageName:
@@ -163,20 +159,19 @@ def showMsg(
 	win.destroy()
 
 
-def showError(msg: str, **kwargs) -> None:
-	showMsg(msg, imageName="dialog-error.svg", **kwargs)
+def showError(msg: str) -> None:
+	showMsg(msg, imageName="dialog-error.svg")
 
 
-def error_exit(resCode: int, text: str, **kwargs) -> None:
+def error_exit(resCode: int, text: str) -> None:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,
 		buttons=gtk.ButtonsType.OK,
 		text=text.strip(),
-		**kwargs,
 	)
 	d.set_title("Error")
-	d.run()
+	d.run()  # type: ignore[no-untyped-call]
 	sys.exit(resCode)
 
 

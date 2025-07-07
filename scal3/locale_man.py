@@ -49,7 +49,6 @@ from scal3.s_object import SObjTextModel
 from scal3.utils import toStr
 
 if TYPE_CHECKING:
-	import subprocess
 	from typing import Any
 
 __all__ = [
@@ -72,7 +71,6 @@ __all__ = [
 	"localTz",
 	"numDecode",
 	"numEncode",
-	"popenDefaultLang",
 	"prepareLanguage",
 	"rtl",
 	"rtlSgn",
@@ -179,13 +177,42 @@ loadConf()
 # ----------------------------------------------------------
 
 
-def tr(
-	s: str | int,
-	*a,  # noqa: ANN002
-	**ka,  # noqa: ANN003
+class TranslateFunc(Protocol):
+	def __call__(
+		self,
+		s: str | float,
+		nums: bool = False,
+		ctx: str | None = None,
+		default: str | None = None,
+		localeMode: str | None = None,
+		calType: int | None = None,
+		fillZero: int = 0,
+		negEnd: bool = False,
+	) -> str: ...
+
+
+def fallbackTranslate(
+	s: str | float,
+	nums: bool = False,  # noqa: ARG001
+	ctx: str | None = None,  # noqa: ARG001
+	default: str | None = None,  # noqa: ARG001
+	localeMode: str | None = None,  # language name or "calendar"
+	calType: int | None = None,  # only used when localeMode == "calendar"
+	fillZero: int = 0,
+	negEnd: bool = False,
 ) -> str:
-	"""String translator function."""
-	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
+	if not isinstance(s, int):
+		return str(s)
+	return numEncode(
+		s,
+		localeMode=localeMode,
+		calType=calType,
+		fillZero=fillZero,
+		negEnd=negEnd,
+	)
+
+
+tr = fallbackTranslate
 
 
 class LangData(SObjTextModel):
@@ -353,29 +380,6 @@ def prepareLanguage() -> str:
 	return langSh
 
 
-def fallbackTranslate(
-	s: str | float,
-	*a: Any,  # noqa: ARG001
-	nums: bool = False,  # noqa: ARG001
-	ctx: str | None = None,  # noqa: ARG001
-	default: str | None = None,  # noqa: ARG001
-	**ka: Any,  # noqa: ARG001
-) -> str:
-	return str(s)
-
-
-class TranslateFunc(Protocol):
-	def __call__(
-		self,
-		s: str | float,
-		*a: Any,
-		nums: bool = False,
-		ctx: str | None = None,
-		default: str | None = None,
-		**ka: Any,
-	) -> str: ...
-
-
 def loadTranslator() -> TranslateFunc:
 	global tr
 	transObj = None
@@ -392,15 +396,23 @@ def loadTranslator() -> TranslateFunc:
 
 	def tr(
 		s: str | float,
-		*a: Any,
 		nums: bool = False,
 		ctx: str | None = None,
 		default: str | None = None,
-		**ka: Any,
+		localeMode: str | None = None,
+		calType: int | None = None,
+		fillZero: int = 0,
+		negEnd: bool = False,
 	) -> str:
 		orig = s
 		if isinstance(s, int):
-			s = numEncode(s, *a, **ka)
+			s = numEncode(
+				s,
+				localeMode=localeMode,
+				calType=calType,
+				fillZero=fillZero,
+				negEnd=negEnd,
+			)
 		elif isinstance(s, float):
 			return floatEncode(str(s))
 		else:
@@ -413,15 +425,15 @@ def loadTranslator() -> TranslateFunc:
 				s = toStr(transObj.gettext(s))
 			if default is not None and s == orig:
 				s = default
-			if a:
-				s %= a
-			if ka:
-				s %= ka
+			# if args:
+			# 	s %= args
+			# if kwargs:
+			# 	s %= kwargs
 			if nums:
 				s = textNumEncode(s)
 		return s
 
-	return tr  # type: ignore[return-value]
+	return tr
 
 
 def rtlSgn() -> int:
@@ -643,18 +655,6 @@ def cutText(text: str, n: int) -> str:
 
 def addLRM(text: str) -> str:
 	return LRM + toStr(text)
-
-
-def popenDefaultLang(
-	*args,  # noqa: ANN002
-	**kwargs,  # noqa: ANN003
-) -> subprocess.Popen[str]:
-	from subprocess import Popen
-
-	os.environ["LANG"] = sysLangDefault
-	p = Popen(*args, **kwargs)  # noqa: S603
-	os.environ["LANG"] = lang.v
-	return p
 
 
 def getNeedRestartParams() -> list[Property[Any]]:

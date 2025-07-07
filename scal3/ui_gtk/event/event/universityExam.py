@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
@@ -64,7 +64,7 @@ class WidgetClass(gtk.Box):
 		# combo.connect("changed", self.updateSummary)
 		self.courseCombo = combo
 		# --
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Course"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -73,7 +73,7 @@ class WidgetClass(gtk.Box):
 		# --
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Date"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -82,7 +82,7 @@ class WidgetClass(gtk.Box):
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Time"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -99,7 +99,7 @@ class WidgetClass(gtk.Box):
 		pack(hbox, self.dayTimeEndCombo)
 		pack(self, hbox)
 		# -----------
-		# hbox = HBox()
+		# hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# label = gtk.Label(label=_("Summary"))
 		# label.set_xalign(0)
 		# sizeGroup.add_widget(label)
@@ -108,7 +108,7 @@ class WidgetClass(gtk.Box):
 		# pack(hbox, self.summaryEntry, 1, 1)
 		# pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Description"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -117,7 +117,7 @@ class WidgetClass(gtk.Box):
 		pack(hbox, self.descriptionInput, 1, 1)
 		pack(self, hbox)
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Icon"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)

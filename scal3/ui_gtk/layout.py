@@ -22,7 +22,7 @@ log = logger.get()
 
 from typing import TYPE_CHECKING
 
-from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
+from scal3.ui_gtk import gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
 	newSubPageButton,
@@ -169,7 +169,10 @@ class WinLayoutObj(WinLayoutBase):
 			return self.optionsButtonBox
 		item = self._item
 		page = StackPage()
-		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
+		page.pageWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL,
+			spacing=item.optionsPageSpacing,
+		)
 		page.pageName = item.objName
 		page.pageTitle = item.desc
 		pageLabel = self.desc
@@ -190,7 +193,7 @@ class WinLayoutObj(WinLayoutBase):
 		)
 		self.optionsButtonEnable = item.enable
 		self.optionsButton = button
-		vbox = VBox()
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(vbox, button, expand=True, fill=True)
 		self.optionsButtonBox = vbox
 		return vbox
@@ -269,8 +272,8 @@ class WinLayoutBox(WinLayoutBase):
 				pack(box, item.w, item.expand, item.expand)
 				item.showHide()
 
-	def onConfigChange(self, *args, **kwargs) -> None:
-		super().onConfigChange(*args, **kwargs)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		if self.itemsParam:
 			self.itemsParam.v = [item.objName for item in self.items if item.enable]
 		self.createWidget()
@@ -281,6 +284,8 @@ class WinLayoutBox(WinLayoutBase):
 		for name in prop.default:
 			if name not in prop.v:
 				self.items.append(itemByName[name])
+		# for item in self.items:
+		# 	self.connectItem(item)
 
 	def getOptionsButtonBox(self) -> gtk.Box:
 		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self.objName}")
@@ -301,7 +306,7 @@ class WinLayoutBox(WinLayoutBase):
 			for index, item in enumerate(self.items):
 				assert isinstance(item, WinLayoutObj)
 				childBox = item.getOptionsButtonBox()
-				hbox = HBox(spacing=0)
+				hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 				action = "down" if index == 0 else "up"
 				moveButton = MoveButton(
 					iconName=f"pan-{action}-symbolic",

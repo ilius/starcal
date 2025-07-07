@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from scal3 import logger
+import os
+
+from scal3 import locale_man, logger
 
 log = logger.get()
 
 import sys
 from typing import TYPE_CHECKING
-
-from scal3.locale_man import popenDefaultLang
 
 if TYPE_CHECKING:
 	import subprocess
@@ -26,16 +26,16 @@ def getDefaultAppCommand(fpath: str) -> str | None:
 	return app.get_executable()
 
 
-def popenFile(fpath: str) -> subprocess.Popen[str] | None:
+def popenFile(fpath: str) -> subprocess.Popen[bytes] | None:
+	from subprocess import Popen
+
 	command = getDefaultAppCommand(fpath)
 	if not command:
 		return None
-	return popenDefaultLang(
-		[
-			command,
-			fpath,
-		],
-	)
+	os.environ["LANG"] = locale_man.sysLangDefault
+	p = Popen([command, fpath])
+	os.environ["LANG"] = locale_man.lang.v
+	return p
 
 
 if __name__ == "__main__":
