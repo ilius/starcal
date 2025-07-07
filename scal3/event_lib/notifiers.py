@@ -39,8 +39,6 @@ if TYPE_CHECKING:
 
 __all__ = ["AlarmNotifier", "FloatingMsgNotifier"]
 
-classes.notifier.setMain(EventNotifier)
-
 
 @classes.notifier.register
 class AlarmNotifier(EventNotifier):

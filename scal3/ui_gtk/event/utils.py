@@ -6,7 +6,7 @@ from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.menuitems import ImageMenuItem, ItemCallback
 from scal3.ui_gtk.utils import confirm, pixbufFromFile, showError
 
 if TYPE_CHECKING:
@@ -24,7 +24,10 @@ __all__ = [
 ]
 
 
-def confirmEventTrash(event: EventType, **kwargs) -> bool:
+def confirmEventTrash(
+	event: EventType,
+	transient_for: gtk.Window | None = None,
+) -> bool:
 	return confirm(
 		_(
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
@@ -32,11 +35,11 @@ def confirmEventTrash(event: EventType, **kwargs) -> bool:
 			eventSummary=event.summary,
 			trashTitle=ev.trash.title,
 		),
-		**kwargs,
+		transient_for=transient_for,
 	)
 
 
-def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
+def confirmEventsTrash(toTrashCount: int, deleteCount: int) -> bool:
 	return confirm(
 		_(
 			"Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
@@ -47,7 +50,6 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs) -> bool:
 			trashTitle=ev.trash.title,
 		),
 		use_markup=True,
-		**kwargs,
 	)
 
 
@@ -64,27 +66,47 @@ def checkEventsReadOnly(doException: bool = True) -> bool:
 	return True
 
 
-def eventWriteMenuItem(*args, sensitive: bool = True, **kwargs) -> gtk.MenuItem:
-	item = ImageMenuItem(*args, **kwargs)
+def eventWriteMenuItem(
+	label: str = "",
+	imageName: str | None = None,
+	func: ItemCallback | None = None,
+	sensitive: bool = True,
+) -> gtk.MenuItem:
+	item = ImageMenuItem(
+		label=label,
+		imageName=imageName,
+		func=func,
+	)
 	item.set_sensitive(sensitive and not ev.allReadOnly)
 	return item
 
 
-def eventWriteImageMenuItem(*args, **kwargs) -> gtk.MenuItem:
-	item = ImageMenuItem(*args, **kwargs)
+def eventWriteImageMenuItem(
+	label: str = "",
+	imageName: str | None = None,
+	func: ItemCallback | None = None,
+) -> gtk.MenuItem:
+	item = ImageMenuItem(
+		label=label,
+		imageName=imageName,
+		func=func,
+	)
 	item.set_sensitive(not ev.allReadOnly)
 	return item
 
 
-def menuItemFromEventGroup(group: EventGroupType, **kwargs) -> gtk.MenuItem:
+def menuItemFromEventGroup(
+	group: EventGroupType,
+	func: ItemCallback | None = None,
+) -> gtk.MenuItem:
 	return ImageMenuItem(
-		group.title,
+		label=group.title,
+		func=func,
 		pixbuf=newColorCheckPixbuf(
 			group.color.rgb(),
 			conf.menuEventCheckIconSize.v,
 			group.enable,
 		),
-		**kwargs,
 	)
 
 

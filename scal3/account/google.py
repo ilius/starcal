@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
@@ -14,14 +15,13 @@
 # limitations under the License.
 
 from __future__ import annotations
-from typing import Any
+
+from typing import TYPE_CHECKING, Any
 
 from scal3.event_lib.errors import AccountError
-from scal3.event_lib.pytypes import EventGroupType
 
 developerKey = (
-	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2"
-	"mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU"
+	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU"
 )
 
 from scal3 import logger
@@ -49,15 +49,20 @@ sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
 from scal3 import core, event_lib
 from scal3.cal_types import GREGORIAN
 from scal3.event_lib import Account
+from scal3.event_lib.common import compressLongInt
 from scal3.ics import getIcsTimeByEpoch
 
 # from scal3.ics import
 from scal3.locale_man import tr as _
 from scal3.os_utils import getUserDisplayName, openUrl
-from scal3.utils import toBytes, toStr
-from scal3.event_lib.common import compressLongInt
+from scal3.utils import toStr
 
-__all__ = ['GoogleAccount']
+if TYPE_CHECKING:
+	from apiclient.discovery import HttpError
+
+	from scal3.event_lib.pytypes import AccountType, EventGroupType, EventType
+
+__all__ = ["GoogleAccount"]
 userDisplayName = getUserDisplayName()
 
 
@@ -70,18 +75,18 @@ syncResultPerPage = 1000
 STATUS_UNCHANCHED, STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED = range(4)
 
 
-def calcEtag(gevent):
+def calcEtag(gevent: dict[str, Any]) -> str:
 	return compressLongInt(abs(hash(repr(gevent))))
 
 
-def decodeIcsStartEnd(value):
+def decodeIcsStartEnd(value: str) -> dict[str, str]:
 	return {
 		("dateTime" if "T" in value else "date"): value,
 		"timeZone": "GMT",
 	}
 
 
-def encodeIcsStartEnd(value):
+def encodeIcsStartEnd(value: dict[str, str]) -> str:
 	# timeZone = value.get("timeZone", "GMT")  # FIXME
 	if "date" in value:
 		icsValue = value["date"].replace("-", "")
@@ -92,12 +97,12 @@ def encodeIcsStartEnd(value):
 	return icsValue
 
 
-def exportEvent(event):
+def exportEvent(event: EventType) -> dict[str, Any] | None:
 	if not event.changeCalType(GREGORIAN):
-		return
+		return None
 	icsData = event.getIcsData(True)
 	if not icsData:
-		return
+		return None
 	gevent = {
 		"kind": "calendar#event",
 		"summary": toStr(event.summary),
@@ -119,16 +124,16 @@ def exportEvent(event):
 			},
 		},
 	}
-	for key, value in icsData:
-		key = key.upper()
+	for key1, value in icsData:
+		key = key1.upper()
 		if key == "DTSTART":
 			gevent["start"] = decodeIcsStartEnd(value)
 		elif key == "DTEND":
 			gevent["end"] = decodeIcsStartEnd(value)
-		elif key in ("RRULE", "RDATE", "EXRULE", "EXDATE"):
+		elif key in {"RRULE", "RDATE", "EXRULE", "EXDATE"}:
 			if "recurrence" not in gevent:
 				gevent["recurrence"] = []
-			gevent["recurrence"].append(key + ":" + value)
+			gevent["recurrence"].append(key + ":" + value)  # type: ignore[attr-defined]
 		elif key == "TRANSP":
 			gevent["transparency"] = value.lower()
 		# elif key=="CATEGORIES":
@@ -138,7 +143,7 @@ def exportEvent(event):
 # def exportToEvent(event, group, gevent):  # FIXME
 
 
-def importEvent(gevent, group):
+def importEvent(gevent: dict[str, Any], group: EventGroupType) -> EventType | None:
 	# open("/tmp/gevent.js", "a").write(pformat(gevent) + "\n\n")
 	icsData = [
 		("DTSTART", encodeIcsStartEnd(gevent["start"])),
@@ -162,9 +167,9 @@ def importEvent(gevent, group):
 	event = group.create(eventType)
 	event.calType = GREGORIAN  # FIXME
 	if not event.setIcsData(dict(icsData)):
-		return
-	event.summary = toBytes(gevent["summary"])
-	event.description = toBytes(gevent.get("description", ""))
+		return None
+	event.summary = gevent["summary"]
+	event.description = gevent.get("description", "")
 	if "reminders" in gevent:
 		try:
 			minutes = gevent["reminders"]["overrides"]["minutes"]
@@ -176,7 +181,6 @@ def importEvent(gevent, group):
 
 
 class ClientRedirectServer(http.server.HTTPServer):
-
 	"""
 	A server to handle OAuth 2.0 redirects back to localhost.
 
@@ -188,7 +192,6 @@ class ClientRedirectServer(http.server.HTTPServer):
 
 
 class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
-
 	"""
 	A handler for OAuth 2.0 redirects back to localhost.
 
@@ -196,7 +199,7 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 	into the servers query_params and then stops serving.
 	"""
 
-	def do_GET(s):
+	def do_GET(s) -> None:
 		"""
 		Handle a GET request.
 
@@ -208,8 +211,7 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 		s.send_header("Content-type", "text/html")
 		s.end_headers()
 		query = s.path.split("?", 1)[-1]
-		query = dict(parse_qsl(query))
-		s.server.query_params = query
+		s.server.query_params = dict(parse_qsl(query))  # type: ignore[attr-defined]
 		s.wfile.write(
 			b"<html><head><title>Authentication Status</title></head>",
 		)
@@ -220,18 +222,19 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 			b"</body></html>",
 		)
 
-	def log_message(self, msgFormat, *args):
+	def log_message(self, msgFormat: str, *args) -> None:
 		"""Do not log messages to stdout while running as command line program."""
 
 
-def dumpRequest(request):
-	with open("/tmp/starcal-request", "a") as _file:
-		_file.write(
-			f"uri={request.uri!r}\n"
-			f"method={request.method!r}\n"
-			f"headers={request.headers!r}\n"
-			f"body={request.body!r}\n\n\n",
-		)
+# def dumpRequest(request) -> None:
+# 	# request is HttpRequest
+# 	with open("/tmp/starcal-request", "a", encoding="utf-8") as _file:
+# 		_file.write(
+# 			f"uri={request.uri!r}\n"
+# 			f"method={request.method!r}\n"
+# 			f"headers={request.headers!r}\n"
+# 			f"body={request.body!r}\n\n\n",
+# 		)
 
 
 @event_lib.classes.account.register
@@ -241,7 +244,7 @@ class GoogleAccount(Account):
 	paramsOrder = Account.paramsOrder + ["email"]
 	params = Account.params + ["email"]
 
-	def __init__(self, ident=None, email=""):
+	def __init__(self, ident: int | None = None, email: str = "") -> None:
 		from oauth2client.client import OAuth2WebServerFlow
 
 		Account.__init__(self, ident)
@@ -257,7 +260,7 @@ class GoogleAccount(Account):
 			user_agent=f"{core.APP_NAME}/{core.VERSION}",
 		)
 
-	def getDict(self):
+	def getDict(self) -> dict[str, Any]:
 		data = Account.getDict(self)
 		data.update(
 			{
@@ -266,20 +269,22 @@ class GoogleAccount(Account):
 		)
 		return data
 
-	def setDict(self, data):
+	def setDict(self, data: dict[str, Any]) -> None:
 		Account.setDict(self, data)
 		for attr in ("email",):
 			if attr not in data:
 				continue
 			setattr(self, attr, data[attr])
 
-	def askVerificationCode(self):
+	@staticmethod
+	def askVerificationCode() -> str:
 		return input("Enter verification code: ").strip()
 
-	def showError(self, error):
+	@staticmethod
+	def showError(error: str) -> None:
 		sys.stderr.write(error + "\n")
 
-	def showHttpException(self, e):
+	def showHttpException(self, e: HttpError) -> None:
 		self.showError(
 			_("HTTP Error")
 			+ "\n"
@@ -289,10 +294,10 @@ class GoogleAccount(Account):
 			+ "\n"
 			+ _("Error Message")
 			+ ": "
-			+ _(e._get_reason().strip()),
+			+ _(e._get_reason().strip()),  # noqa: SLF001
 		)
 
-	def authenticate(self):
+	def authenticate(self) -> None:
 		global auth_local_webserver
 
 		from oauth2client.file import Storage
@@ -357,7 +362,7 @@ class GoogleAccount(Account):
 		credential.set_store(storage)
 		return credentials
 
-	def getHttp(self):
+	def getHttp(self) -> Any:
 		credentials = self.authenticate()
 		if not credentials:
 			return False
@@ -371,7 +376,7 @@ class GoogleAccount(Account):
 		# http.request("google.com")
 		return http
 
-	def getCalendarService(self):
+	def getCalendarService(self) -> Any:
 		from apiclient.discovery import HttpError, build
 
 		try:
@@ -385,7 +390,7 @@ class GoogleAccount(Account):
 		except HttpError as e:
 			self.showHttpException(e)
 
-	def getTasksService(self):
+	def getTasksService(self) -> Any:
 		from apiclient.discovery import HttpError, build
 
 		try:
@@ -398,7 +403,7 @@ class GoogleAccount(Account):
 		except HttpError as e:
 			self.showHttpException(e)
 
-	def addNewGroup(self, title):
+	def addNewGroup(self, title: str) -> None:
 		service = self.getCalendarService()
 		if not service:
 			return
@@ -409,7 +414,7 @@ class GoogleAccount(Account):
 			},
 		).execute()["id"]
 
-	def deleteGroup(self, remoteGroupId):
+	def deleteGroup(self, remoteGroupId: str) -> None:
 		service = self.getCalendarService()
 		if not service:
 			return
@@ -430,7 +435,7 @@ class GoogleAccount(Account):
 		# log.debug(f"{groups = }")
 		self.remoteGroups = groups
 
-	def fetchAllEventsInGroup(self, remoteGroupId):
+	def fetchAllEventsInGroup(self, remoteGroupId: str) -> list[dict[str, Any]]:
 		service = self.getCalendarService()
 		if not service:
 			return
@@ -470,7 +475,7 @@ class GoogleAccount(Account):
 			"pageToken": 0,
 		}
 		if lastSyncTuple:
-			lastSyncStartEpoch, lastSyncEndEpoch = lastSyncTuple
+			_lastSyncStartEpoch, lastSyncEndEpoch = lastSyncTuple
 			kwargs["updatedMin"] = getIcsTimeByEpoch(lastSyncEndEpoch, True)  # FIXME
 			# int(lastSync)
 		# log.debug(kwargs)
@@ -481,13 +486,13 @@ class GoogleAccount(Account):
 			geventsRes = request.execute()
 		except HttpError as e:
 			self.showHttpException(e)
-			raise AccountError(str(e))
+			raise AccountError(str(e)) from None
 		# plog.info(geventsRes)
 		gevents = geventsRes.get("items", [])
 		# plog.info(gevents)
 		diff: dict[str, list[Any]] = {}
 
-		def addToDiff(key, here, status, *args):
+		def addToDiff(key: str, here: Any, status: str, *args) -> None:
 			value = (status, here) + args
 			toAppend = diff.get(key)
 			if toAppend is None:
@@ -621,17 +626,16 @@ class GoogleAccount(Account):
 		"""
 		group.afterSync()  # FIXME
 		group.save()  # FIXME
-		return None
 
 
-def printAllEvent(account, remoteGroupId):
+def printAllEvent(account: AccountType, remoteGroupId: str) -> None:
 	for gevent in account.fetchAllEventsInGroup(remoteGroupId):
 		log.info(gevent["summary"], gevent["updated"])
 
 
 if __name__ == "__main__":
 	account = GoogleAccount.load(1, fs=core.fs)
-	assert account is not None
+	_acc: AccountType = account
 	account.fetchGroups()
 	# remoteGroupId = "gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com"
 	# groupId = 102

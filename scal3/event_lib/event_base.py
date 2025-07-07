@@ -139,7 +139,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		revHash: str,
 		*args: Any,  # noqa: ARG002
 	) -> Self:
-		return SObjBinaryModel.getRevision(self, revHash, self.id)
+		return SObjBinaryModel.getRevision(self, revHash, self.id or 0)
 
 	def __bool__(self) -> bool:
 		return bool(self.rulesDict)  # FIXME

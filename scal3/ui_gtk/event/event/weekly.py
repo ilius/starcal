@@ -26,7 +26,7 @@ from scal3.event_lib.rules import (
 	StartEventRule,
 )
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
@@ -46,7 +46,7 @@ class WidgetClass(common.WidgetClass):
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -57,7 +57,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Repeat Every "))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -69,7 +69,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("End"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -80,7 +80,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		# ---------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Time"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)

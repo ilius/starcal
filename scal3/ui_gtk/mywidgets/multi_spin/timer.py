@@ -20,8 +20,8 @@ class SignalHandler(SignalHandlerBase):
 class TimerButton(TimeButton):
 	Sig = SignalHandler
 
-	def __init__(self, **kwargs) -> None:
-		TimeButton.__init__(self, **kwargs)
+	def __init__(self) -> None:
+		TimeButton.__init__(self)
 		# self.timer = False
 		# self.clock = False
 		self.delay = 1.0  # timer delay

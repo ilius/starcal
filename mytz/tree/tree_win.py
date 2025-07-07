@@ -7,7 +7,8 @@ __all__ = ["getZoneInfoTree"]
 
 def getZoneInfoTree() -> dict[str, Any]:
 	zoneTree = {}
-	for name in tzwin.list():
+	name: str
+	for name in tzwin.list():  # type: ignore[no-untyped-call]
 		zoneTree[name] = ""
 	# FIXME: this is long list, find a way to group them
 	# even group by the first word if you have to

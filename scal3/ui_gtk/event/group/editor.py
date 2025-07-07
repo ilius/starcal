@@ -9,7 +9,7 @@ log = logger.get()
 from scal3 import event_lib
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button
 
@@ -21,9 +21,13 @@ __all__ = ["GroupEditorDialog"]
 
 
 class GroupEditorDialog(Dialog):
-	def __init__(self, group: EventGroupType | None = None, **kwargs) -> None:
+	def __init__(
+		self,
+		group: EventGroupType | None = None,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		checkEventsReadOnly()
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.isNew = group is None
 		self.set_title(_("Add New Group") if self.isNew else _("Edit Group"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
@@ -45,7 +49,7 @@ class GroupEditorDialog(Dialog):
 		# -------
 		self.activeWidget: BaseWidgetClass | None = None
 		# -------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.group:
 			combo.append_text(cls.desc)
@@ -108,7 +112,7 @@ class GroupEditorDialog(Dialog):
 		pack(self.vbox, self.activeWidget)
 		self.activeWidget.show()
 
-	def run(self) -> EventGroupType | None:
+	def run2(self) -> EventGroupType | None:
 		if self.activeWidget is None:
 			return None
 		if Dialog.run(self) != gtk.ResponseType.OK:

@@ -54,7 +54,6 @@ from scal3.ui.msgs import menuMainItemDefs
 from scal3.ui_gtk import (
 	GdkPixbuf,
 	Menu,
-	VBox,
 	gdk,
 	gtk,
 	listener,
@@ -147,7 +146,8 @@ class MainWinVbox(CustomizableCalBox):
 		self.win = win
 		self.initVars()
 
-	def connectItem(self, item: CustomizableCalObj) -> None:
+	def connectItem(self, item: CalObjType) -> None:
+		super().connectItem(item)
 		win = self.win
 		signalNames = {sigTup[0] for sigTup in item.s.signals}
 		if "popup-cell-menu" in signalNames:
@@ -227,12 +227,14 @@ class MainWinVbox(CustomizableCalBox):
 	# 	# self.reorder_child(mcal, wi)
 	# 	# self.items[wi], self.items[mi] = mcal, wcal
 	# 	self.showHide()
-	# 	self.onDateChange()
+	# 	self.broadcastDateChange()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		if self.optionsWidget is not None:
 			return self.optionsWidget
-		self.optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		self.optionsWidget = gtk.Box(
+			orientation=gtk.Orientation.VERTICAL, spacing=self.optionsPageSpacing
+		)
 		return self.optionsWidget
 
 
@@ -507,7 +509,7 @@ class MainWin(CalObjWidget):
 		conf.mainWinRightPanelEnable.v = enable
 		self.rightPanel.enable = enable
 		self.rightPanel.showHide()
-		self.rightPanel.onDateChange()
+		self.rightPanel.broadcastDateChange()
 
 		# update Enable checkbutton in Customize dialog
 		self.rightPanel.onToggleFromMainWin()
@@ -557,7 +559,7 @@ class MainWin(CalObjWidget):
 
 	def selectDateResponse(self, _w: gtk.Widget, y: int, m: int, d: int) -> None:
 		ui.cells.changeDate(y, m, d)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval)
@@ -595,7 +597,7 @@ class MainWin(CalObjWidget):
 	def focusOut(
 		self,
 		_widget: gtk.Widget,
-		_gevent: gdk.Event,
+		_gevent: gdk.EventFocus,
 		_data: Any = None,
 	) -> None:
 		# called 0.0004 sec (max) after focusIn
@@ -655,7 +657,7 @@ class MainWin(CalObjWidget):
 		if (winX, winY) != (conf.winX.v, conf.winY.v):
 			self.w.move(winX, winY)
 
-	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> bool | None:
+	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
 		if self.ignoreConfigureEvent:
 			return None
 		wx, wy = self.w.get_position()
@@ -728,15 +730,12 @@ class MainWin(CalObjWidget):
 		ui.updateFocusTime()
 		return result
 
-	def begin_resize_drag(self, *args) -> None:
-		conf.winMaximized.v = False
-		ui.updateFocusTime()
-		gtk.Window.begin_resize_drag(self.w, *args)
-
 	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if self.menuMain:
 			self.menuMain.hide()
-		self.begin_resize_drag(
+		conf.winMaximized.v = False
+		ui.updateFocusTime()
+		self.w.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
@@ -747,16 +746,16 @@ class MainWin(CalObjWidget):
 
 	def changeDate(self, year: int, month: int, day: int) -> None:
 		ui.cells.changeDate(year, month, day)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def goToday(self, _w: gtk.Widget | None = None) -> None:
 		self.changeDate(*cal_types.getSysDate(calTypes.primary))
 
-	def onDateChange(self, *a, **kw) -> None:
+	def onDateChange(self) -> None:
 		plugIndex = core.plugIndex.v
 		allPlugList = core.allPlugList.v
 		# log.debug("MainWin.onDateChange")
-		super().onDateChange(*a, **kw)
+		super().onDateChange()
 		for idx in plugIndex:
 			plug = allPlugList[idx]
 			if plug is None:
@@ -778,11 +777,14 @@ class MainWin(CalObjWidget):
 		eventTypes = group.acceptsEventTypes
 		if not eventTypes:
 			return
-		item2_kwargs: dict[str, Any] = {}
+
+		imageName: str | None = None
+		pixbuf: GdkPixbuf.Pixbuf | None = None
+
 		if group.icon:
-			item2_kwargs["imageName"] = group.icon
+			imageName = group.icon
 		else:
-			item2_kwargs["pixbuf"] = newColorCheckPixbuf(
+			pixbuf = newColorCheckPixbuf(
 				group.color.rgb(),
 				20,
 				True,
@@ -800,7 +802,8 @@ class MainWin(CalObjWidget):
 				ImageMenuItem(
 					group.title,
 					func=addToGroupFromMenu(eventTypes[0]),
-					**item2_kwargs,
+					imageName=imageName,
+					pixbuf=pixbuf,
 				),
 			)
 		else:
@@ -817,7 +820,8 @@ class MainWin(CalObjWidget):
 			menu3.show_all()
 			item2 = ImageMenuItem(
 				group.title,
-				**item2_kwargs,  # type: ignore[arg-type]
+				imageName=imageName,
+				pixbuf=pixbuf,
 			)
 			item2.set_submenu(menu3)
 			menu2.add(item2)
@@ -848,7 +852,7 @@ class MainWin(CalObjWidget):
 			event,
 			title=_("Edit ") + event.desc,
 			transient_for=self.w,
-		).run()
+		).run2()
 		if eventNew is None:
 			return
 		ui.eventUpdateQueue.put("e", eventNew, self)
@@ -1533,7 +1537,9 @@ class MainWin(CalObjWidget):
 		# -------
 		self.statusIconUpdateTooltip()
 
-	def onStatusIconPress(self, _obj: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def onStatusIconPress(
+		self, _obj: gtk.Widget, gevent: gdk.EventButton
+	) -> bool | None:
 		if gevent.button == 2:
 			# middle button press
 			self.copyDate(calTypes.primary)
@@ -1563,7 +1569,7 @@ class MainWin(CalObjWidget):
 	def onDeleteEvent(
 		self,
 		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_gevent: gdk.Event | None = None,
 	) -> bool:
 		# conf.winX.v, conf.winY.v = self.w.get_position()
 		# FIXME: ^ gives bad position sometimes
@@ -1721,7 +1727,7 @@ class MainWin(CalObjWidget):
 		_gevent: gdk.Event | None = None,
 	) -> None:
 		self.eventSearchCreate()
-		openWindow(ui.eventSearchWin)
+		openWindow(ui.eventSearchWin.w)
 
 	def addCustomEvent(self, _w: gtk.Widget | None = None) -> None:
 		self.eventManCreate()
@@ -1844,14 +1850,14 @@ class MainWin(CalObjWidget):
 		year, month, _day = cal_types.getSysDate(calTypes.primary)
 		self.exportShow(year, month)
 
-	def onConfigChange(self, *a, **kw) -> None:
+	def onConfigChange(self) -> None:
 		if self.menuMain:
 			self.menuMain.destroy()
 			self.menuMain = None
 		if self.menuCell:
 			self.menuCell.destroy()
 			self.menuCell = None
-		super().onConfigChange(*a, **kw)
+		super().onConfigChange()
 		self.autoResize()
 		# self.w.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
 		# self.w.set_skip_taskbar_hint  # FIXME
@@ -1939,6 +1945,8 @@ def main() -> None:
 	ev.info.updateAndSave()
 	# -------------------------------
 	mainWin = MainWin(statusIconMode=statusIconMode)
+	# ud.windowList.broadcastDateChange()
+	ud.windowList.broadcastConfigChange()
 	if TYPE_CHECKING:
 		_mainWin: CalObjType = mainWin
 	if os.getenv("STARCAL_FULL_IMPORT"):

@@ -49,18 +49,13 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		cls,
 		ident: int,
 		fs: FileSystem,
-	) -> Self | None:
+	) -> Self:
 		fpath = cls.getFile(ident)
 		data: list[int] = []
 		if fs.isfile(fpath):
-			try:
-				with fs.open(fpath) as fp:
-					jsonStr = fp.read()
-				data = json.loads(jsonStr)
-			except Exception:
-				if not cls.skipLoadExceptions:
-					raise
-				return None
+			with fs.open(fpath) as fp:
+				jsonStr = fp.read()
+			data = json.loads(jsonStr)
 		else:
 			log.debug(f"ObjectsHolderTextModel: {fpath=} does not exist")
 

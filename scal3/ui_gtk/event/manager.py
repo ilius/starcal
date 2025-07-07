@@ -37,7 +37,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import confDir
 from scal3.property import Property
-from scal3.ui_gtk import Dialog, GdkPixbuf, HBox, Menu, MenuItem, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, GdkPixbuf, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event import common, setActionFuncs
 from scal3.ui_gtk.event.editor import addNewEvent
@@ -136,28 +136,28 @@ class EventManagerToolbar(VerticalStaticToolBox):
 				ToolBoxItem(
 					name="go-up",
 					imageName="go-up.svg",
-					onClick="moveUpByButton",
+					onClick=dialog.moveUpByButton,
 					desc=_("Move up"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="go-down",
 					imageName="go-down.svg",
-					onClick="moveDownByButton",
+					onClick=dialog.moveDownByButton,
 					desc=_("Move down"),
 					continuousClick=False,
 				),
 				# ToolBoxItem(
 				# 	name="goto-bottom",
 				# 	imageName="go-bottom.svg",
-				# 	onClick="",
+				# 	onClick=dialog.,
 				# 	desc=_("Move to bottom"),
 				# 	continuousClick=False,
 				# ),
 				ToolBoxItem(
 					name="duplicate",
 					imageName="edit-copy.svg",
-					onClick="duplicateSelectedObj",
+					onClick=dialog.duplicateSelectedObj,
 					desc=_("Duplicate"),
 					continuousClick=False,
 				),
@@ -169,10 +169,10 @@ class EventManagerDialog(CalObjWidget):
 	objName = "eventMan"
 	desc = _("Event Manager")
 
-	def __init__(self, **kwargs) -> None:
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
-		self.w: MyDialog = MyDialog(**kwargs)
+		self.w: MyDialog = MyDialog(transient_for=transient_for)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
@@ -368,7 +368,9 @@ class EventManagerDialog(CalObjWidget):
 		pack(self.w.vbox, menubar)
 		# -------
 		# multi-select bar
-		self.multiSelectHBox = hbox = HBox(spacing=3)
+		self.multiSelectHBox = hbox = gtk.Box(
+			orientation=gtk.Orientation.HORIZONTAL, spacing=3
+		)
 		self.multiSelectLabel = gtk.Label(label=_("No event selected"))
 		self.multiSelectLabel.set_xalign(0)
 		self.multiSelectLabel.get_style_context().add_class("smaller")
@@ -423,7 +425,7 @@ class EventManagerDialog(CalObjWidget):
 		# ---
 		pack(self.w.vbox, hbox)
 		# -------
-		treeBox = HBox()
+		treeBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# -----
 		self.treev = gtk.TreeView()
 		self.treev.set_search_column(3)
@@ -523,7 +525,7 @@ class EventManagerDialog(CalObjWidget):
 		# (treeIter, move: bool)
 		self.toPasteEvent: tuple[gtk.TreeIter, bool] | None = None
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		hbox.set_direction(gtk.TextDirection.LTR)
 		self.sbar = gtk.Statusbar()
 		self.sbar.set_direction(gtk.TextDirection.LTR)
@@ -555,9 +557,8 @@ class EventManagerDialog(CalObjWidget):
 	# def findEventByPath(self, eid: int, path: "list[int]""):
 	# 	groupIndex, eventIndex = path
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
-		# ---
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		if not self.isLoaded:
 			if self.w.get_property("visible"):
 				self.w.waitingDo(self.reloadEvents)  # FIXME
@@ -588,7 +589,7 @@ class EventManagerDialog(CalObjWidget):
 			assert group.id is not None
 			groupIter = self.groupIterById[group.id]
 			for i, value in enumerate(self.getGroupRow(group)):
-				self.treeModel.set_value(groupIter, i, value)
+				self.treeModel.set_value(groupIter, i, value)  # type: ignore[no-untyped-call]
 
 		elif action == "-":
 			assert isinstance(record.obj.parent, EventGroup)
@@ -808,7 +809,7 @@ class EventManagerDialog(CalObjWidget):
 	) -> None:
 		model = self.treeModel
 		itr = model.get_iter(gtk.TreePath.new_from_indices([groupIndex, eventIndex]))
-		model.set_value(itr, 0, active)
+		model.set_value(itr, 0, active)  # type: ignore[no-untyped-call]
 		if active:
 			self.multiSelectCBActivate(groupIndex, eventIndex)
 		elif groupIndex in self.multiSelectPathDict:
@@ -821,9 +822,9 @@ class EventManagerDialog(CalObjWidget):
 		try:
 			count = len(self.multiSelectPathDict[groupIndex])
 		except KeyError:
-			model.set_value(parentIter, 0, False)
+			model.set_value(parentIter, 0, False)  # type: ignore[no-untyped-call]
 		else:
-			model.set_value(
+			model.set_value(  # type: ignore[no-untyped-call]
 				parentIter,
 				0,
 				count == len(ev.groups[self.getRowId(parentIter)]),
@@ -853,14 +854,14 @@ class EventManagerDialog(CalObjWidget):
 		active = not model.get_value(itr, 0)
 
 		if len(path) == 1:
-			model.set_value(itr, 0, active)
+			model.set_value(itr, 0, active)  # type: ignore[no-untyped-call]
 			childIter = model.iter_children(itr)
 			while childIter is not None:
 				isActive = model.get_value(childIter, 0)
 				if isActive == active:
 					childIter = model.iter_next(childIter)
 					continue
-				model.set_value(childIter, 0, active)
+				model.set_value(childIter, 0, active)  # type: ignore[no-untyped-call]
 				groupIndex, eventIndex = tuple(model.get_path(childIter).get_indices())
 				self.multiSelectCBSetGroup(groupIndex, eventIndex, active)
 				childIter = model.iter_next(childIter)
@@ -906,7 +907,7 @@ class EventManagerDialog(CalObjWidget):
 
 		if not move:
 			for iter_ in iterList:
-				model.set_value(iter_, 0, False)
+				model.set_value(iter_, 0, False)  # type: ignore[no-untyped-call]
 
 		if move:
 			msg = _("{count} events successfully moved")
@@ -959,7 +960,7 @@ class EventManagerDialog(CalObjWidget):
 		model = self.treeModel
 		for groupIndex in self.multiSelectPathDict:
 			with suppress(ValueError):
-				model.set_value(model.get_iter(str(groupIndex)), 0, False)
+				model.set_value(model.get_iter(str(groupIndex)), 0, False)  # type: ignore[no-untyped-call]
 
 		self.multiSelectPathDict = {}
 		self.multiSelectLabelUpdate()
@@ -1017,7 +1018,7 @@ class EventManagerDialog(CalObjWidget):
 		self.multiSelectSetEnable(False)
 		self.multiSelectItem.set_active(False)
 		for gIter in self.multiSelectIters():
-			model.set_value(gIter, 0, False)
+			model.set_value(gIter, 0, False)  # type: ignore[no-untyped-call]
 		self.multiSelectOperationFinished()
 
 	def multiSelectEventIdsDict(self) -> dict[int, list[int]]:
@@ -1059,7 +1060,7 @@ class EventManagerDialog(CalObjWidget):
 
 		idsDict = self.multiSelectEventIdsDict()
 		container: EventContainerType = DummyEventContainer(ev.groups, idsDict)  # type: ignore[assignment]
-		dialog = EventsBulkEditDialog(container, transient_for=self)
+		dialog = EventsBulkEditDialog(container, transient_for=self.w)
 
 		if dialog.run() == gtk.ResponseType.OK:
 			self.w.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
@@ -1097,7 +1098,7 @@ class EventManagerDialog(CalObjWidget):
 		self.multiSelectOperationFinished()
 
 	def getRowId(self, gIter: gtk.TreeIter) -> int:
-		return self.treeModel.get_value(gIter, self.idColIndex)
+		return self.treeModel.get_value(gIter, self.idColIndex)  # type: ignore[no-any-return]
 
 	def canPasteToGroup(self, group: EventGroupType) -> bool:
 		if self.toPasteEvent is None:
@@ -1119,7 +1120,7 @@ class EventManagerDialog(CalObjWidget):
 				groupType=group.desc,
 				eventType=event.desc,
 			)
-			showError(msg, transient_for=self)
+			showError(msg, transient_for=self.w)
 			raise RuntimeError("Invalid event type for this group")
 
 	@staticmethod
@@ -1167,7 +1168,7 @@ class EventManagerDialog(CalObjWidget):
 		event: EventType,
 	) -> gtk.TreeIter:
 		assert event.id is not None
-		eventIter = self.treeModel.insert(
+		eventIter: gtk.TreeIter = self.treeModel.insert(  # type: ignore[no-untyped-call]
 			parentIter,
 			position,
 			self.getEventRow(event),
@@ -1182,7 +1183,7 @@ class EventManagerDialog(CalObjWidget):
 		event: EventType,
 	) -> gtk.TreeIter:
 		assert event.id is not None
-		eventIter = self.treeModel.insert_after(
+		eventIter: gtk.TreeIter = self.treeModel.insert_after(  # type: ignore[no-untyped-call]
 			parentIter,
 			siblingIter,
 			self.getEventRow(event),
@@ -1196,11 +1197,12 @@ class EventManagerDialog(CalObjWidget):
 		group: EventGroupType,
 	) -> gtk.TreeIter:
 		assert group.id is not None
-		self.groupIterById[group.id] = groupIter = self.treeModel.insert(
+		groupIter: gtk.TreeIter = self.treeModel.insert(  # type: ignore[no-untyped-call]
 			None,
 			position,
 			self.getGroupRow(group),
 		)
+		self.groupIterById[group.id] = groupIter
 		return groupIter
 
 	def appendGroupEvents(
@@ -1220,11 +1222,12 @@ class EventManagerDialog(CalObjWidget):
 
 	def appendGroup(self, group: EventGroupType) -> gtk.TreeIter:
 		assert group.id is not None
-		self.groupIterById[group.id] = groupIter = self.treeModel.insert_before(
+		groupIter: gtk.TreeIter = self.treeModel.insert_before(  # type: ignore[no-untyped-call]
 			None,
 			self.trashIter,
 			self.getGroupRow(group),
 		)
+		self.groupIterById[group.id] = groupIter
 		return groupIter
 
 	def appendGroupTree(self, group: EventGroupType) -> None:
@@ -1335,7 +1338,7 @@ class EventManagerDialog(CalObjWidget):
 			eventWriteMenuItem(
 				_("Edit"),
 				imageName="document-edit.svg",
-				func=self.editTrash,
+				func=self.editTrashFromMenu,
 			),
 		)
 
@@ -1353,7 +1356,7 @@ class EventManagerDialog(CalObjWidget):
 			eventWriteMenuItem(
 				_("Empty Trash"),
 				imageName="sweep.svg",
-				func=self.emptyTrash,
+				func=self.editTrashFromMenu,
 				sensitive=bool(trash.idList),
 			),
 		)
@@ -1786,7 +1789,7 @@ class EventManagerDialog(CalObjWidget):
 		return True
 
 	def onMenuBarExportClick(self, _menuItem: gtk.MenuItem) -> None:
-		MultiGroupExportDialog(transient_for=self).run()
+		MultiGroupExportDialog(transient_for=self.w).run()
 
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self.w).present()
@@ -1947,7 +1950,7 @@ class EventManagerDialog(CalObjWidget):
 					eventIter = self.treeModel.iter_nth_child(groupIter, i)
 					assert eventIter is not None
 					eid = self.getRowId(eventIter)
-					self.treeModel.set_value(
+					self.treeModel.set_value(  # type: ignore[no-untyped-call]
 						eventIter,
 						self.summaryColIndex,
 						group[eid].getSummary(),
@@ -1970,7 +1973,7 @@ class EventManagerDialog(CalObjWidget):
 		else:
 			groupIter = self.iterFromPath(path)
 		group.enable = enable
-		self.treeModel.set_value(
+		self.treeModel.set_value(  # type: ignore[no-untyped-call]
 			groupIter,
 			2,
 			common.getTreeGroupPixbuf(group),
@@ -2061,14 +2064,14 @@ class EventManagerDialog(CalObjWidget):
 	def insertNewGroup(self, groupIndex: int) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
-		group = GroupEditorDialog(transient_for=self).run()
+		group = GroupEditorDialog(transient_for=self.w).run2()
 		if group is None:
 			return
 		ev.groups.insert(groupIndex, group)
 		ev.groups.save()
 		assert group.id is not None
 		beforeGroupIter = self.iterFromPath([groupIndex])
-		self.groupIterById[group.id] = self.treeModel.insert_before(
+		self.groupIterById[group.id] = self.treeModel.insert_before(  # type: ignore[no-untyped-call]
 			self.treeModel.iter_parent(beforeGroupIter),  # parent
 			beforeGroupIter,  # sibling
 			self.getGroupRow(group),
@@ -2103,7 +2106,7 @@ class EventManagerDialog(CalObjWidget):
 		assert newGroup.id is not None
 		ev.groups.insert(index + 1, newGroup)
 		ev.groups.save()
-		self.groupIterById[newGroup.id] = self.treeModel.insert(
+		self.groupIterById[newGroup.id] = self.treeModel.insert(  # type: ignore[no-untyped-call]
 			None,
 			index + 1,
 			self.getGroupRow(newGroup),
@@ -2120,7 +2123,7 @@ class EventManagerDialog(CalObjWidget):
 		ev.groups.insert(index + 1, newGroup)
 		ev.groups.save()
 		assert newGroup.id is not None
-		newGroupIter = self.groupIterById[newGroup.id] = self.treeModel.insert(
+		newGroupIter = self.groupIterById[newGroup.id] = self.treeModel.insert(  # type: ignore[no-untyped-call]
 			None,
 			index + 1,
 			self.getGroupRow(newGroup),
@@ -2209,15 +2212,15 @@ class EventManagerDialog(CalObjWidget):
 			msg = _(
 				'Event group "{groupTitle}" is synchronizing and read-only',
 			).format(groupTitle=group.title)
-			showError(msg, transient_for=self)
+			showError(msg, transient_for=self.w)
 			return
 
-		groupNew = GroupEditorDialog(group, transient_for=self).run()
+		groupNew = GroupEditorDialog(group, transient_for=self.w).run2()
 		if groupNew is None:
 			return
 		groupIter = self.iterFromPath(path)
 		for i, value in enumerate(self.getGroupRow(groupNew)):
-			self.treeModel.set_value(groupIter, i, value)
+			self.treeModel.set_value(groupIter, i, value)  # type: ignore[no-untyped-call]
 		self.onGroupModify(groupNew)
 		ui.eventUpdateQueue.put("eg", groupNew, self)
 
@@ -2256,7 +2259,7 @@ class EventManagerDialog(CalObjWidget):
 				eventCount=_(eventCount),
 				trashTitle=ev.trash.title,
 			),
-			transient_for=self,
+			transient_for=self.w,
 		):
 			return
 		self.w.waitingDo(self._do_deleteGroup, path, group)
@@ -2279,7 +2282,7 @@ class EventManagerDialog(CalObjWidget):
 				group,
 				eventType,
 				title=title,
-				transient_for=self,
+				transient_for=self.w,
 			)
 			if event is None:
 				return
@@ -2314,7 +2317,7 @@ class EventManagerDialog(CalObjWidget):
 				group.acceptsEventTypes[0],
 				typeChangable=True,
 				title=_("Add Event"),
-				transient_for=self,
+				transient_for=self.w,
 			)
 			if event is None:
 				return
@@ -2338,7 +2341,7 @@ class EventManagerDialog(CalObjWidget):
 		eventIter: gtk.TreeIter,
 	) -> None:
 		for i, value in enumerate(self.getEventRow(event)):
-			self.treeModel.set_value(eventIter, i, value)
+			self.treeModel.set_value(eventIter, i, value)  # type: ignore[no-untyped-call]
 		self.treeviewCursorChanged()
 
 	def editEventByPath(self, path: list[int]) -> None:
@@ -2348,8 +2351,8 @@ class EventManagerDialog(CalObjWidget):
 		eventNew = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			transient_for=self,
-		).run()
+			transient_for=self.w,
+		).run2()
 		if eventNew is None:
 			return
 		ui.eventUpdateQueue.put("e", eventNew, self)
@@ -2374,7 +2377,7 @@ class EventManagerDialog(CalObjWidget):
 
 	def moveEventToTrashByPath(self, path: list[int]) -> None:
 		group, event = self.getEventAndGroupByPath(path)
-		if not confirmEventTrash(event, transient_for=self):
+		if not confirmEventTrash(event, transient_for=self.w):
 			return
 		ui.moveEventToTrash(group, event, self)
 		self.treeModel.remove(self.iterFromPath(path))
@@ -2425,14 +2428,17 @@ class EventManagerDialog(CalObjWidget):
 		self.removeIterChildren(self.trashIter)
 		self.treeviewCursorChanged()
 
-	def editTrash(self, _menuItem: gtk.MenuItem | None = None) -> None:
-		TrashEditorDialog(transient_for=self).run()
-		self.treeModel.set_value(
+	def editTrashFromMenu(self, _w: gtk.Widget) -> None:
+		self.editTrash()
+
+	def editTrash(self) -> None:
+		TrashEditorDialog(transient_for=self.w).run()
+		self.treeModel.set_value(  # type: ignore[no-untyped-call]
 			self.trashIter,
 			2,
 			eventTreeIconPixbuf(ev.trash.getIconRel()),
 		)
-		self.treeModel.set_value(
+		self.treeModel.set_value(  # type: ignore[no-untyped-call]
 			self.trashIter,
 			3,
 			ev.trash.title,
@@ -2576,14 +2582,14 @@ class EventManagerDialog(CalObjWidget):
 		_w: W,
 		group: EventGroupType,
 	) -> None:
-		SingleGroupExportDialog(group, transient_for=self).run()
+		SingleGroupExportDialog(group, transient_for=self.w).run()
 
 	def groupSortFromMenu(self, path: list[int]) -> Callable[[W], None]:
 		def func(_w: W) -> None:
 			if not (isinstance(path, list) and len(path) == 1):
 				raise RuntimeError(f"invalid {path = }")
 			group = self.getGroupByPath(path)
-			if not GroupSortDialog(group, transient_for=self).run():
+			if not GroupSortDialog(group, transient_for=self.w).run2():
 				return
 			if group.id not in self.loadedGroupIds and group.name != "trash":
 				return
@@ -2603,7 +2609,7 @@ class EventManagerDialog(CalObjWidget):
 		group: EventGroupType,
 	) -> Callable[[W], None]:
 		def func(_w: W) -> None:
-			if GroupConvertCalTypeDialog(group, transient_for=self).perform():
+			if GroupConvertCalTypeDialog(group, transient_for=self.w).perform():
 				ui.eventUpdateQueue.put("r", group, self)
 
 		return func
@@ -2659,7 +2665,7 @@ class EventManagerDialog(CalObjWidget):
 		def func(_w: W) -> None:
 			from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
 
-			dialog = EventsBulkEditDialog(group, transient_for=self)
+			dialog = EventsBulkEditDialog(group, transient_for=self.w)
 			if dialog.run() == gtk.ResponseType.OK:
 				self.w.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 

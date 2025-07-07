@@ -4,7 +4,7 @@ from scal3 import ui
 from scal3.locale_man import rtl, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.pbar import MyProgressBar
 
@@ -27,10 +27,10 @@ class CalObj(CustomizableCalObj):
 		self.pbar.w.show()
 		self.initVars()
 
-	def onDateChange(self, *a, **kw) -> None:
+	def onDateChange(self) -> None:
 		from scal3.season import getSeasonNamePercentFromJd
 
-		super().onDateChange(*a, **kw)
+		super().onDateChange()
 		name, frac = getSeasonNamePercentFromJd(
 			ui.cells.current.jd,
 			conf.seasonPBar_southernHemisphere.v,
@@ -55,15 +55,18 @@ class CalObj(CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
-		optionsWidget = HBox()
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		prefItem = CheckPrefItem(
 			prop=conf.seasonPBar_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
-			onChangeFunc=self.onDateChange,
+			onChangeFunc=self.onSouthernHemisphereChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def onSouthernHemisphereChange(self) -> None:
+		self.onDateChange()

@@ -8,7 +8,7 @@ from scal3.event_lib import ev
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
-from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button
@@ -20,9 +20,13 @@ __all__ = ["EventListExportDialog", "MultiGroupExportDialog", "SingleGroupExport
 
 
 class SingleGroupExportDialog(MyDialog):
-	def __init__(self, group: EventGroupType, **kwargs) -> None:
+	def __init__(
+		self,
+		group: EventGroupType,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		self._group = group
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Export Group"))
 		# ----
 		dialog_add_button(
@@ -39,10 +43,10 @@ class SingleGroupExportDialog(MyDialog):
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
-		radioBox = VBox()
+		radioBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# --
 		self.radioIcs = gtk.RadioButton(label="iCalendar")
 		self.radioJsonCompact = gtk.RadioButton(
@@ -114,15 +118,17 @@ class SingleGroupExportDialog(MyDialog):
 				[self._group.id],
 			)
 
-	def run(self) -> None:
-		if Dialog.run(self) == gtk.ResponseType.OK:
+	def run(self) -> gtk.ResponseType:
+		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
+		return res
 
 
 class MultiGroupExportDialog(MyDialog):
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Export", ctx="window title"))
 		self.vbox.set_spacing(10)
 		# ----
@@ -139,10 +145,10 @@ class MultiGroupExportDialog(MyDialog):
 			label=_("_Export", ctx="window action"),
 		)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
-		radioBox = VBox()
+		radioBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# --
 		self.radioIcs = gtk.RadioButton(
 			label="iCalendar",
@@ -169,7 +175,7 @@ class MultiGroupExportDialog(MyDialog):
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
 		# ----
-		hButtonBox = VBox()
+		hButtonBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(hButtonBox, gtk.Label(), 1, 1)
 		# --
 		button = gtk.Button(label=_("Disable All"))
@@ -185,7 +191,7 @@ class MultiGroupExportDialog(MyDialog):
 		# --
 		pack(self.vbox, hbox)
 		# --------
-		hbox = HBox(spacing=2)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=2)
 		pack(hbox, gtk.Label(label=_("File") + ":"))
 		self.fpathEntry = gtk.Entry()
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
@@ -245,10 +251,12 @@ class MultiGroupExportDialog(MyDialog):
 			with open(fpath, "w", encoding="utf-8") as _file:
 				_file.write(text)
 
-	def run(self) -> None:
-		if Dialog.run(self) == gtk.ResponseType.OK:
+	def run(self) -> gtk.ResponseType:
+		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
+		return res
 
 
 class EventListExportDialog(MyDialog):
@@ -257,12 +265,12 @@ class EventListExportDialog(MyDialog):
 		idsList: list[tuple[int, int]],
 		defaultFileName: str = "",
 		groupTitle: str = "",
-		**kwargs,
+		transient_for: gtk.Window | None = None,
 	) -> None:
 		self._idsList = idsList
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Export Group"))  # , ctx="window title"
 		# ----
 		dialog_add_button(
@@ -279,10 +287,10 @@ class EventListExportDialog(MyDialog):
 		)
 		self.connect("response", lambda _w, _e: self.hide())
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		frame = gtk.Frame()
 		frame.set_label(_("Format"))
-		radioBox = VBox()
+		radioBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# --
 		self.radioJsonCompact = gtk.RadioButton(
 			label=_("Compact JSON (StarCalendar)"),
@@ -355,7 +363,9 @@ class EventListExportDialog(MyDialog):
 		with open(fpath, "w", encoding="utf-8") as _file:
 			_file.write(text)
 
-	def run(self) -> None:
-		if Dialog.run(self) == gtk.ResponseType.OK:
+	def run(self) -> gtk.ResponseType:
+		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
+		return res

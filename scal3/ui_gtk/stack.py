@@ -23,7 +23,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
+from scal3.ui_gtk import gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
 
 if TYPE_CHECKING:
@@ -148,10 +148,10 @@ class MyStack(gtk.Stack):
 		icon: str = "",
 	) -> gtk.Box:
 		spacing = 10
-		hbox = HBox(spacing=spacing)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		# hbox.set_direction(gtk.TextDirection.LTR)
 		backButton = gtk.Button()
-		backHbox = HBox(spacing=3)
+		backHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=3)
 		backHbox.set_border_width(5)
 		backText = _("Back")
 		if conf.buttonIconEnable.v:
@@ -209,7 +209,9 @@ class MyStack(gtk.Stack):
 
 		widget.show()
 		if self._header and parentName:
-			vbox = VBox(spacing=self._headerSpacing)
+			vbox = gtk.Box(
+				orientation=gtk.Orientation.VERTICAL, spacing=self._headerSpacing
+			)
 			pack(
 				vbox,
 				self._newHeaderBox(

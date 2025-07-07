@@ -199,7 +199,7 @@ def saveConfCustomize() -> None:
 
 
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
-	log.debug(f"saveLiveConf: {conf.winX.v=}, {conf.winY.v=}, {conf.winWidth.v=}")
+	# log.debug(f"saveLiveConf: {conf.winX.v=}, {conf.winY.v=}, {conf.winWidth.v=}")
 	saveSingleConfig(
 		confPathLive,
 		confParamsLive,
@@ -475,7 +475,7 @@ timeout_initial = 200
 timeout_repeat = 50
 
 
-def updateFocusTime(*_args) -> None:
+def updateFocusTime() -> None:
 	global focusTime
 	focusTime = perf_counter()
 

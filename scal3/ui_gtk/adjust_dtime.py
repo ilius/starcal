@@ -36,7 +36,7 @@ from time import localtime
 from scal3 import ui
 from scal3.path import pixDir
 from scal3.time_utils import clockWaitMilliseconds
-from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, gtk, pack, timeout_add
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from scal3.ui_gtk.utils import dialog_add_button
@@ -44,25 +44,26 @@ from scal3.ui_gtk.utils import dialog_add_button
 _ = str  # FIXME
 
 
-def error_exit(resCode: int, text: str, **kwargs) -> Never:
+def error_exit(
+	resCode: int, text: str, transient_for: gtk.Window | None = None
+) -> Never:
 	d = gtk.MessageDialog(
 		destroy_with_parent=True,
 		message_type=gtk.MessageType.ERROR,
 		buttons=gtk.ButtonsType.OK,
 		text=text.strip(),
-		**kwargs,
+		transient_for=transient_for,
 	)
 	d.set_title("Error")
-	d.run()
+	d.run()  # type: ignore[no-untyped-call]
 	sys.exit(resCode)
 
 
 class AdjusterDialog(Dialog):
 	xpad = 15
-	vbox: gtk.Box  # type: ignore[assignment]
 
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self) -> None:
+		Dialog.__init__(self)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
 		self.set_icon_from_file(join(pixDir, "preferences-system-time.png"))
@@ -82,12 +83,12 @@ class AdjusterDialog(Dialog):
 		)
 		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
 		# ---------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.label_cur = gtk.Label(label=_("Current:"))
 		pack(hbox, self.label_cur)
 		pack(self.vbox, hbox)
 		# ---------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.radioMan = gtk.RadioButton.new_with_mnemonic(
 			group=None,
 			label=_("Set _Manully:"),
@@ -96,10 +97,10 @@ class AdjusterDialog(Dialog):
 		pack(hbox, self.radioMan)
 		pack(self.vbox, hbox)
 		# ------
-		vb = VBox()
+		vb = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		sg = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		self.ckeckbEditTime = gtk.CheckButton.new_with_mnemonic(_("Edit _Time"))
 		self.editTime = False
@@ -110,7 +111,7 @@ class AdjusterDialog(Dialog):
 		pack(hbox, self.timeInput)
 		pack(vb, hbox)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		self.ckeckbEditDate = gtk.CheckButton.new_with_mnemonic(_("Edit _Date"))
 		self.editDate = False
@@ -124,7 +125,7 @@ class AdjusterDialog(Dialog):
 		pack(self.vbox, vb, 0, 0, padding=10)
 		self.vboxMan = vb
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.radioNtp = gtk.RadioButton.new_with_mnemonic_from_widget(
 			radio_group_member=self.radioMan,
 			label=_("Set from _NTP:"),
@@ -133,7 +134,7 @@ class AdjusterDialog(Dialog):
 		pack(hbox, self.radioNtp)
 		pack(self.vbox, hbox)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		# --
 		pack(hbox, gtk.Label(label=_("Server:") + " "), padding=self.xpad)
 		combo = gtk.ComboBoxText.new_with_entry()

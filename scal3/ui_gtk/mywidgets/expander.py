@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.signals import registerSignals
 
 __all__ = ["ExpanderFrame"]
@@ -43,7 +43,7 @@ class ExpanderFrameTitle(gtk.Button):
 		self._icon_size = icon_size
 		self._image = gtk.Image()
 		# --
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, self._image)
 		pack(hbox, labelW)
 		self.add(hbox)
@@ -93,7 +93,7 @@ class ExpanderFrame(gtk.Frame):
 		self.set_label_widget(self._title)
 		self._title.show()
 		# --
-		self._box = VBox()
+		self._box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		gtk.Frame.add(self, self._box)
 		# --
 		self.set_border_width(border_width)

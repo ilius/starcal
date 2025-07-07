@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from gi.repository import GLib as glib
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button, imageFromFile
 
 if TYPE_CHECKING:
@@ -59,7 +59,7 @@ def _notify(notifier: EventNotifier) -> None:
 	# ----
 	dialog.set_title(event.getText())
 	# ----
-	hbox = HBox(spacing=15)
+	hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=15)
 	hbox.set_border_width(10)
 	if event.icon:
 		pack(hbox, imageFromFile(event.icon))
@@ -67,7 +67,7 @@ def _notify(notifier: EventNotifier) -> None:
 	label = gtk.Label(label=text)
 	label.set_selectable(True)
 	pack(hbox, label, 1, 1)
-	pack(dialog.vbox, hbox)  # type: ignore[arg-type]
+	pack(dialog.vbox, hbox)
 	# ----
 	okB = dialog_add_button(
 		dialog,
@@ -76,6 +76,6 @@ def _notify(notifier: EventNotifier) -> None:
 		label=_("_Close"),
 	)
 	okB.connect("clicked", lambda _w, _e: dialog.response(gtk.ResponseType.OK))
-	dialog.vbox.show_all()  # type: ignore[attr-defined]
+	dialog.vbox.show_all()
 	dialog.connect("response", response)
 	dialog.present()

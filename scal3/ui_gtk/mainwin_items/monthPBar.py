@@ -6,7 +6,7 @@ from scal3.date_utils import monthPlus
 from scal3.locale_man import getMonthName, rtl, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.pbar import MyProgressBar
 
@@ -29,8 +29,8 @@ class CalObj(CustomizableCalObj):
 		self.pbar.w.show()
 		self.initVars()
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 
 		calType = conf.monthPBarCalType.v
 		if calType == -1:
@@ -70,14 +70,17 @@ class CalObj(CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
-		optionsWidget = HBox()
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		prefItem = CalTypePrefItem(
 			prop=conf.monthPBarCalType,
 			live=True,
-			onChangeFunc=self.onDateChange,
+			onChangeFunc=self.onCalTypeChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def onCalTypeChange(self) -> None:
+		self.onDateChange()

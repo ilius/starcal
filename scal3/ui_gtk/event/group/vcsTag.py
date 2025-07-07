@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event.group.vcsEpochBase import (
 	VcsEpochBaseWidgetClass as BaseWidgetClass,
 )
@@ -20,7 +20,7 @@ class WidgetClass(BaseWidgetClass):
 	def __init__(self, group: VcsTagEventGroup) -> None:
 		BaseWidgetClass.__init__(self, group)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Tag Description"))
 		label.set_xalign(0)
 		self.sizeGroup.add_widget(label)

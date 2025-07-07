@@ -14,7 +14,7 @@ from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import getJhmsFromEpoch
-from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack, pango
+from scal3.ui_gtk import Dialog, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.gtk_ud import CalObjWidget
@@ -42,7 +42,7 @@ def _unnestStep(dst: dict[str, Any], src: dict[str, Any], path: str) -> None:
 
 def unnest(src: Any) -> dict[str, Any]:
 	if not isinstance(src, dict):
-		return src
+		return src  # type: ignore[no-any-return]
 	dst: dict[str, Any] = {}
 	_unnestStep(dst, src, "")
 	return dst
@@ -64,10 +64,10 @@ class EventHistoryDialog(CalObjWidget):
 	def __init__(
 		self,
 		event: EventType,
-		**kwargs,
+		transient_for: gtk.Window | None = None,
 	) -> None:
 		checkEventsReadOnly()
-		self.w: Dialog = Dialog(**kwargs)
+		self.w: Dialog = Dialog(transient_for=transient_for)
 		self.w.set_title(_("History") + ": " + event.summary)
 		self._event = event
 		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
@@ -105,12 +105,12 @@ class EventHistoryDialog(CalObjWidget):
 
 		hpan = gtk.HPaned()
 		hpan.add1(treevSwin)
-		leftVbox = VBox()
+		leftVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		hpan.add2(leftVbox)
 		hpan.set_position(600)
 		pack(self.w.vbox, hpan, expand=True, fill=True)
 
-		actionBox = VBox(spacing=5)
+		actionBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		pack(leftVbox, actionBox, padding=30)
 
 		# revertButton = labelImageButton(
@@ -146,7 +146,7 @@ class EventHistoryDialog(CalObjWidget):
 		combo.connect("changed", self.viewTypeComboChanged)
 		self.viewTypeCombo = combo
 
-		textTypeHbox = HBox()
+		textTypeHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(textTypeHbox, gtk.Label(label=_("View type") + ": "))
 		pack(textTypeHbox, self.viewTypeCombo)
 		pack(leftVbox, textTypeHbox)

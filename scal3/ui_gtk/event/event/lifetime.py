@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 from scal3.event_lib.groups import LifetimeGroup
 from scal3.event_lib.rules import EndEventRule, StartEventRule
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
@@ -51,7 +51,7 @@ class WidgetClass(common.WidgetClass):
 			self.startDateInput = DateButton()
 			self.endDateInput = DateButton()
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start") + ": ")
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -59,7 +59,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.startDateInput)
 		pack(self, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("End") + ": ")
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)

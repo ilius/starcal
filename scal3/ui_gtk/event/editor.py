@@ -6,7 +6,7 @@ from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import ev
 from scal3.event_lib.groups import EventGroup
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button, showInfo
@@ -24,11 +24,12 @@ class EventEditorDialog(Dialog):
 		typeChangable: bool = True,
 		isNew: bool = False,
 		useSelectedDate: bool = False,
-		**kwargs,
+		title: str = "",
+		transient_for: gtk.Window | None = None,
 	) -> None:
 		checkEventsReadOnly()
 		assert event.parent is not None
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, title=title, transient_for=transient_for)
 		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		self.isNew = isNew
 		# self.connect("delete-event", lambda obj, e: self.destroy())
@@ -63,7 +64,7 @@ class EventEditorDialog(Dialog):
 		if isNew and not event.timeZone:
 			event.timeZone = str(locale_man.localTz)  # why? FIXME
 		# -------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(
 			hbox,
 			gtk.Label(
@@ -73,7 +74,7 @@ class EventEditorDialog(Dialog):
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		# -------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("Event Type")))
 		if typeChangable:
 			combo = gtk.ComboBoxText()
@@ -143,7 +144,7 @@ class EventEditorDialog(Dialog):
 		# activeWidget.calTypeComboChanged()-- apearantly not needed
 		self.activeWidget = activeWidget
 
-	def run(self) -> EventType | None:
+	def run2(self) -> EventType | None:
 		assert self.activeWidget is not None
 
 		parentWin = self.get_transient_for()
@@ -196,7 +197,9 @@ def addNewEvent(
 	group: EventGroupType,
 	eventType: str,
 	typeChangable: bool = False,
-	**kwargs,
+	useSelectedDate: bool = False,
+	title: str = "",
+	transient_for: gtk.Window | None = None,
 ) -> EventType | None:
 	event = group.create(eventType)
 	if eventType == "custom":  # FIXME
@@ -205,5 +208,7 @@ def addNewEvent(
 		event,
 		typeChangable=typeChangable,
 		isNew=True,
-		**kwargs,
-	).run()
+		useSelectedDate=useSelectedDate,
+		title=title,
+		transient_for=transient_for,
+	).run2()

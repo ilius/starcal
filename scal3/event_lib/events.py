@@ -110,6 +110,20 @@ class SingleStartEndEvent(Event):
 		start.setJdExact(jd)
 		end.setJdExact(jd + 1)
 
+	def setEndDateTime(
+		self, date: tuple[int, int, int], hms: tuple[int, int, int]
+	) -> None:
+		self.removeSomeRuleTypes("duration")
+		end = EndEventRule.addOrGetFrom(self)
+		end.date = date
+		end.time = hms
+
+	def setEndDuration(self, value: float, unit: int) -> None:
+		self.removeSomeRuleTypes("end")
+		duration = DurationEventRule.addOrGetFrom(self)
+		duration.value = value
+		duration.unit = unit
+
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
 		return [
 			(
@@ -174,7 +188,7 @@ class TaskEvent(SingleStartEndEvent):
 
 	def _setDefaultDuration(self, group: EventGroup | None) -> None:
 		if group is None or group.name != "taskList":
-			self.setEnd("duration", 1, 3600)
+			self.setEndDuration(1, 3600)
 			return
 		if TYPE_CHECKING:
 			assert isinstance(group, TaskList)
@@ -182,7 +196,7 @@ class TaskEvent(SingleStartEndEvent):
 		value, unit = group.defaultDuration
 		if value == 0:
 			value, unit = 1, 3600
-		self.setEnd("duration", value, unit)
+		self.setEndDuration(value, unit)
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
@@ -197,7 +211,7 @@ class TaskEvent(SingleStartEndEvent):
 		start = StartEventRule.getFrom(self)
 		assert start is not None
 		start.setJdExact(jd)
-		self.setEnd("duration", 24, 3600)
+		self.setEndDuration(24, 3600)
 
 	def setStart(
 		self,
@@ -210,25 +224,25 @@ class TaskEvent(SingleStartEndEvent):
 		start.date = date
 		start.time = dayTime
 
+	def setEndEpochOnly(self, epoch: int) -> None:
+		self.removeSomeRuleTypes("duration")
+		return super().setEndEpoch(epoch)
+
 	def setEnd(
 		self,
 		endType: str,
-		*values,  # noqa: ANN002
+		*values: Any,  # noqa: ANN002
 	) -> None:
-		self.removeSomeRuleTypes("end", "duration")
-		rule: EventRuleType
 		if endType == "date":
-			rule = EndEventRule(self)
-			rule.date, rule.time = values
+			date, time = values
+			self.setEndDateTime(date, time)
 		elif endType == "epoch":
-			rule = EndEventRule(self)
-			rule.setEpoch(values[0])
+			self.setEndEpochOnly(values[0])
 		elif endType == "duration":
-			rule = DurationEventRule(self)
-			rule.value, rule.unit = values
+			value, unit = values
+			self.setEndDuration(value, unit)
 		else:
 			raise ValueError(f"invalid {endType=}")
-		self.addRule(rule)
 
 	def getStart(self) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
 		start = StartEventRule.getFrom(self)
@@ -306,13 +320,8 @@ class TaskEvent(SingleStartEndEvent):
 			else:
 				raise RuntimeError("no end rule nor duration rule")
 
-	def copyFrom(
-		self,
-		other: Event,
-		*a,  # noqa: ANN002
-		**kw,  # noqa: ANN003
-	) -> None:
-		Event.copyFrom(self, other, *a, **kw)
+	def copyFrom(self, other: Event) -> None:
+		Event.copyFrom(self, other)
 		myStart = StartEventRule.getFrom(self)
 		if myStart is None:
 			raise KeyError
@@ -323,7 +332,7 @@ class TaskEvent(SingleStartEndEvent):
 			self.setEnd(endType, *values)
 		elif other.name == "dailyNote":
 			myStart.time = (0, 0, 0)
-			self.setEnd("duration", 24, 3600)
+			self.setEndDuration(24, 3600)
 		elif other.name == "allDayTask":
 			self.removeSomeRuleTypes("end", "duration")
 			self.copySomeRuleTypesFrom(other, "start", "end", "duration")
@@ -378,41 +387,39 @@ class AllDayTaskEvent(SingleStartEndEvent):
 
 	def setJdExact(self, jd: int) -> None:
 		self.setJd(jd)
-		self.setEnd("duration", 1)
+		self.setEndDurationDays(1)
 
 	def setDefaults(self, group: EventGroup | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		jd = getCurrentJd()
 		self.setJd(jd)
-		self.setEnd("duration", 1)
+		self.setEndDurationDays(1)
 		# if group and group.name == "taskList":
 		# 	value, unit = group.defaultAllDayDuration
 		# 	if value > 0:
-		# 		self.setEnd("duration", value)
+		# 		self.setEndDurationDays(value)
+
+	def setEndDurationDays(self, value: float) -> None:
+		self.removeSomeRuleTypes("duration")
+		rule = DurationEventRule.addOrGetFrom(self)
+		rule.value = value
+		rule.unit = dayLen
 
 	def setEnd(self, endType: str, value: tuple[int, int, int] | float) -> None:
-		self.removeSomeRuleTypes("end", "duration")
-		rule: EventRuleType
 		if endType == "date":
 			assert isinstance(value, tuple)
-			rule = EndEventRule(self)
-			rule.setDate(value)
-		elif endType == "jd":
-			assert isinstance(value, int)
-			rule = EndEventRule(self)
-			rule.setJd(value)
+			self.setEndDateTime(value, (0, 0, 0))
 		elif endType == "epoch":
 			assert isinstance(value, int)
-			rule = EndEventRule(self)
-			rule.setJd(self.getJdFromEpoch(value))
+			self.setEndEpochOnly(value)
 		elif endType == "duration":
 			assert isinstance(value, float)
-			rule = DurationEventRule(self)
-			rule.value = value
-			rule.unit = dayLen
+			self.setEndDuration(value, dayLen)
+		elif endType == "jd":
+			assert isinstance(value, int)
+			self.setEndEpochOnly(self.getEpochFromJd(value))
 		else:
 			raise ValueError(f"invalid {endType=}")
-		self.addRule(rule)
 
 	def getEnd(self) -> tuple[str, tuple[int, int, int] | float]:
 		end = EndEventRule.getFrom(self)

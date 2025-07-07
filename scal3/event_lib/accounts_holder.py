@@ -80,7 +80,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 			return None
 			# FIXME: or raise FileNotFoundError?
 		with self.fs.open(objFile) as fp:
-			data = json.loads(fp.read())
+			data: dict[str, Any] = json.loads(fp.read())
 		SObjBinaryModel.updateBasicData(data, objFile, "account", self.fs)
 		# if data["id"] != ident:
 		# 	log.error(
@@ -93,6 +93,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 	# FIXME: types
 	def getLoadedObj(self, obj: AccountType) -> AccountType | None:
 		ident = obj.id
+		assert ident is not None
 		data = self.loadData(ident)
 		assert data is not None
 		name = data["type"]
@@ -106,6 +107,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 
 	def replaceDummyObj(self, obj: AccountType) -> AccountType:
 		ident = obj.id
+		assert ident is not None
 		objNew = self.getLoadedObj(obj)
 		assert objNew is not None
 		self.byId[ident] = objNew

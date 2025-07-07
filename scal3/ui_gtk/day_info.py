@@ -21,7 +21,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
@@ -41,15 +41,15 @@ class AllDateLabelsVBox(CustomizableCalObj):
 		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		self.initVars()
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		assert ud.dateFormatBin is not None
 		for child in self.w.get_children():
 			child.destroy()
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		sgroupDate = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, module in calTypes.iterIndexModule():
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			label = gtk.Label(label=_(module.desc, ctx="calendar"))
 			label.set_xalign(0)
 			pack(hbox, label)
@@ -80,8 +80,8 @@ class PluginsTextView(CustomizableCalObj):
 		self.w.set_cursor_visible(False)
 		self.w.set_justification(gtk.Justification.CENTER)
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.w.get_buffer().set_text(ui.cells.current.getPluginsText())
 
 
@@ -102,8 +102,8 @@ class DayInfoJulianDayHBox(CustomizableCalObj):
 		# ---
 		self.w.show_all()
 
-	def onDateChange(self, *a, **ka) -> None:
-		super().onDateChange(*a, **ka)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.jdLabel.set_label(str(ui.cells.current.jd))
 
 
@@ -111,8 +111,8 @@ class DayInfoDialog(CustomizableCalObj):
 	objName = "dayInfo"
 	desc = _("Day Info")
 
-	def __init__(self, **kwargs) -> None:
-		self.w: Dialog = Dialog(**kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		self.w: Dialog = Dialog(transient_for=transient_for)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
@@ -182,12 +182,12 @@ class DayInfoDialog(CustomizableCalObj):
 
 	def goBack(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(-1)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def goToday(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.gotoJd(core.getCurrentJd())
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def goNext(self, _w: gtk.Widget | None = None) -> None:
 		ui.cells.jdPlus(1)
-		self.onDateChange()
+		self.broadcastDateChange()

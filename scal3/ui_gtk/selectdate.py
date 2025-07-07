@@ -24,7 +24,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
 from scal3.date_utils import parseDroppedDate
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
@@ -40,10 +40,9 @@ class SelectDateDialog(Dialog):
 	signals = [
 		("response-date", [int, int, int]),
 	]
-	vbox: gtk.Box  # type: ignore[assignment]
 
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Select Date..."))
 		# self.set_has_separator(False)
 		# self.set_skip_taskbar_hint(True)
@@ -59,14 +58,14 @@ class SelectDateDialog(Dialog):
 		self.connect("drag-data-received", self.dragRec)
 		self.vbox.set_spacing(5)
 		# ------
-		hb0 = HBox(spacing=4)
+		hb0 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=4)
 		pack(hb0, gtk.Label(label=_("Date Mode")))
 		combo = CalTypeCombo()
 		combo.set_active(self.calType)
 		pack(hb0, combo)
 		pack(self.vbox, hb0)
 		# -----------------------
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		rb1 = gtk.RadioButton(label="")
 		# rb1.num = 1
 		pack(hbox, rb1)
@@ -74,24 +73,24 @@ class SelectDateDialog(Dialog):
 		pack(hbox, self.ymdBox)
 		pack(self.vbox, hbox)
 		# --------
-		hb2 = HBox(spacing=4)
+		hb2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=4)
 		pack(hb2, gtk.Label(label="yyyy/mm/dd"))
 		dateInput = DateButtonOption(hist_size=16)
 		pack(hb2, dateInput)
 		rb2 = gtk.RadioButton(label="", group=rb1)
 		# rb2.num = 2
-		hb2i = HBox(spacing=5)
+		hb2i = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hb2i, rb2)
 		pack(hb2i, hb2)
 		pack(self.vbox, hb2i)
 		# --------
-		hb3 = HBox(spacing=10)
+		hb3 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		pack(hb3, gtk.Label(label=_("Julian Day Number")))
 		jdInput = IntSpinButton(0, 9999999)
 		pack(hb3, jdInput)
 		rb3 = gtk.RadioButton(label="", group=rb1)
 		# rb3.num = 3
-		hb3i = HBox(spacing=5)
+		hb3i = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hb3i, rb3)
 		pack(hb3i, hb3)
 		pack(self.vbox, hb3i)

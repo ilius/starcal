@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import event_lib
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.event import EventWidgetType, common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
@@ -46,7 +46,7 @@ class WidgetClass(common.WidgetClass):
 		# ----------------
 		self.autoCheck = autoCheck
 		# ------
-		self.ruleAddBox = HBox()
+		self.ruleAddBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.warnLabel = gtk.Label()
 		self.warnLabel.modify_fg(
 			gtk.StateType.NORMAL,
@@ -59,7 +59,7 @@ class WidgetClass(common.WidgetClass):
 		self.rulesFrame.set_label(_("Rules"))
 		self.rulesFrame.set_border_width(1)
 		self.rulesSwin = gtk.ScrolledWindow()
-		self.rulesBox = VBox()
+		self.rulesBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		self.rulesBox.set_border_width(5)
 		self.rulesSwin.add(self.rulesBox)
 		self.rulesFrame.add(self.rulesSwin)
@@ -97,7 +97,7 @@ class WidgetClass(common.WidgetClass):
 		self.removeButtons: dict[int, gtk.Button] = {}
 
 	def makeRuleHbox(self, rule: EventRuleType) -> gtk.Box | None:
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		lab = gtk.Label(label=rule.desc)
 		lab.set_xalign(0)
 		pack(hbox, lab)

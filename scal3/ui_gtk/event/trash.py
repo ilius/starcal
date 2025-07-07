@@ -1,6 +1,6 @@
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -12,9 +12,9 @@ __all__ = ["TrashEditorDialog"]
 
 
 class TrashEditorDialog(Dialog):
-	def __init__(self, **kwargs) -> None:
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
 		checkEventsReadOnly()
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Edit Trash"))
 		# self.connect("delete-event", lambda obj, e: self.destroy())
 		# self.resize(800, 600)
@@ -38,7 +38,7 @@ class TrashEditorDialog(Dialog):
 		# --
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# -------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Title"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -47,7 +47,7 @@ class TrashEditorDialog(Dialog):
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self.vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Icon"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -57,7 +57,7 @@ class TrashEditorDialog(Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.addEventsToBeginningCheck = gtk.CheckButton(
 			label=_("Add New Events to Beginning"),
 		)
@@ -71,10 +71,12 @@ class TrashEditorDialog(Dialog):
 		self.vbox.show_all()
 		self.updateWidget()
 
-	def run(self) -> None:
-		if Dialog.run(self) == gtk.ResponseType.OK:
+	def run(self) -> gtk.ResponseType:
+		res = super().run()
+		if res == gtk.ResponseType.OK:
 			self.updateVars()
 		self.destroy()
+		return res
 
 	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.trash.title)

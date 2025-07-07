@@ -189,8 +189,8 @@ def getTagShortStatLine(obj: VcsBaseEventGroup, prevTag: str, tag: str) -> str:
 
 
 def getFirstCommitEpoch(obj: VcsBaseEventGroup) -> int:
-	return obj.repo[0].date()[0]  # type: ignore[attr-defined]
+	return obj.repo[0].date()[0]  # type: ignore[attr-defined, no-any-return]
 
 
 def getLastCommitEpoch(obj: VcsBaseEventGroup) -> int:
-	return obj.repo[len(obj.repo) - 1].date()[0]  # type: ignore[attr-defined]
+	return obj.repo[len(obj.repo) - 1].date()[0]  # type: ignore[attr-defined, no-any-return]

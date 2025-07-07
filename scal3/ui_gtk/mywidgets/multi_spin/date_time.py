@@ -22,7 +22,6 @@ class DateTimeButton(MultiSpinButton[DateTimeFieldType, Sequence[Sequence[int]]]
 	def __init__(
 		self,
 		date_time: tuple[int, int, int, int, int, int] | None = None,
-		**kwargs,
 	) -> None:
 		MultiSpinButton.__init__(
 			self,
@@ -42,7 +41,6 @@ class DateTimeButton(MultiSpinButton[DateTimeFieldType, Sequence[Sequence[int]]]
 				),
 				# StrConField("seconds"),
 			),
-			**kwargs,
 		)
 		if date_time is None:
 			date_time = localtime()[:6]

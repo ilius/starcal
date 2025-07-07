@@ -5,7 +5,7 @@ from scal3.cal_types import calTypes
 
 
 class Test_getMonthDesc(unittest.TestCase):
-	def __init__(self, *args) -> None:
+	def __init__(self, *args) -> None:  # type: ignore[no-untyped-def]
 		unittest.TestCase.__init__(self, *args)
 		locale_man.lang.v = "en_US.UTF-8"
 		locale_man.prepareLanguage()

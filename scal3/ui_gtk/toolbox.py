@@ -13,12 +13,12 @@ from typing import Any
 
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import GdkPixbuf, VBox, gdk, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, gdk, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.gtk_ud import commonSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
@@ -48,12 +48,12 @@ class SignalHandler(SignalHandlerBase):
 
 
 class BaseToolBoxItem(CustomizableCalObj):
-	Sig = SignalHandler
+	Sig: type[SignalHandlerType] = SignalHandler
 	hasOptions = False
 	iconSize = Property(0)
 	preferIconName = Property(False)
-	onClick: str | ButtonClickCallback | None = None
-	onPress: str | ButtonPressCallback | None = None
+	onClick: ButtonClickCallback | None = None
+	onPress: ButtonPressCallback | None = None
 	continuousClick = False
 
 	def __init__(self, continuousClick: bool) -> None:
@@ -96,8 +96,8 @@ class ToolBoxItem(BaseToolBoxItem):
 		iconName: str = "",
 		imageName: str = "",
 		imageNameDynamic: bool = False,
-		onClick: str | ButtonClickCallback | None = None,
-		onPress: str | ButtonPressCallback | None = None,
+		onClick: ButtonClickCallback | None = None,
+		onPress: ButtonPressCallback | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
@@ -110,7 +110,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.w.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.w.set_focus_on_click(False)
+		self.w.set_focus_on_click(False)  # type: ignore[no-untyped-call]
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -214,8 +214,8 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
 		name: str = "",
-		onClick: str | ButtonClickCallback | None = None,
-		onPress: str | ButtonPressCallback | None = None,
+		onClick: ButtonClickCallback | None = None,
+		onPress: ButtonPressCallback | None = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
@@ -227,7 +227,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.w.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.w.set_focus_on_click(False)
+		self.w.set_focus_on_click(False)  # type: ignore[no-untyped-call]
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -316,9 +316,10 @@ class BaseToolBox(CustomizableCalObj):
 				onClick = getattr(self.funcOwner, item.onClick)
 			else:
 				onClick = item.onClick
-			item.w.connect("clicked", onClick)
 			if self.continuousClick and item.continuousClick:
-				item.s.connect("con-clicked", onClick)
+				item.w.connect("con-clicked", onClick)
+			else:
+				item.w.connect("clicked", onClick)
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
@@ -354,7 +355,7 @@ class StaticToolBox(BaseToolBox):
 		item.preferIconName = self.preferIconName
 		item.w.set_border_width(self.buttonBorder.v)
 		item.build()
-		item.onConfigChange(toParent=False)
+		item.onConfigChange()
 		self.setupItemSignals(item)
 		pack(self.box, item.w, padding=self.buttonPadding.v)
 		item.show()
@@ -398,7 +399,7 @@ class CustomizableToolBox(StaticToolBox):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ---
-		optionsWidget = VBox()
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		prefItem: PrefItem
 		# ----
 		prefItem = CheckPrefItem(
@@ -494,7 +495,7 @@ class CustomizableToolBox(StaticToolBox):
 				pack_type=gtk.PackType.START,
 			)
 			item.build()
-			item.onConfigChange(toParent=False)
+			item.onConfigChange()
 
 	def getDict(self) -> CustomizableToolBoxDict:
 		self.data.update(

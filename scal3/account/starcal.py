@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from scal3 import logger
+from scal3 import core, logger
 from scal3.event_lib.errors import AccountError
 
 log = logger.get()
@@ -34,7 +34,7 @@ from scal3.time_utils import jsonTimeFromEpoch
 if TYPE_CHECKING:
 	import requests
 
-	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.event_lib.pytypes import AccountType, EventGroupType, EventType
 
 
 __all__ = ["StarCalendarAccount"]
@@ -181,21 +181,22 @@ class StarCalendarAccount(Account):
 		self,
 		method: str,
 		path: str,
-		**kwargs,  # noqa: ANN003
+		reqData: dict[str, Any] | None = None,
 	) -> requests.Response:
 		import requests
 
-		return getattr(requests, method)(
+		return requests.request(
+			method,
 			self.serverUrl + path,
 			headers={"Authorization": "bearer " + self.lastToken},
-			json=kwargs,
+			json=reqData,
 		)
 
 	def call(
 		self,
 		method: str,
 		path: str,
-		**kwargs,  # noqa: ANN003
+		reqData: dict[str, Any] | None = None,
 	) -> tuple[dict[str, Any], str | None]:
 		"""
 		Return (data, None) if successful
@@ -211,12 +212,12 @@ class StarCalendarAccount(Account):
 				error = self.login()
 				if error:
 					return data, error
-			res = self.callBase(method, path, **kwargs)
+			res = self.callBase(method, path, reqData)
 			if res.status_code == 401 and tokenIsOld:
 				error = self.login()
 				if error:
 					return data, error
-				res = self.callBase(method, path, **kwargs)
+				res = self.callBase(method, path, reqData)
 		except Exception as e:
 			error = str(e)
 			return data, error
@@ -379,3 +380,7 @@ class StarCalendarAccount(Account):
 		finally:
 			group.setReadOnly(False)
 			group.save()
+
+
+if TYPE_CHECKING:
+	_account: AccountType = StarCalendarAccount.load(1, fs=core.fs)

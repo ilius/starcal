@@ -116,7 +116,7 @@ def newTextLayout(
 	layout.set_font_description(pfontEncode(font))
 	if not text:
 		return layout
-	layout.set_markup(text=text, length=-1)
+	layout.set_markup(text=text, length=-1)  # type: ignore[no-untyped-call]
 	if maxSize is None:
 		return layout
 	layoutW, layoutH = layout.get_pixel_size()

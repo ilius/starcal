@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class WidgetClass(NormalWidgetClass):
 	def __init__(self, group: YearlyGroup) -> None:
 		NormalWidgetClass.__init__(self, group)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Show Date in Event Summary"))
 		label.set_xalign(0)
 		pack(hbox, label)

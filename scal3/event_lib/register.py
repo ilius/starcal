@@ -25,7 +25,7 @@ class ClassGroup[T: BaseClassType](list[type[Any]]):
 
 	def register(
 		self,
-		cls: Any,  # FIXME: type[T] gives error
+		cls: type[T],
 	) -> type[T]:
 		assert cls.name
 		cls.tname = self.tname
@@ -40,7 +40,7 @@ class ClassGroup[T: BaseClassType](list[type[Any]]):
 
 	def setMain(
 		self,
-		cls: Any,  # FIXME: type[T] gives error
+		cls: type[T],
 	) -> type[T]:
 		self.main = cls
 		return cls
