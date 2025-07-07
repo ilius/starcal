@@ -6,7 +6,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from scal3.ui_gtk import VBox, gdk, gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyWindow
 from scal3.ui_gtk.stack import MyStack, StackPage
@@ -34,7 +34,7 @@ class WizardWindow(MyWindow):
 		self.set_title(title)
 		self.connect("delete-event", lambda _w, _e: self.destroy())
 		self.connect("key-press-event", self.onKeyPress)
-		self.vbox = VBox()
+		self.vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		self.stack = MyStack(
 			header=False,
 		)

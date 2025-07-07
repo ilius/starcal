@@ -99,7 +99,7 @@ def _renderTableCellCalType(
 		params = conf.mcalTypeParams.v[calTypeIndex]
 	except IndexError:
 		return False, ""
-	day = _(cell.dates[calType][2], calType)
+	day = _(cell.dates[calType][2], calType=calType)
 
 	font = getParamsFont(params)
 	assert font is not None

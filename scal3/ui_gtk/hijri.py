@@ -29,7 +29,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, hijri, jd_to, to_jd
 from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
@@ -45,15 +45,15 @@ def getCurrentYm() -> int:
 
 
 class EditDbDialog(Dialog):
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Tune Hijri Monthes"))
 		self.connect("delete-event", self.onDeleteEvent)
 		# ------------
 		self.altMode = 0
 		self.altModeDesc = "Gregorian"
 		# ------------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.topLabel = gtk.Label()
 		pack(hbox, self.topLabel)
 		self.startDateInput = DateButton()
@@ -109,14 +109,14 @@ class EditDbDialog(Dialog):
 				ToolBoxItem(
 					name="add",
 					imageName="list-add.svg",
-					onClick="onAddClick",
+					onClick=self.onAddClick,
 					desc=_("Add"),
 					continuousClick=False,
 				),
 				ToolBoxItem(
 					name="delete",
 					imageName="edit-delete.svg",
-					onClick="onDeleteClick",
+					onClick=self.onDeleteClick,
 					desc=_("Delete", ctx="button"),
 					continuousClick=False,
 				),
@@ -126,7 +126,7 @@ class EditDbDialog(Dialog):
 		self.treev = treev
 		self.treeModel = treeModel
 		# -----
-		mainHbox = HBox()
+		mainHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(mainHbox, swin, 1, 1)
 		pack(mainHbox, toolbar.w)
 		pack(self.vbox, mainHbox, 1, 1)
@@ -304,7 +304,7 @@ class EditDbDialog(Dialog):
 		hijri.monthDb.expJd = hijri.monthDb.endJd
 		hijri.monthDb.save()
 
-	def run(self) -> None:
+	def run2(self) -> None:
 		hijri.monthDb.load()
 		self.updateWidget()
 		self.treev.grab_focus()
@@ -326,7 +326,7 @@ class EditDbDialog(Dialog):
 def tuneHijriMonthes(_widget: gtk.Widget | None = None) -> None:
 	dialog = EditDbDialog(transient_for=ui.prefWindow)
 	dialog.resize(400, 400)
-	dialog.run()
+	dialog.run2()
 
 
 def dbIsExpired() -> bool:
@@ -346,14 +346,14 @@ Please update StarCalendar.
 Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 	)
 
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Hijri months expired"))
 		self.connect("response", self.onResponse)
 		# ---
 		pack(self.vbox, gtk.Label(label=self.message + "\n\n"), 1, 1)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		checkb = gtk.CheckButton(label=_("Don't show this again"))
 		pack(hbox, checkb)
 		pack(self.vbox, hbox)
@@ -383,7 +383,7 @@ def checkHijriMonthsExpiration() -> None:
 	if isfile(hijri.monthDbExpiredIgnoreFile):
 		# user previously checked "Don't show this again" checkbox
 		return
-	dialog = HijriMonthsExpirationDialog(transient_for=ui.mainWin)
+	dialog = HijriMonthsExpirationDialog(transient_for=ui.mainWin.w)
 	dialog.run()
 
 

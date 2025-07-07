@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event.account import BaseWidgetClass
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ class WidgetClass(BaseWidgetClass):
 		BaseWidgetClass.__init__(self, account)
 		self.account = account
 		# -----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Email"))
 		label.set_xalign(0)
 		pack(hbox, label)
@@ -24,7 +24,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.emailEntry, 1, 1)
 		pack(self, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Password"))
 		label.set_xalign(0)
 		pack(hbox, label)

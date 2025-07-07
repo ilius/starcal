@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.pytypes import AccountType
 
 log = logger.get()
 
@@ -76,7 +77,7 @@ class DummyAccount:
 
 # Should not be registered, or instantiate directly
 @classes.account.setMain
-class Account(HistoryEventObjBinaryModel):
+class Account(HistoryEventObjBinaryModel, AccountType):
 	loaded = True
 	name = ""
 	desc = ""

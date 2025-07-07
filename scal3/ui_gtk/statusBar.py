@@ -8,7 +8,7 @@ from scal3.color_utils import colorizeSpan
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.mywidgets.label import SLabel
@@ -40,16 +40,17 @@ class CalObj(CustomizableCalObj):
 		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		# ----
-		self.labelBox = HBox()
+		self.labelBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(self.w, self.labelBox, 1, 1)
 		resizeB = ResizeButton(win)
 		pack(self.w, resizeB, 0, 0)
 		if rtl:
 			self.w.set_direction(gtk.TextDirection.LTR)
 			self.labelBox.set_direction(gtk.TextDirection.LTR)
+		# self.onConfigChange()
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
+	def onConfigChange(self) -> None:
+		super().onConfigChange()
 		# ---
 		for label in self.labelBox.get_children():
 			label.destroy()
@@ -64,11 +65,11 @@ class CalObj(CustomizableCalObj):
 			pack(self.labelBox, label, 1)
 		self.w.show_all()
 		# ---
-		self.onDateChange()
+		self.broadcastDateChange()
 
-	def onDateChange(self, *a, **kw) -> None:
+	def onDateChange(self) -> None:
 		assert ud.dateFormatBin is not None
-		super().onDateChange(*a, **kw)
+		super().onDateChange()
 		labels = self.labelBox.get_children()
 		for label in labels:
 			assert isinstance(label, LabelWithCalType)
@@ -89,7 +90,7 @@ class CalObj(CustomizableCalObj):
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
-		optionsWidget = VBox(spacing=10)
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		prefItem: PrefItem
 		# ----
 		prefItem = CheckPrefItem(

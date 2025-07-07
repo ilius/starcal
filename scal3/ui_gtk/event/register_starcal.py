@@ -25,7 +25,7 @@ log = logger.get()
 from scal3 import core, locale_man, ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
@@ -37,8 +37,8 @@ __all__ = ["StarCalendarRegisterDialog"]
 
 
 class StarCalendarRegisterDialog(MyDialog):
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		# ---
 		self.set_title(_("Register at StarCalendar.net"))
 		self.resize(600, 300)
@@ -53,7 +53,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		label = gtk.Label(label=_("Email"))
 		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
@@ -63,7 +63,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		pack(hbox, self.emailEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		label = gtk.Label(label=_("Password"))
 		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
@@ -74,7 +74,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		pack(hbox, self.passwordEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		label = gtk.Label(label=_("Repeat Password"))
 		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
@@ -85,7 +85,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		pack(hbox, self.passwordEntry2, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		label = gtk.Label(label=_("Name (Optional)"))
 		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
@@ -95,7 +95,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		pack(hbox, self.nameEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		# ---
-		hbox = HBox(spacing=5)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		label = gtk.Label()
 		label.set_xalign(0)
 		# make text color red
@@ -105,9 +105,9 @@ class StarCalendarRegisterDialog(MyDialog):
 		pack(self.vbox, hbox, 0, 0, 10)
 		self.errorLabel = label
 		# ---
-		self.emailEntry.connect("changed", self.updateOkSensitive)
-		self.passwordEntry.connect("changed", self.updateOkSensitive)
-		self.passwordEntry2.connect("changed", self.updateOkSensitive)
+		self.emailEntry.connect("changed", self.onInputChange)
+		self.passwordEntry.connect("changed", self.onInputChange)
+		self.passwordEntry2.connect("changed", self.onInputChange)
 		self.updateOkSensitive()
 		# ---
 		self.vbox.show_all()
@@ -129,7 +129,10 @@ class StarCalendarRegisterDialog(MyDialog):
 
 		return True
 
-	def updateOkSensitive(self, *_args) -> None:
+	def onInputChange(self, _w: gtk.Widget) -> None:
+		self.updateOkSensitive()
+
+	def updateOkSensitive(self) -> None:
 		ok = self.canSubmit()
 		self.okButton.set_sensitive(ok)
 		if ok:
@@ -168,7 +171,7 @@ class StarCalendarRegisterDialog(MyDialog):
 			self.errorLabel.set_text(_(error))
 			return error
 
-		account: AccountType = accountCls()  # type: ignore[assignment] # FIXME
+		account: AccountType = accountCls()
 		account.setDict(
 			{
 				"title": "StarCalendar: " + email,

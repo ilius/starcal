@@ -61,7 +61,7 @@ class NumRangesEntry(gtk.Entry):
 			self.set_position(start + len(s))
 		else:
 			pos = self.get_position()
-			self.insert_text(s, pos)
+			self.insert_text(s, pos)  # type: ignore[no-untyped-call]
 			self.set_position(pos + len(s))
 
 	def numPlus(self, plus: int) -> None:
@@ -196,7 +196,7 @@ if __name__ == "__main__":
 	# ---
 	entry = NumRangesEntry(0, 9999)
 	win = Dialog()
-	win.vbox.add(entry)  # type: ignore[attr-defined]
-	win.vbox.show_all()  # type: ignore[attr-defined]
+	win.vbox.add(entry)
+	win.vbox.show_all()
 	win.resize(100, 40)
 	win.run()

@@ -22,7 +22,7 @@ class GtkBufferFile:
 	def write(self, text: str) -> None:
 		"""Write text into the buffer and apply self.tag."""
 		# text = text.replace("\x00", "")
-		self.buffer.insert_with_tags(
+		self.buffer.insert_with_tags(  # type: ignore[no-untyped-call]
 			self.buffer.get_end_iter(),
 			text,
 			self.tag,

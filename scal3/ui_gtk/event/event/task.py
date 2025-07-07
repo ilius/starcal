@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import HBox, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
@@ -38,7 +38,7 @@ class WidgetClass(common.WidgetClass):
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -52,7 +52,7 @@ class WidgetClass(common.WidgetClass):
 		# --
 		pack(self, hbox)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
@@ -63,7 +63,7 @@ class WidgetClass(common.WidgetClass):
 		self.durationBox = common.DurationInputBox()
 		pack(hbox, self.durationBox, 1, 1)
 		# ----
-		self.endDateHbox = HBox()
+		self.endDateHbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.endDateInput = DateButton()
 		pack(self.endDateHbox, self.endDateInput)
 		# --
@@ -123,10 +123,9 @@ class WidgetClass(common.WidgetClass):
 		# ---
 		active = self.endTypeCombo.get_active()
 		if active == 0:
-			self._event.setEnd("duration", *self.durationBox.getDuration())
+			self._event.setEndDuration(*self.durationBox.getDuration())
 		elif active == 1:
-			self._event.setEnd(
-				"date",
+			self._event.setEndDateTime(
 				self.endDateInput.getDate(),
 				self.endTimeInput.getTime(),
 			)

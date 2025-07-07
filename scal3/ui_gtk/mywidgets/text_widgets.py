@@ -13,8 +13,8 @@ __all__ = ["ReadOnlyTextView"]
 
 
 class ReadOnlyTextView(gtk.TextView):
-	def __init__(self, *args, **kwargs) -> None:
-		gtk.TextView.__init__(self, *args, **kwargs)
+	def __init__(self) -> None:
+		gtk.TextView.__init__(self)
 		self.set_editable(False)
 		self.set_cursor_visible(False)
 		self.connect("button-press-event", self.onButtonPress)

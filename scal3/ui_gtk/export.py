@@ -27,7 +27,7 @@ from scal3.cal_types import calTypes
 from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
-from scal3.ui_gtk import Dialog, HBox, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -41,12 +41,12 @@ __all__ = ["ExportDialog", "ExportToIcsDialog"]
 
 
 class ExportDialog(MyDialog):
-	def __init__(self, **kwargs) -> None:
-		Dialog.__init__(self, **kwargs)
+	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Export to {format}").format(format="HTML"))
 		# self.set_has_separator(False)
 		# --------
-		hbox = HBox(spacing=2)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=2)
 		pack(hbox, gtk.Label(label=_("Month Range")))
 		combo = gtk.ComboBoxText()
 		for t in ("Current Month", "Whole Current Year", "Custom"):
@@ -55,7 +55,7 @@ class ExportDialog(MyDialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		self.combo = combo
 		# ---
-		hbox2 = HBox(spacing=2)
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=2)
 		pack(hbox2, gtk.Label(label=_("from month")))
 		self.ymBox0 = YearMonthButton()
 		pack(hbox2, self.ymBox0)
@@ -68,7 +68,7 @@ class ExportDialog(MyDialog):
 		combo.set_active(0)
 		pack(self.vbox, hbox)
 		# --------
-		hbox = HBox(spacing=2)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=2)
 		pack(hbox, gtk.Label(label=_("Font size scale")))
 		self.fontScaleSpin = FloatSpinButton(0.01, 100, 2)
 		self.fontScaleSpin.set_value(1)
@@ -221,14 +221,13 @@ class ExportToIcsDialog(MyDialog):
 		self,
 		saveIcsFunc: Callable[[str, int, int], None],
 		defaultFileName: str,
-		**kwargs,
 	) -> None:
 		self.saveIcsFunc = saveIcsFunc
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self)
 		self.set_title(_("Export to {format}").format(format="iCalendar"))
 		# self.set_has_separator(False)
 		# --------
-		hbox = HBox(spacing=2)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=2)
 		pack(hbox, gtk.Label(label=_("From", ctx="time range") + " "))
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)

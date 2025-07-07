@@ -37,11 +37,11 @@ class SignalHandlerBase(GObject.Object):
 
 
 def registerSignals[T: type[SignalHandlerType]](cls: T) -> T:
-	GObject.type_register(cls)
+	GObject.type_register(cls)  # type: ignore[no-untyped-call]
 	# log.error(f"\nregisterSignals: {cls.__module__}.{cls.__name__}")
 	for name, args in cls.signals:
 		try:
-			GObject.signal_new(
+			GObject.signal_new(  # type: ignore[no-untyped-call]
 				name,
 				cls,
 				GObject.SignalFlags.RUN_LAST,

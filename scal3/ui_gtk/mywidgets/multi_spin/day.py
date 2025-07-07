@@ -7,11 +7,10 @@ __all__ = ["DaySpinButton"]
 
 
 class DaySpinButton(SingleSpinButton[IntField, int]):
-	def __init__(self, **kwargs) -> None:
+	def __init__(self) -> None:
 		SingleSpinButton.__init__(
 			self,
 			field=DayField(0),
-			**kwargs,
 		)
 
 	def set_range(self, minim: int, maxim: int) -> None:

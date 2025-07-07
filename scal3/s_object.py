@@ -136,7 +136,6 @@ class SObj(SObjBase):
 
 
 class SObjTextModel(SObj):
-	skipLoadExceptions = False
 	skipLoadNoFile = False
 	file = ""
 
@@ -152,17 +151,13 @@ class SObjTextModel(SObj):
 		cls,
 		ident: int,
 		fs: FileSystem,
-	) -> Self | None:
+	) -> Self:
 		fpath = cls.getFile(ident)
 		data = {}
 		if fs.isfile(fpath):
-			try:
-				with fs.open(fpath) as fp:
-					jsonStr = fp.read()
-				data = json.loads(jsonStr)
-			except Exception:
-				if not cls.skipLoadExceptions:
-					raise
+			with fs.open(fpath) as fp:
+				jsonStr = fp.read()
+			data = json.loads(jsonStr)
 		elif not cls.skipLoadNoFile:
 			raise FileNotFoundError(f"{fpath} : file not found")
 
@@ -220,7 +215,6 @@ def getObjectPath(_hash: str) -> tuple[str, str]:
 
 
 class SObjBinaryModel(SObj):
-	skipLoadExceptions = False
 	skipLoadNoFile = False
 	file = ""
 	lastHash: str | None = None
@@ -244,7 +238,7 @@ class SObjBinaryModel(SObj):
 		cls,
 		ident: int,  # noqa: ANN002
 		fs: FileSystem,
-	) -> Self | None:
+	) -> Self:
 		file = cls.getFile(ident)
 		data = {}
 		lastEpoch, lastHash = None, None
@@ -255,10 +249,6 @@ class SObjBinaryModel(SObj):
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
 				raise FileNotFoundError(f"{file} : file not found") from None
-		except Exception:
-			if not cls.skipLoadExceptions:
-				log.error(f'error while opening json file "{file}"')
-				raise
 		else:
 			lastEpoch, lastHash = SObjBinaryModel.updateBasicData(
 				data,
@@ -332,7 +322,7 @@ class SObjBinaryModel(SObj):
 			return {}
 		with self.fs.open(self.file) as fp:
 			jsonStr = fp.read()
-		return json.loads(jsonStr)
+		return json.loads(jsonStr)  # type: ignore[no-any-return]
 
 	def loadHistory(self) -> list[tuple[int, str]]:  # (epoch, hashStr)
 		lastBasicData = self.loadBasicData()
@@ -363,7 +353,7 @@ class SObjBinaryModel(SObj):
 
 	def save(
 		self,
-		*histArgs,  # noqa: ANN002  # FIXME?
+		*histArgs: Any,  # FIXME?
 	) -> tuple[int, str] | None:
 		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
@@ -396,7 +386,7 @@ class SObjBinaryModel(SObj):
 		self.saveBasicData(basicData)
 		return history[0]
 
-	def getRevision(self, revHash: str, *args) -> Self:
+	def getRevision(self, revHash: str, ident: int = 0) -> Self:
 		cls = self.__class__
 		data = self.loadBasicData()
 		assert isinstance(data, dict)
@@ -407,7 +397,7 @@ class SObjBinaryModel(SObj):
 			subCls = cls
 		else:
 			subCls = cls.getSubclass(type_)
-		obj = subCls(*args)
+		obj = subCls(ident=ident)
 		obj.setDict(data)
 		obj.fs = self.fs
 		return obj

@@ -157,7 +157,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 				newEvent.changeCalType(event.calType)  # FIXME needed?
 				newEvent.copyFromExact(event)
 				newEvent.setStartEpoch(event.epoch)
-				newEvent.setEnd("duration", 0, 1)
+				newEvent.setEndDuration(0, 1)
 				newEvent.save()
 				newGroup.append(newEvent)
 			newGroup.enable = self.enable
@@ -175,8 +175,8 @@ class VcsEpochBaseEvent(Event):
 		cls,
 		ident: int,
 		fs: FileSystem,
-	) -> Self | None:
-		pass
+	) -> Self:
+		raise NotImplementedError
 
 	def __bool__(self) -> bool:
 		return True
@@ -199,5 +199,5 @@ class VcsEpochBaseEvent(Event):
 			if not self.parent.showSeconds:
 				log.info("-------- showSeconds = False")
 				epoch -= epoch % 60
-			return TimeListOccurSet(epoch)
+			return TimeListOccurSet([epoch])
 		return TimeListOccurSet()

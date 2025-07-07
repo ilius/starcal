@@ -7,7 +7,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
@@ -28,7 +28,7 @@ class WidgetClass(common.WidgetClass):
 		# ------
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ------
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Scale"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -37,7 +37,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.scaleCombo)
 		pack(self, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
@@ -47,7 +47,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.endRelCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endRelCombo.append_text(_(item))

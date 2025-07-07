@@ -48,8 +48,6 @@ from scal3.ui.font import getParamsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	GLibError,
-	HBox,
-	VBox,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -371,7 +369,7 @@ class DayCal(CalBase):
 				calType=_(module.desc, ctx="calendar"),
 			)
 			# --
-			pageWidget = VBox(spacing=5)
+			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 			# ---
 			dayWidget = DayNumListParamsWidget(
 				params=self.dayParams,
@@ -418,7 +416,7 @@ class DayCal(CalBase):
 			# ---
 			c = self.getCell()
 			dayWidget.setFontPreviewText(
-				_(c.dates[calType][2], calTypes.primary),
+				_(c.dates[calType][2], calType=calTypes.primary),
 			)
 			monthWidget.setFontPreviewText(
 				self.getMonthName(c, calType, monthParams[index]),
@@ -439,7 +437,7 @@ class DayCal(CalBase):
 
 		if self.optionsWidget:
 			return self.optionsWidget
-		optionsWidget = VBox()
+		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		subPages = []
 		prefItem: PrefItem
 		# ---
@@ -453,17 +451,17 @@ class DayCal(CalBase):
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			hbox = HBox()
+			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			pack(hbox, gtk.Label(label=_("Background") + ": "))
 			pack(hbox, prefItem.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(optionsWidget, hbox)
 		# --------
-		self.dayMonthParamsVbox = VBox()
+		self.dayMonthParamsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(optionsWidget, self.dayMonthParamsVbox)
 		subPages += self.updateTypeParamsWidget()
 		# ----
-		pageWidget = VBox(spacing=5)
+		pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		page = StackPage()
 		page.pageWidget = pageWidget
 		page.pageName = "buttons"
@@ -513,10 +511,10 @@ class DayCal(CalBase):
 		pageWidget.show_all()
 		# -----
 		if self.weekdayParams:
-			pageWidget = VBox(spacing=5)
+			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 			# ---
 			weekdayWidget = WeekDayNameParamsWidget(
-				params=self.weekdayParams,  # type: ignore[arg-type]
+				params=self.weekdayParams,
 				cal=self,
 				# sgroupLabel=None,
 				desc=_("Week Day"),
@@ -568,7 +566,7 @@ class DayCal(CalBase):
 			)
 			weekdayWidget.setFontPreviewText(text)
 		# --------
-		vbox = VBox(spacing=10)
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "events"
@@ -602,7 +600,7 @@ class DayCal(CalBase):
 			pack(vbox, prefItem.getWidget())
 		# ----
 		if self.seasonPieEnable:
-			pageWidget = VBox(spacing=5)
+			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 			page = StackPage()
 			page.pageWidget = pageWidget
 			page.pageName = "seasonPie"
@@ -632,7 +630,7 @@ class DayCal(CalBase):
 			pack(pageWidget, frame)
 			assert self.seasonPieColors is not None
 			for index, season in enumerate(("Spring", "Summer", "Autumn", "Winter")):
-				hbox = HBox(spacing=10)
+				hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 				label = gtk.Label(label=_(season))
 				label.set_xalign(0)
 				prefItem = ColorPrefItem(
@@ -1027,7 +1025,7 @@ class DayCal(CalBase):
 
 	def jdPlus(self, p: int) -> None:
 		ui.cells.jdPlus(p)
-		self.onDateChange()
+		self.broadcastDateChange()
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool:
 		if CalBase.onKeyPress(self, arg, gevent):
@@ -1076,19 +1074,19 @@ class DayCal(CalBase):
 			return None
 		return False
 
-	def getCellPos(self, *_args) -> tuple[int, int]:
+	def getCellPos(self, *_args: Any) -> tuple[int, int]:
 		alloc = self.w.get_allocation()
 		return (
 			int(alloc.width / 2),
 			int(alloc.height / 2),
 		)
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 		self.w.queue_draw()
 
-	def onConfigChange(self, *a, **kw) -> None:
-		super().onConfigChange(*a, **kw)
-		# TODO: if active cal types are changed, we should re-order buttons
-		# hide extra buttons, and possibly add new buttons with their pages
-		# in Customize window
+	# def onConfigChange(self) -> None:
+	# 	super().onConfigChange()
+	# 	# TODO: if active cal types are changed, we should re-order buttons
+	# 	# hide extra buttons, and possibly add new buttons with their pages
+	# 	# in Customize window

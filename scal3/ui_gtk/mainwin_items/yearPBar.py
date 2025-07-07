@@ -26,8 +26,8 @@ class CalObj(CustomizableCalObj):
 		self.pbar.w.show()
 		self.initVars()
 
-	def onDateChange(self, *a, **kw) -> None:
-		super().onDateChange(*a, **kw)
+	def onDateChange(self) -> None:
+		super().onDateChange()
 
 		year = ui.cells.current.year
 		jd0 = core.primary_to_jd(year, 1, 1)

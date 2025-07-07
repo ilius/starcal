@@ -5,9 +5,16 @@ __all__ = ["YearSpinButton"]
 
 
 class YearSpinButton(SingleSpinButton[IntField, int]):
-	def __init__(self, **kwargs) -> None:
+	def __init__(
+		self,
+		# arrow_select: bool = True,
+		# step_inc: float = 1,
+		# page_inc: float = 10,
+	) -> None:
 		SingleSpinButton.__init__(
 			self,
 			YearField(),
-			**kwargs,
+			# arrow_select=arrow_select,
+			# step_inc=step_inc,
+			# page_inc=page_inc,
 		)

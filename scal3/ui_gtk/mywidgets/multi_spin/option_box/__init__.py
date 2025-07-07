@@ -30,7 +30,6 @@ class MultiSpinOptionBox[F: Field[Any], V](gtk.Box):
 		field: F,
 		spacing: int = 0,
 		hist_size: int = 10,
-		**kwargs,
 	) -> None:
 		gtk.Box.__init__(
 			self,
@@ -39,7 +38,6 @@ class MultiSpinOptionBox[F: Field[Any], V](gtk.Box):
 		)
 		self.spin: MultiSpinButton[F, V] = MultiSpinButton(
 			field=field,
-			**kwargs,
 		)
 		pack(self, self.spin, 1, 1)
 		self.hist_size = hist_size

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import mytz
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, HBox, VBox, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -23,11 +23,15 @@ __all__ = ["EventsBulkEditDialog"]
 
 
 class EventsBulkEditDialog(Dialog):
-	def __init__(self, container: EventContainerType, **kwargs) -> None:
+	def __init__(
+		self,
+		container: EventContainerType,
+		transient_for: gtk.Window | None = None,
+	) -> None:
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 
 		self._container = container
-		Dialog.__init__(self, **kwargs)
+		Dialog.__init__(self, transient_for=transient_for)
 		self.set_title(_("Bulk Edit Events"))
 		# ----
 		dialog_add_button(
@@ -68,7 +72,7 @@ class EventsBulkEditDialog(Dialog):
 		label.set_line_wrap(True)
 		pack(self.vbox, label)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.iconRadio = gtk.RadioButton(label=_("Icon"))
 		pack(hbox, self.iconRadio, 1, 1)
 		self.summaryRadio = gtk.RadioButton(
@@ -93,7 +97,7 @@ class EventsBulkEditDialog(Dialog):
 		self.descriptionRadio.connect("clicked", self.firstRadioChanged)
 		self.timeZoneRadio.connect("clicked", self.firstRadioChanged)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.iconChangeCombo = gtk.ComboBoxText()
 		self.iconChangeCombo.append_text("----")
 		self.iconChangeCombo.append_text(_("Change"))
@@ -108,9 +112,9 @@ class EventsBulkEditDialog(Dialog):
 		pack(self.vbox, hbox)
 		self.iconHbox = hbox
 		# ----
-		self.textVbox = VBox()
+		self.textVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.textChangeCombo = gtk.ComboBoxText()
 		self.textChangeCombo.append_text("----")
 		self.textChangeCombo.append_text(_("Add to beginning"))
@@ -125,7 +129,7 @@ class EventsBulkEditDialog(Dialog):
 		self.textInput1 = TextFrame()
 		pack(self.textVbox, self.textInput1, 1, 1)
 		# ---
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		pack(hbox, gtk.Label(label=_("with")))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.textVbox, hbox, 1, 1)
@@ -136,7 +140,7 @@ class EventsBulkEditDialog(Dialog):
 		# ----
 		pack(self.vbox, self.textVbox, 1, 1)
 		# ----
-		hbox = HBox()
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.timeZoneChangeCombo = gtk.ComboBoxText()
 		self.timeZoneChangeCombo.append_text("----")
 		self.timeZoneChangeCombo.append_text(_("Change"))

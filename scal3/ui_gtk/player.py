@@ -32,7 +32,7 @@ from contextlib import suppress
 from time import sleep
 
 from scal3.ui import conf
-from scal3.ui_gtk import VBox, gdk, gtk, pack, source_remove, timeout_add
+from scal3.ui_gtk import gdk, gtk, pack, source_remove, timeout_add
 from scal3.ui_gtk.utils import (
 	imageFromFile,
 	pixbufFromFile,
@@ -457,7 +457,7 @@ class PlayerBox(gtk.Box):
 if __name__ == "__main__":
 	window = gtk.Window()
 	window.set_title("Simple PyGTK Interface for MPlayer")
-	mainVbox = VBox()
+	mainVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 	pbox = PlayerBox()
 	pack(mainVbox, pbox)
 	window.connect("destroy", pbox.quit)
