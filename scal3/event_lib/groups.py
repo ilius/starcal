@@ -329,14 +329,14 @@ class EventGroup(EventContainer, EventGroupType):
 		self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)  # noqa: S311
 
 	def clearRemoteAttrs(self) -> None:
-		# self.remoteIds is (accountId, groupId) or None
-		self.remoteIds: tuple[int, int] | None = None
+		# self.remoteIds is (accountId: int, remoteGroupId: str) or None
+		self.remoteIds: tuple[int, str] | None = None
 		# remote groupId can be an integer or string,
 		# depending on remote account type
 		self.remoteSyncEnable = False
 		self.remoteSyncDuration = (1.0, 3600)
 		# remoteSyncDuration (value, unit) where value and unit are both ints
-		self.remoteSyncData: dict[tuple[int, int], tuple[float, float]] = {}
+		self.remoteSyncData: dict[tuple[int, str], tuple[float, float]] = {}
 		# remoteSyncData is a dict {remoteIds => (syncStartEpoch, syncEndEpoch)}
 		# self.eventIdByRemoteIds = {}
 		self.deletedRemoteEvents: dict[int, tuple[float, int, str, str]] = {}

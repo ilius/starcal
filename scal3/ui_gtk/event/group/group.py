@@ -102,7 +102,7 @@ class WidgetClass(BaseWidgetClass):
 		else:
 			aid, gid = None, None
 		self.accountCombo.setActive(aid)
-		self.accountGroupCombo.setActive(gid)
+		self.accountGroupCombo.setGroupId(gid)
 		self.syncCheck.set_active(self.group.remoteSyncEnable)
 		self.syncIntervalInput.set_sensitive(self.group.remoteSyncEnable)
 
@@ -119,7 +119,7 @@ class WidgetClass(BaseWidgetClass):
 		self.group.remoteIds = None
 		aid = self.accountCombo.getActive()
 		if aid:
-			gid = self.accountGroupCombo.getActive()
+			gid = self.accountGroupCombo.getGroupId()
 			if gid:
 				self.group.remoteIds = aid, gid
 		self.group.remoteSyncEnable = self.syncCheck.get_active()
