@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from scal3 import logger
+
+log = logger.get()
+
 from typing import TYPE_CHECKING
 
 from scal3 import ui
@@ -69,7 +73,7 @@ class AccountCombo(IdComboBox):
 		gtk.ComboBox.set_active(self, 0)
 
 
-class AccountGroupCombo(IdComboBox):
+class AccountGroupCombo(gtk.ComboBox):
 	def __init__(self) -> None:
 		self.account: AccountType | None = None
 		# ---
@@ -81,6 +85,31 @@ class AccountGroupCombo(IdComboBox):
 		cell = gtk.CellRendererText()
 		self.pack_start(cell, expand=True)
 		self.add_attribute(cell, "text", 1)
+
+	def setGroupId(self, ident: str | None) -> None:
+		if ident is None:
+			gtk.ComboBox.set_active(self, -1)
+			return
+		ls = self.get_model()
+		for i in range(len(ls)):
+			if ls[i][0] == ident:
+				gtk.ComboBox.set_active(self, i)
+				return
+
+	def getGroupId(self) -> str | None:
+		i = gtk.ComboBox.get_active(self)
+		if i == -1 or i is None:
+			return None
+		model = self.get_model()
+		if model is None:
+			log.info("IdComboBox.get_active: model is None")
+		try:
+			return model[i][0]  # type: ignore[no-any-return]
+		except IndexError:
+			return None
+
+	def getAccount(self) -> AccountType | None:
+		return self.account
 
 	def setAccount(self, account: AccountType) -> None:
 		self.account = account
@@ -126,11 +155,7 @@ class AccountGroupBox(gtk.Box):
 			accountCombo.connect("changed", self.accountComboChanged)
 
 	def accountComboChanged(self, _combo: gtk.ComboBox) -> None:
-		aid = self.combo.getActive()
-		if aid is None:
-			return
-		account = ev.accounts[aid]
-		self.combo.setAccount(account)
+		self.combo.updateList()
 
 	def onFetchClick(self, _w: gtk.Widget | None = None) -> None:
 		combo = self.combo

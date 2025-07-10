@@ -212,7 +212,7 @@ class EventGroupType(BaseTextModelType, Protocol):
 	canConvertTo: list[str]
 	notificationEnabled: bool
 	notifyOccur: EventSearchTree
-	remoteIds: tuple[int, int] | None
+	remoteIds: tuple[int, str] | None
 	occur: EventSearchTree
 	occurCount: int
 	showInDCal: bool
