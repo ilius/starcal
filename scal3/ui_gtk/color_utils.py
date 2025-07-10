@@ -30,7 +30,7 @@ def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 
 
 def gdkColorToRgb(gc: gdk.RGBA) -> RGB:
-	assert isinstance(gc, gdk.RGBA)
+	assert isinstance(gc, gdk.RGBA), f"{gc=}"
 	return RGB(
 		int(gc.red * 257),
 		int(gc.green * 257),

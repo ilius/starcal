@@ -150,10 +150,10 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 			newGroup.enable = False  # to prevent per-event node update
 			for vcsId in self.vcsIds:
 				event = self.getEvent(vcsId)
-				assert isinstance(event, VcsEpochBaseEvent)
+				assert isinstance(event, VcsEpochBaseEvent), f"{event=}"
 				assert event.epoch is not None
 				newEvent = newGroup.create("task")
-				assert isinstance(newEvent, TaskEvent)
+				assert isinstance(newEvent, TaskEvent), f"{newEvent=}"
 				newEvent.changeCalType(event.calType)  # FIXME needed?
 				newEvent.copyFromExact(event)
 				newEvent.setStartEpoch(event.epoch)
@@ -191,7 +191,7 @@ class VcsEpochBaseEvent(Event):
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
-		assert isinstance(self.parent, VcsEpochBaseEventGroup)
+		assert isinstance(self.parent, VcsEpochBaseEventGroup), f"{self.parent=}"
 		epoch = self.epoch
 		if epoch is not None and self.getEpochFromJd(
 			startJd,

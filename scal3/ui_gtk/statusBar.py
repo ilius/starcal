@@ -72,7 +72,7 @@ class CalObj(CustomizableCalObj):
 		super().onDateChange()
 		labels = self.labelBox.get_children()
 		for label in labels:
-			assert isinstance(label, LabelWithCalType)
+			assert isinstance(label, LabelWithCalType), f"{label=}"
 			text = ui.cells.current.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"

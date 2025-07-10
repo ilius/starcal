@@ -45,7 +45,7 @@ def loadSingleConfig(
 		log.error(f"invalid json file {confPath!r}: {e}")
 		return
 	# ---
-	assert isinstance(params, dict), repr(params)
+	assert isinstance(params, dict), f"{params=}"
 	for param, value in data.items():
 		if param not in params:
 			log.warning(f"Ignoring config option {param}")
@@ -53,7 +53,7 @@ def loadSingleConfig(
 		if decoders and param in decoders:
 			value = decoders[param](value)  # noqa: PLW2901
 		prop = params[param]
-		assert isinstance(prop, Property), f"{param}"
+		assert isinstance(prop, Property), f"{prop=}, {param=}"
 		prop.v = value
 
 
@@ -64,7 +64,7 @@ def saveSingleConfig(
 ) -> None:
 	data = {}
 	for param, prop in params.items():
-		assert isinstance(prop, Property)
+		assert isinstance(prop, Property), f"{prop=}, {param=}"
 		value = prop.v
 		if encoders and param in encoders:
 			value = encoders[param](value)

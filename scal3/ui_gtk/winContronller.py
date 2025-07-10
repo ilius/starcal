@@ -287,7 +287,7 @@ class CalObj(CustomizableCalBox):
 	@property
 	def buttons(self) -> Iterator[WinConButton]:
 		for b in self.items:
-			assert isinstance(b, WinConButton)
+			assert isinstance(b, WinConButton), f"{b=}"
 			yield b
 
 	def windowFocusIn(

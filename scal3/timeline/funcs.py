@@ -73,7 +73,7 @@ class TimeLineData:
 
 
 def getNum10FactPow(n: int) -> tuple[int, int]:
-	assert isinstance(n, int)
+	assert isinstance(n, int), f"{n=}"
 	if n == 0:
 		return 0, 1
 	ns = str(n)

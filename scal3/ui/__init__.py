@@ -248,7 +248,7 @@ def getFont(
 	bold: bool = False,
 ) -> Font:
 	f = (conf.fontCustom.v if conf.fontCustomEnable.v else None) or fontDefaultInit
-	# assert isinstance(f.family, str)
+	# assert isinstance(f.family, str), f"{f.family=}"
 	return Font(
 		family=f.family if family else None,
 		bold=f.bold or bold,

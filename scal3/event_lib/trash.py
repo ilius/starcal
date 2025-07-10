@@ -75,7 +75,7 @@ class EventTrash(EventContainer, WithIcon):
 		# but after delete(), there is no event file, and not event data
 		if not isinstance(eid, int):
 			raise TypeError("delete takes event ID that is integer")
-		assert eid in self.idList
+		assert eid in self.idList, f"{eid=}, {self.idList=}"
 		try:
 			self.fs.removeFile(Event.getFile(eid))
 		except Exception:

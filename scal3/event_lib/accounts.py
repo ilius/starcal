@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.pytypes import AccountType
 
 log = logger.get()
-
 
 from os.path import join
 from typing import TYPE_CHECKING
@@ -30,6 +28,7 @@ from scal3.locale_man import tr as _
 
 from . import state
 from .objects import HistoryEventObjBinaryModel
+from .pytypes import AccountType
 from .register import classes
 
 if TYPE_CHECKING:

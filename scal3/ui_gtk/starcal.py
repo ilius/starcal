@@ -1373,7 +1373,7 @@ class MainWin(CalObjWidget):
 		]
 
 	def statusIconPopup(self, sicon: gtk.StatusIcon, button: int, etime: int) -> None:
-		assert isinstance(self.sicon, gtk.StatusIcon)
+		assert isinstance(self.sicon, gtk.StatusIcon), f"{self.sicon=}"
 		menu = Menu()
 		if os.sep == "\\":
 			from scal3.ui_gtk.windows import setupMenuHideOnLeave
@@ -1504,7 +1504,7 @@ class MainWin(CalObjWidget):
 			return
 		if sicon is None:
 			return
-		# assert isinstance(sicon, gtk.StatusIcon)
+		# assert isinstance(sicon, gtk.StatusIcon), f"{sicon=}"
 		sicon.set_tooltip_text(self.getStatusIconTooltip())
 
 	def statusIconUpdate(
