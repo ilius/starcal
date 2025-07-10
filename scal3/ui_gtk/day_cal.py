@@ -71,7 +71,7 @@ if TYPE_CHECKING:
 
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
-	from scal3.property import Property
+	from scal3.property import ListProperty, Property
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
 		DayCalTypeBaseParamsDict,
@@ -98,8 +98,8 @@ class DayCal(CalBase):
 	itemListCustomizable = False
 
 	backgroundColor: Property[ColorType] | None = None
-	dayParams: Property[list[DayCalTypeDayParamsDict]] | None = None
-	monthParams: Property[list[DayCalTypeWMParamsDict]] | None = None
+	dayParams: ListProperty[DayCalTypeDayParamsDict] | None = None
+	monthParams: ListProperty[DayCalTypeWMParamsDict] | None = None
 	weekdayParams: Property[DayCalTypeWMParamsDict] | None = None
 	weekdayLocalize: Property[bool] | None = None
 	weekdayAbbreviate: Property[bool] | None = None
@@ -108,7 +108,7 @@ class DayCal(CalBase):
 	widgetButtonsEnable: Property[bool] | None = None
 	widgetButtonsSize: Property[int] | None = None
 	widgetButtonsOpacity: Property[float] | None = None
-	widgetButtons: Property[list[dict[str, Any]]] | None = None
+	widgetButtons: ListProperty[dict[str, Any]] | None = None
 
 	navButtonsEnable: Property[bool] | None = None
 	navButtonsGeo: Property[ButtonGeoDict] | None = None

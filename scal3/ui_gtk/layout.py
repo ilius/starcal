@@ -33,7 +33,7 @@ from scal3.ui_gtk.utils import imageFromIconName, setImageClassButton
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.property import Property
+	from scal3.property import ListProperty, Property
 
 
 __all__ = ["WinLayoutBox", "WinLayoutObj"]
@@ -215,7 +215,7 @@ class WinLayoutBox(WinLayoutBase):
 		expand: bool,
 		enableParam: Property[bool] | None = None,
 		itemsMovable: bool = False,
-		itemsParam: Property[list[str]] | None = None,
+		itemsParam: ListProperty[str] | None = None,
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,
@@ -278,7 +278,7 @@ class WinLayoutBox(WinLayoutBase):
 			self.itemsParam.v = [item.objName for item in self.items if item.enable]
 		self.createWidget()
 
-	def setItemsOrder(self, prop: Property[list[str]]) -> None:
+	def setItemsOrder(self, prop: ListProperty[str]) -> None:
 		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in prop.v]
 		for name in prop.default:
