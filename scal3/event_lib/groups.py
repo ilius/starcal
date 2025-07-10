@@ -85,11 +85,10 @@ if TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.color_utils import ColorType
-	from scal3.event_lib.pytypes import EventSearchConditionDict
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
 
-	from .pytypes import EventType
+	from .pytypes import EventSearchConditionDict, EventType
 
 
 __all__ = [
@@ -948,7 +947,7 @@ class TaskList(EventGroup):
 	def copyFrom(self, other: EventGroup) -> None:
 		EventGroup.copyFrom(self, other)
 		if other.name == self.name:
-			assert isinstance(other, TaskList)
+			assert isinstance(other, TaskList), f"{other=}"
 			self.defaultDuration = other.defaultDuration[:]
 
 	def getDict(self) -> dict[str, Any]:
@@ -1028,11 +1027,13 @@ class UniversityTerm(EventGroup):
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
 		if event.name in self.acceptsEventTypes:
 			if attr == "course":
-				assert isinstance(event, UniversityClassEvent | UniversityExamEvent)
+				assert isinstance(event, UniversityClassEvent | UniversityExamEvent), (
+					f"{event=}"
+				)
 				return event.courseId
 			if attr == "time":
 				if event.name == "universityClass":
-					assert isinstance(event, UniversityClassEvent)
+					assert isinstance(event, UniversityClassEvent), f"{event=}"
 					weekDay = WeekDayEventRule.getFrom(event)
 					if weekDay is None:
 						raise RuntimeError("no weekDay rule")
@@ -1045,7 +1046,7 @@ class UniversityTerm(EventGroup):
 						dayTimeRange.getHourRange(),
 					)
 				if event.name == "universityExam":
-					assert isinstance(event, UniversityExamEvent)
+					assert isinstance(event, UniversityExamEvent), f"{event=}"
 					date = DateEventRule.getFrom(event)
 					if date is None:
 						raise RuntimeError("no date rule")
@@ -1122,7 +1123,7 @@ class UniversityTerm(EventGroup):
 		for event in self:
 			if event.name != "universityClass":
 				continue
-			assert isinstance(event, UniversityClassEvent)
+			assert isinstance(event, UniversityClassEvent), f"{event=}"
 			assert event.courseId is not None
 			weekNumModeRule = WeekNumberModeEventRule.getFrom(event)
 			if weekNumModeRule is None:
@@ -1210,7 +1211,7 @@ class UniversityTerm(EventGroup):
 	def copyFrom(self, other: EventGroup) -> None:
 		EventGroup.copyFrom(self, other)
 		if other.name == self.name:
-			assert isinstance(other, UniversityTerm)
+			assert isinstance(other, UniversityTerm), f"{other=}"
 			self.classesEndDate = other.classesEndDate[:]
 			self.classTimeBounds = other.classTimeBounds[:]
 
@@ -1300,7 +1301,7 @@ class LargeScaleGroup(EventGroup):
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
 		if event.name == "largeScale":
-			assert isinstance(event, LargeScaleEvent)
+			assert isinstance(event, LargeScaleEvent), f"{event=}"
 			if attr == "start":
 				return event.start * event.scale
 			if attr == "end":
@@ -1323,7 +1324,7 @@ class LargeScaleGroup(EventGroup):
 	def copyFrom(self, other: EventGroup) -> None:
 		EventGroup.copyFrom(self, other)
 		if other.name == self.name:
-			assert isinstance(other, LargeScaleGroup)
+			assert isinstance(other, LargeScaleGroup), f"{other=}"
 			self.scale = other.scale
 
 	def getDict(self) -> dict[str, Any]:

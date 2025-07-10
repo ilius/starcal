@@ -17,14 +17,15 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.pytypes import EventNotifierType
-from scal3.event_lib.register import classes
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
 
 from scal3.s_object import SObj
+
+from .pytypes import EventNotifierType
+from .register import classes
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

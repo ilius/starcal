@@ -144,9 +144,9 @@ def decodeRemoteEvent(
 	remoteGroupId = remoteEventFull["groupId"]
 	remoteEvendId = remoteEventFull["eventId"]
 	remoteSha1 = remoteEventFull["sha1"]
-	assert isinstance(remoteGroupId, str)
-	assert isinstance(remoteEvendId, str)
-	assert isinstance(remoteSha1, str)
+	assert isinstance(remoteGroupId, str), f"{remoteGroupId=}"
+	assert isinstance(remoteEvendId, str), f"{remoteEvendId=}"
+	assert isinstance(remoteSha1, str), f"{remoteSha1=}"
 	event.remoteIds = (
 		accountId,
 		remoteGroupId,

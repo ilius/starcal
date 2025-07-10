@@ -198,7 +198,7 @@ calTypes = CalTypesHolder()
 
 
 def jd_to(jd: int, target: int) -> tuple[int, int, int]:
-	assert isinstance(jd, int)
+	assert isinstance(jd, int), f"{jd=}"
 	return modules[target].jd_to(jd)
 
 

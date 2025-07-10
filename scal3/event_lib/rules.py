@@ -17,7 +17,8 @@
 from __future__ import annotations
 
 from scal3 import locale_man, logger
-from scal3.event_lib.pytypes import EventRuleType
+
+from .pytypes import EventRuleType
 
 log = logger.get()
 

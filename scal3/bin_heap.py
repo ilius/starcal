@@ -95,7 +95,7 @@ class MaxHeap[T](list[tuple[float, T]]):
 		return self.verifyIndex(0)
 
 	def verifyIndex(self, i: int) -> bool:
-		assert i >= 0
+		assert i >= 0, f"{i=}"
 		try:
 			k = self[i]
 		except IndexError:
@@ -165,7 +165,7 @@ def testGetMin(N: int) -> None:
 	# t1 = perf_counter()
 	k2 = h.getMin()[0]
 	# t2 = perf_counter()
-	assert k1 == k2
+	assert k1 == k2, f"{k1=}, {k2=}"
 	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
 	# log.debug(f"min key = {k1}")
 

@@ -45,7 +45,7 @@ class WidgetClass(gtk.Box):
 		gtk.Box.show_all(self)
 
 	def __init__(self, event: UniversityExamEvent) -> None:  # FIXME
-		assert isinstance(event.parent, UniversityTerm)
+		assert isinstance(event.parent, UniversityTerm), f"{event.parent=}"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.w = self
 		self._event = event

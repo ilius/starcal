@@ -519,7 +519,7 @@ class DayOccurrenceView(CustomizableCalObj):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		window = self.w.get_toplevel()
-		assert isinstance(window, gtk.Window)
+		assert isinstance(window, gtk.Window), f"{window=}"
 
 		eventNew = EventEditorDialog(
 			event,
@@ -588,7 +588,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 			return self.optionsWidget
 		optionsWidget = self._item.getOptionsWidget()
 		# assert optionsWidget is not None
-		assert isinstance(optionsWidget, gtk.Box)
+		assert isinstance(optionsWidget, gtk.Box), f"{optionsWidget=}"
 		# ---
 		prefItem = IntSpinPrefItem(
 			prop=conf.eventViewMaxHeight,

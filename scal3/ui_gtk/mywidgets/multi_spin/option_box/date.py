@@ -36,6 +36,6 @@ class DateButtonOption(MultiSpinOptionBox[ContainerField[int], tuple[int, int, i
 
 	def setMaxDay(self, maxDay: int) -> None:
 		field = self.spin.field.children[2]
-		assert isinstance(field, IntField)
+		assert isinstance(field, IntField), f"{field=}"
 		field.setMax(maxDay)
 		self.spin.update()
