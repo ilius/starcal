@@ -267,12 +267,12 @@ class ComboEntryTextPrefItem(PrefItem):
 
 	def get(self) -> str:
 		child = self._widget.get_child()
-		assert isinstance(child, gtk.Entry)
+		assert isinstance(child, gtk.Entry), f"{child=}"
 		return child.get_text()
 
 	def set(self, value: str) -> None:
 		child = self._widget.get_child()
-		assert isinstance(child, gtk.Entry)
+		assert isinstance(child, gtk.Entry), f"{child=}"
 		child.set_text(value)
 
 	def addDescriptionColumn(self, descByValue: dict[str, str]) -> None:

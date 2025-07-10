@@ -134,7 +134,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def updateEventDesc(self, event: EventType) -> None:
-		assert isinstance(event, VcsCommitEvent)
+		assert isinstance(event, VcsCommitEvent), f"{event=}"
 		mod = self.getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")

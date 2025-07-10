@@ -708,7 +708,7 @@ class TimeLine(CustomizableCalObj):
 			return
 		editType, event, box, x0, t0 = self.boxEditing
 		# print(f"motionNotify: {self.event=}")
-		assert isinstance(event, TaskEvent | LifetimeEvent)
+		assert isinstance(event, TaskEvent | LifetimeEvent), f"{event=}"
 		t1 = int(t0 + (gevent.x - x0) / self.pixelPerSec)
 		if editType == 0:
 			event.modifyPos(t1)
@@ -755,7 +755,7 @@ class TimeLine(CustomizableCalObj):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		window = self.w.get_toplevel()
-		assert isinstance(window, gtk.Window)
+		assert isinstance(window, gtk.Window), f"{window=}"
 
 		eventNew = EventEditorDialog(
 			event,
@@ -775,7 +775,7 @@ class TimeLine(CustomizableCalObj):
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
 		window = self.w.get_toplevel()
-		assert isinstance(window, gtk.Window)
+		assert isinstance(window, gtk.Window), f"{window=}"
 
 		groupNew = GroupEditorDialog(
 			group,
@@ -803,7 +803,7 @@ class TimeLine(CustomizableCalObj):
 
 	def startResize(self, gevent: gdk.EventButton) -> None:
 		win = self.w.get_parent()
-		assert isinstance(win, gtk.Window)
+		assert isinstance(win, gtk.Window), f"{win=}"
 		win.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,

@@ -234,7 +234,7 @@ def to_jd(year: int, month: int, day: int) -> int:
 
 def jd_to(jd: int) -> tuple[int, int, int]:
 	"""Calculate Jalali date from Julian day."""
-	assert isinstance(jd, int)
+	assert isinstance(jd, int), f"{jd=}"
 	jdays = jd - GREGORIAN_EPOCH - 584101
 	# -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365-79+1 == -584101
 	# log.debug("jdays =", jdays)

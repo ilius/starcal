@@ -188,9 +188,10 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		# self.snoozeTime = (5, 60)  # (value, unit) like DurationEventRule, FIXME
 		self.addRequirements()
 		if parent:
-			if TYPE_CHECKING:
-				assert isinstance(parent, EventGroup)
-			self.setDefaults(group=parent)
+			# FIXME: we can't import EventGroup on runtime here!
+			# but bool(trash) is False, so we know it's a group
+			# assert isinstance(parent, EventGroup), f"{parent=}"
+			self.setDefaults(group=parent)  # type: ignore[arg-type]
 		# ------
 		self.modified = now()  # FIXME
 		self.remoteIds: tuple[int, str, str, str] | None = None
@@ -411,7 +412,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def setDictOverride(self, data: dict[str, Any]) -> None:
 		HistoryEventObjBinaryModel.setDict(self, data)
 		if self.remoteIds:
-			assert isinstance(self.remoteIds, tuple)
+			assert isinstance(self.remoteIds, tuple), f"{self.remoteIds=}"
 		if "id" in data:
 			self.setId(data["id"])
 		if "calType" in data:

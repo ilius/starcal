@@ -578,7 +578,7 @@ class EventManagerDialog(CalObjWidget):
 			self.reloadGroupEvents(record.obj.id)
 
 		elif action == "+g":  # new group with events inside it (imported)
-			assert isinstance(record.obj, EventGroup)
+			assert isinstance(record.obj, EventGroup), f"{record.obj=}"
 			self.appendGroupTree(record.obj)
 
 		elif action == "-g":
@@ -586,15 +586,15 @@ class EventManagerDialog(CalObjWidget):
 
 		elif action == "eg":  # edit group
 			group = record.obj
-			assert isinstance(group, EventGroup)
+			assert isinstance(group, EventGroup), f"{group=}"
 			assert group.id is not None
 			groupIter = self.groupIterById[group.id]
 			for i, value in enumerate(self.getGroupRow(group)):
 				self.treeModel.set_value(groupIter, i, value)  # type: ignore[no-untyped-call]
 
 		elif action == "-":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
+			assert isinstance(record.obj.parent, EventGroup), f"{record.obj.parent=}"
+			assert isinstance(record.obj, Event), f"{record.obj}"
 			assert record.obj.id is not None
 			eventIter = self.eventsIter.get(record.obj.id)
 			if eventIter is None:
@@ -617,7 +617,7 @@ class EventManagerDialog(CalObjWidget):
 		elif action == "+":
 			group2 = record.obj.parent
 			assert isinstance(group2, EventGroup)
-			assert isinstance(record.obj, Event)
+			assert isinstance(record.obj, Event), f"{record.obj=}"
 			assert group2.id is not None
 			if group2.id not in self.loadedGroupIds:
 				return
@@ -628,8 +628,8 @@ class EventManagerDialog(CalObjWidget):
 			self.appendEventRow(parentIter, record.obj)
 
 		elif action == "e":
-			assert isinstance(record.obj.parent, EventGroup)
-			assert isinstance(record.obj, Event)
+			assert isinstance(record.obj.parent, EventGroup), f"{record.obj.parent=}"
+			assert isinstance(record.obj, Event), f"{record.obj=}"
 			assert record.obj.id is not None
 			eventIter = self.eventsIter.get(record.obj.id)
 			if eventIter is None:
@@ -660,7 +660,7 @@ class EventManagerDialog(CalObjWidget):
 
 		groupIndex = path[0]
 		group = self.getGroupByPath(path)
-		assert isinstance(group, EventGroup)
+		assert isinstance(group, EventGroup), f"{group=}"
 		if groupIndex not in self.multiSelectPathDict:
 			cell.set_property("inconsistent", False)
 			cell.set_active(value)
@@ -937,7 +937,7 @@ class EventManagerDialog(CalObjWidget):
 			path = model.get_path(gIter).get_indices()
 			group, event = self.getEventAndGroupByPath(path)
 			assert event.id is not None
-			assert isinstance(event, Event)
+			assert isinstance(event, Event), f"{event=}"
 
 			if isinstance(group, EventTrash):
 				group.delete(event.id)  # group == ev.trash
@@ -945,7 +945,7 @@ class EventManagerDialog(CalObjWidget):
 				model.remove(gIter)
 				continue
 
-			assert isinstance(group, EventGroup)
+			assert isinstance(group, EventGroup), f"{group=}"
 			ui.moveEventToTrash(group, event, self, save=False)
 			saveGroupSet.add(group)
 			saveGroupSet.add(ev.trash)

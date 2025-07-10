@@ -304,7 +304,7 @@ class WinLayoutBox(WinLayoutBase):
 				# spacing=self.buttonSpacing, # FIXME: does not seem to have it
 			)
 			for index, item in enumerate(self.items):
-				assert isinstance(item, WinLayoutObj)
+				assert isinstance(item, WinLayoutObj), f"{item=}"
 				childBox = item.getOptionsButtonBox()
 				hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 				action = "down" if index == 0 else "up"
@@ -351,7 +351,7 @@ class WinLayoutBox(WinLayoutBase):
 		listBox.remove(hbox)
 		listBox.insert(hbox, newIndex)
 		for tmpIndex, tmpItem in enumerate(self.items):
-			assert isinstance(tmpItem, WinLayoutObj)
+			assert isinstance(tmpItem, WinLayoutObj), f"{tmpItem=}"
 			action = "down" if tmpIndex == 0 else "up"
 			assert tmpItem.moveButton is not None
 			if tmpItem.moveButton.action != action:
@@ -369,7 +369,7 @@ class WinLayoutBox(WinLayoutBase):
 			return self.subPages
 		subPages = []
 		for item in self.items:
-			assert isinstance(item, WinLayoutBase)
+			assert isinstance(item, WinLayoutBase), f"{item=}"
 			for page in item.getSubPages():
 				if not page.pageName:
 					raise ValueError(f"pageName empty, pagePath={page.pagePath}")
