@@ -75,7 +75,7 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
-	from scal3.event_lib.event_container import DummyEventContainer, EventContainer
+	from scal3.event_lib.event_container import EventContainer
 	from scal3.event_lib.pytypes import (
 		AccountType,
 		EventContainerType,
@@ -1069,7 +1069,7 @@ class EventManagerDialog(CalObjWidget):
 	def _do_multiSelectBulkEdit(
 		self,
 		dialog: EventsBulkEditDialog,
-		container: DummyEventContainer,
+		container: EventContainerType,
 	) -> None:
 		dialog.doAction()
 		dialog.destroy()
@@ -2648,7 +2648,11 @@ class EventManagerDialog(CalObjWidget):
 		if actionFunc is None:
 			setActionFuncs(group)
 			actionFunc = getattr(group, actionFuncName)
-		self.w.waitingDo(actionFunc, parentWin=self)
+
+		def newActionFunc() -> None:
+			actionFunc(parentWin=self)
+
+		self.w.waitingDo(newActionFunc)
 
 	@widgetActionCallback
 	def cutEventFromMenu(self, path: list[int]) -> None:
