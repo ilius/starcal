@@ -43,7 +43,7 @@ from scal3.path import (
 	sysConfDir,
 )
 from scal3.plugin_man import loadPlugin
-from scal3.property import Property
+from scal3.property import ListProperty, Property
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
@@ -131,12 +131,12 @@ confPath: Final[str] = join(confDir, "core.json")
 
 # just for loading from config, not used after loadConf
 version: Final[Property[str]] = Property("")
-activeCalTypes: Final[Property[list[str]]] = Property([])
-inactiveCalTypes: Final[Property[list[str]]] = Property([])
+activeCalTypes: Final[ListProperty[str]] = ListProperty([])
+inactiveCalTypes: Final[ListProperty[str]] = ListProperty([])
 
-allPlugList: Final[Property[list[PluginType | None]]] = Property([])
-plugIndex: Final[Property[list[int]]] = Property([])
-holidayWeekDays: Final[Property[list[int]]] = Property([0])
+allPlugList: Final[ListProperty[PluginType | None]] = ListProperty([])
+plugIndex: Final[ListProperty[int]] = ListProperty([])
+holidayWeekDays: Final[ListProperty[int]] = ListProperty([0])
 firstWeekDayAuto: Final[Property[bool]] = Property(False)
 firstWeekDay: Final[Property[int]] = Property(0)
 weekNumberModeAuto: Final[Property[bool]] = Property(False)

@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.property import ItemProperty, Property
+from scal3.property import ItemProperty, ListProperty, Property
 
 log = logger.get()
 
@@ -255,7 +255,7 @@ class DayNumParamsWidget(gtk.Box):
 class DayNumListParamsWidget(DayNumParamsWidget):
 	def __init__(
 		self,
-		params: Property[list[DayCalTypeDayParamsDict]],
+		params: ListProperty[DayCalTypeDayParamsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -440,7 +440,7 @@ class WeekDayNameParamsWidget(_WeekMonthParamsWidget):
 class MonthNameListParamsWidget(_WeekMonthParamsWidget):
 	def __init__(
 		self,
-		params: Property[list[DayCalTypeWMParamsDict]],
+		params: ListProperty[DayCalTypeWMParamsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,

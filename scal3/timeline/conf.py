@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 from scal3.color_utils import RGB
-from scal3.property import Property
+from scal3.property import Property, StrDictProperty
 
 if typing.TYPE_CHECKING:
 	from typing import Any, Final
@@ -122,7 +122,7 @@ movingKeyTimeoutFirst: Final[Property[float]] = Property(0.5)
 movingKeyTimeout: Final[Property[float]] = Property(0.1)
 scrollZoomStep: Final[Property[float]] = Property(1.2)
 keyboardZoomStep: Final[Property[float]] = Property(1.2)
-keys: Final[Property[dict[str, str]]] = Property(
+keys: Final[StrDictProperty[str]] = StrDictProperty(
 	{
 		"space": "moveToNow",
 		"home": "moveToNow",
