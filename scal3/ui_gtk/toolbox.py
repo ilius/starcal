@@ -447,7 +447,7 @@ class CustomizableToolBox(StaticToolBox):
 	@property
 	def _items(self) -> Iterator[BaseToolBoxItem]:
 		for item in self.items:
-			assert isinstance(item, BaseToolBoxItem)
+			assert isinstance(item, BaseToolBoxItem), f"{item=}"
 			yield item
 
 	# this method is for optimization
@@ -470,7 +470,7 @@ class CustomizableToolBox(StaticToolBox):
 		self.repackAll()
 
 	def appendItem(self, item: CustomizableCalObj) -> None:
-		assert isinstance(item, BaseToolBoxItem)
+		assert isinstance(item, BaseToolBoxItem), f"{item=}"
 		CustomizableCalObj.appendItem(self, item)
 		self.append(item)
 		if item.enable:

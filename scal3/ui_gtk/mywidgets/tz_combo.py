@@ -34,7 +34,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 
 		# self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
-		assert isinstance(child, gtk.Entry)
+		assert isinstance(child, gtk.Entry), f"{child=}"
 		child.set_text(str(locale_man.localTz))
 		# self.set_text(str(locale_man.localTz)) # FIXME
 		# ---

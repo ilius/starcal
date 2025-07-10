@@ -284,7 +284,7 @@ class SObjBinaryModel(SObj):
 				f"sha1 diggest does not match for object file '{fpath}'",
 			)
 		data = bson.loads(bsonBytes)
-		assert isinstance(data, dict)
+		assert isinstance(data, dict), f"{data=}"
 		return data
 
 	@classmethod
@@ -326,7 +326,7 @@ class SObjBinaryModel(SObj):
 
 	def loadHistory(self) -> list[tuple[int, str]]:  # (epoch, hashStr)
 		lastBasicData = self.loadBasicData()
-		assert isinstance(lastBasicData, dict)
+		assert isinstance(lastBasicData, dict), f"{lastBasicData=}"
 		history = lastBasicData.get("history")
 		if history is None:
 			if lastBasicData:
@@ -389,7 +389,7 @@ class SObjBinaryModel(SObj):
 	def getRevision(self, revHash: str, ident: int = 0) -> Self:
 		cls = self.__class__
 		data = self.loadBasicData()
-		assert isinstance(data, dict)
+		assert isinstance(data, dict), f"{data=}"
 		data.update(self.loadBinaryDict(revHash, self.fs))
 		try:
 			type_ = data["type"]

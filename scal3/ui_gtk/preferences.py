@@ -299,7 +299,7 @@ class PreferencesWindow(gtk.Window):
 		itemCals = ActiveInactiveCalsPrefItem()
 		self.corePrefItems.append(itemCals)
 		itemCalsWidget = itemCals.getWidget()
-		assert isinstance(itemCalsWidget, gtk.Container)
+		assert isinstance(itemCalsWidget, gtk.Container), f"{itemCalsWidget=}"
 		itemCalsWidget.set_border_width(10)
 		frame.add(itemCalsWidget)
 		pack(hbox, frame, 1, 1)
@@ -654,7 +654,7 @@ class PreferencesWindow(gtk.Window):
 		self.corePrefItems.append(item)
 		self.holiWDItem = item  # Holiday Week Days Item
 		itemWidget = item.getWidget()
-		assert isinstance(itemWidget, gtk.Container)
+		assert isinstance(itemWidget, gtk.Container), f"{itemWidget=}"
 		itemWidget.set_border_width(10)
 		frame.add(itemWidget)
 		pack(pageVBox, frame)

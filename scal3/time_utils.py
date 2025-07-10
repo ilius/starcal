@@ -175,11 +175,11 @@ def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
 		if offset is None:
 			y, m, d = jd_to_g(jd)
 			offset = tzDict[jd] = getUtcOffsetByGDate(y, m, d, tz)
-			assert isinstance(offset, int)
+			assert isinstance(offset, int), f"{offset=}"
 	else:
 		y, m, d = jd_to_g(jd)
 		offset = getUtcOffsetByGDate(y, m, d, tz)
-		assert isinstance(offset, int)
+		assert isinstance(offset, int), f"{offset=}"
 
 	return offset
 
@@ -197,7 +197,7 @@ def getJdFromEpoch(epoch: float, tz: TZ = None) -> int:
 
 
 def getEpochFromJd(jd: int, tz: TZ = None) -> int:
-	assert isinstance(jd, int)
+	assert isinstance(jd, int), f"{jd=}"
 	localEpoch = (jd - J1970) * 86400
 	year, month, day = jd_to_g(jd)  # jd or jd-1? FIXME
 	return localEpoch - getUtcOffsetByGDate(year, month, day, tz)
@@ -214,7 +214,7 @@ def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> list[int]:
 
 
 def getHmsFromSeconds(second: int) -> HMS:
-	assert isinstance(second, int)
+	assert isinstance(second, int), f"{second=}"
 	minute, second = divmod(second, 60)
 	hour, minute = divmod(minute, 60)
 	return HMS(hour, minute, second)

@@ -281,7 +281,7 @@ class CustomizeWindow(Dialog):
 	def onTopClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		curObj = treev.get_cursor()[0]
 		if not curObj:
 			return
@@ -302,7 +302,7 @@ class CustomizeWindow(Dialog):
 	def onUpClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		curObj = treev.get_cursor()[0]
 		if not curObj:
 			return
@@ -322,7 +322,7 @@ class CustomizeWindow(Dialog):
 	def onDownClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		curObj = treev.get_cursor()[0]
 		if not curObj:
 			return
@@ -342,7 +342,7 @@ class CustomizeWindow(Dialog):
 	def onBottomClick(self, _w: gtk.Widget, treev: gtk.TreeView, pagePath: str) -> None:
 		item = self.itemByPagePath[pagePath]
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		curObj = treev.get_cursor()[0]
 		if not curObj:
 			return
@@ -452,7 +452,7 @@ class CustomizeWindow(Dialog):
 		itemIndex: int,
 	) -> StackPage:
 		item = parentItem.items[itemIndex]
-		assert isinstance(item, CustomizableCalObj)
+		assert isinstance(item, CustomizableCalObj), f"{item=}"
 
 		title = item.desc
 		if parentItem.objName != "mainWin":
@@ -508,7 +508,7 @@ class CustomizeWindow(Dialog):
 	) -> None:
 		parentItem = self.itemByPagePath[parentPagePath]
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		itemIter = model.get_iter(path)
 		pagePath = model.get_value(itemIter, 1)
 		itemIndex = path.get_indices()[0]
@@ -517,7 +517,7 @@ class CustomizeWindow(Dialog):
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
 		if isinstance(parentItem, WinLayoutObj):  # if parentItem.isWrapper
 			parentWidget = parentItem.getItem()
-			assert isinstance(parentWidget, CustomizableCalObj)
+			assert isinstance(parentWidget, CustomizableCalObj), f"{parentWidget=}"
 			parentItem = parentWidget
 
 		# if none of the items in list have any settings, we can toggle-enable instead
@@ -576,7 +576,7 @@ class CustomizeWindow(Dialog):
 	) -> None:
 		active = not active
 		model = treev.get_model()
-		assert isinstance(model, gtk.ListStore)
+		assert isinstance(model, gtk.ListStore), f"{model=}"
 		itr = model.get_iter(str(itemIndex))
 		model.set_value(itr, 0, active)
 		parentItem = self.itemByPagePath[pagePath]

@@ -342,7 +342,7 @@ class EventHistoryDialog(CalObjWidget):
 			new_child.show()
 
 	def switchToRevision(self, revHash: str) -> None:
-		assert isinstance(self._event.parent, EventGroup)
+		assert isinstance(self._event.parent, EventGroup), f"{self._event.parent=}"
 		assert self._event.id is not None
 		newEvent = self._event.getRevision(revHash)
 		self._event.parent.removeFromCache(self._event.id)

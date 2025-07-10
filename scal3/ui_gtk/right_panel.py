@@ -202,7 +202,7 @@ class MainWinRightPanel(CustomizableCalObj):
 	def resetItems(self) -> None:
 		for item in self.items:
 			parent = item.w.get_parent()
-			assert isinstance(parent, gtk.Container)
+			assert isinstance(parent, gtk.Container), f"{parent=}"
 			parent.remove(item.w)
 		for child in self.w.get_children():
 			# child is Frame, containing a ScrolledWindow, containing item

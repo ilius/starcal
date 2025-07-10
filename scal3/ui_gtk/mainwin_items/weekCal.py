@@ -1125,7 +1125,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
 		for item in self.items:
-			assert isinstance(item, Column)
+			assert isinstance(item, Column), f"{item=}"
 			item.onWidthChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
@@ -1154,7 +1154,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 	def updatePacking(self) -> None:
 		ColumnBase.updatePacking(self)
 		for item in self.items:
-			assert isinstance(item, Column)
+			assert isinstance(item, Column), f"{item=}"
 			item.expand = self.expand
 			item.updatePacking()
 
@@ -1626,7 +1626,7 @@ class CalObj(CalBase):
 					if self.itemContainsGdkWindow(child, col_win):
 						return child
 			elif self.itemContainsGdkWindow(item.w, col_win):
-				assert isinstance(item, ColumnBase)
+				assert isinstance(item, ColumnBase), f"{item=}"
 				return item
 		return None
 

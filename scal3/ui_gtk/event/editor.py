@@ -51,7 +51,7 @@ class EventEditorDialog(Dialog):
 		self.connect("response", lambda _w, _e: self.hide())
 		# ---
 		self.activeWidget = None
-		assert isinstance(event.parent, EventGroup)
+		assert isinstance(event.parent, EventGroup), f"{event.parent=}"
 		self._group = event.parent
 		self.eventTypeOptions = list(self._group.acceptsEventTypes)
 		# ----
@@ -96,14 +96,14 @@ class EventEditorDialog(Dialog):
 		if useSelectedDate:
 			self._event.setJd(ui.cells.current.jd)
 		activeWidget = self.activeWidget = makeWidget(event)
-		assert isinstance(activeWidget, common.WidgetClass)
+		assert isinstance(activeWidget, common.WidgetClass), f"{activeWidget=}"
 		if self.isNew:
 			activeWidget.focusSummary()
 		pack(self.vbox, activeWidget, 1, 1)
 		self.vbox.show()
 
 	def replaceExistingEvent(self, eventType: str) -> None:
-		assert isinstance(self._group, EventGroup)
+		assert isinstance(self._group, EventGroup), f"{self._group=}"
 		oldEvent = self._event
 		newEvent = self._group.create(eventType)
 		# ---
@@ -137,7 +137,7 @@ class EventEditorDialog(Dialog):
 		self.replaceEventWithType(eventType)
 		self._group.updateCache(self._event)  # needed? FIXME
 		activeWidget = makeWidget(self._event)
-		assert isinstance(activeWidget, common.WidgetClass)
+		assert isinstance(activeWidget, common.WidgetClass), f"{activeWidget=}"
 		if self.isNew:
 			activeWidget.focusSummary()
 		pack(self.vbox, activeWidget, 1, 1)
@@ -162,7 +162,7 @@ class EventEditorDialog(Dialog):
 
 		event = self._event
 		group = event.parent
-		assert isinstance(group, EventGroup)
+		assert isinstance(group, EventGroup), f"{group=}"
 		event.afterModifyBasic()
 		event.save()
 		if self.isNew:

@@ -108,7 +108,7 @@ def newTextLayout(
 	"""None return value should be expected and handled, only if maxSize is given."""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
-		assert isinstance(font, Font)
+		assert isinstance(font, Font), f"{font=}"
 		assert isinstance(font.family, str), font
 		# should we copy the font? font = font.copy()
 	else:

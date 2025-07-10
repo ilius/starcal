@@ -119,7 +119,7 @@ class MyFontButton(gtk.FontButton):
 		return gfontDecode(gtk.FontButton.get_font(self) or "")
 
 	def setFont(self, font: Font) -> None:
-		# assert isinstance(font, Font)
+		# assert isinstance(font, Font), f"{font=}"
 		gtk.FontButton.set_font(self, gfontEncode(font))
 
 

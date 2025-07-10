@@ -80,7 +80,7 @@ class WidgetClass(gtk.Box):
 			return
 		# log.debug(f"----- toplevel: {self.get_toplevel()}")
 		toplevel = self.get_toplevel()
-		assert isinstance(toplevel, gtk.Window)
+		assert isinstance(toplevel, gtk.Window), f"{toplevel=}"
 		self.dialog = dialog = Dialog(
 			title=self.rule.desc,
 			transient_for=toplevel,

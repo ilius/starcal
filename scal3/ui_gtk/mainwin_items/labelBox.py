@@ -132,7 +132,7 @@ class MonthLabel(BaseLabel):
 				text = self.getActiveStr(text)
 			item = MenuItem()
 			label = item.get_child()
-			assert isinstance(label, gtk.Label)
+			assert isinstance(label, gtk.Label), f"{label=}"
 			label.set_label(text)
 			# label.set_justify(gtk.Justification.LEFT)
 			label.set_xalign(0)
@@ -279,7 +279,7 @@ class IntLabel(BaseLabel):
 		for i in range(self.height):
 			item = MenuItem()
 			label = item.get_child()
-			assert isinstance(label, gtk.Label)
+			assert isinstance(label, gtk.Label), f"{label=}"
 			label.set_use_markup(True)
 			label.set_direction(gtk.TextDirection.LTR)
 			item.connect("activate", self.itemActivate, i)

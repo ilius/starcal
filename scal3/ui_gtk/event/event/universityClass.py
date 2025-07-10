@@ -52,7 +52,7 @@ class WidgetClass(gtk.Box):
 		gtk.Box.show_all(self)
 
 	def __init__(self, event: UniversityClassEvent) -> None:  # FIXME
-		assert isinstance(event.parent, UniversityTerm)
+		assert isinstance(event.parent, UniversityTerm), f"{event.parent=}"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.w = self
 		self._event = event
@@ -174,7 +174,7 @@ class WidgetClass(gtk.Box):
 	# 	self._event.summary = summary
 
 	def updateWidget(self) -> None:  # FIXME
-		assert isinstance(self._event.parent, UniversityTerm)
+		assert isinstance(self._event.parent, UniversityTerm), f"{self._event.parent=}"
 		if self._event.courseId is None:
 			pass
 		else:

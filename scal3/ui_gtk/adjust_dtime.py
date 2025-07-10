@@ -139,11 +139,11 @@ class AdjusterDialog(Dialog):
 		pack(hbox, gtk.Label(label=_("Server:") + " "), padding=self.xpad)
 		combo = gtk.ComboBoxText.new_with_entry()
 		comboEntry = combo.get_child()
-		assert isinstance(comboEntry, gtk.Entry)
+		assert isinstance(comboEntry, gtk.Entry), f"{comboEntry=}"
 		comboEntry.connect("changed", self.updateSetButtonSensitive)
 		pack(hbox, combo, 1, 1)
 		ntpServerEntry = combo.get_child()
-		assert isinstance(ntpServerEntry, gtk.Entry)
+		assert isinstance(ntpServerEntry, gtk.Entry), f"{ntpServerEntry=}"
 		self.ntpServerEntry: gtk.Entry = ntpServerEntry
 		for s in ui.ntpServers:
 			combo.append_text(s)

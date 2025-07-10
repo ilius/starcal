@@ -146,7 +146,7 @@ class YearWheel(CustomizableCalObj):
 		win = self.w.get_parent()
 		if win is None:
 			return
-		assert isinstance(win, gtk.Window)
+		assert isinstance(win, gtk.Window), f"{win=}"
 		win.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,

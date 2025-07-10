@@ -190,6 +190,8 @@ class TaskEvent(SingleStartEndEvent):
 		if group is None or group.name != "taskList":
 			self.setEndDuration(1, 3600)
 			return
+
+		# FIXME: we can't import TaskList at runtime here!
 		if TYPE_CHECKING:
 			assert isinstance(group, TaskList)
 
@@ -326,8 +328,7 @@ class TaskEvent(SingleStartEndEvent):
 		if myStart is None:
 			raise KeyError
 		# --
-		if other.name == self.name:
-			assert isinstance(other, TaskEvent)
+		if isinstance(other, TaskEvent):
 			endType, values = other.getEnd()
 			self.setEnd(endType, *values)
 		elif other.name == "dailyNote":
@@ -407,16 +408,16 @@ class AllDayTaskEvent(SingleStartEndEvent):
 
 	def setEnd(self, endType: str, value: tuple[int, int, int] | float) -> None:
 		if endType == "date":
-			assert isinstance(value, tuple)
+			assert isinstance(value, tuple), f"{value=}"
 			self.setEndDateTime(value, (0, 0, 0))
 		elif endType == "epoch":
-			assert isinstance(value, int)
+			assert isinstance(value, int), f"{value=}"
 			self.setEndEpochOnly(value)
 		elif endType == "duration":
-			assert isinstance(value, float)
+			assert isinstance(value, float), f"{value=}"
 			self.setEndDuration(value, dayLen)
 		elif endType == "jd":
-			assert isinstance(value, int)
+			assert isinstance(value, int), f"{value=}"
 			self.setEndEpochOnly(self.getEpochFromJd(value))
 		else:
 			raise ValueError(f"invalid {endType=}")
@@ -481,7 +482,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	def copyFrom(self, other: Event) -> None:
 		SingleStartEndEvent.copyFrom(self, other)
 		if other.name == self.name:
-			assert isinstance(other, AllDayTaskEvent)
+			assert isinstance(other, AllDayTaskEvent), f"{other=}"
 			kind, value = other.getEnd()
 			self.setEnd(kind, value)
 
@@ -713,7 +714,7 @@ class YearlyEvent(Event):
 		summary = Event.getSummary(self)
 		if self.parent and self.parent.name == "yearly":
 			if TYPE_CHECKING:
-				assert isinstance(self.parent, YearlyGroup)
+				assert isinstance(self.parent, YearlyGroup), f"{self.parent=}"
 			showDate = self.parent.showDate
 		else:
 			showDate = True
@@ -955,7 +956,7 @@ class UniversityClassEvent(Event):
 		Event.setDefaults(self, group=group)
 		if group and group.name == "universityTerm":
 			if TYPE_CHECKING:
-				assert isinstance(group, UniversityTerm)
+				assert isinstance(group, UniversityTerm), f"{group=}"
 			try:
 				tm0, tm1 = group.classTimeBounds[:2]
 			except ValueError:
@@ -1183,7 +1184,7 @@ class LifetimeEvent(SingleStartEndEvent):
 
 	def addRule(self, rule: EventRuleType) -> None:
 		if rule.name in {"start", "end"}:
-			assert isinstance(rule, DateAndTimeEventRule)
+			assert isinstance(rule, DateAndTimeEventRule), f"{rule=}"
 			rule.time = (0, 0, 0)
 		SingleStartEndEvent.addRule(self, rule)
 
@@ -1279,7 +1280,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		Event.setDefaults(self, group=group)
 		if group and group.name == "largeScale":
 			if TYPE_CHECKING:
-				assert isinstance(group, LargeScaleEvent)
+				assert isinstance(group, LargeScaleEvent), f"{group=}"
 			self.scale = group.scale
 			self.start = group.getStartValue()
 

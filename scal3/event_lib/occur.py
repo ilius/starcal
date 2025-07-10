@@ -72,7 +72,7 @@ class JdOccurSet(OccurSet):
 		if jdSet is None:
 			jdSet = set()
 		else:
-			assert isinstance(jdSet, set)
+			assert isinstance(jdSet, set), f"{jdSet=}"
 		self.jdSet = jdSet
 
 	def __repr__(self) -> str:

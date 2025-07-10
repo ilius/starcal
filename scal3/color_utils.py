@@ -146,8 +146,6 @@ def htmlColorToRgb(hc: str) -> tuple[int, int, int]:
 
 
 def rgbToHtmlColor(color: ColorType) -> str:
-	for x in color:
-		assert isinstance(x, int)
 	return "#" + "".join([f"{x:02x}" for x in color])
 
 
