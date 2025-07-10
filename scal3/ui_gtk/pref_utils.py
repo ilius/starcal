@@ -42,7 +42,7 @@ if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.color_utils import ColorType
-	from scal3.property import Property
+	from scal3.property import ListProperty, Property
 
 __all__ = [
 	"CheckColorPrefItem",
@@ -996,7 +996,7 @@ class ListPrefItem(PrefItem):
 	def __init__(
 		self,
 		vertical: bool,
-		prop: Property[list[Any]],
+		prop: ListProperty[Any],
 		items: list[PrefItem] | None = None,
 	) -> None:
 		self.prop = prop
@@ -1027,7 +1027,7 @@ class ListPrefItem(PrefItem):
 class HListPrefItem(ListPrefItem):
 	def __init__(
 		self,
-		prop: Property[list[Any]],
+		prop: ListProperty[Any],
 		items: list[PrefItem] | None = None,
 	) -> None:
 		ListPrefItem.__init__(
@@ -1041,7 +1041,7 @@ class HListPrefItem(ListPrefItem):
 class VListPrefItem(ListPrefItem):
 	def __init__(
 		self,
-		prop: Property[list[Any]],
+		prop: ListProperty[Any],
 		items: list[PrefItem] | None = None,
 	) -> None:
 		ListPrefItem.__init__(
