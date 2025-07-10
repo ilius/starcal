@@ -15,6 +15,12 @@
 
 from __future__ import annotations
 
+import logging
+
+from scal3.path import APP_NAME
+
+log = logging.getLogger(APP_NAME)
+
 __all__ = ["ItemProperty", "Property"]
 
 
@@ -22,10 +28,12 @@ class Property[T]:
 	__slots__ = ["_default", "_v"]
 
 	def __init__(self, default: T) -> None:
+		assert not isinstance(default, list), f"{default=}, use ListProperty"
 		self._v = default
 		self._default: T
-		if isinstance(default, list | dict):
+		if isinstance(default, dict):
 			self._default = default.copy()  # type: ignore[assignment]
+			# log.warning(f"{default=}")
 		else:
 			self._default = default
 
@@ -40,6 +48,25 @@ class Property[T]:
 	@property
 	def default(self) -> T:
 		return self._default
+
+
+class ListProperty[T](Property[list[T]]):
+	def __init__(self, default: list[T]) -> None:
+		self._v = default
+		self._default = default.copy()
+
+
+# FIXME: broken
+class DictProperty[T: dict](Property[T]):  # type: ignore[type-arg]
+	def __init__(self, default: T) -> None:
+		self._v = default
+		self._default: T = default.copy()  # type: ignore[assignment]
+
+
+class StrDictProperty[T](Property[dict[str, T]]):
+	def __init__(self, default: dict[str, T]) -> None:
+		self._v = default
+		self._default = default.copy()
 
 
 class ItemProperty[T](Property[T]):

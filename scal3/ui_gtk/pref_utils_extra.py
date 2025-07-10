@@ -36,7 +36,7 @@ from scal3.ui_gtk.utils import set_tooltip
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.property import Property
+	from scal3.property import ListProperty, Property, StrDictProperty
 
 __all__ = [
 	"ActiveCalsTreeView",
@@ -145,7 +145,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 
 	def __init__(
 		self,
-		prop: Property[list[int]],
+		prop: ListProperty[int],
 		vertical: bool = False,
 		homogeneous: bool = True,
 		abbreviateNames: bool = True,
@@ -748,7 +748,7 @@ class KeyBindingPrefItem(PrefItem):
 
 	def __init__(
 		self,
-		prop: Property[dict[str, str]],
+		prop: StrDictProperty[str],
 		actions: list[str],
 		# live: bool = False,
 		# onChangeFunc: "Callable] | None" = None,
