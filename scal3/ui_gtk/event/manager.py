@@ -69,6 +69,7 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 	rectangleContainsPoint,
 	showError,
+	widgetActionCallback,
 )
 
 if typing.TYPE_CHECKING:
@@ -1320,12 +1321,10 @@ class EventManagerDialog(CalObjWidget):
 			return ev.trash
 		return ev.groups[groupId]
 
-	def historyOfEventFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			event = self.getEventByPath(path)
-			EventHistoryDialog(event, transient_for=self.w).w.run()
-
-		return func
+	@widgetActionCallback
+	def historyOfEventFromMenu(self, path: list[int]) -> None:
+		event = self.getEventByPath(path)
+		EventHistoryDialog(event, transient_for=self.w).w.run()
 
 	def trashAddRightClickMenuItems(
 		self,
@@ -2079,10 +2078,9 @@ class EventManagerDialog(CalObjWidget):
 		self.onGroupModify(group)
 		self.loadedGroupIds.add(group.id)
 
-	# def addGroupBeforeGroup(self, path: list[int]) -> Callable[[W], None]:
-	# 	def func(_w: W) -> None:
-	# 		self.insertNewGroup(path[0])
-	# 	return func
+	# @widgetActionCallback
+	# def addGroupBeforeGroup(self, path: list[int]) -> None:
+	# 	self.insertNewGroup(path[0])
 
 	def addGroupBeforeSelection(self, _w: W | None = None) -> None:
 		path = self.getSelectedPath()
@@ -2132,62 +2130,56 @@ class EventManagerDialog(CalObjWidget):
 			self.appendEventRow(newGroupIter, event)
 		self.loadedGroupIds.add(newGroup.id)
 
+	@widgetActionCallback
 	def syncGroupFromMenu(
 		self,
 		path: list[int],
 		account: AccountType,
-	) -> Callable[[W], None]:
+	) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
 			raise RuntimeError(f"invalid {path = }")
 
-		def func(_w: W) -> None:
-			group = self.getGroupByPath(path)
-			if not group.remoteIds:
-				return
-			assert group.id is not None
-			_aid, remoteGid = group.remoteIds
-			# info = {
-			# 	"group": group.title,
-			# 	"account": account.title,
-			# }
-			# account.showError is only used in google account
-			account.showError = showError  # type: ignore[attr-defined]
-			while gtk.events_pending():
-				gtk.main_iteration_do(False)
-			error = self.w.waitingDo(account.sync, group, remoteGid)
-			if error:
-				log.error(error)
-			"""
-				msg = _(
-					"Error in synchronizing group "{group}" with "
-					"account "{account}""
-				).format(**info) + "\n" + error
-				showError(msg, transient_for=self)
-			else:
-				msg = _(
-					"Successful synchronizing of group "{group}" with "
-					"account "{account}""
-				).format(**info)
-				showInfo(msg, transient_for=self)
-			"""
-			self.reloadGroupEvents(group.id)
+		group = self.getGroupByPath(path)
+		if not group.remoteIds:
+			return
+		assert group.id is not None
+		_aid, remoteGid = group.remoteIds
+		# info = {
+		# 	"group": group.title,
+		# 	"account": account.title,
+		# }
+		# account.showError is only used in google account
+		account.showError = showError  # type: ignore[attr-defined]
+		while gtk.events_pending():
+			gtk.main_iteration_do(False)
+		error = self.w.waitingDo(account.sync, group, remoteGid)
+		if error:
+			log.error(error)
+		"""
+			msg = _(
+				"Error in synchronizing group "{group}" with "
+				"account "{account}""
+			).format(**info) + "\n" + error
+			showError(msg, transient_for=self)
+		else:
+			msg = _(
+				"Successful synchronizing of group "{group}" with "
+				"account "{account}""
+			).format(**info)
+			showInfo(msg, transient_for=self)
+		"""
+		self.reloadGroupEvents(group.id)
 
-		return func
+	@widgetActionCallback
+	def duplicateGroupFromMenu(self, path: list[int]) -> None:
+		self.duplicateGroup(path)
 
-	def duplicateGroupFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.duplicateGroup(path)
-
-		return func
-
+	@widgetActionCallback
 	def duplicateGroupWithEventsFromMenu(
 		self,
 		path: list[int],
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.duplicateGroupWithEvents(path)
-
-		return func
+	) -> None:
+		self.duplicateGroupWithEvents(path)
 
 	def duplicateSelectedObj(self, _w: W | None = None) -> None:
 		path = self.getSelectedPath()
@@ -2224,11 +2216,9 @@ class EventManagerDialog(CalObjWidget):
 		self.onGroupModify(groupNew)
 		ui.eventUpdateQueue.put("eg", groupNew, self)
 
-	def editGroupFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.editGroupByPath(path)
-
-		return func
+	@widgetActionCallback
+	def editGroupFromMenu(self, path: list[int]) -> None:
+		self.editGroupByPath(path)
 
 	def _do_deleteGroup(self, path: list[int], group: EventGroupType) -> None:
 		assert self.trashIter is not None
@@ -2264,34 +2254,30 @@ class EventManagerDialog(CalObjWidget):
 			return
 		self.w.waitingDo(self._do_deleteGroup, path, group)
 
-	def deleteGroupFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.deleteGroup(path)
+	@widgetActionCallback
+	def deleteGroupFromMenu(self, path: list[int]) -> None:
+		self.deleteGroup(path)
 
-		return func
-
+	@widgetActionCallback
 	def addEventToGroupFromMenu(
 		self,
 		path: list[int],
 		group: EventGroupType,
 		eventType: str,
 		title: str,
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			event = addNewEvent(
-				group,
-				eventType,
-				title=title,
-				transient_for=self.w,
-			)
-			if event is None:
-				return
-			ui.eventUpdateQueue.put("+", event, self)
-			groupIter = self.iterFromPath(path)
-			self.addNewEventRow(group, groupIter, event)
-			self.treeviewCursorChanged()
-
-		return func
+	) -> None:
+		event = addNewEvent(
+			group,
+			eventType,
+			title=title,
+			transient_for=self.w,
+		)
+		if event is None:
+			return
+		ui.eventUpdateQueue.put("+", event, self)
+		groupIter = self.iterFromPath(path)
+		self.addNewEventRow(group, groupIter, event)
+		self.treeviewCursorChanged()
 
 	def addNewEventRow(
 		self,
@@ -2306,27 +2292,25 @@ class EventManagerDialog(CalObjWidget):
 			return
 		self.appendEventRow(groupIter, event)
 
+	@widgetActionCallback
 	def addGenericEventToGroupFromMenu(
 		self,
 		path: list[int],
 		group: EventGroupType,
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			event = addNewEvent(
-				group,
-				group.acceptsEventTypes[0],
-				typeChangable=True,
-				title=_("Add Event"),
-				transient_for=self.w,
-			)
-			if event is None:
-				return
-			ui.eventUpdateQueue.put("+", event, self)
-			groupIter = self.iterFromPath(path)
-			self.addNewEventRow(group, groupIter, event)
-			self.treeviewCursorChanged()
-
-		return func
+	) -> None:
+		event = addNewEvent(
+			group,
+			group.acceptsEventTypes[0],
+			typeChangable=True,
+			title=_("Add Event"),
+			transient_for=self.w,
+		)
+		if event is None:
+			return
+		ui.eventUpdateQueue.put("+", event, self)
+		groupIter = self.iterFromPath(path)
+		self.addNewEventRow(group, groupIter, event)
+		self.treeviewCursorChanged()
 
 	def updateEventRow(self, event: EventType) -> None:
 		assert event.id is not None
@@ -2358,22 +2342,18 @@ class EventManagerDialog(CalObjWidget):
 		ui.eventUpdateQueue.put("e", eventNew, self)
 		self.updateEventRow(eventNew)
 
-	def editEventFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.editEventByPath(path)
+	@widgetActionCallback
+	def editEventFromMenu(self, path: list[int]) -> None:
+		self.editEventByPath(path)
 
-		return func
-
+	@widgetActionCallback
 	def moveEventToPathFromMenu(
 		self,
 		path: list[int],
 		targetPath: list[int],
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.toPasteEvent = (self.iterFromPath(path), True)
-			self.pasteEventToPath(targetPath, False)
-
-		return func
+	) -> None:
+		self.toPasteEvent = (self.iterFromPath(path), True)
+		self.pasteEventToPath(targetPath, False)
 
 	def moveEventToTrashByPath(self, path: list[int]) -> None:
 		group, event = self.getEventAndGroupByPath(path)
@@ -2390,11 +2370,9 @@ class EventManagerDialog(CalObjWidget):
 		else:
 			self.appendEventRow(self.trashIter, event)
 
-	def moveEventToTrashFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.moveEventToTrashByPath(path)
-
-		return func
+	@widgetActionCallback
+	def moveEventToTrashFromMenu(self, path: list[int]) -> None:
+		self.moveEventToTrashByPath(path)
 
 	def moveSelectionToTrash(self) -> None:
 		path = self.getSelectedPath()
@@ -2405,18 +2383,17 @@ class EventManagerDialog(CalObjWidget):
 		elif len(path) == 2:
 			self.moveEventToTrashByPath(path)
 
-	def deleteEventFromTrash(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			event = self.getEventByPath(path)
-			assert event.id is not None
-			ev.trash.delete(event.id)  # trash == ev.trash
-			ev.trash.save()
-			self.treeModel.remove(self.iterFromPath(path))
+	@widgetActionCallback
+	def deleteEventFromTrash(self, path: list[int]) -> None:
+		event = self.getEventByPath(path)
+		assert event.id is not None
+		ev.trash.delete(event.id)  # trash == ev.trash
+		ev.trash.save()
+		self.treeModel.remove(self.iterFromPath(path))
 
 		# no need to send to ui.eventUpdateQueue right now
 		# since events in trash (or their occurrences) are not displayed
 		# outside Event Manager
-		return func
 
 	def removeIterChildren(self, gIter: gtk.TreeIter) -> None:
 		while (childIter := self.treeModel.iter_children(gIter)) is not None:
@@ -2555,15 +2532,13 @@ class EventManagerDialog(CalObjWidget):
 		self.treev.set_cursor(newPath)
 		self.scroll_to_cell(newPath)
 
-	# def moveUpFromMenu(self, path: list[int]) -> Callable[[W], None]:
-	# 	def func(_w: W) -> None:
-	# 		self.moveUp(path)
-	# 	return func
+	# @widgetActionCallback
+	# def moveUpFromMenu(self, path: list[int]) -> None:
+	# 	self.moveUp(path)
 
-	# def moveDownFromMenu(self, path: list[int]) -> Callable[[W], None]:
-	# 	def func(_w: W) -> None:
-	# 		self.moveDown(path)
-	# 	return func
+	# @widgetActionCallback
+	# def moveDownFromMenu(self, path: list[int]) -> None:
+	# 	self.moveDown(path)
 
 	def moveUpByButton(self, _tb: gtk.Button) -> None:
 		path = self.getSelectedPath()
@@ -2584,35 +2559,31 @@ class EventManagerDialog(CalObjWidget):
 	) -> None:
 		SingleGroupExportDialog(group, transient_for=self.w).run()
 
-	def groupSortFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			if not (isinstance(path, list) and len(path) == 1):
-				raise RuntimeError(f"invalid {path = }")
-			group = self.getGroupByPath(path)
-			if not GroupSortDialog(group, transient_for=self.w).run2():
-				return
-			if group.id not in self.loadedGroupIds and group.name != "trash":
-				return
-			groupIter = self.iterFromPath(path)
-			pathObj = gtk.TreePath.new_from_indices(path)
-			expanded = self.treev.row_expanded(pathObj)
-			self.removeIterChildren(groupIter)
-			for event in group:
-				self.appendEventRow(groupIter, event)
-			if expanded:
-				self.treev.expand_row(pathObj, False)
+	@widgetActionCallback
+	def groupSortFromMenu(self, path: list[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid {path = }")
+		group = self.getGroupByPath(path)
+		if not GroupSortDialog(group, transient_for=self.w).run2():
+			return
+		if group.id not in self.loadedGroupIds and group.name != "trash":
+			return
+		groupIter = self.iterFromPath(path)
+		pathObj = gtk.TreePath.new_from_indices(path)
+		expanded = self.treev.row_expanded(pathObj)
+		self.removeIterChildren(groupIter)
+		for event in group:
+			self.appendEventRow(groupIter, event)
+		if expanded:
+			self.treev.expand_row(pathObj, False)
 
-		return func
-
+	@widgetActionCallback
 	def groupConvertCalTypeFromMenu(
 		self,
 		group: EventGroupType,
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			if GroupConvertCalTypeDialog(group, transient_for=self.w).perform():
-				ui.eventUpdateQueue.put("r", group, self)
-
-		return func
+	) -> None:
+		if GroupConvertCalTypeDialog(group, transient_for=self.w).perform():
+			ui.eventUpdateQueue.put("r", group, self)
 
 	def _do_groupConvertTo(
 		self,
@@ -2630,15 +2601,13 @@ class EventManagerDialog(CalObjWidget):
 		self.treeviewCursorChanged()
 		ui.eventUpdateQueue.put("eg", newGroup, self)
 
+	@widgetActionCallback
 	def groupConvertToFromMenu(
 		self,
 		group: EventGroupType,
 		newGroupType: str,
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.w.waitingDo(self._do_groupConvertTo, group, newGroupType)
-
-		return func
+	) -> None:
+		self.w.waitingDo(self._do_groupConvertTo, group, newGroupType)
 
 	def _do_groupBulkEdit(
 		self,
@@ -2657,51 +2626,41 @@ class EventManagerDialog(CalObjWidget):
 		self.treev.set_cursor(pathObj)
 		ui.eventUpdateQueue.put("r", group, self)
 
+	@widgetActionCallback
 	def groupBulkEditFromMenu(
 		self,
 		group: EventGroupType,
 		path: list[int],
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
+	) -> None:
+		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
 
-			dialog = EventsBulkEditDialog(group, transient_for=self.w)
-			if dialog.run() == gtk.ResponseType.OK:
-				self.w.waitingDo(self._do_groupBulkEdit, dialog, group, path)
+		dialog = EventsBulkEditDialog(group, transient_for=self.w)
+		if dialog.run() == gtk.ResponseType.OK:
+			self.w.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 
-		return func
-
+	@widgetActionCallback
 	def onGroupActionClick(
 		self,
 		group: EventGroupType,
 		actionFuncName: str,
-	) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			actionFunc = getattr(group, actionFuncName, None)
-			if actionFunc is None:
-				setActionFuncs(group)
-				actionFunc = getattr(group, actionFuncName)
-			self.w.waitingDo(actionFunc, parentWin=self)
+	) -> None:
+		actionFunc = getattr(group, actionFuncName, None)
+		if actionFunc is None:
+			setActionFuncs(group)
+			actionFunc = getattr(group, actionFuncName)
+		self.w.waitingDo(actionFunc, parentWin=self)
 
-		return func
+	@widgetActionCallback
+	def cutEventFromMenu(self, path: list[int]) -> None:
+		self.toPasteEvent = (self.iterFromPath(path), True)
 
-	def cutEventFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.toPasteEvent = (self.iterFromPath(path), True)
+	@widgetActionCallback
+	def copyEventFromMenu(self, path: list[int]) -> None:
+		self.toPasteEvent = (self.iterFromPath(path), False)
 
-		return func
-
-	def copyEventFromMenu(self, path: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.toPasteEvent = (self.iterFromPath(path), False)
-
-		return func
-
-	def pasteEventFromMenu(self, targetPath: list[int]) -> Callable[[W], None]:
-		def func(_w: W) -> None:
-			self.pasteEventToPath(targetPath)
-
-		return func
+	@widgetActionCallback
+	def pasteEventFromMenu(self, targetPath: list[int]) -> None:
+		self.pasteEventToPath(targetPath)
 
 	def _pasteEventToPath(
 		self,

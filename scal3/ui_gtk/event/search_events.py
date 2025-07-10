@@ -55,11 +55,11 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 	showError,
 	showInfo,
+	widgetActionCallback,
 )
 from scal3.utils import intcmp
 
 if TYPE_CHECKING:
-	from collections.abc import Callable
 	from typing import Any
 
 	from scal3.event_lib.pytypes import (
@@ -608,52 +608,46 @@ class EventSearchWindow(CalObjWidget):
 	) -> None:
 		self.editEventByPath(path)
 
-	def editEventFromMenu(self, path: str) -> Callable[[gtk.Widget], None]:
-		def func(_w: gtk.Widget) -> None:
-			self.editEventByPath(path)
+	@widgetActionCallback
+	def editEventFromMenu(self, path: str) -> None:
+		self.editEventByPath(path)
 
-		return func
-
+	@widgetActionCallback
 	def moveEventToGroupFromMenu(
 		self,
 		eventPath: str,
 		event: EventType,
 		old_group: EventGroupType,
 		new_group: EventGroupType,
-	) -> Callable[[gtk.Widget], None]:
-		def func(_w: gtk.Widget) -> None:
-			model = self.treeModel
-			old_group.remove(event)
-			old_group.save()
-			new_group.append(event)
-			new_group.save()
-			# ---
-			ui.eventUpdateQueue.put("v", event, self)
-			# FIXME
-			# ---
-			eventIter = model.get_iter(eventPath)
-			model.set_value(eventIter, 0, new_group.id)  # type: ignore[no-untyped-call]
-			model.set_value(eventIter, 2, new_group.title)  # type: ignore[no-untyped-call]
+	) -> None:
+		model = self.treeModel
+		old_group.remove(event)
+		old_group.save()
+		new_group.append(event)
+		new_group.save()
+		# ---
+		ui.eventUpdateQueue.put("v", event, self)
+		# FIXME
+		# ---
+		eventIter = model.get_iter(eventPath)
+		model.set_value(eventIter, 0, new_group.id)  # type: ignore[no-untyped-call]
+		model.set_value(eventIter, 2, new_group.title)  # type: ignore[no-untyped-call]
 
-		return func
-
+	@widgetActionCallback
 	def copyEventToGroupFromMenu(
 		self,
 		event: EventType,
 		new_group: EventGroupType,
-	) -> Callable[[gtk.Widget], None]:
-		def func(_w: gtk.Widget) -> None:
-			new_event = event.copy()
-			new_event.save()
-			new_group.append(new_event)
-			new_group.save()
-			# ---
-			ui.eventUpdateQueue.put("+", new_event, self)
-			# FIXME
-			# ---
-			# eventIter = self.treeModel.get_iter(eventPath)
-
-		return func
+	) -> None:
+		new_event = event.copy()
+		new_event.save()
+		new_group.append(new_event)
+		new_group.save()
+		# ---
+		ui.eventUpdateQueue.put("+", new_event, self)
+		# FIXME
+		# ---
+		# eventIter = self.treeModel.get_iter(eventPath)
 
 	def moveEventToTrash(self, path: str) -> None:
 		try:
@@ -731,17 +725,15 @@ class EventSearchWindow(CalObjWidget):
 		item.set_submenu(subMenu)
 		return item
 
-	def historyOfEventFromMenu(self, path: str) -> Callable[[gtk.Widget], None]:
-		def func(_w: gtk.Widget) -> None:
-			from scal3.ui_gtk.event.history import EventHistoryDialog
+	@widgetActionCallback
+	def historyOfEventFromMenu(self, path: str) -> None:
+		from scal3.ui_gtk.event.history import EventHistoryDialog
 
-			gid = self.treeModel[path][0]
-			eid = self.treeModel[path][1]
-			group = ev.groups[gid]
-			event = group[eid]
-			EventHistoryDialog(event, transient_for=self.w).w.run()
-
-		return func
+		gid = self.treeModel[path][0]
+		eid = self.treeModel[path][1]
+		group = ev.groups[gid]
+		event = group[eid]
+		EventHistoryDialog(event, transient_for=self.w).w.run()
 
 	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]

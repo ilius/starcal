@@ -80,6 +80,7 @@ from scal3.ui_gtk.utils import (
 	openWindow,
 	setClipboard,
 	showError,
+	widgetActionCallback,
 )
 
 if TYPE_CHECKING:
@@ -790,11 +791,9 @@ class MainWin(CalObjWidget):
 				True,
 			)
 
-		def addToGroupFromMenu(eventType: str) -> Callable[[gtk.Widget], None]:
-			def func(w: gtk.Widget) -> None:
-				self.addToGroupFromMenu(w, group, eventType)
-
-			return func
+		@widgetActionCallback
+		def addToGroupFromMenu(eventType: str) -> None:
+			self.addToGroupFromMenu(group, eventType)
 
 		# --
 		if len(eventTypes) == 1:
@@ -844,7 +843,7 @@ class MainWin(CalObjWidget):
 		addToItem.set_submenu(menu2)
 		return addToItem
 
-	def editEventFromMenu(self, _item: gtk.Widget, groupId: int, eventId: int) -> None:
+	def editEventFromMenu(self, groupId: int, eventId: int) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		event = ui.getEvent(groupId, eventId)
@@ -871,11 +870,9 @@ class MainWin(CalObjWidget):
 		if not eventsData:
 			return
 
-		def editEvent(groupId: int, eventId: int) -> Callable[[gtk.Widget], None]:
-			def func(w: gtk.Widget) -> None:
-				self.editEventFromMenu(w, groupId, eventId)
-
-			return func
+		@widgetActionCallback
+		def editEvent(groupId: int, eventId: int) -> None:
+			self.editEventFromMenu(groupId, eventId)
 
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
@@ -1141,7 +1138,6 @@ class MainWin(CalObjWidget):
 
 	def addToGroupFromMenu(
 		self,
-		_menu: gtk.Widget,
 		group: EventGroupType,
 		eventType: str,
 	) -> None:
