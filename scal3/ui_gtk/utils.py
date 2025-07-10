@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.ui import conf
 
 log = logger.get()
 
@@ -28,6 +27,7 @@ from scal3.color_utils import ColorType, rgbToCSS
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
+from scal3.ui import conf
 from scal3.ui_gtk import (
 	Dialog,
 	GdkPixbuf,
