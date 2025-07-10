@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from scal3 import logger
 
@@ -41,22 +41,21 @@ class MyWindow(gtk.Window):
 		if self.vbox:
 			self.vbox.set_sensitive(True)
 
-	def waitingDo(  # type: ignore[no-untyped-def]
+	def waitingDo[*Ts, R](
 		self,
-		func: Callable,  # type: ignore[type-arg]
-		*args,
-		**kwargs,
-	) -> Any:
+		func: Callable[[*Ts], R],
+		*args: *Ts,
+	) -> R | None:
 		result = None
 		self.startWaiting()
 		if log.level >= logging.DEBUG:
 			try:
-				result = func(*args, **kwargs)
+				result = func(*args)
 			finally:
 				self.endWaiting()
 			return result
 		try:
-			result = func(*args, **kwargs)
+			result = func(*args)
 		finally:
 			self.endWaiting()
 		return result
