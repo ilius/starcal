@@ -69,7 +69,7 @@ from scal3.ui_gtk.timeline_box import (
 	drawBoxBorder,
 	drawBoxText,
 )
-from scal3.ui_gtk.utils import openWindow
+from scal3.ui_gtk.utils import openWindow, widgetActionCallback
 from scal3.utils import iceil
 
 if TYPE_CHECKING:
@@ -290,7 +290,8 @@ class TimeLine(CustomizableCalObj):
 		# if you want it to stop movement, set: self.movingV = 0
 		# just like self.stopMovingAnim
 
-	def onZoomMenuItemClick(self, _w: gtk.Widget, timeWidth: int) -> None:
+	@widgetActionCallback
+	def onZoomMenuItemClick(self, timeWidth: int) -> None:
 		timeCenter = self.timeStart + self.timeWidth / 2
 		self.timeStart = timeCenter - timeWidth / 2
 		self.timeWidth = timeWidth
@@ -300,12 +301,6 @@ class TimeLine(CustomizableCalObj):
 		avgYearLen = dayLen * calTypes.primaryModule().avgYearLen
 		etime = gtk.get_current_event_time()
 		menu = Menu()
-
-		def selectZoomLevel(timeWidth: int) -> Callable[[gtk.Widget], None]:
-			def func(w: gtk.Widget) -> None:
-				self.onZoomMenuItemClick(w, timeWidth)
-
-			return func
 
 		for title, timeWidth in [
 			(_("1 day"), dayLen),
@@ -319,7 +314,7 @@ class TimeLine(CustomizableCalObj):
 			menu.add(
 				ImageMenuItem(
 					title,
-					func=selectZoomLevel(timeWidth),
+					func=self.onZoomMenuItemClick(timeWidth),
 				),
 			)
 		menu.show_all()
@@ -648,25 +643,20 @@ class TimeLine(CustomizableCalObj):
 					return True
 		elif gevent.button == 3:
 
-			def editEvent(event: EventType, gid: int) -> Callable[[gtk.Widget], None]:
-				def func(w: gtk.Widget) -> None:
-					self.onEditEventClick(w, winTitle, event, gid)
+			@widgetActionCallback
+			def editEvent(event: EventType, gid: int) -> None:
+				self.onEditEventClick(winTitle, event, gid)
 
-				return func
+			@widgetActionCallback
+			def editGroup(group: EventGroupType) -> None:
+				self.onEditGroupClick(winTitle, group)
 
-			def editGroup(group: EventGroupType) -> Callable[[gtk.Widget], None]:
-				def func(w: gtk.Widget) -> None:
-					self.onEditGroupClick(w, winTitle, group)
-
-				return func
-
+			@widgetActionCallback
 			def moveToTrash(
-				group: EventGroupType, event: EventType
-			) -> Callable[[gtk.Widget], None]:
-				def func(w: gtk.Widget) -> None:
-					self.moveEventToTrash(w, group, event)
-
-				return func
+				group: EventGroupType,
+				event: EventType,
+			) -> None:
+				self.moveEventToTrash(group, event)
 
 			for box in self.data.boxes:
 				if not box.ids:
@@ -758,7 +748,6 @@ class TimeLine(CustomizableCalObj):
 
 	def onEditEventClick(
 		self,
-		_menu: gtk.Widget,
 		winTitle: str,
 		event: EventType,
 		_gid: int,
@@ -780,7 +769,6 @@ class TimeLine(CustomizableCalObj):
 
 	def onEditGroupClick(
 		self,
-		_menu: gtk.Widget,
 		_winTitle: str,
 		group: EventGroupType,
 	) -> None:
@@ -803,7 +791,6 @@ class TimeLine(CustomizableCalObj):
 
 	def moveEventToTrash(
 		self,
-		_menu: gtk.Widget,
 		group: EventGroupType,
 		event: EventType,
 	) -> None:

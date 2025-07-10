@@ -89,8 +89,21 @@ __all__ = [
 	"showMsg",
 	"showWarning",
 	"show_event",
+	"widgetActionCallback",
 	"window_set_size_aspect",
 ]
+
+
+def widgetActionCallback[*Ts](
+	func: Callable[[*Ts], None],
+) -> Callable[[*Ts], Callable[[gtk.Widget], None]]:
+	def func2(*args: *Ts) -> Callable[[gtk.Widget], None]:
+		def func3(_w: gtk.Widget) -> None:
+			func(*args)
+
+		return func3
+
+	return func2
 
 
 def hideList(widgets: list[gtk.Widget]) -> None:

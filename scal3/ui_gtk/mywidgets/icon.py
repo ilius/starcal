@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from os.path import join
-from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -15,10 +14,8 @@ from scal3.ui_gtk.utils import (
 	getGtkWindow,
 	pixbufFromFile,
 	resolveImagePath,
+	widgetActionCallback,
 )
-
-if TYPE_CHECKING:
-	from collections.abc import Callable
 
 __all__ = ["IconSelectButton"]
 # FIXME
@@ -47,16 +44,10 @@ class IconSelectButton(gtk.Button):
 		menu = Menu()
 		self.menu = menu
 
-		def setIcon(icon: str) -> Callable[[gtk.Widget], None]:
-			def func(w: gtk.Widget) -> None:
-				self.menuItemActivate(w, icon)
-
-			return func
-
 		menu.add(
 			ImageMenuItem(
 				_("None"),
-				func=setIcon(""),
+				func=self.menuItemActivate(""),
 			),
 		)
 		for item in ui.eventTags:
@@ -67,7 +58,7 @@ class IconSelectButton(gtk.Button):
 				ImageMenuItem(
 					_(item.desc),
 					imageName=icon,
-					func=setIcon(icon),
+					func=self.menuItemActivate(icon),
 				),
 			)
 		menu.show_all()
@@ -120,7 +111,8 @@ class IconSelectButton(gtk.Button):
 		elif button == 3:
 			self.menu.popup(None, None, None, None, button, gevent.time)
 
-	def menuItemActivate(self, _w: gtk.Widget, icon: str) -> None:
+	@widgetActionCallback
+	def menuItemActivate(self, icon: str) -> None:
 		self.set_filename(icon)
 		self.emit("changed", icon)
 
