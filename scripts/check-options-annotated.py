@@ -50,12 +50,23 @@ def searchOption(opt: options.OptionData) -> None:
 		_, _, boundsValue = bounds.partition("=")
 		_, _, stepValue = step.partition("=")
 		boundsValue = boundsValue.strip(",()")
-		annotated = opt.type.capitalize() + f"Spin({boundsValue}, {stepValue})"
+
+		if opt.type == "float":
+			digitsStart = text.find("digits=", start)
+			assert digitsStart > 0, f"{name=}"
+			digitsEnd = text.find("\n", digitsStart)
+			assert digitsEnd > 0
+			digitsStr = text[digitsStart:digitsEnd].rstrip(",")
+			_, _, digitsValue = digitsStr.partition("=")
+			annotated = f"FloatSpin({boundsValue}, {stepValue}, {digitsValue})"
+		else:
+			annotated = f"IntSpin({boundsValue}, {stepValue})"
+
 		if opt.annotated:
 			if opt.annotated == annotated:
 				print(f"OK: {name}")
 			else:
-				print(f"\tERROR: {annotated=}")
+				print(f"ERROR: {name=}, {annotated=}")
 			continue
 		print(f"\t{name=}, {annotated=}")
 
