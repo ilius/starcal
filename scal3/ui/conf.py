@@ -328,9 +328,9 @@ mainWinRightPanelSwap: Final[Option[bool]] = Option(False)
 mainWinRightPanelWidth: Final[Annotated[Option[int], IntSpin(1, 9999, 10)]] = Option(
 	200
 )
-mainWinRightPanelWidthRatio: Final[Annotated[Option[float], FloatSpin(0, 1, 0.01)]] = (
-	Option(0.25)
-)
+mainWinRightPanelWidthRatio: Final[
+	Annotated[Option[float], FloatSpin(0, 1, 0.01, 3)]
+] = Option(0.25)
 mainWinRightPanelWidthRatioEnable: Final[Option[bool]] = Option(True)
 mainWinRightPanelEventFontEnable: Final[Option[bool]] = Option(False)
 mainWinRightPanelEventFont: Final[Option[Font | None]] = Option(None)
@@ -361,13 +361,13 @@ mcalGridColor: Final[Option[ColorType]] = Option(
 mcalCornerMenuTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-mcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+mcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
 	Option(0.12)
 )
-mcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+mcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
 	Option(0.5)
 )
-wcalTextSizeScale: Final[Annotated[Option[float], FloatSpin(0.01, 1, 0.1)]] = Option(
+wcalTextSizeScale: Final[Annotated[Option[float], FloatSpin(0.01, 1, 0.1, 3)]] = Option(
 	0.6
 )
 wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
@@ -418,10 +418,10 @@ wcal_eventsCount_expand: Final[Option[bool]] = Option(False)
 wcalFont_eventsBox: Final[Option[str | None]] = Option(None)
 wcal_moonStatus_width: Final[Option[int]] = Option(48)
 wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
-wcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+wcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
 	Option(0.12)
 )
-wcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+wcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
 	Option(0.5)
 )
 dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
