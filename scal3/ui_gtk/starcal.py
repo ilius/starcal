@@ -1395,7 +1395,7 @@ class MainWin(CalObjWidget):
 		else:
 			y1 = geo.index(1)
 		try:  # new gi versions
-			y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]  # type: ignore
+			y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]  # type: ignore[call-arg, arg-type]
 		except TypeError:  # old gi versions
 			y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
 		if y1 > 0 and y < y1:  # taskbar is on bottom
