@@ -409,7 +409,7 @@ class CustomizeWindow(Dialog):
 		if item.enableParam:
 			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 			option = CheckOptionUI(
-				prop=item.enableParam,
+				option=item.enableParam,
 				label=_("Enable"),
 				live=True,
 				onChangeFunc=item.onEnableCheckClick,

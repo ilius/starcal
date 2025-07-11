@@ -715,7 +715,7 @@ class CalObj(CustomizableCalObj):
 		option: OptionUI
 		# ----
 		option = IntSpinOptionUI(
-			prop=conf.labelBoxBorderWidth,
+			option=conf.labelBoxBorderWidth,
 			bounds=(0, 99),
 			step=1,
 			unitLabel=_("pixels"),
@@ -728,7 +728,7 @@ class CalObj(CustomizableCalObj):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
 		option = ColorOptionUI(
-			prop=conf.labelBoxMenuActiveColor,
+			option=conf.labelBoxMenuActiveColor,
 			live=True,
 			onChangeFunc=self.onMenuColorChange,
 		)
@@ -738,8 +738,8 @@ class CalObj(CustomizableCalObj):
 		checkSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
 		option = CheckColorOptionUI(
-			CheckOptionUI(prop=conf.labelBoxYearColorEnable, label=_("Year Color")),
-			ColorOptionUI(prop=conf.labelBoxYearColor, useAlpha=True),
+			CheckOptionUI(option=conf.labelBoxYearColorEnable, label=_("Year Color")),
+			ColorOptionUI(option=conf.labelBoxYearColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
@@ -747,8 +747,8 @@ class CalObj(CustomizableCalObj):
 		pack(optionsWidget, option.getWidget())
 		# ---
 		option = CheckColorOptionUI(
-			CheckOptionUI(prop=conf.labelBoxMonthColorEnable, label=_("Month Color")),
-			ColorOptionUI(prop=conf.labelBoxMonthColor, useAlpha=True),
+			CheckOptionUI(option=conf.labelBoxMonthColorEnable, label=_("Month Color")),
+			ColorOptionUI(option=conf.labelBoxMonthColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
@@ -757,8 +757,8 @@ class CalObj(CustomizableCalObj):
 		# ---
 		previewText = self.getFontPreviewTextFull()
 		option = CheckFontOptionUI(
-			CheckOptionUI(prop=conf.labelBoxFontEnable, label=_("Font")),
-			FontOptionUI(prop=conf.labelBoxFont, previewText=previewText),
+			CheckOptionUI(option=conf.labelBoxFontEnable, label=_("Font")),
+			FontOptionUI(option=conf.labelBoxFont, previewText=previewText),
 			live=True,
 			onChangeFunc=self.onFontConfigChange,
 		)
@@ -767,10 +767,10 @@ class CalObj(CustomizableCalObj):
 		previewText = self.getFontPreviewText(calTypes.primary)
 		option = CheckFontOptionUI(
 			CheckOptionUI(
-				prop=conf.labelBoxPrimaryFontEnable,
+				option=conf.labelBoxPrimaryFontEnable,
 				label=_("Primary Calendar Font"),
 			),
-			FontOptionUI(prop=conf.labelBoxPrimaryFont, previewText=previewText),
+			FontOptionUI(option=conf.labelBoxPrimaryFont, previewText=previewText),
 			vertical=True,
 			spacing=0,
 			live=True,
@@ -779,7 +779,7 @@ class CalObj(CustomizableCalObj):
 		pack(optionsWidget, option.getWidget())
 		# ---
 		option = CheckOptionUI(
-			prop=conf.boldYmLabel,
+			option=conf.boldYmLabel,
 			label=_("Bold Font"),
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,

@@ -74,7 +74,7 @@ __all__ = [
 
 
 class OptionUI:
-	prop: Option[Any]
+	option: Option[Any]
 	# def __new__(cls, *args, **kwargs):
 	# print("OptionUI:", args, kwargs)
 	# obj = object.__new__(cls)
@@ -91,10 +91,10 @@ class OptionUI:
 		raise NotImplementedError
 
 	def updateVar(self) -> None:
-		self.prop.v = self.get()
+		self.option.v = self.get()
 
 	def updateWidget(self) -> None:
-		self.set(self.prop.v)
+		self.set(self.option.v)
 
 	def getWidget(self) -> gtk.Widget:
 		raise NotImplementedError
@@ -112,14 +112,14 @@ class ComboTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		items: list[str],
 		label: str = "",
 		labelSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		combo = gtk.ComboBoxText()
 		self._combo = combo
 		self._items = items
@@ -162,12 +162,12 @@ class FontFamilyOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str] | Option[str | None],
+		option: Option[str] | Option[str | None],
 		hasAuto: bool = False,
 		label: str = "",
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		self.hasAuto = hasAuto
 		self._onChangeFunc = onChangeFunc
 		# ---
@@ -240,12 +240,12 @@ class FontFamilyOptionUI(OptionUI):
 # 		semi-condensed | normal | semi-expanded | expanded |
 # 		extra-expanded | ultra-expanded
 
-# Constructor can accept argument `propDict: dict[str, Option]`
+# Constructor can accept argument `optionDict: dict[str, Option]`
 # with keys being a subset these 6 style keys, and values
 # being the attribute/variable names for reading (in updateWidget)
 # and storing (in updateVar) the style values
 # or maybe we should leave that to the user of class, and just accept
-# a `prop: Option` argument like other classes
+# a `option: Option` argument like other classes
 
 
 class ComboEntryTextOptionUI(OptionUI):
@@ -254,11 +254,11 @@ class ComboEntryTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		items: list[str] | None = None,
 	) -> None:
 		"""Items is a list of strings."""
-		self.prop = prop
+		self.option = option
 		w = gtk.ComboBoxText.new_with_entry()
 		self._widget = w
 		if items:
@@ -291,11 +291,11 @@ class ComboImageTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[int],
+		option: Option[int],
 		items: list[tuple[str, str]] | None = None,
 	) -> None:
 		"""Items is a list of (imagePath, text) tuples."""
-		self.prop = prop
+		self.option = option
 		# ---
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
@@ -342,13 +342,13 @@ class FontOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[Font | None],
+		option: Option[Font | None],
 		dragAndDrop: bool = True,
 		previewText: str = "",
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyFontButton
 
-		self.prop = prop
+		self.option = option
 		w = MyFontButton(dragAndDrop=dragAndDrop)
 		self._widget = w
 		if previewText:
@@ -373,13 +373,13 @@ class CheckOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[bool],
+		option: Option[bool],
 		label: str = "",
 		tooltip: str = "",
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		checkb = gtk.CheckButton(label=label)
 		if tooltip:
 			set_tooltip(checkb, tooltip)
@@ -439,14 +439,14 @@ class ColorOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[ColorType] | Option[ColorType | None],
+		option: Option[ColorType] | Option[ColorType | None],
 		useAlpha: bool = False,
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton
 
-		self.prop = prop
+		self.option = option
 		colorb = MyColorButton()
 		gtk.ColorChooser.set_use_alpha(colorb, useAlpha)
 		self.useAlpha = useAlpha
@@ -477,7 +477,7 @@ class ColorOptionUI(OptionUI):
 # class OptionalColorOptionUI(ColorOptionUI):
 # 	def __init__(
 # 		self,
-# 		prop: Option[ColorType | None],
+# 		option: Option[ColorType | None],
 # 		useAlpha: bool = False,
 # 		live: bool = False,
 # 		onChangeFunc: Callable | None = None,
@@ -603,7 +603,7 @@ class IntSpinOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[int],
+		option: Option[int],
 		bounds: tuple[int, int],
 		step: int = 0,
 		label: str = "",
@@ -613,7 +613,7 @@ class IntSpinOptionUI(OptionUI):
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		minim, maxim = bounds
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# --
 		spinb = IntSpinButton(minim, maxim, step=step)
@@ -658,7 +658,7 @@ class FloatSpinOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[float],
+		option: Option[float],
 		bounds: tuple[float, float],
 		digits: int = 1,
 		step: float = 0,
@@ -669,7 +669,7 @@ class FloatSpinOptionUI(OptionUI):
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		minim, maxim = bounds
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# --
 		spinb = FloatSpinButton(minim, maxim, digits, step=step)
@@ -714,14 +714,14 @@ class TextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import TextFrame
 
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# ---
 		kwargs = {}
@@ -759,11 +759,11 @@ class WidthHeightOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[tuple[int, int]],
+		option: Option[tuple[int, int]],
 		maxim: int,
 	) -> None:
 		minim = 0
-		self.prop = prop
+		self.option = option
 		# ---
 		self.widthItem = IntSpinButton(minim, maxim)
 		self.heightItem = IntSpinButton(minim, maxim)
@@ -793,11 +793,11 @@ class FileChooserOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		title: str = "Select File",
 		currentFolder: str = "",
 	) -> None:
-		self.prop = prop
+		self.option = option
 		# ---
 		dialog = gtk.FileChooserDialog(
 			title=title,
@@ -838,8 +838,8 @@ class FileChooserOptionUI(OptionUI):
 		self._fcb.set_filename(value)
 
 	def onRevertClick(self, _w: gtk.Widget) -> None:
-		defaultValue = self.prop.default()
-		self.prop.v = defaultValue
+		defaultValue = self.option.default()
+		self.option.v = defaultValue
 		self.set(defaultValue)
 
 
@@ -849,13 +849,13 @@ class ImageFileChooserOptionUI(FileChooserOptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		title: str = "Select File",
 		currentFolder: str = "",
 	) -> None:
 		FileChooserOptionUI.__init__(
 			self,
-			prop=prop,
+			option=option,
 			title=title,
 			currentFolder=currentFolder,
 		)
@@ -875,14 +875,14 @@ class IconChooserOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		if label:
@@ -924,12 +924,12 @@ class RadioListOptionUI(OptionUI):
 	def __init__(
 		self,
 		vertical: bool,
-		prop: Option[int | None],
+		option: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
 		self.num = len(texts)
-		self.prop = prop
+		self.option = option
 		if vertical:
 			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		else:
@@ -960,14 +960,14 @@ class RadioListOptionUI(OptionUI):
 class RadioHListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
-		prop: Option[int | None],
+		option: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
 		RadioListOptionUI.__init__(
 			self,
 			vertical=False,
-			prop=prop,
+			option=option,
 			texts=texts,
 			label=label,
 		)
@@ -976,14 +976,14 @@ class RadioHListOptionUI(RadioListOptionUI):
 class RadioVListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
-		prop: Option[int | None],
+		option: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
 		RadioListOptionUI.__init__(
 			self,
 			vertical=True,
-			prop=prop,
+			option=option,
 			texts=texts,
 			label=label,
 		)
@@ -996,10 +996,10 @@ class ListOptionUI(OptionUI):
 	def __init__(
 		self,
 		vertical: bool,
-		prop: ListOption[Any],
+		option: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		if vertical:
 			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		else:
@@ -1027,13 +1027,13 @@ class ListOptionUI(OptionUI):
 class HListOptionUI(ListOptionUI):
 	def __init__(
 		self,
-		prop: ListOption[Any],
+		option: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
 		ListOptionUI.__init__(
 			self,
 			vertical=False,
-			prop=prop,
+			option=option,
 			items=items,
 		)
 
@@ -1041,13 +1041,13 @@ class HListOptionUI(ListOptionUI):
 class VListOptionUI(ListOptionUI):
 	def __init__(
 		self,
-		prop: ListOption[Any],
+		option: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
 		ListOptionUI.__init__(
 			self,
 			vertical=True,
-			prop=prop,
+			option=option,
 			items=items,
 		)
 
@@ -1058,13 +1058,13 @@ class DirectionOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
 
 		# ---
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -1097,14 +1097,14 @@ class JustificationOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[str],
+		option: Option[str],
 		label: str = "",
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
 
 		# ---
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)

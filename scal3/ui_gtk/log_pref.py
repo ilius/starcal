@@ -70,7 +70,7 @@ class LogLevelOptionUI(OptionUI):
 		return self._widget
 
 	def __init__(self) -> None:
-		self.prop = logger.logLevel
+		self.option = logger.logLevel
 		# ---
 		self.combo = LogLevelComboBox()
 		# ---
@@ -90,7 +90,7 @@ class LogLevelOptionUI(OptionUI):
 		self.combo.set_value(levelNum)
 
 	def save(self) -> None:  # noqa: PLR6301
-		logData = {"logLevel": self.prop.v}
+		logData = {"logLevel": self.option.v}
 		logJson = dataToCompactJson(logData)
 		with open(logger.confPath, "w", encoding="utf-8") as file:
 			file.write(logJson)

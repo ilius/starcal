@@ -1,6 +1,6 @@
 grep -rPoI '([a-zA-Z]+\s*=\s*|Option\[.*\] = )?conf\.[a-zA-Z_.]+' |
 	grep -v ':prop=' |
-	grep -v 'Prop=conf\.' |
+	grep -v 'Option=conf\.' |
 	grep -v 'Param=conf\.' |
 	grep -v '\.v$' |
 	grep -v '\.v\.' |
