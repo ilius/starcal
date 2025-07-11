@@ -71,7 +71,7 @@ class FixedSizeOrRatioOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		ratioEnableProp: Option[bool] | None,
+		ratioEnableOption: Option[bool] | None,
 		fixedLabel: str = "",
 		fixedItem: IntSpinOptionUI | None = None,
 		ratioLabel: str = "",
@@ -81,7 +81,7 @@ class FixedSizeOrRatioOptionUI(OptionUI):
 		borderWidth: int = 2,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
-		if not ratioEnableProp:
+		if not ratioEnableOption:
 			raise ValueError("ratioEnableVarName is not given")
 		if not fixedLabel:
 			raise ValueError("fixedLabel is not given")
@@ -91,7 +91,7 @@ class FixedSizeOrRatioOptionUI(OptionUI):
 			raise ValueError("ratioLanel is not given")
 		if ratioItem is None:
 			raise ValueError("ratioItem is not given")
-		self.ratioEnableProp = ratioEnableProp
+		self.ratioEnableOption = ratioEnableOption
 		self.fixedItem = fixedItem
 		self.ratioItem = ratioItem
 		self.fixedRadio = gtk.RadioButton(label=fixedLabel)
@@ -124,12 +124,12 @@ class FixedSizeOrRatioOptionUI(OptionUI):
 		self.ratioRadio.connect("clicked", self.onChange)
 
 	def updateVar(self) -> None:
-		self.ratioEnableProp.v = self.ratioRadio.get_active()
+		self.ratioEnableOption.v = self.ratioRadio.get_active()
 		self.fixedItem.updateVar()
 		self.ratioItem.updateVar()
 
 	def updateWidget(self) -> None:
-		self.ratioRadio.set_active(self.ratioEnableProp.v)
+		self.ratioRadio.set_active(self.ratioEnableOption.v)
 		self.fixedItem.updateWidget()
 		self.ratioItem.updateWidget()
 
@@ -145,13 +145,13 @@ class WeekDayCheckListOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: ListOption[int],
+		option: ListOption[int],
 		vertical: bool = False,
 		homogeneous: bool = True,
 		abbreviateNames: bool = True,
 		twoRows: bool = False,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		self.vertical = vertical
 		self.homogeneous = homogeneous
 		self.twoRows = twoRows
@@ -211,8 +211,8 @@ class ToolbarIconSizeOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
-	def __init__(self, prop: Option):
-		self.prop = prop
+	def __init__(self, option: Option):
+		self.option = option
 		# ----
 		self._widget = gtk.ComboBoxText()
 		for item in ud.iconSizeList:
@@ -237,13 +237,13 @@ class CalTypeOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Option[int],
+		option: Option[int],
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 
-		self.prop = prop
+		self.option = option
 		self._onChangeFunc = onChangeFunc
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -273,13 +273,13 @@ class CalTypeOptionUI(OptionUI):
 			self._onChangeFunc()
 
 
-# FIXME: switch to: prop: Option,
+# FIXME: switch to: option: Option,
 class LangOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
 	def __init__(self) -> None:
-		self.prop = locale_man.lang
+		self.option = locale_man.lang
 		# ---
 		listStore = self.listStore = gtk.ListStore(str)
 		combo = gtk.ComboBox()
@@ -748,12 +748,12 @@ class KeyBindingOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: StrDictOption[str],
+		option: StrDictOption[str],
 		actions: list[str],
 		# live: bool = False,
 		# onChangeFunc: "Callable] | None" = None,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		self.actions = actions
 		# ------
 		treev = gtk.TreeView()

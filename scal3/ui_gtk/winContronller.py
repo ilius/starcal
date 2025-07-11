@@ -326,7 +326,7 @@ class CalObj(CustomizableCalBox):
 		option: OptionUI
 		# ----
 		option = ComboTextOptionUI(
-			prop=conf.winControllerTheme,
+			option=conf.winControllerTheme,
 			items=ui.winControllerThemeList,
 			label=_("Theme"),
 			live=True,
@@ -335,7 +335,7 @@ class CalObj(CustomizableCalBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=conf.winControllerIconSize,
+			option=conf.winControllerIconSize,
 			bounds=(5, 128),
 			step=1,
 			label=_("Icon Size"),
@@ -345,7 +345,7 @@ class CalObj(CustomizableCalBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=conf.winControllerBorder,
+			option=conf.winControllerBorder,
 			bounds=(0, 99),
 			step=1,
 			label=_("Buttons Border"),
@@ -355,7 +355,7 @@ class CalObj(CustomizableCalBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=conf.winControllerSpacing,
+			option=conf.winControllerSpacing,
 			bounds=(0, 99),
 			step=1,
 			label=_("Space between buttons"),
@@ -365,7 +365,7 @@ class CalObj(CustomizableCalBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = CheckOptionUI(
-			prop=conf.winControllerPressState,
+			option=conf.winControllerPressState,
 			label=_("Change icon on button press"),
 			live=True,
 		)

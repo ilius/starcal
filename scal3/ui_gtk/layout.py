@@ -278,11 +278,11 @@ class WinLayoutBox(WinLayoutBase):
 			self.itemsParam.v = [item.objName for item in self.items if item.enable]
 		self.createWidget()
 
-	def setItemsOrder(self, prop: ListOption[str]) -> None:
+	def setItemsOrder(self, option: ListOption[str]) -> None:
 		itemByName = {item.objName: item for item in self.items}
-		self.items = [itemByName[name] for name in prop.v]
-		for name in prop.default:
-			if name not in prop.v:
+		self.items = [itemByName[name] for name in option.v]
+		for name in option.default:
+			if name not in option.v:
 				self.items.append(itemByName[name])
 		# for item in self.items:
 		# 	self.connectItem(item)
