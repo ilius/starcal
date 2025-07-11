@@ -22,10 +22,10 @@ from scal3.path import APP_NAME
 
 log = logging.getLogger(APP_NAME)
 
-__all__ = ["ItemProperty", "ListProperty", "Property", "StrDictProperty"]
+__all__ = ["ItemOption", "ListOption", "Option", "StrDictOption"]
 
 
-class Property[T]:
+class Option[T]:
 	__slots__ = ["_default", "_v"]
 
 	def __init__(self, default: T) -> None:
@@ -45,23 +45,23 @@ class Property[T]:
 		return self._default
 
 
-class ListProperty[T](Property[list[T]]):
+class ListOption[T](Option[list[T]]):
 	pass
 
 
 # FIXME: broken
-class DictProperty[T: dict](Property[T]):  # type: ignore[type-arg]
+class DictOption[T: dict](Option[T]):  # type: ignore[type-arg]
 	pass
 
 
-class StrDictProperty[T](Property[dict[str, T]]):
+class StrDictOption[T](Option[dict[str, T]]):
 	pass
 
 
-class ItemProperty[T](Property[T]):
+class ItemOption[T](Option[T]):
 	__slots__ = ["_index", "_parent"]
 
-	def __init__(self, parent: Property[list[T]], index: int) -> None:
+	def __init__(self, parent: Option[list[T]], index: int) -> None:
 		self._parent = parent
 		self._index = index
 

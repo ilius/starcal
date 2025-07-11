@@ -25,7 +25,7 @@ from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["CustomizableCalObj"]
@@ -39,7 +39,7 @@ class CustomizableCalObj(CalObjWidget):
 	# vertical: only set (non-None) when `hasOptions and itemListCustomizable`
 	# vertical: True if items are on top of each other
 	isWrapper = False
-	enableParam: Property[bool] | None = None
+	enableParam: Option[bool] | None = None
 	optionsPageSpacing = 0
 	itemListSeparatePage = False
 	itemsPageTitle = ""

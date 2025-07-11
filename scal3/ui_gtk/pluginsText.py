@@ -23,8 +23,8 @@ from scal3.utils import findWordByPos, toStr
 
 if TYPE_CHECKING:
 	from scal3.font import Font
+	from scal3.option import Option
 	from scal3.plugin_type import PluginType
-	from scal3.property import Property
 	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["PluginsTextBox"]
@@ -267,10 +267,10 @@ class PluginsTextBox(CustomizableCalObj):
 		self,
 		hideIfEmpty: bool = True,
 		tabToNewline: bool = False,
-		insideExpanderParam: Property[bool] | None = None,
-		justificationParam: Property[str] | None = None,
-		fontEnableParam: Property[bool] | None = None,
-		fontParam: Property[Font | None] | None = None,
+		insideExpanderParam: Option[bool] | None = None,
+		justificationParam: Option[str] | None = None,
+		fontEnableParam: Option[bool] | None = None,
+		fontParam: Option[Font | None] | None = None,
 		styleClass: str = "",
 	) -> None:
 		super().__init__()

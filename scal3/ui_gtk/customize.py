@@ -29,7 +29,7 @@ from scal3.ui_gtk import getOrientation, gtk, pack
 from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = [
@@ -45,7 +45,7 @@ class DummyCalObj(CalObjWidget):
 	itemListCustomizable = False
 	hasOptions = False
 	isWrapper = False
-	enableParam: Property[bool] | None = None
+	enableParam: Option[bool] | None = None
 	itemListSeparatePage = False
 
 	def __init__(

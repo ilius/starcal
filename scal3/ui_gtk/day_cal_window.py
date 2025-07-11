@@ -51,7 +51,7 @@ if TYPE_CHECKING:
 
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.ui_gtk.cal_base import CalBase
 	from scal3.ui_gtk.signals import SignalHandlerType
 
@@ -176,7 +176,7 @@ class DayCalWindowWidget(DayCal):
 
 	seasonPieEnable = conf.dcalWinSeasonPieEnable
 	seasonPieGeo = conf.dcalWinSeasonPieGeo
-	seasonPieColors: dict[str, Property[ColorType]] = {
+	seasonPieColors: dict[str, Option[ColorType]] = {
 		"Spring": conf.dcalWinSeasonPieSpringColor,
 		"Summer": conf.dcalWinSeasonPieSummerColor,
 		"Autumn": conf.dcalWinSeasonPieAutumnColor,

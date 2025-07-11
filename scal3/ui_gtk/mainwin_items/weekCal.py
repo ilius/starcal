@@ -75,7 +75,7 @@ if TYPE_CHECKING:
 	from scal3.cell import WeekStatus
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumParamsDict
 	from scal3.ui_gtk.starcal import MainWin
@@ -117,14 +117,14 @@ class ColumnBase(CustomizableCalObj):
 		# v4: f"wcal.{cls.objName}.width"
 		return f"wcal_{cls.objName}_width"
 
-	def getWidthProp(self) -> Property[float] | None:
+	def getWidthProp(self) -> Option[float] | None:
 		return getattr(conf, self.getWidthAttr(), None)
 
-	def getExpandProp(self) -> Property[bool] | None:
+	def getExpandProp(self) -> Option[bool] | None:
 		# v4: f"wcal.{self.objName}.expand"
 		return getattr(conf, f"wcal_{self.objName}_expand", None)
 
-	def getFontProp(self) -> Property[str] | None:
+	def getFontProp(self) -> Option[str] | None:
 		# v4: f"wcal.{self.objName}.font"
 		return getattr(conf, f"wcalFont_{self.objName}", None)
 

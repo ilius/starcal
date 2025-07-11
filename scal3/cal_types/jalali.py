@@ -25,7 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Final
 
 from scal3 import logger
-from scal3.property import Property
+from scal3.option import Option
 
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
@@ -39,7 +39,7 @@ name = "jalali"
 desc = "Persian"
 origLang = "fa"
 
-monthNameMode: Final[Property[int]] = Property(0)
+monthNameMode: Final[Option[int]] = Option(0)
 options: list[OptionTuple] = [
 	(
 		"monthNameMode",
@@ -48,7 +48,7 @@ options: list[OptionTuple] = [
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 ]
-confParams: Final[dict[str, Property[Any]]] = {
+confParams: Final[dict[str, Option[Any]]] = {
 	"monthNameMode": monthNameMode,
 }
 
