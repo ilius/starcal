@@ -101,7 +101,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Background Color")))
 		option = ColorOptionUI(
-			prop=conf.bgColor,
+			option=conf.bgColor,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
@@ -111,7 +111,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Foreground Color")))
 		option = ColorOptionUI(
-			prop=conf.fgColor,
+			option=conf.fgColor,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
@@ -120,7 +120,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.baseFontSize,
+			option=conf.baseFontSize,
 			bounds=(0.1, 999),
 			digits=1,
 			step=1,
@@ -136,11 +136,11 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = CheckColorOptionUI(
 			CheckOptionUI(
-				prop=conf.changeHolidayBg,
+				option=conf.changeHolidayBg,
 				label=_("Change Holidays Background"),
 			),
 			ColorOptionUI(
-				prop=conf.holidayBgBolor,
+				option=conf.holidayBgBolor,
 				# useAlpha=False,
 			),
 			live=True,
@@ -169,7 +169,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = IntSpinOptionUI(
-			prop=conf.basicButtonsSize,
+			option=conf.basicButtonsSize,
 			bounds=(1, 999),
 			step=1,
 			label=_("Buttons Size"),
@@ -182,7 +182,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.basicButtonsSpacing,
+			option=conf.basicButtonsSpacing,
 			bounds=(0, 999),
 			digits=1,
 			step=1,
@@ -202,7 +202,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = CheckOptionUI(
-			prop=conf.movementButtonsEnable,
+			option=conf.movementButtonsEnable,
 			label=_("Movement Buttons"),
 			live=True,
 			onChangeFunc=updateMovementButtons,
@@ -212,7 +212,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = IntSpinOptionUI(
-			prop=conf.movementButtonsSize,
+			option=conf.movementButtonsSize,
 			bounds=(1, 999),
 			step=1,
 			label=_("Movement Buttons Size"),
@@ -226,7 +226,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.basicButtonsOpacity,
+			option=conf.basicButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
@@ -239,7 +239,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movementButtonsOpacity,
+			option=conf.movementButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
@@ -262,7 +262,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.majorStepMin,
+			option=conf.majorStepMin,
 			bounds=(1, 999),
 			digits=1,
 			step=1,
@@ -277,7 +277,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.minorStepMin,
+			option=conf.minorStepMin,
 			bounds=(1, 999),
 			digits=1,
 			step=1,
@@ -303,7 +303,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.baseTickHeight,
+			option=conf.baseTickHeight,
 			bounds=(0.1, 999),
 			digits=1,
 			step=1,
@@ -317,7 +317,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.baseTickWidth,
+			option=conf.baseTickWidth,
 			bounds=(0.1, 99),
 			digits=2,
 			step=1,
@@ -331,7 +331,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.maxTickWidth,
+			option=conf.maxTickWidth,
 			bounds=(0.1, 99),
 			digits=1,
 			step=1,
@@ -345,7 +345,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.maxTickHeightRatio,
+			option=conf.maxTickHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
 			step=0.1,
@@ -359,7 +359,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.maxLabelWidth,
+			option=conf.maxLabelWidth,
 			bounds=(1, 999),
 			digits=1,
 			step=1,
@@ -392,7 +392,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.currentTimeMarkerHeightRatio,
+			option=conf.currentTimeMarkerHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
 			step=0.1,
@@ -406,7 +406,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.currentTimeMarkerWidth,
+			option=conf.currentTimeMarkerWidth,
 			bounds=(0.1, 99),
 			digits=2,
 			step=1,
@@ -421,7 +421,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		option = ColorOptionUI(
-			prop=conf.currentTimeMarkerColor,
+			option=conf.currentTimeMarkerColor,
 			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
@@ -443,7 +443,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = CheckOptionUI(
-			prop=conf.showWeekStart,
+			option=conf.showWeekStart,
 			label=_("Show Week Start"),
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
@@ -454,7 +454,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
 		option = ColorOptionUI(
-			prop=conf.weekStartTickColor,
+			option=conf.weekStartTickColor,
 			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
@@ -464,7 +464,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = IntSpinOptionUI(
-			prop=conf.showWeekStartMinDays,
+			option=conf.showWeekStartMinDays,
 			bounds=(1, 999),
 			step=1,
 			label=_("Minimum Interval"),
@@ -477,7 +477,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = IntSpinOptionUI(
-			prop=conf.showWeekStartMaxDays,
+			option=conf.showWeekStartMaxDays,
 			bounds=(1, 999),
 			step=1,
 			label=_("Maximum Interval"),
@@ -500,7 +500,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.boxLineWidth,
+			option=conf.boxLineWidth,
 			bounds=(0, 99),
 			digits=1,
 			step=1,
@@ -514,7 +514,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.boxInnerAlpha,
+			option=conf.boxInnerAlpha,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
@@ -527,7 +527,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.boxEditBorderWidth,
+			option=conf.boxEditBorderWidth,
 			bounds=(0, 999),
 			digits=1,
 			step=1,
@@ -541,7 +541,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.boxEditInnerLineWidth,
+			option=conf.boxEditInnerLineWidth,
 			bounds=(0, 99),
 			digits=1,
 			step=1,
@@ -555,7 +555,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.boxEditHelperLineWidth,
+			option=conf.boxEditHelperLineWidth,
 			bounds=(0, 99),
 			digits=1,
 			step=1,
@@ -569,7 +569,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = CheckOptionUI(
-			prop=conf.boxReverseGravity,
+			option=conf.boxReverseGravity,
 			label=_("Reverse Gravity"),
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
@@ -605,7 +605,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			timeLine.w.queue_draw()
 
 		option = CheckOptionUI(
-			prop=conf.enableAnimation,
+			option=conf.enableAnimation,
 			label=_("Animation"),
 			live=True,
 			onChangeFunc=enableAnimationChanged,
@@ -621,7 +621,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingStaticStepMouse,
+			option=conf.movingStaticStepMouse,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -635,7 +635,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingStaticStepKeyboard,
+			option=conf.movingStaticStepKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -663,7 +663,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingInitialVelocity,
+			option=conf.movingInitialVelocity,
 			bounds=(0, 9999),
 			digits=1,
 			step=1,
@@ -677,7 +677,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingMaxVelocity,
+			option=conf.movingMaxVelocity,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -691,7 +691,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingHandForceMouse,
+			option=conf.movingHandForceMouse,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -711,7 +711,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingHandForceKeyboard,
+			option=conf.movingHandForceKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -731,7 +731,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingHandForceKeyboardSmall,
+			option=conf.movingHandForceKeyboardSmall,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -751,7 +751,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingHandForceButton,
+			option=conf.movingHandForceButton,
 			bounds=(0.1, 9999),
 			digits=1,
 			step=1,
@@ -771,7 +771,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.movingFrictionForce,
+			option=conf.movingFrictionForce,
 			bounds=(0, 9999),
 			digits=1,
 			step=1,
@@ -804,7 +804,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.scrollZoomStep,
+			option=conf.scrollZoomStep,
 			bounds=(1, 9),
 			digits=2,
 			step=0.1,
@@ -817,7 +817,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		option = FloatSpinOptionUI(
-			prop=conf.keyboardZoomStep,
+			option=conf.keyboardZoomStep,
 			bounds=(1, 9),
 			digits=2,
 			step=0.1,
@@ -839,7 +839,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# -----
 		option = KeyBindingOptionUI(
-			prop=conf.keys,
+			option=conf.keys,
 			actions=sorted(conf.keys.v.values()),
 		)
 		option.updateWidget()

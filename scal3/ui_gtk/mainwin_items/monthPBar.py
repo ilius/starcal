@@ -72,7 +72,7 @@ class CalObj(CustomizableCalObj):
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		option = CalTypeOptionUI(
-			prop=conf.monthPBarCalType,
+			option=conf.monthPBarCalType,
 			live=True,
 			onChangeFunc=self.onCalTypeChange,
 		)

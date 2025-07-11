@@ -403,7 +403,7 @@ class CustomizableToolBox(StaticToolBox):
 		option: OptionUI
 		# ----
 		option = CheckOptionUI(
-			prop=self.preferIconName,
+			option=self.preferIconName,
 			label=_("Use System Icons"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -411,7 +411,7 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=self.iconSize,
+			option=self.iconSize,
 			bounds=(5, 128),
 			step=1,
 			label=_("Icon Size"),
@@ -421,7 +421,7 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=self.buttonBorder,
+			option=self.buttonBorder,
 			bounds=(0, 99),
 			step=1,
 			label=_("Buttons Border"),
@@ -431,7 +431,7 @@ class CustomizableToolBox(StaticToolBox):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=self.buttonPadding,
+			option=self.buttonPadding,
 			bounds=(0, 99),
 			step=1,
 			label=_("Space between buttons"),

@@ -328,21 +328,21 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ------------------------
 		item = CheckOptionUI(
-			prop=conf.showMain,
+			option=conf.showMain,
 			label=_("Open main window on start"),
 		)
 		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ------------------------
 		item = CheckOptionUI(
-			prop=conf.showDesktopWidget,
+			option=conf.showDesktopWidget,
 			label=_("Open desktop widget on start"),
 		)
 		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# --------------------------
 		item = CheckOptionUI(
-			prop=conf.winTaskbar,
+			option=conf.winTaskbar,
 			label=_("Window in Taskbar"),
 		)
 		self.uiOptionUIs.append(item)
@@ -360,7 +360,7 @@ class PreferencesWindow(gtk.Window):
 			pass
 		else:
 			item = CheckOptionUI(
-				prop=conf.useAppIndicator,
+				option=conf.useAppIndicator,
 				label=_("Use AppIndicator"),
 			)
 			self.uiOptionUIs.append(item)
@@ -413,13 +413,13 @@ class PreferencesWindow(gtk.Window):
 		)
 		# ---
 		customCheckItem = CheckOptionUI(
-			prop=conf.fontCustomEnable,
+			option=conf.fontCustomEnable,
 			label=_("Application Font"),
 		)
 		self.uiOptionUIs.append(customCheckItem)
 		pack(hbox, customCheckItem.getWidget())
 		# ---
-		customItem = FontOptionUI(prop=conf.fontCustom)
+		customItem = FontOptionUI(option=conf.fontCustom)
 		self.uiOptionUIs.append(customItem)
 		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -428,21 +428,21 @@ class PreferencesWindow(gtk.Window):
 		item: OptionUI
 		# ---------------------------
 		item = CheckOptionUI(
-			prop=conf.buttonIconEnable,
+			option=conf.buttonIconEnable,
 			label=_("Show icons in buttons"),
 		)
 		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ---------------------------
 		item = CheckOptionUI(
-			prop=conf.useSystemIcons,
+			option=conf.useSystemIcons,
 			label=_("Use System Icons"),
 		)
 		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ---------------------------
 		item = CheckOptionUI(
-			prop=conf.oldStyleProgressBar,
+			option=conf.oldStyleProgressBar,
 			label=_("Old-style Progress Bar"),
 		)
 		self.uiOptionUIs.append(item)
@@ -457,7 +457,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Background")))
-		item = ColorOptionUI(prop=conf.bgColor, useAlpha=True)
+		item = ColorOptionUI(option=conf.bgColor, useAlpha=True)
 		self.uiOptionUIs.append(item)
 		self.colorbBg = item.getWidget()  # FIXME
 		pack(hbox, item.getWidget())
@@ -466,7 +466,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border")))
-		item = ColorOptionUI(prop=conf.borderColor, useAlpha=True)
+		item = ColorOptionUI(option=conf.borderColor, useAlpha=True)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -474,7 +474,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor")))
-		item = ColorOptionUI(prop=conf.cursorOutColor, useAlpha=False)
+		item = ColorOptionUI(option=conf.cursorOutColor, useAlpha=False)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -482,7 +482,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor BG")))
-		item = ColorOptionUI(prop=conf.cursorBgColor, useAlpha=True)
+		item = ColorOptionUI(option=conf.cursorBgColor, useAlpha=True)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -490,7 +490,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Today")))
-		item = ColorOptionUI(prop=conf.todayCellColor, useAlpha=True)
+		item = ColorOptionUI(option=conf.todayCellColor, useAlpha=True)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -503,7 +503,7 @@ class PreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Normal Text")))
-		item = ColorOptionUI(prop=conf.textColor, useAlpha=False)
+		item = ColorOptionUI(option=conf.textColor, useAlpha=False)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -511,7 +511,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Holidays Font")))
-		item = ColorOptionUI(prop=conf.holidayColor, useAlpha=False)
+		item = ColorOptionUI(option=conf.holidayColor, useAlpha=False)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -519,7 +519,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Inactive Day Font")))
-		item = ColorOptionUI(prop=conf.inactiveColor, useAlpha=True)
+		item = ColorOptionUI(option=conf.inactiveColor, useAlpha=True)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -527,7 +527,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border Font")))
-		item = ColorOptionUI(prop=conf.borderTextColor, useAlpha=False)
+		item = ColorOptionUI(option=conf.borderTextColor, useAlpha=False)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -576,7 +576,7 @@ class PreferencesWindow(gtk.Window):
 		sgroup.add_widget(label)
 		# pack(hbox, gtk.Label(), 1, 1)
 		item = ComboEntryTextOptionUI(
-			prop=ud.dateFormat,
+			option=ud.dateFormat,
 			items=[
 				"%Y/%m/%d",
 				"%Y-%m-%d",
@@ -597,7 +597,7 @@ class PreferencesWindow(gtk.Window):
 			spacing=int(self.spacing / 3),
 		)
 		item = CheckOptionUI(
-			prop=locale_man.enableNumLocale,
+			option=locale_man.enableNumLocale,
 			label=_("Numbers Localization"),
 		)
 		self.localeOptionUIs.append(item)
@@ -647,7 +647,7 @@ class PreferencesWindow(gtk.Window):
 		frame.set_border_width(10)
 		frame.set_label(_("Holidays"))
 		item = WeekDayCheckListOptionUI(
-			prop=core.holidayWeekDays,
+			option=core.holidayWeekDays,
 			abbreviateNames=False,
 			twoRows=True,
 		)
@@ -706,7 +706,7 @@ class PreferencesWindow(gtk.Window):
 				else:
 					prop = getattr(mod, opt[0])
 					optl = ModuleOptionItem(
-						prop=prop,
+						option=prop,
 						opt=opt,
 						spacing=self.spacing,
 					)
@@ -753,7 +753,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, label)
 		# sgroup.add_widget(label)
 		item = ComboEntryTextOptionUI(
-			prop=conf.eventDayViewTimeFormat,
+			option=conf.eventDayViewTimeFormat,
 			items=[
 				"HM$",
 				"HMS",
@@ -818,7 +818,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, label)
 		# sgroup.add_widget(label)
 		item = IntSpinOptionUI(
-			prop=conf.maxDayCacheSize,
+			option=conf.maxDayCacheSize,
 			bounds=(100, 9999),
 			step=10,
 		)
@@ -832,7 +832,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
 		item = IntSpinOptionUI(
-			prop=conf.cellMenuXOffset,
+			option=conf.cellMenuXOffset,
 			bounds=(0, 999),
 			step=1,
 		)
@@ -1091,7 +1091,7 @@ class PreferencesWindow(gtk.Window):
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
 		pack(hbox, label)
 		item = ImageFileChooserOptionUI(
-			prop=conf.statusIconImage,
+			option=conf.statusIconImage,
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
 		)
@@ -1103,7 +1103,7 @@ class PreferencesWindow(gtk.Window):
 		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
 		pack(hbox, label)
 		item = ImageFileChooserOptionUI(
-			prop=conf.statusIconImageHoli,
+			option=conf.statusIconImageHoli,
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
 		)
@@ -1113,7 +1113,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		checkItem = CheckOptionUI(
-			prop=conf.statusIconFontFamilyEnable,
+			option=conf.statusIconFontFamilyEnable,
 			label=_("Change font family to"),
 			# tooltip=_("In SVG files"),
 		)
@@ -1121,7 +1121,7 @@ class PreferencesWindow(gtk.Window):
 		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
 		item = FontFamilyOptionUI(
-			prop=conf.statusIconFontFamily,
+			option=conf.statusIconFontFamily,
 		)
 		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
@@ -1129,7 +1129,7 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		item = CheckOptionUI(
-			prop=conf.statusIconLocalizeNumber,
+			option=conf.statusIconLocalizeNumber,
 			label=_("Localize the number"),
 		)
 		self.uiOptionUIs.append(item)
@@ -1139,11 +1139,11 @@ class PreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		item = CheckColorOptionUI(
 			CheckOptionUI(
-				prop=conf.statusIconHolidayFontColorEnable,
+				option=conf.statusIconHolidayFontColorEnable,
 				label=_("Holiday font color"),
 			),
 			ColorOptionUI(
-				prop=conf.statusIconHolidayFontColor,
+				option=conf.statusIconHolidayFontColor,
 			),
 		)
 		self.uiOptionUIs.append(item)
@@ -1152,7 +1152,7 @@ class PreferencesWindow(gtk.Window):
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		checkItem = CheckOptionUI(
-			prop=conf.statusIconFixedSizeEnable,
+			option=conf.statusIconFixedSizeEnable,
 			label=_("Fixed Size"),
 			# tooltip=_(""),
 		)
@@ -1161,7 +1161,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, checkItem.getWidget())
 		pack(hbox, gtk.Label(label=" "))
 		item = WidthHeightOptionUI(
-			prop=conf.statusIconFixedSizeWH,
+			option=conf.statusIconFixedSizeWH,
 			maxim=999,
 		)
 		self.uiOptionUIs.append(item)
@@ -1172,7 +1172,7 @@ class PreferencesWindow(gtk.Window):
 		# pluginsTextStatusIcon:
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		item = CheckOptionUI(
-			prop=conf.pluginsTextStatusIcon,
+			option=conf.pluginsTextStatusIcon,
 			label=_("Show Plugins Text in Status Icon (for today)"),
 		)
 		self.uiOptionUIs.append(item)

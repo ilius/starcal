@@ -139,7 +139,7 @@ class DayOccurrenceView(CustomizableCalObj):
 		# ---
 		if self.justificationParam:
 			option = JustificationOptionUI(
-				prop=self.justificationParam,
+				option=self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
 			)
@@ -148,8 +148,8 @@ class DayOccurrenceView(CustomizableCalObj):
 		if self.fontParam:
 			assert self.fontEnableParam
 			option = CheckFontOptionUI(
-				CheckOptionUI(prop=self.fontEnableParam, label=_("Font")),
-				FontOptionUI(prop=self.fontParam),
+				CheckOptionUI(option=self.fontEnableParam, label=_("Font")),
+				FontOptionUI(option=self.fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
@@ -166,7 +166,7 @@ class DayOccurrenceView(CustomizableCalObj):
 		# ---
 		if self.eventSepParam:
 			option = TextOptionUI(
-				prop=self.eventSepParam,
+				option=self.eventSepParam,
 				label=_("Event Text Separator"),
 				live=True,
 				onChangeFunc=self.onEventSepChange,
@@ -591,7 +591,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 		assert isinstance(optionsWidget, gtk.Box), f"{optionsWidget=}"
 		# ---
 		option = IntSpinOptionUI(
-			prop=conf.eventViewMaxHeight,
+			option=conf.eventViewMaxHeight,
 			bounds=(1, 9999),
 			step=1,
 			label=_("Maximum Height"),

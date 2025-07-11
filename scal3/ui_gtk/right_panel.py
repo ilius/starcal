@@ -312,15 +312,15 @@ class MainWinRightPanel(CustomizableCalObj):
 		option: OptionUI
 		# -----
 		option = FixedSizeOrRatioOptionUI(
-			ratioEnableProp=conf.mainWinRightPanelWidthRatioEnable,
+			ratioEnableOption=conf.mainWinRightPanelWidthRatioEnable,
 			fixedLabel=_("Fixed width"),
 			fixedItem=IntSpinOptionUI(
-				prop=conf.mainWinRightPanelWidth,
+				option=conf.mainWinRightPanelWidth,
 				bounds=(1, 9999),
 			),
 			ratioLabel=_("Relative to window"),
 			ratioItem=FloatSpinOptionUI(
-				prop=conf.mainWinRightPanelWidthRatio,
+				option=conf.mainWinRightPanelWidthRatio,
 				bounds=(0, 1),
 				digits=3,
 			),
@@ -334,7 +334,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		pack(sizesVBox, frame)
 		# ---
 		option = IntSpinOptionUI(
-			prop=conf.mainWinRightPanelBorderWidth,
+			option=conf.mainWinRightPanelBorderWidth,
 			bounds=(1, 999),
 			step=1,
 			unitLabel=_("pixels"),
@@ -357,7 +357,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		pack(optionsWidget, button)
 		# ---
 		option = IntSpinOptionUI(
-			prop=conf.rightPanelEventIconSize,
+			option=conf.rightPanelEventIconSize,
 			bounds=(5, 128),
 			step=1,
 			label=_("Event Icon Size"),
@@ -387,7 +387,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		pack(pluginsVBox, pluginOptionsWidget)
 		# ------
 		option = CheckOptionUI(
-			prop=conf.mainWinRightPanelResizeOnToggle,
+			option=conf.mainWinRightPanelResizeOnToggle,
 			label=_("Resize on show/hide\nfrom window controller"),
 			# tooltip="",
 			live=True,

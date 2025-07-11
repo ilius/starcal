@@ -198,7 +198,7 @@ class CalObj(CalBase):
 		option: OptionUI
 		# -------
 		option = IntSpinOptionUI(
-			prop=conf.mcalLeftMargin,
+			option=conf.mcalLeftMargin,
 			bounds=(0, 999),
 			step=1,
 			label=_("Left Margin"),
@@ -209,7 +209,7 @@ class CalObj(CalBase):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = IntSpinOptionUI(
-			prop=conf.mcalTopMargin,
+			option=conf.mcalTopMargin,
 			bounds=(0, 999),
 			step=1,
 			label=_("Top Margin"),
@@ -220,8 +220,8 @@ class CalObj(CalBase):
 		pack(optionsWidget, option.getWidget())
 		# --------
 		option = CheckColorOptionUI(
-			CheckOptionUI(prop=conf.mcalGrid, label=_("Grid")),
-			ColorOptionUI(prop=conf.mcalGridColor, useAlpha=True),
+			CheckOptionUI(option=conf.mcalGrid, label=_("Grid")),
+			ColorOptionUI(option=conf.mcalGridColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
@@ -231,7 +231,7 @@ class CalObj(CalBase):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		pack(hbox, newAlignLabel(label=_("Corner Menu Text Color")))
 		option = ColorOptionUI(
-			prop=conf.mcalCornerMenuTextColor,
+			option=conf.mcalCornerMenuTextColor,
 			useAlpha=True,
 			live=True,
 			onChangeFunc=self.w.queue_draw,
@@ -245,7 +245,7 @@ class CalObj(CalBase):
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		option = FloatSpinOptionUI(
-			prop=conf.mcalCursorLineWidthFactor,
+			option=conf.mcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
@@ -257,7 +257,7 @@ class CalObj(CalBase):
 		pack(pageVBox, option.getWidget())
 		# ---
 		option = FloatSpinOptionUI(
-			prop=conf.mcalCursorRoundingFactor,
+			option=conf.mcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
