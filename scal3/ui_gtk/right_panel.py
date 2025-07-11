@@ -317,12 +317,14 @@ class MainWinRightPanel(CustomizableCalObj):
 			fixedItem=IntSpinOptionUI(
 				option=conf.mainWinRightPanelWidth,
 				bounds=(1, 9999),
+				step=10,
 			),
 			ratioLabel=_("Relative to window"),
 			ratioItem=FloatSpinOptionUI(
 				option=conf.mainWinRightPanelWidthRatio,
 				bounds=(0, 1),
 				digits=3,
+				step=0.01,
 			),
 			onChangeFunc=self.updateWidth,
 			vspacing=3,
@@ -335,7 +337,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		# ---
 		option = IntSpinOptionUI(
 			option=conf.mainWinRightPanelBorderWidth,
-			bounds=(1, 999),
+			bounds=(0, 999),
 			step=1,
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
