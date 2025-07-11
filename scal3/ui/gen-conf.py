@@ -39,7 +39,7 @@ output.write(
 	"from __future__ import annotations\n\n"
 	"import typing\n"
 	"from scal3.color_utils import RGB, RGBA\n"
-	"from scal3.property import DictProperty, ListProperty, Property\n\n"
+	"from scal3.option import DictOption, ListOption, Option\n\n"
 	"if typing.TYPE_CHECKING:\n"
 	"\tfrom typing import Any, Final\n\n"
 	"\tfrom scal3.color_utils import ColorType\n"
@@ -62,16 +62,16 @@ for p in params.confParamsData:
 	if p.type.startswith("list["):
 		itemType = p.type[5:-1]
 		output.write(
-			f"{p.v3Name}: Final[ListProperty[{itemType}]] = ListProperty({value!r})\n"
+			f"{p.v3Name}: Final[ListOption[{itemType}]] = ListOption({value!r})\n"
 		)
 		continue
 	# if p.type.endswith("Dict"):
 	# 	output.write(
-	# 		f"{p.v3Name}: Final[DictProperty[{p.type}]] = DictProperty({value!r})\n"
+	# 		f"{p.v3Name}: Final[DictOption[{p.type}]] = DictOption({value!r})\n"
 	# 	)
 	# 	continue
 
-	output.write(f"{p.v3Name}: Final[Property[{p.type}]] = Property({value!r})" + "\n")
+	output.write(f"{p.v3Name}: Final[Option[{p.type}]] = Option({value!r})" + "\n")
 
 
 output.write("\n\n")
@@ -81,16 +81,14 @@ confParamsLive = params.getParamNamesWithFlag(params.LIVE)
 confParamsCustomize = params.getParamNamesWithFlag(params.CUSTOMIZE)
 dayCalWinParamsLive = params.getParamNamesWithFlag(params.DAYCAL_WIN_LIVE)
 
-output.write("confParams: dict[str, Property[Any]] = " + genParamDict(confParams))
+output.write("confParams: dict[str, Option[Any]] = " + genParamDict(confParams))
+output.write("confParamsLive: dict[str, Option[Any]] = " + genParamDict(confParamsLive))
 output.write(
-	"confParamsLive: dict[str, Property[Any]] = " + genParamDict(confParamsLive)
-)
-output.write(
-	"confParamsCustomize: dict[str, Property[Any]] = "
+	"confParamsCustomize: dict[str, Option[Any]] = "
 	+ genParamDict(confParamsCustomize),
 )
 output.write(
-	"dayCalWinParamsLive: dict[str, Property[Any]] = "
+	"dayCalWinParamsLive: dict[str, Option[Any]] = "
 	+ genParamDict(dayCalWinParamsLive),
 )
 

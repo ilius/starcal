@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.property import Property
+from scal3.option import Option
 
 log = logger.get()
 
@@ -93,10 +93,10 @@ localTzStr = str(localTz)
 
 confPath = join(confDir, "locale.json")
 
-lang: Final[Property[str]] = Property("")
-enableNumLocale: Final[Property[bool]] = Property(True)
+lang: Final[Option[str]] = Option("")
+enableNumLocale: Final[Option[bool]] = Option(True)
 
-confParams: Final[dict[str, Property[Any]]] = {
+confParams: Final[dict[str, Option[Any]]] = {
 	"lang": lang,
 	"enableNumLocale": enableNumLocale,
 }
@@ -657,7 +657,7 @@ def addLRM(text: str) -> str:
 	return LRM + toStr(text)
 
 
-def getNeedRestartParams() -> list[Property[Any]]:
+def getNeedRestartParams() -> list[Option[Any]]:
 	return [
 		lang,
 		enableNumLocale,

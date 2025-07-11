@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 from scal3.color_utils import RGB
-from scal3.property import Property, StrDictProperty
+from scal3.option import Option, StrDictOption
 
 if typing.TYPE_CHECKING:
 	from typing import Any, Final
@@ -67,62 +67,62 @@ __all__ = [
 	"yearPrettyPower",
 ]
 
-bgColor: Final[Property[ColorType | None]] = Property(None)
-fgColor: Final[Property[ColorType | None]] = Property(None)
-baseFontSize: Final[Property[float]] = Property(8)
-changeHolidayBg: Final[Property[bool]] = Property(False)
-changeHolidayBgMinDays: Final[Property[int]] = Property(1)
-changeHolidayBgMaxDays: Final[Property[int]] = Property(60)
-holidayBgBolor: Final[Property[ColorType]] = Property(RGB(red=60, green=35, blue=35))
-basicButtonsSize: Final[Property[int]] = Property(22)
-basicButtonsSpacing: Final[Property[float]] = Property(3)
-basicButtonsOpacity: Final[Property[float]] = Property(1.0)
-movementButtonsEnable: Final[Property[bool]] = Property(True)
-movementButtonsSize: Final[Property[int]] = Property(22)
-movementButtonsOpacity: Final[Property[float]] = Property(1.0)
-majorStepMin: Final[Property[float]] = Property(50)
-minorStepMin: Final[Property[float]] = Property(5)
-maxLabelWidth: Final[Property[float]] = Property(60)
-baseTickHeight: Final[Property[float]] = Property(1.0)
-baseTickWidth: Final[Property[float]] = Property(0.5)
-maxTickWidth: Final[Property[float]] = Property(40.0)
-maxTickHeightRatio: Final[Property[float]] = Property(0.3)
-labelYRatio: Final[Property[float]] = Property(1.1)
-yearPrettyPower: Final[Property[bool]] = Property(True)
-truncateTickLabel: Final[Property[bool]] = Property(False)
-currentTimeMarkerHeightRatio: Final[Property[float]] = Property(0.3)
-currentTimeMarkerWidth: Final[Property[float]] = Property(2)
-currentTimeMarkerColor: Final[Property[ColorType]] = Property(
+bgColor: Final[Option[ColorType | None]] = Option(None)
+fgColor: Final[Option[ColorType | None]] = Option(None)
+baseFontSize: Final[Option[float]] = Option(8)
+changeHolidayBg: Final[Option[bool]] = Option(False)
+changeHolidayBgMinDays: Final[Option[int]] = Option(1)
+changeHolidayBgMaxDays: Final[Option[int]] = Option(60)
+holidayBgBolor: Final[Option[ColorType]] = Option(RGB(red=60, green=35, blue=35))
+basicButtonsSize: Final[Option[int]] = Option(22)
+basicButtonsSpacing: Final[Option[float]] = Option(3)
+basicButtonsOpacity: Final[Option[float]] = Option(1.0)
+movementButtonsEnable: Final[Option[bool]] = Option(True)
+movementButtonsSize: Final[Option[int]] = Option(22)
+movementButtonsOpacity: Final[Option[float]] = Option(1.0)
+majorStepMin: Final[Option[float]] = Option(50)
+minorStepMin: Final[Option[float]] = Option(5)
+maxLabelWidth: Final[Option[float]] = Option(60)
+baseTickHeight: Final[Option[float]] = Option(1.0)
+baseTickWidth: Final[Option[float]] = Option(0.5)
+maxTickWidth: Final[Option[float]] = Option(40.0)
+maxTickHeightRatio: Final[Option[float]] = Option(0.3)
+labelYRatio: Final[Option[float]] = Option(1.1)
+yearPrettyPower: Final[Option[bool]] = Option(True)
+truncateTickLabel: Final[Option[bool]] = Option(False)
+currentTimeMarkerHeightRatio: Final[Option[float]] = Option(0.3)
+currentTimeMarkerWidth: Final[Option[float]] = Option(2)
+currentTimeMarkerColor: Final[Option[ColorType]] = Option(
 	RGB(red=255, green=100, blue=100)
 )
-showWeekStart: Final[Property[bool]] = Property(True)
-showWeekStartMinDays: Final[Property[int]] = Property(1)
-showWeekStartMaxDays: Final[Property[int]] = Property(60)
-weekStartTickColor: Final[Property[ColorType]] = Property(RGB(red=0, green=200, blue=0))
-boxLineWidth: Final[Property[float]] = Property(2)
-boxInnerAlpha: Final[Property[float]] = Property(0.1)
-boxEditBorderWidth: Final[Property[float]] = Property(10.0)
-boxEditInnerLineWidth: Final[Property[float]] = Property(0.5)
-boxEditHelperLineWidth: Final[Property[float]] = Property(0.3)
-boxReverseGravity: Final[Property[bool]] = Property(False)
-boxSkipPixelLimit: Final[Property[float]] = Property(0.1)
-rotateBoxLabel: Final[Property[int]] = Property(-1)
-enableAnimation: Final[Property[bool]] = Property(False)
-movingStaticStepKeyboard: Final[Property[float]] = Property(20)
-movingStaticStepMouse: Final[Property[float]] = Property(20)
-movingUpdateTime: Final[Property[int]] = Property(10)
-movingInitialVelocity: Final[Property[float]] = Property(0)
-movingHandForceMouse: Final[Property[float]] = Property(1100)
-movingHandForceKeyboard: Final[Property[float]] = Property(1100)
-movingHandForceKeyboardSmall: Final[Property[float]] = Property(850)
-movingHandForceButton: Final[Property[float]] = Property(1100)
-movingFrictionForce: Final[Property[float]] = Property(600)
-movingMaxVelocity: Final[Property[float]] = Property(1200)
-movingKeyTimeoutFirst: Final[Property[float]] = Property(0.5)
-movingKeyTimeout: Final[Property[float]] = Property(0.1)
-scrollZoomStep: Final[Property[float]] = Property(1.2)
-keyboardZoomStep: Final[Property[float]] = Property(1.2)
-keys: Final[StrDictProperty[str]] = StrDictProperty(
+showWeekStart: Final[Option[bool]] = Option(True)
+showWeekStartMinDays: Final[Option[int]] = Option(1)
+showWeekStartMaxDays: Final[Option[int]] = Option(60)
+weekStartTickColor: Final[Option[ColorType]] = Option(RGB(red=0, green=200, blue=0))
+boxLineWidth: Final[Option[float]] = Option(2)
+boxInnerAlpha: Final[Option[float]] = Option(0.1)
+boxEditBorderWidth: Final[Option[float]] = Option(10.0)
+boxEditInnerLineWidth: Final[Option[float]] = Option(0.5)
+boxEditHelperLineWidth: Final[Option[float]] = Option(0.3)
+boxReverseGravity: Final[Option[bool]] = Option(False)
+boxSkipPixelLimit: Final[Option[float]] = Option(0.1)
+rotateBoxLabel: Final[Option[int]] = Option(-1)
+enableAnimation: Final[Option[bool]] = Option(False)
+movingStaticStepKeyboard: Final[Option[float]] = Option(20)
+movingStaticStepMouse: Final[Option[float]] = Option(20)
+movingUpdateTime: Final[Option[int]] = Option(10)
+movingInitialVelocity: Final[Option[float]] = Option(0)
+movingHandForceMouse: Final[Option[float]] = Option(1100)
+movingHandForceKeyboard: Final[Option[float]] = Option(1100)
+movingHandForceKeyboardSmall: Final[Option[float]] = Option(850)
+movingHandForceButton: Final[Option[float]] = Option(1100)
+movingFrictionForce: Final[Option[float]] = Option(600)
+movingMaxVelocity: Final[Option[float]] = Option(1200)
+movingKeyTimeoutFirst: Final[Option[float]] = Option(0.5)
+movingKeyTimeout: Final[Option[float]] = Option(0.1)
+scrollZoomStep: Final[Option[float]] = Option(1.2)
+keyboardZoomStep: Final[Option[float]] = Option(1.2)
+keys: Final[StrDictOption[str]] = StrDictOption(
 	{
 		"space": "moveToNow",
 		"home": "moveToNow",
@@ -140,7 +140,7 @@ keys: Final[StrDictProperty[str]] = StrDictProperty(
 )
 
 
-confParams: dict[str, Property[Any]] = {
+confParams: dict[str, Option[Any]] = {
 	"baseFontSize": baseFontSize,
 	"baseTickHeight": baseTickHeight,
 	"baseTickWidth": baseTickWidth,
