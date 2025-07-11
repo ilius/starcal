@@ -5,8 +5,8 @@ import sys
 from os.path import join
 from typing import Final, Protocol
 
+from scal3.option import Option
 from scal3.path import confDir
-from scal3.property import Property
 
 __all__ = ["FallbackLogger", "get", "init", "logLevel"]
 
@@ -54,7 +54,7 @@ class FallbackLogger:
 
 
 log: LoggerType = FallbackLogger()
-logLevel: Final[Property[int]] = Property(logging.INFO)
+logLevel: Final[Option[int]] = Option(logging.INFO)
 
 
 def init() -> None:

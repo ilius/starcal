@@ -42,7 +42,7 @@ if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.color_utils import ColorType
-	from scal3.property import ListProperty, Property
+	from scal3.option import ListOption, Option
 
 __all__ = [
 	"CheckColorOptionUI",
@@ -74,7 +74,7 @@ __all__ = [
 
 
 class OptionUI:
-	prop: Property[Any]
+	prop: Option[Any]
 	# def __new__(cls, *args, **kwargs):
 	# print("OptionUI:", args, kwargs)
 	# obj = object.__new__(cls)
@@ -112,7 +112,7 @@ class ComboTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		items: list[str],
 		label: str = "",
 		labelSizeGroup: gtk.SizeGroup | None = None,
@@ -162,7 +162,7 @@ class FontFamilyOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str] | Property[str | None],
+		prop: Option[str] | Option[str | None],
 		hasAuto: bool = False,
 		label: str = "",
 		onChangeFunc: Callable[[], None] | None = None,
@@ -240,12 +240,12 @@ class FontFamilyOptionUI(OptionUI):
 # 		semi-condensed | normal | semi-expanded | expanded |
 # 		extra-expanded | ultra-expanded
 
-# Constructor can accept argument `propDict: dict[str, Property]`
+# Constructor can accept argument `propDict: dict[str, Option]`
 # with keys being a subset these 6 style keys, and values
 # being the attribute/variable names for reading (in updateWidget)
 # and storing (in updateVar) the style values
 # or maybe we should leave that to the user of class, and just accept
-# a `prop: Property` argument like other classes
+# a `prop: Option` argument like other classes
 
 
 class ComboEntryTextOptionUI(OptionUI):
@@ -254,7 +254,7 @@ class ComboEntryTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		items: list[str] | None = None,
 	) -> None:
 		"""Items is a list of strings."""
@@ -291,7 +291,7 @@ class ComboImageTextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[int],
+		prop: Option[int],
 		items: list[tuple[str, str]] | None = None,
 	) -> None:
 		"""Items is a list of (imagePath, text) tuples."""
@@ -342,7 +342,7 @@ class FontOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[Font | None],
+		prop: Option[Font | None],
 		dragAndDrop: bool = True,
 		previewText: str = "",
 	) -> None:
@@ -373,7 +373,7 @@ class CheckOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[bool],
+		prop: Option[bool],
 		label: str = "",
 		tooltip: str = "",
 		live: bool = False,
@@ -439,7 +439,7 @@ class ColorOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[ColorType] | Property[ColorType | None],
+		prop: Option[ColorType] | Option[ColorType | None],
 		useAlpha: bool = False,
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
@@ -477,7 +477,7 @@ class ColorOptionUI(OptionUI):
 # class OptionalColorOptionUI(ColorOptionUI):
 # 	def __init__(
 # 		self,
-# 		prop: Property[ColorType | None],
+# 		prop: Option[ColorType | None],
 # 		useAlpha: bool = False,
 # 		live: bool = False,
 # 		onChangeFunc: Callable | None = None,
@@ -603,7 +603,7 @@ class IntSpinOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[int],
+		prop: Option[int],
 		bounds: tuple[int, int],
 		step: int = 0,
 		label: str = "",
@@ -658,7 +658,7 @@ class FloatSpinOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[float],
+		prop: Option[float],
 		bounds: tuple[float, float],
 		digits: int = 1,
 		step: float = 0,
@@ -714,7 +714,7 @@ class TextOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
@@ -759,7 +759,7 @@ class WidthHeightOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[tuple[int, int]],
+		prop: Option[tuple[int, int]],
 		maxim: int,
 	) -> None:
 		minim = 0
@@ -793,7 +793,7 @@ class FileChooserOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		title: str = "Select File",
 		currentFolder: str = "",
 	) -> None:
@@ -849,7 +849,7 @@ class ImageFileChooserOptionUI(FileChooserOptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		title: str = "Select File",
 		currentFolder: str = "",
 	) -> None:
@@ -875,7 +875,7 @@ class IconChooserOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		label: str = "",
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
@@ -924,7 +924,7 @@ class RadioListOptionUI(OptionUI):
 	def __init__(
 		self,
 		vertical: bool,
-		prop: Property[int | None],
+		prop: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
@@ -960,7 +960,7 @@ class RadioListOptionUI(OptionUI):
 class RadioHListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
-		prop: Property[int | None],
+		prop: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
@@ -976,7 +976,7 @@ class RadioHListOptionUI(RadioListOptionUI):
 class RadioVListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
-		prop: Property[int | None],
+		prop: Option[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
@@ -996,7 +996,7 @@ class ListOptionUI(OptionUI):
 	def __init__(
 		self,
 		vertical: bool,
-		prop: ListProperty[Any],
+		prop: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
 		self.prop = prop
@@ -1027,7 +1027,7 @@ class ListOptionUI(OptionUI):
 class HListOptionUI(ListOptionUI):
 	def __init__(
 		self,
-		prop: ListProperty[Any],
+		prop: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
 		ListOptionUI.__init__(
@@ -1041,7 +1041,7 @@ class HListOptionUI(ListOptionUI):
 class VListOptionUI(ListOptionUI):
 	def __init__(
 		self,
-		prop: ListProperty[Any],
+		prop: ListOption[Any],
 		items: list[OptionUI] | None = None,
 	) -> None:
 		ListOptionUI.__init__(
@@ -1058,7 +1058,7 @@ class DirectionOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
@@ -1097,7 +1097,7 @@ class JustificationOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[str],
+		prop: Option[str],
 		label: str = "",
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:

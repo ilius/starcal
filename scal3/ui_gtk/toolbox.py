@@ -3,7 +3,7 @@ from __future__ import annotations
 from gi.overrides import GObject
 
 from scal3 import logger
-from scal3.property import Property
+from scal3.option import Option
 from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
 
 log = logger.get()
@@ -50,8 +50,8 @@ class SignalHandler(SignalHandlerBase):
 class BaseToolBoxItem(CustomizableCalObj):
 	Sig: type[SignalHandlerType] = SignalHandler
 	hasOptions = False
-	iconSize = Property(0)
-	preferIconName = Property(False)
+	iconSize = Option(0)
+	preferIconName = Option(False)
 	onClick: ButtonClickCallback | None = None
 	onPress: ButtonPressCallback | None = None
 	continuousClick = False
@@ -117,8 +117,8 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
-		self.preferIconName = Property(False)
-		self.iconSize = Property(conf.toolbarIconSize.v)
+		self.preferIconName = Option(False)
+		self.iconSize = Option(conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
 		self.vertical = False
 		# ------
@@ -298,11 +298,11 @@ class BaseToolBox(CustomizableCalObj):
 		self.box.show()
 		self.w.add(self.box)
 		self.funcOwner = funcOwner
-		self.preferIconName: Property[bool] = conf.useSystemIcons
-		self.iconSize: Property[int] = Property(iconSize or conf.toolbarIconSize.v)
+		self.preferIconName: Option[bool] = conf.useSystemIcons
+		self.iconSize: Option[int] = Option(iconSize or conf.toolbarIconSize.v)
 		self.continuousClick = continuousClick
-		self.buttonBorder = Property(buttonBorder)
-		self.buttonPadding = Property(buttonPadding)
+		self.buttonBorder = Option(buttonBorder)
+		self.buttonPadding = Option(buttonPadding)
 		self.initVars()
 
 	def get_orientation(self) -> gtk.Orientation:

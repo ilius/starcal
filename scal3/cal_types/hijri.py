@@ -23,7 +23,7 @@ import json
 from typing import TYPE_CHECKING, Any, Final
 
 from scal3 import logger
-from scal3.property import Property
+from scal3.option import Option
 
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
@@ -91,7 +91,7 @@ minMonthLen = 29
 maxMonthLen = 30
 avgYearLen = 354.3666  # FIXME
 
-hijriUseDB: Final[Property[bool]] = Property(True)
+hijriUseDB: Final[Option[bool]] = Option(True)
 
 
 options: list[OptionTuple] = [
@@ -126,7 +126,7 @@ if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
-confParams: Final[dict[str, Property[Any]]] = {
+confParams: Final[dict[str, Option[Any]]] = {
 	"hijriUseDB": hijriUseDB,
 }
 

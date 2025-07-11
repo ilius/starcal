@@ -44,8 +44,8 @@ from scal3.event_update_queue import EventUpdateQueue
 from scal3.filesystem import FileSystem
 from scal3.font import Font
 from scal3.locale_man import tr as _
+from scal3.option import Option
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
-from scal3.property import Property
 from scal3.s_object import SObj
 from scal3.ui import conf
 from scal3.ui.conf import (
@@ -85,7 +85,7 @@ __all__ = [
 	"EventNotificationManager",
 	"FileSystem",
 	"Font",
-	"Property",
+	"Option",
 	"SObj",
 	"cells",
 	"checkMainWinItems",
@@ -488,7 +488,7 @@ if updateLocalTimezoneHistory():
 	saveConf()
 
 
-needRestartList: list[tuple[Property[Any], Any]] = [
+needRestartList: list[tuple[Option[Any], Any]] = [
 	(prop, prop.v) for prop in conf.needRestartList + locale_man.getNeedRestartParams()
 ]
 

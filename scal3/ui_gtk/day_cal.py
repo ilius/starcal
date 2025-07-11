@@ -71,7 +71,7 @@ if TYPE_CHECKING:
 
 	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
-	from scal3.property import ListProperty, Property
+	from scal3.option import ListOption, Option
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
 		DayCalTypeBaseParamsDict,
@@ -97,30 +97,30 @@ class DayCal(CalBase):
 	desc = _("Day Calendar")
 	itemListCustomizable = False
 
-	backgroundColor: Property[ColorType] | None = None
-	dayParams: ListProperty[DayCalTypeDayParamsDict] | None = None
-	monthParams: ListProperty[DayCalTypeWMParamsDict] | None = None
-	weekdayParams: Property[DayCalTypeWMParamsDict] | None = None
-	weekdayLocalize: Property[bool] | None = None
-	weekdayAbbreviate: Property[bool] | None = None
-	weekdayUppercase: Property[bool] | None = None
+	backgroundColor: Option[ColorType] | None = None
+	dayParams: ListOption[DayCalTypeDayParamsDict] | None = None
+	monthParams: ListOption[DayCalTypeWMParamsDict] | None = None
+	weekdayParams: Option[DayCalTypeWMParamsDict] | None = None
+	weekdayLocalize: Option[bool] | None = None
+	weekdayAbbreviate: Option[bool] | None = None
+	weekdayUppercase: Option[bool] | None = None
 
-	widgetButtonsEnable: Property[bool] | None = None
-	widgetButtonsSize: Property[int] | None = None
-	widgetButtonsOpacity: Property[float] | None = None
-	widgetButtons: ListProperty[dict[str, Any]] | None = None
+	widgetButtonsEnable: Option[bool] | None = None
+	widgetButtonsSize: Option[int] | None = None
+	widgetButtonsOpacity: Option[float] | None = None
+	widgetButtons: ListOption[dict[str, Any]] | None = None
 
-	navButtonsEnable: Property[bool] | None = None
-	navButtonsGeo: Property[ButtonGeoDict] | None = None
-	navButtonsOpacity: Property[float] | None = None
+	navButtonsEnable: Option[bool] | None = None
+	navButtonsGeo: Option[ButtonGeoDict] | None = None
+	navButtonsOpacity: Option[float] | None = None
 
-	eventIconSize: Property[int] | None = None
-	eventTotalSizeRatio: Property[float] | None = None
+	eventIconSize: Option[int] | None = None
+	eventTotalSizeRatio: Option[float] | None = None
 
-	seasonPieEnable: Property[bool] | None = None
-	seasonPieGeo: Property[PieGeoDict] | None = None
-	seasonPieColors: dict[str, Property[ColorType]] | None = None
-	seasonPieTextColor: Property[ColorType] | None = None
+	seasonPieEnable: Option[bool] | None = None
+	seasonPieGeo: Option[PieGeoDict] | None = None
+	seasonPieColors: dict[str, Option[ColorType]] | None = None
+	seasonPieTextColor: Option[ColorType] | None = None
 
 	myKeys = CalBase.myKeys | {
 		"up",

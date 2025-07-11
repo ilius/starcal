@@ -25,7 +25,7 @@ from time import time as now
 from typing import Final
 
 from scal3.cell_type import CellType
-from scal3.property import Property
+from scal3.option import Option
 
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):
@@ -206,16 +206,16 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# --------------
 		confNeedsSave = False
 		# ------
-		self.locName = Property("")
-		self.lat = Property(0)
-		self.lng = Property(0)
-		self.method = Property("")
+		self.locName = Option("")
+		self.lat = Option(0)
+		self.lng = Option(0)
+		self.method = Option("")
 		# ------
-		self.imsak = Property(10)  # minutes before Fajr (Morning Azan)
+		self.imsak = Option(10)  # minutes before Fajr (Morning Azan)
 		# self.asrMode = ASR_STANDARD
 		# self.highLats = "NightMiddle"
 		# self.timeFormat = "24h"
-		self.shownTimeNames = Property(
+		self.shownTimeNames = Option(
 			[
 				"fajr",
 				"sunrise",
@@ -226,18 +226,18 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		)
 		# FIXME rename shownTimeNames to activeTimeNames
 		# 		or add another list azanSoundTimeNames
-		self.sep = Property("     ")
+		self.sep = Option("     ")
 		# --
-		self.azanEnable = Property(False)
-		self.azanFile = Property("")
+		self.azanEnable = Option(False)
+		self.azanFile = Option("")
 		# --
-		self.preAzanEnable = Property(False)
-		self.preAzanFile = Property("")
-		self.preAzanMinutes = Property(2.0)
+		self.preAzanEnable = Option(False)
+		self.preAzanFile = Option("")
+		self.preAzanMinutes = Option(2.0)
 		# --
-		self.disclaimerLastEpoch = Property(0)
+		self.disclaimerLastEpoch = Option(0)
 		# -------
-		self.confParams: Final[dict[str, Property]] = {
+		self.confParams: Final[dict[str, Option]] = {
 			"lat": self.lat,
 			"lng": self.lng,
 			"method": self.method,
