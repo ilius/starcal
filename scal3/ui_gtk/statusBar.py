@@ -15,7 +15,7 @@ from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["CalObj"]
 
@@ -81,33 +81,33 @@ class CalObj(CustomizableCalObj):
 			label.set_label(text)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckColorPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckColorOptionUI,
+			CheckOptionUI,
+			ColorOptionUI,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.statusBarDatesReverseOrder,
 			label=_("Reverse the order of dates"),
 			live=True,
 			onChangeFunc=self.onConfigChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(prop=conf.statusBarDatesColorEnable, label=_("Dates Color")),
-			ColorPrefItem(prop=conf.statusBarDatesColor, useAlpha=True),
+		option = CheckColorOptionUI(
+			CheckOptionUI(prop=conf.statusBarDatesColorEnable, label=_("Dates Color")),
+			ColorOptionUI(prop=conf.statusBarDatesColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

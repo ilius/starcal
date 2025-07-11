@@ -65,18 +65,18 @@ class CalObj(CustomizableCalObj):
 		self.pbar.set_fraction(fraction)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils_extra import CalTypePrefItem
+		from scal3.ui_gtk.option_ui_extra import CalTypeOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		prefItem = CalTypePrefItem(
+		option = CalTypeOptionUI(
 			prop=conf.monthPBarCalType,
 			live=True,
 			onChangeFunc=self.onCalTypeChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

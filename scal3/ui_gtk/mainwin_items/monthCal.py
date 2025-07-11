@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
-from scal3.ui_gtk.pref_utils import IntSpinPrefItem
+from scal3.ui_gtk.option_ui import IntSpinOptionUI
 
 log = logger.get()
 
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
 	from scal3.ui.pytypes import CalTypeParamsDict
-	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
@@ -180,11 +180,11 @@ class CalObj(CalBase):
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckColorPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
-			FloatSpinPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckColorOptionUI,
+			CheckOptionUI,
+			ColorOptionUI,
+			FloatSpinOptionUI,
 		)
 
 		if self.optionsWidget:
@@ -195,9 +195,9 @@ class CalObj(CalBase):
 			spacing=self.optionsPageSpacing,
 		)
 		labelSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		prefItem: PrefItem
+		option: OptionUI
 		# -------
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.mcalLeftMargin,
 			bounds=(0, 999),
 			step=1,
@@ -206,9 +206,9 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.mcalTopMargin,
 			bounds=(0, 999),
 			step=1,
@@ -217,26 +217,26 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# --------
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(prop=conf.mcalGrid, label=_("Grid")),
-			ColorPrefItem(prop=conf.mcalGridColor, useAlpha=True),
+		option = CheckColorOptionUI(
+			CheckOptionUI(prop=conf.mcalGrid, label=_("Grid")),
+			ColorOptionUI(prop=conf.mcalGridColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		hbox = prefItem.getWidget()
+		hbox = option.getWidget()
 		pack(optionsWidget, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		pack(hbox, newAlignLabel(label=_("Corner Menu Text Color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.mcalCornerMenuTextColor,
 			useAlpha=True,
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(optionsWidget, hbox)
 		# ------------
@@ -244,7 +244,7 @@ class CalObj(CalBase):
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.mcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -254,9 +254,9 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(pageVBox, prefItem.getWidget())
+		pack(pageVBox, option.getWidget())
 		# ---
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.mcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -266,7 +266,7 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(pageVBox, prefItem.getWidget())
+		pack(pageVBox, option.getWidget())
 		# ---
 		pageVBox.show_all()
 		# ---

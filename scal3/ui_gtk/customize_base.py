@@ -45,7 +45,7 @@ class CustomizableCalObj(CalObjWidget):
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
 	params = ()
-	# enablePrefItem = None
+	# enableOptionUI = None
 
 	def initVars(self) -> None:
 		if self.hasOptions and self.itemListCustomizable and self.vertical is None:

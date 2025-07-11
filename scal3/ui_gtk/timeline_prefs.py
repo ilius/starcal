@@ -23,15 +23,15 @@ from scal3.timeline import conf
 from scal3.ui import conf as uiconf
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.pref_utils import (
-	CheckColorPrefItem,
-	CheckPrefItem,
-	ColorPrefItem,
-	FloatSpinPrefItem,
-	IntSpinPrefItem,
-	PrefItem,
+from scal3.ui_gtk.option_ui import (
+	CheckColorOptionUI,
+	CheckOptionUI,
+	ColorOptionUI,
+	FloatSpinOptionUI,
+	IntSpinOptionUI,
+	OptionUI,
 )
-from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
+from scal3.ui_gtk.option_ui_extra import KeyBindingOptionUI
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import imageFromFile
 
@@ -96,30 +96,30 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageLabel = _("_General")
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
-		prefItem: PrefItem
+		option: OptionUI
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Background Color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.bgColor,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Foreground Color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.fgColor,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.baseFontSize,
 			bounds=(0.1, 999),
 			digits=1,
@@ -128,25 +128,25 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# FIXME: should we update TimeLine on type?! Can make it very slow
 		# can even cause freezing TimeLine
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(
+		option = CheckColorOptionUI(
+			CheckOptionUI(
 				prop=conf.changeHolidayBg,
 				label=_("Change Holidays Background"),
 			),
-			ColorPrefItem(
+			ColorOptionUI(
 				prop=conf.holidayBgBolor,
 				# useAlpha=False,
 			),
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		# TODO: changeHolidayBgMinDays
@@ -168,7 +168,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			timeLine.w.queue_draw()
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.basicButtonsSize,
 			bounds=(1, 999),
 			step=1,
@@ -176,12 +176,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=updateBasicButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.basicButtonsSpacing,
 			bounds=(0, 999),
 			digits=1,
@@ -190,7 +190,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=updateBasicButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 
@@ -201,17 +201,17 @@ class TimeLinePreferencesWindow(gtk.Window):
 			timeLine.w.queue_draw()
 
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.movementButtonsEnable,
 			label=_("Movement Buttons"),
 			live=True,
 			onChangeFunc=updateMovementButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.movementButtonsSize,
 			bounds=(1, 999),
 			step=1,
@@ -219,13 +219,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=updateMovementButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 
 		# --------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.basicButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
@@ -234,11 +234,11 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=updateBasicButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movementButtonsOpacity,
 			bounds=(0, 1),
 			digits=2,
@@ -247,7 +247,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=updateMovementButtons,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ----------------------------------------------------
 		vboxIndicators = vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
@@ -261,7 +261,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.majorStepMin,
 			bounds=(1, 999),
 			digits=1,
@@ -270,13 +270,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# FIXME: ValueError: could not convert string to float:
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.minorStepMin,
 			bounds=(1, 999),
 			digits=1,
@@ -285,7 +285,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# ---------------
@@ -302,7 +302,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.baseTickHeight,
 			bounds=(0.1, 999),
 			digits=1,
@@ -311,12 +311,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.baseTickWidth,
 			bounds=(0.1, 99),
 			digits=2,
@@ -325,12 +325,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.maxTickWidth,
 			bounds=(0.1, 99),
 			digits=1,
@@ -339,12 +339,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.maxTickHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
@@ -353,12 +353,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.maxLabelWidth,
 			bounds=(1, 999),
 			digits=1,
@@ -367,7 +367,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
@@ -391,7 +391,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.currentTimeMarkerHeightRatio,
 			bounds=(0.01, 1),
 			digits=2,
@@ -400,12 +400,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("of window height")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.currentTimeMarkerWidth,
 			bounds=(0.1, 99),
 			digits=2,
@@ -414,19 +414,19 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.currentTimeMarkerColor,
 			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ---------------
 		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
@@ -442,28 +442,28 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vboxIndicators, self.newWideButton(page), 1, 1)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.showWeekStart,
 			label=_("Show Week Start"),
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.weekStartTickColor,
 			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.showWeekStartMinDays,
 			bounds=(1, 999),
 			step=1,
@@ -471,12 +471,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.showWeekStartMaxDays,
 			bounds=(1, 999),
 			step=1,
@@ -484,7 +484,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("days")))
 		pack(vbox, hbox)
 		# ----------------------------------------------------
@@ -499,7 +499,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.boxLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -508,12 +508,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.boxInnerAlpha,
 			bounds=(0, 1),
 			digits=2,
@@ -522,11 +522,11 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.boxEditBorderWidth,
 			bounds=(0, 999),
 			digits=1,
@@ -535,12 +535,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.boxEditInnerLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -549,12 +549,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.boxEditHelperLineWidth,
 			bounds=(0, 99),
 			digits=1,
@@ -563,18 +563,18 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(vbox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.boxReverseGravity,
 			label=_("Reverse Gravity"),
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ------
 		# TODO: boxSkipPixelLimit = 0.1  # pixel
@@ -604,13 +604,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 			animVBox.set_sensitive(animation)
 			timeLine.w.queue_draw()
 
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.enableAnimation,
 			label=_("Animation"),
 			live=True,
 			onChangeFunc=enableAnimationChanged,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ------
 		frame = gtk.Frame(label=_("Without Animation"))
@@ -620,7 +620,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, frame)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingStaticStepMouse,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -629,12 +629,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(noAnimVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingStaticStepKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -643,7 +643,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixels")))
 		pack(noAnimVBox, hbox)
 		# ---
@@ -662,7 +662,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(animVBox, self.newWideButton(page), 1, 1)
 		# -----------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingInitialVelocity,
 			bounds=(0, 9999),
 			digits=1,
@@ -671,12 +671,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingMaxVelocity,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -685,12 +685,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(hbox, gtk.Label(label=_("pixel/second")))
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingHandForceMouse,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -699,7 +699,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(
 			hbox,
 			gtk.Label(
@@ -710,7 +710,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingHandForceKeyboard,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -719,7 +719,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(
 			hbox,
 			gtk.Label(
@@ -730,7 +730,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingHandForceKeyboardSmall,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -739,7 +739,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(
 			hbox,
 			gtk.Label(
@@ -750,7 +750,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingHandForceButton,
 			bounds=(0.1, 9999),
 			digits=1,
@@ -759,7 +759,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(
 			hbox,
 			gtk.Label(
@@ -770,7 +770,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.movingFrictionForce,
 			bounds=(0, 9999),
 			digits=1,
@@ -779,7 +779,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(
 			hbox,
 			gtk.Label(
@@ -803,7 +803,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.scrollZoomStep,
 			bounds=(1, 9),
 			digits=2,
@@ -812,11 +812,11 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.keyboardZoomStep,
 			bounds=(1, 9),
 			digits=2,
@@ -825,7 +825,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			live=True,
 			onChangeFunc=timeLine.w.queue_draw,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(vbox, hbox)
 		# ----------------------------------------------------
 		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
@@ -838,12 +838,12 @@ class TimeLinePreferencesWindow(gtk.Window):
 		page.pageIcon = "configure-shortcuts.png"
 		self.prefPages.append(page)
 		# -----
-		prefItem = KeyBindingPrefItem(
+		option = KeyBindingOptionUI(
 			prop=conf.keys,
 			actions=sorted(conf.keys.v.values()),
 		)
-		prefItem.updateWidget()
-		pack(vbox, prefItem.getWidget(), 1, 1)
+		option.updateWidget()
+		pack(vbox, option.getWidget(), 1, 1)
 		# --------------------------------------------------------------------
 		rootPagePath = "root"
 		# ---

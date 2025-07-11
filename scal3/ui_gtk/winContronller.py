@@ -12,7 +12,7 @@ from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
-from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if TYPE_CHECKING:
@@ -315,26 +315,26 @@ class CalObj(CustomizableCalBox):
 		conf.winControllerButtons.v = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckPrefItem,
-			ComboTextPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckOptionUI,
+			ComboTextOptionUI,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
-		prefItem = ComboTextPrefItem(
+		option = ComboTextOptionUI(
 			prop=conf.winControllerTheme,
 			items=ui.winControllerThemeList,
 			label=_("Theme"),
 			live=True,
 			onChangeFunc=self.updateTheme,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.winControllerIconSize,
 			bounds=(5, 128),
 			step=1,
@@ -342,9 +342,9 @@ class CalObj(CustomizableCalBox):
 			live=True,
 			onChangeFunc=self.updateButtons,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.winControllerBorder,
 			bounds=(0, 99),
 			step=1,
@@ -352,9 +352,9 @@ class CalObj(CustomizableCalBox):
 			live=True,
 			onChangeFunc=self.onButtonBorderChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.winControllerSpacing,
 			bounds=(0, 99),
 			step=1,
@@ -362,14 +362,14 @@ class CalObj(CustomizableCalBox):
 			live=True,
 			onChangeFunc=self.onButtonPaddingChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.winControllerPressState,
 			label=_("Change icon on button press"),
 			live=True,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

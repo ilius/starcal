@@ -24,9 +24,9 @@ log = logger.get()
 from scal3.json_utils import dataToCompactJson
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.pref_utils import PrefItem
+from scal3.ui_gtk.option_ui import OptionUI
 
-__all__ = ["LogLevelPrefItem"]
+__all__ = ["LogLevelOptionUI"]
 
 
 class LogLevelComboBox(gtk.ComboBox):
@@ -65,7 +65,7 @@ class LogLevelComboBox(gtk.ComboBox):
 				return
 
 
-class LogLevelPrefItem(PrefItem):
+class LogLevelOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
