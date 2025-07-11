@@ -56,22 +56,21 @@ output.write("""\tfrom scal3.ui.pytypes import (
 	)\n\n\n""")
 output.write(f"__all__ = {all_names!r}\n\n")
 
-for p in options.confOptionsData:
-	assert p.default is not options.NOT_SET
-	value = p.default
-	if p.type.startswith("list["):
-		itemType = p.type[5:-1]
-		output.write(
-			f"{p.v3Name}: Final[ListOption[{itemType}]] = ListOption({value!r})\n"
-		)
-		continue
-	# if p.type.endswith("Dict"):
-	# 	output.write(
-	# 		f"{p.v3Name}: Final[DictOption[{p.type}]] = DictOption({value!r})\n"
-	# 	)
-	# 	continue
+for opt in options.confOptionsData:
+	assert opt.default is not options.NOT_SET
+	value = opt.default
+	fullType = f"Option[{opt.type}]"
+	fullValue = f"Option({value!r})"
+	if opt.type.startswith("list["):
+		fullType = f"ListOption[{opt.type[5:-1]}]"
+		fullValue = f"ListOption({value!r})"
+	# elif p.type.endswith("Dict"):
+	# 	fullType = f"DictOption[{p.type}]"
+	# 	fullValue = f"DictOption({value!r})"
 
-	output.write(f"{p.v3Name}: Final[Option[{p.type}]] = Option({value!r})" + "\n")
+	fullType = f"Final[{fullType}]"
+
+	output.write(f"{opt.v3Name}: {fullType} = {fullValue}" + "\n")
 
 
 output.write("\n\n")
