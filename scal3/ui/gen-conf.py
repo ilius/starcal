@@ -23,7 +23,7 @@ def genParamList(names: list[str]) -> str:
 
 
 all_names = sorted(
-	[p.v3Name for p in options.confOptionsData]
+	[opt.v3Name for opt in options.confOptionsData]
 	+ [
 		"confOptions",
 		"confOptionsCustomize",

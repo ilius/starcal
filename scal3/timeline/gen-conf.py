@@ -16,7 +16,7 @@ def genParamDict(names: list[str]) -> str:
 	return "{" + "\n".join([f"\t{name!r}: {name}," for name in names]) + "\n}\n"
 
 
-confOptions = sorted([p.v3Name for p in options.confOptionsData])
+confOptions = sorted([opt.v3Name for opt in options.confOptionsData])
 all_names = sorted(confOptions + ["confOptions"])
 
 output = io.StringIO()
