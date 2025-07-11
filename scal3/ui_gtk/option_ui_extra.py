@@ -29,7 +29,7 @@ from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import set_tooltip
 
@@ -40,19 +40,19 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"ActiveCalsTreeView",
-	"ActiveInactiveCalsPrefItem",
-	"ActiveInactiveCalsPrefItemToolbar",
+	"ActiveInactiveCalsOptionUI",
+	"ActiveInactiveCalsOptionUIToolbar",
 	"ActiveInactveCalsTreeview",
-	"CalTypePrefItem",
-	"CheckStartupPrefItem",
-	"FixedSizeOrRatioPrefItem",
+	"CalTypeOptionUI",
+	"CheckStartupOptionUI",
+	"FixedSizeOrRatioOptionUI",
 	"InactiveCalsTreeView",
-	"KeyBindingPrefItem",
-	"LangPrefItem",
-	"WeekDayCheckListPrefItem",
+	"KeyBindingOptionUI",
+	"LangOptionUI",
+	"WeekDayCheckListOptionUI",
 	"newBox",
 	"treeviewSelect",
-	# "ToolbarIconSizePrefItem",
+	# "ToolbarIconSizeOptionUI",
 ]
 
 
@@ -65,7 +65,7 @@ def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 	return box
 
 
-class FixedSizeOrRatioPrefItem(PrefItem):
+class FixedSizeOrRatioOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -73,9 +73,9 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		self,
 		ratioEnableProp: Property[bool] | None,
 		fixedLabel: str = "",
-		fixedItem: IntSpinPrefItem | None = None,
+		fixedItem: IntSpinOptionUI | None = None,
 		ratioLabel: str = "",
-		ratioItem: FloatSpinPrefItem | None = None,
+		ratioItem: FloatSpinOptionUI | None = None,
 		vspacing: int = 0,
 		hspacing: int = 0,
 		borderWidth: int = 2,
@@ -139,7 +139,7 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class WeekDayCheckListPrefItem(PrefItem):
+class WeekDayCheckListOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -207,7 +207,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 
 
 """
-class ToolbarIconSizePrefItem(PrefItem):
+class ToolbarIconSizeOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -231,7 +231,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 # ------------------------------------------------------------
 
 
-class CalTypePrefItem(PrefItem):
+class CalTypeOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -274,7 +274,7 @@ class CalTypePrefItem(PrefItem):
 
 
 # FIXME: switch to: prop: Property,
-class LangPrefItem(PrefItem):
+class LangOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -318,7 +318,7 @@ class LangPrefItem(PrefItem):
 	# 	lang =
 
 
-class CheckStartupPrefItem(PrefItem):  # FIXME
+class CheckStartupOptionUI(OptionUI):  # FIXME
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -478,8 +478,8 @@ class InactiveCalsTreeView(ActiveInactveCalsTreeview):
 	dragId = 102
 
 
-class ActiveInactiveCalsPrefItemToolbar(VerticalStaticToolBox):
-	def __init__(self, parent: ActiveInactiveCalsPrefItem) -> None:
+class ActiveInactiveCalsOptionUIToolbar(VerticalStaticToolBox):
+	def __init__(self, parent: ActiveInactiveCalsOptionUI) -> None:
 		VerticalStaticToolBox.__init__(self, parent)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
@@ -543,7 +543,7 @@ def treeviewSelect(treev: gtk.TreeView, index: int) -> None:
 	# and calling set_cursor unselects it
 
 
-class ActiveInactiveCalsPrefItem(PrefItem):
+class ActiveInactiveCalsOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -564,7 +564,7 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 		self.activeTreev = activeTreev
 		self.activeTrees = activeTreev.listStore
 		# --------
-		toolbar = ActiveInactiveCalsPrefItemToolbar(self)
+		toolbar = ActiveInactiveCalsOptionUIToolbar(self)
 		toolbar.w.show_all()
 		self.toolbar = toolbar
 		pack(self._widget, toolbar.w)
@@ -742,7 +742,7 @@ class ActiveInactiveCalsPrefItem(PrefItem):
 			self.inactiveTrees.append([module.name, _(module.desc, ctx="calendar")])
 
 
-class KeyBindingPrefItem(PrefItem):
+class KeyBindingOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 

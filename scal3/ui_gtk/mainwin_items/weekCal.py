@@ -57,7 +57,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, OptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
 	BaseToolBoxItem,
@@ -140,10 +140,10 @@ class ColumnBase(CustomizableCalObj):
 		self.w.queue_resize()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckPrefItem,
-			FloatSpinPrefItem,
-			FontFamilyPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckOptionUI,
+			FloatSpinOptionUI,
+			FontFamilyOptionUI,
 		)
 
 		if self.optionsWidget:
@@ -153,12 +153,12 @@ class ColumnBase(CustomizableCalObj):
 			orientation=gtk.Orientation.VERTICAL,
 			spacing=self.optionsPageSpacing,
 		)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
 		if self.customizeWidth:
 			widthProp = self.getWidthProp()
 			assert widthProp is not None
-			prefItem = FloatSpinPrefItem(
+			option = FloatSpinOptionUI(
 				prop=widthProp,
 				bounds=(1, 999),
 				digits=1,
@@ -167,33 +167,33 @@ class ColumnBase(CustomizableCalObj):
 				live=True,
 				onChangeFunc=self.onWidthChange,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.customizeExpand:
 			expandProp = self.getExpandProp()
 			assert expandProp is not None
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=expandProp,
 				label=_("Expand"),
 				live=True,
 				onChangeFunc=self.onExpandCheckClick,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.customizeFont:
 			fontProp = self.getFontProp()
 			assert fontProp is not None
-			prefItem = FontFamilyPrefItem(
+			option = FontFamilyOptionUI(
 				prop=fontProp,
 				hasAuto=True,
 				label=_("Font Family"),
 				onChangeFunc=self.onFontChange,
 			)
-			prefItem.updateWidget()  # done inside Live*PrefItem classes
-			pack(optionsWidget, prefItem.getWidget())
+			option.updateWidget()  # done inside Live*OptionUI classes
+			pack(optionsWidget, option.getWidget())
 			previewText = self.getFontPreviewText()
 			if previewText:
-				prefItem.setPreviewText(previewText)
+				option.setPreviewText(previewText)
 		# ----
 		self.addExtraOptionsWidget(optionsWidget)
 		# ----
@@ -485,7 +485,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import IconChooserPrefItem
+		from scal3.ui_gtk.option_ui import IconChooserOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -494,13 +494,13 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			spacing=self.optionsPageSpacing,
 		)
 		# ---
-		prefItem = IconChooserPrefItem(
+		option = IconChooserOptionUI(
 			prop=conf.wcal_toolbar_mainMenu_icon,
 			label=_("Icon"),
 			live=True,
 			onChangeFunc=self.updateImage,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
@@ -679,16 +679,16 @@ class PluginsTextColumn(Column):
 		)
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		from scal3.ui_gtk.option_ui import CheckOptionUI
 
 		# -----
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.wcal_pluginsText_firstLineOnly,
 			label=_("Only first line of text"),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 
 	def getFontPreviewText(self) -> str:  # noqa: PLR6301
 		for occurData in ui.cells.current.getPluginsData():
@@ -830,22 +830,22 @@ class EventsTextColumn(Column):
 		self.onDateChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckColorPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckColorOptionUI,
+			CheckOptionUI,
+			ColorOptionUI,
 		)
 
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
 		pack(
 			optionsWidget,
-			CheckColorPrefItem(
-				CheckPrefItem(
+			CheckColorOptionUI(
+				CheckOptionUI(
 					prop=conf.wcal_eventsText_pastColorEnable,
 					label=_("Past Event Color"),
 				),
-				ColorPrefItem(
+				ColorOptionUI(
 					prop=conf.wcal_eventsText_pastColor,
 					useAlpha=True,
 				),
@@ -857,12 +857,12 @@ class EventsTextColumn(Column):
 
 		pack(
 			optionsWidget,
-			CheckColorPrefItem(
-				CheckPrefItem(
+			CheckColorOptionUI(
+				CheckOptionUI(
 					prop=conf.wcal_eventsText_ongoingColorEnable,
 					label=_("Ongoing Event Color"),
 				),
-				ColorPrefItem(
+				ColorOptionUI(
 					prop=conf.wcal_eventsText_ongoingColor,
 					useAlpha=True,
 				),
@@ -874,7 +874,7 @@ class EventsTextColumn(Column):
 
 		pack(
 			optionsWidget,
-			CheckPrefItem(
+			CheckOptionUI(
 				prop=conf.wcal_eventsText_colorize,
 				label=_("Use color of event group\nfor event text"),
 				live=True,
@@ -884,7 +884,7 @@ class EventsTextColumn(Column):
 
 		pack(
 			optionsWidget,
-			CheckPrefItem(
+			CheckOptionUI(
 				prop=conf.wcal_eventsText_showDesc,
 				label=_("Show Description"),
 				live=True,
@@ -1129,14 +1129,14 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 			item.onWidthChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.pref_utils import DirectionPrefItem
+		from scal3.ui_gtk.option_ui import DirectionOptionUI
 
 		# ---
-		prefItem = DirectionPrefItem(
+		option = DirectionOptionUI(
 			prop=conf.wcal_daysOfMonth_dir,
 			onChangeFunc=self.updateDirection,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
@@ -1365,16 +1365,16 @@ class MoonStatusColumn(Column):
 		cr.scale(1 / scaleFact, 1 / scaleFact)
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		from scal3.ui_gtk.option_ui import CheckOptionUI
 
 		# ----
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.wcal_moonStatus_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onSouthernHemisphereChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 
 	def onSouthernHemisphereChange(self) -> None:
 		self.onDateChange()
@@ -1476,10 +1476,10 @@ class CalObj(CalBase):
 		self.repackAll()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckColorPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckColorOptionUI,
+			CheckOptionUI,
+			ColorOptionUI,
 		)
 
 		if self.optionsWidget:
@@ -1489,9 +1489,9 @@ class CalObj(CalBase):
 			orientation=gtk.Orientation.VERTICAL,
 			spacing=self.optionsPageSpacing,
 		)
-		prefItem: PrefItem
+		option: OptionUI
 		# -----
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.wcalTextSizeScale,
 			bounds=(0.01, 1),
 			digits=3,
@@ -1500,32 +1500,32 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(prop=conf.wcalGrid, label=_("Grid")),
-			ColorPrefItem(prop=conf.wcalGridColor, useAlpha=True),
+		option = CheckColorOptionUI(
+			CheckOptionUI(prop=conf.wcalGrid, label=_("Grid")),
+			ColorOptionUI(prop=conf.wcalGridColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(
+		option = CheckColorOptionUI(
+			CheckOptionUI(
 				prop=conf.wcalUpperGradientEnable,
 				label=_("Row's Upper Gradient"),
 			),
-			ColorPrefItem(prop=conf.wcalUpperGradientColor, useAlpha=True),
+			ColorOptionUI(prop=conf.wcalUpperGradientColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ------------
 		pageVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=20)
 		pageVBox.set_border_width(10)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.wcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -1535,9 +1535,9 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(pageVBox, prefItem.getWidget())
+		pack(pageVBox, option.getWidget())
 		# ---
-		prefItem = FloatSpinPrefItem(
+		option = FloatSpinOptionUI(
 			prop=conf.wcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
@@ -1547,7 +1547,7 @@ class CalObj(CalBase):
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(pageVBox, prefItem.getWidget())
+		pack(pageVBox, option.getWidget())
 		# ---
 		pageVBox.show_all()
 		# ---
