@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 	from scal3.font import Font
 	from scal3.plugin_type import PluginType
 	from scal3.property import Property
-	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["PluginsTextBox"]
 
@@ -346,11 +346,11 @@ class PluginsTextBox(CustomizableCalObj):
 		return True
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckFontPrefItem,
-			CheckPrefItem,
-			FontPrefItem,
-			JustificationPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckFontOptionUI,
+			CheckOptionUI,
+			FontOptionUI,
+			JustificationOptionUI,
 		)
 
 		if self.optionsWidget:
@@ -359,34 +359,34 @@ class PluginsTextBox(CustomizableCalObj):
 			orientation=gtk.Orientation.VERTICAL,
 			spacing=20,
 		)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
 		if self.insideExpanderParam:
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=self.insideExpanderParam,
 				label=_("Inside Expander"),
 				live=True,
 				onChangeFunc=self.onInsideExpanderCheckClick,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.justificationParam:
-			prefItem = JustificationPrefItem(
+			option = JustificationOptionUI(
 				prop=self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.fontParam:
 			assert self.fontEnableParam
-			prefItem = CheckFontPrefItem(
-				CheckPrefItem(prop=self.fontEnableParam, label=_("Font")),
-				FontPrefItem(prop=self.fontParam),
+			option = CheckFontOptionUI(
+				CheckOptionUI(prop=self.fontEnableParam, label=_("Font")),
+				FontOptionUI(prop=self.fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

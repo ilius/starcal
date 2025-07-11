@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.font import Font
 	from scal3.property import Property
-	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
@@ -124,54 +124,54 @@ class DayOccurrenceView(CustomizableCalObj):
 		self.w.set_justification(ud.justificationByName[value])
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckFontPrefItem,
-			CheckPrefItem,
-			FontPrefItem,
-			JustificationPrefItem,
-			TextPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckFontOptionUI,
+			CheckOptionUI,
+			FontOptionUI,
+			JustificationOptionUI,
+			TextOptionUI,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
-		prefItem: PrefItem
+		option: OptionUI
 		# ---
 		if self.justificationParam:
-			prefItem = JustificationPrefItem(
+			option = JustificationOptionUI(
 				prop=self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ---
 		if self.fontParam:
 			assert self.fontEnableParam
-			prefItem = CheckFontPrefItem(
-				CheckPrefItem(prop=self.fontEnableParam, label=_("Font")),
-				FontPrefItem(prop=self.fontParam),
+			option = CheckFontOptionUI(
+				CheckOptionUI(prop=self.fontEnableParam, label=_("Font")),
+				FontOptionUI(prop=self.fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		if self.timeFontParam:
 			assert self.timeFontEnableParam
-			prefItem = CheckFontPrefItem(
-				CheckPrefItem(self.timeFontEnableParam, label=_("Time Font")),
-				FontPrefItem(self.timeFontParam),
+			option = CheckFontOptionUI(
+				CheckOptionUI(self.timeFontEnableParam, label=_("Time Font")),
+				FontOptionUI(self.timeFontParam),
 				live=True,
 				onChangeFunc=self.updateTimeFont,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ---
 		if self.eventSepParam:
-			prefItem = TextPrefItem(
+			option = TextOptionUI(
 				prop=self.eventSepParam,
 				label=_("Event Text Separator"),
 				live=True,
 				onChangeFunc=self.onEventSepChange,
 			)
-			pack(optionsWidget, prefItem.getWidget())
+			pack(optionsWidget, option.getWidget())
 		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
@@ -582,7 +582,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 		return height, height
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import IntSpinPrefItem
+		from scal3.ui_gtk.option_ui import IntSpinOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -590,7 +590,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 		# assert optionsWidget is not None
 		assert isinstance(optionsWidget, gtk.Box), f"{optionsWidget=}"
 		# ---
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.eventViewMaxHeight,
 			bounds=(1, 9999),
 			step=1,
@@ -598,7 +598,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 			live=True,
 			onChangeFunc=self.onMaximumHeightChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

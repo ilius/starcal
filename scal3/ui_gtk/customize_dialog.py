@@ -28,7 +28,7 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, GdkPixbuf, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj, DummyCalObj, newSubPageButton
-from scal3.ui_gtk.pref_utils import CheckPrefItem
+from scal3.ui_gtk.option_ui import CheckOptionUI
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
@@ -144,7 +144,7 @@ class CustomizeWindow(Dialog):
 		# should we save on Escape? or when clicking the X (close) button?
 		# ---
 		self.itemByPagePath: dict[str, CustomizableCalObj] = {}
-		self.enableParamByPagePath: dict[str, CheckPrefItem] = {}
+		self.enableParamByPagePath: dict[str, CheckOptionUI] = {}
 		self.rootItem = item
 		# ---
 		rootPagePath = "mainWin"
@@ -408,15 +408,15 @@ class CustomizeWindow(Dialog):
 
 		if item.enableParam:
 			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=item.enableParam,
 				label=_("Enable"),
 				live=True,
 				onChangeFunc=item.onEnableCheckClick,
 			)
-			pack(hbox, prefItem.getWidget())
+			pack(hbox, option.getWidget())
 			pack(page.pageWidget, hbox, 0, 0)
-			self.enableParamByPagePath[pagePath] = prefItem
+			self.enableParamByPagePath[pagePath] = option
 
 		if item.itemListCustomizable and item.items:
 			self._addPageItemsTree(page)

@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.ui_gtk.cal_type_pref_items import ModuleOptionButton, ModuleOptionItem
+from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionItem
 
 log = logger.get()
 
@@ -34,26 +34,26 @@ from scal3.path import sourceDir, svgDir
 from scal3.ui import conf
 from scal3.ui_gtk import Dialog, Menu, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.log_pref import LogLevelPrefItem
+from scal3.ui_gtk.log_pref import LogLevelOptionUI
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.pref_utils import (
-	CheckColorPrefItem,
-	CheckPrefItem,
-	ColorPrefItem,
-	ComboEntryTextPrefItem,
-	FontFamilyPrefItem,
-	FontPrefItem,
-	ImageFileChooserPrefItem,
-	IntSpinPrefItem,
-	PrefItem,
-	WidthHeightPrefItem,
+from scal3.ui_gtk.option_ui import (
+	CheckColorOptionUI,
+	CheckOptionUI,
+	ColorOptionUI,
+	ComboEntryTextOptionUI,
+	FontFamilyOptionUI,
+	FontOptionUI,
+	ImageFileChooserOptionUI,
+	IntSpinOptionUI,
+	OptionUI,
+	WidthHeightOptionUI,
 )
-from scal3.ui_gtk.pref_utils_extra import (
-	ActiveInactiveCalsPrefItem,
-	CheckStartupPrefItem,
-	LangPrefItem,
-	WeekDayCheckListPrefItem,
+from scal3.ui_gtk.option_ui_extra import (
+	ActiveInactiveCalsOptionUI,
+	CheckStartupOptionUI,
+	LangOptionUI,
+	WeekDayCheckListOptionUI,
 )
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
@@ -187,11 +187,11 @@ class PreferencesWindow(gtk.Window):
 		# okB.grab_default()  # FIXME
 		# okB.grab_focus()  # FIXME
 		# ----------------------------------------------
-		self.loggerPrefItem: LogLevelPrefItem | None = None
-		self.localePrefItems: list[PrefItem] = []
-		self.corePrefItems: list[PrefItem] = []
-		self.uiPrefItems: list[PrefItem] = []
-		self.gtkPrefItems: list[PrefItem] = []  # FIXME
+		self.loggerOptionUI: LogLevelOptionUI | None = None
+		self.localeOptionUIs: list[OptionUI] = []
+		self.coreOptionUIs: list[OptionUI] = []
+		self.uiOptionUIs: list[OptionUI] = []
+		self.gtkOptionUIs: list[OptionUI] = []  # FIXME
 		# -----
 		self.prefPages: list[StackPage] = []
 		# ----------------------------------------------
@@ -285,8 +285,8 @@ class PreferencesWindow(gtk.Window):
 			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
 		)
 		pack(hbox, gtk.Label(label=_("Language")))
-		itemLang = LangPrefItem()
-		self.localePrefItems.append(itemLang)
+		itemLang = LangOptionUI()
+		self.localeOptionUIs.append(itemLang)
 		# ---
 		pack(hbox, itemLang.getWidget())
 		if langSh != "en":
@@ -296,8 +296,8 @@ class PreferencesWindow(gtk.Window):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		frame = gtk.Frame()
 		frame.set_label(_("Calendar Types"))
-		itemCals = ActiveInactiveCalsPrefItem()
-		self.corePrefItems.append(itemCals)
+		itemCals = ActiveInactiveCalsOptionUI()
+		self.coreOptionUIs.append(itemCals)
 		itemCalsWidget = itemCals.getWidget()
 		assert isinstance(itemCalsWidget, gtk.Container), f"{itemCalsWidget=}"
 		itemCalsWidget.set_border_width(10)
@@ -317,35 +317,35 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("_General")
 		page.pageIcon = "preferences-system.svg"
 		self.prefPages.append(page)
-		item: PrefItem
+		item: OptionUI
 		# --------------------------
 		hbox = gtk.Box(
 			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
 		)
-		item = CheckStartupPrefItem()
-		self.uiPrefItems.append(item)
+		item = CheckStartupOptionUI()
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# ------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.showMain,
 			label=_("Open main window on start"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.showDesktopWidget,
 			label=_("Open desktop widget on start"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# --------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.winTaskbar,
 			label=_("Window in Taskbar"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		hbox = gtk.Box(
 			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
 		)
@@ -359,11 +359,11 @@ class PreferencesWindow(gtk.Window):
 		except (ImportError, ValueError):
 			pass
 		else:
-			item = CheckPrefItem(
+			item = CheckOptionUI(
 				prop=conf.useAppIndicator,
 				label=_("Use AppIndicator"),
 			)
-			self.uiPrefItems.append(item)
+			self.uiOptionUIs.append(item)
 			hbox = gtk.Box(
 				orientation=gtk.Orientation.HORIZONTAL,
 				spacing=int(self.spacing / 2),
@@ -375,19 +375,19 @@ class PreferencesWindow(gtk.Window):
 		# hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL,spacing=self.spacing/2)
 		# pack(hbox, gtk.Label(label=_("Show Digital Clock:")))
 		# pack(hbox, gtk.Label(), 1, 1)
-		# #item = CheckPrefItem(
+		# #item = CheckOptionUI(
 		# #	prop=conf.showDigClockTb",
 		# #	label=_("On Toolbar"),
 		# #)  # FIXME
-		# #self.uiPrefItems.append(item)
+		# #self.uiOptionUIs.append(item)
 		# #pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
-		# item = CheckPrefItem(
+		# item = CheckOptionUI(
 		# 	prop=conf.showDigClockTr,
 		# 	label=_("On Status Icon"),
 		# 	tooltip="Notification Area",
 		# )
-		# self.uiPrefItems.append(item)
+		# self.uiOptionUIs.append(item)
 		# pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
 		# pack(vbox, hbox)
@@ -412,40 +412,40 @@ class PreferencesWindow(gtk.Window):
 			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
 		)
 		# ---
-		customCheckItem = CheckPrefItem(
+		customCheckItem = CheckOptionUI(
 			prop=conf.fontCustomEnable,
 			label=_("Application Font"),
 		)
-		self.uiPrefItems.append(customCheckItem)
+		self.uiOptionUIs.append(customCheckItem)
 		pack(hbox, customCheckItem.getWidget())
 		# ---
-		customItem = FontPrefItem(prop=conf.fontCustom)
-		self.uiPrefItems.append(customItem)
+		customItem = FontOptionUI(prop=conf.fontCustom)
+		self.uiOptionUIs.append(customItem)
 		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		customCheckItem.syncSensitive(customItem.getWidget())
 		pack(vbox, hbox, padding=padding)
-		item: PrefItem
+		item: OptionUI
 		# ---------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.buttonIconEnable,
 			label=_("Show icons in buttons"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ---------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.useSystemIcons,
 			label=_("Use System Icons"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ---------------------------
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.oldStyleProgressBar,
 			label=_("Old-style Progress Bar"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(vbox, item.getWidget())
 		# ------------------------- Theme ---------------------
 		pageHBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -457,8 +457,8 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Background")))
-		item = ColorPrefItem(prop=conf.bgColor, useAlpha=True)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.bgColor, useAlpha=True)
+		self.uiOptionUIs.append(item)
 		self.colorbBg = item.getWidget()  # FIXME
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -466,32 +466,32 @@ class PreferencesWindow(gtk.Window):
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border")))
-		item = ColorPrefItem(prop=conf.borderColor, useAlpha=True)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.borderColor, useAlpha=True)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor")))
-		item = ColorPrefItem(prop=conf.cursorOutColor, useAlpha=False)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.cursorOutColor, useAlpha=False)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Cursor BG")))
-		item = ColorPrefItem(prop=conf.cursorBgColor, useAlpha=True)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.cursorBgColor, useAlpha=True)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Today")))
-		item = ColorPrefItem(prop=conf.todayCellColor, useAlpha=True)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.todayCellColor, useAlpha=True)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
@@ -503,32 +503,32 @@ class PreferencesWindow(gtk.Window):
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Normal Text")))
-		item = ColorPrefItem(prop=conf.textColor, useAlpha=False)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.textColor, useAlpha=False)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Holidays Font")))
-		item = ColorPrefItem(prop=conf.holidayColor, useAlpha=False)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.holidayColor, useAlpha=False)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Inactive Day Font")))
-		item = ColorPrefItem(prop=conf.inactiveColor, useAlpha=True)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.inactiveColor, useAlpha=True)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Border Font")))
-		item = ColorPrefItem(prop=conf.borderTextColor, useAlpha=False)
-		self.uiPrefItems.append(item)
+		item = ColorOptionUI(prop=conf.borderTextColor, useAlpha=False)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
@@ -568,14 +568,14 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		# ------
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		item: PrefItem
+		item: OptionUI
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=self.spacing)
 		label = gtk.Label(label=_("Date Format"))
 		pack(hbox, label)
 		sgroup.add_widget(label)
 		# pack(hbox, gtk.Label(), 1, 1)
-		item = ComboEntryTextPrefItem(
+		item = ComboEntryTextOptionUI(
 			prop=ud.dateFormat,
 			items=[
 				"%Y/%m/%d",
@@ -588,7 +588,7 @@ class PreferencesWindow(gtk.Window):
 				"%m/%d/%Y",
 			],
 		)
-		self.gtkPrefItems.append(item)
+		self.gtkOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# --------------------------------
@@ -596,11 +596,11 @@ class PreferencesWindow(gtk.Window):
 			orientation=gtk.Orientation.HORIZONTAL,
 			spacing=int(self.spacing / 3),
 		)
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=locale_man.enableNumLocale,
 			label=_("Numbers Localization"),
 		)
-		self.localePrefItems.append(item)
+		self.localeOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(vbox, hbox, padding=self.spacing)
@@ -614,7 +614,7 @@ class PreferencesWindow(gtk.Window):
 			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 3)
 		)
 		pack(hbox, gtk.Label(label=_("First day of week")))
-		# item = ComboTextPrefItem(  # FIXME
+		# item = ComboTextOptionUI(  # FIXME
 		self.comboFirstWD = gtk.ComboBoxText()
 		for wdName in core.weekDayName:
 			self.comboFirstWD.append_text(wdName)
@@ -646,12 +646,12 @@ class PreferencesWindow(gtk.Window):
 		frame = gtk.Frame()
 		frame.set_border_width(10)
 		frame.set_label(_("Holidays"))
-		item = WeekDayCheckListPrefItem(
+		item = WeekDayCheckListOptionUI(
 			prop=core.holidayWeekDays,
 			abbreviateNames=False,
 			twoRows=True,
 		)
-		self.corePrefItems.append(item)
+		self.coreOptionUIs.append(item)
 		self.holiWDItem = item  # Holiday Week Days Item
 		itemWidget = item.getWidget()
 		assert isinstance(itemWidget, gtk.Container), f"{itemWidget=}"
@@ -737,10 +737,10 @@ class PreferencesWindow(gtk.Window):
 		page.pageLabel = _("A_dvanced")
 		page.pageIcon = "applications-system.svg"
 		self.prefPages.append(page)
-		item: PrefItem
+		item: OptionUI
 		# ------
-		item = LogLevelPrefItem()
-		self.loggerPrefItem = item
+		item = LogLevelOptionUI()
+		self.loggerOptionUI = item
 		pack(vbox, item.getWidget())
 		# ---
 		self.initialLogLevel = logger.logLevel
@@ -752,7 +752,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Event Time Format"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = ComboEntryTextPrefItem(
+		item = ComboEntryTextOptionUI(
 			prop=conf.eventDayViewTimeFormat,
 			items=[
 				"HM$",
@@ -777,7 +777,7 @@ class PreferencesWindow(gtk.Window):
 				"hM": "5:07",
 			},
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# ------
@@ -788,7 +788,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Digital Clock Format"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = ComboEntryTextPrefItem(
+		item = ComboEntryTextOptionUI(
 			ud.clockFormat,
 			items=[
 				"%T",
@@ -807,7 +807,7 @@ class PreferencesWindow(gtk.Window):
 				"<b>%OH:%OM</b>",
 			],
 		)
-		self.gtkPrefItems.append(item)
+		self.gtkOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		# ------
@@ -817,12 +817,12 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = IntSpinPrefItem(
+		item = IntSpinOptionUI(
 			prop=conf.maxDayCacheSize,
 			bounds=(100, 9999),
 			step=10,
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
 		# ------
@@ -831,12 +831,12 @@ class PreferencesWindow(gtk.Window):
 		)
 		label = gtk.Label(label=_("Horizontal offset for day right-click menu"))
 		pack(hbox, label)
-		item = IntSpinPrefItem(
+		item = IntSpinOptionUI(
 			prop=conf.cellMenuXOffset,
 			bounds=(0, 999),
 			step=1,
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
 		# ------
@@ -1085,97 +1085,97 @@ class PreferencesWindow(gtk.Window):
 		)
 		pageVBox.set_border_width(self.spacing)
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		item: PrefItem
+		item: OptionUI
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
 		pack(hbox, label)
-		item = ImageFileChooserPrefItem(
+		item = ImageFileChooserOptionUI(
 			prop=conf.statusIconImage,
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Holidays"))
 		pack(hbox, label)
-		item = ImageFileChooserPrefItem(
+		item = ImageFileChooserOptionUI(
 			prop=conf.statusIconImageHoli,
 			title=_("Select Icon"),
 			currentFolder=join(sourceDir, "status-icons"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
-		checkItem = CheckPrefItem(
+		checkItem = CheckOptionUI(
 			prop=conf.statusIconFontFamilyEnable,
 			label=_("Change font family to"),
 			# tooltip=_("In SVG files"),
 		)
-		self.uiPrefItems.append(checkItem)
+		self.uiOptionUIs.append(checkItem)
 		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
-		item = FontFamilyPrefItem(
+		item = FontFamilyOptionUI(
 			prop=conf.statusIconFontFamily,
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.statusIconLocalizeNumber,
 			label=_("Localize the number"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
-		item = CheckColorPrefItem(
-			CheckPrefItem(
+		item = CheckColorOptionUI(
+			CheckOptionUI(
 				prop=conf.statusIconHolidayFontColorEnable,
 				label=_("Holiday font color"),
 			),
-			ColorPrefItem(
+			ColorOptionUI(
 				prop=conf.statusIconHolidayFontColor,
 			),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
-		checkItem = CheckPrefItem(
+		checkItem = CheckOptionUI(
 			prop=conf.statusIconFixedSizeEnable,
 			label=_("Fixed Size"),
 			# tooltip=_(""),
 		)
-		self.uiPrefItems.append(checkItem)
+		self.uiOptionUIs.append(checkItem)
 		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
 		pack(hbox, gtk.Label(label=" "))
-		item = WidthHeightPrefItem(
+		item = WidthHeightOptionUI(
 			prop=conf.statusIconFixedSizeWH,
 			maxim=999,
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
 		checkItem.syncSensitive(item.getWidget(), reverse=False)
 		# --------
 		# pluginsTextStatusIcon:
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		item = CheckPrefItem(
+		item = CheckOptionUI(
 			prop=conf.pluginsTextStatusIcon,
 			label=_("Show Plugins Text in Status Icon (for today)"),
 		)
-		self.uiPrefItems.append(item)
+		self.uiOptionUIs.append(item)
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
@@ -1379,17 +1379,17 @@ class PreferencesWindow(gtk.Window):
 		self.hide()
 		self.updatePrefGui()
 
-	def iterAllPrefItems(self) -> typing.Iterable[PrefItem]:
+	def iterAllOptionUIs(self) -> typing.Iterable[OptionUI]:
 		import itertools
 
-		assert self.loggerPrefItem is not None
+		assert self.loggerOptionUI is not None
 		return itertools.chain(
-			[self.loggerPrefItem],
+			[self.loggerOptionUI],
 			self.moduleOptions,
-			self.localePrefItems,
-			self.corePrefItems,
-			self.uiPrefItems,
-			self.gtkPrefItems,
+			self.localeOptionUIs,
+			self.coreOptionUIs,
+			self.uiOptionUIs,
+			self.gtkOptionUIs,
 		)
 
 	@staticmethod
@@ -1412,8 +1412,8 @@ class PreferencesWindow(gtk.Window):
 		conf.preferencesPagePath.v = self.stack.currentPagePath()
 		# -----
 		# -------------------- Updating pref variables ---------------------
-		for prefItem in self.iterAllPrefItems():
-			prefItem.updateVar()
+		for option in self.iterAllOptionUIs():
+			option.updateVar()
 		# Plugin Manager
 		index = []
 		for row in self.plugListStore:
@@ -1457,8 +1457,8 @@ class PreferencesWindow(gtk.Window):
 		ud.updateFormatsBin()
 		# ---------------------- Saving Preferences -----------------------
 		# ------------------- Saving logger config
-		assert self.loggerPrefItem is not None
-		self.loggerPrefItem.save()
+		assert self.loggerOptionUI is not None
+		self.loggerOptionUI.save()
 		# ------------------- Saving calendar types config
 		for mod in calTypes:
 			mod.save()
@@ -1533,7 +1533,7 @@ class PreferencesWindow(gtk.Window):
 			)
 
 	def updatePrefGui(self) -> None:  # Updating Pref Gui (NOT MAIN GUI)
-		for opt in self.iterAllPrefItems():
+		for opt in self.iterAllOptionUIs():
 			opt.updateWidget()
 		# -------------------------------
 		if core.firstWeekDayAuto.v:

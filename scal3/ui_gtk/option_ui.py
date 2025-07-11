@@ -45,38 +45,38 @@ if typing.TYPE_CHECKING:
 	from scal3.property import ListProperty, Property
 
 __all__ = [
-	"CheckColorPrefItem",
-	"CheckFontPrefItem",
-	"CheckPrefItem",
-	"ColorPrefItem",
-	"ComboEntryTextPrefItem",
-	"ComboImageTextPrefItem",
-	"ComboTextPrefItem",
-	"DirectionPrefItem",
-	"FileChooserPrefItem",
-	"FloatSpinPrefItem",
-	"FontFamilyPrefItem",
-	"FontPrefItem",
-	"HListPrefItem",
-	"IconChooserPrefItem",
-	"ImageFileChooserPrefItem",
-	"IntSpinPrefItem",
-	"JustificationPrefItem",
-	"ListPrefItem",
-	"PrefItem",
-	"RadioHListPrefItem",
-	"RadioListPrefItem",
-	"RadioVListPrefItem",
-	"TextPrefItem",
-	"VListPrefItem",
-	"WidthHeightPrefItem",
+	"CheckColorOptionUI",
+	"CheckFontOptionUI",
+	"CheckOptionUI",
+	"ColorOptionUI",
+	"ComboEntryTextOptionUI",
+	"ComboImageTextOptionUI",
+	"ComboTextOptionUI",
+	"DirectionOptionUI",
+	"FileChooserOptionUI",
+	"FloatSpinOptionUI",
+	"FontFamilyOptionUI",
+	"FontOptionUI",
+	"HListOptionUI",
+	"IconChooserOptionUI",
+	"ImageFileChooserOptionUI",
+	"IntSpinOptionUI",
+	"JustificationOptionUI",
+	"ListOptionUI",
+	"OptionUI",
+	"RadioHListOptionUI",
+	"RadioListOptionUI",
+	"RadioVListOptionUI",
+	"TextOptionUI",
+	"VListOptionUI",
+	"WidthHeightOptionUI",
 ]
 
 
-class PrefItem:
+class OptionUI:
 	prop: Property[Any]
 	# def __new__(cls, *args, **kwargs):
-	# print("PrefItem:", args, kwargs)
+	# print("OptionUI:", args, kwargs)
 	# obj = object.__new__(cls)
 	# return obj
 
@@ -100,7 +100,7 @@ class PrefItem:
 		raise NotImplementedError
 
 
-class ComboTextPrefItem(PrefItem):
+class ComboTextOptionUI(OptionUI):
 	# valueString is not used anywhere!
 	# and I was using self here!
 	# @classmethod
@@ -156,7 +156,7 @@ class ComboTextPrefItem(PrefItem):
 		self._combo.set_active(self._items.index(value))
 
 
-class FontFamilyPrefItem(PrefItem):
+class FontFamilyOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -228,7 +228,7 @@ class FontFamilyPrefItem(PrefItem):
 		self.fontButton.set_property("preview-text", text)
 
 
-# TODO: FontStylePrefItem
+# TODO: FontStyleOptionUI
 # get() should return a dict, with keys and values being compatible
 # with svg and gtk+css, these keys and values
 # 	"font-family"
@@ -248,7 +248,7 @@ class FontFamilyPrefItem(PrefItem):
 # a `prop: Property` argument like other classes
 
 
-class ComboEntryTextPrefItem(PrefItem):
+class ComboEntryTextOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -285,7 +285,7 @@ class ComboEntryTextPrefItem(PrefItem):
 			row[1] = descByValue.get(row[0], "")
 
 
-class ComboImageTextPrefItem(PrefItem):
+class ComboImageTextOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -332,7 +332,7 @@ class ComboImageTextPrefItem(PrefItem):
 		self.ls.append([pix, label])
 
 
-class FontPrefItem(PrefItem):
+class FontOptionUI(OptionUI):
 	@classmethod
 	def valueString(cls, value: Any) -> str:
 		return gfontEncode(value)
@@ -367,7 +367,7 @@ class FontPrefItem(PrefItem):
 		# self._widget.set_property("preview-text", text)
 
 
-class CheckPrefItem(PrefItem):
+class CheckOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -423,7 +423,7 @@ class CheckPrefItem(PrefItem):
 # with something else!!
 
 
-class ColorPrefItem(PrefItem):
+class ColorOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -474,7 +474,7 @@ class ColorPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-# class OptionalColorPrefItem(ColorPrefItem):
+# class OptionalColorOptionUI(ColorOptionUI):
 # 	def __init__(
 # 		self,
 # 		prop: Property[ColorType | None],
@@ -484,16 +484,16 @@ class ColorPrefItem(PrefItem):
 # 	) -> None:
 
 
-# combination of CheckPrefItem and ColorPrefItem in a HBox,
+# combination of CheckOptionUI and ColorOptionUI in a HBox,
 # with auto-update / auto-apply, for use in Customize window
-class CheckColorPrefItem(PrefItem):
+class CheckColorOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
 	def __init__(
 		self,
-		checkItem: CheckPrefItem,
-		colorItem: ColorPrefItem,
+		checkItem: CheckOptionUI,
+		colorItem: ColorOptionUI,
 		checkSizeGroup: gtk.SizeGroup | None = None,
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
@@ -540,15 +540,15 @@ class CheckColorPrefItem(PrefItem):
 				self._onChangeFunc()
 
 
-# combination of CheckPrefItem and FontPrefItem in a HBox
-class CheckFontPrefItem(PrefItem):
+# combination of CheckOptionUI and FontOptionUI in a HBox
+class CheckFontOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
 	def __init__(
 		self,
-		checkItem: CheckPrefItem,
-		fontItem: FontPrefItem,
+		checkItem: CheckOptionUI,
+		fontItem: FontOptionUI,
 		checkSizeGroup: gtk.SizeGroup | None = None,
 		vertical: bool = False,
 		spacing: int = 3,
@@ -597,7 +597,7 @@ class CheckFontPrefItem(PrefItem):
 				self._onChangeFunc()
 
 
-class IntSpinPrefItem(PrefItem):
+class IntSpinOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -652,7 +652,7 @@ class IntSpinPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class FloatSpinPrefItem(PrefItem):
+class FloatSpinOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -708,7 +708,7 @@ class FloatSpinPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class TextPrefItem(PrefItem):
+class TextOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -753,7 +753,7 @@ class TextPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class WidthHeightPrefItem(PrefItem):
+class WidthHeightOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -787,7 +787,7 @@ class WidthHeightPrefItem(PrefItem):
 		self.heightItem.set_value(h)
 
 
-class FileChooserPrefItem(PrefItem):
+class FileChooserOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -843,7 +843,7 @@ class FileChooserPrefItem(PrefItem):
 		self.set(defaultValue)
 
 
-class ImageFileChooserPrefItem(FileChooserPrefItem):
+class ImageFileChooserOptionUI(FileChooserOptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -853,7 +853,7 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 		title: str = "Select File",
 		currentFolder: str = "",
 	) -> None:
-		FileChooserPrefItem.__init__(
+		FileChooserOptionUI.__init__(
 			self,
 			prop=prop,
 			title=title,
@@ -869,7 +869,7 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 		self._preview.set_from_file(fpath)
 
 
-class IconChooserPrefItem(PrefItem):
+class IconChooserOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -917,7 +917,7 @@ class IconChooserPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class RadioListPrefItem(PrefItem):
+class RadioListOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -957,14 +957,14 @@ class RadioListPrefItem(PrefItem):
 		self.radios[index].set_active(True)
 
 
-class RadioHListPrefItem(RadioListPrefItem):
+class RadioHListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
 		prop: Property[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
-		RadioListPrefItem.__init__(
+		RadioListOptionUI.__init__(
 			self,
 			vertical=False,
 			prop=prop,
@@ -973,14 +973,14 @@ class RadioHListPrefItem(RadioListPrefItem):
 		)
 
 
-class RadioVListPrefItem(RadioListPrefItem):
+class RadioVListOptionUI(RadioListOptionUI):
 	def __init__(
 		self,
 		prop: Property[int | None],
 		texts: list[str],
 		label: str | None = None,
 	) -> None:
-		RadioListPrefItem.__init__(
+		RadioListOptionUI.__init__(
 			self,
 			vertical=True,
 			prop=prop,
@@ -989,7 +989,7 @@ class RadioVListPrefItem(RadioListPrefItem):
 		)
 
 
-class ListPrefItem(PrefItem):
+class ListOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -997,7 +997,7 @@ class ListPrefItem(PrefItem):
 		self,
 		vertical: bool,
 		prop: ListProperty[Any],
-		items: list[PrefItem] | None = None,
+		items: list[OptionUI] | None = None,
 	) -> None:
 		self.prop = prop
 		if vertical:
@@ -1019,18 +1019,18 @@ class ListPrefItem(PrefItem):
 		for i in range(self.num):
 			self.items[i].set(valueL[i])
 
-	def append(self, item: PrefItem) -> None:
+	def append(self, item: OptionUI) -> None:
 		pack(self._widget, item.getWidget())
 		self.items.append(item)
 
 
-class HListPrefItem(ListPrefItem):
+class HListOptionUI(ListOptionUI):
 	def __init__(
 		self,
 		prop: ListProperty[Any],
-		items: list[PrefItem] | None = None,
+		items: list[OptionUI] | None = None,
 	) -> None:
-		ListPrefItem.__init__(
+		ListOptionUI.__init__(
 			self,
 			vertical=False,
 			prop=prop,
@@ -1038,13 +1038,13 @@ class HListPrefItem(ListPrefItem):
 		)
 
 
-class VListPrefItem(ListPrefItem):
+class VListOptionUI(ListOptionUI):
 	def __init__(
 		self,
 		prop: ListProperty[Any],
-		items: list[PrefItem] | None = None,
+		items: list[OptionUI] | None = None,
 	) -> None:
-		ListPrefItem.__init__(
+		ListOptionUI.__init__(
 			self,
 			vertical=True,
 			prop=prop,
@@ -1052,7 +1052,7 @@ class VListPrefItem(ListPrefItem):
 		)
 
 
-class DirectionPrefItem(PrefItem):
+class DirectionOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -1091,7 +1091,7 @@ class DirectionPrefItem(PrefItem):
 			self._onChangeFunc()
 
 
-class JustificationPrefItem(PrefItem):
+class JustificationOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
