@@ -94,7 +94,7 @@ smallest = Smallest()
 class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	name = ""
 	desc = ""
-	basicParams: list[str] = [
+	basicOptions: list[str] = [
 		"idList",  # FIXME
 		"uuid",
 	]

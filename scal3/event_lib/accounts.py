@@ -80,7 +80,7 @@ class Account(HistoryEventObjBinaryModel, AccountType):
 	loaded = True
 	name = ""
 	desc = ""
-	basicParams = [  # FIXME
+	basicOptions = [  # FIXME
 		# "enable",
 		"type",
 	]

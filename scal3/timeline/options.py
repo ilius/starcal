@@ -19,7 +19,7 @@ from typing import Any, NamedTuple
 
 from scal3.color_utils import RGB
 
-__all__ = ["NOT_SET", "confParamsData"]
+__all__ = ["NOT_SET", "confOptionsData"]
 
 
 class NOT_SET:
@@ -36,7 +36,7 @@ class Param(NamedTuple):
 	default: Any = NOT_SET
 
 
-confParamsData = [
+confOptionsData = [
 	Param(
 		name="bgColor",
 		type="ColorType | None",

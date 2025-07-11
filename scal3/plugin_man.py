@@ -839,7 +839,7 @@ def loadPlugin(_file: str | None = None, **kwargs: Any) -> PluginType | None:
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
-				f'invalid plugin "{file}": parameter "{param}" is missing',
+				f'invalid plugin "{file}": param "{param}" is missing',
 			)
 			return None
 	# ----

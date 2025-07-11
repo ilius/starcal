@@ -77,7 +77,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	readOnly = False
 	isAllDay = False
 	isSingleOccur = False
-	basicParams = [
+	basicOptions = [
 		"uuid",
 		# "modified",
 		"remoteIds",

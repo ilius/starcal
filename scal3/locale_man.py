@@ -62,7 +62,7 @@ __all__ = [
 	"getDigits",
 	"getLocaleFirstWeekDay",
 	"getMonthName",
-	"getNeedRestartParams",
+	"getNeedRestartOptions",
 	"lang",
 	"langDict",
 	"langHasUppercase",
@@ -96,7 +96,7 @@ confPath = join(confDir, "locale.json")
 lang: Final[Option[str]] = Option("")
 enableNumLocale: Final[Option[bool]] = Option(True)
 
-confParams: Final[dict[str, Option[Any]]] = {
+confOptions: Final[dict[str, Option[Any]]] = {
 	"lang": lang,
 	"enableNumLocale": enableNumLocale,
 }
@@ -106,13 +106,13 @@ def loadConf() -> None:
 	loadModuleConfig(
 		confPath=confPath,
 		sysConfPath=None,
-		params=confParams,
+		options=confOptions,
 		decoders={},
 	)
 
 
 def saveConf() -> None:
-	saveSingleConfig(confPath, confParams, {})
+	saveSingleConfig(confPath, confOptions, {})
 
 
 # ----------------------------------------------------------
@@ -657,7 +657,7 @@ def addLRM(text: str) -> str:
 	return LRM + toStr(text)
 
 
-def getNeedRestartParams() -> list[Option[Any]]:
+def getNeedRestartOptions() -> list[Option[Any]]:
 	return [
 		lang,
 		enableNumLocale,

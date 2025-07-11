@@ -237,7 +237,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# --
 		self.disclaimerLastEpoch = Option(0)
 		# -------
-		self.confParams: Final[dict[str, Option]] = {
+		self.confOptions: Final[dict[str, Option]] = {
 			"lat": self.lat,
 			"lng": self.lng,
 			"method": self.method,
@@ -256,7 +256,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		loadModuleConfig(
 			confPath=self.confPath,
 			sysConfPath=None,
-			params=self.confParams,
+			options=self.confOptions,
 			decoders={},
 		)
 		# ----
@@ -323,7 +323,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.lat.v = self.backend.lat
 		self.lng.v = self.backend.lng
 		self.method.v = self.backend.method.name
-		saveSingleConfig(self.confPath, self.confParams, {})
+		saveSingleConfig(self.confPath, self.confOptions, {})
 
 	# def date_change_after(self, widget, year, month, day):
 	# 	self.dialog.menuCell.add(self.menuitem)

@@ -59,15 +59,15 @@ __all__ = ["DayCalWindow"]
 
 confPathLive = join(confDir, "ui-daycal-live.json")
 
-confParamsLive = conf.dayCalWinParamsLive
+confOptionsLive = conf.dayCalWinOptionsLive
 
 lastLiveConfChangeTime = 0.0
 
-loadSingleConfig(confPathLive, confParamsLive)
+loadSingleConfig(confPathLive, confOptionsLive)
 
 
 def saveLiveConf() -> None:  # FIXME: rename to saveConfLive
-	saveSingleConfig(confPathLive, confParamsLive)
+	saveSingleConfig(confPathLive, confOptionsLive)
 
 
 def saveLiveConfLoop() -> bool:  # FIXME: rename to saveConfLiveLoop
@@ -161,9 +161,9 @@ class DayCalWindowWidget(DayCal):
 	doubleClickEnable = False
 
 	backgroundColor = conf.dcalWinBackgroundColor
-	dayParams = conf.dcalWinDayParams
-	monthParams = conf.dcalWinMonthParams
-	weekdayParams = conf.dcalWinWeekdayParams
+	dayOptions = conf.dcalWinDayParams
+	monthOptions = conf.dcalWinMonthParams
+	weekdayOptions = conf.dcalWinWeekdayParams
 	widgetButtonsEnable = conf.dcalWinWidgetButtonsEnable
 	widgetButtonsSize = conf.dcalWinWidgetButtonsSize
 	widgetButtonsOpacity = conf.dcalWinWidgetButtonsOpacity

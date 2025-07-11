@@ -12,12 +12,12 @@ if typing.TYPE_CHECKING:
 	from scal3.font import Font
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
-		CalTypeParamsDict,
+		CalTypeOptionsDict,
 		CustomizableToolBoxDict,
-		DayCalTypeDayParamsDict,
-		DayCalTypeWMParamsDict,
+		DayCalTypeDayOptionsDict,
+		DayCalTypeWMOptionsDict,
 		PieGeoDict,
-		WeekCalDayNumParamsDict,
+		WeekCalDayNumOptionsDict,
 	)
 
 
@@ -30,13 +30,13 @@ __all__ = [
 	"buttonIconSize",
 	"cellMenuXOffset",
 	"comboBoxIconSize",
-	"confParams",
-	"confParamsCustomize",
-	"confParamsLive",
+	"confOptions",
+	"confOptionsCustomize",
+	"confOptionsLive",
 	"cursorBgColor",
 	"cursorOutColor",
 	"customizePagePath",
-	"dayCalWinParamsLive",
+	"dayCalWinOptionsLive",
 	"dcalDayParams",
 	"dcalEventIconSize",
 	"dcalEventTotalSizeRatio",
@@ -339,7 +339,7 @@ mainWinRightPanelResizeOnToggle: Final[Option[bool]] = Option(True)
 mainWinRightPanelBorderWidth: Final[Option[int]] = Option(7)
 mcalLeftMargin: Final[Option[int]] = Option(30)
 mcalTopMargin: Final[Option[int]] = Option(30)
-mcalTypeParams: Final[ListOption[CalTypeParamsDict]] = ListOption(
+mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 		{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
@@ -393,7 +393,7 @@ wcalFont_weekDays: Final[Option[str | None]] = Option(None)
 wcalFont_pluginsText: Final[Option[str | None]] = Option(None)
 wcal_pluginsText_firstLineOnly: Final[Option[bool]] = Option(False)
 wcal_eventsIcon_width: Final[Option[int]] = Option(50)
-wcalTypeParams: Final[ListOption[WeekCalDayNumParamsDict]] = ListOption(
+wcalTypeParams: Final[ListOption[WeekCalDayNumOptionsDict]] = ListOption(
 	[{"font": None}, {"font": None}, {"font": None}]
 )
 wcal_daysOfMonth_dir: Final[Option[str]] = Option("ltr")
@@ -407,7 +407,7 @@ wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
 wcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
 wcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
 dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
-dcalDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
+dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
 			"pos": (0, -12),
@@ -438,7 +438,7 @@ dcalDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
 		},
 	]
 )
-dcalMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
+dcalMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
 			"pos": (0, -12),
@@ -472,7 +472,7 @@ dcalMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
 		},
 	]
 )
-dcalWeekdayParams: Final[Option[DayCalTypeWMParamsDict]] = Option(
+dcalWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -513,7 +513,7 @@ dcalWinWidgetButtonsOpacity: Final[Option[float]] = Option(1.0)
 dcalWinWeekdayLocalize: Final[Option[bool]] = Option(True)
 dcalWinWeekdayAbbreviate: Final[Option[bool]] = Option(False)
 dcalWinWeekdayUppercase: Final[Option[bool]] = Option(False)
-dcalWinDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
+dcalWinDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
 			"pos": (0, 5),
@@ -544,7 +544,7 @@ dcalWinDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
 		},
 	]
 )
-dcalWinMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
+dcalWinMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
 			"pos": (0, 5),
@@ -578,7 +578,7 @@ dcalWinMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
 		},
 	]
 )
-dcalWinWeekdayParams: Final[Option[DayCalTypeWMParamsDict]] = Option(
+dcalWinWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -714,7 +714,7 @@ wcalEventIconSizeMax: Final[Option[int]] = Option(26)
 eventWeekViewTimeFormat: Final[Option[str]] = Option("HM$")
 
 
-confParams: dict[str, Option[Any]] = {
+confOptions: dict[str, Option[Any]] = {
 	"showMain": showMain,
 	"winTaskbar": winTaskbar,
 	"useAppIndicator": useAppIndicator,
@@ -750,7 +750,7 @@ confParams: dict[str, Option[Any]] = {
 	"preferencesPagePath": preferencesPagePath,
 	"localTzHist": localTzHist,
 }
-confParamsLive: dict[str, Option[Any]] = {
+confOptionsLive: dict[str, Option[Any]] = {
 	"winX": winX,
 	"winY": winY,
 	"winWidth": winWidth,
@@ -763,7 +763,7 @@ confParamsLive: dict[str, Option[Any]] = {
 	"mainWinRightPanelRatio": mainWinRightPanelRatio,
 	"wcal_toolbar_weekNum_negative": wcal_toolbar_weekNum_negative,
 }
-confParamsCustomize: dict[str, Option[Any]] = {
+confOptionsCustomize: dict[str, Option[Any]] = {
 	"mainWinItems": mainWinItems,
 	"mainWinFooterItems": mainWinFooterItems,
 	"pluginsTextEnable": pluginsTextEnable,
@@ -885,7 +885,7 @@ confParamsCustomize: dict[str, Option[Any]] = {
 	"ud__mainToolbarData": ud__mainToolbarData,
 	"customizePagePath": customizePagePath,
 }
-dayCalWinParamsLive: dict[str, Option[Any]] = {
+dayCalWinOptionsLive: dict[str, Option[Any]] = {
 	"dcalWinX": dcalWinX,
 	"dcalWinY": dcalWinY,
 	"dcalWinWidth": dcalWinWidth,

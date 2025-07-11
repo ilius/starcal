@@ -7,7 +7,7 @@ Each instance of this class manages its own queue.
 No multi-threading is implied; you are supposed to hack that
 yourself, or use a single instance per application.
 
-Each instance is parametrized with two functions, one that is
+Each instance is optionetrized with two functions, one that is
 supposed to return the current time, one that is supposed to
 implement a delay.  You can implement real-time scheduling by
 substituting time and sleep from built-in module time, or you can
@@ -20,7 +20,7 @@ Events are specified by tuples (time, action, argument, kwargs).
 Execution of the
 event means calling the action function, passing it the argument
 Sequence in "argument" (remember that in Python, multiple function
-arguments are be packed in a Sequence) and keyword parameters in "kwargs".
+arguments are be packed in a Sequence) and keyword options in "kwargs".
 The action function may be an instance method so it
 has another way to reference private data (besides global variables).
 """

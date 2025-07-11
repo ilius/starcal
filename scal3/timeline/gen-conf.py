@@ -9,15 +9,15 @@ os.environ["STARCAL_NO_LOAD_CONFIG"] = "1"
 
 sys.path.insert(0, rootDir)
 
-from scal3.timeline import params
+from scal3.timeline import options
 
 
 def genParamDict(names: list[str]) -> str:
 	return "{" + "\n".join([f"\t{name!r}: {name}," for name in names]) + "\n}\n"
 
 
-confParams = sorted([p.v3Name for p in params.confParamsData])
-all_names = sorted(confParams + ["confParams"])
+confOptions = sorted([p.v3Name for p in options.confOptionsData])
+all_names = sorted(confOptions + ["confOptions"])
 
 output = io.StringIO()
 
@@ -33,8 +33,8 @@ output.write(
 )
 output.write(f"__all__ = {all_names!r}\n\n")
 
-for p in params.confParamsData:
-	assert p.default is not params.NOT_SET
+for p in options.confOptionsData:
+	assert p.default is not options.NOT_SET
 	value = p.default
 	if p.type.startswith("list["):
 		itemType = p.type[5:-1]
@@ -53,7 +53,7 @@ for p in params.confParamsData:
 
 output.write("\n\n")
 
-output.write("confParams: dict[str, Option[Any]] = " + genParamDict(confParams))
+output.write("confOptions: dict[str, Option[Any]] = " + genParamDict(confOptions))
 
 output.write("\n")
 
