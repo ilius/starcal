@@ -33,6 +33,7 @@ class FloatSpin(NamedTuple):
 	start: float
 	end: float
 	step: float
+	digits: int
 
 
 class DictWithFont(TypedDict):
