@@ -44,7 +44,7 @@ class NOT_SET:
 	pass
 
 
-class Param(NamedTuple):
+class OptionData(NamedTuple):
 	name: str
 	v3Name: str
 	flags: int
@@ -54,8 +54,8 @@ class Param(NamedTuple):
 	default: Any = NOT_SET
 
 
-confOptionsData: list[Param] = [
-	Param(
+confOptionsData: list[OptionData] = [
+	OptionData(
 		name="mainWin.openOnStartup",
 		v3Name="showMain",
 		flags=MAIN_CONF,
@@ -64,7 +64,7 @@ confOptionsData: list[Param] = [
 		desc="Open main window on start",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="mainWin.inTaskbar",
 		v3Name="winTaskbar",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -73,7 +73,7 @@ confOptionsData: list[Param] = [
 		desc="Window in Taskbar",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="useAppIndicator",
 		v3Name="useAppIndicator",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -83,7 +83,7 @@ confOptionsData: list[Param] = [
 		default=True,
 	),
 	# ----------------- mainWin live info
-	Param(
+	OptionData(
 		name="mainWin.geo.x",
 		v3Name="winX",
 		flags=LIVE,
@@ -92,7 +92,7 @@ confOptionsData: list[Param] = [
 		desc="Window X",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="mainWin.geo.y",
 		v3Name="winY",
 		flags=LIVE,
@@ -101,7 +101,7 @@ confOptionsData: list[Param] = [
 		desc="Window Y",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="mainWin.geo.width",
 		v3Name="winWidth",
 		flags=LIVE,
@@ -110,7 +110,7 @@ confOptionsData: list[Param] = [
 		desc="Window Width",
 		default=480,
 	),
-	Param(
+	OptionData(
 		name="mainWin.geo.height",
 		v3Name="winHeight",
 		flags=LIVE,
@@ -119,7 +119,7 @@ confOptionsData: list[Param] = [
 		desc="Window Height",
 		default=300,
 	),
-	Param(
+	OptionData(
 		name="mainWin.keepAbove",
 		v3Name="winKeepAbove",
 		flags=LIVE,
@@ -128,7 +128,7 @@ confOptionsData: list[Param] = [
 		desc="On Top",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="mainWin.sticky",
 		v3Name="winSticky",
 		flags=LIVE,
@@ -137,7 +137,7 @@ confOptionsData: list[Param] = [
 		desc="On All Desktops",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="mainWin.maximized",
 		v3Name="winMaximized",
 		flags=LIVE,
@@ -147,7 +147,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# ----------------- mainWin customize
-	Param(
+	OptionData(
 		name="mainWin.items",
 		v3Name="mainWinItems",
 		flags=CUSTOMIZE,
@@ -166,7 +166,7 @@ confOptionsData: list[Param] = [
 		],
 	),
 	# -----------------= mainWin customize footer
-	Param(
+	OptionData(
 		name="mainWin.footer.items",
 		v3Name="mainWinFooterItems",
 		flags=CUSTOMIZE,
@@ -176,7 +176,7 @@ confOptionsData: list[Param] = [
 		default=["pluginsText", "eventDayView", "statusBar"],
 	),
 	# ------------ pluginsText
-	Param(
+	OptionData(
 		name="mainWin.footer.pluginsText.enable",
 		v3Name="pluginsTextEnable",
 		flags=CUSTOMIZE,
@@ -185,7 +185,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="mainWin.footer.pluginsText.insideExpander",
 		v3Name="pluginsTextInsideExpander",
 		flags=CUSTOMIZE,
@@ -194,7 +194,7 @@ confOptionsData: list[Param] = [
 		desc="Inside Expander",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="mainWin.footer.pluginsText.isExpanded",
 		v3Name="pluginsTextIsExpanded",
 		flags=LIVE,
@@ -204,7 +204,7 @@ confOptionsData: list[Param] = [
 		default=True,
 	),
 	# ------------ eventDayView
-	Param(
+	OptionData(
 		name="mainWin.footer.eventDayView.enable",
 		v3Name="eventDayViewEnable",
 		flags=CUSTOMIZE,
@@ -213,7 +213,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="mainWin.footer.eventDayView.eventSep",
 		v3Name="eventDayViewEventSep",
 		flags=CUSTOMIZE,
@@ -222,7 +222,7 @@ confOptionsData: list[Param] = [
 		desc="Event Text Separator",
 		default="\n",
 	),
-	Param(
+	OptionData(
 		name="mainWin.footer.eventDayView.maxHeight",
 		v3Name="eventViewMaxHeight",
 		flags=CUSTOMIZE,
@@ -232,7 +232,7 @@ confOptionsData: list[Param] = [
 		default=200,
 	),
 	# ------------ statusBar
-	Param(
+	OptionData(
 		name="statusBar.enable",
 		v3Name="statusBarEnable",
 		flags=CUSTOMIZE,
@@ -241,7 +241,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="statusBar.dates.reverseOrder",
 		v3Name="statusBarDatesReverseOrder",
 		flags=CUSTOMIZE,
@@ -250,7 +250,7 @@ confOptionsData: list[Param] = [
 		desc="Reverse the order of dates",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="statusBar.dates.colorEnable",
 		v3Name="statusBarDatesColorEnable",
 		flags=CUSTOMIZE,
@@ -259,7 +259,7 @@ confOptionsData: list[Param] = [
 		desc="Dates Color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="statusBar.dates.color",
 		v3Name="statusBarDatesColor",
 		flags=CUSTOMIZE,
@@ -269,7 +269,7 @@ confOptionsData: list[Param] = [
 		default=RGBA(255, 132, 255, 255),
 	),
 	# ----------------- Preferences: Appearance
-	Param(
+	OptionData(
 		name="fontCustomEnable",
 		v3Name="fontCustomEnable",
 		flags=MAIN_CONF,
@@ -278,7 +278,7 @@ confOptionsData: list[Param] = [
 		desc="Application Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="fontCustom",
 		v3Name="fontCustom",
 		flags=MAIN_CONF,
@@ -287,7 +287,7 @@ confOptionsData: list[Param] = [
 		desc="Application Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="buttonIconEnable",
 		v3Name="buttonIconEnable",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -296,7 +296,7 @@ confOptionsData: list[Param] = [
 		desc="Show icons in buttons",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="useSystemIcons",
 		v3Name="useSystemIcons",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -305,7 +305,7 @@ confOptionsData: list[Param] = [
 		desc="Use System Icons",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="oldStyleProgressBar",
 		v3Name="oldStyleProgressBar",
 		flags=MAIN_CONF | NEED_RESTART,
@@ -315,7 +315,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# ----------------- Preferences: Appearance: Colors
-	Param(
+	OptionData(
 		name="bgColor",
 		v3Name="bgColor",
 		flags=MAIN_CONF | LIVE,
@@ -324,7 +324,7 @@ confOptionsData: list[Param] = [
 		desc="Background",
 		default=RGBA(26, 0, 1, 255),
 	),
-	Param(
+	OptionData(
 		name="borderColor",
 		v3Name="borderColor",
 		flags=MAIN_CONF,
@@ -333,7 +333,7 @@ confOptionsData: list[Param] = [
 		desc="Border",
 		default=RGBA(123, 40, 0, 255),
 	),
-	Param(
+	OptionData(
 		name="borderTextColor",
 		v3Name="borderTextColor",
 		flags=MAIN_CONF,
@@ -342,7 +342,7 @@ confOptionsData: list[Param] = [
 		desc="Border Font",
 		default=RGBA(255, 255, 255, 255),
 	),
-	Param(
+	OptionData(
 		name="textColor",
 		v3Name="textColor",
 		flags=MAIN_CONF,
@@ -351,7 +351,7 @@ confOptionsData: list[Param] = [
 		desc="Normal Text",
 		default=RGBA(255, 255, 255, 255),
 	),
-	Param(
+	OptionData(
 		name="holidayColor",
 		v3Name="holidayColor",
 		flags=MAIN_CONF,
@@ -360,7 +360,7 @@ confOptionsData: list[Param] = [
 		desc="Holidays Font",
 		default=RGBA(255, 160, 0, 255),
 	),
-	Param(
+	OptionData(
 		name="inactiveColor",
 		v3Name="inactiveColor",
 		flags=MAIN_CONF,
@@ -369,7 +369,7 @@ confOptionsData: list[Param] = [
 		desc="Inactive Day Font",
 		default=RGBA(255, 255, 255, 115),
 	),
-	Param(
+	OptionData(
 		name="todayCellColor",
 		v3Name="todayCellColor",
 		flags=MAIN_CONF,
@@ -378,7 +378,7 @@ confOptionsData: list[Param] = [
 		desc="Today",
 		default=RGBA(0, 255, 0, 50),
 	),
-	Param(
+	OptionData(
 		"cursorOutColor",
 		v3Name="cursorOutColor",
 		flags=MAIN_CONF,
@@ -387,7 +387,7 @@ confOptionsData: list[Param] = [
 		desc="Cursor",
 		default=RGBA(213, 207, 0, 255),
 	),
-	Param(
+	OptionData(
 		name="cursorBgColor",
 		v3Name="cursorBgColor",
 		flags=MAIN_CONF,
@@ -397,7 +397,7 @@ confOptionsData: list[Param] = [
 		default=RGBA(41, 41, 41, 255),
 	),
 	# ----------------- Preferences: Appearance: Status Icon
-	Param(
+	OptionData(
 		name="statusIcon.digitalClockEnable",
 		v3Name="showDigClockTr",
 		flags=MAIN_CONF,
@@ -406,7 +406,7 @@ confOptionsData: list[Param] = [
 		desc="Show Digital Clock: On Status Icon",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.imagePath",
 		v3Name="statusIconImage",
 		flags=MAIN_CONF,
@@ -415,7 +415,7 @@ confOptionsData: list[Param] = [
 		desc="Normal Days: Icon Path",
 		default=join("status-icons", "dark-green.svg"),
 	),
-	Param(
+	OptionData(
 		name="statusIcon.holidayImagePath",
 		v3Name="statusIconImageHoli",
 		flags=MAIN_CONF,
@@ -424,7 +424,7 @@ confOptionsData: list[Param] = [
 		desc="Holidays: Icon Path",
 		default=join("status-icons", "dark-red.svg"),
 	),
-	Param(
+	OptionData(
 		name="statusIcon.fontFamilyEnable",
 		v3Name="statusIconFontFamilyEnable",
 		flags=MAIN_CONF,
@@ -433,7 +433,7 @@ confOptionsData: list[Param] = [
 		desc="[ ] Change font family to",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.fontFamily",
 		v3Name="statusIconFontFamily",
 		flags=MAIN_CONF,
@@ -442,7 +442,7 @@ confOptionsData: list[Param] = [
 		desc="Font family",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.holidayFontColorEnable",
 		v3Name="statusIconHolidayFontColorEnable",
 		flags=MAIN_CONF,
@@ -451,7 +451,7 @@ confOptionsData: list[Param] = [
 		desc="Holiday font color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.holidayFontColor",
 		v3Name="statusIconHolidayFontColor",
 		flags=MAIN_CONF,
@@ -460,7 +460,7 @@ confOptionsData: list[Param] = [
 		desc="Holiday font color",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.localizeNumber",
 		v3Name="statusIconLocalizeNumber",
 		flags=MAIN_CONF,
@@ -469,7 +469,7 @@ confOptionsData: list[Param] = [
 		desc="Localize the number",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.fixedSizeEnable",
 		v3Name="statusIconFixedSizeEnable",
 		flags=MAIN_CONF,
@@ -478,7 +478,7 @@ confOptionsData: list[Param] = [
 		desc="[ ] Fixed Size",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="statusIcon.fixedSizeWH",
 		v3Name="statusIconFixedSizeWH",
 		flags=MAIN_CONF,
@@ -487,7 +487,7 @@ confOptionsData: list[Param] = [
 		desc="Fixed Size (width, height)",
 		default=(24, 24),
 	),
-	Param(
+	OptionData(
 		name="statusIcon.pluginsText",
 		v3Name="pluginsTextStatusIcon",
 		flags=MAIN_CONF,
@@ -497,7 +497,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# ----------------- Preferences: Advanced
-	Param(
+	OptionData(
 		name="maxDayCacheSize",
 		v3Name="maxDayCacheSize",
 		flags=MAIN_CONF,
@@ -506,7 +506,7 @@ confOptionsData: list[Param] = [
 		desc="Days maximum cache size",
 		default=100,
 	),
-	Param(
+	OptionData(
 		name="eventDayView.timeFormat",
 		v3Name="eventDayViewTimeFormat",
 		flags=MAIN_CONF,
@@ -515,7 +515,7 @@ confOptionsData: list[Param] = [
 		desc="Event Time Format",
 		default="HM$",
 	),
-	Param(
+	OptionData(
 		name="cellMenuHorizontalOffset",
 		v3Name="cellMenuXOffset",
 		flags=MAIN_CONF,
@@ -526,7 +526,7 @@ confOptionsData: list[Param] = [
 	),
 	# TODO: ud.clockFormat: Digital Clock Format
 	# ------------ Window Controller
-	Param(
+	OptionData(
 		name="winController.enable",
 		v3Name="winControllerEnable",
 		flags=CUSTOMIZE,
@@ -535,7 +535,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="winController.theme",
 		v3Name="winControllerTheme",
 		flags=CUSTOMIZE,
@@ -544,7 +544,7 @@ confOptionsData: list[Param] = [
 		desc="Theme",
 		default="default",
 	),
-	Param(
+	OptionData(
 		name="winController.buttons",
 		v3Name="winControllerButtons",
 		flags=CUSTOMIZE,
@@ -562,7 +562,7 @@ confOptionsData: list[Param] = [
 			("sep", False),
 		],
 	),
-	Param(
+	OptionData(
 		name="winController.iconSize",
 		v3Name="winControllerIconSize",
 		flags=CUSTOMIZE,
@@ -571,7 +571,7 @@ confOptionsData: list[Param] = [
 		desc="Icon Size",
 		default=24,
 	),
-	Param(
+	OptionData(
 		name="winController.border",
 		v3Name="winControllerBorder",
 		flags=CUSTOMIZE,
@@ -580,7 +580,7 @@ confOptionsData: list[Param] = [
 		desc="Buttons Border",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="winController.spacing",
 		v3Name="winControllerSpacing",
 		flags=CUSTOMIZE,
@@ -589,7 +589,7 @@ confOptionsData: list[Param] = [
 		desc="Space between buttons",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="winController.pressState",
 		v3Name="winControllerPressState",
 		flags=CUSTOMIZE,
@@ -599,7 +599,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# ------------ rightPanel
-	Param(
+	OptionData(
 		name="rightPanel.enable",
 		v3Name="mainWinRightPanelEnable",
 		flags=CUSTOMIZE,
@@ -608,7 +608,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.heightRatio",
 		v3Name="mainWinRightPanelRatio",
 		flags=LIVE,
@@ -617,7 +617,7 @@ confOptionsData: list[Param] = [
 		desc="Ration of height of upper half to the whole",
 		default=0.5,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.swap",
 		v3Name="mainWinRightPanelSwap",
 		flags=CUSTOMIZE,
@@ -626,7 +626,7 @@ confOptionsData: list[Param] = [
 		desc="Swap Plugins Text and Events Text",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.width",
 		v3Name="mainWinRightPanelWidth",
 		flags=CUSTOMIZE,
@@ -635,7 +635,7 @@ confOptionsData: list[Param] = [
 		desc="Width: Fixed width",
 		default=200,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.widthRatio",
 		v3Name="mainWinRightPanelWidthRatio",
 		flags=CUSTOMIZE,
@@ -644,7 +644,7 @@ confOptionsData: list[Param] = [
 		desc="Width: Relative to window",
 		default=0.25,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.widthRatioEnable",
 		v3Name="mainWinRightPanelWidthRatioEnable",
 		flags=CUSTOMIZE,
@@ -653,7 +653,7 @@ confOptionsData: list[Param] = [
 		desc="Width: Relative to window",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.event.fontEnable",
 		v3Name="mainWinRightPanelEventFontEnable",
 		flags=CUSTOMIZE,
@@ -662,7 +662,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.event.font",
 		v3Name="mainWinRightPanelEventFont",
 		flags=CUSTOMIZE,
@@ -671,7 +671,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		"rightPanel.event.timeFontEnable",
 		v3Name="mainWinRightPanelEventTimeFontEnable",
 		flags=CUSTOMIZE,
@@ -680,7 +680,7 @@ confOptionsData: list[Param] = [
 		desc="Time Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.event.timeFont",
 		v3Name="mainWinRightPanelEventTimeFont",
 		flags=CUSTOMIZE,
@@ -689,7 +689,7 @@ confOptionsData: list[Param] = [
 		desc="Time Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.event.justification",
 		v3Name="mainWinRightPanelEventJustification",
 		flags=CUSTOMIZE,
@@ -698,7 +698,7 @@ confOptionsData: list[Param] = [
 		desc="Text Alignment",
 		default="left",
 	),
-	Param(
+	OptionData(
 		name="rightPanel.event.sep",
 		v3Name="mainWinRightPanelEventSep",
 		flags=CUSTOMIZE,
@@ -707,7 +707,7 @@ confOptionsData: list[Param] = [
 		desc="Event Text Separator",
 		default="\n\n",
 	),
-	Param(
+	OptionData(
 		name="rightPanel.plugins.fontEnable",
 		v3Name="mainWinRightPanelPluginsFontEnable",
 		flags=CUSTOMIZE,
@@ -716,7 +716,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.plugins.font",
 		v3Name="mainWinRightPanelPluginsFont",
 		flags=CUSTOMIZE,
@@ -725,7 +725,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.plugins.justification",
 		v3Name="mainWinRightPanelPluginsJustification",
 		flags=CUSTOMIZE,
@@ -734,7 +734,7 @@ confOptionsData: list[Param] = [
 		desc="Text Alignment",
 		default="left",
 	),
-	Param(
+	OptionData(
 		name="rightPanel.resizeOnToggle",
 		v3Name="mainWinRightPanelResizeOnToggle",
 		flags=CUSTOMIZE,
@@ -743,7 +743,7 @@ confOptionsData: list[Param] = [
 		desc="Resize on show/hide from window controller",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="rightPanel.border",
 		v3Name="mainWinRightPanelBorderWidth",
 		flags=CUSTOMIZE,
@@ -753,7 +753,7 @@ confOptionsData: list[Param] = [
 		default=7,
 	),
 	# ------------ Month Calendar
-	Param(
+	OptionData(
 		name="monthCal.leftMargin",
 		v3Name="mcalLeftMargin",
 		flags=CUSTOMIZE,
@@ -762,7 +762,7 @@ confOptionsData: list[Param] = [
 		desc="Left Margin",
 		default=30,
 	),
-	Param(
+	OptionData(
 		name="monthCal.topMargin",
 		v3Name="mcalTopMargin",
 		flags=CUSTOMIZE,
@@ -771,7 +771,7 @@ confOptionsData: list[Param] = [
 		desc="Top Margin",
 		default=30,
 	),
-	Param(
+	OptionData(
 		name="monthCal.typeOptions",
 		v3Name="mcalTypeParams",
 		flags=CUSTOMIZE,
@@ -784,7 +784,7 @@ confOptionsData: list[Param] = [
 			{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
 		],
 	),
-	Param(
+	OptionData(
 		name="monthCal.grid",
 		v3Name="mcalGrid",
 		flags=CUSTOMIZE,
@@ -793,7 +793,7 @@ confOptionsData: list[Param] = [
 		desc="Grid",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="monthCal.gridColor",
 		v3Name="mcalGridColor",
 		flags=CUSTOMIZE,
@@ -802,7 +802,7 @@ confOptionsData: list[Param] = [
 		desc="Grid Color",
 		default=RGBA(255, 252, 0, 82),
 	),
-	Param(
+	OptionData(
 		name="monthCal.cornerMenuTextColor",
 		v3Name="mcalCornerMenuTextColor",
 		flags=CUSTOMIZE,
@@ -811,7 +811,7 @@ confOptionsData: list[Param] = [
 		desc="Corner Menu Text Color",
 		default=RGBA(255, 255, 255, 255),
 	),
-	Param(
+	OptionData(
 		name="monthCal.cursorLineWidthFactor",
 		v3Name="mcalCursorLineWidthFactor",
 		flags=CUSTOMIZE,
@@ -820,7 +820,7 @@ confOptionsData: list[Param] = [
 		desc="Line Width Factor",
 		default=0.12,
 	),
-	Param(
+	OptionData(
 		name="monthCal.cursorRoundingFactor",
 		v3Name="mcalCursorRoundingFactor",
 		flags=CUSTOMIZE,
@@ -830,7 +830,7 @@ confOptionsData: list[Param] = [
 		default=0.5,
 	),
 	# ------------ weekcal
-	Param(
+	OptionData(
 		name="weekCal.textSizeScale",
 		v3Name="wcalTextSizeScale",
 		flags=CUSTOMIZE,
@@ -839,7 +839,7 @@ confOptionsData: list[Param] = [
 		desc="Text Size Scale",
 		default=0.6,
 	),
-	Param(
+	OptionData(
 		name="weekCal.items",
 		v3Name="wcalItems",
 		flags=CUSTOMIZE,
@@ -855,7 +855,7 @@ confOptionsData: list[Param] = [
 			("daysOfMonth", True),
 		],
 	),
-	Param(
+	OptionData(
 		name="weekCal.grid",
 		v3Name="wcalGrid",
 		flags=CUSTOMIZE,
@@ -864,7 +864,7 @@ confOptionsData: list[Param] = [
 		desc="Grid ",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.gridColor",
 		v3Name="wcalGridColor",
 		flags=CUSTOMIZE,
@@ -873,7 +873,7 @@ confOptionsData: list[Param] = [
 		desc="Grid Color",
 		default=RGBA(255, 252, 0, 82),
 	),
-	Param(
+	OptionData(
 		name="weekCal.upperGradientEnable",
 		v3Name="wcalUpperGradientEnable",
 		flags=CUSTOMIZE,
@@ -882,7 +882,7 @@ confOptionsData: list[Param] = [
 		desc="Row's Upper Gradient",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.upperGradientColor",
 		v3Name="wcalUpperGradientColor",
 		flags=CUSTOMIZE,
@@ -891,7 +891,7 @@ confOptionsData: list[Param] = [
 		desc="Row's Upper Gradient",
 		default=RGBA(255, 255, 255, 60),
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.pastColorEnable",
 		v3Name="wcal_eventsText_pastColorEnable",
 		flags=CUSTOMIZE,
@@ -900,7 +900,7 @@ confOptionsData: list[Param] = [
 		desc="Past Event Color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.pastColor",
 		v3Name="wcal_eventsText_pastColor",
 		flags=CUSTOMIZE,
@@ -909,7 +909,7 @@ confOptionsData: list[Param] = [
 		desc="Past Event Color",
 		default=RGBA(100, 100, 100, 50),
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.ongoingColorEnable",
 		v3Name="wcal_eventsText_ongoingColorEnable",
 		flags=CUSTOMIZE,
@@ -918,7 +918,7 @@ confOptionsData: list[Param] = [
 		desc="Ongoing Event Color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.ongoingColor",
 		v3Name="wcal_eventsText_ongoingColor",
 		flags=CUSTOMIZE,
@@ -927,7 +927,7 @@ confOptionsData: list[Param] = [
 		desc="Ongoing Event Color",
 		default=RGBA(80, 255, 80, 255),
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.showDesc",
 		v3Name="wcal_eventsText_showDesc",
 		flags=CUSTOMIZE,
@@ -936,7 +936,7 @@ confOptionsData: list[Param] = [
 		desc="Show Description",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.colorize",
 		v3Name="wcal_eventsText_colorize",
 		flags=CUSTOMIZE,
@@ -945,7 +945,7 @@ confOptionsData: list[Param] = [
 		desc="Use color of event group for event text",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsText.fontFamily",
 		v3Name="wcalFont_eventsText",
 		flags=CUSTOMIZE,
@@ -954,7 +954,7 @@ confOptionsData: list[Param] = [
 		desc="Font Family",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="weekCal.toolbar.weekNumNegative",
 		v3Name="wcal_toolbar_weekNum_negative",
 		flags=LIVE,
@@ -963,7 +963,7 @@ confOptionsData: list[Param] = [
 		desc="Week number is negated by clicking",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.toolbar.mainMenuIcon",
 		v3Name="wcal_toolbar_mainMenu_icon",
 		flags=CUSTOMIZE,
@@ -972,7 +972,7 @@ confOptionsData: list[Param] = [
 		desc="Icon",
 		default="starcal.png",
 	),
-	Param(
+	OptionData(
 		name="weekCal.weekDays.width",
 		v3Name="wcal_weekDays_width",
 		flags=CUSTOMIZE,
@@ -981,7 +981,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=80,
 	),
-	Param(
+	OptionData(
 		name="weekCal.weekDays.expand",
 		v3Name="wcal_weekDays_expand",
 		flags=CUSTOMIZE,
@@ -990,7 +990,7 @@ confOptionsData: list[Param] = [
 		desc="Expand",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.weekDays.fontFamily",
 		v3Name="wcalFont_weekDays",
 		flags=CUSTOMIZE,
@@ -999,7 +999,7 @@ confOptionsData: list[Param] = [
 		desc="Font Family",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="weekCal.pluginsText.fontFamily",
 		v3Name="wcalFont_pluginsText",
 		flags=CUSTOMIZE,
@@ -1008,7 +1008,7 @@ confOptionsData: list[Param] = [
 		desc="Font Family",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="weekCal.pluginsText.firstLineOnly",
 		v3Name="wcal_pluginsText_firstLineOnly",
 		flags=CUSTOMIZE,
@@ -1017,7 +1017,7 @@ confOptionsData: list[Param] = [
 		desc="Only first line of text",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsIcon.width",
 		v3Name="wcal_eventsIcon_width",
 		flags=CUSTOMIZE,
@@ -1026,7 +1026,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=50,
 	),
-	Param(
+	OptionData(
 		name="weekCal.daysOfMonth.typeOptions",
 		v3Name="wcalTypeParams",
 		flags=CUSTOMIZE,
@@ -1035,7 +1035,7 @@ confOptionsData: list[Param] = [
 		desc="Font (for each calendar type)",
 		default=[{"font": None}, {"font": None}, {"font": None}],
 	),
-	Param(
+	OptionData(
 		name="weekCal.daysOfMonth.direction",
 		v3Name="wcal_daysOfMonth_dir",
 		flags=CUSTOMIZE,
@@ -1044,7 +1044,7 @@ confOptionsData: list[Param] = [
 		desc="Direction",
 		default="ltr",
 	),
-	Param(
+	OptionData(
 		name="weekCal.daysOfMonth.width",
 		v3Name="wcal_daysOfMonth_width",
 		flags=CUSTOMIZE,
@@ -1053,7 +1053,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=30,
 	),
-	Param(
+	OptionData(
 		name="weekCal.daysOfMonth.expand",
 		v3Name="wcal_daysOfMonth_expand",
 		flags=CUSTOMIZE,
@@ -1062,7 +1062,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsCount.width",
 		v3Name="wcal_eventsCount_width",
 		flags=CUSTOMIZE,
@@ -1071,7 +1071,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=80,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsCount.expand",
 		v3Name="wcal_eventsCount_expand",
 		flags=CUSTOMIZE,
@@ -1080,7 +1080,7 @@ confOptionsData: list[Param] = [
 		desc="Expand",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.eventsBox.fontFamily",
 		v3Name="wcalFont_eventsBox",
 		flags=CUSTOMIZE,
@@ -1089,7 +1089,7 @@ confOptionsData: list[Param] = [
 		desc="Font Family",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="weekCal.moonStatus.width",
 		v3Name="wcal_moonStatus_width",
 		flags=CUSTOMIZE,
@@ -1098,7 +1098,7 @@ confOptionsData: list[Param] = [
 		desc="Width",
 		default=48,
 	),
-	Param(
+	OptionData(
 		name="weekCal.moonStatus.southernHemisphere",
 		v3Name="wcal_moonStatus_southernHemisphere",
 		flags=CUSTOMIZE,
@@ -1107,7 +1107,7 @@ confOptionsData: list[Param] = [
 		desc="Southern Hemisphere",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="weekCal.cursorLineWidthFactor",
 		v3Name="wcalCursorLineWidthFactor",
 		flags=CUSTOMIZE,
@@ -1116,7 +1116,7 @@ confOptionsData: list[Param] = [
 		desc="Line Width Factor",
 		default=0.12,
 	),
-	Param(
+	OptionData(
 		name="weekCal.cursorRoundingFactor",
 		v3Name="wcalCursorRoundingFactor",
 		flags=CUSTOMIZE,
@@ -1126,7 +1126,7 @@ confOptionsData: list[Param] = [
 		default=0.5,
 	),
 	# ------------ daycal
-	Param(
+	OptionData(
 		name="dayCal.widgetButtonsEnable",
 		v3Name="dcalWidgetButtonsEnable",
 		flags=CUSTOMIZE,
@@ -1136,7 +1136,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# Param("dayCal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
-	Param(
+	OptionData(
 		name="dayCal.day.options",
 		v3Name="dcalDayParams",
 		flags=CUSTOMIZE,
@@ -1173,7 +1173,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="dayCal.month.options",
 		v3Name="dcalMonthParams",
 		flags=CUSTOMIZE,
@@ -1213,7 +1213,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="dayCal.weekday.options",
 		v3Name="dcalWeekdayParams",
 		flags=CUSTOMIZE,
@@ -1231,7 +1231,7 @@ confOptionsData: list[Param] = [
 			"uppercase": False,
 		},
 	),
-	Param(
+	OptionData(
 		name="dayCal.navButtons.enable",
 		v3Name="dcalNavButtonsEnable",
 		flags=CUSTOMIZE,
@@ -1240,7 +1240,7 @@ confOptionsData: list[Param] = [
 		desc="Navigation buttons",
 		default=True,
 	),
-	Param(
+	OptionData(
 		# FIXME: where is the GUI?
 		name="dayCal.navButtons.geo",
 		v3Name="dcalNavButtonsGeo",
@@ -1257,7 +1257,7 @@ confOptionsData: list[Param] = [
 			"yalign": "buttom",
 		},
 	),
-	Param(
+	OptionData(
 		# FIXME: where is the GUI?
 		name="dayCal.navButtons.opacity",
 		v3Name="dcalNavButtonsOpacity",
@@ -1267,7 +1267,7 @@ confOptionsData: list[Param] = [
 		desc="Navigation Buttons Opacity",
 		default=0.7,
 	),
-	Param(
+	OptionData(
 		name="dayCal.weekday.localize",
 		v3Name="dcalWeekdayLocalize",
 		flags=CUSTOMIZE,
@@ -1276,7 +1276,7 @@ confOptionsData: list[Param] = [
 		desc="Localize",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="dayCal.weekday.abbreviate",
 		v3Name="dcalWeekdayAbbreviate",
 		flags=CUSTOMIZE,
@@ -1285,7 +1285,7 @@ confOptionsData: list[Param] = [
 		desc="Abbreviate",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCal.weekday.uppercase",
 		v3Name="dcalWeekdayUppercase",
 		flags=CUSTOMIZE,
@@ -1294,7 +1294,7 @@ confOptionsData: list[Param] = [
 		desc="Uppercase",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCal.event.iconSize",
 		v3Name="dcalEventIconSize",
 		flags=CUSTOMIZE,
@@ -1303,7 +1303,7 @@ confOptionsData: list[Param] = [
 		desc="Icon Size",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="dayCal.event.totalSizeRatio",
 		v3Name="dcalEventTotalSizeRatio",
 		flags=CUSTOMIZE,
@@ -1313,7 +1313,7 @@ confOptionsData: list[Param] = [
 		default=0.3,
 	),
 	# ------------ dayCalWin
-	Param(
+	OptionData(
 		name="dayCalWin.enable",
 		v3Name="showDesktopWidget",
 		flags=MAIN_CONF,
@@ -1322,7 +1322,7 @@ confOptionsData: list[Param] = [
 		desc="Open desktop widget on start",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.geo.x",
 		v3Name="dcalWinX",
 		flags=DAYCAL_WIN_LIVE,
@@ -1331,7 +1331,7 @@ confOptionsData: list[Param] = [
 		desc="Geometry: X",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.geo.y",
 		v3Name="dcalWinY",
 		flags=DAYCAL_WIN_LIVE,
@@ -1340,7 +1340,7 @@ confOptionsData: list[Param] = [
 		desc="Geometry: Y",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.geo.width",
 		v3Name="dcalWinWidth",
 		flags=DAYCAL_WIN_LIVE,
@@ -1349,7 +1349,7 @@ confOptionsData: list[Param] = [
 		desc="Geometry: Width",
 		default=180,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.geo.height",
 		v3Name="dcalWinHeight",
 		flags=DAYCAL_WIN_LIVE,
@@ -1358,7 +1358,7 @@ confOptionsData: list[Param] = [
 		desc="Geometry: Height",
 		default=180,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.backgroundColor",
 		v3Name="dcalWinBackgroundColor",
 		flags=CUSTOMIZE,
@@ -1367,7 +1367,7 @@ confOptionsData: list[Param] = [
 		desc="Background Color",
 		default=RGB(0, 10, 0),
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.widgetButtons.enable",
 		v3Name="dcalWinWidgetButtonsEnable",
 		flags=CUSTOMIZE,
@@ -1376,7 +1376,7 @@ confOptionsData: list[Param] = [
 		desc="Widget buttons",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.widgetButtons.size",
 		v3Name="dcalWinWidgetButtonsSize",
 		flags=CUSTOMIZE,
@@ -1385,7 +1385,7 @@ confOptionsData: list[Param] = [
 		desc="Widget buttons Size",
 		default=16,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.widgetButtons.opacity",
 		v3Name="dcalWinWidgetButtonsOpacity",
 		flags=CUSTOMIZE,
@@ -1395,7 +1395,7 @@ confOptionsData: list[Param] = [
 		default=1.0,
 	),
 	# Param("dayCalWin.widgetButtons", "dcalWinWidgetButtons", CUSTOMIZE),
-	Param(
+	OptionData(
 		name="dayCalWin.weekday.localize",
 		v3Name="dcalWinWeekdayLocalize",
 		flags=CUSTOMIZE,
@@ -1404,7 +1404,7 @@ confOptionsData: list[Param] = [
 		desc="Localize",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.weekday.abbreviate",
 		v3Name="dcalWinWeekdayAbbreviate",
 		flags=CUSTOMIZE,
@@ -1413,7 +1413,7 @@ confOptionsData: list[Param] = [
 		desc="Abbreviate",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.weekday.uppercase",
 		v3Name="dcalWinWeekdayUppercase",
 		flags=CUSTOMIZE,
@@ -1422,7 +1422,7 @@ confOptionsData: list[Param] = [
 		desc="Uppercase",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.day.options",
 		v3Name="dcalWinDayParams",
 		flags=CUSTOMIZE,
@@ -1459,7 +1459,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.month.options",
 		v3Name="dcalWinMonthParams",
 		flags=CUSTOMIZE,
@@ -1499,7 +1499,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.weekday.options",
 		v3Name="dcalWinWeekdayParams",
 		flags=CUSTOMIZE,
@@ -1518,7 +1518,7 @@ confOptionsData: list[Param] = [
 			"uppercase": False,
 		},
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.event.iconSize",
 		v3Name="dcalWinEventIconSize",
 		flags=CUSTOMIZE,
@@ -1527,7 +1527,7 @@ confOptionsData: list[Param] = [
 		desc="Icon Size",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.event.totalSizeRatio",
 		v3Name="dcalWinEventTotalSizeRatio",
 		flags=CUSTOMIZE,
@@ -1536,7 +1536,7 @@ confOptionsData: list[Param] = [
 		desc="Total Size Ratio",
 		default=0.3,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.enable",
 		v3Name="dcalWinSeasonPieEnable",
 		flags=CUSTOMIZE,
@@ -1545,7 +1545,7 @@ confOptionsData: list[Param] = [
 		desc="Enable",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.geo",
 		v3Name="dcalWinSeasonPieGeo",
 		flags=CUSTOMIZE,
@@ -1561,7 +1561,7 @@ confOptionsData: list[Param] = [
 			"startAngle": 270,
 		},
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.springColor",
 		v3Name="dcalWinSeasonPieSpringColor",
 		flags=CUSTOMIZE,
@@ -1570,7 +1570,7 @@ confOptionsData: list[Param] = [
 		desc="Spring Color",
 		default=RGBA(167, 252, 1, 180),
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.summerColor",
 		v3Name="dcalWinSeasonPieSummerColor",
 		flags=CUSTOMIZE,
@@ -1579,7 +1579,7 @@ confOptionsData: list[Param] = [
 		desc="Summer Color",
 		default=RGBA(255, 254, 0, 180),
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.autumnColor",
 		v3Name="dcalWinSeasonPieAutumnColor",
 		flags=CUSTOMIZE,
@@ -1588,7 +1588,7 @@ confOptionsData: list[Param] = [
 		desc="Autumn Color",
 		default=RGBA(255, 127, 0, 180),
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.winterColor",
 		v3Name="dcalWinSeasonPieWinterColor",
 		flags=CUSTOMIZE,
@@ -1597,7 +1597,7 @@ confOptionsData: list[Param] = [
 		desc="Winter Color",
 		default=RGBA(1, 191, 255, 180),
 	),
-	Param(
+	OptionData(
 		name="dayCalWin.seasonPie.textColor",
 		v3Name="dcalWinSeasonPieTextColor",
 		flags=CUSTOMIZE,
@@ -1607,7 +1607,7 @@ confOptionsData: list[Param] = [
 		default=RGBA(255, 255, 255, 180),
 	),
 	# ------------ progress bars
-	Param(
+	OptionData(
 		name="monthPBar.calType",
 		v3Name="monthPBarCalType",
 		flags=CUSTOMIZE,
@@ -1616,7 +1616,7 @@ confOptionsData: list[Param] = [
 		desc="Calendar Type",
 		default=-1,
 	),
-	Param(
+	OptionData(
 		name="seasonPBar.southernHemisphere",
 		v3Name="seasonPBar_southernHemisphere",
 		flags=CUSTOMIZE,
@@ -1626,7 +1626,7 @@ confOptionsData: list[Param] = [
 		default=False,
 	),
 	# ------------
-	Param(
+	OptionData(
 		name="yearMonthBar.border",
 		v3Name="labelBoxBorderWidth",
 		flags=CUSTOMIZE,
@@ -1635,7 +1635,7 @@ confOptionsData: list[Param] = [
 		desc="Border Width",
 		default=0,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.menuActiveColor",
 		v3Name="labelBoxMenuActiveColor",
 		flags=CUSTOMIZE,
@@ -1644,7 +1644,7 @@ confOptionsData: list[Param] = [
 		desc="Active menu item color",
 		default=RGBA(0, 255, 0, 255),
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.yearColorEnable",
 		v3Name="labelBoxYearColorEnable",
 		flags=CUSTOMIZE,
@@ -1653,7 +1653,7 @@ confOptionsData: list[Param] = [
 		desc="Year Color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.yearColor",
 		v3Name="labelBoxYearColor",
 		flags=CUSTOMIZE,
@@ -1662,7 +1662,7 @@ confOptionsData: list[Param] = [
 		desc="Year Color",
 		default=RGBA(255, 132, 255, 255),
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.monthColorEnable",
 		v3Name="labelBoxMonthColorEnable",
 		flags=CUSTOMIZE,
@@ -1671,7 +1671,7 @@ confOptionsData: list[Param] = [
 		desc="Month Color",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.monthColor",
 		v3Name="labelBoxMonthColor",
 		flags=CUSTOMIZE,
@@ -1680,7 +1680,7 @@ confOptionsData: list[Param] = [
 		desc="Month Color",
 		default=RGBA(255, 132, 255, 255),
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.fontEnable",
 		v3Name="labelBoxFontEnable",
 		flags=CUSTOMIZE,
@@ -1689,7 +1689,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.font",
 		v3Name="labelBoxFont",
 		flags=CUSTOMIZE,
@@ -1698,7 +1698,7 @@ confOptionsData: list[Param] = [
 		desc="Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.primaryFontEnable",
 		v3Name="labelBoxPrimaryFontEnable",
 		flags=CUSTOMIZE,
@@ -1707,7 +1707,7 @@ confOptionsData: list[Param] = [
 		desc="Primary Calendar Font",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.primaryFont",
 		v3Name="labelBoxPrimaryFont",
 		flags=CUSTOMIZE,
@@ -1716,7 +1716,7 @@ confOptionsData: list[Param] = [
 		desc="Primary Calendar Font",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="yearMonthBar.boldYearMonth",
 		v3Name="boldYmLabel",
 		flags=CUSTOMIZE,
@@ -1726,7 +1726,7 @@ confOptionsData: list[Param] = [
 		default=True,
 	),
 	# ------------
-	Param(
+	OptionData(
 		name="weekCal.toolbar.items",
 		v3Name="ud__wcalToolbarData",
 		flags=CUSTOMIZE,
@@ -1735,7 +1735,7 @@ confOptionsData: list[Param] = [
 		desc="Toolbar Buttons",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="mainWin.toolbar.items",
 		v3Name="ud__mainToolbarData",
 		flags=CUSTOMIZE,
@@ -1745,7 +1745,7 @@ confOptionsData: list[Param] = [
 		default=None,
 	),
 	# ----------------- Other
-	Param(
+	OptionData(
 		name="preferencesPagePath",
 		v3Name="preferencesPagePath",
 		flags=MAIN_CONF,
@@ -1754,7 +1754,7 @@ confOptionsData: list[Param] = [
 		desc="Preferences Page Path",
 		default="",
 	),
-	Param(
+	OptionData(
 		name="customizePagePath",
 		v3Name="customizePagePath",
 		flags=CUSTOMIZE,
@@ -1764,7 +1764,7 @@ confOptionsData: list[Param] = [
 		default="",
 	),
 	# move to a new file like local-tz.json?
-	Param(
+	OptionData(
 		name="localTimezoneHistory",
 		v3Name="localTzHist",
 		flags=MAIN_CONF,
@@ -1774,7 +1774,7 @@ confOptionsData: list[Param] = [
 		default=[],
 	),
 	# ----------------- Not currently save / loaded
-	Param(
+	OptionData(
 		name="",
 		v3Name="showDigClockTb",
 		flags=0,
@@ -1783,7 +1783,7 @@ confOptionsData: list[Param] = [
 		desc="Show Digital Clock: On Toolbar",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="menuIconPadding",
 		flags=0,
@@ -1792,7 +1792,7 @@ confOptionsData: list[Param] = [
 		desc="Menu Icon Padding",
 		default=7,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="eventTreeGroupIconSize",
 		flags=0,
@@ -1801,7 +1801,7 @@ confOptionsData: list[Param] = [
 		desc="Event Tree Group Icon Size",
 		default=24,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="treeIconSize",
 		flags=0,
@@ -1810,7 +1810,7 @@ confOptionsData: list[Param] = [
 		desc="Tree Icon Size",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="labelBoxIconSize",
 		flags=0,
@@ -1819,7 +1819,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="stackIconSize",
 		flags=0,
@@ -1828,7 +1828,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="dcalWidgetButtons",
 		flags=0,
@@ -1854,7 +1854,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="dcalWinWidgetButtons",
 		flags=0,
@@ -1888,7 +1888,7 @@ confOptionsData: list[Param] = [
 			},
 		],
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="menuIconEdgePadding",
 		flags=0,
@@ -1897,7 +1897,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=3,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="rightPanelEventIconSize",
 		flags=0,
@@ -1906,7 +1906,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="eventTreeIconSize",
 		flags=0,
@@ -1915,7 +1915,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="menuEventCheckIconSize",
 		flags=0,
@@ -1924,7 +1924,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="toolbarIconSize",
 		flags=0,
@@ -1933,7 +1933,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=24,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="mcalEventIconSizeMax",
 		flags=0,
@@ -1942,7 +1942,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=26,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="messageDialogIconSize",
 		flags=0,
@@ -1951,7 +1951,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=48,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="menuCheckSize",
 		flags=0,
@@ -1960,7 +1960,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="menuIconSize",
 		flags=0,
@@ -1969,7 +1969,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=18,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="comboBoxIconSize",
 		flags=0,
@@ -1978,7 +1978,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="imageInputIconSize",
 		flags=0,
@@ -1987,7 +1987,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=32,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="maxWeekCacheSize",
 		flags=0,
@@ -1996,7 +1996,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=12,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="wcalPadding",
 		flags=0,
@@ -2005,7 +2005,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=10,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="buttonIconSize",
 		flags=0,
@@ -2014,7 +2014,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=20,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="wcalEventIconSizeMax",
 		flags=0,
@@ -2023,7 +2023,7 @@ confOptionsData: list[Param] = [
 		desc="",
 		default=26,
 	),
-	Param(
+	OptionData(
 		name="",
 		v3Name="eventWeekViewTimeFormat",
 		flags=0,
