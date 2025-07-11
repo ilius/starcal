@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, OptionUI
 
 log = logger.get()
 
@@ -166,7 +166,7 @@ class MainWinRightPanel(CustomizableCalObj):
 			styleClass="right-panel-plugins",
 		)
 		# ---
-		self.enablePrefItem = None  # will be set in customize_dialog.py
+		self.enableOptionUI = None  # will be set in customize_dialog.py
 		# ---
 		self.addItems()
 		# ---
@@ -174,9 +174,9 @@ class MainWinRightPanel(CustomizableCalObj):
 		self.onBorderWidthChange()
 
 	def onToggleFromMainWin(self) -> None:
-		if self.enablePrefItem is None:
+		if self.enableOptionUI is None:
 			return
-		self.enablePrefItem.set(not self.enablePrefItem.get())
+		self.enableOptionUI.set(not self.enableOptionUI.get())
 
 	def appendItem(self, item: CustomizableCalObj) -> None:
 		CustomizableCalObj.appendItem(self, item)
@@ -286,11 +286,11 @@ class MainWinRightPanel(CustomizableCalObj):
 		return conf.mainWinRightPanelWidth.v
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckPrefItem,
-			IntSpinPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckOptionUI,
+			IntSpinOptionUI,
 		)
-		from scal3.ui_gtk.pref_utils_extra import FixedSizeOrRatioPrefItem
+		from scal3.ui_gtk.option_ui_extra import FixedSizeOrRatioOptionUI
 		from scal3.ui_gtk.stack import StackPage
 
 		if self.optionsWidget is not None:
@@ -309,17 +309,17 @@ class MainWinRightPanel(CustomizableCalObj):
 		# ---
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
-		prefItem: PrefItem
+		option: OptionUI
 		# -----
-		prefItem = FixedSizeOrRatioPrefItem(
+		option = FixedSizeOrRatioOptionUI(
 			ratioEnableProp=conf.mainWinRightPanelWidthRatioEnable,
 			fixedLabel=_("Fixed width"),
-			fixedItem=IntSpinPrefItem(
+			fixedItem=IntSpinOptionUI(
 				prop=conf.mainWinRightPanelWidth,
 				bounds=(1, 9999),
 			),
 			ratioLabel=_("Relative to window"),
-			ratioItem=FloatSpinPrefItem(
+			ratioItem=FloatSpinOptionUI(
 				prop=conf.mainWinRightPanelWidthRatio,
 				bounds=(0, 1),
 				digits=3,
@@ -329,11 +329,11 @@ class MainWinRightPanel(CustomizableCalObj):
 			# hspacing=0,
 		)
 		frame = gtk.Frame(label=_("Width"))
-		frame.add(prefItem.getWidget())
+		frame.add(option.getWidget())
 		frame.set_border_width(0)
 		pack(sizesVBox, frame)
 		# ---
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.mainWinRightPanelBorderWidth,
 			bounds=(1, 999),
 			step=1,
@@ -342,7 +342,7 @@ class MainWinRightPanel(CustomizableCalObj):
 			live=True,
 			onChangeFunc=self.onBorderWidthChange,
 		)
-		pack(sizesVBox, prefItem.getWidget())
+		pack(sizesVBox, option.getWidget())
 		# ------
 		eventsVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()
@@ -356,7 +356,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		button = newSubPageButton(self, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.rightPanelEventIconSize,
 			bounds=(5, 128),
 			step=1,
@@ -364,7 +364,7 @@ class MainWinRightPanel(CustomizableCalObj):
 			live=True,
 			onChangeFunc=self.onEventIconSizeChange,
 		)
-		pack(eventsVBox, prefItem.getWidget())
+		pack(eventsVBox, option.getWidget())
 		# ---
 		eventOptionsWidget = self.eventItem.getOptionsWidget()
 		assert eventOptionsWidget is not None
@@ -386,14 +386,14 @@ class MainWinRightPanel(CustomizableCalObj):
 		assert pluginOptionsWidget is not None
 		pack(pluginsVBox, pluginOptionsWidget)
 		# ------
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.mainWinRightPanelResizeOnToggle,
 			label=_("Resize on show/hide\nfrom window controller"),
 			# tooltip="",
 			live=True,
 			# onChangeFunc=None,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ------
 		self.optionsWidget = optionsWidget
 		self.subPages = subPages

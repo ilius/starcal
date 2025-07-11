@@ -50,19 +50,19 @@ class CalObj(CustomizableCalObj):
 		self.pbar.set_fraction(frac)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		from scal3.ui_gtk.option_ui import CheckOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.seasonPBar_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onSouthernHemisphereChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

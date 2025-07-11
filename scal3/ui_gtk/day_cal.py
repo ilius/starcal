@@ -22,7 +22,7 @@ from scal3.ui_gtk.cal_type_params import (
 	MonthNameListParamsWidget,
 	WeekDayNameParamsWidget,
 )
-from scal3.ui_gtk.pref_utils import FloatSpinPrefItem, IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
 
 log = logger.get()
 
@@ -430,30 +430,30 @@ class DayCal(CalBase):
 		return self._window
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckPrefItem,
-			ColorPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckOptionUI,
+			ColorOptionUI,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		subPages = []
-		prefItem: PrefItem
+		option: OptionUI
 		# ---
 		buttons1: list[gtk.Button] = []
 		buttons2: list[gtk.Button] = []
 		self.buttons1 = buttons1
 		# ----
 		if self.backgroundColor:
-			prefItem = ColorPrefItem(
+			option = ColorOptionUI(
 				prop=self.backgroundColor,
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
 			hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 			pack(hbox, gtk.Label(label=_("Background") + ": "))
-			pack(hbox, prefItem.getWidget())
+			pack(hbox, option.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(optionsWidget, hbox)
 		# --------
@@ -472,15 +472,15 @@ class DayCal(CalBase):
 		buttons2.append(newSubPageButton(self, page))
 		# ---
 		if self.widgetButtonsEnable:
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=self.widgetButtonsEnable,
 				label=_("Widget Buttons"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(pageWidget, prefItem.getWidget())
+			pack(pageWidget, option.getWidget())
 		if self.widgetButtonsSize:
-			prefItem = IntSpinPrefItem(
+			option = IntSpinOptionUI(
 				prop=self.widgetButtonsSize,
 				bounds=(0, 99),
 				step=1,
@@ -488,9 +488,9 @@ class DayCal(CalBase):
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(pageWidget, prefItem.getWidget())
+			pack(pageWidget, option.getWidget())
 		if self.widgetButtonsOpacity:
-			prefItem = FloatSpinPrefItem(
+			option = FloatSpinOptionUI(
 				prop=self.widgetButtonsOpacity,
 				bounds=(0, 1),
 				digits=2,
@@ -499,15 +499,15 @@ class DayCal(CalBase):
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(pageWidget, prefItem.getWidget())
+			pack(pageWidget, option.getWidget())
 		if self.navButtonsEnable:
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=self.navButtonsEnable,
 				label=_("Navigation buttons"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(pageWidget, prefItem.getWidget())
+			pack(pageWidget, option.getWidget())
 		pageWidget.show_all()
 		# -----
 		if self.weekdayParams:
@@ -523,29 +523,29 @@ class DayCal(CalBase):
 			pack(pageWidget, weekdayWidget)
 			# ---
 			if self.weekdayLocalize and langSh != "en":
-				prefItem = CheckPrefItem(
+				option = CheckOptionUI(
 					prop=self.weekdayLocalize,
 					label=_("Localize"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
 				)
-				pack(pageWidget, prefItem.getWidget())
+				pack(pageWidget, option.getWidget())
 			if self.weekdayAbbreviate:
-				prefItem = CheckPrefItem(
+				option = CheckOptionUI(
 					prop=self.weekdayAbbreviate,
 					label=_("Abbreviate"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
 				)
-				pack(pageWidget, prefItem.getWidget())
+				pack(pageWidget, option.getWidget())
 			if langHasUppercase and self.weekdayUppercase:
-				prefItem = CheckPrefItem(
+				option = CheckOptionUI(
 					prop=self.weekdayUppercase,
 					label=_("Uppercase"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
 				)
-				pack(pageWidget, prefItem.getWidget())
+				pack(pageWidget, option.getWidget())
 			# ---
 			pageWidget.show_all()
 			page = StackPage()
@@ -577,7 +577,7 @@ class DayCal(CalBase):
 		buttons2.append(newSubPageButton(self, page))
 		# ---
 		if self.eventIconSize:
-			prefItem = IntSpinPrefItem(
+			option = IntSpinOptionUI(
 				prop=self.eventIconSize,
 				bounds=(5, 999),
 				step=1,
@@ -585,10 +585,10 @@ class DayCal(CalBase):
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(vbox, prefItem.getWidget())
+			pack(vbox, option.getWidget())
 		# ---
 		if self.eventTotalSizeRatio:
-			prefItem = FloatSpinPrefItem(
+			option = FloatSpinOptionUI(
 				prop=self.eventTotalSizeRatio,
 				bounds=(0, 1),
 				digits=3,
@@ -597,7 +597,7 @@ class DayCal(CalBase):
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(vbox, prefItem.getWidget())
+			pack(vbox, option.getWidget())
 		# ----
 		if self.seasonPieEnable:
 			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
@@ -610,13 +610,13 @@ class DayCal(CalBase):
 			subPages.append(page)
 			buttons2.append(newSubPageButton(self, page))
 			# ---
-			prefItem = CheckPrefItem(
+			option = CheckOptionUI(
 				prop=self.seasonPieEnable,
 				label=_("Season Pie"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
-			pack(pageWidget, prefItem.getWidget())
+			pack(pageWidget, option.getWidget())
 			# ---
 			frame = gtk.Frame()
 			frame.set_border_width(5)
@@ -633,7 +633,7 @@ class DayCal(CalBase):
 				hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 				label = gtk.Label(label=_(season))
 				label.set_xalign(0)
-				prefItem = ColorPrefItem(
+				option = ColorOptionUI(
 					prop=self.seasonPieColors[season],
 					useAlpha=True,
 					live=True,
@@ -649,7 +649,7 @@ class DayCal(CalBase):
 					1,
 				)
 				grid.attach(
-					prefItem.getWidget(),
+					option.getWidget(),
 					column_index + 1,
 					row_index,
 					1,

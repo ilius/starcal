@@ -4,7 +4,7 @@ from gi.overrides import GObject
 
 from scal3 import logger
 from scal3.property import Property
-from scal3.ui_gtk.pref_utils import IntSpinPrefItem, PrefItem
+from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
 
 log = logger.get()
 
@@ -394,23 +394,23 @@ class CustomizableToolBox(StaticToolBox):
 		self.data: CustomizableToolBoxDict = {}  # type: ignore[typeddict-item]
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		from scal3.ui_gtk.option_ui import CheckOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ---
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=self.preferIconName,
 			label=_("Use System Icons"),
 			live=True,
 			onChangeFunc=self.updateItems,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=self.iconSize,
 			bounds=(5, 128),
 			step=1,
@@ -418,9 +418,9 @@ class CustomizableToolBox(StaticToolBox):
 			live=True,
 			onChangeFunc=self.onIconSizeChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=self.buttonBorder,
 			bounds=(0, 99),
 			step=1,
@@ -428,9 +428,9 @@ class CustomizableToolBox(StaticToolBox):
 			live=True,
 			onChangeFunc=self.updateItems,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=self.buttonPadding,
 			bounds=(0, 99),
 			step=1,
@@ -438,7 +438,7 @@ class CustomizableToolBox(StaticToolBox):
 			live=True,
 			onChangeFunc=self.updateItems,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# --
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

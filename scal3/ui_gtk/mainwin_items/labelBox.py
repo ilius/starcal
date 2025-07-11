@@ -54,7 +54,7 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.ui_gtk.pref_utils import PrefItem
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
@@ -699,22 +699,22 @@ class CalObj(CustomizableCalObj):
 		self.onDateChange()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.pref_utils import (
-			CheckColorPrefItem,
-			CheckFontPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
-			FontPrefItem,
-			IntSpinPrefItem,
+		from scal3.ui_gtk.option_ui import (
+			CheckColorOptionUI,
+			CheckFontOptionUI,
+			CheckOptionUI,
+			ColorOptionUI,
+			FontOptionUI,
+			IntSpinOptionUI,
 		)
 
 		if self.optionsWidget:
 			return self.optionsWidget
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
-		prefItem: PrefItem
+		option: OptionUI
 		# ----
-		prefItem = IntSpinPrefItem(
+		option = IntSpinOptionUI(
 			prop=conf.labelBoxBorderWidth,
 			bounds=(0, 99),
 			step=1,
@@ -723,68 +723,68 @@ class CalObj(CustomizableCalObj):
 			live=True,
 			onChangeFunc=self.onBorderWidthChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
-		prefItem = ColorPrefItem(
+		option = ColorOptionUI(
 			prop=conf.labelBoxMenuActiveColor,
 			live=True,
 			onChangeFunc=self.onMenuColorChange,
 		)
-		pack(hbox, prefItem.getWidget())
+		pack(hbox, option.getWidget())
 		pack(optionsWidget, hbox)
 		# ---
 		checkSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ---
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(prop=conf.labelBoxYearColorEnable, label=_("Year Color")),
-			ColorPrefItem(prop=conf.labelBoxYearColor, useAlpha=True),
+		option = CheckColorOptionUI(
+			CheckOptionUI(prop=conf.labelBoxYearColorEnable, label=_("Year Color")),
+			ColorOptionUI(prop=conf.labelBoxYearColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
-		prefItem = CheckColorPrefItem(
-			CheckPrefItem(prop=conf.labelBoxMonthColorEnable, label=_("Month Color")),
-			ColorPrefItem(prop=conf.labelBoxMonthColor, useAlpha=True),
+		option = CheckColorOptionUI(
+			CheckOptionUI(prop=conf.labelBoxMonthColorEnable, label=_("Month Color")),
+			ColorOptionUI(prop=conf.labelBoxMonthColor, useAlpha=True),
 			checkSizeGroup=checkSizeGroup,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
 		previewText = self.getFontPreviewTextFull()
-		prefItem = CheckFontPrefItem(
-			CheckPrefItem(prop=conf.labelBoxFontEnable, label=_("Font")),
-			FontPrefItem(prop=conf.labelBoxFont, previewText=previewText),
+		option = CheckFontOptionUI(
+			CheckOptionUI(prop=conf.labelBoxFontEnable, label=_("Font")),
+			FontOptionUI(prop=conf.labelBoxFont, previewText=previewText),
 			live=True,
 			onChangeFunc=self.onFontConfigChange,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
 		previewText = self.getFontPreviewText(calTypes.primary)
-		prefItem = CheckFontPrefItem(
-			CheckPrefItem(
+		option = CheckFontOptionUI(
+			CheckOptionUI(
 				prop=conf.labelBoxPrimaryFontEnable,
 				label=_("Primary Calendar Font"),
 			),
-			FontPrefItem(prop=conf.labelBoxPrimaryFont, previewText=previewText),
+			FontOptionUI(prop=conf.labelBoxPrimaryFont, previewText=previewText),
 			vertical=True,
 			spacing=0,
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
-		prefItem = CheckPrefItem(
+		option = CheckOptionUI(
 			prop=conf.boldYmLabel,
 			label=_("Bold Font"),
 			live=True,
 			onChangeFunc=ud.windowList.updateCSS,
 		)
-		pack(optionsWidget, prefItem.getWidget())
+		pack(optionsWidget, option.getWidget())
 		# ---
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
