@@ -26,7 +26,7 @@ class NOT_SET:
 	pass
 
 
-class Param(NamedTuple):
+class OptionData(NamedTuple):
 	name: str
 	v3Name: str
 	type: str
@@ -37,81 +37,81 @@ class Param(NamedTuple):
 
 
 confOptionsData = [
-	Param(
+	OptionData(
 		name="bgColor",
 		type="ColorType | None",
 		v3Name="bgColor",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="fgColor",
 		type="ColorType | None",
 		v3Name="fgColor",
 		default=None,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="baseFontSize",
 		default=8,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="changeHolidayBg",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="changeHolidayBgMinDays",
 		default=1,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="changeHolidayBgMaxDays",
 		default=60,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="ColorType",
 		v3Name="holidayBgBolor",
 		default=RGB(60, 35, 35),
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="basicButtonsSize",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="basicButtonsSpacing",
 		default=3,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="basicButtonsOpacity",
 		default=1.0,
 		# 0.0 <= value <= 1.0
 	),
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="movementButtonsEnable",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="movementButtonsSize",
 		default=22,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movementButtonsOpacity",
@@ -119,79 +119,79 @@ confOptionsData = [
 		# 0.0 <= value <= 1.0
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="majorStepMin",
 		default=50,  # with label
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="minorStepMin",
 		default=5,  # with or without label
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="maxLabelWidth",
 		default=60,  # or the same majorStepMin
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="baseTickHeight",
 		default=1.0,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="baseTickWidth",
 		default=0.5,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="maxTickWidth",
 		default=40.0,  # pixel,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="maxTickHeightRatio",
 		default=0.3,  # 0 < value < 1
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="labelYRatio",
 		default=1.1,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="yearPrettyPower",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="truncateTickLabel",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="currentTimeMarkerHeightRatio",
 		default=0.3,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="currentTimeMarkerWidth",
 		default=2,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="ColorType",
 		v3Name="currentTimeMarkerColor",
@@ -200,74 +200,74 @@ confOptionsData = [
 	# TODO: change timeline background according to daylight
 	# sunLightEnable = False
 	# sunLightH = 10
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="showWeekStart",
 		default=True,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="showWeekStartMinDays",
 		default=1,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="showWeekStartMaxDays",
 		default=60,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="ColorType",
 		v3Name="weekStartTickColor",
 		default=RGB(0, 200, 0),
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxLineWidth",
 		default=2,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxInnerAlpha",
 		default=0.1,  # 0 <= boxInnerAlpha <= 1
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxEditBorderWidth",
 		default=10.0,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxEditInnerLineWidth",
 		default=0.5,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxEditHelperLineWidth",
 		default=0.3,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="boxReverseGravity",
 		default=False,
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="boxSkipPixelLimit",
 		default=0.1,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="rotateBoxLabel",
@@ -278,7 +278,7 @@ confOptionsData = [
 		# -1: 90 deg CW (if needed)
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="bool",
 		v3Name="enableAnimation",
@@ -286,97 +286,97 @@ confOptionsData = [
 	),
 	# movingStaticStep* is used only when enableAnimation==False
 	# number of pixels on each step (keyboard / mouse event)
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingStaticStepKeyboard",
 		default=20,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingStaticStepMouse",
 		default=20,  # pixel
 	),
-	Param(
+	OptionData(
 		name="",
 		type="int",
 		v3Name="movingUpdateTime",
 		default=10,  # miliseconds
 	),
 	# movingInitialVelocity: pixel/second, initial speed/velocity when moving time range
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingInitialVelocity",
 		default=0,
 	),
 	# Force is the same as Acceleration, assuming Mass == 1
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingHandForceMouse",
 		default=1100,  # pixel / second^2
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingHandForceKeyboard",
 		default=1100,  # pixel / second^2
 	),
 	# movingHandForceKeyboardSmall is when press Shift with Left/Right arrow
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingHandForceKeyboardSmall",
 		default=850,  # pixel / second^2
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingHandForceButton",
 		default=1100,
 	),
 	# movingHandForce > movingFrictionForce
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingFrictionForce",
 		default=600,  # pixel / second^2
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingMaxVelocity",
 		default=1200,  # pixel / second
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingKeyTimeoutFirst",
 		default=0.5,  # second
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="movingKeyTimeout",
 		default=0.1,  # seconds
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="scrollZoomStep",
 		default=1.2,  # > 1.0
 	),
-	Param(
+	OptionData(
 		name="",
 		type="float",
 		v3Name="keyboardZoomStep",
 		default=1.2,  # > 1.0
 	),
 	# ---------------------
-	Param(
+	OptionData(
 		name="",
 		type="dict[str, str]",
 		v3Name="keys",
