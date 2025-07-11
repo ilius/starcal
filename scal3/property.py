@@ -22,7 +22,7 @@ from scal3.path import APP_NAME
 
 log = logging.getLogger(APP_NAME)
 
-__all__ = ["ItemProperty", "Property"]
+__all__ = ["ItemProperty", "ListProperty", "Property", "StrDictProperty"]
 
 
 class Property[T]:
