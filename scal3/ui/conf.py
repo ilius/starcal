@@ -6,7 +6,7 @@ from scal3.color_utils import RGB, RGBA
 from scal3.option import ListOption, Option
 
 if typing.TYPE_CHECKING:
-	from typing import Any, Final
+	from typing import Annotated, Any, Final
 
 	from scal3.color_utils import ColorType
 	from scal3.font import Font
@@ -16,6 +16,8 @@ if typing.TYPE_CHECKING:
 		CustomizableToolBoxDict,
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
+		FloatSpin,
+		IntSpin,
 		PieGeoDict,
 		WeekCalDayNumOptionsDict,
 	)
@@ -251,7 +253,7 @@ pluginsTextInsideExpander: Final[Option[bool]] = Option(True)
 pluginsTextIsExpanded: Final[Option[bool]] = Option(True)
 eventDayViewEnable: Final[Option[bool]] = Option(False)
 eventDayViewEventSep: Final[Option[str]] = Option("\n")
-eventViewMaxHeight: Final[Option[int]] = Option(200)
+eventViewMaxHeight: Final[Annotated[Option[int], IntSpin(1, 9999, 1)]] = Option(200)
 statusBarEnable: Final[Option[bool]] = Option(True)
 statusBarDatesReverseOrder: Final[Option[bool]] = Option(False)
 statusBarDatesColorEnable: Final[Option[bool]] = Option(False)
@@ -299,9 +301,9 @@ statusIconLocalizeNumber: Final[Option[bool]] = Option(True)
 statusIconFixedSizeEnable: Final[Option[bool]] = Option(False)
 statusIconFixedSizeWH: Final[Option[tuple[int, int]]] = Option((24, 24))
 pluginsTextStatusIcon: Final[Option[bool]] = Option(False)
-maxDayCacheSize: Final[Option[int]] = Option(100)
+maxDayCacheSize: Final[Annotated[Option[int], IntSpin(100, 9999, 10)]] = Option(100)
 eventDayViewTimeFormat: Final[Option[str]] = Option("HM$")
-cellMenuXOffset: Final[Option[int]] = Option(0)
+cellMenuXOffset: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(0)
 winControllerEnable: Final[Option[bool]] = Option(True)
 winControllerTheme: Final[Option[str]] = Option("default")
 winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
@@ -316,15 +318,19 @@ winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 		("sep", False),
 	]
 )
-winControllerIconSize: Final[Option[int]] = Option(24)
-winControllerBorder: Final[Option[int]] = Option(0)
-winControllerSpacing: Final[Option[int]] = Option(0)
+winControllerIconSize: Final[Annotated[Option[int], IntSpin(5, 128, 1)]] = Option(24)
+winControllerBorder: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
+winControllerSpacing: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
 winControllerPressState: Final[Option[bool]] = Option(False)
 mainWinRightPanelEnable: Final[Option[bool]] = Option(True)
 mainWinRightPanelRatio: Final[Option[float]] = Option(0.5)
 mainWinRightPanelSwap: Final[Option[bool]] = Option(False)
-mainWinRightPanelWidth: Final[Option[int]] = Option(200)
-mainWinRightPanelWidthRatio: Final[Option[float]] = Option(0.25)
+mainWinRightPanelWidth: Final[Annotated[Option[int], IntSpin(1, 9999, 10)]] = Option(
+	200
+)
+mainWinRightPanelWidthRatio: Final[Annotated[Option[float], FloatSpin(0, 1, 0.01)]] = (
+	Option(0.25)
+)
 mainWinRightPanelWidthRatioEnable: Final[Option[bool]] = Option(True)
 mainWinRightPanelEventFontEnable: Final[Option[bool]] = Option(False)
 mainWinRightPanelEventFont: Final[Option[Font | None]] = Option(None)
@@ -336,9 +342,11 @@ mainWinRightPanelPluginsFontEnable: Final[Option[bool]] = Option(False)
 mainWinRightPanelPluginsFont: Final[Option[Font | None]] = Option(None)
 mainWinRightPanelPluginsJustification: Final[Option[str]] = Option("left")
 mainWinRightPanelResizeOnToggle: Final[Option[bool]] = Option(True)
-mainWinRightPanelBorderWidth: Final[Option[int]] = Option(7)
-mcalLeftMargin: Final[Option[int]] = Option(30)
-mcalTopMargin: Final[Option[int]] = Option(30)
+mainWinRightPanelBorderWidth: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = (
+	Option(7)
+)
+mcalLeftMargin: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(30)
+mcalTopMargin: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(30)
 mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
@@ -353,9 +361,15 @@ mcalGridColor: Final[Option[ColorType]] = Option(
 mcalCornerMenuTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-mcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
-mcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
-wcalTextSizeScale: Final[Option[float]] = Option(0.6)
+mcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+	Option(0.12)
+)
+mcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+	Option(0.5)
+)
+wcalTextSizeScale: Final[Annotated[Option[float], FloatSpin(0.01, 1, 0.1)]] = Option(
+	0.6
+)
 wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
@@ -404,8 +418,12 @@ wcal_eventsCount_expand: Final[Option[bool]] = Option(False)
 wcalFont_eventsBox: Final[Option[str | None]] = Option(None)
 wcal_moonStatus_width: Final[Option[int]] = Option(48)
 wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
-wcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
-wcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
+wcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+	Option(0.12)
+)
+wcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1)]] = (
+	Option(0.5)
+)
 dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
 dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
@@ -620,7 +638,7 @@ dcalWinSeasonPieTextColor: Final[Option[ColorType]] = Option(
 )
 monthPBarCalType: Final[Option[int]] = Option(-1)
 seasonPBar_southernHemisphere: Final[Option[bool]] = Option(False)
-labelBoxBorderWidth: Final[Option[int]] = Option(0)
+labelBoxBorderWidth: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
 labelBoxMenuActiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=255)
 )
@@ -697,7 +715,7 @@ dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	]
 )
 menuIconEdgePadding: Final[Option[int]] = Option(3)
-rightPanelEventIconSize: Final[Option[int]] = Option(20)
+rightPanelEventIconSize: Final[Annotated[Option[int], IntSpin(5, 128, 1)]] = Option(20)
 eventTreeIconSize: Final[Option[int]] = Option(22)
 menuEventCheckIconSize: Final[Option[int]] = Option(20)
 toolbarIconSize: Final[Option[int]] = Option(24)

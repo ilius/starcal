@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NotRequired, TypedDict
+from typing import TYPE_CHECKING, NamedTuple, NotRequired, TypedDict
 
 from scal3.font import Font
 
@@ -21,6 +21,18 @@ __all__ = [
 ]
 
 type FontType = FontTuple | Font | None
+
+
+class IntSpin(NamedTuple):
+	start: int
+	end: int
+	step: int
+
+
+class FloatSpin(NamedTuple):
+	start: float
+	end: float
+	step: float
 
 
 class DictWithFont(TypedDict):
