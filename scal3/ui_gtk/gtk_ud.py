@@ -349,6 +349,8 @@ class IntegatedWindowList(CalObjBase):
 		self.updateIconSizes()
 		# ----
 		self.updateCSS()
+		# ----
+		self.broadcastDateChange()
 
 	# override_color and override_font are deprecated since version 3.16
 	# override_color:
