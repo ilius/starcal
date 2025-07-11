@@ -208,7 +208,7 @@ class CourseListEditor(gtk.Box):
 			self.treeModel.append(row)
 
 	def getDict(self) -> list[tuple[int, str, int]]:
-		return [tuple(row) for row in self.treeModel]  # type: ignore
+		return [tuple(row) for row in self.treeModel]  # type: ignore[misc, arg-type]
 
 
 class ClassTimeBoundsEditor(gtk.Box):

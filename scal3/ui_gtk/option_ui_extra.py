@@ -622,18 +622,28 @@ class ActiveInactiveCalsOptionUI(OptionUI):
 			return self.inactiveTreev
 		return None
 
+	def getCurrentTreestore(self) -> gtk.ListStore | None:
+		action = self.toolbar.getLeftRightAction()
+		if action == "inactivate":
+			return self.activeTrees
+		if action == "activate":
+			return self.inactiveTrees
+		return None
+
 	def onUpClick(self, _obj: gtk.Button | None = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
+		model = self.getCurrentTreestore()
+		assert model is not None
 		selection = treev.get_selection()
-		model, iter_ = selection.get_selected()
+		_model, iter_ = selection.get_selected()
 		if not iter_:
 			return
 		i = model.get_path(iter_).get_indices()[0]
 		if i <= 0:
 			return
-		model.swap(  # type: ignore[attr-defined]
+		model.swap(
 			model.get_iter(str(i - 1)),
 			model.get_iter(str(i)),
 		)
@@ -643,14 +653,16 @@ class ActiveInactiveCalsOptionUI(OptionUI):
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
+		model = self.getCurrentTreestore()
+		assert model is not None
 		selection = treev.get_selection()
-		model, iter_ = selection.get_selected()
+		_model, iter_ = selection.get_selected()
 		if not iter_:
 			return
 		i = model.get_path(iter_).get_indices()[0]
 		if i >= len(model) - 1:
 			return
-		model.swap(  # type: ignore[attr-defined]
+		model.swap(
 			model.get_iter(str(i)),
 			model.get_iter(str(i + 1)),
 		)
