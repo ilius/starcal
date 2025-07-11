@@ -32,11 +32,7 @@ import http.server
 import sys
 from os.path import join, splitext
 from time import time as now
-
-try:
-	from urllib.parse import parse_qsl
-except ImportError:
-	from cgi import parse_qsl  # type: ignore
+from urllib.parse import parse_qsl
 
 import httplib2
 

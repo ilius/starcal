@@ -587,8 +587,10 @@ class TimeLine(CustomizableCalObj):
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		assert self.data is not None
-		if self.pressingButton is not None:
-			self.pressingButton.onRelease(gevent)  # type: ignore[misc]
+		button = self.pressingButton
+		if button is not None:
+			assert button.onRelease is not None
+			button.onRelease(gevent)
 			self.pressingButton = None
 		win = self.w.get_window()
 		assert win is not None
@@ -734,8 +736,10 @@ class TimeLine(CustomizableCalObj):
 			event.afterModify()
 			event.save()
 			self.boxEditing = None
-		if self.pressingButton is not None:
-			self.pressingButton.onRelease(gevent)  # type: ignore[misc]
+		button = self.pressingButton
+		if button is not None:
+			assert button.onRelease is not None
+			button.onRelease(gevent)
 			self.pressingButton = None
 		win = self.w.get_window()
 		assert win is not None

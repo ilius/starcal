@@ -38,7 +38,7 @@ def makeGroupWidget(obj: EventGroupType) -> BaseWidgetClass | None:
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
 		return None
-	widget: BaseWidgetClass = WidgetClass(obj)  # type: ignore
+	widget: BaseWidgetClass = WidgetClass(obj)  # type: ignore[arg-type, assignment]
 	widget.show()
 	widget.updateWidget()
 	return widget

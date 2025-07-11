@@ -192,7 +192,7 @@ def intersectionOfTwoIntervalList(
 		if ptype in {OPEN_END, CLOSED_END}:
 			# end == pos
 			if None not in openStartList:
-				start: int = max(openStartList)  # type: ignore
+				start: int = max(openStartList)  # type: ignore[type-var, assignment]
 				if start > pos:
 					raise RuntimeError(f"{start - pos = }")
 				if pos > start or ptype == CLOSED_END:

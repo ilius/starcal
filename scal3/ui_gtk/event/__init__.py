@@ -54,7 +54,7 @@ def makeWidget(obj: BaseClassType) -> EventWidgetType | None:
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
 		return None
-	widget: EventWidgetType = WidgetClass(obj)  # type: ignore
+	widget: EventWidgetType = WidgetClass(obj)  # type: ignore[assignment, arg-type]
 	widget.show()
 	widget.updateWidget()
 	return widget
