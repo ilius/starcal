@@ -27,7 +27,7 @@ __all__ = [
 	"changeHolidayBg",
 	"changeHolidayBgMaxDays",
 	"changeHolidayBgMinDays",
-	"confParams",
+	"confOptions",
 	"currentTimeMarkerColor",
 	"currentTimeMarkerHeightRatio",
 	"currentTimeMarkerWidth",
@@ -140,7 +140,7 @@ keys: Final[StrDictOption[str]] = StrDictOption(
 )
 
 
-confParams: dict[str, Option[Any]] = {
+confOptions: dict[str, Option[Any]] = {
 	"baseFontSize": baseFontSize,
 	"baseTickHeight": baseTickHeight,
 	"baseTickWidth": baseTickWidth,

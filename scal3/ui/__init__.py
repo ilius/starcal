@@ -49,17 +49,17 @@ from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.s_object import SObj
 from scal3.ui import conf
 from scal3.ui.conf import (
-	confParams,
-	confParamsCustomize,
-	confParamsLive,
+	confOptions,
+	confOptionsCustomize,
+	confOptionsLive,
 )
 from scal3.ui.funcs import checkEnabledNamesItems
-from scal3.ui.params import (
+from scal3.ui.options import (
 	CUSTOMIZE,
 	LIVE,
 	MAIN_CONF,
 	NEED_RESTART,
-	confParamsData,
+	confOptionsData,
 	getParamNamesWithFlag,
 )
 
@@ -68,7 +68,7 @@ if typing.TYPE_CHECKING:
 
 	from scal3.cell_type import CellCacheType
 	from scal3.event_lib.pytypes import EventGroupType, EventType
-	from scal3.ui.pytypes import CalTypeParamsDict
+	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.gtk_ud import CalObjType
 	from scal3.ui_gtk.starcal import MainWin
 
@@ -102,7 +102,7 @@ __all__ = [
 	"eventUpdateQueue",
 	"focusTime",
 	"fontDefault",
-	"getActiveMonthCalParams",
+	"getActiveMonthCalOptions",
 	"getEvent",
 	"getFont",
 	"getParamNamesWithFlag",
@@ -135,13 +135,15 @@ confPathCustomize = join(confDir, "ui-customize.json")
 
 confPathLive = join(confDir, "ui-live.json")
 
-fontParams = ["fontDefault"] + [
-	p.v3Name for p in confParamsData if p.type.startswith("Font")
+fontOptions = ["fontDefault"] + [
+	p.v3Name for p in confOptionsData if p.type.startswith("Font")
 ]
 
-confDecoders: dict[str, Callable[[Any], Any]] = dict.fromkeys(fontParams, Font.fromList)
+confDecoders: dict[str, Callable[[Any], Any]] = dict.fromkeys(
+	fontOptions, Font.fromList
+)
 confEncoders: dict[str, Callable[[Any], Any]] = {
-	# param: Font.to_json for param in fontParams
+	# param: Font.to_json for param in fontOptions
 }
 
 
@@ -150,22 +152,22 @@ def loadConf() -> None:
 		return
 	loadSingleConfig(
 		sysConfPath,
-		confParams,
+		confOptions,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		confPath,
-		confParams,
+		confOptions,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		confPathCustomize,
-		confParamsCustomize,
+		confOptionsCustomize,
 		decoders=confDecoders,
 	)
 	loadSingleConfig(
 		confPathLive,
-		confParamsLive,
+		confOptionsLive,
 		decoders=confDecoders,
 	)
 	if not isabs(conf.statusIconImage.v):
@@ -185,7 +187,7 @@ def loadConf() -> None:
 def saveConf() -> None:
 	saveSingleConfig(
 		confPath,
-		confParams,
+		confOptions,
 		encoders=confEncoders,
 	)
 
@@ -193,7 +195,7 @@ def saveConf() -> None:
 def saveConfCustomize() -> None:
 	saveSingleConfig(
 		confPathCustomize,
-		confParamsCustomize,
+		confOptionsCustomize,
 		encoders=confEncoders,
 	)
 
@@ -202,7 +204,7 @@ def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 	# log.debug(f"saveLiveConf: {conf.winX.v=}, {conf.winY.v=}, {conf.winWidth.v=}")
 	saveSingleConfig(
 		confPathLive,
-		confParamsLive,
+		confOptionsLive,
 		encoders=confEncoders,
 	)
 
@@ -309,7 +311,7 @@ def initFonts(fontDefaultNew: Font) -> None:
 
 
 def checkNeedRestart() -> bool:
-	return any(prop.v != value for prop, value in needRestartList)
+	return any(opt.v != value for opt, value in needRestartList)
 
 
 def checkMainWinItems() -> None:
@@ -384,7 +386,7 @@ def init() -> None:
 # ----------------------------------------------------------------------
 
 
-def getActiveMonthCalParams() -> list[tuple[int, CalTypeParamsDict]]:
+def getActiveMonthCalOptions() -> list[tuple[int, CalTypeOptionsDict]]:
 	return list(
 		zip(
 			calTypes.active,
@@ -489,7 +491,7 @@ if updateLocalTimezoneHistory():
 
 
 needRestartList: list[tuple[Option[Any], Any]] = [
-	(prop, prop.v) for prop in conf.needRestartList + locale_man.getNeedRestartParams()
+	(opt, opt.v) for opt in conf.needRestartList + locale_man.getNeedRestartOptions()
 ]
 
 # ----------------------------------

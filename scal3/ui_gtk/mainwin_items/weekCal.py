@@ -33,7 +33,7 @@ from scal3.font import Font
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui.font import getParamsFont
+from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	gdk,
@@ -77,7 +77,7 @@ if TYPE_CHECKING:
 	from scal3.color_utils import ColorType
 	from scal3.option import Option
 	from scal3.timeline.box import Box as TimeLineBox
-	from scal3.ui.pytypes import WeekCalDayNumParamsDict
+	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
 	from scal3.ui_gtk.starcal import MainWin
 
 __all__ = ["CalObj"]
@@ -129,9 +129,9 @@ class ColumnBase(CustomizableCalObj):
 		return getattr(conf, f"wcalFont_{self.objName}", None)
 
 	def getFontFamily(self) -> str:
-		prop = self.getFontOption()
-		if prop and prop.v:
-			return prop.v
+		option = self.getFontOption()
+		if option and option.v:
+			return option.v
 		return ""
 
 	def onWidthChange(self) -> None:
@@ -219,9 +219,9 @@ class ColumnBase(CustomizableCalObj):
 		)
 
 	def onExpandCheckClick(self) -> None:
-		prop = self.getExpandOption()
-		assert prop is not None
-		self.expand = prop.v
+		option = self.getExpandOption()
+		assert option is not None
+		self.expand = option.v
 		self.updatePacking()
 		self.w.queue_draw()
 
@@ -998,7 +998,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		wcal: CalObj,
 		index: int,
 		calType: int,
-		params: WeekCalDayNumParamsDict,
+		options: WeekCalDayNumOptionsDict,
 		sgroupLabel: gtk.SizeGroup,
 		sgroupFont: gtk.SizeGroup,
 	) -> None:
@@ -1027,18 +1027,18 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		pack(self, self.fontb)
 		sgroupFont.add_widget(self.fontb)
 		# ----
-		self.set(params)
+		self.set(options)
 		# ----
 		self.fontCheck.connect("clicked", self.onChange)
 		self.fontb.connect("font-set", self.onChange)
 
-	def get(self) -> WeekCalDayNumParamsDict:
+	def get(self) -> WeekCalDayNumOptionsDict:
 		return {
 			"font": (self.fontb.getFont() if self.fontCheck.get_active() else None),
 		}
 
-	def set(self, data: WeekCalDayNumParamsDict) -> None:
-		font = getParamsFont(data)
+	def set(self, data: WeekCalDayNumOptionsDict) -> None:
+		font = getOptionsFont(data)
 		self.fontCheck.set_active(bool(font))
 		if not font:
 			font = ui.getFont()
@@ -1077,7 +1077,7 @@ class DaysOfMonthColumn(Column):
 		status = self.wcal.status
 		assert status is not None
 		self.drawBg(cr)
-		font = getParamsFont(conf.wcalTypeParams.v[self.index])
+		font = getOptionsFont(conf.wcalTypeParams.v[self.index])
 		self.drawTextList(
 			cr,
 			[
@@ -1140,15 +1140,15 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		# ----
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
-		self.typeParamsVbox = gtk.Box(
+		self.typeOptionsVbox = gtk.Box(
 			orientation=gtk.Orientation.VERTICAL,
 			spacing=self.optionsPageSpacing // 2,
 		)
-		self.typeParamsVbox.set_border_width(5)
-		frame.add(self.typeParamsVbox)
+		self.typeOptionsVbox.set_border_width(5)
+		frame.add(self.typeOptionsVbox)
 		frame.show_all()
 		pack(optionsWidget, frame)
-		self.updateTypeParamsWidget()  # FIXME
+		self.updateTypeOptionsWidget()  # FIXME
 
 	# overwrites method from ColumnBase
 	def updatePacking(self) -> None:
@@ -1199,10 +1199,10 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 			col2.calType = calType
 			col2.show()
 
-	def updateTypeParamsWidget(self) -> None:
-		if not hasattr(self, "typeParamsVbox"):
+	def updateTypeOptionsWidget(self) -> None:
+		if not hasattr(self, "typeOptionsVbox"):
 			return
-		vbox = self.typeParamsVbox
+		vbox = self.typeOptionsVbox
 		for child in vbox.get_children():
 			child.destroy()
 		# ---
@@ -1217,14 +1217,14 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		sgroupFont = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, calType in enumerate(calTypes.active):
 			# try:
-			params = conf.wcalTypeParams.v[i]
+			options = conf.wcalTypeParams.v[i]
 			# except IndexError:
 			# --
 			hbox = DaysOfMonthCalTypeParamBox(
 				self.wcal,
 				i,
 				calType,
-				params,
+				options,
 				sgroupLabel,
 				sgroupFont,
 			)
@@ -1235,7 +1235,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 	def onConfigChange(self) -> None:
 		super().onConfigChange()
 		self.updateCols()
-		self.updateTypeParamsWidget()
+		self.updateTypeOptionsWidget()
 
 
 class MoonStatusColumn(Column):

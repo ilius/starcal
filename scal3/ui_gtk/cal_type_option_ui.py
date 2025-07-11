@@ -35,7 +35,7 @@ if typing.TYPE_CHECKING:
 
 __all__ = [
 	"ModuleOptionButton",
-	"ModuleOptionItem",
+	"ModuleOptionUI",
 ]
 
 
@@ -43,7 +43,7 @@ __all__ = [
 # (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
 # (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
 # (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
-class ModuleOptionItem:
+class ModuleOptionUI:
 	@classmethod
 	def valueString(cls, value: Any) -> str:
 		return str(value)
@@ -51,32 +51,32 @@ class ModuleOptionItem:
 	def __init__(
 		self,
 		option: Option,
-		opt: tuple,
+		rawOption: tuple,
 		spacing: int = 0,
 	) -> None:
 		self.option = option
-		t = opt[1]
+		t = rawOption[1]
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		w: gtk.Widget
 		if t is bool:
-			w = gtk.CheckButton(label=_(opt[2]))
+			w = gtk.CheckButton(label=_(rawOption[2]))
 			self.get = w.get_active
 			self.set = w.set_active
 		elif t is list:
-			pack(hbox, gtk.Label(label=_(opt[2])))
+			pack(hbox, gtk.Label(label=_(rawOption[2])))
 			w = gtk.ComboBoxText()  # or RadioButton
-			for s in opt[3]:
+			for s in rawOption[3]:
 				w.append_text(_(s))
 			self.get = w.get_active
 			self.set = w.set_active
 		elif t is int:
-			pack(hbox, gtk.Label(label=_(opt[2])))
-			w = IntSpinButton(opt[3], opt[4])
+			pack(hbox, gtk.Label(label=_(rawOption[2])))
+			w = IntSpinButton(rawOption[3], rawOption[4])
 			self.get = w.get_value
 			self.set = w.set_value
 		elif t is float:
-			pack(hbox, gtk.Label(label=_(opt[2])))
-			w = FloatSpinButton(opt[3], opt[4], opt[5])
+			pack(hbox, gtk.Label(label=_(rawOption[2])))
+			w = FloatSpinButton(rawOption[3], rawOption[4], rawOption[5])
 			self.get = w.get_value
 			self.set = w.set_value
 		else:

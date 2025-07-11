@@ -23,7 +23,7 @@ from scal3.color_utils import RGB, ColorType
 from scal3.locale_man import tr as _
 from scal3.monthcal import getMonthDesc
 from scal3.ui import conf
-from scal3.ui.font import getParamsFont
+from scal3.ui.font import getOptionsFont
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
@@ -96,12 +96,12 @@ def _renderTableCellCalType(
 	except IndexError:
 		return False, ""
 	try:
-		params = conf.mcalTypeParams.v[calTypeIndex]
+		options = conf.mcalTypeParams.v[calTypeIndex]
 	except IndexError:
 		return False, ""
 	day = _(cell.dates[calType][2], calType=calType)
 
-	font = getParamsFont(params)
+	font = getOptionsFont(options)
 	assert font is not None
 	face, sizeOrig = formatFont(font)
 	size = str(sizeMap(sizeOrig))
