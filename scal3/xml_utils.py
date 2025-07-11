@@ -13,7 +13,7 @@ def escape(data: str, entities: dict[str, Any] | None = None) -> str:  # noqa: A
 	Escape &, <, and > in a string of data.
 
 	You can escape other strings of data by passing a dictionary as
-	the optional entities parameter.  The keys and values must all be
+	the optional entities option.  The keys and values must all be
 	strings; each key will be replaced with its corresponding value.
 	"""
 	# must do ampersand first
@@ -29,7 +29,7 @@ def unescape(data: str, entities: dict[str, Any] | None = None) -> str:  # noqa:
 	Unescape &amp;, &lt;, and &gt; in a string of data.
 
 	You can unescape other strings of data by passing a dictionary as
-	the optional entities parameter.  The keys and values must all be
+	the optional entities option.  The keys and values must all be
 	strings; each key will be replaced with its corresponding value.
 	"""
 	data = data.replace("&lt;", "<")

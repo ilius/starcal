@@ -26,21 +26,21 @@ log = logger.get()
 from scal3.cal_types import calTypes
 from scal3.locale_man import langHasUppercase
 from scal3.locale_man import tr as _
-from scal3.ui.font import getParamsFont
+from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import gtk, pack
 
 if TYPE_CHECKING:
 	from scal3.ui.pytypes import (
-		DayCalTypeDayParamsDict,
-		DayCalTypeWMParamsDict,
+		DayCalTypeDayOptionsDict,
+		DayCalTypeWMOptionsDict,
 	)
 	from scal3.ui_gtk.cal_base import CalBase
 
 __all__ = [
-	"DayNumListParamsWidget",
-	"DayNumParamsWidget",
-	"MonthNameListParamsWidget",
-	"WeekDayNameParamsWidget",
+	"DayNumListOptionsWidget",
+	"DayNumOptionsWidget",
+	"MonthNameListOptionsWidget",
+	"WeekDayNameOptionsWidget",
 ]
 
 
@@ -107,10 +107,10 @@ class YAlignComboBox(gtk.ComboBoxText):
 
 
 # only used for Day Cal so far
-class DayNumParamsWidget(gtk.Box):
+class DayNumOptionsWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Option[DayCalTypeDayParamsDict],
+		options: Option[DayCalTypeDayOptionsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
@@ -127,7 +127,7 @@ class DayNumParamsWidget(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
 		# ---
 		self.set_border_width(5)
-		self.params = params
+		self.options = options
 		self.cal = cal
 		self.hasEnable = hasEnable
 		# ----
@@ -202,7 +202,7 @@ class DayNumParamsWidget(gtk.Box):
 		self.localizeCheck = gtk.CheckButton(label=_("Localize"))
 		pack(vbox, self.localizeCheck)
 		# ----
-		self.set(params.v)
+		self.set(options.v)
 		# ----
 		self.spinX.connect("changed", self.onChange)
 		self.spinY.connect("changed", self.onChange)
@@ -214,7 +214,7 @@ class DayNumParamsWidget(gtk.Box):
 		self.yalignCombo.connect("changed", self.onChange)
 		self.localizeCheck.connect("clicked", self.onChange)
 
-	def get(self) -> DayCalTypeDayParamsDict:
+	def get(self) -> DayCalTypeDayOptionsDict:
 		enable = True
 		if self.hasEnable:
 			enable = self.enableCheck.get_active()
@@ -231,31 +231,31 @@ class DayNumParamsWidget(gtk.Box):
 			"localize": self.localizeCheck.get_active(),
 		}
 
-	def set(self, params: DayCalTypeDayParamsDict) -> None:
-		self.spinX.set_value(params["pos"][0])
-		self.spinY.set_value(params["pos"][1])
-		font = getParamsFont(params)
+	def set(self, options: DayCalTypeDayOptionsDict) -> None:
+		self.spinX.set_value(options["pos"][0])
+		self.spinY.set_value(options["pos"][1])
+		font = getOptionsFont(options)
 		assert font is not None
 		self.fontb.setFont(font)
-		self.colorb.setRGBA(params["color"])
+		self.colorb.setRGBA(options["color"])
 		if self.hasEnable:
-			self.enableCheck.set_active(params.get("enable", True))
-		self.xalignCombo.set(params.get("xalign", "center"))
-		self.yalignCombo.set(params.get("yalign", "center"))
-		self.localizeCheck.set_active(params.get("localize", False))
+			self.enableCheck.set_active(options.get("enable", True))
+		self.xalignCombo.set(options.get("xalign", "center"))
+		self.yalignCombo.set(options.get("yalign", "center"))
+		self.localizeCheck.set_active(options.get("localize", False))
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
-		self.params.v = self.get()
+		self.options.v = self.get()
 		self.cal.w.queue_draw()
 
 	def setFontPreviewText(self, text: str) -> None:
 		self.fontb.set_property("preview-text", text)
 
 
-class DayNumListParamsWidget(DayNumParamsWidget):
+class DayNumListOptionsWidget(DayNumOptionsWidget):
 	def __init__(
 		self,
-		params: ListOption[DayCalTypeDayParamsDict],
+		options: ListOption[DayCalTypeDayOptionsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -269,9 +269,9 @@ class DayNumListParamsWidget(DayNumParamsWidget):
 		module = calTypes[calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		DayNumParamsWidget.__init__(
+		DayNumOptionsWidget.__init__(
 			self,
-			params=ItemOption(params, index),
+			options=ItemOption(options, index),
 			cal=cal,
 			sgroupLabel=sgroupLabel,
 			desc=_(module.desc, ctx="calendar"),
@@ -282,10 +282,10 @@ class DayNumListParamsWidget(DayNumParamsWidget):
 
 
 # only used for Day Cal so far
-class _WeekMonthParamsWidget(gtk.Box):
+class _WeekMonthOptionsWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Option[DayCalTypeWMParamsDict],
+		options: Option[DayCalTypeWMOptionsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
@@ -302,7 +302,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=10)
 		# ---
 		self.set_border_width(5)
-		self.params = params
+		self.options = options
 		self.cal = cal
 		self.hasEnable = hasEnable
 		# ----
@@ -380,7 +380,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		if langHasUppercase:
 			pack(vbox, self.uppercaseCheck)
 		# ----
-		self.set(params.v)
+		self.set(options.v)
 		# ----
 		self.spinX.connect("changed", self.onChange)
 		self.spinY.connect("changed", self.onChange)
@@ -393,7 +393,7 @@ class _WeekMonthParamsWidget(gtk.Box):
 		self.abbreviateCheck.connect("clicked", self.onChange)
 		self.uppercaseCheck.connect("clicked", self.onChange)
 
-	def get(self) -> DayCalTypeWMParamsDict:
+	def get(self) -> DayCalTypeWMOptionsDict:
 		enable = True
 		if self.hasEnable:
 			enable = self.enableCheck.get_active()
@@ -411,36 +411,36 @@ class _WeekMonthParamsWidget(gtk.Box):
 			"uppercase": self.uppercaseCheck.get_active(),
 		}
 
-	def set(self, params: DayCalTypeWMParamsDict) -> None:
-		self.spinX.set_value(params["pos"][0])
-		self.spinY.set_value(params["pos"][1])
-		font = getParamsFont(params)
+	def set(self, options: DayCalTypeWMOptionsDict) -> None:
+		self.spinX.set_value(options["pos"][0])
+		self.spinY.set_value(options["pos"][1])
+		font = getOptionsFont(options)
 		assert font is not None
 		self.fontb.setFont(font)
-		self.colorb.setRGBA(params["color"])
+		self.colorb.setRGBA(options["color"])
 		if self.hasEnable:
-			self.enableCheck.set_active(params.get("enable", True))
-		self.xalignCombo.set(params.get("xalign", "center"))
-		self.yalignCombo.set(params.get("yalign", "center"))
-		self.abbreviateCheck.set_active(params.get("abbreviate", False))
-		self.uppercaseCheck.set_active(params.get("uppercase", False))
+			self.enableCheck.set_active(options.get("enable", True))
+		self.xalignCombo.set(options.get("xalign", "center"))
+		self.yalignCombo.set(options.get("yalign", "center"))
+		self.abbreviateCheck.set_active(options.get("abbreviate", False))
+		self.uppercaseCheck.set_active(options.get("uppercase", False))
 
 	def onChange(self, _w: gtk.Widget | None = None, _ge: Any = None) -> None:
-		self.params.v = self.get()
+		self.options.v = self.get()
 		self.cal.w.queue_draw()
 
 	def setFontPreviewText(self, text: str) -> None:
 		self.fontb.set_property("preview-text", text)
 
 
-class WeekDayNameParamsWidget(_WeekMonthParamsWidget):
+class WeekDayNameOptionsWidget(_WeekMonthOptionsWidget):
 	pass
 
 
-class MonthNameListParamsWidget(_WeekMonthParamsWidget):
+class MonthNameListOptionsWidget(_WeekMonthOptionsWidget):
 	def __init__(
 		self,
-		params: ListOption[DayCalTypeWMParamsDict],
+		options: ListOption[DayCalTypeWMOptionsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -454,9 +454,9 @@ class MonthNameListParamsWidget(_WeekMonthParamsWidget):
 		module = calTypes[calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		_WeekMonthParamsWidget.__init__(
+		_WeekMonthOptionsWidget.__init__(
 			self,
-			params=ItemOption(params, index),
+			options=ItemOption(options, index),
 			cal=cal,
 			sgroupLabel=sgroupLabel,
 			desc=_(module.desc, ctx="calendar"),

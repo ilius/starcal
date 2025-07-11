@@ -117,7 +117,7 @@ class EventGroup(EventContainer, EventGroupType):
 	actions: list[tuple[str, str]] = []  # [("Export to ICS", "exportToIcs")]
 	# eventActions = []  # not implemented yet!
 	eventCacheSizeMin = 0  # minimum cache size for events
-	basicParams: list[str] = EventContainer.basicParams + [
+	basicOptions: list[str] = EventContainer.basicOptions + [
 		# "enable",  # FIXME
 		# "remoteIds",  # user edits the value, FIXME
 		"remoteSyncData",

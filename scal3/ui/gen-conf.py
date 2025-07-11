@@ -11,7 +11,7 @@ os.environ["STARCAL_NO_LOAD_CONFIG"] = "1"
 
 sys.path.insert(0, rootDir)
 
-from scal3.ui import params
+from scal3.ui import options
 
 
 def genParamDict(names: list[str]) -> str:
@@ -23,12 +23,12 @@ def genParamList(names: list[str]) -> str:
 
 
 all_names = sorted(
-	[p.v3Name for p in params.confParamsData]
+	[p.v3Name for p in options.confOptionsData]
 	+ [
-		"confParams",
-		"confParamsCustomize",
-		"confParamsLive",
-		"dayCalWinParamsLive",
+		"confOptions",
+		"confOptionsCustomize",
+		"confOptionsLive",
+		"dayCalWinOptionsLive",
 		"needRestartList",
 	],
 )
@@ -47,17 +47,17 @@ output.write(
 )
 output.write("""\tfrom scal3.ui.pytypes import (
 		ButtonGeoDict,
-		CalTypeParamsDict,
+		CalTypeOptionsDict,
 		CustomizableToolBoxDict,
-		DayCalTypeWMParamsDict,
-		DayCalTypeDayParamsDict,
-		WeekCalDayNumParamsDict,
+		DayCalTypeWMOptionsDict,
+		DayCalTypeDayOptionsDict,
+		WeekCalDayNumOptionsDict,
 		PieGeoDict,
 	)\n\n\n""")
 output.write(f"__all__ = {all_names!r}\n\n")
 
-for p in params.confParamsData:
-	assert p.default is not params.NOT_SET
+for p in options.confOptionsData:
+	assert p.default is not options.NOT_SET
 	value = p.default
 	if p.type.startswith("list["):
 		itemType = p.type[5:-1]
@@ -76,25 +76,27 @@ for p in params.confParamsData:
 
 output.write("\n\n")
 
-confParams = params.getParamNamesWithFlag(params.MAIN_CONF)
-confParamsLive = params.getParamNamesWithFlag(params.LIVE)
-confParamsCustomize = params.getParamNamesWithFlag(params.CUSTOMIZE)
-dayCalWinParamsLive = params.getParamNamesWithFlag(params.DAYCAL_WIN_LIVE)
+confOptions = options.getParamNamesWithFlag(options.MAIN_CONF)
+confOptionsLive = options.getParamNamesWithFlag(options.LIVE)
+confOptionsCustomize = options.getParamNamesWithFlag(options.CUSTOMIZE)
+dayCalWinOptionsLive = options.getParamNamesWithFlag(options.DAYCAL_WIN_LIVE)
 
-output.write("confParams: dict[str, Option[Any]] = " + genParamDict(confParams))
-output.write("confParamsLive: dict[str, Option[Any]] = " + genParamDict(confParamsLive))
+output.write("confOptions: dict[str, Option[Any]] = " + genParamDict(confOptions))
 output.write(
-	"confParamsCustomize: dict[str, Option[Any]] = "
-	+ genParamDict(confParamsCustomize),
+	"confOptionsLive: dict[str, Option[Any]] = " + genParamDict(confOptionsLive)
 )
 output.write(
-	"dayCalWinParamsLive: dict[str, Option[Any]] = "
-	+ genParamDict(dayCalWinParamsLive),
+	"confOptionsCustomize: dict[str, Option[Any]] = "
+	+ genParamDict(confOptionsCustomize),
+)
+output.write(
+	"dayCalWinOptionsLive: dict[str, Option[Any]] = "
+	+ genParamDict(dayCalWinOptionsLive),
 )
 
 output.write("\n")
 
-needRestart = params.getParamNamesWithFlag(params.NEED_RESTART)
+needRestart = options.getParamNamesWithFlag(options.NEED_RESTART)
 output.write("needRestartList = " + genParamList(needRestart))
 output.write("\n")
 

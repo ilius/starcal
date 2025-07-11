@@ -30,9 +30,9 @@ __all__ = ["CalObj"]
 class CalObj(DayCal):
 	expand = True
 
-	dayParams = conf.dcalDayParams
-	monthParams = conf.dcalMonthParams
-	weekdayParams = conf.dcalWeekdayParams
+	dayOptions = conf.dcalDayParams
+	monthOptions = conf.dcalMonthParams
+	weekdayOptions = conf.dcalWeekdayParams
 
 	widgetButtonsEnable = conf.dcalWidgetButtonsEnable
 	widgetButtons = conf.dcalWidgetButtons
