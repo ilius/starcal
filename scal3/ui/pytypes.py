@@ -10,14 +10,14 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"ButtonGeoDict",
-	"CalTypeParamsDict",
+	"CalTypeOptionsDict",
 	"CustomizableToolBoxDict",
-	"DayCalTypeBaseParamsDict",
-	"DayCalTypeDayParamsDict",
-	"DayCalTypeWMParamsDict",
+	"DayCalTypeBaseOptionsDict",
+	"DayCalTypeDayOptionsDict",
+	"DayCalTypeWMOptionsDict",
 	"DictWithFont",
 	"PieGeoDict",
-	"WeekCalDayNumParamsDict",
+	"WeekCalDayNumOptionsDict",
 ]
 
 type FontType = FontTuple | Font | None
@@ -27,18 +27,18 @@ class DictWithFont(TypedDict):
 	font: FontType
 
 
-class WeekCalDayNumParamsDict(TypedDict):
+class WeekCalDayNumOptionsDict(TypedDict):
 	font: FontType
 
 
-class CalTypeParamsDict(TypedDict):
+class CalTypeOptionsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?
 
 
 # shared (for day numbers, week day name and month name)
-class DayCalTypeBaseParamsDict(TypedDict):
+class DayCalTypeBaseOptionsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?
@@ -48,7 +48,7 @@ class DayCalTypeBaseParamsDict(TypedDict):
 
 
 # for day numbers
-class DayCalTypeDayParamsDict(TypedDict):
+class DayCalTypeDayOptionsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?
@@ -59,7 +59,7 @@ class DayCalTypeDayParamsDict(TypedDict):
 
 
 # for week day name and month name
-class DayCalTypeWMParamsDict(TypedDict):
+class DayCalTypeWMOptionsDict(TypedDict):
 	pos: tuple[float, float]
 	font: FontType
 	color: RawColor  # | None?

@@ -251,7 +251,7 @@ class CellCache:
 		return self.buildCell(jd)
 
 	def getTmpCell(self, jd: int) -> CellType:
-		# don't keep, no eventsData, no plugin params
+		# don't keep, no eventsData, no plugin options
 		c = self.jdCells.get(jd)
 		if c is not None:
 			return c

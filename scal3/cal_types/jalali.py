@@ -48,7 +48,7 @@ options: list[OptionTuple] = [
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 ]
-confParams: Final[dict[str, Option[Any]]] = {
+confOptions: Final[dict[str, Option[Any]]] = {
 	"monthNameMode": monthNameMode,
 }
 
@@ -187,18 +187,18 @@ from scal3.path import confDir, sysConfDir
 
 # Here load user options from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(sysConfPath, confParams)
+loadSingleConfig(sysConfPath, confOptions)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(confPath, confParams)
+loadSingleConfig(confPath, confOptions)
 
 
 def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
 		confPath,
-		confParams,
+		confOptions,
 	)
 
 

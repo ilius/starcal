@@ -98,7 +98,7 @@ confPath = join(confDir, "event", "manager.json")
 
 eventManPos: Final[Option[tuple[int, int]]] = Option((0, 0))
 eventManShowDescription: Final[Option[bool]] = Option(True)
-confParams: dict[str, Option[Any]] = {
+confOptions: dict[str, Option[Any]] = {
 	"eventManPos": eventManPos,
 	"eventManShowDescription": eventManShowDescription,
 }
@@ -111,13 +111,13 @@ def loadConf() -> None:
 	loadModuleConfig(
 		confPath=confPath,
 		sysConfPath=None,
-		params=confParams,
+		options=confOptions,
 		decoders={},
 	)
 
 
 def saveConf() -> None:
-	saveSingleConfig(confPath, confParams, {})
+	saveSingleConfig(confPath, confOptions, {})
 
 
 class EventManagerToolbar(VerticalStaticToolBox):

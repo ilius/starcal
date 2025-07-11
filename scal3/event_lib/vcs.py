@@ -89,13 +89,13 @@ class VcsTagEvent(VcsEpochBaseEvent):
 class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	name = "vcs"
 	desc = _("VCS Repository (Commits)")
-	_myParams = [
+	_myOptions = [
 		"showAuthor",
 		"showShortHash",
 		"showStat",
 	]
-	params = VcsEpochBaseEventGroup.params + _myParams
-	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myParams
+	params = VcsEpochBaseEventGroup.params + _myOptions
+	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myOptions
 
 	def __init__(self, ident: str | None = None) -> None:
 		VcsEpochBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]

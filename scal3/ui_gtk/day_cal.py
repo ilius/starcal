@@ -18,9 +18,9 @@ from __future__ import annotations
 from scal3 import logger
 from scal3.color_utils import RGBA
 from scal3.ui import conf
-from scal3.ui_gtk.cal_type_params import (
-	MonthNameListParamsWidget,
-	WeekDayNameParamsWidget,
+from scal3.ui_gtk.cal_type_options import (
+	MonthNameListOptionsWidget,
+	WeekDayNameOptionsWidget,
 )
 from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
 
@@ -44,7 +44,7 @@ from scal3.locale_man import (
 )
 from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
-from scal3.ui.font import getParamsFont
+from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	GLibError,
@@ -74,9 +74,9 @@ if TYPE_CHECKING:
 	from scal3.option import ListOption, Option
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
-		DayCalTypeBaseParamsDict,
-		DayCalTypeDayParamsDict,
-		DayCalTypeWMParamsDict,
+		DayCalTypeBaseOptionsDict,
+		DayCalTypeDayOptionsDict,
+		DayCalTypeWMOptionsDict,
 		PieGeoDict,
 	)
 
@@ -98,9 +98,9 @@ class DayCal(CalBase):
 	itemListCustomizable = False
 
 	backgroundColor: Option[ColorType] | None = None
-	dayParams: ListOption[DayCalTypeDayParamsDict] | None = None
-	monthParams: ListOption[DayCalTypeWMParamsDict] | None = None
-	weekdayParams: Option[DayCalTypeWMParamsDict] | None = None
+	dayOptions: ListOption[DayCalTypeDayOptionsDict] | None = None
+	monthOptions: ListOption[DayCalTypeWMOptionsDict] | None = None
+	weekdayOptions: Option[DayCalTypeWMOptionsDict] | None = None
 	weekdayLocalize: Option[bool] | None = None
 	weekdayAbbreviate: Option[bool] | None = None
 	weekdayUppercase: Option[bool] | None = None
@@ -161,14 +161,16 @@ class DayCal(CalBase):
 			return self.backgroundColor.v
 		return conf.bgColor.v
 
-	def getDayParams(self, allCalTypes: bool = False) -> list[DayCalTypeDayParamsDict]:
-		if not self.dayParams:
+	def getDayOptions(
+		self, allCalTypes: bool = False
+	) -> list[DayCalTypeDayOptionsDict]:
+		if not self.dayOptions:
 			return []
-		params = self.dayParams.v
+		options = self.dayOptions.v
 		if allCalTypes:
 			n = len(calTypes.active)
-			while len(params) < n:
-				params.append(
+			while len(options) < n:
+				options.append(
 					{
 						"enable": False,
 						"pos": (0, 0),
@@ -179,19 +181,19 @@ class DayCal(CalBase):
 						"localize": False,
 					},
 				)
-		return params
+		return options
 
-	def getMonthParams(
+	def getMonthOptions(
 		self,
 		allCalTypes: bool = False,
-	) -> list[DayCalTypeWMParamsDict]:
-		if not self.monthParams:
+	) -> list[DayCalTypeWMOptionsDict]:
+		if not self.monthOptions:
 			return []
-		params = self.monthParams.v
+		options = self.monthOptions.v
 		if allCalTypes:
 			n = len(calTypes.active)
-			while len(params) < n:
-				params.append(
+			while len(options) < n:
+				options.append(
 					{
 						"enable": False,
 						"pos": (0, 0),
@@ -203,7 +205,7 @@ class DayCal(CalBase):
 						"uppercase": False,
 					},
 				)
-		return params
+		return options
 
 	def getWidgetButtons(self) -> list[BaseButton]:
 		if not self.widgetButtonsEnable:
@@ -348,19 +350,19 @@ class DayCal(CalBase):
 	def nextDayClicked(self, _ge: gdk.EventButton | None = None) -> None:
 		self.jdPlus(1)
 
-	def updateTypeParamsWidget(self) -> list[StackPage]:
-		from scal3.ui_gtk.cal_type_params import DayNumListParamsWidget
+	def updateTypeOptionsWidget(self) -> list[StackPage]:
+		from scal3.ui_gtk.cal_type_options import DayNumListOptionsWidget
 
-		monthParams = self.getMonthParams(allCalTypes=True)
-		vbox = self.dayMonthParamsVbox
+		monthOptions = self.getMonthOptions(allCalTypes=True)
+		vbox = self.dayMonthOptionsVbox
 		for child in vbox.get_children():
 			child.destroy()
 		# ---
 		subPages = []
 		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		assert self.dayParams
-		assert self.monthParams
+		assert self.dayOptions
+		assert self.monthOptions
 		for index, calType in enumerate(calTypes.active):
 			module = calTypes[calType]
 			if module is None:
@@ -371,8 +373,8 @@ class DayCal(CalBase):
 			# --
 			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 			# ---
-			dayWidget = DayNumListParamsWidget(
-				params=self.dayParams,
+			dayWidget = DayNumListOptionsWidget(
+				options=self.dayOptions,
 				index=index,
 				calType=calType,
 				cal=self,
@@ -383,8 +385,8 @@ class DayCal(CalBase):
 			)
 			pack(pageWidget, dayWidget)
 			# ---
-			monthWidget = MonthNameListParamsWidget(
-				params=self.monthParams,
+			monthWidget = MonthNameListOptionsWidget(
+				options=self.monthOptions,
 				index=index,
 				calType=calType,
 				cal=self,
@@ -419,7 +421,7 @@ class DayCal(CalBase):
 				_(c.dates[calType][2], calType=calTypes.primary),
 			)
 			monthWidget.setFontPreviewText(
-				self.getMonthName(c, calType, monthParams[index]),
+				self.getMonthName(c, calType, monthOptions[index]),
 			)
 		# ---
 		vbox.show_all()
@@ -457,9 +459,9 @@ class DayCal(CalBase):
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(optionsWidget, hbox)
 		# --------
-		self.dayMonthParamsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		pack(optionsWidget, self.dayMonthParamsVbox)
-		subPages += self.updateTypeParamsWidget()
+		self.dayMonthOptionsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		pack(optionsWidget, self.dayMonthOptionsVbox)
+		subPages += self.updateTypeOptionsWidget()
 		# ----
 		pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		page = StackPage()
@@ -510,11 +512,11 @@ class DayCal(CalBase):
 			pack(pageWidget, option.getWidget())
 		pageWidget.show_all()
 		# -----
-		if self.weekdayParams:
+		if self.weekdayOptions:
 			pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 			# ---
-			weekdayWidget = WeekDayNameParamsWidget(
-				params=self.weekdayParams,
+			weekdayWidget = WeekDayNameOptionsWidget(
+				options=self.weekdayOptions,
 				cal=self,
 				# sgroupLabel=None,
 				desc=_("Week Day"),
@@ -700,7 +702,7 @@ class DayCal(CalBase):
 
 	@staticmethod
 	def getRenderPos(
-		params: DayCalTypeBaseParamsDict,
+		options: DayCalTypeBaseOptionsDict,
 		x0: float,
 		y0: float,
 		w: float,
@@ -708,27 +710,27 @@ class DayCal(CalBase):
 		fontw: float,
 		fonth: float,
 	) -> tuple[float, float]:
-		xalign = params.get("xalign")
-		yalign = params.get("yalign")
+		xalign = options.get("xalign")
+		yalign = options.get("yalign")
 
 		if not xalign or xalign == "center":
-			x = x0 + w / 2 - fontw / 2 + params["pos"][0]
+			x = x0 + w / 2 - fontw / 2 + options["pos"][0]
 		elif xalign == "left":
-			x = x0 + params["pos"][0]
+			x = x0 + options["pos"][0]
 		elif xalign == "right":
-			x = x0 + w - fontw - params["pos"][0]
+			x = x0 + w - fontw - options["pos"][0]
 		else:
-			x = x0 + w / 2 - fontw / 2 + params["pos"][0]
+			x = x0 + w / 2 - fontw / 2 + options["pos"][0]
 			log.error(f"invalid {xalign=}")
 
 		if not yalign or yalign == "center":
-			y = y0 + h / 2 - fonth / 2 + params["pos"][1]
+			y = y0 + h / 2 - fonth / 2 + options["pos"][1]
 		elif yalign == "top":
-			y = y0 + params["pos"][1]
+			y = y0 + options["pos"][1]
 		elif yalign == "buttom":
-			y = y0 + h - fonth - params["pos"][1]
+			y = y0 + h - fonth - options["pos"][1]
 		else:
-			y = y0 + h / 2 - fonth / 2 + params["pos"][1]
+			y = y0 + h / 2 - fonth / 2 + options["pos"][1]
 			log.error(f"invalid {yalign=}")
 
 		return (x, y)
@@ -805,25 +807,25 @@ class DayCal(CalBase):
 	def getMonthName(
 		c: CellType,
 		calType: int,
-		params: DayCalTypeWMParamsDict,
+		options: DayCalTypeWMOptionsDict,
 	) -> str:
 		month: int = c.dates[calType][1]
-		abbreviate: bool = params.get("abbreviate", False)
-		uppercase: bool = params.get("uppercase", False)
+		abbreviate: bool = options.get("abbreviate", False)
+		uppercase: bool = options.get("uppercase", False)
 		text = getMonthName(calType, month, abbreviate=abbreviate)
 		if uppercase:
 			text = text.upper()
 		return text
 
-	def iterMonthParams(self) -> Iterable[tuple[int, DayCalTypeWMParamsDict]]:
+	def iterMonthOptions(self) -> Iterable[tuple[int, DayCalTypeWMOptionsDict]]:
 		return (
-			(calType, params)
-			for calType, params in zip(
+			(calType, options)
+			for calType, options in zip(
 				calTypes.active,
-				self.getMonthParams(),
+				self.getMonthOptions(),
 				strict=False,
 			)
-			if params.get("enable", True)
+			if options.get("enable", True)
 		)
 
 	def getWeekdayLocalize(self) -> bool:
@@ -924,50 +926,50 @@ class DayCal(CalBase):
 		# 	h-1,
 		# )
 		# ----
-		for calType, dparams in zip(
+		for calType, doptions in zip(
 			calTypes.active,
-			self.getDayParams(),
+			self.getDayOptions(),
 			strict=False,
 		):
-			if not dparams.get("enable", True):
+			if not doptions.get("enable", True):
 				continue
 			dayNum = c.dates[calType][2]
-			if dparams.get("localize", False):
+			if doptions.get("localize", False):
 				dayStr = _(dayNum)
 			else:
 				dayStr = str(dayNum)
 			layout = newTextLayout(
 				self.w,
 				dayStr,
-				getParamsFont(dparams),
+				getOptionsFont(doptions),
 			)
 			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
 			if calType == calTypes.primary and c.holiday:
 				setColor(cr, conf.holidayColor.v)
 			else:
-				setColor(cr, dparams["color"])
-			font_x, font_y = self.getRenderPos(dparams, x0, y0, w, h, fontw, fonth)
+				setColor(cr, doptions["color"])
+			font_x, font_y = self.getRenderPos(doptions, x0, y0, w, h, fontw, fonth)
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
-		for calType, mparams in self.iterMonthParams():
-			text = self.getMonthName(c, calType, mparams)
+		for calType, moptions in self.iterMonthOptions():
+			text = self.getMonthName(c, calType, moptions)
 			layout = newTextLayout(
 				self.w,
 				text,
-				getParamsFont(mparams),
+				getOptionsFont(moptions),
 			)
 			assert layout is not None
 			fontw, fonth = layout.get_pixel_size()
-			setColor(cr, mparams["color"])
-			font_x, font_y = self.getRenderPos(mparams, x0, y0, w, h, fontw, fonth)
+			setColor(cr, moptions["color"])
+			font_x, font_y = self.getRenderPos(moptions, x0, y0, w, h, fontw, fonth)
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
-		if self.weekdayParams:
-			wparams = self.weekdayParams.v
-			if wparams.get("enable", True):
+		if self.weekdayOptions:
+			woptions = self.weekdayOptions.v
+			if woptions.get("enable", True):
 				text = core.getWeekDayAuto(
 					c.weekDay,
 					localize=self.getWeekdayLocalize(),
@@ -983,12 +985,12 @@ class DayCal(CalBase):
 				daynum = newTextLayout(
 					self.w,
 					text,
-					getParamsFont(wparams),
+					getOptionsFont(woptions),
 				)
 				assert daynum is not None
 				fontw, fonth = daynum.get_pixel_size()
-				setColor(cr, wparams["color"])
-				font_x, font_y = self.getRenderPos(wparams, x0, y0, w, h, fontw, fonth)
+				setColor(cr, woptions["color"])
+				font_x, font_y = self.getRenderPos(woptions, x0, y0, w, h, fontw, fonth)
 				cr.move_to(font_x, font_y)
 				show_layout(cr, daynum)
 

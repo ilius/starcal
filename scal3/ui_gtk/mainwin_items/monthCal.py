@@ -30,7 +30,7 @@ from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3.ui.font import getParamsFont
+from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
 	TWO_BUTTON_PRESS,
 	gdk,
@@ -54,7 +54,7 @@ from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 if TYPE_CHECKING:
 	from scal3.cell import MonthStatus
 	from scal3.cell_type import CellType
-	from scal3.ui.pytypes import CalTypeParamsDict
+	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.starcal import MainWin
 
@@ -105,11 +105,11 @@ class CalObj(CalBase):
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
 
-	def updateTypeParamsWidget(self) -> None:
-		from scal3.ui_gtk.cal_type_params import DayNumListParamsWidget
+	def updateTypeOptionsWidget(self) -> None:
+		from scal3.ui_gtk.cal_type_options import DayNumListOptionsWidget
 
 		try:
-			vbox = self.typeParamsVbox
+			vbox = self.typeOptionsVbox
 		except AttributeError:
 			return
 		for child in vbox.get_children():
@@ -130,8 +130,8 @@ class CalObj(CalBase):
 			module = calTypes[calType]
 			if module is None:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			pageWidget = DayNumListParamsWidget(
-				params=conf.mcalTypeParams,  # type: ignore[arg-type]
+			pageWidget = DayNumListOptionsWidget(
+				options=conf.mcalTypeParams,  # type: ignore[arg-type]
 				index=index,
 				cal=self,
 				sgroupLabel=sgroupLabel,
@@ -283,10 +283,10 @@ class CalObj(CalBase):
 		# --------
 		self.optionsWidget = optionsWidget
 		# ----
-		self.typeParamsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		pack(optionsWidget, self.typeParamsVbox, padding=5)
+		self.typeOptionsVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		pack(optionsWidget, self.typeOptionsVbox, padding=5)
 		optionsWidget.show_all()
-		self.updateTypeParamsWidget()  # FIXME
+		self.updateTypeOptionsWidget()  # FIXME
 		return optionsWidget
 
 	def getSubPages(self) -> list[StackPage]:
@@ -445,23 +445,23 @@ class CalObj(CalBase):
 		cell: CellType,
 		x0: float,
 		y0: float,
-		activeParams: list[tuple[int, CalTypeParamsDict]],
+		activeOptions: list[tuple[int, CalTypeOptionsDict]],
 		cellHasCursor: bool,
 	) -> None:
-		for calType, params in activeParams[1:]:
-			if not params.get("enable", True):
+		for calType, options in activeOptions[1:]:
+			if not options.get("enable", True):
 				continue
 			dayNumLayout = newTextLayout(
 				self.w,
 				_(cell.dates[calType][2], calType=calType),
-				getParamsFont(params),
+				getOptionsFont(options),
 			)
 			assert dayNumLayout is not None
 			fontw, fonth = dayNumLayout.get_pixel_size()
-			setColor(cr, params["color"])
+			setColor(cr, options["color"])
 			cr.move_to(
-				x0 - fontw / 2 + params["pos"][0],
-				y0 - fonth / 2 + params["pos"][1],
+				x0 - fontw / 2 + options["pos"][0],
+				y0 - fonth / 2 + options["pos"][1],
 			)
 			show_layout(cr, dayNumLayout)
 		if cellHasCursor:
@@ -495,7 +495,7 @@ class CalObj(CalBase):
 		if ui.cells.today.date[:2] == currentCell.date[:2]:
 			self._drawTodayMarker(cr)
 
-		activeParams = ui.getActiveMonthCalParams()
+		activeOptions = ui.getActiveMonthCalOptions()
 
 		for yPos in range(6):
 			for xPos in range(7):
@@ -518,11 +518,11 @@ class CalObj(CalBase):
 					self._drawEventIcons(cr=cr, cell=c, x0=x0, y0=y0)
 				# Drawing numbers inside every cell
 				calType = calTypes.primary
-				params = conf.mcalTypeParams.v[0]
+				options = conf.mcalTypeParams.v[0]
 				dayNumLayout = newTextLayout(
 					self.w,
 					_(c.dates[calType][2], calType=calType),
-					getParamsFont(params),
+					getOptionsFont(options),
 				)
 				assert dayNumLayout is not None
 				fontw, fonth = dayNumLayout.get_pixel_size()
@@ -531,10 +531,10 @@ class CalObj(CalBase):
 				elif c.holiday:
 					setColor(cr, conf.holidayColor.v)
 				else:
-					setColor(cr, params["color"])
+					setColor(cr, options["color"])
 				cr.move_to(
-					x0 - fontw / 2 + params["pos"][0],
-					y0 - fonth / 2 + params["pos"][1],
+					x0 - fontw / 2 + options["pos"][0],
+					y0 - fonth / 2 + options["pos"][1],
 				)
 				show_layout(cr, dayNumLayout)
 				if not cellInactive:
@@ -543,7 +543,7 @@ class CalObj(CalBase):
 						cell=c,
 						x0=x0,
 						y0=y0,
-						activeParams=activeParams,
+						activeOptions=activeOptions,
 						cellHasCursor=cellHasCursor,
 					)
 
@@ -728,4 +728,4 @@ class CalObj(CalBase):
 	def onConfigChange(self) -> None:
 		super().onConfigChange()
 		self.updateTextWidth()
-		self.updateTypeParamsWidget()
+		self.updateTypeOptionsWidget()

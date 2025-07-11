@@ -126,17 +126,17 @@ if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
-confParams: Final[dict[str, Option[Any]]] = {
+confOptions: Final[dict[str, Option[Any]]] = {
 	"hijriUseDB": hijriUseDB,
 }
 
 # Here load user options (hijriUseDB) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
-loadSingleConfig(sysConfPath, confParams)
+loadSingleConfig(sysConfPath, confOptions)
 
 
 confPath = f"{confDir}/{name}.json"
-loadSingleConfig(confPath, confParams)
+loadSingleConfig(confPath, confOptions)
 
 
 def ifloor(x: float) -> int:
@@ -151,7 +151,7 @@ def save() -> None:
 	"""Save user options to file."""
 	saveSingleConfig(
 		confPath,
-		confParams,
+		confOptions,
 	)
 
 

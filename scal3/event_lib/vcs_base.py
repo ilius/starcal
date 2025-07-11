@@ -40,7 +40,7 @@ __all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
 
 class VcsBaseEventGroup(EventGroup):
 	acceptsEventTypes = ()
-	myParams: list[str] = [
+	myOptions: list[str] = [
 		"vcsType",
 		"vcsDir",
 		"vcsBranch",
@@ -115,7 +115,7 @@ class VcsBaseEventGroup(EventGroup):
 
 
 class VcsEpochBaseEventGroup(VcsBaseEventGroup):
-	myParams = VcsBaseEventGroup.myParams + ["showSeconds"]
+	myOptions = VcsBaseEventGroup.myOptions + ["showSeconds"]
 	canConvertTo: list[str] = VcsBaseEventGroup.canConvertTo + ["taskList"]
 
 	def __init__(self, ident: int | None = None) -> None:

@@ -23,7 +23,7 @@ __all__ = [
 
 def loadSingleConfig(
 	confPath: str,
-	params: dict[str, Option[Any]],
+	options: dict[str, Option[Any]],
 	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	from os.path import isfile
@@ -45,30 +45,30 @@ def loadSingleConfig(
 		log.error(f"invalid json file {confPath!r}: {e}")
 		return
 	# ---
-	assert isinstance(params, dict), f"{params=}"
-	for param, value in data.items():
-		if param not in params:
-			log.warning(f"Ignoring config option {param}")
+	assert isinstance(options, dict), f"{options=}"
+	for optName, value in data.items():
+		if optName not in options:
+			log.warning(f"Ignoring config option {optName}")
 			continue
-		if decoders and param in decoders:
-			value = decoders[param](value)  # noqa: PLW2901
-		prop = params[param]
-		assert isinstance(prop, Option), f"{prop=}, {param=}"
-		prop.v = value
+		if decoders and optName in decoders:
+			value = decoders[optName](value)  # noqa: PLW2901
+		option = options[optName]
+		assert isinstance(option, Option), f"{option=}, {optName=}"
+		option.v = value
 
 
 def saveSingleConfig(
 	confPath: str,
-	params: dict[str, Option[Any]],
+	options: dict[str, Option[Any]],
 	encoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	data = {}
-	for param, prop in params.items():
-		assert isinstance(prop, Option), f"{prop=}, {param=}"
-		value = prop.v
-		if encoders and param in encoders:
-			value = encoders[param](value)
-		data[param] = value
+	for optName, option in options.items():
+		assert isinstance(option, Option), f"{option=}, {optName=}"
+		value = option.v
+		if encoders and optName in encoders:
+			value = encoders[optName](value)
+		data[optName] = value
 	# ---
 	text = dataToPrettyJson(data, sort_keys=True)
 	try:
@@ -82,18 +82,18 @@ def saveSingleConfig(
 def loadModuleConfig(
 	confPath: str,
 	sysConfPath: str | None,
-	params: dict[str, Option[Any]],
+	options: dict[str, Option[Any]],
 	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	if sysConfPath:
 		loadSingleConfig(
 			sysConfPath,
-			params,
+			options,
 			decoders,
 		)
 	# ----
 	loadSingleConfig(
 		confPath,
-		params,
+		options,
 		decoders,
 	)

@@ -165,7 +165,7 @@ class StarCalendarAccount(Account):
 		"password",
 		"lastToken",
 	]
-	basicParams: list[str] = Account.basicParams + [
+	basicOptions: list[str] = Account.basicOptions + [
 		"password",
 		"lastToken",
 	]

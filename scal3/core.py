@@ -142,7 +142,7 @@ firstWeekDay: Final[Option[int]] = Option(0)
 weekNumberModeAuto: Final[Option[bool]] = Option(False)
 weekNumberMode: Final[Option[int]] = Option(7)
 
-confParams: Final[dict[str, Option[Any]]] = {
+confOptions: Final[dict[str, Option[Any]]] = {
 	"version": version,
 	"allPlugList": allPlugList,
 	"plugIndex": plugIndex,
@@ -170,7 +170,7 @@ def loadConf() -> None:
 	loadModuleConfig(
 		confPath=confPath,
 		sysConfPath=sysConfPath,
-		params=confParams,
+		options=confOptions,
 		decoders=confDecoders,
 	)
 	# -----------
@@ -186,7 +186,7 @@ def loadConf() -> None:
 def saveConf() -> None:
 	activeCalTypes.v = calTypes.activeNames
 	inactiveCalTypes.v = calTypes.inactiveNames
-	saveSingleConfig(confPath, confParams, confEncoders)
+	saveSingleConfig(confPath, confOptions, confEncoders)
 
 
 fs: FileSystem = DefaultFileSystem(confDir)

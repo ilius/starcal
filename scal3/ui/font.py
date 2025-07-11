@@ -8,11 +8,11 @@ from scal3.ui import getFont
 if TYPE_CHECKING:
 	from scal3.ui.pytypes import DictWithFont
 
-__all__ = ["getParamsFont"]
+__all__ = ["getOptionsFont"]
 
 
-def getParamsFont(params: DictWithFont) -> Font | None:
-	font = params.get("font")
+def getOptionsFont(options: DictWithFont) -> Font | None:
+	font = options.get("font")
 	if not font:
 		return None
 	if not isinstance(font, Font):

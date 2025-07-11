@@ -102,7 +102,9 @@ class CalObj(CustomizableCalObj):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = CheckColorOptionUI(
-			CheckOptionUI(option=conf.statusBarDatesColorEnable, label=_("Dates Color")),
+			CheckOptionUI(
+				option=conf.statusBarDatesColorEnable, label=_("Dates Color")
+			),
 			ColorOptionUI(option=conf.statusBarDatesColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.onDateChange,

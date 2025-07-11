@@ -29,7 +29,7 @@ __all__ = [
 	"NEED_RESTART",
 	"NOT_SET",
 	"Font",
-	"confParamsData",
+	"confOptionsData",
 	"getParamNamesWithFlag",
 ]
 
@@ -54,7 +54,7 @@ class Param(NamedTuple):
 	default: Any = NOT_SET
 
 
-confParamsData: list[Param] = [
+confOptionsData: list[Param] = [
 	Param(
 		name="mainWin.openOnStartup",
 		v3Name="showMain",
@@ -772,12 +772,12 @@ confParamsData: list[Param] = [
 		default=30,
 	),
 	Param(
-		name="monthCal.typeParams",
+		name="monthCal.typeOptions",
 		v3Name="mcalTypeParams",
 		flags=CUSTOMIZE,
-		type="list[CalTypeParamsDict]",
+		type="list[CalTypeOptionsDict]",
 		where="MainWin: Customize: Month Calendar",
-		desc="Calendar Types Params",
+		desc="Calendar Types Options",
 		default=[
 			{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 			{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
@@ -1027,10 +1027,10 @@ confParamsData: list[Param] = [
 		default=50,
 	),
 	Param(
-		name="weekCal.daysOfMonth.typeParams",
+		name="weekCal.daysOfMonth.typeOptions",
 		v3Name="wcalTypeParams",
 		flags=CUSTOMIZE,
-		type="list[WeekCalDayNumParamsDict]",
+		type="list[WeekCalDayNumOptionsDict]",
 		where="MainWin: Customize: Week Calendar: Columns: Days of Month",
 		desc="Font (for each calendar type)",
 		default=[{"font": None}, {"font": None}, {"font": None}],
@@ -1137,10 +1137,10 @@ confParamsData: list[Param] = [
 	),
 	# Param("dayCal.widgetButtons", "dcalWidgetButtons", CUSTOMIZE),
 	Param(
-		name="dayCal.day.params",
+		name="dayCal.day.options",
 		v3Name="dcalDayParams",
 		flags=CUSTOMIZE,
-		type="list[DayCalTypeDayParamsDict]",
+		type="list[DayCalTypeDayOptionsDict]",
 		where="MainWin: Customize: Day Calendar: {Calendar Type}",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default=[
@@ -1174,10 +1174,10 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="dayCal.month.params",
+		name="dayCal.month.options",
 		v3Name="dcalMonthParams",
 		flags=CUSTOMIZE,
-		type="list[DayCalTypeWMParamsDict]",
+		type="list[DayCalTypeWMOptionsDict]",
 		where="MainWin: Customize: Day Calendar: {Calendar Type}: Month Name",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default=[
@@ -1214,10 +1214,10 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="dayCal.weekday.params",
+		name="dayCal.weekday.options",
 		v3Name="dcalWeekdayParams",
 		flags=CUSTOMIZE,
-		type="DayCalTypeWMParamsDict",
+		type="DayCalTypeWMOptionsDict",
 		where="MainWin: Customize: Day Calendar: Week Day",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default={
@@ -1423,10 +1423,10 @@ confParamsData: list[Param] = [
 		default=False,
 	),
 	Param(
-		name="dayCalWin.day.params",
+		name="dayCalWin.day.options",
 		v3Name="dcalWinDayParams",
 		flags=CUSTOMIZE,
-		type="list[DayCalTypeDayParamsDict]",
+		type="list[DayCalTypeDayOptionsDict]",
 		where="DayCalWin: Customize: {Calendar Type}",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default=[
@@ -1460,10 +1460,10 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="dayCalWin.month.params",
+		name="dayCalWin.month.options",
 		v3Name="dcalWinMonthParams",
 		flags=CUSTOMIZE,
-		type="list[DayCalTypeWMParamsDict]",
+		type="list[DayCalTypeWMOptionsDict]",
 		where="DayCalWin: Customize: {Calendar Type}: Month Name",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		default=[
@@ -1500,10 +1500,10 @@ confParamsData: list[Param] = [
 		],
 	),
 	Param(
-		name="dayCalWin.weekday.params",
+		name="dayCalWin.weekday.options",
 		v3Name="dcalWinWeekdayParams",
 		flags=CUSTOMIZE,
-		type="DayCalTypeWMParamsDict",
+		type="DayCalTypeWMOptionsDict",
 		where="DayCalWin: Customize: Week Day",
 		desc="[Enable, Position, Alignment, Font, Color]",
 		# TODO: add abbreviate and uppercase
@@ -2034,9 +2034,9 @@ confParamsData: list[Param] = [
 	),
 ]
 
-_v3Names = [p.v3Name for p in confParamsData]
+_v3Names = [p.v3Name for p in confOptionsData]
 assert len(_v3Names) == len(set(_v3Names))
 
 
 def getParamNamesWithFlag(flag: int) -> list[str]:
-	return [p.v3Name for p in confParamsData if p.flags & flag > 0]
+	return [p.v3Name for p in confOptionsData if p.flags & flag > 0]

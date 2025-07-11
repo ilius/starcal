@@ -83,7 +83,7 @@ confPath = join(confDir, "ui-gtk.json")
 dateFormat: Final[Option[str]] = Option("%Y/%m/%d")
 # clockFormat: "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 clockFormat: Final[Option[str]] = Option("%X")
-confParams: Final[dict[str, Option[Any]]] = {
+confOptions: Final[dict[str, Option[Any]]] = {
 	"dateFormat": dateFormat,
 	"clockFormat": clockFormat,
 	# "adjustTimeCmd": adjustTimeCmd,
@@ -94,14 +94,14 @@ def loadConf() -> None:
 	loadModuleConfig(
 		confPath=confPath,
 		sysConfPath=sysConfPath,
-		params=confParams,
+		options=confOptions,
 		decoders={},
 	)
 	updateFormatsBin()
 
 
 def saveConf() -> None:
-	saveSingleConfig(confPath, confParams, {})
+	saveSingleConfig(confPath, confOptions, {})
 
 
 # ------------------------------------------------------------

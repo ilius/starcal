@@ -1086,13 +1086,13 @@ class MainWin(CalObjWidget):
 			return self.menuMain
 		menu = gtk.Menu(reserve_toggle_size=False)
 		# ----
-		for propsTmp in menuMainItemDefs.values():
-			props = dict(propsTmp)  # make a copy before modify
-			cls = getattr(menuitems, props.pop("cls"))
-			props["func"] = getattr(self, props["func"])
-			if "active" in props:
-				props["active"] = getattr(conf, props["active"])
-			menu.add(cls(**props))
+		for optionsTmp in menuMainItemDefs.values():
+			options = dict(optionsTmp)  # make a copy before modify
+			cls = getattr(menuitems, options.pop("cls"))
+			options["func"] = getattr(self, options["func"])
+			if "active" in options:
+				options["active"] = getattr(conf, options["active"])
+			menu.add(cls(**options))
 		# -------
 		menu.show_all()
 		self.menuMain = menu

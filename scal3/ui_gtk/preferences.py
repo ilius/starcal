@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionItem
+from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionUI
 
 log = logger.get()
 
@@ -376,14 +376,14 @@ class PreferencesWindow(gtk.Window):
 		# pack(hbox, gtk.Label(label=_("Show Digital Clock:")))
 		# pack(hbox, gtk.Label(), 1, 1)
 		# #item = CheckOptionUI(
-		# #	prop=conf.showDigClockTb",
+		# #	option=conf.showDigClockTb",
 		# #	label=_("On Toolbar"),
 		# #)  # FIXME
 		# #self.uiOptionUIs.append(item)
 		# #pack(hbox, item.getWidget())
 		# pack(hbox, gtk.Label(), 1, 1)
 		# item = CheckOptionUI(
-		# 	prop=conf.showDigClockTr,
+		# 	option=conf.showDigClockTr,
 		# 	label=_("On Status Icon"),
 		# 	tooltip="Notification Area",
 		# )
@@ -695,23 +695,23 @@ class PreferencesWindow(gtk.Window):
 			self.prefPages.append(page)
 			# -----
 			regionalSubPages.append(page)
-			optl: typing.Any
-			for opt in mod.options:
-				if opt[0] == "button":
+			optionUI: typing.Any
+			for rawOpt in mod.options:
+				if rawOpt[0] == "button":
 					try:
-						optl = ModuleOptionButton(opt[1:])
+						optionUI = ModuleOptionButton(rawOpt[1:])
 					except Exception:
 						log.exception("")
 						continue
 				else:
-					prop = getattr(mod, opt[0])
-					optl = ModuleOptionItem(
-						option=prop,
-						opt=opt,
+					option = getattr(mod, rawOpt[0])
+					optionUI = ModuleOptionUI(
+						option=option,
+						rawOption=rawOpt,
 						spacing=self.spacing,
 					)
-				options.append(optl)
-				pack(pageVBox, optl.getWidget())
+				options.append(optionUI)
+				pack(pageVBox, optionUI.getWidget())
 			# -----
 		# -----
 		grid = gtk.Grid()

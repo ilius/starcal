@@ -218,8 +218,8 @@ class SObjBinaryModel(SObj):
 	skipLoadNoFile = False
 	file = ""
 	lastHash: str | None = None
-	# FIXME: basicParams or noHistParams
-	basicParams: list[str] = []
+	# FIXME: basicOptions or noHistOptions
+	basicOptions: list[str] = []
 
 	# def setDict(self, data: dict[str, Any]) -> None:
 	# 	if self.dataIsSet:
@@ -364,7 +364,7 @@ class SObjBinaryModel(SObj):
 			raise RuntimeError(f"{self} has no fs object")
 		data = self.getDict()
 		basicData: dict[str, Any] = {}
-		for param in self.basicParams:
+		for param in self.basicOptions:
 			if param not in data:
 				continue
 			basicData[param] = data.pop(param)
