@@ -41,7 +41,7 @@ output.write(
 	"from scal3.color_utils import RGB, RGBA\n"
 	"from scal3.option import DictOption, ListOption, Option\n\n"
 	"if typing.TYPE_CHECKING:\n"
-	"\tfrom typing import Any, Final\n\n"
+	"\tfrom typing import Annotated, Any, Final\n\n"
 	"\tfrom scal3.color_utils import ColorType\n"
 	"\tfrom scal3.font import Font\n",
 )
@@ -51,8 +51,10 @@ output.write("""\tfrom scal3.ui.pytypes import (
 		CustomizableToolBoxDict,
 		DayCalTypeWMOptionsDict,
 		DayCalTypeDayOptionsDict,
-		WeekCalDayNumOptionsDict,
+		FloatSpin,
+		IntSpin,
 		PieGeoDict,
+		WeekCalDayNumOptionsDict,
 	)\n\n\n""")
 output.write(f"__all__ = {all_names!r}\n\n")
 
@@ -68,8 +70,10 @@ for opt in options.confOptionsData:
 	# 	fullType = f"DictOption[{p.type}]"
 	# 	fullValue = f"DictOption({value!r})"
 
-	fullType = f"Final[{fullType}]"
+	if opt.annotated:
+		fullType = f"Annotated[{fullType}, {opt.annotated}]"
 
+	fullType = f"Final[{fullType}]"  # must the the last type modifier
 	output.write(f"{opt.v3Name}: {fullType} = {fullValue}" + "\n")
 
 
