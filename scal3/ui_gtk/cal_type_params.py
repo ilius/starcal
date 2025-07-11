@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.property import ItemProperty, ListProperty, Property
+from scal3.option import ItemOption, ListOption, Option
 
 log = logger.get()
 
@@ -110,7 +110,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 class DayNumParamsWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Property[DayCalTypeDayParamsDict],
+		params: Option[DayCalTypeDayParamsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
@@ -255,7 +255,7 @@ class DayNumParamsWidget(gtk.Box):
 class DayNumListParamsWidget(DayNumParamsWidget):
 	def __init__(
 		self,
-		params: ListProperty[DayCalTypeDayParamsDict],
+		params: ListOption[DayCalTypeDayParamsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -271,7 +271,7 @@ class DayNumListParamsWidget(DayNumParamsWidget):
 			raise RuntimeError(f"cal type '{calType}' not found")
 		DayNumParamsWidget.__init__(
 			self,
-			params=ItemProperty(params, index),
+			params=ItemOption(params, index),
 			cal=cal,
 			sgroupLabel=sgroupLabel,
 			desc=_(module.desc, ctx="calendar"),
@@ -285,7 +285,7 @@ class DayNumListParamsWidget(DayNumParamsWidget):
 class _WeekMonthParamsWidget(gtk.Box):
 	def __init__(
 		self,
-		params: Property[DayCalTypeWMParamsDict],
+		params: Option[DayCalTypeWMParamsDict],
 		cal: CalBase,
 		sgroupLabel: gtk.SizeGroup | None = None,
 		desc: str | None = None,
@@ -440,7 +440,7 @@ class WeekDayNameParamsWidget(_WeekMonthParamsWidget):
 class MonthNameListParamsWidget(_WeekMonthParamsWidget):
 	def __init__(
 		self,
-		params: ListProperty[DayCalTypeWMParamsDict],
+		params: ListOption[DayCalTypeWMParamsDict],
 		index: int,
 		calType: int,
 		cal: CalBase,
@@ -456,7 +456,7 @@ class MonthNameListParamsWidget(_WeekMonthParamsWidget):
 			raise RuntimeError(f"cal type '{calType}' not found")
 		_WeekMonthParamsWidget.__init__(
 			self,
-			params=ItemProperty(params, index),
+			params=ItemOption(params, index),
 			cal=cal,
 			sgroupLabel=sgroupLabel,
 			desc=_(module.desc, ctx="calendar"),

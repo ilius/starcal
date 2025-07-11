@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.occur_data import DayOccurData
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.font import Font
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
@@ -55,12 +55,12 @@ class DayOccurrenceView(CustomizableCalObj):
 
 	def __init__(
 		self,
-		eventSepParam: Property[str] | None = None,
-		justificationParam: Property[str] | None = None,
-		fontEnableParam: Property[bool] | None = None,
-		fontParam: Property[Font | None] | None = None,
-		timeFontEnableParam: Property[bool] | None = None,
-		timeFontParam: Property[Font | None] | None = None,
+		eventSepParam: Option[str] | None = None,
+		justificationParam: Option[str] | None = None,
+		fontEnableParam: Option[bool] | None = None,
+		fontParam: Option[Font | None] | None = None,
+		timeFontEnableParam: Option[bool] | None = None,
+		timeFontParam: Option[Font | None] | None = None,
 		styleClass: str = "",
 		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
@@ -556,7 +556,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 
 	def __init__(
 		self,
-		eventSepParam: Property[str] | None = None,
+		eventSepParam: Option[str] | None = None,
 	) -> None:
 		super().__init__()
 		self.w: gtk.ScrolledWindow = gtk.ScrolledWindow()

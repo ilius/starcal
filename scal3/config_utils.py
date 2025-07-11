@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.property import Property
+from scal3.option import Option
 
 log = logger.get()
 
@@ -23,7 +23,7 @@ __all__ = [
 
 def loadSingleConfig(
 	confPath: str,
-	params: dict[str, Property[Any]],
+	params: dict[str, Option[Any]],
 	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	from os.path import isfile
@@ -53,18 +53,18 @@ def loadSingleConfig(
 		if decoders and param in decoders:
 			value = decoders[param](value)  # noqa: PLW2901
 		prop = params[param]
-		assert isinstance(prop, Property), f"{prop=}, {param=}"
+		assert isinstance(prop, Option), f"{prop=}, {param=}"
 		prop.v = value
 
 
 def saveSingleConfig(
 	confPath: str,
-	params: dict[str, Property[Any]],
+	params: dict[str, Option[Any]],
 	encoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	data = {}
 	for param, prop in params.items():
-		assert isinstance(prop, Property), f"{prop=}, {param=}"
+		assert isinstance(prop, Option), f"{prop=}, {param=}"
 		value = prop.v
 		if encoders and param in encoders:
 			value = encoders[param](value)
@@ -82,7 +82,7 @@ def saveSingleConfig(
 def loadModuleConfig(
 	confPath: str,
 	sysConfPath: str | None,
-	params: dict[str, Property[Any]],
+	params: dict[str, Option[Any]],
 	decoders: dict[str, Callable[[Any], Any]] | None = None,
 ) -> None:
 	if sysConfPath:

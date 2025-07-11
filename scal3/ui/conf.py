@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 from scal3.color_utils import RGB, RGBA
-from scal3.property import ListProperty, Property
+from scal3.option import ListOption, Option
 
 if typing.TYPE_CHECKING:
 	from typing import Any, Final
@@ -221,17 +221,17 @@ __all__ = [
 	"winY",
 ]
 
-showMain: Final[Property[bool]] = Property(True)
-winTaskbar: Final[Property[bool]] = Property(False)
-useAppIndicator: Final[Property[bool]] = Property(True)
-winX: Final[Property[int]] = Property(0)
-winY: Final[Property[int]] = Property(0)
-winWidth: Final[Property[int]] = Property(480)
-winHeight: Final[Property[int]] = Property(300)
-winKeepAbove: Final[Property[bool]] = Property(True)
-winSticky: Final[Property[bool]] = Property(True)
-winMaximized: Final[Property[bool]] = Property(False)
-mainWinItems: Final[ListProperty[tuple[str, bool]]] = ListProperty(
+showMain: Final[Option[bool]] = Option(True)
+winTaskbar: Final[Option[bool]] = Option(False)
+useAppIndicator: Final[Option[bool]] = Option(True)
+winX: Final[Option[int]] = Option(0)
+winY: Final[Option[int]] = Option(0)
+winWidth: Final[Option[int]] = Option(480)
+winHeight: Final[Option[int]] = Option(300)
+winKeepAbove: Final[Option[bool]] = Option(True)
+winSticky: Final[Option[bool]] = Option(True)
+winMaximized: Final[Option[bool]] = Option(False)
+mainWinItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
 		("labelBox", True),
@@ -243,68 +243,68 @@ mainWinItems: Final[ListProperty[tuple[str, bool]]] = ListProperty(
 		("yearPBar", False),
 	]
 )
-mainWinFooterItems: Final[ListProperty[str]] = ListProperty(
+mainWinFooterItems: Final[ListOption[str]] = ListOption(
 	["pluginsText", "eventDayView", "statusBar"]
 )
-pluginsTextEnable: Final[Property[bool]] = Property(False)
-pluginsTextInsideExpander: Final[Property[bool]] = Property(True)
-pluginsTextIsExpanded: Final[Property[bool]] = Property(True)
-eventDayViewEnable: Final[Property[bool]] = Property(False)
-eventDayViewEventSep: Final[Property[str]] = Property("\n")
-eventViewMaxHeight: Final[Property[int]] = Property(200)
-statusBarEnable: Final[Property[bool]] = Property(True)
-statusBarDatesReverseOrder: Final[Property[bool]] = Property(False)
-statusBarDatesColorEnable: Final[Property[bool]] = Property(False)
-statusBarDatesColor: Final[Property[ColorType]] = Property(
+pluginsTextEnable: Final[Option[bool]] = Option(False)
+pluginsTextInsideExpander: Final[Option[bool]] = Option(True)
+pluginsTextIsExpanded: Final[Option[bool]] = Option(True)
+eventDayViewEnable: Final[Option[bool]] = Option(False)
+eventDayViewEventSep: Final[Option[str]] = Option("\n")
+eventViewMaxHeight: Final[Option[int]] = Option(200)
+statusBarEnable: Final[Option[bool]] = Option(True)
+statusBarDatesReverseOrder: Final[Option[bool]] = Option(False)
+statusBarDatesColorEnable: Final[Option[bool]] = Option(False)
+statusBarDatesColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
-fontCustomEnable: Final[Property[bool]] = Property(False)
-fontCustom: Final[Property[Font | None]] = Property(None)
-buttonIconEnable: Final[Property[bool]] = Property(True)
-useSystemIcons: Final[Property[bool]] = Property(False)
-oldStyleProgressBar: Final[Property[bool]] = Property(False)
-bgColor: Final[Property[ColorType]] = Property(RGBA(red=26, green=0, blue=1, alpha=255))
-borderColor: Final[Property[ColorType]] = Property(
+fontCustomEnable: Final[Option[bool]] = Option(False)
+fontCustom: Final[Option[Font | None]] = Option(None)
+buttonIconEnable: Final[Option[bool]] = Option(True)
+useSystemIcons: Final[Option[bool]] = Option(False)
+oldStyleProgressBar: Final[Option[bool]] = Option(False)
+bgColor: Final[Option[ColorType]] = Option(RGBA(red=26, green=0, blue=1, alpha=255))
+borderColor: Final[Option[ColorType]] = Option(
 	RGBA(red=123, green=40, blue=0, alpha=255)
 )
-borderTextColor: Final[Property[ColorType]] = Property(
+borderTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-textColor: Final[Property[ColorType]] = Property(
+textColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-holidayColor: Final[Property[ColorType]] = Property(
+holidayColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=160, blue=0, alpha=255)
 )
-inactiveColor: Final[Property[ColorType]] = Property(
+inactiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=115)
 )
-todayCellColor: Final[Property[ColorType]] = Property(
+todayCellColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=50)
 )
-cursorOutColor: Final[Property[ColorType]] = Property(
+cursorOutColor: Final[Option[ColorType]] = Option(
 	RGBA(red=213, green=207, blue=0, alpha=255)
 )
-cursorBgColor: Final[Property[ColorType]] = Property(
+cursorBgColor: Final[Option[ColorType]] = Option(
 	RGBA(red=41, green=41, blue=41, alpha=255)
 )
-showDigClockTr: Final[Property[bool]] = Property(True)
-statusIconImage: Final[Property[str]] = Property("status-icons/dark-green.svg")
-statusIconImageHoli: Final[Property[str]] = Property("status-icons/dark-red.svg")
-statusIconFontFamilyEnable: Final[Property[bool]] = Property(False)
-statusIconFontFamily: Final[Property[str | None]] = Property(None)
-statusIconHolidayFontColorEnable: Final[Property[bool]] = Property(False)
-statusIconHolidayFontColor: Final[Property[ColorType | None]] = Property(None)
-statusIconLocalizeNumber: Final[Property[bool]] = Property(True)
-statusIconFixedSizeEnable: Final[Property[bool]] = Property(False)
-statusIconFixedSizeWH: Final[Property[tuple[int, int]]] = Property((24, 24))
-pluginsTextStatusIcon: Final[Property[bool]] = Property(False)
-maxDayCacheSize: Final[Property[int]] = Property(100)
-eventDayViewTimeFormat: Final[Property[str]] = Property("HM$")
-cellMenuXOffset: Final[Property[int]] = Property(0)
-winControllerEnable: Final[Property[bool]] = Property(True)
-winControllerTheme: Final[Property[str]] = Property("default")
-winControllerButtons: Final[ListProperty[tuple[str, bool]]] = ListProperty(
+showDigClockTr: Final[Option[bool]] = Option(True)
+statusIconImage: Final[Option[str]] = Option("status-icons/dark-green.svg")
+statusIconImageHoli: Final[Option[str]] = Option("status-icons/dark-red.svg")
+statusIconFontFamilyEnable: Final[Option[bool]] = Option(False)
+statusIconFontFamily: Final[Option[str | None]] = Option(None)
+statusIconHolidayFontColorEnable: Final[Option[bool]] = Option(False)
+statusIconHolidayFontColor: Final[Option[ColorType | None]] = Option(None)
+statusIconLocalizeNumber: Final[Option[bool]] = Option(True)
+statusIconFixedSizeEnable: Final[Option[bool]] = Option(False)
+statusIconFixedSizeWH: Final[Option[tuple[int, int]]] = Option((24, 24))
+pluginsTextStatusIcon: Final[Option[bool]] = Option(False)
+maxDayCacheSize: Final[Option[int]] = Option(100)
+eventDayViewTimeFormat: Final[Option[str]] = Option("HM$")
+cellMenuXOffset: Final[Option[int]] = Option(0)
+winControllerEnable: Final[Option[bool]] = Option(True)
+winControllerTheme: Final[Option[str]] = Option("default")
+winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("sep", True),
 		("rightPanel", True),
@@ -316,47 +316,47 @@ winControllerButtons: Final[ListProperty[tuple[str, bool]]] = ListProperty(
 		("sep", False),
 	]
 )
-winControllerIconSize: Final[Property[int]] = Property(24)
-winControllerBorder: Final[Property[int]] = Property(0)
-winControllerSpacing: Final[Property[int]] = Property(0)
-winControllerPressState: Final[Property[bool]] = Property(False)
-mainWinRightPanelEnable: Final[Property[bool]] = Property(True)
-mainWinRightPanelRatio: Final[Property[float]] = Property(0.5)
-mainWinRightPanelSwap: Final[Property[bool]] = Property(False)
-mainWinRightPanelWidth: Final[Property[int]] = Property(200)
-mainWinRightPanelWidthRatio: Final[Property[float]] = Property(0.25)
-mainWinRightPanelWidthRatioEnable: Final[Property[bool]] = Property(True)
-mainWinRightPanelEventFontEnable: Final[Property[bool]] = Property(False)
-mainWinRightPanelEventFont: Final[Property[Font | None]] = Property(None)
-mainWinRightPanelEventTimeFontEnable: Final[Property[bool]] = Property(False)
-mainWinRightPanelEventTimeFont: Final[Property[Font | None]] = Property(None)
-mainWinRightPanelEventJustification: Final[Property[str]] = Property("left")
-mainWinRightPanelEventSep: Final[Property[str]] = Property("\n\n")
-mainWinRightPanelPluginsFontEnable: Final[Property[bool]] = Property(False)
-mainWinRightPanelPluginsFont: Final[Property[Font | None]] = Property(None)
-mainWinRightPanelPluginsJustification: Final[Property[str]] = Property("left")
-mainWinRightPanelResizeOnToggle: Final[Property[bool]] = Property(True)
-mainWinRightPanelBorderWidth: Final[Property[int]] = Property(7)
-mcalLeftMargin: Final[Property[int]] = Property(30)
-mcalTopMargin: Final[Property[int]] = Property(30)
-mcalTypeParams: Final[ListProperty[CalTypeParamsDict]] = ListProperty(
+winControllerIconSize: Final[Option[int]] = Option(24)
+winControllerBorder: Final[Option[int]] = Option(0)
+winControllerSpacing: Final[Option[int]] = Option(0)
+winControllerPressState: Final[Option[bool]] = Option(False)
+mainWinRightPanelEnable: Final[Option[bool]] = Option(True)
+mainWinRightPanelRatio: Final[Option[float]] = Option(0.5)
+mainWinRightPanelSwap: Final[Option[bool]] = Option(False)
+mainWinRightPanelWidth: Final[Option[int]] = Option(200)
+mainWinRightPanelWidthRatio: Final[Option[float]] = Option(0.25)
+mainWinRightPanelWidthRatioEnable: Final[Option[bool]] = Option(True)
+mainWinRightPanelEventFontEnable: Final[Option[bool]] = Option(False)
+mainWinRightPanelEventFont: Final[Option[Font | None]] = Option(None)
+mainWinRightPanelEventTimeFontEnable: Final[Option[bool]] = Option(False)
+mainWinRightPanelEventTimeFont: Final[Option[Font | None]] = Option(None)
+mainWinRightPanelEventJustification: Final[Option[str]] = Option("left")
+mainWinRightPanelEventSep: Final[Option[str]] = Option("\n\n")
+mainWinRightPanelPluginsFontEnable: Final[Option[bool]] = Option(False)
+mainWinRightPanelPluginsFont: Final[Option[Font | None]] = Option(None)
+mainWinRightPanelPluginsJustification: Final[Option[str]] = Option("left")
+mainWinRightPanelResizeOnToggle: Final[Option[bool]] = Option(True)
+mainWinRightPanelBorderWidth: Final[Option[int]] = Option(7)
+mcalLeftMargin: Final[Option[int]] = Option(30)
+mcalTopMargin: Final[Option[int]] = Option(30)
+mcalTypeParams: Final[ListOption[CalTypeParamsDict]] = ListOption(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
 		{"pos": (18, 5), "font": None, "color": (165, 255, 114)},
 		{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
 	]
 )
-mcalGrid: Final[Property[bool]] = Property(False)
-mcalGridColor: Final[Property[ColorType]] = Property(
+mcalGrid: Final[Option[bool]] = Option(False)
+mcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
-mcalCornerMenuTextColor: Final[Property[ColorType]] = Property(
+mcalCornerMenuTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-mcalCursorLineWidthFactor: Final[Property[float]] = Property(0.12)
-mcalCursorRoundingFactor: Final[Property[float]] = Property(0.5)
-wcalTextSizeScale: Final[Property[float]] = Property(0.6)
-wcalItems: Final[ListProperty[tuple[str, bool]]] = ListProperty(
+mcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
+mcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
+wcalTextSizeScale: Final[Option[float]] = Option(0.6)
+wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
 		("weekDays", True),
@@ -366,48 +366,48 @@ wcalItems: Final[ListProperty[tuple[str, bool]]] = ListProperty(
 		("daysOfMonth", True),
 	]
 )
-wcalGrid: Final[Property[bool]] = Property(False)
-wcalGridColor: Final[Property[ColorType]] = Property(
+wcalGrid: Final[Option[bool]] = Option(False)
+wcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
-wcalUpperGradientEnable: Final[Property[bool]] = Property(False)
-wcalUpperGradientColor: Final[Property[ColorType]] = Property(
+wcalUpperGradientEnable: Final[Option[bool]] = Option(False)
+wcalUpperGradientColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=60)
 )
-wcal_eventsText_pastColorEnable: Final[Property[bool]] = Property(False)
-wcal_eventsText_pastColor: Final[Property[ColorType]] = Property(
+wcal_eventsText_pastColorEnable: Final[Option[bool]] = Option(False)
+wcal_eventsText_pastColor: Final[Option[ColorType]] = Option(
 	RGBA(red=100, green=100, blue=100, alpha=50)
 )
-wcal_eventsText_ongoingColorEnable: Final[Property[bool]] = Property(False)
-wcal_eventsText_ongoingColor: Final[Property[ColorType]] = Property(
+wcal_eventsText_ongoingColorEnable: Final[Option[bool]] = Option(False)
+wcal_eventsText_ongoingColor: Final[Option[ColorType]] = Option(
 	RGBA(red=80, green=255, blue=80, alpha=255)
 )
-wcal_eventsText_showDesc: Final[Property[bool]] = Property(False)
-wcal_eventsText_colorize: Final[Property[bool]] = Property(True)
-wcalFont_eventsText: Final[Property[str | None]] = Property(None)
-wcal_toolbar_weekNum_negative: Final[Property[bool]] = Property(False)
-wcal_toolbar_mainMenu_icon: Final[Property[str]] = Property("starcal.png")
-wcal_weekDays_width: Final[Property[int]] = Property(80)
-wcal_weekDays_expand: Final[Property[bool]] = Property(False)
-wcalFont_weekDays: Final[Property[str | None]] = Property(None)
-wcalFont_pluginsText: Final[Property[str | None]] = Property(None)
-wcal_pluginsText_firstLineOnly: Final[Property[bool]] = Property(False)
-wcal_eventsIcon_width: Final[Property[int]] = Property(50)
-wcalTypeParams: Final[ListProperty[WeekCalDayNumParamsDict]] = ListProperty(
+wcal_eventsText_showDesc: Final[Option[bool]] = Option(False)
+wcal_eventsText_colorize: Final[Option[bool]] = Option(True)
+wcalFont_eventsText: Final[Option[str | None]] = Option(None)
+wcal_toolbar_weekNum_negative: Final[Option[bool]] = Option(False)
+wcal_toolbar_mainMenu_icon: Final[Option[str]] = Option("starcal.png")
+wcal_weekDays_width: Final[Option[int]] = Option(80)
+wcal_weekDays_expand: Final[Option[bool]] = Option(False)
+wcalFont_weekDays: Final[Option[str | None]] = Option(None)
+wcalFont_pluginsText: Final[Option[str | None]] = Option(None)
+wcal_pluginsText_firstLineOnly: Final[Option[bool]] = Option(False)
+wcal_eventsIcon_width: Final[Option[int]] = Option(50)
+wcalTypeParams: Final[ListOption[WeekCalDayNumParamsDict]] = ListOption(
 	[{"font": None}, {"font": None}, {"font": None}]
 )
-wcal_daysOfMonth_dir: Final[Property[str]] = Property("ltr")
-wcal_daysOfMonth_width: Final[Property[int]] = Property(30)
-wcal_daysOfMonth_expand: Final[Property[bool]] = Property(False)
-wcal_eventsCount_width: Final[Property[int]] = Property(80)
-wcal_eventsCount_expand: Final[Property[bool]] = Property(False)
-wcalFont_eventsBox: Final[Property[str | None]] = Property(None)
-wcal_moonStatus_width: Final[Property[int]] = Property(48)
-wcal_moonStatus_southernHemisphere: Final[Property[bool]] = Property(False)
-wcalCursorLineWidthFactor: Final[Property[float]] = Property(0.12)
-wcalCursorRoundingFactor: Final[Property[float]] = Property(0.5)
-dcalWidgetButtonsEnable: Final[Property[bool]] = Property(False)
-dcalDayParams: Final[ListProperty[DayCalTypeDayParamsDict]] = ListProperty(
+wcal_daysOfMonth_dir: Final[Option[str]] = Option("ltr")
+wcal_daysOfMonth_width: Final[Option[int]] = Option(30)
+wcal_daysOfMonth_expand: Final[Option[bool]] = Option(False)
+wcal_eventsCount_width: Final[Option[int]] = Option(80)
+wcal_eventsCount_expand: Final[Option[bool]] = Option(False)
+wcalFont_eventsBox: Final[Option[str | None]] = Option(None)
+wcal_moonStatus_width: Final[Option[int]] = Option(48)
+wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
+wcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
+wcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
+dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
+dcalDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
 	[
 		{
 			"pos": (0, -12),
@@ -438,7 +438,7 @@ dcalDayParams: Final[ListProperty[DayCalTypeDayParamsDict]] = ListProperty(
 		},
 	]
 )
-dcalMonthParams: Final[ListProperty[DayCalTypeWMParamsDict]] = ListProperty(
+dcalMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
 	[
 		{
 			"pos": (0, -12),
@@ -472,7 +472,7 @@ dcalMonthParams: Final[ListProperty[DayCalTypeWMParamsDict]] = ListProperty(
 		},
 	]
 )
-dcalWeekdayParams: Final[Property[DayCalTypeWMParamsDict]] = Property(
+dcalWeekdayParams: Final[Option[DayCalTypeWMParamsDict]] = Option(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -484,8 +484,8 @@ dcalWeekdayParams: Final[Property[DayCalTypeWMParamsDict]] = Property(
 		"uppercase": False,
 	}
 )
-dcalNavButtonsEnable: Final[Property[bool]] = Property(True)
-dcalNavButtonsGeo: Final[Property[ButtonGeoDict]] = Property(
+dcalNavButtonsEnable: Final[Option[bool]] = Option(True)
+dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 	{
 		"auto_rtl": True,
 		"size": 64,
@@ -495,27 +495,25 @@ dcalNavButtonsGeo: Final[Property[ButtonGeoDict]] = Property(
 		"yalign": "buttom",
 	}
 )
-dcalNavButtonsOpacity: Final[Property[float]] = Property(0.7)
-dcalWeekdayLocalize: Final[Property[bool]] = Property(True)
-dcalWeekdayAbbreviate: Final[Property[bool]] = Property(False)
-dcalWeekdayUppercase: Final[Property[bool]] = Property(False)
-dcalEventIconSize: Final[Property[int]] = Property(20)
-dcalEventTotalSizeRatio: Final[Property[float]] = Property(0.3)
-showDesktopWidget: Final[Property[bool]] = Property(False)
-dcalWinX: Final[Property[int]] = Property(0)
-dcalWinY: Final[Property[int]] = Property(0)
-dcalWinWidth: Final[Property[int]] = Property(180)
-dcalWinHeight: Final[Property[int]] = Property(180)
-dcalWinBackgroundColor: Final[Property[ColorType]] = Property(
-	RGB(red=0, green=10, blue=0)
-)
-dcalWinWidgetButtonsEnable: Final[Property[bool]] = Property(True)
-dcalWinWidgetButtonsSize: Final[Property[int]] = Property(16)
-dcalWinWidgetButtonsOpacity: Final[Property[float]] = Property(1.0)
-dcalWinWeekdayLocalize: Final[Property[bool]] = Property(True)
-dcalWinWeekdayAbbreviate: Final[Property[bool]] = Property(False)
-dcalWinWeekdayUppercase: Final[Property[bool]] = Property(False)
-dcalWinDayParams: Final[ListProperty[DayCalTypeDayParamsDict]] = ListProperty(
+dcalNavButtonsOpacity: Final[Option[float]] = Option(0.7)
+dcalWeekdayLocalize: Final[Option[bool]] = Option(True)
+dcalWeekdayAbbreviate: Final[Option[bool]] = Option(False)
+dcalWeekdayUppercase: Final[Option[bool]] = Option(False)
+dcalEventIconSize: Final[Option[int]] = Option(20)
+dcalEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
+showDesktopWidget: Final[Option[bool]] = Option(False)
+dcalWinX: Final[Option[int]] = Option(0)
+dcalWinY: Final[Option[int]] = Option(0)
+dcalWinWidth: Final[Option[int]] = Option(180)
+dcalWinHeight: Final[Option[int]] = Option(180)
+dcalWinBackgroundColor: Final[Option[ColorType]] = Option(RGB(red=0, green=10, blue=0))
+dcalWinWidgetButtonsEnable: Final[Option[bool]] = Option(True)
+dcalWinWidgetButtonsSize: Final[Option[int]] = Option(16)
+dcalWinWidgetButtonsOpacity: Final[Option[float]] = Option(1.0)
+dcalWinWeekdayLocalize: Final[Option[bool]] = Option(True)
+dcalWinWeekdayAbbreviate: Final[Option[bool]] = Option(False)
+dcalWinWeekdayUppercase: Final[Option[bool]] = Option(False)
+dcalWinDayParams: Final[ListOption[DayCalTypeDayParamsDict]] = ListOption(
 	[
 		{
 			"pos": (0, 5),
@@ -546,7 +544,7 @@ dcalWinDayParams: Final[ListProperty[DayCalTypeDayParamsDict]] = ListProperty(
 		},
 	]
 )
-dcalWinMonthParams: Final[ListProperty[DayCalTypeWMParamsDict]] = ListProperty(
+dcalWinMonthParams: Final[ListOption[DayCalTypeWMParamsDict]] = ListOption(
 	[
 		{
 			"pos": (0, 5),
@@ -580,7 +578,7 @@ dcalWinMonthParams: Final[ListProperty[DayCalTypeWMParamsDict]] = ListProperty(
 		},
 	]
 )
-dcalWinWeekdayParams: Final[Property[DayCalTypeWMParamsDict]] = Property(
+dcalWinWeekdayParams: Final[Option[DayCalTypeWMParamsDict]] = Option(
 	{
 		"pos": (20, 10),
 		"font": None,
@@ -592,10 +590,10 @@ dcalWinWeekdayParams: Final[Property[DayCalTypeWMParamsDict]] = Property(
 		"uppercase": False,
 	}
 )
-dcalWinEventIconSize: Final[Property[int]] = Property(20)
-dcalWinEventTotalSizeRatio: Final[Property[float]] = Property(0.3)
-dcalWinSeasonPieEnable: Final[Property[bool]] = Property(False)
-dcalWinSeasonPieGeo: Final[Property[PieGeoDict]] = Property(
+dcalWinEventIconSize: Final[Option[int]] = Option(20)
+dcalWinEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
+dcalWinSeasonPieEnable: Final[Option[bool]] = Option(False)
+dcalWinSeasonPieGeo: Final[Option[PieGeoDict]] = Option(
 	{
 		"size": 64,
 		"thickness": 0.3,
@@ -605,52 +603,52 @@ dcalWinSeasonPieGeo: Final[Property[PieGeoDict]] = Property(
 		"startAngle": 270,
 	}
 )
-dcalWinSeasonPieSpringColor: Final[Property[ColorType]] = Property(
+dcalWinSeasonPieSpringColor: Final[Option[ColorType]] = Option(
 	RGBA(red=167, green=252, blue=1, alpha=180)
 )
-dcalWinSeasonPieSummerColor: Final[Property[ColorType]] = Property(
+dcalWinSeasonPieSummerColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=254, blue=0, alpha=180)
 )
-dcalWinSeasonPieAutumnColor: Final[Property[ColorType]] = Property(
+dcalWinSeasonPieAutumnColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=127, blue=0, alpha=180)
 )
-dcalWinSeasonPieWinterColor: Final[Property[ColorType]] = Property(
+dcalWinSeasonPieWinterColor: Final[Option[ColorType]] = Option(
 	RGBA(red=1, green=191, blue=255, alpha=180)
 )
-dcalWinSeasonPieTextColor: Final[Property[ColorType]] = Property(
+dcalWinSeasonPieTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=180)
 )
-monthPBarCalType: Final[Property[int]] = Property(-1)
-seasonPBar_southernHemisphere: Final[Property[bool]] = Property(False)
-labelBoxBorderWidth: Final[Property[int]] = Property(0)
-labelBoxMenuActiveColor: Final[Property[ColorType]] = Property(
+monthPBarCalType: Final[Option[int]] = Option(-1)
+seasonPBar_southernHemisphere: Final[Option[bool]] = Option(False)
+labelBoxBorderWidth: Final[Option[int]] = Option(0)
+labelBoxMenuActiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=255)
 )
-labelBoxYearColorEnable: Final[Property[bool]] = Property(False)
-labelBoxYearColor: Final[Property[ColorType]] = Property(
+labelBoxYearColorEnable: Final[Option[bool]] = Option(False)
+labelBoxYearColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
-labelBoxMonthColorEnable: Final[Property[bool]] = Property(False)
-labelBoxMonthColor: Final[Property[ColorType]] = Property(
+labelBoxMonthColorEnable: Final[Option[bool]] = Option(False)
+labelBoxMonthColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
-labelBoxFontEnable: Final[Property[bool]] = Property(False)
-labelBoxFont: Final[Property[Font | None]] = Property(None)
-labelBoxPrimaryFontEnable: Final[Property[bool]] = Property(False)
-labelBoxPrimaryFont: Final[Property[Font | None]] = Property(None)
-boldYmLabel: Final[Property[bool]] = Property(True)
-ud__wcalToolbarData: Final[Property[CustomizableToolBoxDict | None]] = Property(None)
-ud__mainToolbarData: Final[Property[CustomizableToolBoxDict | None]] = Property(None)
-preferencesPagePath: Final[Property[str]] = Property("")
-customizePagePath: Final[Property[str]] = Property("")
-localTzHist: Final[ListProperty[str]] = ListProperty([])
-showDigClockTb: Final[Property[bool]] = Property(True)
-menuIconPadding: Final[Property[int]] = Property(7)
-eventTreeGroupIconSize: Final[Property[int]] = Property(24)
-treeIconSize: Final[Property[int]] = Property(22)
-labelBoxIconSize: Final[Property[int]] = Property(20)
-stackIconSize: Final[Property[int]] = Property(22)
-dcalWidgetButtons: Final[ListProperty[dict[str, Any]]] = ListProperty(
+labelBoxFontEnable: Final[Option[bool]] = Option(False)
+labelBoxFont: Final[Option[Font | None]] = Option(None)
+labelBoxPrimaryFontEnable: Final[Option[bool]] = Option(False)
+labelBoxPrimaryFont: Final[Option[Font | None]] = Option(None)
+boldYmLabel: Final[Option[bool]] = Option(True)
+ud__wcalToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
+ud__mainToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
+preferencesPagePath: Final[Option[str]] = Option("")
+customizePagePath: Final[Option[str]] = Option("")
+localTzHist: Final[ListOption[str]] = ListOption([])
+showDigClockTb: Final[Option[bool]] = Option(True)
+menuIconPadding: Final[Option[int]] = Option(7)
+eventTreeGroupIconSize: Final[Option[int]] = Option(24)
+treeIconSize: Final[Option[int]] = Option(22)
+labelBoxIconSize: Final[Option[int]] = Option(20)
+stackIconSize: Final[Option[int]] = Option(22)
+dcalWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	[
 		{
 			"imageName": "transform-move.svg",
@@ -670,7 +668,7 @@ dcalWidgetButtons: Final[ListProperty[dict[str, Any]]] = ListProperty(
 		},
 	]
 )
-dcalWinWidgetButtons: Final[ListProperty[dict[str, Any]]] = ListProperty(
+dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	[
 		{
 			"imageName": "transform-move.svg",
@@ -698,25 +696,25 @@ dcalWinWidgetButtons: Final[ListProperty[dict[str, Any]]] = ListProperty(
 		},
 	]
 )
-menuIconEdgePadding: Final[Property[int]] = Property(3)
-rightPanelEventIconSize: Final[Property[int]] = Property(20)
-eventTreeIconSize: Final[Property[int]] = Property(22)
-menuEventCheckIconSize: Final[Property[int]] = Property(20)
-toolbarIconSize: Final[Property[int]] = Property(24)
-mcalEventIconSizeMax: Final[Property[int]] = Property(26)
-messageDialogIconSize: Final[Property[int]] = Property(48)
-menuCheckSize: Final[Property[int]] = Property(22)
-menuIconSize: Final[Property[int]] = Property(18)
-comboBoxIconSize: Final[Property[int]] = Property(20)
-imageInputIconSize: Final[Property[int]] = Property(32)
-maxWeekCacheSize: Final[Property[int]] = Property(12)
-wcalPadding: Final[Property[int]] = Property(10)
-buttonIconSize: Final[Property[int]] = Property(20)
-wcalEventIconSizeMax: Final[Property[int]] = Property(26)
-eventWeekViewTimeFormat: Final[Property[str]] = Property("HM$")
+menuIconEdgePadding: Final[Option[int]] = Option(3)
+rightPanelEventIconSize: Final[Option[int]] = Option(20)
+eventTreeIconSize: Final[Option[int]] = Option(22)
+menuEventCheckIconSize: Final[Option[int]] = Option(20)
+toolbarIconSize: Final[Option[int]] = Option(24)
+mcalEventIconSizeMax: Final[Option[int]] = Option(26)
+messageDialogIconSize: Final[Option[int]] = Option(48)
+menuCheckSize: Final[Option[int]] = Option(22)
+menuIconSize: Final[Option[int]] = Option(18)
+comboBoxIconSize: Final[Option[int]] = Option(20)
+imageInputIconSize: Final[Option[int]] = Option(32)
+maxWeekCacheSize: Final[Option[int]] = Option(12)
+wcalPadding: Final[Option[int]] = Option(10)
+buttonIconSize: Final[Option[int]] = Option(20)
+wcalEventIconSizeMax: Final[Option[int]] = Option(26)
+eventWeekViewTimeFormat: Final[Option[str]] = Option("HM$")
 
 
-confParams: dict[str, Property[Any]] = {
+confParams: dict[str, Option[Any]] = {
 	"showMain": showMain,
 	"winTaskbar": winTaskbar,
 	"useAppIndicator": useAppIndicator,
@@ -752,7 +750,7 @@ confParams: dict[str, Property[Any]] = {
 	"preferencesPagePath": preferencesPagePath,
 	"localTzHist": localTzHist,
 }
-confParamsLive: dict[str, Property[Any]] = {
+confParamsLive: dict[str, Option[Any]] = {
 	"winX": winX,
 	"winY": winY,
 	"winWidth": winWidth,
@@ -765,7 +763,7 @@ confParamsLive: dict[str, Property[Any]] = {
 	"mainWinRightPanelRatio": mainWinRightPanelRatio,
 	"wcal_toolbar_weekNum_negative": wcal_toolbar_weekNum_negative,
 }
-confParamsCustomize: dict[str, Property[Any]] = {
+confParamsCustomize: dict[str, Option[Any]] = {
 	"mainWinItems": mainWinItems,
 	"mainWinFooterItems": mainWinFooterItems,
 	"pluginsTextEnable": pluginsTextEnable,
@@ -887,7 +885,7 @@ confParamsCustomize: dict[str, Property[Any]] = {
 	"ud__mainToolbarData": ud__mainToolbarData,
 	"customizePagePath": customizePagePath,
 }
-dayCalWinParamsLive: dict[str, Property[Any]] = {
+dayCalWinParamsLive: dict[str, Option[Any]] = {
 	"dcalWinX": dcalWinX,
 	"dcalWinY": dcalWinY,
 	"dcalWinWidth": dcalWinWidth,

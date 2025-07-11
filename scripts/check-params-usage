@@ -1,11 +1,11 @@
-grep -rPoI '([a-zA-Z]+\s*=\s*|Property\[.*\] = )?conf\.[a-zA-Z_.]+' |
+grep -rPoI '([a-zA-Z]+\s*=\s*|Option\[.*\] = )?conf\.[a-zA-Z_.]+' |
 	grep -v ':prop=' |
 	grep -v 'Prop=conf\.' |
 	grep -v 'Param=conf\.' |
 	grep -v '\.v$' |
 	grep -v '\.v\.' |
 	grep -v '\.default$' |
-	grep -v 'Property\[' |
+	grep -v 'Option\[' |
 	grep -v ':conf.py' |
 	sort |
 	uniq |

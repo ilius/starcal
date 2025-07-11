@@ -33,7 +33,7 @@ from scal3.ui_gtk.utils import imageFromIconName, setImageClassButton
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.property import ListProperty, Property
+	from scal3.option import ListOption, Option
 
 
 __all__ = ["WinLayoutBox", "WinLayoutObj"]
@@ -49,7 +49,7 @@ class WinLayoutBase(CustomizableCalObj):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property[bool] | None = None,
+		enableParam: Option[bool] | None = None,
 	) -> None:
 		super().__init__()
 		self.objName = name
@@ -104,7 +104,7 @@ class WinLayoutObj(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property[bool] | None = None,
+		enableParam: Option[bool] | None = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
@@ -213,9 +213,9 @@ class WinLayoutBox(WinLayoutBase):
 		desc: str,
 		vertical: bool,
 		expand: bool,
-		enableParam: Property[bool] | None = None,
+		enableParam: Option[bool] | None = None,
 		itemsMovable: bool = False,
-		itemsParam: ListProperty[str] | None = None,
+		itemsParam: ListOption[str] | None = None,
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
 		items: list[WinLayoutBox | WinLayoutObj] | None = None,
@@ -278,7 +278,7 @@ class WinLayoutBox(WinLayoutBase):
 			self.itemsParam.v = [item.objName for item in self.items if item.enable]
 		self.createWidget()
 
-	def setItemsOrder(self, prop: ListProperty[str]) -> None:
+	def setItemsOrder(self, prop: ListOption[str]) -> None:
 		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in prop.v]
 		for name in prop.default:

@@ -35,8 +35,8 @@ from scal3.event_lib.groups import EventGroup
 from scal3.event_lib.trash import EventTrash
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
+from scal3.option import Option
 from scal3.path import confDir
-from scal3.property import Property
 from scal3.ui_gtk import Dialog, GdkPixbuf, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event import common, setActionFuncs
@@ -96,9 +96,9 @@ type EventOrGroup = lib.Event | lib.EventGroup
 confPath = join(confDir, "event", "manager.json")
 
 
-eventManPos: Final[Property[tuple[int, int]]] = Property((0, 0))
-eventManShowDescription: Final[Property[bool]] = Property(True)
-confParams: dict[str, Property[Any]] = {
+eventManPos: Final[Option[tuple[int, int]]] = Option((0, 0))
+eventManShowDescription: Final[Option[bool]] = Option(True)
+confParams: dict[str, Option[Any]] = {
 	"eventManPos": eventManPos,
 	"eventManShowDescription": eventManShowDescription,
 }

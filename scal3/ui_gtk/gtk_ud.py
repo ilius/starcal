@@ -34,8 +34,8 @@ from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.format_time import compileTmFormat
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
+from scal3.option import Option
 from scal3.path import confDir, sourceDir, sysConfDir
-from scal3.property import Property
 from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.drawing import calcTextPixelSize
@@ -80,10 +80,10 @@ sysConfPath = join(sysConfDir, "ui-gtk.json")
 
 confPath = join(confDir, "ui-gtk.json")
 
-dateFormat: Final[Property[str]] = Property("%Y/%m/%d")
+dateFormat: Final[Option[str]] = Option("%Y/%m/%d")
 # clockFormat: "%T", "%X" (local), "<b>%T</b>", "%m:%d"
-clockFormat: Final[Property[str]] = Property("%X")
-confParams: Final[dict[str, Property[Any]]] = {
+clockFormat: Final[Option[str]] = Option("%X")
+confParams: Final[dict[str, Option[Any]]] = {
 	"dateFormat": dateFormat,
 	"clockFormat": clockFormat,
 	# "adjustTimeCmd": adjustTimeCmd,

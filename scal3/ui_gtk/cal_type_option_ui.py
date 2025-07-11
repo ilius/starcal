@@ -30,7 +30,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if typing.TYPE_CHECKING:
-	from scal3.property import Property
+	from scal3.option import Option
 
 
 __all__ = [
@@ -50,7 +50,7 @@ class ModuleOptionItem:
 
 	def __init__(
 		self,
-		prop: Property,
+		prop: Option,
 		opt: tuple,
 		spacing: int = 0,
 	) -> None:

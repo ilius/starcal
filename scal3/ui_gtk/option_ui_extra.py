@@ -36,7 +36,7 @@ from scal3.ui_gtk.utils import set_tooltip
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.property import ListProperty, Property, StrDictProperty
+	from scal3.option import ListOption, Option, StrDictOption
 
 __all__ = [
 	"ActiveCalsTreeView",
@@ -71,7 +71,7 @@ class FixedSizeOrRatioOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		ratioEnableProp: Property[bool] | None,
+		ratioEnableProp: Option[bool] | None,
 		fixedLabel: str = "",
 		fixedItem: IntSpinOptionUI | None = None,
 		ratioLabel: str = "",
@@ -145,7 +145,7 @@ class WeekDayCheckListOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: ListProperty[int],
+		prop: ListOption[int],
 		vertical: bool = False,
 		homogeneous: bool = True,
 		abbreviateNames: bool = True,
@@ -211,7 +211,7 @@ class ToolbarIconSizeOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
-	def __init__(self, prop: Property):
+	def __init__(self, prop: Option):
 		self.prop = prop
 		# ----
 		self._widget = gtk.ComboBoxText()
@@ -237,7 +237,7 @@ class CalTypeOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: Property[int],
+		prop: Option[int],
 		live: bool = False,
 		onChangeFunc: Callable[[], None] | None = None,
 	) -> None:
@@ -273,7 +273,7 @@ class CalTypeOptionUI(OptionUI):
 			self._onChangeFunc()
 
 
-# FIXME: switch to: prop: Property,
+# FIXME: switch to: prop: Option,
 class LangOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
@@ -748,7 +748,7 @@ class KeyBindingOptionUI(OptionUI):
 
 	def __init__(
 		self,
-		prop: StrDictProperty[str],
+		prop: StrDictOption[str],
 		actions: list[str],
 		# live: bool = False,
 		# onChangeFunc: "Callable] | None" = None,

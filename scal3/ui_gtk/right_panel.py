@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.font import Font
-	from scal3.property import Property
+	from scal3.option import Option
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["MainWinRightPanel"]
@@ -33,12 +33,12 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 	def __init__(
 		self,
 		rightPanel: MainWinRightPanel | None = None,
-		eventSepParam: Property[str] | None = None,
-		justificationParam: Property[str] | None = None,
-		fontEnableParam: Property[bool] | None = None,
-		fontParam: Property[Font | None] | None = None,
-		timeFontEnableParam: Property[bool] | None = None,
-		timeFontParam: Property[Font | None] | None = None,
+		eventSepParam: Option[str] | None = None,
+		justificationParam: Option[str] | None = None,
+		fontEnableParam: Option[bool] | None = None,
+		fontParam: Option[Font | None] | None = None,
+		timeFontEnableParam: Option[bool] | None = None,
+		timeFontParam: Option[Font | None] | None = None,
 		styleClass: str = "",
 		wrapMode: gtk.WrapMode = gtk.WrapMode.WORD_CHAR,
 	) -> None:
@@ -77,10 +77,10 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 		rightPanel: MainWinRightPanel | None = None,
 		hideIfEmpty: bool = True,
 		tabToNewline: bool = False,
-		insideExpanderParam: Property[bool] | None = None,
-		justificationParam: Property[str] | None = None,
-		fontEnableParam: Property[bool] | None = None,
-		fontParam: Property[Font | None] | None = None,
+		insideExpanderParam: Option[bool] | None = None,
+		justificationParam: Option[str] | None = None,
+		fontEnableParam: Option[bool] | None = None,
+		fontParam: Option[Font | None] | None = None,
 		styleClass: str = "",
 	) -> None:
 		PluginsTextBox.__init__(

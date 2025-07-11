@@ -34,6 +34,7 @@ from scal3.date_utils import jwday
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
+from scal3.option import ListOption, Option
 from scal3.path import (
 	APP_NAME,
 	confDir,
@@ -43,7 +44,6 @@ from scal3.path import (
 	sysConfDir,
 )
 from scal3.plugin_man import loadPlugin
-from scal3.property import ListProperty, Property
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
@@ -130,19 +130,19 @@ confPath: Final[str] = join(confDir, "core.json")
 # __________________________ Default Configuration __________________________ #
 
 # just for loading from config, not used after loadConf
-version: Final[Property[str]] = Property("")
-activeCalTypes: Final[ListProperty[str]] = ListProperty([])
-inactiveCalTypes: Final[ListProperty[str]] = ListProperty([])
+version: Final[Option[str]] = Option("")
+activeCalTypes: Final[ListOption[str]] = ListOption([])
+inactiveCalTypes: Final[ListOption[str]] = ListOption([])
 
-allPlugList: Final[ListProperty[PluginType | None]] = ListProperty([])
-plugIndex: Final[ListProperty[int]] = ListProperty([])
-holidayWeekDays: Final[ListProperty[int]] = ListProperty([0])
-firstWeekDayAuto: Final[Property[bool]] = Property(False)
-firstWeekDay: Final[Property[int]] = Property(0)
-weekNumberModeAuto: Final[Property[bool]] = Property(False)
-weekNumberMode: Final[Property[int]] = Property(7)
+allPlugList: Final[ListOption[PluginType | None]] = ListOption([])
+plugIndex: Final[ListOption[int]] = ListOption([])
+holidayWeekDays: Final[ListOption[int]] = ListOption([0])
+firstWeekDayAuto: Final[Option[bool]] = Option(False)
+firstWeekDay: Final[Option[int]] = Option(0)
+weekNumberModeAuto: Final[Option[bool]] = Option(False)
+weekNumberMode: Final[Option[int]] = Option(7)
 
-confParams: Final[dict[str, Property[Any]]] = {
+confParams: Final[dict[str, Option[Any]]] = {
 	"version": version,
 	"allPlugList": allPlugList,
 	"plugIndex": plugIndex,
