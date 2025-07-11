@@ -117,19 +117,19 @@ class ColumnBase(CustomizableCalObj):
 		# v4: f"wcal.{cls.objName}.width"
 		return f"wcal_{cls.objName}_width"
 
-	def getWidthProp(self) -> Option[float] | None:
+	def getWidthOption(self) -> Option[float] | None:
 		return getattr(conf, self.getWidthAttr(), None)
 
-	def getExpandProp(self) -> Option[bool] | None:
+	def getExpandOption(self) -> Option[bool] | None:
 		# v4: f"wcal.{self.objName}.expand"
 		return getattr(conf, f"wcal_{self.objName}_expand", None)
 
-	def getFontProp(self) -> Option[str] | None:
+	def getFontOption(self) -> Option[str] | None:
 		# v4: f"wcal.{self.objName}.font"
 		return getattr(conf, f"wcalFont_{self.objName}", None)
 
 	def getFontFamily(self) -> str:
-		prop = self.getFontProp()
+		prop = self.getFontOption()
 		if prop and prop.v:
 			return prop.v
 		return ""
@@ -156,10 +156,10 @@ class ColumnBase(CustomizableCalObj):
 		option: OptionUI
 		# ----
 		if self.customizeWidth:
-			widthProp = self.getWidthProp()
-			assert widthProp is not None
+			widthOption = self.getWidthOption()
+			assert widthOption is not None
 			option = FloatSpinOptionUI(
-				prop=widthProp,
+				option=widthOption,
 				bounds=(1, 999),
 				digits=1,
 				step=1,
@@ -170,10 +170,10 @@ class ColumnBase(CustomizableCalObj):
 			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.customizeExpand:
-			expandProp = self.getExpandProp()
-			assert expandProp is not None
+			expandOption = self.getExpandOption()
+			assert expandOption is not None
 			option = CheckOptionUI(
-				prop=expandProp,
+				option=expandOption,
 				label=_("Expand"),
 				live=True,
 				onChangeFunc=self.onExpandCheckClick,
@@ -181,10 +181,10 @@ class ColumnBase(CustomizableCalObj):
 			pack(optionsWidget, option.getWidget())
 		# ----
 		if self.customizeFont:
-			fontProp = self.getFontProp()
-			assert fontProp is not None
+			fontOption = self.getFontOption()
+			assert fontOption is not None
 			option = FontFamilyOptionUI(
-				prop=fontProp,
+				option=fontOption,
 				hasAuto=True,
 				label=_("Font Family"),
 				onChangeFunc=self.onFontChange,
@@ -219,7 +219,7 @@ class ColumnBase(CustomizableCalObj):
 		)
 
 	def onExpandCheckClick(self) -> None:
-		prop = self.getExpandProp()
+		prop = self.getExpandOption()
 		assert prop is not None
 		self.expand = prop.v
 		self.updatePacking()
@@ -256,15 +256,15 @@ class Column(ColumnBase):
 		self.wcal = wcal
 		self.colParent: ColumnParent = wcal  # type: ignore[assignment]
 		if self.customizeExpand:
-			expandProp = self.getExpandProp()
-			assert expandProp is not None
-			self.expand = expandProp.v
+			expandOption = self.getExpandOption()
+			assert expandOption is not None
+			self.expand = expandOption.v
 
 	def getWidth(self) -> int:
-		widthProp = self.getWidthProp()
-		if widthProp is None:
+		widthOption = self.getWidthOption()
+		if widthOption is None:
 			return 0
-		return int(widthProp.v)
+		return int(widthOption.v)
 
 	def onExposeEvent(
 		self,
@@ -495,7 +495,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		)
 		# ---
 		option = IconChooserOptionUI(
-			prop=conf.wcal_toolbar_mainMenu_icon,
+			option=conf.wcal_toolbar_mainMenu_icon,
 			label=_("Icon"),
 			live=True,
 			onChangeFunc=self.updateImage,
@@ -683,7 +683,7 @@ class PluginsTextColumn(Column):
 
 		# -----
 		option = CheckOptionUI(
-			prop=conf.wcal_pluginsText_firstLineOnly,
+			option=conf.wcal_pluginsText_firstLineOnly,
 			label=_("Only first line of text"),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
@@ -842,11 +842,11 @@ class EventsTextColumn(Column):
 			optionsWidget,
 			CheckColorOptionUI(
 				CheckOptionUI(
-					prop=conf.wcal_eventsText_pastColorEnable,
+					option=conf.wcal_eventsText_pastColorEnable,
 					label=_("Past Event Color"),
 				),
 				ColorOptionUI(
-					prop=conf.wcal_eventsText_pastColor,
+					option=conf.wcal_eventsText_pastColor,
 					useAlpha=True,
 				),
 				live=True,
@@ -859,11 +859,11 @@ class EventsTextColumn(Column):
 			optionsWidget,
 			CheckColorOptionUI(
 				CheckOptionUI(
-					prop=conf.wcal_eventsText_ongoingColorEnable,
+					option=conf.wcal_eventsText_ongoingColorEnable,
 					label=_("Ongoing Event Color"),
 				),
 				ColorOptionUI(
-					prop=conf.wcal_eventsText_ongoingColor,
+					option=conf.wcal_eventsText_ongoingColor,
 					useAlpha=True,
 				),
 				live=True,
@@ -875,7 +875,7 @@ class EventsTextColumn(Column):
 		pack(
 			optionsWidget,
 			CheckOptionUI(
-				prop=conf.wcal_eventsText_colorize,
+				option=conf.wcal_eventsText_colorize,
 				label=_("Use color of event group\nfor event text"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
@@ -885,7 +885,7 @@ class EventsTextColumn(Column):
 		pack(
 			optionsWidget,
 			CheckOptionUI(
-				prop=conf.wcal_eventsText_showDesc,
+				option=conf.wcal_eventsText_showDesc,
 				label=_("Show Description"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
@@ -1133,7 +1133,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 
 		# ---
 		option = DirectionOptionUI(
-			prop=conf.wcal_daysOfMonth_dir,
+			option=conf.wcal_daysOfMonth_dir,
 			onChangeFunc=self.updateDirection,
 		)
 		pack(optionsWidget, option.getWidget())
@@ -1159,11 +1159,11 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 			item.updatePacking()
 
 	def getWidth(self) -> int:
-		widthProp = self.getWidthProp()
-		if widthProp is None:
+		widthOption = self.getWidthOption()
+		if widthOption is None:
 			raise ValueError("widthProp is None")
 		count = len(self.w.get_children())
-		return int(count * widthProp.v)
+		return int(count * widthOption.v)
 
 	def updateCols(self) -> None:
 		# self.foreach(gtk.DrawingArea.destroy)
@@ -1369,7 +1369,7 @@ class MoonStatusColumn(Column):
 
 		# ----
 		option = CheckOptionUI(
-			prop=conf.wcal_moonStatus_southernHemisphere,
+			option=conf.wcal_moonStatus_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onSouthernHemisphereChange,
@@ -1492,7 +1492,7 @@ class CalObj(CalBase):
 		option: OptionUI
 		# -----
 		option = FloatSpinOptionUI(
-			prop=conf.wcalTextSizeScale,
+			option=conf.wcalTextSizeScale,
 			bounds=(0.01, 1),
 			digits=3,
 			step=0.1,
@@ -1503,8 +1503,8 @@ class CalObj(CalBase):
 		pack(optionsWidget, option.getWidget())
 		# ---
 		option = CheckColorOptionUI(
-			CheckOptionUI(prop=conf.wcalGrid, label=_("Grid")),
-			ColorOptionUI(prop=conf.wcalGridColor, useAlpha=True),
+			CheckOptionUI(option=conf.wcalGrid, label=_("Grid")),
+			ColorOptionUI(option=conf.wcalGridColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
@@ -1512,10 +1512,10 @@ class CalObj(CalBase):
 		# ---
 		option = CheckColorOptionUI(
 			CheckOptionUI(
-				prop=conf.wcalUpperGradientEnable,
+				option=conf.wcalUpperGradientEnable,
 				label=_("Row's Upper Gradient"),
 			),
-			ColorOptionUI(prop=conf.wcalUpperGradientColor, useAlpha=True),
+			ColorOptionUI(option=conf.wcalUpperGradientColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
@@ -1526,7 +1526,7 @@ class CalObj(CalBase):
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		# ----
 		option = FloatSpinOptionUI(
-			prop=conf.wcalCursorLineWidthFactor,
+			option=conf.wcalCursorLineWidthFactor,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,
@@ -1538,7 +1538,7 @@ class CalObj(CalBase):
 		pack(pageVBox, option.getWidget())
 		# ---
 		option = FloatSpinOptionUI(
-			prop=conf.wcalCursorRoundingFactor,
+			option=conf.wcalCursorRoundingFactor,
 			bounds=(0, 1),
 			digits=2,
 			step=0.1,

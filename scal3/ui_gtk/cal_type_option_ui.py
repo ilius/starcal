@@ -50,11 +50,11 @@ class ModuleOptionItem:
 
 	def __init__(
 		self,
-		prop: Option,
+		option: Option,
 		opt: tuple,
 		spacing: int = 0,
 	) -> None:
-		self.prop = prop
+		self.option = option
 		t = opt[1]
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 		w: gtk.Widget
@@ -86,10 +86,10 @@ class ModuleOptionItem:
 		# ----
 
 	def updateVar(self) -> None:
-		self.prop.v = self.get()
+		self.option.v = self.get()
 
 	def updateWidget(self) -> None:
-		self.set(self.prop.v)
+		self.set(self.option.v)
 
 	def getWidget(self) -> gtk.Widget:
 		return self._widget

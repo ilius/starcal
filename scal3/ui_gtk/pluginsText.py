@@ -363,7 +363,7 @@ class PluginsTextBox(CustomizableCalObj):
 		# ----
 		if self.insideExpanderParam:
 			option = CheckOptionUI(
-				prop=self.insideExpanderParam,
+				option=self.insideExpanderParam,
 				label=_("Inside Expander"),
 				live=True,
 				onChangeFunc=self.onInsideExpanderCheckClick,
@@ -372,7 +372,7 @@ class PluginsTextBox(CustomizableCalObj):
 		# ----
 		if self.justificationParam:
 			option = JustificationOptionUI(
-				prop=self.justificationParam,
+				option=self.justificationParam,
 				label=_("Text Alignment"),
 				onChangeFunc=self.updateJustification,
 			)
@@ -381,8 +381,8 @@ class PluginsTextBox(CustomizableCalObj):
 		if self.fontParam:
 			assert self.fontEnableParam
 			option = CheckFontOptionUI(
-				CheckOptionUI(prop=self.fontEnableParam, label=_("Font")),
-				FontOptionUI(prop=self.fontParam),
+				CheckOptionUI(option=self.fontEnableParam, label=_("Font")),
+				FontOptionUI(option=self.fontParam),
 				live=True,
 				onChangeFunc=ud.windowList.updateCSS,
 			)

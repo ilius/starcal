@@ -57,7 +57,7 @@ class CalObj(CustomizableCalObj):
 		# ----
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		option = CheckOptionUI(
-			prop=conf.seasonPBar_southernHemisphere,
+			option=conf.seasonPBar_southernHemisphere,
 			label=_("Southern Hemisphere"),
 			live=True,
 			onChangeFunc=self.onSouthernHemisphereChange,

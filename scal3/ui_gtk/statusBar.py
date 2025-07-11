@@ -94,7 +94,7 @@ class CalObj(CustomizableCalObj):
 		option: OptionUI
 		# ----
 		option = CheckOptionUI(
-			prop=conf.statusBarDatesReverseOrder,
+			option=conf.statusBarDatesReverseOrder,
 			label=_("Reverse the order of dates"),
 			live=True,
 			onChangeFunc=self.onConfigChange,
@@ -102,8 +102,8 @@ class CalObj(CustomizableCalObj):
 		pack(optionsWidget, option.getWidget())
 		# ----
 		option = CheckColorOptionUI(
-			CheckOptionUI(prop=conf.statusBarDatesColorEnable, label=_("Dates Color")),
-			ColorOptionUI(prop=conf.statusBarDatesColor, useAlpha=True),
+			CheckOptionUI(option=conf.statusBarDatesColorEnable, label=_("Dates Color")),
+			ColorOptionUI(option=conf.statusBarDatesColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.onDateChange,
 		)

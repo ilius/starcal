@@ -447,7 +447,7 @@ class DayCal(CalBase):
 		# ----
 		if self.backgroundColor:
 			option = ColorOptionUI(
-				prop=self.backgroundColor,
+				option=self.backgroundColor,
 				live=True,
 				onChangeFunc=self.w.queue_draw,
 			)
@@ -473,7 +473,7 @@ class DayCal(CalBase):
 		# ---
 		if self.widgetButtonsEnable:
 			option = CheckOptionUI(
-				prop=self.widgetButtonsEnable,
+				option=self.widgetButtonsEnable,
 				label=_("Widget Buttons"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
@@ -481,7 +481,7 @@ class DayCal(CalBase):
 			pack(pageWidget, option.getWidget())
 		if self.widgetButtonsSize:
 			option = IntSpinOptionUI(
-				prop=self.widgetButtonsSize,
+				option=self.widgetButtonsSize,
 				bounds=(0, 99),
 				step=1,
 				label=_("Widget Buttons Size"),
@@ -491,7 +491,7 @@ class DayCal(CalBase):
 			pack(pageWidget, option.getWidget())
 		if self.widgetButtonsOpacity:
 			option = FloatSpinOptionUI(
-				prop=self.widgetButtonsOpacity,
+				option=self.widgetButtonsOpacity,
 				bounds=(0, 1),
 				digits=2,
 				step=0.1,
@@ -502,7 +502,7 @@ class DayCal(CalBase):
 			pack(pageWidget, option.getWidget())
 		if self.navButtonsEnable:
 			option = CheckOptionUI(
-				prop=self.navButtonsEnable,
+				option=self.navButtonsEnable,
 				label=_("Navigation buttons"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
@@ -524,7 +524,7 @@ class DayCal(CalBase):
 			# ---
 			if self.weekdayLocalize and langSh != "en":
 				option = CheckOptionUI(
-					prop=self.weekdayLocalize,
+					option=self.weekdayLocalize,
 					label=_("Localize"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
@@ -532,7 +532,7 @@ class DayCal(CalBase):
 				pack(pageWidget, option.getWidget())
 			if self.weekdayAbbreviate:
 				option = CheckOptionUI(
-					prop=self.weekdayAbbreviate,
+					option=self.weekdayAbbreviate,
 					label=_("Abbreviate"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
@@ -540,7 +540,7 @@ class DayCal(CalBase):
 				pack(pageWidget, option.getWidget())
 			if langHasUppercase and self.weekdayUppercase:
 				option = CheckOptionUI(
-					prop=self.weekdayUppercase,
+					option=self.weekdayUppercase,
 					label=_("Uppercase"),
 					live=True,
 					onChangeFunc=self.w.queue_draw,
@@ -578,7 +578,7 @@ class DayCal(CalBase):
 		# ---
 		if self.eventIconSize:
 			option = IntSpinOptionUI(
-				prop=self.eventIconSize,
+				option=self.eventIconSize,
 				bounds=(5, 999),
 				step=1,
 				label=_("Icon Size"),
@@ -589,7 +589,7 @@ class DayCal(CalBase):
 		# ---
 		if self.eventTotalSizeRatio:
 			option = FloatSpinOptionUI(
-				prop=self.eventTotalSizeRatio,
+				option=self.eventTotalSizeRatio,
 				bounds=(0, 1),
 				digits=3,
 				step=0.01,
@@ -611,7 +611,7 @@ class DayCal(CalBase):
 			buttons2.append(newSubPageButton(self, page))
 			# ---
 			option = CheckOptionUI(
-				prop=self.seasonPieEnable,
+				option=self.seasonPieEnable,
 				label=_("Season Pie"),
 				live=True,
 				onChangeFunc=self.w.queue_draw,
@@ -634,7 +634,7 @@ class DayCal(CalBase):
 				label = gtk.Label(label=_(season))
 				label.set_xalign(0)
 				option = ColorOptionUI(
-					prop=self.seasonPieColors[season],
+					option=self.seasonPieColors[season],
 					useAlpha=True,
 					live=True,
 					onChangeFunc=self.w.queue_draw,
