@@ -69,9 +69,9 @@ from scal3.ui_gtk.utils import pixbufFromFile
 if TYPE_CHECKING:
 	from collections.abc import Iterable
 
-	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
 	from scal3.option import ListOption, Option
+	from scal3.pytypes import CellType
 	from scal3.ui.pytypes import (
 		ButtonGeoDict,
 		DayCalTypeBaseOptionsDict,

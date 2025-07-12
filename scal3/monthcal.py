@@ -25,8 +25,7 @@ from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 
 if TYPE_CHECKING:
-	from scal3.cell import MonthStatus
-	from scal3.cell_type import CellType
+	from scal3.pytypes import CellType, MonthStatusType
 
 __all__ = ["getMonthDesc"]
 
@@ -37,7 +36,7 @@ pluginName = "MonthCal"
 
 
 # TODO: write test for it
-def getMonthDesc(status: MonthStatus | None = None) -> str:
+def getMonthDesc(status: MonthStatusType | None = None) -> str:
 	if not status:
 		status = ui.cells.getCurrentMonthStatus()
 	first: CellType | None = None

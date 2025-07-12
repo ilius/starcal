@@ -33,7 +33,7 @@ from scal3.time_utils import getEpochFromJhms, getUtcOffsetByGDate
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.cell_type import CellType, CompiledTimeFormat
+	from scal3.pytypes import CellType, CompiledTimeFormat
 
 __all__ = ["compileTmFormat"]
 

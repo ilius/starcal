@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from scal3 import logger
 
 if TYPE_CHECKING:
-	from scal3.cell_type import CellCacheType
+	from scal3.pytypes import CellCacheType
 
 __all__ = ["checkEnabledNamesItems", "getHolidaysJdList"]
 

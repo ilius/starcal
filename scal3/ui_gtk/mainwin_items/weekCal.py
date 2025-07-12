@@ -72,10 +72,9 @@ if TYPE_CHECKING:
 
 	from gi.repository import GObject
 
-	from scal3.cell import WeekStatus
-	from scal3.cell_type import CellType
 	from scal3.color_utils import ColorType
 	from scal3.option import Option
+	from scal3.pytypes import CellType, WeekStatusType
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
 	from scal3.ui_gtk.starcal_types import MainWinType
@@ -1424,7 +1423,7 @@ class CalObj(CalBase):
 		self.w.connect("button-press-event", self.onButtonPress)
 		# -----
 		# set in self.updateStatus
-		self.status: WeekStatus | None = None
+		self.status: WeekStatusType | None = None
 		self.cellIndex = 0
 		# -----
 		defaultItems: list[ColumnBase] = [

@@ -26,21 +26,26 @@ from cachetools import LRUCache
 
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes, jd_to, to_jd
-from scal3.cell_type import CellType
-from scal3.date_utils import getJdRangeForMonth
 from scal3.date_utils import monthPlus as lowMonthPlus
 from scal3.event_lib import ev
+from scal3.month_status import MonthStatus
 from scal3.ui import conf
+from scal3.week_status import WeekStatus
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Sequence
 
-	from scal3.cell_type import CellCacheType, CompiledTimeFormat
 	from scal3.color_utils import ColorType
 	from scal3.event_lib.occur_data import DayOccurData
-	from scal3.plugin_type import PluginType
+	from scal3.pytypes import (
+		CellType,
+		CompiledTimeFormat,
+		MonthStatusType,
+		PluginType,
+		WeekStatusType,
+	)
 
-__all__ = ["Cell", "MonthStatus", "WeekStatus", "init"]
+__all__ = ["Cell", "init"]
 
 
 class EventDataDict(TypedDict):
@@ -307,81 +312,14 @@ class CellCache:
 		day = min(cell.day, cal_types.getMonthLen(year, month, calTypes.primary))
 		self.current = self.getCellByDate(year, month, day)
 
-	def getCurrentWeekStatus(self) -> WeekStatus:
+	def getCurrentWeekStatus(self) -> WeekStatusType:
 		return WeekStatus(self, self.current.absWeekNumber)
 
-	def getMonthStatus(self, year: int, month: int) -> MonthStatus:
+	def getMonthStatus(self, year: int, month: int) -> MonthStatusType:
 		return MonthStatus(self, year, month)
 
-	def getCurrentMonthStatus(self) -> MonthStatus:
+	def getCurrentMonthStatus(self) -> MonthStatusType:
 		return MonthStatus(self, self.current.year, self.current.month)
-
-
-class WeekStatus(list[CellType]):
-	__slots__ = [
-		"absWeekNumber",
-	]
-
-	# list (of 7 cells)
-	def __init__(self, cells: CellCacheType, absWeekNumber: int) -> None:
-		self.absWeekNumber = absWeekNumber
-		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
-		endJd = startJd + 7
-		# self.startJd = startJd
-		# self.startDate = core.jd_to_primary(self.startJd)
-		# self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
-		# ---------
-		# list.__init__(self, [
-		# 	cells.getCell(jd) for jd in range(startJd, endJd)
-		# ])
-		list.__init__(self, [])
-		for jd in range(startJd, endJd):
-			# log.debug("WeekStatus", jd)
-			self.append(cells.getCell(jd))
-
-
-class MonthStatus(list[list[CellType]]):  # FIXME
-	__slots__ = [
-		"month",
-		"offset",
-		"weekNum",
-		"year",
-	]
-
-	# self[sy<6][sx<7] of cells
-	# list (of 6 lists, each list containing 7 cells)
-	def __init__(
-		self,
-		cells: CellCacheType,
-		year: int,
-		month: int,
-	) -> None:
-		self.year = year
-		self.month = month
-		self.offset = core.getWeekDay(year, month, 1)  # month start offset
-		initJd = core.primary_to_jd(year, month, 1)
-		self.weekNum = [core.getWeekNumberByJd(initJd + i * 7) for i in range(6)]
-		# ---------
-		startJd, _endJd = getJdRangeForMonth(year, month, calTypes.primary)
-		tableStartJd = startJd - self.offset
-		# -----
-		list.__init__(
-			self,
-			[
-				[
-					cells.getCell(
-						tableStartJd + yPos * 7 + xPos,
-					)
-					for xPos in range(7)
-				]
-				for yPos in range(6)
-			],
-		)
-
-	# needed? FIXME
-	# def getDayCell(self, day):
-	# 	yPos, xPos = divmod(day + self.offset - 1, 7)
-	# 	return self[yPos][xPos]
 
 
 def init() -> None:
