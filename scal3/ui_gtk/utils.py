@@ -515,7 +515,7 @@ def get_pixbuf_hash(pbuf):
 	pbuf.save_to_callbackv(
 		save_func,
 		None,  # user_data
-		"bmp",  # type, name of file format
+		"png",  # type, name of file format
 		[],  # option_keys
 		[],  # option_values
 	)
