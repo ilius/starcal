@@ -95,7 +95,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.export import ExportDialog
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
-	from scal3.ui_gtk.starcal_types import MainWinType
+	from scal3.ui_gtk.starcal_types import MainWinType, OptEvent, OptWidget
 	from scal3.ui_gtk.statusBar import CalObj as StatusBar
 	from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj
 
@@ -231,7 +231,7 @@ class MainWinVbox(CustomizableCalBox):
 	# 	self.showHide()
 	# 	self.broadcastDateChange()
 
-	def getOptionsWidget(self) -> gtk.Widget | None:
+	def getOptionsWidget(self) -> OptWidget:
 		if self.optionsWidget is not None:
 			return self.optionsWidget
 		self.optionsWidget = gtk.Box(
@@ -587,8 +587,8 @@ class MainWin(CalObjWidget):
 
 	def focusIn(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 		_data: Any = None,
 	) -> None:
 		# log.debug("focusIn")
@@ -750,7 +750,7 @@ class MainWin(CalObjWidget):
 		ui.cells.changeDate(year, month, day)
 		self.broadcastDateChange()
 
-	def goToday(self, _w: gtk.Widget | None = None) -> None:
+	def goToday(self, _w: OptWidget = None) -> None:
 		self.changeDate(*cal_types.getSysDate(calTypes.primary))
 
 	def onDateChange(self) -> None:
@@ -1208,16 +1208,16 @@ class MainWin(CalObjWidget):
 
 	@staticmethod
 	def copyCurrentDate(
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_event: OptEvent = None,
 	) -> None:
 		assert ud.dateFormatBin is not None
 		setClipboard(ui.cells.today.format(ud.dateFormatBin))
 
 	@staticmethod
 	def copyCurrentDateTime(
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_event: OptEvent = None,
 	) -> None:
 		assert ud.dateFormatBin is not None
 		assert ud.clockFormatBin is not None
@@ -1265,7 +1265,7 @@ class MainWin(CalObjWidget):
 				self.clockTr = None
 	"""
 
-	# def weekCalShow(self, _w: gtk.Widget | None = None, data: Any = None):
+	# def weekCalShow(self, _w: OptWidget = None, data: Any = None):
 	# 	openWindow(ui.weekCalWin.w)
 
 	@staticmethod
@@ -1543,7 +1543,7 @@ class MainWin(CalObjWidget):
 			return True
 		return None
 
-	def onStatusIconClick(self, _w: gtk.Widget | None = None) -> None:
+	def onStatusIconClick(self, _w: OptWidget = None) -> None:
 		if self.w.get_property("visible"):
 			# conf.winX.v, conf.winY.v = self.w.get_position()
 			# FIXME: ^ gives bad position sometimes
@@ -1565,8 +1565,8 @@ class MainWin(CalObjWidget):
 
 	def onDeleteEvent(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> bool:
 		# conf.winX.v, conf.winY.v = self.w.get_position()
 		# FIXME: ^ gives bad position sometimes
@@ -1599,8 +1599,8 @@ class MainWin(CalObjWidget):
 
 	def onQuitClick(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_event: OptEvent = None,
 	) -> None:
 		self.quit()
 
@@ -1633,8 +1633,8 @@ class MainWin(CalObjWidget):
 
 	def adjustTime(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_event: OptEvent = None,
 	) -> None:
 		from subprocess import Popen
 
@@ -1647,7 +1647,7 @@ class MainWin(CalObjWidget):
 			return
 		Popen(ud.adjustTimeCmd, env=ud.adjustTimeEnv)
 
-	def aboutShow(self, _w: gtk.Widget | None = None, _data: Any = None) -> None:
+	def aboutShow(self, _w: OptWidget = None, _data: Any = None) -> None:
 		if not self.aboutDialog:
 			from scal3.ui_gtk.about import AboutDialog
 
@@ -1679,7 +1679,7 @@ class MainWin(CalObjWidget):
 			self.aboutDialog = dialog
 		openWindow(self.aboutDialog)
 
-	def aboutHide(self, _w: gtk.Widget, _gevent: gdk.Event | None = None) -> bool:
+	def aboutHide(self, _w: gtk.Widget, _gevent: OptEvent = None) -> bool:
 		# arg maybe an event, or response id
 		assert self.aboutDialog is not None
 		self.aboutDialog.hide()
@@ -1687,8 +1687,8 @@ class MainWin(CalObjWidget):
 
 	def prefShow(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		if not ui.prefWindow:
 			from scal3.ui_gtk.preferences import PreferencesWindow
@@ -1708,8 +1708,8 @@ class MainWin(CalObjWidget):
 
 	def eventManShow(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		self.eventManCreate()
 		openWindow(ui.eventManDialog.w)
@@ -1723,20 +1723,20 @@ class MainWin(CalObjWidget):
 
 	def eventSearchShow(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		self.eventSearchCreate()
 		openWindow(ui.eventSearchWin.w)
 
-	def addCustomEvent(self, _w: gtk.Widget | None = None) -> None:
+	def addCustomEvent(self, _w: OptWidget = None) -> None:
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
 
 	@staticmethod
 	def dayCalWinShow(
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		if not ui.dayCalWin:
 			from scal3.ui_gtk.day_cal_window import DayCalWindow
@@ -1746,8 +1746,8 @@ class MainWin(CalObjWidget):
 
 	@staticmethod
 	def timeLineShow(
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
@@ -1757,8 +1757,8 @@ class MainWin(CalObjWidget):
 
 	@staticmethod
 	def timeLineShowSelectedDay(
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
@@ -1769,8 +1769,8 @@ class MainWin(CalObjWidget):
 
 	@staticmethod
 	def yearWheelShow(
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		if not ui.yearWheelWin:
 			from scal3.ui_gtk.year_wheel import YearWheelWindow
@@ -1778,7 +1778,7 @@ class MainWin(CalObjWidget):
 			ui.yearWheelWin = YearWheelWindow()
 		openWindow(ui.yearWheelWin.w)
 
-	def selectDateShow(self, _w: gtk.Widget | None = None) -> None:
+	def selectDateShow(self, _w: OptWidget = None) -> None:
 		if not self.selectDateDialog:
 			from scal3.ui_gtk.selectdate import SelectDateDialog
 
@@ -1817,7 +1817,7 @@ class MainWin(CalObjWidget):
 
 		return self.customizeWindow
 
-	# def switchWcalMcal(self, _w: gtk.Widget | None = None) -> None:
+	# def switchWcalMcal(self, _w: OptWidget = None) -> None:
 	# 	assert self.mainVBox is not None
 	# 	customizeWindow = self.customizeWindowCreate()
 	# 	self.mainVBox.switchWcalMcal(customizeWindow)
@@ -1826,8 +1826,8 @@ class MainWin(CalObjWidget):
 
 	def customizeShow(
 		self,
-		_widget: gtk.Widget | None = None,
-		_gevent: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_gevent: OptEvent = None,
 	) -> None:
 		customizeWindow = self.customizeWindowCreate()
 		openWindow(customizeWindow)
@@ -1839,13 +1839,13 @@ class MainWin(CalObjWidget):
 			self.exportDialog = ExportDialog(transient_for=self.w)
 		self.exportDialog.showDialog(year, month)
 
-	def onExportClick(self, _w: gtk.Widget | None = None) -> None:
+	def onExportClick(self, _w: OptWidget = None) -> None:
 		self.exportShow(ui.cells.current.year, ui.cells.current.month)
 
 	def onExportClickStatusIcon(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: OptWidget = None,
+		_event: OptEvent = None,
 	) -> None:
 		year, month, _day = cal_types.getSysDate(calTypes.primary)
 		self.exportShow(year, month)
