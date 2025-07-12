@@ -78,7 +78,7 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
 
@@ -1412,7 +1412,7 @@ class CalObj(CalBase):
 	def getCellPagePlus(cell: CellType, plus: int) -> CellType:
 		return ui.cells.getCell(cell.jd + 7 * plus)
 
-	def __init__(self, win: MainWin) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
 		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)

@@ -70,7 +70,7 @@ if typing.TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.gtk_ud import CalObjType
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 
 __all__ = [
@@ -416,8 +416,8 @@ eventUpdateQueue = EventUpdateQueue()
 cells: CellCacheType = DummyCellCache()
 # ---------------------------
 # appLogo = join(pixDir, "starcal.png")
-appLogo = join(svgDir, "starcal.svg")
-appIcon = join(pixDir, "starcal-48.png")
+appLogo: str = join(svgDir, "starcal.svg")
+appIcon: str = join(pixDir, "starcal-48.png")
 # ---------------------------
 
 uiName = ""
@@ -497,7 +497,7 @@ needRestartList: list[tuple[Option[Any], Any]] = [
 # ----------------------------------
 
 # move to gtk_ud ? FIXME
-mainWin: MainWin = None  # type: ignore[assignment]
+mainWin: MainWinType = None  # type: ignore[assignment]
 prefWindow: Any = None
 eventManDialog: Any = None
 eventSearchWin: Any = None

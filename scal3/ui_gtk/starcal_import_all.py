@@ -8,12 +8,13 @@ if TYPE_CHECKING:
 	from gi.repository import Gtk as gtk
 
 	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["doFullImport"]
 # to help with testing phase and also tell code analyzers these are imported
 
 
-def doFullImport(win: MainWin) -> None:
+def doFullImport(win: MainWinType) -> None:
 	import scal3.cal_types.import_all
 	import scal3.event_lib_import_all
 	import scal3.ui_gtk.event.import_all

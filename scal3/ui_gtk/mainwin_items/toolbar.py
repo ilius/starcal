@@ -11,7 +11,7 @@ from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
 
@@ -56,7 +56,7 @@ class CalObj(CustomizableToolBox):
 	itemHaveOptions = False
 	desc = _("Toolbar (Horizontal)")
 
-	def __init__(self, win: MainWin) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		CustomizableToolBox.__init__(
 			self,
 			win,
@@ -138,7 +138,7 @@ class CalObj(CustomizableToolBox):
 				name="quit",
 				iconName="gtk-quit",
 				imageName="application-exit.svg",
-				onClick=win.quit,
+				onClick=win.onQuitClick,
 				continuousClick=False,
 			),
 		]

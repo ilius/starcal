@@ -56,7 +56,7 @@ if TYPE_CHECKING:
 	from scal3.cell_type import CellType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.option_ui import OptionUI
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
 
@@ -84,7 +84,7 @@ class CalObj(CalBase):
 		"m",
 	}
 
-	def __init__(self, win: MainWin) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
 		self.w = gtk.DrawingArea()
 		self.win = win

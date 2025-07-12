@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.ui_gtk.option_ui import OptionUI
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
 
@@ -554,7 +554,7 @@ class CalObj(CustomizableCalObj):
 			font.bold = True
 		return font
 
-	def __init__(self, win: MainWin) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
 		self.win = win
 		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)

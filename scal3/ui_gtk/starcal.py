@@ -95,6 +95,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.export import ExportDialog
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
+	from scal3.ui_gtk.starcal_types import MainWinType
 	from scal3.ui_gtk.statusBar import CalObj as StatusBar
 	from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj
 
@@ -142,7 +143,7 @@ class MainWinVbox(CustomizableCalBox):
 		"up",
 	}
 
-	def __init__(self, win: MainWin) -> None:
+	def __init__(self, win: MainWinType) -> None:
 		CustomizableCalBox.__init__(self, vertical=True)
 		self.win = win
 		self.initVars()
@@ -1040,7 +1041,7 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("_Quit"),
 				imageName="application-exit.svg",
-				func=self.quit,
+				func=self.onQuitClick,
 			),
 		)
 		# --
@@ -1368,7 +1369,7 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("_Quit"),
 				imageName="application-exit.svg",
-				func=self.quit,
+				func=self.onQuitClick,
 			),
 		]
 
@@ -1596,11 +1597,14 @@ class MainWin(CalObjWidget):
 	def quitOnSignal(self, _sig: int, _frame: FrameType | None) -> None:
 		self.quit()
 
-	def quit(
+	def onQuitClick(
 		self,
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> None:
+		self.quit()
+
+	def quit(self) -> None:
 		try:
 			ui.saveLiveConf()
 		except Exception:
