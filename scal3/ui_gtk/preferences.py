@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.app_info import APP_DESC
 from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionUI
 
 log = logger.get()
@@ -1475,7 +1476,7 @@ class PreferencesWindow(gtk.Window):
 		ud.windowList.onConfigChange()
 		if self.checkNeedRestart():
 			d = Dialog(
-				title=_("Restart " + core.APP_DESC),
+				title=_("Restart " + APP_DESC),
 				transient_for=self,
 				modal=True,
 				destroy_with_parent=True,
@@ -1489,7 +1490,7 @@ class PreferencesWindow(gtk.Window):
 			d.set_keep_above(True)
 			label = gtk.Label(
 				label=(
-					_(f"Some preferences need restarting {core.APP_DESC} to apply.")  # noqa: INT001
+					_(f"Some preferences need restarting {APP_DESC} to apply.")  # noqa: INT001
 					+ " "
 					+ _("Restart Now?")
 				),
