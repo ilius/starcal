@@ -26,8 +26,6 @@ from scal3 import core
 if TYPE_CHECKING:
 	from scal3.ui_gtk.starcal_types import MainWinType
 
-# from scal3.ui_gtk.starcal import MainWin as MainWinType
-
 
 class GioNotificationWrapper(gio.Notification):
 	def __init__(self, mainWin: MainWinType) -> None:
