@@ -49,8 +49,8 @@ from scal3.ui_gtk.signals import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.cell_type import CompiledTimeFormat
 	from scal3.event_update_queue import EventUpdateRecord
+	from scal3.pytypes import CompiledTimeFormat
 	from scal3.ui.pytypes import CustomizableToolBoxDict
 	from scal3.ui_gtk.customize import CustomizableCalObj
 

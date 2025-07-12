@@ -29,8 +29,7 @@ from scal3.ui.font import getOptionsFont
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
-	from scal3.cell import MonthStatus
-	from scal3.cell_type import CellType
+	from scal3.pytypes import CellType, MonthStatusType
 
 __all__ = ["exportToHtml"]
 
@@ -87,7 +86,7 @@ def _renderTableCellCalType(
 	tag: str | None,
 	cell: CellType,
 	sizeMap: Callable[[float], float],
-	status: MonthStatus,
+	status: MonthStatusType,
 	inactiveColor: str,
 	holidayColor: str,
 	colors: list[str],
@@ -138,7 +137,7 @@ def _renderTableCellCalType(
 
 def exportToHtml(
 	fpath: str,
-	monthsStatus: Iterable[MonthStatus],
+	monthsStatus: Iterable[MonthStatusType],
 	title: str = "",
 	fontSizeScale: float = 1.0,
 	pluginsTextPerLine: bool = True,  # description of each day in one line

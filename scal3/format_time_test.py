@@ -16,7 +16,7 @@ from scal3.cell import init as initCells
 from scal3.format_time import compileTmFormat
 
 if TYPE_CHECKING:
-	from scal3.cell_type import CompiledTimeFormat
+	from scal3.pytypes import CompiledTimeFormat
 
 
 def formatTime(

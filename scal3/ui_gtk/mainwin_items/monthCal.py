@@ -52,8 +52,7 @@ from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 
 if TYPE_CHECKING:
-	from scal3.cell import MonthStatus
-	from scal3.cell_type import CellType
+	from scal3.pytypes import CellType, MonthStatusType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.starcal_types import MainWinType
@@ -316,7 +315,7 @@ class CalObj(CalBase):
 		cr: ImageContext,
 		w: float,
 		h: float,
-		status: MonthStatus,
+		status: MonthStatusType,
 	) -> None:
 		if conf.mcalTopMargin.v > 0:
 			# Drawing border top background

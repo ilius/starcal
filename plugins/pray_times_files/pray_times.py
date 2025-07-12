@@ -24,8 +24,8 @@ from os.path import dirname, isdir, isfile, join
 from time import time as now
 from typing import Final
 
-from scal3.cell_type import CellType
 from scal3.option import Option
+from scal3.pytypes import CellType
 
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):

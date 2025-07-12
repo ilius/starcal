@@ -31,7 +31,7 @@ from scal3.ui_gtk.gtk_ud import commonSignals
 if TYPE_CHECKING:
 	from gi.overrides import GObject
 
-	from scal3.cell_type import CellType
+	from scal3.pytypes import CellType
 	from scal3.ui_gtk.stack import StackPage
 	from scal3.ui_gtk.starcal_types import MainWinType
 
