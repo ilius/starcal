@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from scal3 import core, logger
+from scal3 import logger
+from scal3.filesystem import DefaultFileSystem
 
 log = logger.get()
 
@@ -22,6 +23,7 @@ import bson
 
 from scal3.dict_utils import makeOrderedDict
 from scal3.json_utils import dataToPrettyJson
+from scal3.path import confDir
 
 if TYPE_CHECKING:
 	from typing import Any, Self
@@ -44,6 +46,8 @@ dataToJson = dataToPrettyJson
 
 objectDirName = "objects"
 
+fs: FileSystem = DefaultFileSystem(confDir)
+
 
 class ParentSObj(Protocol):
 	calType: int
@@ -61,7 +65,7 @@ class SObjBase:
 	params: list[str] = []  # used in getDict, setDict and copyFrom
 
 	def __init__(self) -> None:
-		self.fs = core.fs
+		self.fs = fs
 
 	@classmethod
 	def getSubclass(cls, typeName: str) -> type:  # noqa: ARG003
@@ -87,7 +91,7 @@ class SObjBase:
 
 class SObj(SObjBase):
 	def __init__(self) -> None:
-		self.fs: FileSystem = core.fs
+		self.fs: FileSystem = fs
 		self.parent: ParentSObj | None = None
 		self.id: int | None = None
 
