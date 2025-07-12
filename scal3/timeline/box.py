@@ -195,6 +195,7 @@ def calcEventBoxes(
 		if not group.showInTimeLine:
 			continue
 		assert group.id is not None
+		assert group.occur is not None
 		for item in group.occur.search(
 			timeStart - borderTm,
 			timeEnd + borderTm,

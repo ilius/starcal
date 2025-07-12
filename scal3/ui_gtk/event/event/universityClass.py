@@ -17,12 +17,12 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.groups import UniversityTerm
 from scal3.event_lib.rules import (
 	DayTimeRangeEventRule,
 	WeekDayEventRule,
 	WeekNumberModeEventRule,
 )
+from scal3.event_lib.university import UniversityTerm
 
 log = logger.get()
 
@@ -42,7 +42,7 @@ from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 from scal3.ui_gtk.utils import showError
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import UniversityClassEvent
+	from scal3.event_lib.university import UniversityClassEvent
 
 __all__ = ["WidgetClass"]
 

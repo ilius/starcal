@@ -84,14 +84,16 @@ from scal3.utils import (
 
 from . import (
 	events,  # noqa: F401
+	large_scale,  # noqa: F401
 	notifiers,  # noqa: F401
 	state,
+	university,  # noqa: F401
 	vcs,  # noqa: F401
 )
 from .accounts import Account, accountsDir
 from .accounts_holder import EventAccountsHolder
 from .event_base import Event, eventsDir
-from .groups import EventGroup, LargeScaleGroup, NoteBook, groupsDir
+from .groups import EventGroup, NoteBook, groupsDir
 from .groups_holder import EventGroupsHolder
 from .handler import Handler
 from .icon import WithIcon
@@ -114,7 +116,6 @@ __all__ = [
 	"EventTrash",
 	"Handler",
 	"JdOccurSet",
-	"LargeScaleGroup",
 	"NoteBook",
 	"SObj",
 	"SObjBinaryModel",

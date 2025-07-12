@@ -43,6 +43,7 @@ if TYPE_CHECKING:
 	from datetime import tzinfo
 	from typing import Any
 
+	from scal3.event_lib.pytypes import EventContainerType
 	from scal3.event_search_tree import EventSearchTree
 
 	from .pytypes import EventGroupType, EventType
@@ -388,3 +389,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			key=lambda eid: event_key(self.getEventNoCache(eid)),
 			reverse=reverse,
 		)
+
+
+if TYPE_CHECKING:
+	_c: EventContainerType = EventContainer()

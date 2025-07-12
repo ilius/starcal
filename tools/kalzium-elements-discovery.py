@@ -3,7 +3,8 @@ from xml.etree.ElementTree import XML
 
 sys.path.append("/starcal2")
 
-from scal3 import event_lib, logger
+from scal3 import logger
+from scal3.event_lib.large_scale import LargeScaleGroup
 
 log = logger.get()
 
@@ -61,7 +62,7 @@ def createDiscoveryEvent(group, atom):
 
 if __name__ == "__main__":
 	ev.groups.load()
-	group = event_lib.LargeScaleGroup()
+	group = LargeScaleGroup()
 	group.setDict(
 		{
 			"calType": "gregorian",

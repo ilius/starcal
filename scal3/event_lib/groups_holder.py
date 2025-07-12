@@ -28,8 +28,8 @@ from os.path import join, splitext
 from typing import TYPE_CHECKING
 
 from scal3 import ics
+from scal3.app_info import APP_NAME, VERSION_TAG
 from scal3.color_utils import RGB
-from scal3.core import APP_NAME, VERSION
 from scal3.locale_man import tr as _
 from scal3.s_object import SObjBinaryModel
 
@@ -158,7 +158,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			"info": OrderedDict(
 				[
 					("appName", APP_NAME),
-					("version", VERSION),
+					("version", VERSION_TAG),
 				],
 			),
 			"groups": [self.byId[gid].exportData() for gid in gidList],
@@ -188,7 +188,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			"info": OrderedDict(
 				[
 					("appName", APP_NAME),
-					("version", VERSION),
+					("version", VERSION_TAG),
 				],
 			),
 			"groups": [

@@ -34,6 +34,7 @@ from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
 )
+from scal3.event_lib import common as event_common
 from scal3.event_lib import ev
 from scal3.event_lib.accounts_holder import EventAccountsHolder
 from scal3.event_lib.event_base import Event
@@ -381,6 +382,7 @@ def init() -> None:
 	fs = core.fs
 	event_lib.init(fs)  # must come before ev.init
 	ev.init(fs)  # must come after event_lib.init
+	event_common.setTranslator(_)
 
 
 # ----------------------------------------------------------------------
