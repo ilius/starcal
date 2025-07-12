@@ -16,8 +16,7 @@
 
 from __future__ import annotations
 
-from scal3 import core, logger
-from scal3.event_lib.errors import AccountError
+from scal3 import logger
 
 log = logger.get()
 
@@ -25,16 +24,16 @@ from contextlib import suppress
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from scal3 import event_lib
 from scal3.cal_types import calTypes
-from scal3.event_lib import Account
+from scal3.event_lib import Account, classes
+from scal3.event_lib.errors import AccountError
 from scal3.locale_man import tr as _
 from scal3.time_utils import jsonTimeFromEpoch
 
 if TYPE_CHECKING:
 	import requests
 
-	from scal3.event_lib.pytypes import AccountType, EventGroupType, EventType
+	from scal3.event_lib.pytypes import EventGroupType, EventType
 
 
 __all__ = ["StarCalendarAccount"]
@@ -139,7 +138,7 @@ def decodeRemoteEvent(
 		log.exception("")
 		return None, f"bad remoteEvent: {e}"
 	eventData.update(eventTypeData)
-	event = event_lib.classes.event.byName[eventType]()
+	event = classes.event.byName[eventType]()
 	event.setDict(eventData)
 	remoteGroupId = remoteEventFull["groupId"]
 	remoteEvendId = remoteEventFull["eventId"]
@@ -156,7 +155,7 @@ def decodeRemoteEvent(
 	return event, None
 
 
-@event_lib.classes.account.register
+@classes.account.register
 class StarCalendarAccount(Account):
 	name = "starcal"
 	desc = _("StarCalendar.net")
@@ -380,7 +379,3 @@ class StarCalendarAccount(Account):
 		finally:
 			group.setReadOnly(False)
 			group.save()
-
-
-if TYPE_CHECKING:
-	_account: AccountType = StarCalendarAccount.load(1, fs=core.fs)
