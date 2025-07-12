@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from scal3.date_utils import parseDroppedDate
+from scal3.date_dnd import parseDroppedDate
 
 
 class TestParseDroppedDate(unittest.TestCase):
