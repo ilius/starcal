@@ -22,7 +22,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
-from scal3.date_utils import parseDroppedDate
+from scal3.date_dnd import parseDroppedDate
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo

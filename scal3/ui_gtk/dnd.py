@@ -4,7 +4,7 @@ import os
 from time import localtime
 
 from scal3 import core, logger, ui
-from scal3.date_utils import parseDroppedDate
+from scal3.date_dnd import parseDroppedDate
 from scal3.utils import urlToPath
 
 __all__ = ["processDroppedDate"]
