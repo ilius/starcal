@@ -17,7 +17,6 @@ from __future__ import annotations
 
 from scal3 import cal_types, logger
 from scal3.cal_types import to_jd
-from scal3.locale_man import numDecode
 from scal3.time_utils import getEpochFromJd
 
 __all__ = [
@@ -28,7 +27,6 @@ __all__ = [
 	"getJdRangeForMonth",
 	"jwday",
 	"monthPlus",
-	"parseDroppedDate",
 ]
 
 
@@ -115,61 +113,3 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 			calType,
 		),
 	)
-
-
-def parseDroppedDate(text: str) -> tuple[int, int, int] | None:
-	part = text.split("/")
-	if len(part) != 3:
-		return None
-	try:
-		num0 = numDecode(part[0])
-		num1 = numDecode(part[1])
-		num2 = numDecode(part[2])
-	except ValueError:
-		log.exception("")
-		return None
-	del part
-	maxPart = max(num0, num1, num2)
-	if maxPart <= 999:
-		valid = 0 <= num0 <= 99 and 1 <= num1 <= 12 and 1 <= num2 <= 31
-		if not valid:
-			return None
-		return (
-			2000 + num0,
-			num1,
-			num2,
-		)
-
-	minMax = (
-		(1000, 2100),
-		(1, 12),
-		(1, 31),
-	)
-	formats = (
-		[0, 1, 2],
-		[1, 2, 0],
-		[2, 1, 0],
-	)
-	# "format" must be list because we use method "index"
-
-	nums = [num0, num1, num2]
-
-	def formatIsValid(fmt: list[int]) -> bool:
-		for i, num in enumerate(nums):
-			f = fmt[i]
-			if not (minMax[f][0] <= num <= minMax[f][1]):
-				return False
-		return True
-
-	for fmt in formats:
-		if formatIsValid(fmt):
-			return (
-				nums[fmt.index(0)],
-				nums[fmt.index(1)],
-				nums[fmt.index(2)],
-			)
-	return None
-
-	# FIXME: when drag from a persian GtkCalendar with format %y/%m/%d
-	# if year < 100:
-	# 	year += 2000
