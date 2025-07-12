@@ -1,4 +1,5 @@
 from scal3 import logger
+from scal3.app_info import APP_DESC, COMMAND
 
 log = logger.get()
 
@@ -24,7 +25,7 @@ def addStartup() -> bool:
 
 		makeDir(winStartupDir)
 		# fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
-		fname = core.COMMAND + ".pyw"
+		fname = COMMAND + ".pyw"
 		fpath = join(sourceDir, fname)
 		try:
 			winMakeShortcut(fpath, winStartupFile)
@@ -37,9 +38,9 @@ def addStartup() -> bool:
 		# maybe Gnome/KDE on Solaris, *BSD, ...
 		text = f"""[Desktop Entry]
 Type=Application
-Name={core.APP_DESC} {core.VERSION}
+Name={APP_DESC} {core.VERSION}
 Icon=starcal32
-Exec={core.COMMAND}"""
+Exec={COMMAND}"""
 		# FIXME: double quotes needed when the exec path has space
 		# f"{core.COMMAND!r}" or repr(core.COMMAND) adds single quotes
 		# does it work with single quotes too??

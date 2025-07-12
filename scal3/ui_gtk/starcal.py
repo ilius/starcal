@@ -34,6 +34,7 @@ log = logger.get()
 from gi.repository import Gio as gio
 
 import scal3.account.starcal  # noqa: F401
+from scal3.app_info import APP_DESC, homePage
 from scal3.event_lib import ev
 
 try:
@@ -300,7 +301,7 @@ class MainWin(CalObjWidget):
 		# log.debug("windowList.items", [item.objName for item in ud.windowList.items])
 		# -----------
 		# self.connect("window-state-event", selfStateEvent)
-		self.w.set_title(f"{core.APP_DESC} {core.VERSION}")
+		self.w.set_title(f"{APP_DESC} {core.VERSION}")
 		# self.connect("main-show", lambda arg: self.present())
 		# self.connect("main-hide", lambda arg: self.hide())
 		self.w.set_decorated(False)
@@ -1294,7 +1295,7 @@ class MainWin(CalObjWidget):
 
 		sicon = gtk.StatusIcon()
 		self.sicon = sicon
-		sicon.set_title(core.APP_DESC)
+		sicon.set_title(APP_DESC)
 		sicon.set_visible(True)  # is needed?
 		sicon.connect(
 			"button-press-event",
@@ -1658,13 +1659,13 @@ class MainWin(CalObjWidget):
 			) as authorsFile:
 				authors = authorsFile.read().splitlines()
 			dialog = AboutDialog(
-				name=core.APP_DESC,
+				name=APP_DESC,
 				version=core.VERSION,
-				title=_("About ") + core.APP_DESC,
+				title=_("About ") + APP_DESC,
 				authors=[_(author) for author in authors],
 				comments=core.aboutText,
 				license=core.licenseText,
-				website=core.homePage,
+				website=homePage,
 				logo=GdkPixbuf.Pixbuf.new_from_file_at_size(
 					ui.appLogo,
 					logoSize,

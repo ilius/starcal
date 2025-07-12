@@ -32,7 +32,6 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.core import getAbsWeekNumberFromJd
 from scal3.date_utils import (
 	checkDate,
 	dateDecode,
@@ -133,7 +132,6 @@ __all__ = [
 	"durationEncode",
 	"ev",
 	"findNearestIndex",
-	"getAbsWeekNumberFromJd",
 	"getDayOccurrenceData",
 	"getEpochFromJd",
 	"getEpochFromJhms",

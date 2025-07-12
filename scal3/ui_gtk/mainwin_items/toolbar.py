@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scal3 import core
+from scal3.app_info import APP_DESC
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
@@ -130,7 +130,7 @@ class CalObj(CustomizableToolBox):
 				iconName="gtk-about",
 				imageName="dialog-information.svg",
 				onClick=win.aboutShow,
-				desc=_("About ") + core.APP_DESC,
+				desc=_("About ") + APP_DESC,
 				shortDesc="About",
 				continuousClick=False,
 			),

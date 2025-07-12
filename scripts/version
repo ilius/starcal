@@ -11,7 +11,7 @@ function core_version() {
 			echo "$line" | sed 's/VERSION_TAG: .*=\s*//' | sed s/[\"\']//g
 			return
 		fi
-	done < "$sourceDir/scal3/core.py"
+	done < "$sourceDir/scal3/app_info.py"
 }
 
 myPath=$(realpath "$0")

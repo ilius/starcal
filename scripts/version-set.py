@@ -12,7 +12,7 @@ def main() -> None:
 	parse(version)
 	versionQuoted = f'"{version}"'
 	rootDir = dirname(dirname(abspath(__file__)))
-	replaceVar(join(rootDir, "scal3/core.py"), "VERSION", versionQuoted)
+	replaceVar(join(rootDir, "scal3/app_info.py"), "VERSION_TAG", versionQuoted)
 	# replaceVar(join(rootDir, "pyproject.toml"), "version", versionQuoted)
 
 	# update copyright year number
@@ -26,13 +26,13 @@ def main() -> None:
 
 
 def replaceVar(fname: str, name: str, value: str) -> None:
-	prefix = name + " = "
+	prefix = name + ": "
 	lines = []
 	with open(fname, encoding="utf-8") as _file:
 		for _line in _file:
 			line = _line
 			if line.startswith(prefix):
-				line = f"{name} = {value}\n"
+				line = f"{name}: Final[str] = {value}\n"
 			lines.append(line)
 	with open(fname, mode="w", encoding="utf-8") as _file:
 		_file.writelines(lines)
