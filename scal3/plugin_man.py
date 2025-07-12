@@ -41,8 +41,7 @@ from scal3.s_object import SObjTextModel
 from scal3.time_utils import getJdListFromEpochRange
 
 if TYPE_CHECKING:
-	from scal3.cell_type import CellType
-	from scal3.plugin_type import PluginType
+	from scal3.pytypes import CellType, PluginType
 
 try:
 	import logging

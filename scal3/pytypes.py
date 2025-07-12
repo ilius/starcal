@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-	from scal3.cell import MonthStatus, WeekStatus
 	from scal3.event_lib.occur_data import DayOccurData
-	from scal3.plugin_type import PluginType
 
-__all__ = ["CellCacheType", "CellType", "CompiledTimeFormat", "DummyCellCache"]
+__all__ = [
+	"CellCacheType",
+	"CellType",
+	"CompiledTimeFormat",
+	"DummyCellCache",
+	"MonthStatusType",
+	"PluginType",
+	"WeekStatusType",
+]
 
 type CompiledTimeFormat = tuple[
 	str,
@@ -19,6 +25,48 @@ type CompiledTimeFormat = tuple[
 		],
 	],
 ]
+
+
+class PluginType(Protocol):
+	name: str
+	show_date: bool
+	title: str
+	file: str
+	enable: bool
+	external: bool
+	loaded: bool
+	hasConfig: bool
+	about: str
+	params: list[str]
+	essentialParams: list[str]
+	authors: list[str]
+
+	def getArgs(self) -> dict[str, Any]: ...
+
+	def __bool__(self) -> bool: ...
+
+	def __init__(
+		self,
+		_file: str,
+	) -> None: ...
+
+	def getDict(self) -> dict[str, Any]: ...
+
+	def setDict(self, data: dict[str, Any]) -> None: ...
+
+	def clear(self) -> None: ...
+
+	def loadData(self) -> None: ...
+
+	def getText(self, year: int, month: int, day: int) -> str: ...
+
+	def updateCell(self, c: CellType) -> None: ...
+
+	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None: ...
+
+	def exportToIcs(self, fileName: str, startJd: int, endJd: int) -> None: ...
+
+	def open_configure(self) -> None: ...
 
 
 class CellType(Protocol):
@@ -73,6 +121,18 @@ class CellType(Protocol):
 	def getEventsData(self) -> list[DayOccurData]: ...
 
 
+class MonthStatusType(Protocol):
+	weekNum: list[int]
+	month: int
+	year: int
+
+	def __getitem__(self, index: int) -> list[CellType]: ...
+
+
+class WeekStatusType(Protocol):
+	def __getitem__(self, index: int) -> CellType: ...
+
+
 class CellCacheType(Protocol):
 	current: CellType
 	today: CellType
@@ -82,9 +142,9 @@ class CellCacheType(Protocol):
 	def getTodayCell(self) -> CellType: ...
 	def clearEventsData(self) -> None: ...
 	def clear(self) -> None: ...
-	def getMonthStatus(self, year: int, month: int) -> MonthStatus: ...
-	def getCurrentMonthStatus(self) -> MonthStatus: ...
-	def getCurrentWeekStatus(self) -> WeekStatus: ...
+	def getMonthStatus(self, year: int, month: int) -> MonthStatusType: ...
+	def getCurrentMonthStatus(self) -> MonthStatusType: ...
+	def getCurrentWeekStatus(self) -> WeekStatusType: ...
 	def gotoJd(self, jd: int) -> None: ...
 	def jdPlus(self, plus: int = 1) -> None: ...
 	def changeDate(
@@ -117,13 +177,13 @@ class DummyCellCache:
 	def clear(self) -> None:
 		raise NotImplementedError
 
-	def getMonthStatus(self, year: int, month: int) -> MonthStatus:
+	def getMonthStatus(self, year: int, month: int) -> MonthStatusType:
 		raise NotImplementedError
 
-	def getCurrentMonthStatus(self) -> MonthStatus:
+	def getCurrentMonthStatus(self) -> MonthStatusType:
 		raise NotImplementedError
 
-	def getCurrentWeekStatus(self) -> WeekStatus:
+	def getCurrentWeekStatus(self) -> WeekStatusType:
 		raise NotImplementedError
 
 	def gotoJd(self, jd: int) -> None:

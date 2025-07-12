@@ -24,7 +24,7 @@ from scal3.utils import findWordByPos, toStr
 if TYPE_CHECKING:
 	from scal3.font import Font
 	from scal3.option import Option
-	from scal3.plugin_type import PluginType
+	from scal3.pytypes import PluginType
 	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["PluginsTextBox"]

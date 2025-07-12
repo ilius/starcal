@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.cell_type import DummyCellCache
+from scal3.pytypes import DummyCellCache
 
 log = logger.get()
 
@@ -67,8 +67,8 @@ from scal3.ui.options import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
-	from scal3.cell_type import CellCacheType
 	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.pytypes import CellCacheType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.gtk_ud import CalObjType
 	from scal3.ui_gtk.starcal_types import MainWinType

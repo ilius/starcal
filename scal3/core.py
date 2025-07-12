@@ -49,7 +49,7 @@ from scal3.plugin_man import loadPlugin
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3.plugin_type import PluginType
+	from scal3.pytypes import PluginType
 
 try:
 	__file__  # noqa: B018
