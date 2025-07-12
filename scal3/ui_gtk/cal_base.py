@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 	from scal3.cell_type import CellType
 	from scal3.ui_gtk.stack import StackPage
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalBase"]
 
@@ -60,7 +60,7 @@ class CalBase(CustomizableCalObj):
 		"menu",
 		"i",
 	}
-	win: MainWin
+	win: MainWinType
 
 	def initCal(self) -> None:
 		self.initVars()

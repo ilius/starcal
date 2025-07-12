@@ -16,8 +16,6 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from scal3 import logger
 
 log = logger.get()
@@ -42,10 +40,12 @@ from scal3.ui_gtk.utils import (
 )
 
 gi.require_version("AppIndicator3", "0.1")
+from typing import TYPE_CHECKING
+
 from gi.repository import AppIndicator3 as appindicator
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["IndicatorStatusIconWrapper"]
 
@@ -53,7 +53,7 @@ __all__ = ["IndicatorStatusIconWrapper"]
 class IndicatorStatusIconWrapper:
 	imNamePrefix = f"{APP_NAME}-indicator-{os.getuid()}-"
 
-	def __init__(self, mainWin: MainWin) -> None:
+	def __init__(self, mainWin: MainWinType) -> None:
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
 			APP_NAME,  # app id
