@@ -22,8 +22,8 @@ class MainWinType(Protocol):
 	def dayInfoShow(self, _sig: SignalHandlerType | None = None) -> None: ...
 	def eventSearchShow(
 		self,
-		_widget: OptWidget = None,
-		_gevent: OptEvent = None,
+		_w: OptWidget = None,
+		_ge: OptEvent = None,
 	) -> None: ...
 	def autoResize(self) -> None: ...
 	def screenSizeChanged(self, rect: gdk.Rectangle) -> None: ...
@@ -32,24 +32,24 @@ class MainWinType(Protocol):
 	def selectDateShow(self, _w: OptWidget = None) -> None: ...
 	def customizeShow(
 		self,
-		_widget: OptWidget = None,
-		_gevent: OptEvent = None,
+		_w: OptWidget = None,
+		_ge: OptEvent = None,
 	) -> None: ...
 	def prefShow(
 		self,
-		_widget: OptWidget = None,
-		_gevent: OptEvent = None,
+		_w: OptWidget = None,
+		_ge: OptEvent = None,
 	) -> None: ...
 	def eventManShow(
 		self,
-		_widget: OptWidget = None,
-		_gevent: OptEvent = None,
+		_w: OptWidget = None,
+		_ge: OptEvent = None,
 	) -> None: ...
 	def onExportClick(self, _w: OptWidget = None) -> None: ...
 	def aboutShow(self, _w: OptWidget = None, _data: Any = None) -> None: ...
 	def onQuitClick(
 		self,
-		_widget: OptWidget = None,
+		_w: OptWidget = None,
 		_event: OptEvent = None,
 	) -> None: ...
 
@@ -84,6 +84,6 @@ class MainWinType(Protocol):
 	def getMainWinMenuItem(self) -> gtk.MenuItem: ...
 	@staticmethod
 	def dayCalWinShow(
-		_widget: OptWidget = None,
-		_gevent: OptEvent = None,
+		_w: OptWidget = None,
+		_ge: OptEvent = None,
 	) -> None: ...
