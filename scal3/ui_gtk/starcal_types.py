@@ -6,7 +6,7 @@ from gi.repository import Gtk as gtk
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.signals import SignalHandlerType
 
-__all__ = ["MainWinType"]
+__all__ = ["MainWinType", "OptEvent", "OptWidget"]
 
 
 type OptWidget = gtk.Widget | None
