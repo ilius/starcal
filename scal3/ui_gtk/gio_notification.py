@@ -24,13 +24,13 @@ from gi.repository import Gio as gio
 from scal3 import core
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk.starcal import MainWin
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 # from scal3.ui_gtk.starcal import MainWin as MainWinType
 
 
 class GioNotificationWrapper(gio.Notification):
-	def __init__(self, mainWin: MainWin) -> None:
+	def __init__(self, mainWin: MainWinType) -> None:
 		self.mainWin = mainWin
 		self.app = mainWin.app
 		# --
