@@ -17,8 +17,8 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.groups import UniversityTerm
 from scal3.event_lib.rules import DayTimeRangeEventRule
+from scal3.event_lib.university import UniversityTerm
 
 log = logger.get()
 
@@ -35,7 +35,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.utils import showError
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import UniversityExamEvent
+	from scal3.event_lib.university import UniversityExamEvent
 
 __all__ = ["WidgetClass"]
 

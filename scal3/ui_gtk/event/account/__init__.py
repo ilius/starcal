@@ -116,7 +116,8 @@ class AccountGroupCombo(gtk.ComboBox):
 		self.updateList()
 
 	def updateList(self) -> None:
-		assert self.account is not None
+		if self.account is None:
+			return
 		ls = self._listStore
 		ls.clear()
 		if self.account:

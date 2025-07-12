@@ -36,6 +36,8 @@ from scal3.time_utils import (
 if TYPE_CHECKING:
 	from collections.abc import Iterable
 
+	from scal3.event_lib.pytypes import OccurSetType
+
 	from .pytypes import EventType
 
 __all__ = ["IntervalOccurSet", "JdOccurSet", "OccurSet", "TimeListOccurSet"]
@@ -45,7 +47,7 @@ class OccurSet(SObj):
 	def __init__(self) -> None:
 		self.event: EventType | None = None
 
-	def intersection(self, other: OccurSet) -> OccurSet:
+	def intersection(self, other: OccurSetType) -> OccurSetType:
 		raise NotImplementedError
 
 	def getDaysJdList(self) -> list[int]:  # noqa: PLR6301
@@ -94,7 +96,7 @@ class JdOccurSet(OccurSet):
 			return None
 		return max(self.jdSet) + 1
 
-	def intersection(self, occur: OccurSet) -> OccurSet:
+	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		if isinstance(occur, JdOccurSet):
 			return JdOccurSet(
 				self.jdSet.intersection(occur.jdSet),
@@ -172,7 +174,7 @@ class IntervalOccurSet(OccurSet):
 			return None
 		return getJdFromEpoch(max(r[1] for r in self.rangeList))
 
-	def intersection(self, occur: OccurSet) -> OccurSet:
+	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			return IntervalOccurSet(
 				intersectionOfTwoIntervalList(
@@ -200,7 +202,7 @@ class IntervalOccurSet(OccurSet):
 		return self.rangeList
 
 	@staticmethod
-	def newFromStartEnd(startEpoch: int, endEpoch: int) -> OccurSet:
+	def newFromStartEnd(startEpoch: int, endEpoch: int) -> OccurSetType:
 		if startEpoch > endEpoch:
 			return IntervalOccurSet([])
 		return IntervalOccurSet([(startEpoch, endEpoch)])
@@ -259,7 +261,7 @@ class TimeListOccurSet(OccurSet):
 		self.stepSeconds = stepSeconds
 		self.epochList = set(arange(startEpoch, endEpoch, stepSeconds))
 
-	def intersection(self, occur: OccurSet) -> OccurSet:
+	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			epochBetween = []
 			for epoch in self.epochList:

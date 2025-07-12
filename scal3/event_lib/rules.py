@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from scal3 import locale_man, logger
 
-from .pytypes import EventRuleType
+from .pytypes import EventRuleType, OccurSetType
 
 log = logger.get()
 
@@ -31,11 +31,6 @@ from scal3.cal_types import (
 	getSysDate,
 	jd_to,
 	to_jd,
-)
-from scal3.core import (
-	firstWeekDay,
-	getAbsWeekNumberFromJd,
-	weekDayName,
 )
 from scal3.date_utils import (
 	checkDate,
@@ -59,9 +54,14 @@ from scal3.time_utils import (
 )
 from scal3.utils import numRangesEncode, s_join
 
-from .common import weekDayNameEnglish
+from .common import (
+	firstWeekDay,
+	getAbsWeekNumberFromJd,
+	weekDayName,
+	weekDayNameEnglish,
+)
 from .exceptions import BadEventFile
-from .occur import IntervalOccurSet, JdOccurSet, OccurSet, TimeListOccurSet
+from .occur import IntervalOccurSet, JdOccurSet, TimeListOccurSet
 from .register import classes
 
 if TYPE_CHECKING:
@@ -149,7 +149,7 @@ class EventRule(SObjBase, EventRuleType):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet:
+	) -> OccurSetType:
 		raise NotImplementedError
 
 	def getInfo(self) -> str:
@@ -185,7 +185,7 @@ class AllDayEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		# improve performance FIXME
 		jds = set()
 		for jd in range(startJd, endJd):
@@ -360,7 +360,7 @@ class WeekNumberModeEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet:
+	) -> OccurSetType:
 		# improve performance FIXME
 		startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1
 		# 1st week # FIXME
@@ -553,7 +553,7 @@ class WeekMonthEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		calType = self.getCalType()
 		startYear, _startMonth, _startDay = jd_to(startJd, calType)
 		endYear, _endMonth, _endDay = jd_to(endJd, calType)
@@ -632,7 +632,7 @@ class DateEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		myJd = self.getJd()
 		if startJd <= myJd < endJd:
 			return JdOccurSet({myJd})
@@ -766,7 +766,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		mySec = getSecondsFromHms(*self.dayTime)
 		return TimeListOccurSet.fromRange(  # FIXME
 			self.getEpochFromJd(startJd) + mySec,
@@ -840,7 +840,7 @@ class DayTimeRangeEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		daySecStart = getSecondsFromHms(*self.dayTimeStart)
 		daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
 		daySecEnd = max(daySecStart, daySecEnd)
@@ -869,7 +869,7 @@ class StartEventRule(DateAndTimeEventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getEpoch()),
 			self.getEpochFromJd(endJd),
@@ -892,7 +892,7 @@ class EndEventRule(DateAndTimeEventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		return IntervalOccurSet.newFromStartEnd(
 			self.getEpochFromJd(startJd),
 			min(self.getEpochFromJd(endJd), self.getEpoch()),
@@ -980,7 +980,7 @@ class DurationEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		parentStart = self.parent["start"]
 		if parentStart is None:
 			raise RuntimeError("parent has no start rule")
@@ -1004,7 +1004,7 @@ def cycleDaysCalcOccurrence(
 	startJd: int,
 	endJd: int,
 	event: EventType,
-) -> OccurSet:
+) -> OccurSetType:
 	eStartJd = event.getStartJd()
 	if startJd <= eStartJd:
 		startJd = eStartJd
@@ -1055,7 +1055,7 @@ class CycleDaysEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet:
+	) -> OccurSetType:
 		return cycleDaysCalcOccurrence(self.days, startJd, endJd, event)
 
 	def getInfo(self) -> str:
@@ -1096,7 +1096,7 @@ class CycleWeeksEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet:
+	) -> OccurSetType:
 		return cycleDaysCalcOccurrence(
 			self.weeks * 7,
 			startJd,
@@ -1158,7 +1158,7 @@ class CycleLenEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet:
+	) -> OccurSetType:
 		startEpoch = self.getEpochFromJd(startJd)
 		eventStartEpoch = event.getStartEpoch()
 		# --
@@ -1242,7 +1242,7 @@ class ExDatesEventRule(EventRule):
 		startJd: int,
 		endJd: int,
 		event: EventType,  # noqa: ARG002
-	) -> OccurSet:
+	) -> OccurSetType:
 		# improve performance # FIXME
 		return JdOccurSet(
 			set(range(startJd, endJd)).difference(self.jdList),

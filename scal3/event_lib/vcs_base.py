@@ -22,7 +22,7 @@ from scal3 import logger
 from scal3.utils import toStr
 
 from .events import TaskEvent
-from .occur import OccurSet, TimeListOccurSet
+from .occur import TimeListOccurSet
 
 log = logger.get()
 
@@ -31,6 +31,7 @@ from .event_base import Event
 from .groups import EventGroup
 
 if TYPE_CHECKING:
+	from scal3.event_lib.pytypes import OccurSetType
 	from scal3.filesystem import FileSystem
 
 	from .pytypes import EventGroupType
@@ -190,7 +191,7 @@ class VcsEpochBaseEvent(Event):
 	def getInfo(self) -> str:
 		return self.getText()  # FIXME
 
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		assert isinstance(self.parent, VcsEpochBaseEventGroup), f"{self.parent=}"
 		epoch = self.epoch
 		if epoch is not None and self.getEpochFromJd(

@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 	import cairo
 	from cairo import ImageSurface, SVGSurface
 
-	from scal3.event_lib.groups import UniversityTerm, WeeklyScheduleItem
+	from scal3.event_lib.university import UniversityTerm, WeeklyScheduleItem
 
 __all__ = ["WidgetClass"]
 

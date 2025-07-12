@@ -25,41 +25,25 @@ from contextlib import suppress
 from os.path import join
 from time import perf_counter
 from time import time as now
-from typing import IO, TYPE_CHECKING, NamedTuple, Self
+from typing import IO, TYPE_CHECKING, Self
 
 from cachetools import LRUCache
 
 from scal3 import ics
 from scal3.cal_types import (
-	calTypes,
 	getSysDate,
-	jd_to,
 	to_jd,
 )
-from scal3.core import firstWeekDay, getAbsWeekNumberFromJd
-from scal3.date_utils import dateDecode, dateEncode
 from scal3.dict_utils import makeOrderedDict
-from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
 	durationDecode,
 	durationEncode,
 	getEpochFromJd,
-	hmDecode,
-	hmEncode,
-	simpleTimeEncode,
-	timeToFloatHour,
 )
-from scal3.utils import findNearestIndex
 
 from . import state
-from .common import getCurrentJd
 from .event_container import EventContainer
-from .events import (
-	LargeScaleEvent,
-	UniversityClassEvent,
-	UniversityExamEvent,
-)
 from .groups_import import (
 	IMPORT_MODE_APPEND,
 	IMPORT_MODE_OVERRIDE_MODIFIED,
@@ -68,17 +52,10 @@ from .groups_import import (
 from .occur import (
 	IntervalOccurSet,
 	JdOccurSet,
-	OccurSet,
 	TimeListOccurSet,
 )
-from .pytypes import EventGroupType
+from .pytypes import EventGroupType, OccurSetType
 from .register import classes
-from .rules import (
-	DateEventRule,
-	DayTimeRangeEventRule,
-	WeekDayEventRule,
-	WeekNumberModeEventRule,
-)
 
 if TYPE_CHECKING:
 	from collections.abc import Iterator
@@ -93,12 +70,9 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"EventGroup",
-	"LargeScaleGroup",
 	"LifetimeGroup",
 	"NoteBook",
 	"TaskList",
-	"UniversityTerm",
-	"WeeklyScheduleItem",
 	"YearlyGroup",
 	"groupsDir",
 ]
@@ -583,7 +557,7 @@ class EventGroup(EventContainer, EventGroupType):
 		# events with the same id"s, can not be contained by two groups
 		return newGroup
 
-	def calcGroupOccurrences(self) -> Iterator[tuple[EventType, OccurSet]]:
+	def calcGroupOccurrences(self) -> Iterator[tuple[EventType, OccurSetType]]:
 		startJd = self.startJd
 		endJd = self.endJd
 		for event in self:
@@ -661,7 +635,7 @@ class EventGroup(EventContainer, EventGroupType):
 		self.notificationEnabled = notificationEnabled
 
 		# self.occurLoaded = True
-		log.debug(f"time = {(perf_counter() - stm0) * 1000} ms")
+		log.debug(f"time = {(perf_counter() - stm0) * 1000} ms for group {self.title}")
 		# log.debug(
 		# 	f"updateOccurrence, id={self.id}, title={self.title}, " +
 		# 	f"count={self.occurCount}, time={perf_counter()-stm0}"
@@ -993,262 +967,6 @@ class YearlyGroup(EventGroup):
 		self.showDate = True
 
 
-class WeeklyScheduleItem(NamedTuple):
-	name: str  # Course Name
-	weekNumMode: str  # values: "odd", "even", "any"
-
-
-@classes.group.register
-class UniversityTerm(EventGroup):
-	name = "universityTerm"
-	desc = _("University Term (Semester)")
-	acceptsEventTypes = (
-		"universityClass",
-		"universityExam",
-	)
-	actions = EventGroup.actions + [
-		("View Weekly Schedule", "viewWeeklySchedule"),
-	]
-	sortBys = EventGroup.sortBys + [
-		("course", _("Course"), True),
-		("time", _("Time"), True),
-	]
-	sortByDefault = "time"
-	params = EventGroup.params + ["courses"]
-	paramsOrder = EventGroup.paramsOrder + [
-		"classTimeBounds",
-		"classesEndDate",
-		"courses",
-	]
-	noCourseError = _(
-		"Edit University Term and define some Courses before you add a Class/Exam",
-	)
-
-	def getSortByValue(self, event: EventType, attr: str) -> Any:
-		if event.name in self.acceptsEventTypes:
-			if attr == "course":
-				assert isinstance(event, UniversityClassEvent | UniversityExamEvent), (
-					f"{event=}"
-				)
-				return event.courseId
-			if attr == "time":
-				if event.name == "universityClass":
-					assert isinstance(event, UniversityClassEvent), f"{event=}"
-					weekDay = WeekDayEventRule.getFrom(event)
-					if weekDay is None:
-						raise RuntimeError("no weekDay rule")
-					wd = weekDay.weekDayList[0]
-					dayTimeRange = DayTimeRangeEventRule.getFrom(event)
-					if dayTimeRange is None:
-						raise RuntimeError("no dayTimeRange rule")
-					return (
-						(wd - firstWeekDay.v) % 7,
-						dayTimeRange.getHourRange(),
-					)
-				if event.name == "universityExam":
-					assert isinstance(event, UniversityExamEvent), f"{event=}"
-					date = DateEventRule.getFrom(event)
-					if date is None:
-						raise RuntimeError("no date rule")
-					dayTimeRange = DayTimeRangeEventRule.getFrom(event)
-					if dayTimeRange is None:
-						raise RuntimeError("no dayTimeRange rule")
-					return date.getJd(), dayTimeRange.getHourRange()
-		return EventGroup.getSortByValue(self, event, attr)
-
-	def __init__(self, ident: int | None = None) -> None:
-		EventGroup.__init__(self, ident)
-		self.classesEndDate = getSysDate(self.calType)  # FIXME
-		self.setCourses([])  # list of (courseId, courseName, courseUnits)
-		self.classTimeBounds = [
-			(8, 0),
-			(10, 0),
-			(12, 0),
-			(14, 0),
-			(16, 0),
-			(18, 0),
-		]  # FIXME
-
-	def getClassBoundsFormatted(self) -> tuple[list[str], list[float]] | None:
-		count = len(self.classTimeBounds)
-		if count < 2:
-			return None
-		titles = []
-		firstTm = timeToFloatHour(*self.classTimeBounds[0])
-		lastTm = timeToFloatHour(*self.classTimeBounds[-1])
-		deltaTm = lastTm - firstTm
-		for i in range(count - 1):
-			tm0, tm1 = self.classTimeBounds[i : i + 2]
-			titles.append(
-				_("{start} to {end}", ctx="time range").format(
-					start=textNumEncode(simpleTimeEncode(tm0)),
-					end=textNumEncode(simpleTimeEncode(tm1)),
-				),
-			)
-		tmfactors = [
-			(timeToFloatHour(*tm1) - firstTm) / deltaTm for tm1 in self.classTimeBounds
-		]
-		return titles, tmfactors
-
-	def getWeeklyScheduleData(
-		self,
-		currentWeekOnly: bool = False,
-	) -> list[list[list[WeeklyScheduleItem]]]:
-		"""
-		Returns `data` as a nested list that:
-			data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
-		where
-			weekDay: int, in range(7)
-			classIndex: int
-			intervalIndex: int.
-		"""
-		boundsCount = len(self.classTimeBounds)
-		boundsHour = [h + m / 60.0 for h, m in self.classTimeBounds]
-		data: list[list[list[WeeklyScheduleItem]]] = [
-			[[] for i in range(boundsCount - 1)] for weekDay in range(7)
-		]
-		# ---
-		if currentWeekOnly:
-			currentJd = getCurrentJd()
-			if (
-				getAbsWeekNumberFromJd(currentJd) - getAbsWeekNumberFromJd(self.startJd)
-			) % 2 == 1:
-				currentWeekNumMode = "odd"
-			else:
-				currentWeekNumMode = "even"
-			# log.debug(f"{currentWeekNumMode = }")
-		else:
-			currentWeekNumMode = ""
-		# ---
-		for event in self:
-			if event.name != "universityClass":
-				continue
-			assert isinstance(event, UniversityClassEvent), f"{event=}"
-			assert event.courseId is not None
-			weekNumModeRule = WeekNumberModeEventRule.getFrom(event)
-			if weekNumModeRule is None:
-				raise RuntimeError("no weekNumMode rule")
-			weekNumMode: str = weekNumModeRule.getRuleValue()
-			if currentWeekNumMode:
-				if weekNumMode not in {"any", currentWeekNumMode}:
-					continue
-				weekNumMode = ""
-			elif weekNumMode == "any":
-				weekNumMode = ""
-			# ---
-			weekDayRule = WeekDayEventRule.getFrom(event)
-			if weekDayRule is None:
-				raise RuntimeError("no weekDay rule")
-			weekDay = weekDayRule.weekDayList[0]
-			dayTimeRangeRule = DayTimeRangeEventRule.getFrom(event)
-			if dayTimeRangeRule is None:
-				raise RuntimeError("no dayTimeRange rule")
-			h0, h1 = dayTimeRangeRule.getHourRange()
-			startIndex = findNearestIndex(boundsHour, h0)
-			endIndex = findNearestIndex(boundsHour, h1)
-			assert startIndex is not None
-			assert endIndex is not None
-			# ---
-			classData = WeeklyScheduleItem(
-				name=self.getCourseNameById(event.courseId),
-				weekNumMode=weekNumMode,
-			)
-			for i in range(startIndex, endIndex):
-				data[weekDay][i].append(classData)
-
-		return data
-
-	def setCourses(self, courses: list[tuple[int, str, int]]) -> None:
-		"""
-		courses[index] == (
-		courseId: int,
-		courseName: str,
-		units: int,
-		).
-		"""
-		self.courses = courses
-		# self.lastCourseId = max([1]+[course[0] for course in self.courses])
-		# log.debug(f"setCourses: {self.lastCourseId=}")
-
-	# def getCourseNamesDictById(self):
-	# 	return dict([c[:2] for c in self.courses])
-
-	def getCourseNameById(self, courseId: int) -> str:
-		for course in self.courses:
-			if course[0] == courseId:
-				return course[1]
-		return _("Deleted Course")
-
-	def setDefaults(self) -> None:
-		calType = calTypes.names[self.calType]
-		# odd term or even term?
-		jd = getCurrentJd()
-		year, month, day = jd_to(jd, self.calType)
-		md = (month, day)
-		if calType == "jalali":
-			# 0/07/01 to 0/11/01
-			# 0/11/15 to 1/03/20
-			if (1, 1) <= md < (4, 1):
-				self.startJd = to_jd(year - 1, 11, 15, self.calType)
-				self.classesEndDate = (year, 3, 20)
-				self.endJd = to_jd(year, 4, 10, self.calType)
-			elif (4, 1) <= md < (10, 1):
-				self.startJd = to_jd(year, 7, 1, self.calType)
-				self.classesEndDate = (year, 11, 1)
-				self.endJd = to_jd(year, 11, 1, self.calType)
-			else:  # md >= (10, 1)
-				self.startJd = to_jd(year, 11, 15, self.calType)
-				self.classesEndDate = (year + 1, 3, 1)
-				self.endJd = to_jd(year + 1, 3, 20, self.calType)
-		# elif calType=="gregorian":
-		# 	pass
-
-	# def getNewCourseID(self) -> int:
-	# 	self.lastCourseId += 1
-	# 	log.info(f"getNewCourseID: {self.lastCourseId=}")
-	# 	return self.lastCourseId
-
-	def copyFrom(self, other: EventGroup) -> None:
-		EventGroup.copyFrom(self, other)
-		if other.name == self.name:
-			assert isinstance(other, UniversityTerm), f"{other=}"
-			self.classesEndDate = other.classesEndDate[:]
-			self.classTimeBounds = other.classTimeBounds[:]
-
-	def getDict(self) -> dict[str, Any]:
-		data = EventGroup.getDict(self)
-		data.update(
-			{
-				"classTimeBounds": [hmEncode(hm) for hm in self.classTimeBounds],
-				"classesEndDate": dateEncode(self.classesEndDate),
-			},
-		)
-		return data
-
-	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
-		# self.setCourses(data["courses"])
-		if "classesEndDate" in data:
-			try:
-				self.classesEndDate = dateDecode(data["classesEndDate"])
-			except ValueError:
-				log.exception("")
-		if "classTimeBounds" in data:
-			self.classTimeBounds = sorted(
-				hmDecode(hm) for hm in data["classTimeBounds"]
-			)
-
-	def afterModify(self) -> None:
-		EventGroup.afterModify(self)
-		for event in self:
-			try:
-				event.updateSummary()
-			except AttributeError:  # noqa: PERF203
-				pass
-			else:
-				event.save()
-
-
 @classes.group.register
 class LifetimeGroup(EventGroup):
 	name = "lifetime"
@@ -1286,79 +1004,3 @@ class LifetimeGroup(EventGroup):
 		self.showInWCal = False
 		self.showInMCal = False
 		self.showInStatusIcon = False
-
-
-@classes.group.register
-class LargeScaleGroup(EventGroup):
-	name = "largeScale"
-	desc = _("Large Scale Events Group")
-	acceptsEventTypes = ("largeScale",)
-	sortBys = EventGroup.sortBys + [
-		("start", _("Start"), True),
-		("end", _("End"), True),
-	]
-	sortByDefault = "start"
-
-	def getSortByValue(self, event: EventType, attr: str) -> Any:
-		if event.name == "largeScale":
-			assert isinstance(event, LargeScaleEvent), f"{event=}"
-			if attr == "start":
-				return event.start * event.scale
-			if attr == "end":
-				return event.getEnd() * event.scale
-		return EventGroup.getSortByValue(self, event, attr)
-
-	def __init__(self, ident: int | None = None) -> None:
-		self.scale = 1  # 1, 1000, 1000**2, 1000**3
-		EventGroup.__init__(self, ident)
-
-	def setDefaults(self) -> None:
-		self.startJd = 0
-		self.endJd = self.startJd + self.scale * 9999
-		# only show in time line
-		self.showInDCal = False
-		self.showInWCal = False
-		self.showInMCal = False
-		self.showInStatusIcon = False
-
-	def copyFrom(self, other: EventGroup) -> None:
-		EventGroup.copyFrom(self, other)
-		if other.name == self.name:
-			assert isinstance(other, LargeScaleGroup), f"{other=}"
-			self.scale = other.scale
-
-	def getDict(self) -> dict[str, Any]:
-		data = EventGroup.getDict(self)
-		data["scale"] = self.scale
-		return data
-
-	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
-		with suppress(KeyError):
-			self.scale = data["scale"]
-
-	def getStartValue(self) -> int:
-		return int(jd_to(self.startJd, self.calType)[0] // self.scale)
-
-	def getEndValue(self) -> int:
-		return int(jd_to(self.endJd, self.calType)[0] // self.scale)
-
-	def setStartValue(self, start: float) -> None:
-		self.startJd = int(
-			to_jd(
-				int(start * self.scale),
-				1,
-				1,
-				self.calType,
-			),
-		)
-
-	def setEndValue(self, end: float) -> None:
-		self.endJd = int(
-			to_jd(
-				int(end * self.scale),
-				1,
-				1,
-				self.calType,
-			),
-		)
