@@ -92,7 +92,10 @@ smallest = Smallest()
 
 
 class EventContainer(HistoryEventObjBinaryModel, WithIcon):
+	WidgetClass: Any
 	name = ""
+	tname = ""
+	nameAlias = ""
 	desc = ""
 	basicOptions: list[str] = [
 		"idList",  # FIXME
