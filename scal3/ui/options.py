@@ -876,7 +876,7 @@ confOptionsData: list[OptionData] = [
 		flags=CUSTOMIZE,
 		type="bool",
 		where="MainWin: Customize: Week Calendar",
-		desc="Grid ",
+		desc="Grid",
 		default=False,
 	),
 	OptionData(
