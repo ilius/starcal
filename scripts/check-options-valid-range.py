@@ -58,17 +58,17 @@ def searchOption(opt: options.OptionData) -> None:
 			assert digitsEnd > 0
 			digitsStr = text[digitsStart:digitsEnd].rstrip(",")
 			_, _, digitsValue = digitsStr.partition("=")
-			annotated = f"FloatSpin({boundsValue}, {stepValue}, {digitsValue})"
+			valid = f"FloatSpin({boundsValue}, {stepValue}, {digitsValue})"
 		else:
-			annotated = f"IntSpin({boundsValue}, {stepValue})"
+			valid = f"IntSpin({boundsValue}, {stepValue})"
 
-		if opt.annotated:
-			if opt.annotated == annotated:
+		if opt.valid:
+			if opt.valid == valid:
 				print(f"OK: {name}")
 			else:
-				print(f"ERROR: {name=}, {annotated=}")
+				print(f"ERROR: {name=}, {valid=}")
 			continue
-		print(f"\t{name=}, {annotated=}")
+		print(f"\t{name=}, {valid=}")
 
 
 def listFilesRecursive(direc: str) -> Iterable[str]:

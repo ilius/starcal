@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import typing
-
 from scal3.color_utils import RGB, RGBA
 from scal3.option import ListOption, Option
 
 if typing.TYPE_CHECKING:
-	from typing import Annotated, Any, Final
+	from typing import Any, Final
 
 	from scal3.color_utils import ColorType
 	from scal3.font import Font
@@ -16,8 +15,6 @@ if typing.TYPE_CHECKING:
 		CustomizableToolBoxDict,
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
-		FloatSpin,
-		IntSpin,
 		PieGeoDict,
 		WeekCalDayNumOptionsDict,
 	)
@@ -223,16 +220,27 @@ __all__ = [
 	"winY",
 ]
 
+
 showMain: Final[Option[bool]] = Option(True)
+
 winTaskbar: Final[Option[bool]] = Option(False)
+
 useAppIndicator: Final[Option[bool]] = Option(True)
+
 winX: Final[Option[int]] = Option(0)
+
 winY: Final[Option[int]] = Option(0)
+
 winWidth: Final[Option[int]] = Option(480)
+
 winHeight: Final[Option[int]] = Option(300)
+
 winKeepAbove: Final[Option[bool]] = Option(True)
+
 winSticky: Final[Option[bool]] = Option(True)
+
 winMaximized: Final[Option[bool]] = Option(False)
+
 mainWinItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
@@ -245,67 +253,112 @@ mainWinItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 		("yearPBar", False),
 	]
 )
+
 mainWinFooterItems: Final[ListOption[str]] = ListOption(
 	["pluginsText", "eventDayView", "statusBar"]
 )
+
 pluginsTextEnable: Final[Option[bool]] = Option(False)
+
 pluginsTextInsideExpander: Final[Option[bool]] = Option(True)
+
 pluginsTextIsExpanded: Final[Option[bool]] = Option(True)
+
 eventDayViewEnable: Final[Option[bool]] = Option(False)
+
 eventDayViewEventSep: Final[Option[str]] = Option("\n")
-eventViewMaxHeight: Final[Annotated[Option[int], IntSpin(1, 9999, 1)]] = Option(200)
+
+"IntSpin(1, 9999, 1)"
+eventViewMaxHeight: Final[Option[int]] = Option(200)
+
 statusBarEnable: Final[Option[bool]] = Option(True)
+
 statusBarDatesReverseOrder: Final[Option[bool]] = Option(False)
+
 statusBarDatesColorEnable: Final[Option[bool]] = Option(False)
+
 statusBarDatesColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
+
 fontCustomEnable: Final[Option[bool]] = Option(False)
+
 fontCustom: Final[Option[Font | None]] = Option(None)
+
 buttonIconEnable: Final[Option[bool]] = Option(True)
+
 useSystemIcons: Final[Option[bool]] = Option(False)
+
 oldStyleProgressBar: Final[Option[bool]] = Option(False)
+
 bgColor: Final[Option[ColorType]] = Option(RGBA(red=26, green=0, blue=1, alpha=255))
+
 borderColor: Final[Option[ColorType]] = Option(
 	RGBA(red=123, green=40, blue=0, alpha=255)
 )
+
 borderTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
+
 textColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
+
 holidayColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=160, blue=0, alpha=255)
 )
+
 inactiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=115)
 )
+
 todayCellColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=50)
 )
+
 cursorOutColor: Final[Option[ColorType]] = Option(
 	RGBA(red=213, green=207, blue=0, alpha=255)
 )
+
 cursorBgColor: Final[Option[ColorType]] = Option(
 	RGBA(red=41, green=41, blue=41, alpha=255)
 )
+
 showDigClockTr: Final[Option[bool]] = Option(True)
+
 statusIconImage: Final[Option[str]] = Option("status-icons/dark-green.svg")
+
 statusIconImageHoli: Final[Option[str]] = Option("status-icons/dark-red.svg")
+
 statusIconFontFamilyEnable: Final[Option[bool]] = Option(False)
+
 statusIconFontFamily: Final[Option[str | None]] = Option(None)
+
 statusIconHolidayFontColorEnable: Final[Option[bool]] = Option(False)
+
 statusIconHolidayFontColor: Final[Option[ColorType | None]] = Option(None)
+
 statusIconLocalizeNumber: Final[Option[bool]] = Option(True)
+
 statusIconFixedSizeEnable: Final[Option[bool]] = Option(False)
+
 statusIconFixedSizeWH: Final[Option[tuple[int, int]]] = Option((24, 24))
+
 pluginsTextStatusIcon: Final[Option[bool]] = Option(False)
-maxDayCacheSize: Final[Annotated[Option[int], IntSpin(100, 9999, 10)]] = Option(100)
+
+"IntSpin(100, 9999, 10)"
+maxDayCacheSize: Final[Option[int]] = Option(100)
+
 eventDayViewTimeFormat: Final[Option[str]] = Option("HM$")
-cellMenuXOffset: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(0)
+
+"IntSpin(0, 999, 1)"
+cellMenuXOffset: Final[Option[int]] = Option(0)
+
 winControllerEnable: Final[Option[bool]] = Option(True)
+
 winControllerTheme: Final[Option[str]] = Option("default")
+
 winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("sep", True),
@@ -318,35 +371,61 @@ winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 		("sep", False),
 	]
 )
-winControllerIconSize: Final[Annotated[Option[int], IntSpin(5, 128, 1)]] = Option(24)
-winControllerBorder: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
-winControllerSpacing: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
+
+"IntSpin(5, 128, 1)"
+winControllerIconSize: Final[Option[int]] = Option(24)
+
+"IntSpin(0, 99, 1)"
+winControllerBorder: Final[Option[int]] = Option(0)
+
+"IntSpin(0, 99, 1)"
+winControllerSpacing: Final[Option[int]] = Option(0)
+
 winControllerPressState: Final[Option[bool]] = Option(False)
+
 mainWinRightPanelEnable: Final[Option[bool]] = Option(True)
+
 mainWinRightPanelRatio: Final[Option[float]] = Option(0.5)
+
 mainWinRightPanelSwap: Final[Option[bool]] = Option(False)
-mainWinRightPanelWidth: Final[Annotated[Option[int], IntSpin(1, 9999, 10)]] = Option(
-	200
-)
-mainWinRightPanelWidthRatio: Final[
-	Annotated[Option[float], FloatSpin(0, 1, 0.01, 3)]
-] = Option(0.25)
+
+"IntSpin(1, 9999, 10)"
+mainWinRightPanelWidth: Final[Option[int]] = Option(200)
+
+"FloatSpin(0, 1, 0.01, 3)"
+mainWinRightPanelWidthRatio: Final[Option[float]] = Option(0.25)
+
 mainWinRightPanelWidthRatioEnable: Final[Option[bool]] = Option(True)
+
 mainWinRightPanelEventFontEnable: Final[Option[bool]] = Option(False)
+
 mainWinRightPanelEventFont: Final[Option[Font | None]] = Option(None)
+
 mainWinRightPanelEventTimeFontEnable: Final[Option[bool]] = Option(False)
+
 mainWinRightPanelEventTimeFont: Final[Option[Font | None]] = Option(None)
+
 mainWinRightPanelEventJustification: Final[Option[str]] = Option("left")
+
 mainWinRightPanelEventSep: Final[Option[str]] = Option("\n\n")
+
 mainWinRightPanelPluginsFontEnable: Final[Option[bool]] = Option(False)
+
 mainWinRightPanelPluginsFont: Final[Option[Font | None]] = Option(None)
+
 mainWinRightPanelPluginsJustification: Final[Option[str]] = Option("left")
+
 mainWinRightPanelResizeOnToggle: Final[Option[bool]] = Option(True)
-mainWinRightPanelBorderWidth: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = (
-	Option(7)
-)
-mcalLeftMargin: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(30)
-mcalTopMargin: Final[Annotated[Option[int], IntSpin(0, 999, 1)]] = Option(30)
+
+"IntSpin(0, 999, 1)"
+mainWinRightPanelBorderWidth: Final[Option[int]] = Option(7)
+
+"IntSpin(0, 999, 1)"
+mcalLeftMargin: Final[Option[int]] = Option(30)
+
+"IntSpin(0, 999, 1)"
+mcalTopMargin: Final[Option[int]] = Option(30)
+
 mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
@@ -354,22 +433,26 @@ mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 		{"pos": (-18, 4), "font": None, "color": (0, 200, 205)},
 	]
 )
+
 mcalGrid: Final[Option[bool]] = Option(False)
+
 mcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
+
 mcalCornerMenuTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
-mcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
-	Option(0.12)
-)
-mcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
-	Option(0.5)
-)
-wcalTextSizeScale: Final[Annotated[Option[float], FloatSpin(0.01, 1, 0.1, 3)]] = Option(
-	0.6
-)
+
+"FloatSpin(0, 1, 0.1, 2)"
+mcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
+
+"FloatSpin(0, 1, 0.1, 2)"
+mcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
+
+"FloatSpin(0.01, 1, 0.1, 3)"
+wcalTextSizeScale: Final[Option[float]] = Option(0.6)
+
 wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
@@ -380,51 +463,81 @@ wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 		("daysOfMonth", True),
 	]
 )
+
 wcalGrid: Final[Option[bool]] = Option(False)
+
 wcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
+
 wcalUpperGradientEnable: Final[Option[bool]] = Option(False)
+
 wcalUpperGradientColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=60)
 )
+
 wcal_eventsText_pastColorEnable: Final[Option[bool]] = Option(False)
+
 wcal_eventsText_pastColor: Final[Option[ColorType]] = Option(
 	RGBA(red=100, green=100, blue=100, alpha=50)
 )
+
 wcal_eventsText_ongoingColorEnable: Final[Option[bool]] = Option(False)
+
 wcal_eventsText_ongoingColor: Final[Option[ColorType]] = Option(
 	RGBA(red=80, green=255, blue=80, alpha=255)
 )
+
 wcal_eventsText_showDesc: Final[Option[bool]] = Option(False)
+
 wcal_eventsText_colorize: Final[Option[bool]] = Option(True)
+
 wcalFont_eventsText: Final[Option[str | None]] = Option(None)
+
 wcal_toolbar_weekNum_negative: Final[Option[bool]] = Option(False)
+
 wcal_toolbar_mainMenu_icon: Final[Option[str]] = Option("starcal.png")
+
 wcal_weekDays_width: Final[Option[int]] = Option(80)
+
 wcal_weekDays_expand: Final[Option[bool]] = Option(False)
+
 wcalFont_weekDays: Final[Option[str | None]] = Option(None)
+
 wcalFont_pluginsText: Final[Option[str | None]] = Option(None)
+
 wcal_pluginsText_firstLineOnly: Final[Option[bool]] = Option(False)
+
 wcal_eventsIcon_width: Final[Option[int]] = Option(50)
+
 wcalTypeParams: Final[ListOption[WeekCalDayNumOptionsDict]] = ListOption(
 	[{"font": None}, {"font": None}, {"font": None}]
 )
+
 wcal_daysOfMonth_dir: Final[Option[str]] = Option("ltr")
+
 wcal_daysOfMonth_width: Final[Option[int]] = Option(30)
+
 wcal_daysOfMonth_expand: Final[Option[bool]] = Option(False)
+
 wcal_eventsCount_width: Final[Option[int]] = Option(80)
+
 wcal_eventsCount_expand: Final[Option[bool]] = Option(False)
+
 wcalFont_eventsBox: Final[Option[str | None]] = Option(None)
+
 wcal_moonStatus_width: Final[Option[int]] = Option(48)
+
 wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
-wcalCursorLineWidthFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
-	Option(0.12)
-)
-wcalCursorRoundingFactor: Final[Annotated[Option[float], FloatSpin(0, 1, 0.1, 2)]] = (
-	Option(0.5)
-)
+
+"FloatSpin(0, 1, 0.1, 2)"
+wcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
+
+"FloatSpin(0, 1, 0.1, 2)"
+wcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
+
 dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
+
 dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
@@ -456,6 +569,7 @@ dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 		},
 	]
 )
+
 dcalMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
@@ -490,6 +604,7 @@ dcalMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 		},
 	]
 )
+
 dcalWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
@@ -502,7 +617,9 @@ dcalWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 		"uppercase": False,
 	}
 )
+
 dcalNavButtonsEnable: Final[Option[bool]] = Option(True)
+
 dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 	{
 		"auto_rtl": True,
@@ -513,24 +630,43 @@ dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 		"yalign": "buttom",
 	}
 )
+
 dcalNavButtonsOpacity: Final[Option[float]] = Option(0.7)
+
 dcalWeekdayLocalize: Final[Option[bool]] = Option(True)
+
 dcalWeekdayAbbreviate: Final[Option[bool]] = Option(False)
+
 dcalWeekdayUppercase: Final[Option[bool]] = Option(False)
+
 dcalEventIconSize: Final[Option[int]] = Option(20)
+
 dcalEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
+
 showDesktopWidget: Final[Option[bool]] = Option(False)
+
 dcalWinX: Final[Option[int]] = Option(0)
+
 dcalWinY: Final[Option[int]] = Option(0)
+
 dcalWinWidth: Final[Option[int]] = Option(180)
+
 dcalWinHeight: Final[Option[int]] = Option(180)
+
 dcalWinBackgroundColor: Final[Option[ColorType]] = Option(RGB(red=0, green=10, blue=0))
+
 dcalWinWidgetButtonsEnable: Final[Option[bool]] = Option(True)
+
 dcalWinWidgetButtonsSize: Final[Option[int]] = Option(16)
+
 dcalWinWidgetButtonsOpacity: Final[Option[float]] = Option(1.0)
+
 dcalWinWeekdayLocalize: Final[Option[bool]] = Option(True)
+
 dcalWinWeekdayAbbreviate: Final[Option[bool]] = Option(False)
+
 dcalWinWeekdayUppercase: Final[Option[bool]] = Option(False)
+
 dcalWinDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
@@ -562,6 +698,7 @@ dcalWinDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 		},
 	]
 )
+
 dcalWinMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
@@ -596,6 +733,7 @@ dcalWinMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 		},
 	]
 )
+
 dcalWinWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
@@ -608,9 +746,13 @@ dcalWinWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 		"uppercase": False,
 	}
 )
+
 dcalWinEventIconSize: Final[Option[int]] = Option(20)
+
 dcalWinEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
+
 dcalWinSeasonPieEnable: Final[Option[bool]] = Option(False)
+
 dcalWinSeasonPieGeo: Final[Option[PieGeoDict]] = Option(
 	{
 		"size": 64,
@@ -621,51 +763,82 @@ dcalWinSeasonPieGeo: Final[Option[PieGeoDict]] = Option(
 		"startAngle": 270,
 	}
 )
+
 dcalWinSeasonPieSpringColor: Final[Option[ColorType]] = Option(
 	RGBA(red=167, green=252, blue=1, alpha=180)
 )
+
 dcalWinSeasonPieSummerColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=254, blue=0, alpha=180)
 )
+
 dcalWinSeasonPieAutumnColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=127, blue=0, alpha=180)
 )
+
 dcalWinSeasonPieWinterColor: Final[Option[ColorType]] = Option(
 	RGBA(red=1, green=191, blue=255, alpha=180)
 )
+
 dcalWinSeasonPieTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=180)
 )
+
 monthPBarCalType: Final[Option[int]] = Option(-1)
+
 seasonPBar_southernHemisphere: Final[Option[bool]] = Option(False)
-labelBoxBorderWidth: Final[Annotated[Option[int], IntSpin(0, 99, 1)]] = Option(0)
+
+"IntSpin(0, 99, 1)"
+labelBoxBorderWidth: Final[Option[int]] = Option(0)
+
 labelBoxMenuActiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=255)
 )
+
 labelBoxYearColorEnable: Final[Option[bool]] = Option(False)
+
 labelBoxYearColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
+
 labelBoxMonthColorEnable: Final[Option[bool]] = Option(False)
+
 labelBoxMonthColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
+
 labelBoxFontEnable: Final[Option[bool]] = Option(False)
+
 labelBoxFont: Final[Option[Font | None]] = Option(None)
+
 labelBoxPrimaryFontEnable: Final[Option[bool]] = Option(False)
+
 labelBoxPrimaryFont: Final[Option[Font | None]] = Option(None)
+
 boldYmLabel: Final[Option[bool]] = Option(True)
+
 ud__wcalToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
+
 ud__mainToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
+
 preferencesPagePath: Final[Option[str]] = Option("")
+
 customizePagePath: Final[Option[str]] = Option("")
+
 localTzHist: Final[ListOption[str]] = ListOption([])
+
 showDigClockTb: Final[Option[bool]] = Option(True)
+
 menuIconPadding: Final[Option[int]] = Option(7)
+
 eventTreeGroupIconSize: Final[Option[int]] = Option(24)
+
 treeIconSize: Final[Option[int]] = Option(22)
+
 labelBoxIconSize: Final[Option[int]] = Option(20)
+
 stackIconSize: Final[Option[int]] = Option(22)
+
 dcalWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	[
 		{
@@ -686,6 +859,7 @@ dcalWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 		},
 	]
 )
+
 dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	[
 		{
@@ -714,21 +888,38 @@ dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 		},
 	]
 )
+
 menuIconEdgePadding: Final[Option[int]] = Option(3)
-rightPanelEventIconSize: Final[Annotated[Option[int], IntSpin(5, 128, 1)]] = Option(20)
+
+"IntSpin(5, 128, 1)"
+rightPanelEventIconSize: Final[Option[int]] = Option(20)
+
 eventTreeIconSize: Final[Option[int]] = Option(22)
+
 menuEventCheckIconSize: Final[Option[int]] = Option(20)
+
 toolbarIconSize: Final[Option[int]] = Option(24)
+
 mcalEventIconSizeMax: Final[Option[int]] = Option(26)
+
 messageDialogIconSize: Final[Option[int]] = Option(48)
+
 menuCheckSize: Final[Option[int]] = Option(22)
+
 menuIconSize: Final[Option[int]] = Option(18)
+
 comboBoxIconSize: Final[Option[int]] = Option(20)
+
 imageInputIconSize: Final[Option[int]] = Option(32)
+
 maxWeekCacheSize: Final[Option[int]] = Option(12)
+
 wcalPadding: Final[Option[int]] = Option(10)
+
 buttonIconSize: Final[Option[int]] = Option(20)
+
 wcalEventIconSizeMax: Final[Option[int]] = Option(26)
+
 eventWeekViewTimeFormat: Final[Option[str]] = Option("HM$")
 
 
