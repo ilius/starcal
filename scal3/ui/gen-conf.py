@@ -69,9 +69,16 @@ for opt in options.confOptionsData:
 	# 	fullType = f"DictOption[{p.type}]"
 	# 	fullValue = f"DictOption({value!r})"
 
+	doc = opt.desc
+	if opt.where and opt.where != "-":
+		doc += "\n" + opt.where
+
 	if opt.valid:
 		# fullType = f"Annotated[{fullType}, {opt.valid}]"
-		output.write(f'"{opt.valid}"\n')
+		doc += f"\nValid: {opt.valid}"
+
+	if doc.strip():
+		output.write(f'"""{doc}"""\n')
 
 	fullType = f"Final[{fullType}]"  # must the the last type modifier
 	output.write(f"{opt.v3Name}: {fullType} = {fullValue}" + "\n")

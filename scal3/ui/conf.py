@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+
 from scal3.color_utils import RGB, RGBA
 from scal3.option import ListOption, Option
 
@@ -221,26 +222,48 @@ __all__ = [
 ]
 
 
+"""Open main window on start
+Preferences: General"""
 showMain: Final[Option[bool]] = Option(True)
 
+"""Window in Taskbar
+Preferences: General"""
 winTaskbar: Final[Option[bool]] = Option(False)
 
+"""Use AppIndicator
+Preferences: General"""
 useAppIndicator: Final[Option[bool]] = Option(True)
 
+"""Window X
+MainWin: Move"""
 winX: Final[Option[int]] = Option(0)
 
+"""Window Y
+MainWin: Move"""
 winY: Final[Option[int]] = Option(0)
 
+"""Window Width
+MainWin: Resize"""
 winWidth: Final[Option[int]] = Option(480)
 
+"""Window Height
+MainWin: Resize"""
 winHeight: Final[Option[int]] = Option(300)
 
+"""On Top
+MainWin: Menu"""
 winKeepAbove: Final[Option[bool]] = Option(True)
 
+"""On All Desktops
+MainWin: Menu"""
 winSticky: Final[Option[bool]] = Option(True)
 
+"""Window Maximized
+MainWin: Window Controller: Maximize Window"""
 winMaximized: Final[Option[bool]] = Option(False)
 
+"""Items
+MainWin: Customize: Main Panel"""
 mainWinItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
@@ -254,111 +277,195 @@ mainWinItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	]
 )
 
+"""Footer Items
+MainWin: Customize: (Footer)"""
 mainWinFooterItems: Final[ListOption[str]] = ListOption(
 	["pluginsText", "eventDayView", "statusBar"]
 )
 
+"""Enable
+MainWin: Customize: (Footer): Plugins Text"""
 pluginsTextEnable: Final[Option[bool]] = Option(False)
 
+"""Inside Expander
+MainWin: Customize: (Footer): Plugins Text"""
 pluginsTextInsideExpander: Final[Option[bool]] = Option(True)
 
+"""Is Expanded
+MainWin: (Footer): Plugins Text"""
 pluginsTextIsExpanded: Final[Option[bool]] = Option(True)
 
+"""Enable
+MainWin: Customize: (Footer): Events of Day"""
 eventDayViewEnable: Final[Option[bool]] = Option(False)
 
+"""Event Text Separator
+MainWin: Customize: (Footer): Events of Day"""
 eventDayViewEventSep: Final[Option[str]] = Option("\n")
 
-"IntSpin(1, 9999, 1)"
+"""Maximum Height
+MainWin: Customize: (Footer): Events of Day
+Valid: IntSpin(1, 9999, 1)"""
 eventViewMaxHeight: Final[Option[int]] = Option(200)
 
+"""Enable
+MainWin: Customize: (Footer): Status Bar"""
 statusBarEnable: Final[Option[bool]] = Option(True)
 
+"""Reverse the order of dates
+MainWin: Customize: (Footer): Status Bar"""
 statusBarDatesReverseOrder: Final[Option[bool]] = Option(False)
 
+"""Dates Color
+MainWin: Customize: (Footer): Status Bar"""
 statusBarDatesColorEnable: Final[Option[bool]] = Option(False)
 
+"""Dates Color
+MainWin: Customize: (Footer): Status Bar"""
 statusBarDatesColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 
+"""Application Font
+Preferences: Appearance"""
 fontCustomEnable: Final[Option[bool]] = Option(False)
 
+"""Application Font
+Preferences: Appearance"""
 fontCustom: Final[Option[Font | None]] = Option(None)
 
+"""Show icons in buttons
+Preferences: Appearance"""
 buttonIconEnable: Final[Option[bool]] = Option(True)
 
+"""Use System Icons
+Preferences: Appearance"""
 useSystemIcons: Final[Option[bool]] = Option(False)
 
+"""Old-style Progress Bar
+Preferences: Appearance"""
 oldStyleProgressBar: Final[Option[bool]] = Option(False)
 
+"""Background
+Preferences: Appearance: Colors"""
 bgColor: Final[Option[ColorType]] = Option(RGBA(red=26, green=0, blue=1, alpha=255))
 
+"""Border
+Preferences: Appearance: Colors"""
 borderColor: Final[Option[ColorType]] = Option(
 	RGBA(red=123, green=40, blue=0, alpha=255)
 )
 
+"""Border Font
+Preferences: Appearance: Colors"""
 borderTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
 
+"""Normal Text
+Preferences: Appearance: Colors"""
 textColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
 
+"""Holidays Font
+Preferences: Appearance: Colors"""
 holidayColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=160, blue=0, alpha=255)
 )
 
+"""Inactive Day Font
+Preferences: Appearance: Colors"""
 inactiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=115)
 )
 
+"""Today
+Preferences: Appearance: Colors"""
 todayCellColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=50)
 )
 
+"""Cursor
+Preferences: Appearance: Colors"""
 cursorOutColor: Final[Option[ColorType]] = Option(
 	RGBA(red=213, green=207, blue=0, alpha=255)
 )
 
+"""Cursor BG
+Preferences: Appearance: Colors"""
 cursorBgColor: Final[Option[ColorType]] = Option(
 	RGBA(red=41, green=41, blue=41, alpha=255)
 )
 
+"""Show Digital Clock: On Status Icon
+Preferences: ... (not usable)"""
 showDigClockTr: Final[Option[bool]] = Option(True)
 
+"""Normal Days: Icon Path
+Preferences: Appearance: Status Icon"""
 statusIconImage: Final[Option[str]] = Option("status-icons/dark-green.svg")
 
+"""Holidays: Icon Path
+Preferences: Appearance: Status Icon"""
 statusIconImageHoli: Final[Option[str]] = Option("status-icons/dark-red.svg")
 
+"""[ ] Change font family to
+Preferences: Appearance: Status Icon"""
 statusIconFontFamilyEnable: Final[Option[bool]] = Option(False)
 
+"""Font family
+Preferences: Appearance: Status Icon"""
 statusIconFontFamily: Final[Option[str | None]] = Option(None)
 
+"""Holiday font color
+Preferences: Appearance: Status Icon"""
 statusIconHolidayFontColorEnable: Final[Option[bool]] = Option(False)
 
+"""Holiday font color
+Preferences: Appearance: Status Icon"""
 statusIconHolidayFontColor: Final[Option[ColorType | None]] = Option(None)
 
+"""Localize the number
+Preferences: Appearance: Status Icon"""
 statusIconLocalizeNumber: Final[Option[bool]] = Option(True)
 
+"""[ ] Fixed Size
+Preferences: Appearance: Status Icon"""
 statusIconFixedSizeEnable: Final[Option[bool]] = Option(False)
 
+"""Fixed Size (width, height)
+Preferences: Appearance: Status Icon"""
 statusIconFixedSizeWH: Final[Option[tuple[int, int]]] = Option((24, 24))
 
+"""Show in Status Icon (for today)
+Preferences: Plugins"""
 pluginsTextStatusIcon: Final[Option[bool]] = Option(False)
 
-"IntSpin(100, 9999, 10)"
+"""Days maximum cache size
+Preferences: Advanced
+Valid: IntSpin(100, 9999, 10)"""
 maxDayCacheSize: Final[Option[int]] = Option(100)
 
+"""Event Time Format
+Preferences: Advanced"""
 eventDayViewTimeFormat: Final[Option[str]] = Option("HM$")
 
-"IntSpin(0, 999, 1)"
+"""Horizontal offset for day right-click menu
+Preferences: Advanced
+Valid: IntSpin(0, 999, 1)"""
 cellMenuXOffset: Final[Option[int]] = Option(0)
 
+"""Enable
+MainWin: Customize: Window Controller"""
 winControllerEnable: Final[Option[bool]] = Option(True)
 
+"""Theme
+MainWin: Customize: Window Controller"""
 winControllerTheme: Final[Option[str]] = Option("default")
 
+"""Buttons
+MainWin: Customize: Window Controller"""
 winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("sep", True),
@@ -372,60 +479,108 @@ winControllerButtons: Final[ListOption[tuple[str, bool]]] = ListOption(
 	]
 )
 
-"IntSpin(5, 128, 1)"
+"""Icon Size
+MainWin: Customize: Window Controller
+Valid: IntSpin(5, 128, 1)"""
 winControllerIconSize: Final[Option[int]] = Option(24)
 
-"IntSpin(0, 99, 1)"
+"""Buttons Border
+MainWin: Customize: Window Controller
+Valid: IntSpin(0, 99, 1)"""
 winControllerBorder: Final[Option[int]] = Option(0)
 
-"IntSpin(0, 99, 1)"
+"""Space between buttons
+MainWin: Customize: Window Controller
+Valid: IntSpin(0, 99, 1)"""
 winControllerSpacing: Final[Option[int]] = Option(0)
 
+"""Change icon on button press
+MainWin: Customize: Window Controller"""
 winControllerPressState: Final[Option[bool]] = Option(False)
 
+"""Enable
+MainWin: Customize: Right Panel"""
 mainWinRightPanelEnable: Final[Option[bool]] = Option(True)
 
+"""Ration of height of upper half to the whole
+MainWin: Right Panel"""
 mainWinRightPanelRatio: Final[Option[float]] = Option(0.5)
 
+"""Swap Plugins Text and Events Text
+MainWin: Right Panel: Context menu"""
 mainWinRightPanelSwap: Final[Option[bool]] = Option(False)
 
-"IntSpin(1, 9999, 10)"
+"""Width: Fixed width
+MainWin: Customize: Right Panel: Sizes
+Valid: IntSpin(1, 9999, 10)"""
 mainWinRightPanelWidth: Final[Option[int]] = Option(200)
 
-"FloatSpin(0, 1, 0.01, 3)"
+"""Width: Relative to window
+MainWin: Customize: Right Panel: Sizes
+Valid: FloatSpin(0, 1, 0.01, 3)"""
 mainWinRightPanelWidthRatio: Final[Option[float]] = Option(0.25)
 
+"""Width: Relative to window
+MainWin: Customize: Right Panel: Sizes"""
 mainWinRightPanelWidthRatioEnable: Final[Option[bool]] = Option(True)
 
+"""Font
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventFontEnable: Final[Option[bool]] = Option(False)
 
+"""Font
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventFont: Final[Option[Font | None]] = Option(None)
 
+"""Time Font
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventTimeFontEnable: Final[Option[bool]] = Option(False)
 
+"""Time Font
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventTimeFont: Final[Option[Font | None]] = Option(None)
 
+"""Text Alignment
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventJustification: Final[Option[str]] = Option("left")
 
+"""Event Text Separator
+MainWin: Customize: Right Panel: Events Text"""
 mainWinRightPanelEventSep: Final[Option[str]] = Option("\n\n")
 
+"""Font
+MainWin: Customize: Right Panel: Plugins Text"""
 mainWinRightPanelPluginsFontEnable: Final[Option[bool]] = Option(False)
 
+"""Font
+MainWin: Customize: Right Panel: Plugins Text"""
 mainWinRightPanelPluginsFont: Final[Option[Font | None]] = Option(None)
 
+"""Text Alignment
+MainWin: Customize: Right Panel: Plugins Text"""
 mainWinRightPanelPluginsJustification: Final[Option[str]] = Option("left")
 
+"""Resize on show/hide from window controller
+MainWin: Customize: Right Panel"""
 mainWinRightPanelResizeOnToggle: Final[Option[bool]] = Option(True)
 
-"IntSpin(0, 999, 1)"
+"""Border Width
+MainWin: Customize: Right Panel
+Valid: IntSpin(0, 999, 1)"""
 mainWinRightPanelBorderWidth: Final[Option[int]] = Option(7)
 
-"IntSpin(0, 999, 1)"
+"""Left Margin
+MainWin: Customize: Month Calendar
+Valid: IntSpin(0, 999, 1)"""
 mcalLeftMargin: Final[Option[int]] = Option(30)
 
-"IntSpin(0, 999, 1)"
+"""Top Margin
+MainWin: Customize: Month Calendar
+Valid: IntSpin(0, 999, 1)"""
 mcalTopMargin: Final[Option[int]] = Option(30)
 
+"""Calendar Types Options
+MainWin: Customize: Month Calendar"""
 mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 	[
 		{"pos": (0, -2), "font": None, "color": (220, 220, 220)},
@@ -434,25 +589,39 @@ mcalTypeParams: Final[ListOption[CalTypeOptionsDict]] = ListOption(
 	]
 )
 
+"""Grid
+MainWin: Customize: Month Calendar"""
 mcalGrid: Final[Option[bool]] = Option(False)
 
+"""Grid Color
+MainWin: Customize: Month Calendar"""
 mcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
 
+"""Corner Menu Text Color
+MainWin: Customize: Month Calendar"""
 mcalCornerMenuTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=255)
 )
 
-"FloatSpin(0, 1, 0.1, 2)"
+"""Line Width Factor
+MainWin: Customize: Month Calendar: Cursor
+Valid: FloatSpin(0, 1, 0.1, 2)"""
 mcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
 
-"FloatSpin(0, 1, 0.1, 2)"
+"""Rounding Factor
+MainWin: Customize: Month Calendar: Cursor
+Valid: FloatSpin(0, 1, 0.1, 2)"""
 mcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
 
-"FloatSpin(0.01, 1, 0.1, 3)"
+"""Text Size Scale
+MainWin: Customize: Week Calendar
+Valid: FloatSpin(0.01, 1, 0.1, 3)"""
 wcalTextSizeScale: Final[Option[float]] = Option(0.6)
 
+"""Items
+MainWin: Customize: Week Calendar"""
 wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	[
 		("toolbar", True),
@@ -464,80 +633,144 @@ wcalItems: Final[ListOption[tuple[str, bool]]] = ListOption(
 	]
 )
 
+"""Grid
+MainWin: Customize: Week Calendar"""
 wcalGrid: Final[Option[bool]] = Option(False)
 
+"""Grid Color
+MainWin: Customize: Week Calendar"""
 wcalGridColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=252, blue=0, alpha=82)
 )
 
+"""Row's Upper Gradient
+MainWin: Customize: Week Calendar"""
 wcalUpperGradientEnable: Final[Option[bool]] = Option(False)
 
+"""Row's Upper Gradient
+MainWin: Customize: Week Calendar"""
 wcalUpperGradientColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=60)
 )
 
+"""Past Event Color
+MainWin: Customize: Week Calendar: Columns: Events Text"""
 wcal_eventsText_pastColorEnable: Final[Option[bool]] = Option(False)
 
+"""Past Event Color
+MainWin: Customize: Week Calendar: Columns: Events Text"""
 wcal_eventsText_pastColor: Final[Option[ColorType]] = Option(
 	RGBA(red=100, green=100, blue=100, alpha=50)
 )
 
+"""Ongoing Event Color
+MainWin: Customize: Week Calendar: Columns: Events Text"""
 wcal_eventsText_ongoingColorEnable: Final[Option[bool]] = Option(False)
 
+"""Ongoing Event Color
+MainWin: Customize: Week Calendar: Columns: Events Text"""
 wcal_eventsText_ongoingColor: Final[Option[ColorType]] = Option(
 	RGBA(red=80, green=255, blue=80, alpha=255)
 )
 
+"""Show Description
+MainWin: Customize: Week Calendar: Columns: Events Text"""
 wcal_eventsText_showDesc: Final[Option[bool]] = Option(False)
 
+"""Use color of event group for event text
+MainWin: Customize: Week Calendar: Columns: """
 wcal_eventsText_colorize: Final[Option[bool]] = Option(True)
 
+"""Font Family
+MainWin: Customize: Week Calendar: Columns: """
 wcalFont_eventsText: Final[Option[str | None]] = Option(None)
 
+"""Week number is negated by clicking
+MainWin: Week Calendar: Toolbar"""
 wcal_toolbar_weekNum_negative: Final[Option[bool]] = Option(False)
 
+"""Icon
+MainWin: Customize: Week Calendar: Columns: Toolbar: Main Menu"""
 wcal_toolbar_mainMenu_icon: Final[Option[str]] = Option("starcal.png")
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: Week Days"""
 wcal_weekDays_width: Final[Option[int]] = Option(80)
 
+"""Expand
+MainWin: Customize: Week Calendar: Columns: Week Days"""
 wcal_weekDays_expand: Final[Option[bool]] = Option(False)
 
+"""Font Family
+MainWin: Customize: Week Calendar: Columns: Week Days"""
 wcalFont_weekDays: Final[Option[str | None]] = Option(None)
 
+"""Font Family
+MainWin: Customize: Week Calendar: Columns: Plugins Text"""
 wcalFont_pluginsText: Final[Option[str | None]] = Option(None)
 
+"""Only first line of text
+MainWin: Customize: Week Calendar: Columns: Plugins Text"""
 wcal_pluginsText_firstLineOnly: Final[Option[bool]] = Option(False)
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: Events Icon"""
 wcal_eventsIcon_width: Final[Option[int]] = Option(50)
 
+"""Font (for each calendar type)
+MainWin: Customize: Week Calendar: Columns: Days of Month"""
 wcalTypeParams: Final[ListOption[WeekCalDayNumOptionsDict]] = ListOption(
 	[{"font": None}, {"font": None}, {"font": None}]
 )
 
+"""Direction
+MainWin: Customize: Week Calendar: Columns: Days of Month"""
 wcal_daysOfMonth_dir: Final[Option[str]] = Option("ltr")
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: Days of Month"""
 wcal_daysOfMonth_width: Final[Option[int]] = Option(30)
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: """
 wcal_daysOfMonth_expand: Final[Option[bool]] = Option(False)
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: """
 wcal_eventsCount_width: Final[Option[int]] = Option(80)
 
+"""Expand
+MainWin: Customize: Week Calendar: Columns: """
 wcal_eventsCount_expand: Final[Option[bool]] = Option(False)
 
+"""Font Family
+MainWin: Customize: Week Calendar: Columns: Events Box"""
 wcalFont_eventsBox: Final[Option[str | None]] = Option(None)
 
+"""Width
+MainWin: Customize: Week Calendar: Columns: Moon Status"""
 wcal_moonStatus_width: Final[Option[int]] = Option(48)
 
+"""Southern Hemisphere
+MainWin: Customize: Week Calendar: Columns: Moon Status"""
 wcal_moonStatus_southernHemisphere: Final[Option[bool]] = Option(False)
 
-"FloatSpin(0, 1, 0.1, 2)"
+"""Line Width Factor
+MainWin: Customize: Week Calendar: Cursor
+Valid: FloatSpin(0, 1, 0.1, 2)"""
 wcalCursorLineWidthFactor: Final[Option[float]] = Option(0.12)
 
-"FloatSpin(0, 1, 0.1, 2)"
+"""Rounding Factor
+MainWin: Customize: Week Calendar: Cursor
+Valid: FloatSpin(0, 1, 0.1, 2)"""
 wcalCursorRoundingFactor: Final[Option[float]] = Option(0.5)
 
+"""Widget buttons
+MainWin: Customize: Day Calendar: Buttons"""
 dcalWidgetButtonsEnable: Final[Option[bool]] = Option(False)
 
+"""[Enable, Position, Alignment, Font, Color]
+MainWin: Customize: Day Calendar: {Calendar Type}"""
 dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
@@ -570,6 +803,8 @@ dcalDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	]
 )
 
+"""[Enable, Position, Alignment, Font, Color]
+MainWin: Customize: Day Calendar: {Calendar Type}: Month Name"""
 dcalMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
@@ -605,6 +840,8 @@ dcalMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	]
 )
 
+"""[Enable, Position, Alignment, Font, Color]
+MainWin: Customize: Day Calendar: Week Day"""
 dcalWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
@@ -618,8 +855,12 @@ dcalWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	}
 )
 
+"""Navigation buttons
+MainWin: Customize: Day Calendar: Buttons"""
 dcalNavButtonsEnable: Final[Option[bool]] = Option(True)
 
+"""Navigation Buttons
+MainWin: Customize: Day Calendar: Buttons"""
 dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 	{
 		"auto_rtl": True,
@@ -631,42 +872,80 @@ dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 	}
 )
 
+"""Navigation Buttons Opacity
+MainWin: Customize: Day Calendar: Buttons"""
 dcalNavButtonsOpacity: Final[Option[float]] = Option(0.7)
 
+"""Localize
+MainWin: Customize: Day Calendar: Week Day"""
 dcalWeekdayLocalize: Final[Option[bool]] = Option(True)
 
+"""Abbreviate
+MainWin: Customize: Day Calendar: Week Day"""
 dcalWeekdayAbbreviate: Final[Option[bool]] = Option(False)
 
+"""Uppercase
+MainWin: Customize: Day Calendar: Week Day"""
 dcalWeekdayUppercase: Final[Option[bool]] = Option(False)
 
+"""Icon Size
+MainWin: Customize: Day Calendar: Events"""
 dcalEventIconSize: Final[Option[int]] = Option(20)
 
+"""Total Size Ratio
+MainWin: Customize: Day Calendar: Events"""
 dcalEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
 
+"""Open desktop widget on start
+Preferences: General"""
 showDesktopWidget: Final[Option[bool]] = Option(False)
 
+"""Geometry: X
+DayCalWin: Move"""
 dcalWinX: Final[Option[int]] = Option(0)
 
+"""Geometry: Y
+DayCalWin: Move"""
 dcalWinY: Final[Option[int]] = Option(0)
 
+"""Geometry: Width
+DayCalWin: Resize"""
 dcalWinWidth: Final[Option[int]] = Option(180)
 
+"""Geometry: Height
+DayCalWin: Resize"""
 dcalWinHeight: Final[Option[int]] = Option(180)
 
+"""Background Color
+DayCalWin: Customize"""
 dcalWinBackgroundColor: Final[Option[ColorType]] = Option(RGB(red=0, green=10, blue=0))
 
+"""Widget buttons
+DayCalWin: Customize: Buttons"""
 dcalWinWidgetButtonsEnable: Final[Option[bool]] = Option(True)
 
+"""Widget buttons Size
+DayCalWin: Customize: Buttons"""
 dcalWinWidgetButtonsSize: Final[Option[int]] = Option(16)
 
+"""Widget buttons Opacity
+DayCalWin: Customize: Buttons"""
 dcalWinWidgetButtonsOpacity: Final[Option[float]] = Option(1.0)
 
+"""Localize
+DayCalWin: Customize: Week Day"""
 dcalWinWeekdayLocalize: Final[Option[bool]] = Option(True)
 
+"""Abbreviate
+DayCalWin: Customize: Week Day"""
 dcalWinWeekdayAbbreviate: Final[Option[bool]] = Option(False)
 
+"""Uppercase
+DayCalWin: Customize: Week Day"""
 dcalWinWeekdayUppercase: Final[Option[bool]] = Option(False)
 
+"""[Enable, Position, Alignment, Font, Color]
+DayCalWin: Customize: {Calendar Type}"""
 dcalWinDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	[
 		{
@@ -699,6 +978,8 @@ dcalWinDayParams: Final[ListOption[DayCalTypeDayOptionsDict]] = ListOption(
 	]
 )
 
+"""[Enable, Position, Alignment, Font, Color]
+DayCalWin: Customize: {Calendar Type}: Month Name"""
 dcalWinMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	[
 		{
@@ -734,6 +1015,8 @@ dcalWinMonthParams: Final[ListOption[DayCalTypeWMOptionsDict]] = ListOption(
 	]
 )
 
+"""[Enable, Position, Alignment, Font, Color]
+DayCalWin: Customize: Week Day"""
 dcalWinWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	{
 		"pos": (20, 10),
@@ -747,12 +1030,20 @@ dcalWinWeekdayParams: Final[Option[DayCalTypeWMOptionsDict]] = Option(
 	}
 )
 
+"""Icon Size
+DayCalWin: Customize: Events"""
 dcalWinEventIconSize: Final[Option[int]] = Option(20)
 
+"""Total Size Ratio
+DayCalWin: Customize: Events"""
 dcalWinEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
 
+"""Enable
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieEnable: Final[Option[bool]] = Option(False)
 
+"""Geometry
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieGeo: Final[Option[PieGeoDict]] = Option(
 	{
 		"size": 64,
@@ -764,75 +1055,125 @@ dcalWinSeasonPieGeo: Final[Option[PieGeoDict]] = Option(
 	}
 )
 
+"""Spring Color
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieSpringColor: Final[Option[ColorType]] = Option(
 	RGBA(red=167, green=252, blue=1, alpha=180)
 )
 
+"""Summer Color
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieSummerColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=254, blue=0, alpha=180)
 )
 
+"""Autumn Color
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieAutumnColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=127, blue=0, alpha=180)
 )
 
+"""Winter Color
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieWinterColor: Final[Option[ColorType]] = Option(
 	RGBA(red=1, green=191, blue=255, alpha=180)
 )
 
+"""Text Color
+DayCalWin: Customize: Season Pie"""
 dcalWinSeasonPieTextColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=180)
 )
 
+"""Calendar Type
+MainWin: Customize: Main Panel: Month Progress Bar"""
 monthPBarCalType: Final[Option[int]] = Option(-1)
 
+"""Southern Hemisphere
+MainWin: Customize: Main Panel: Season Progress Bar"""
 seasonPBar_southernHemisphere: Final[Option[bool]] = Option(False)
 
-"IntSpin(0, 99, 1)"
+"""Border Width
+MainWin: Customize: Main Panel: Year & Month Bar
+Valid: IntSpin(0, 99, 1)"""
 labelBoxBorderWidth: Final[Option[int]] = Option(0)
 
+"""Active menu item color
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxMenuActiveColor: Final[Option[ColorType]] = Option(
 	RGBA(red=0, green=255, blue=0, alpha=255)
 )
 
+"""Year Color
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxYearColorEnable: Final[Option[bool]] = Option(False)
 
+"""Year Color
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxYearColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 
+"""Month Color
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxMonthColorEnable: Final[Option[bool]] = Option(False)
 
+"""Month Color
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxMonthColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=132, blue=255, alpha=255)
 )
 
+"""Font
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxFontEnable: Final[Option[bool]] = Option(False)
 
+"""Font
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxFont: Final[Option[Font | None]] = Option(None)
 
+"""Primary Calendar Font
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxPrimaryFontEnable: Final[Option[bool]] = Option(False)
 
+"""Primary Calendar Font
+MainWin: Customize: Main Panel: Year & Month Bar"""
 labelBoxPrimaryFont: Final[Option[Font | None]] = Option(None)
 
+"""Bold Font
+MainWin: Customize: Main Panel: Year & Month Bar"""
 boldYmLabel: Final[Option[bool]] = Option(True)
 
+"""Toolbar Buttons
+MainWin: Customize: Main Panel: Week Calendar: Columns/; Toolbar"""
 ud__wcalToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
 
+"""Toolbar Buttons
+MainWin: Customize: Main Panel: Toolbar"""
 ud__mainToolbarData: Final[Option[CustomizableToolBoxDict | None]] = Option(None)
 
+"""Preferences Page Path
+Preferences"""
 preferencesPagePath: Final[Option[str]] = Option("")
 
+"""Customize Page Path
+Customize"""
 customizePagePath: Final[Option[str]] = Option("")
 
+"""Local Timezone History"""
 localTzHist: Final[ListOption[str]] = ListOption([])
 
+"""Show Digital Clock: On Toolbar
+Preferences: ... (not usable)"""
 showDigClockTb: Final[Option[bool]] = Option(True)
 
+"""Menu Icon Padding"""
 menuIconPadding: Final[Option[int]] = Option(7)
 
+"""Event Tree Group Icon Size"""
 eventTreeGroupIconSize: Final[Option[int]] = Option(24)
 
+"""Tree Icon Size"""
 treeIconSize: Final[Option[int]] = Option(22)
 
 labelBoxIconSize: Final[Option[int]] = Option(20)
@@ -891,7 +1232,8 @@ dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 
 menuIconEdgePadding: Final[Option[int]] = Option(3)
 
-"IntSpin(5, 128, 1)"
+"""
+Valid: IntSpin(5, 128, 1)"""
 rightPanelEventIconSize: Final[Option[int]] = Option(20)
 
 eventTreeIconSize: Final[Option[int]] = Option(22)
