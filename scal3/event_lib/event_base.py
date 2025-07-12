@@ -47,11 +47,9 @@ if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator
 	from typing import Any
 
+	from scal3.event_lib.pytypes import EventContainerType, EventGroupType, OccurSetType
 	from scal3.filesystem import FileSystem
 
-	from .event_container import EventContainer
-	from .groups import EventGroup
-	from .occur import OccurSet
 	from .pytypes import (
 		EventNotifierType,
 		EventRuleType,
@@ -161,7 +159,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def __init__(
 		self,
 		ident: int | None = None,
-		parent: EventContainer | None = None,
+		parent: EventContainerType | None = None,
 	) -> None:
 		if ident is None:
 			self.id = None
@@ -170,7 +168,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.fs = null_fs
 		self.dataIsSet = False
 		self.uuid: str | None = None
-		self.parent: EventContainer | None = parent
+		self.parent: EventContainerType | None = parent
 		self.calType: int
 		if parent is not None:
 			self.calType = parent.calType
@@ -246,7 +244,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def getNotifyBeforeMin(self) -> int:
 		return int(self.getNotifyBeforeSec() / 60)
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		"""
 		Sets default values that depends on event type and group type
 		as well as common parameters, like those are set in __init__
@@ -443,7 +441,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def getNotifiersDict(self) -> dict[str, dict[str, Any]]:
 		return dict(self.getNotifiersData())
 
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		"""StartJd and endJd are float jd."""
 		# cache Occurrences  # FIXME
 		rules = list(self.rulesDict.values())
@@ -475,7 +473,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		occur.event = self
 		return occur  # FIXME
 
-	def calcEventOccurrence(self) -> OccurSet:
+	def calcEventOccurrence(self) -> OccurSetType:
 		assert self.parent is not None
 		return self.calcEventOccurrenceIn(self.parent.startJd, self.parent.endJd)
 

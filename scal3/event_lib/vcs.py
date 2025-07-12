@@ -38,13 +38,13 @@ from scal3.time_utils import (
 from scal3.utils import toStr
 
 from .event_base import Event
-from .occur import JdOccurSet, OccurSet
+from .occur import JdOccurSet
 from .register import classes
 
 if TYPE_CHECKING:
+	from scal3.event_lib.pytypes import EventContainerType, OccurSetType
 	from scal3.filesystem import FileSystem
 
-	from .event_container import EventContainer
 	from .pytypes import EventType
 
 __all__ = ["VcsCommitEventGroup", "VcsTagEventGroup"]
@@ -59,7 +59,7 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 		"shortHash",
 	]
 
-	def __init__(self, parent: EventContainer, ident: str) -> None:
+	def __init__(self, parent: EventContainerType, ident: str) -> None:
 		Event.__init__(self, parent=parent)
 		# commit full hash:
 		self.id = ident  # type: ignore[assignment]
@@ -77,7 +77,7 @@ class VcsTagEvent(VcsEpochBaseEvent):
 	desc = _("VCS Tag")
 	# params = VcsEpochBaseEvent.params +
 
-	def __init__(self, parent: EventContainer, ident: str) -> None:
+	def __init__(self, parent: EventContainerType, ident: str) -> None:
 		Event.__init__(self, parent=parent)
 		# tag name
 		self.id = ident  # type: ignore[assignment]
@@ -262,7 +262,7 @@ class VcsDailyStatEvent(Event):
 	def __bool__(self) -> bool:
 		return True
 
-	def __init__(self, parent: EventContainer, jd: int) -> None:
+	def __init__(self, parent: EventContainerType, jd: int) -> None:
 		Event.__init__(self, parent=parent)
 		self.id = jd  # ID is Julian Day
 
@@ -275,7 +275,7 @@ class VcsDailyStatEvent(Event):
 	def getInfo(self) -> str:
 		return self.getText()  # FIXME
 
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		jd = self.id
 		if jd is not None and startJd <= jd < endJd:
 			return JdOccurSet({jd})

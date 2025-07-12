@@ -12,7 +12,8 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import LargeScaleEvent
+	from scal3.event_lib.large_scale import LargeScaleEvent
+
 
 __all__ = ["WidgetClass"]
 

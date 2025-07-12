@@ -1,6 +1,6 @@
 from typing import Final
 
-__all__ = ["APP_NAME", "COMMAND", "VERSION_TAG"]
+__all__ = ["APP_DESC", "APP_NAME", "COMMAND", "VERSION_TAG", "homePage"]
 
 VERSION_TAG: Final[str] = "3.2.4"
 

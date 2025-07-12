@@ -1,22 +1,49 @@
+from __future__ import annotations
+
 from datetime import datetime
 from time import time as now
+from typing import TYPE_CHECKING, Final
 
-from scal3.locale_man import tr as _
+from scal3.option import Option
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 __all__ = [
 	"compressLongInt",
 	"eventTextSep",
+	"firstWeekDay",
+	"getAbsWeekNumberFromJd",
 	"getCompactTime",
 	"getCurrentJd",
+	"setTranslator",
 	"weekDayName",
 	"weekDayNameEnglish",
 ]
+
+tr: Callable[[str], str] = str
+
+
+def setTranslator(translator: Callable[[str], str]) -> None:
+	global tr, weekDayName
+	tr = translator
+	weekDayName = (
+		tr("Sunday"),
+		tr("Monday"),
+		tr("Tuesday"),
+		tr("Wednesday"),
+		tr("Thursday"),
+		tr("Friday"),
+		tr("Saturday"),
+	)
 
 
 # to separate summary from description for display
 eventTextSep = ": "
 
-weekDayNameEnglish = (
+type StrTuple7 = tuple[str, str, str, str, str, str, str]
+
+weekDayNameEnglish: Final[StrTuple7] = (
 	"Sunday",
 	"Monday",
 	"Tuesday",
@@ -25,7 +52,9 @@ weekDayNameEnglish = (
 	"Friday",
 	"Saturday",
 )
-weekDayName = tuple(_(name) for name in weekDayNameEnglish)
+weekDayName: StrTuple7 = weekDayNameEnglish
+
+firstWeekDay: Final[Option[int]] = Option(0)
 
 
 def getCurrentJd() -> int:
@@ -52,3 +81,12 @@ def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 			now() % (maxDays * 86400) / minSec,
 		),
 	)
+
+
+def getWeekDateFromJd(jd: int) -> tuple[int, int]:
+	"""Return (absWeekNumber, weekDay)."""
+	return divmod(jd - firstWeekDay.v + 1, 7)
+
+
+def getAbsWeekNumberFromJd(jd: int) -> int:
+	return getWeekDateFromJd(jd)[0]

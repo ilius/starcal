@@ -12,9 +12,8 @@ if TYPE_CHECKING:
 	from scal3.s_object import ParentSObj
 	from scal3.time_utils import HMS
 
-	from .event_container import EventContainer
 	from .groups_import import EventGroupsImportResult
-	from .occur import OccurSet
+
 
 __all__ = [
 	"AccountType",
@@ -25,6 +24,7 @@ __all__ = [
 	"EventRuleType",
 	"EventSearchConditionDict",
 	"EventType",
+	"OccurSetType",
 	"RuleContainerType",
 ]
 
@@ -48,6 +48,16 @@ class BaseTextModelType(BaseClassType, Protocol):
 		ident: int,
 		fs: FileSystem,
 	) -> Self | None: ...
+
+
+class OccurSetType(Protocol):
+	event: EventType | None
+
+	def intersection(self, other: OccurSetType) -> OccurSetType: ...
+	def getDaysJdList(self) -> list[int]: ...
+	def getTimeRangeList(self) -> list[tuple[int, int]]: ...
+	def getStartJd(self) -> int | None: ...
+	def getEndJd(self) -> int | None: ...
 
 
 class RuleContainerType(BaseClassType, Protocol):
@@ -81,7 +91,7 @@ class EventRuleType(BaseClassType, Protocol):
 		startJd: int,
 		endJd: int,
 		event: EventType,
-	) -> OccurSet: ...
+	) -> OccurSetType: ...
 	def changeCalType(self, calType: int) -> bool: ...
 	def getJd(self) -> int: ...
 	def getInfo(self) -> str: ...
@@ -106,7 +116,7 @@ class EventNotifierType(BaseClassType, Protocol):
 class EventType(RuleContainerType, Protocol):
 	id: int | None
 	uuid: str | None
-	parent: EventContainer | None
+	parent: EventContainerType | None
 	calType: int
 	timeZone: str
 	timeZoneEnable: bool
@@ -139,7 +149,7 @@ class EventType(RuleContainerType, Protocol):
 	def __init__(
 		self,
 		ident: int | None = None,
-		parent: EventContainer | None = None,
+		parent: EventContainerType | None = None,
 	) -> None: ...
 	def getRulesHash(self) -> int: ...
 	def getTextParts(self, showDesc: bool = True) -> list[str]: ...
@@ -150,8 +160,8 @@ class EventType(RuleContainerType, Protocol):
 	def afterModifyInGroup(self) -> None: ...
 	def changeCalType(self, calType: int) -> bool: ...
 	def setId(self, ident: int | None = None) -> None: ...
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet: ...
-	def calcEventOccurrence(self) -> OccurSet: ...
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType: ...
+	def calcEventOccurrence(self) -> OccurSetType: ...
 	def getNotifyBeforeSec(self) -> float: ...
 	def getSummary(self) -> str: ...
 	def getDescription(self) -> str: ...
@@ -188,21 +198,32 @@ class EventType(RuleContainerType, Protocol):
 	def setIcsData(self, data: dict[str, str]) -> bool: ...
 
 
-class EventContainerType(BaseClassType, Protocol):
+class EventContainerType(BaseTextModelType, Protocol):
 	title: str
+	calType: int
+	showFullEventDesc: bool
+	idList: list[int]
+	eventTextSep: str
+	startJd: int
+	endJd: int
+	occur: EventSearchTree | None
 
 	def __len__(self) -> int: ...
 	def __iter__(self) -> Iterator[EventType]: ...
+	def index(self, ident: int) -> int: ...
+	def getIdPath(self) -> list[int]: ...
+	def getPath(self) -> list[int]: ...
+	def updateOccurrenceEvent(self, event: EventType) -> None: ...
+	def getStartEpoch(self) -> int: ...
+	def getEndEpoch(self) -> int: ...
+	def getTimeZoneStr(self) -> str: ...
 
 
-class EventGroupType(BaseTextModelType, Protocol):
+class EventGroupType(EventContainerType, Protocol):
 	id: int | None
 	uuid: str | None
 	file: str
-	title: str
 	enable: bool
-	calType: int
-	idList: list[int]
 	parent: ParentSObj | None
 	color: ColorType
 	icon: str | None
@@ -213,7 +234,6 @@ class EventGroupType(BaseTextModelType, Protocol):
 	notificationEnabled: bool
 	notifyOccur: EventSearchTree
 	remoteIds: tuple[int, str] | None
-	occur: EventSearchTree
 	occurCount: int
 	showInDCal: bool
 	showInWCal: bool

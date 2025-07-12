@@ -32,6 +32,7 @@ from scal3.app_info import APP_NAME, COMMAND, VERSION_TAG
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.date_utils import jwday
+from scal3.event_lib.common import firstWeekDay
 from scal3.filesystem import DefaultFileSystem, FileSystem
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
@@ -130,7 +131,6 @@ allPlugList: Final[ListOption[PluginType | None]] = ListOption([])
 plugIndex: Final[ListOption[int]] = ListOption([])
 holidayWeekDays: Final[ListOption[int]] = ListOption([0])
 firstWeekDayAuto: Final[Option[bool]] = Option(False)
-firstWeekDay: Final[Option[int]] = Option(0)
 weekNumberModeAuto: Final[Option[bool]] = Option(False)
 weekNumberMode: Final[Option[int]] = Option(7)
 

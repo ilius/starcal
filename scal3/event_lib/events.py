@@ -30,7 +30,6 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.date_utils import jwday
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
@@ -40,7 +39,7 @@ from scal3.time_utils import (
 )
 from scal3.utils import iceil, ifloor
 
-from .common import getCurrentJd, weekDayName
+from .common import getCurrentJd
 from .event_base import Event
 from .occur import IntervalOccurSet, JdOccurSet
 from .register import classes
@@ -55,30 +54,24 @@ from .rules import (
 	EndEventRule,
 	MonthEventRule,
 	StartEventRule,
-	WeekDayEventRule,
-	WeekNumberModeEventRule,
 )
 
 if TYPE_CHECKING:
 	from typing import Any
 
-	from .event_container import EventContainer
-	from .groups import EventGroup, TaskList, UniversityTerm, YearlyGroup
-	from .occur import OccurSet
-	from .pytypes import EventRuleType
+	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
 
+	from .groups import TaskList, YearlyGroup
+	from .pytypes import EventRuleType
 
 __all__ = [
 	"AllDayTaskEvent",
 	"DailyNoteEvent",
 	"Event",
-	"LargeScaleEvent",
 	"LifetimeEvent",
 	"MonthlyEvent",
 	"SingleStartEndEvent",
 	"TaskEvent",
-	"UniversityClassEvent",
-	"UniversityExamEvent",
 	"WeeklyEvent",
 	"YearlyEvent",
 ]
@@ -144,7 +137,7 @@ class SingleStartEndEvent(Event):
 			("CATEGORIES", self.name),  # FIXME
 		]
 
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getStartEpoch()),
 			min(self.getEpochFromJd(endJd), self.getEndEpoch()),
@@ -186,7 +179,7 @@ class TaskEvent(SingleStartEndEvent):
 		)
 		return data
 
-	def _setDefaultDuration(self, group: EventGroup | None) -> None:
+	def _setDefaultDuration(self, group: EventGroupType | None) -> None:
 		if group is None or group.name != "taskList":
 			self.setEndDuration(1, 3600)
 			return
@@ -200,7 +193,7 @@ class TaskEvent(SingleStartEndEvent):
 			value, unit = 1, 3600
 		self.setEndDuration(value, unit)
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		tt = localtime()
 		self.setStart(
@@ -390,7 +383,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.setJd(jd)
 		self.setEndDurationDays(1)
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		jd = getCurrentJd()
 		self.setJd(jd)
@@ -531,12 +524,12 @@ class DailyNoteEvent(Event):
 			return
 		rule.setJd(jd)
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		self.setDate(*getSysDate(self.calType))
 
 	# startJd and endJd can be float jd
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		jd = self.getJd()
 		return JdOccurSet(
 			{jd} if startJd <= jd < endJd else set(),
@@ -617,7 +610,7 @@ class YearlyEvent(Event):
 		rule.setRuleValue(day)
 		return rule
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		_y, m, d = getSysDate(self.calType)
 		self.setMonth(m)
@@ -643,7 +636,7 @@ class YearlyEvent(Event):
 		start = StartEventRule.addOrGetFrom(self)
 		start.date = (y, 1, 1)
 
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		# startJd and endJd can be float? or they are just int? FIXME
 		calType = self.calType
 		month = self.getMonth()
@@ -813,7 +806,7 @@ class MonthlyEvent(Event):
 		)
 		return data
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		year, month, day = jd_to(getCurrentJd(), self.calType)
 		start = StartEventRule.getFrom(self)
@@ -884,7 +877,7 @@ class WeeklyEvent(Event):
 		)
 		return data
 
-	def setDefaults(self, group: EventGroup | None = None) -> None:
+	def setDefaults(self, group: EventGroupType | None = None) -> None:
 		Event.setDefaults(self, group=group)
 		jd = getCurrentJd()
 		start = StartEventRule.getFrom(self)
@@ -895,257 +888,6 @@ class WeeklyEvent(Event):
 			raise RuntimeError("no end rule")
 		start.setJd(jd)
 		end.setJd(jd + 8)
-
-
-# TODO
-# @classes.event.register
-# class UniversityCourseOwner(Event):
-
-
-@classes.event.register
-class UniversityClassEvent(Event):
-	name = "universityClass"
-	desc = _("Class")
-	iconName = "university"
-	requiredRules = [
-		"weekNumMode",
-		"weekDay",
-		"dayTimeRange",
-	]
-	supportedRules = [
-		"weekNumMode",
-		"weekDay",
-		"dayTimeRange",
-	]
-	params: list[str] = Event.params + ["courseId"]
-	isAllDay = False
-
-	def getV4Dict(self) -> dict[str, Any]:
-		data = Event.getV4Dict(self)
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		assert dayTimeRange is not None
-		startSec, endSec = dayTimeRange.getSecondsRange()
-		weekNumMode = WeekNumberModeEventRule.getFrom(self)
-		assert weekNumMode is not None
-		weekDay = WeekDayEventRule.getFrom(self)
-		assert weekDay is not None
-		data.update(
-			{
-				"weekNumMode": weekNumMode.getRuleValue(),
-				"weekDayList": weekDay.getRuleValue(),
-				"dayStartSeconds": startSec,
-				"dayEndSeconds": endSec,
-				"courseId": self.courseId,
-			},
-		)
-		return data
-
-	def __init__(
-		self,
-		ident: int | None = None,
-		parent: EventContainer | None = None,
-	) -> None:
-		# assert parent is not None
-		Event.__init__(self, ident, parent)
-		self.courseId: int | None = None  # FIXME
-
-	def setDefaults(
-		self,
-		group: EventGroup | None = None,
-	) -> None:
-		Event.setDefaults(self, group=group)
-		if group and group.name == "universityTerm":
-			if TYPE_CHECKING:
-				assert isinstance(group, UniversityTerm), f"{group=}"
-			try:
-				tm0, tm1 = group.classTimeBounds[:2]
-			except ValueError:
-				log.exception("")
-			else:
-				rule = DayTimeRangeEventRule.getFrom(self)
-				if rule is None:
-					raise RuntimeError("no dayTimeRange rule")
-				rule.setRange(
-					tm0 + (0,),
-					tm1 + (0,),
-				)
-
-	def getCourseName(self) -> str:
-		assert self.parent is not None
-		assert self.courseId is not None
-		return self.parent.getCourseNameById(self.courseId)
-
-	def getWeekDayName(self) -> str:
-		rule = WeekDayEventRule.getFrom(self)
-		if rule is None:
-			raise RuntimeError("no weekDay rule")
-		return weekDayName[rule.weekDayList[0]]
-
-	def updateSummary(self) -> None:
-		self.summary = (
-			_("{courseName} Class").format(courseName=self.getCourseName())
-			+ " ("
-			+ self.getWeekDayName()
-			+ ")"
-		)
-
-	def setJd(self, jd: int) -> None:
-		rule = WeekDayEventRule.getFrom(self)
-		if rule is None:
-			raise RuntimeError("no weekDay rule")
-		rule.weekDayList = [jwday(jd)]
-		# set weekNumMode from absWeekNumber FIXME
-
-	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
-		start = StartEventRule.getFrom(self)
-		if start is None:
-			raise RuntimeError("no start rule")
-		end = EndEventRule.getFrom(self)
-		if end is None:
-			raise RuntimeError("no end rule")
-		startJd = start.getJd()
-		endJd = end.getJd()
-		occur = self.calcEventOccurrenceIn(startJd, endJd)
-		tRangeList = occur.getTimeRangeList()
-		if not tRangeList:
-			return None
-		weekNumMode = WeekNumberModeEventRule.getFrom(self)
-		if weekNumMode is None:
-			raise RuntimeError("no weekNumMode rule")
-		weekDay = WeekDayEventRule.getFrom(self)
-		if weekDay is None:
-			raise RuntimeError("no weekDay rule")
-		until = ics.getIcsDateByJd(endJd, prettyDateTime)
-		interval = 1 if weekNumMode.getRuleValue() == "any" else 2
-		byDay = ics.encodeIcsWeekDayList(weekDay.weekDayList)
-		return [
-			(
-				"DTSTART",
-				ics.getIcsTimeByEpoch(
-					tRangeList[0][0],
-					prettyDateTime,
-				),
-			),
-			(
-				"DTEND",
-				ics.getIcsTimeByEpoch(
-					tRangeList[0][1],
-					prettyDateTime,
-				),
-			),
-			(
-				"RRULE",
-				f"FREQ=WEEKLY;UNTIL={until};INTERVAL={interval};BYDAY={byDay}",
-			),
-			("TRANSP", "OPAQUE"),
-			("CATEGORIES", self.name),  # FIXME
-		]
-
-
-@classes.event.register
-class UniversityExamEvent(DailyNoteEvent):
-	name = "universityExam"
-	desc = _("Exam")
-	iconName = "university"
-	requiredRules = [
-		"date",
-		"dayTimeRange",
-	]
-	supportedRules = [
-		"date",
-		"dayTimeRange",
-	]
-	params = DailyNoteEvent.params + ["courseId"]
-	isAllDay = False
-
-	def getV4Dict(self) -> dict[str, Any]:
-		data = Event.getV4Dict(self)
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		assert dayTimeRange is not None
-		startSec, endSec = dayTimeRange.getSecondsRange()
-		data.update(
-			{
-				"jd": self.getJd(),
-				"dayStartSeconds": startSec,
-				"dayEndSeconds": endSec,
-				"courseId": self.courseId,
-			},
-		)
-		return data
-
-	def __init__(
-		self,
-		ident: int | None = None,
-		parent: EventContainer | None = None,
-	) -> None:
-		# assert group is not None  # FIXME
-		DailyNoteEvent.__init__(self, ident, parent)
-		self.courseId: int | None = None  # FIXME
-
-	def setDefaults(self, group: EventGroup | None = None) -> None:
-		DailyNoteEvent.setDefaults(self, group=group)
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		if dayTimeRange is None:
-			raise RuntimeError("no dayTimeRange rule")
-		dayTimeRange.setRange((9, 0, 0), (11, 0, 0))  # FIXME
-		if group and group.name == "universityTerm":
-			self.setJd(group.endJd)  # FIXME
-
-	def getCourseName(self) -> str:
-		assert self.parent is not None
-		assert self.courseId is not None
-		return self.parent.getCourseNameById(self.courseId)
-
-	def updateSummary(self) -> None:
-		self.summary = _("{courseName} Exam").format(
-			courseName=self.getCourseName(),
-		)
-
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
-		jd = self.getJd()
-		if not startJd <= jd < endJd:
-			return IntervalOccurSet()
-
-		epoch = self.getEpochFromJd(jd)
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		if dayTimeRange is None:
-			raise RuntimeError("no dayTimeRange rule")
-		startSec, endSec = dayTimeRange.getSecondsRange()
-		return IntervalOccurSet(
-			[
-				(
-					epoch + startSec,
-					epoch + endSec,
-				),
-			],
-		)
-
-	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
-		date = DateEventRule.getFrom(self)
-		if date is None:
-			raise RuntimeError("no date rule")
-		dayStart = date.getEpoch()
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		if dayTimeRange is None:
-			raise RuntimeError("no dayTimeRange rule")
-		startSec, endSec = dayTimeRange.getSecondsRange()
-		return [
-			(
-				"DTSTART",
-				ics.getIcsTimeByEpoch(
-					dayStart + startSec,
-					prettyDateTime,
-				),
-			),
-			(
-				"DTEND",
-				ics.getIcsTimeByEpoch(
-					dayStart + endSec,
-					prettyDateTime,
-				),
-			),
-			("TRANSP", "OPAQUE"),
-		]
 
 
 @classes.event.register
@@ -1208,123 +950,6 @@ class LifetimeEvent(SingleStartEndEvent):
 		if end is None:
 			raise RuntimeError("no end rule")
 		end.setEpoch(roundEpochToDay(newEpoch))
-
-
-@classes.event.register
-class LargeScaleEvent(Event):  # or MegaEvent? FIXME
-	name = "largeScale"
-	desc = _("Large Scale Event")
-	isSingleOccur = True
-	_myOptions = [
-		"scale",
-		"start",
-		"end",
-		"endRel",
-	]
-	params = Event.params + _myOptions
-	paramsOrder = Event.paramsOrder + _myOptions
-
-	def __bool__(self) -> bool:
-		return True
-
-	isAllDay = True
-
-	def getV4Dict(self) -> dict[str, Any]:
-		data = Event.getV4Dict(self)
-		data.update(
-			{
-				"scale": self.scale,
-				"start": self.start,
-				"end": self.end,
-				"durationEnable": self.endRel,
-			},
-		)
-		return data
-
-	def __init__(
-		self,
-		ident: int | None = None,
-		parent: EventContainer | None = None,
-	) -> None:
-		self.scale = 1  # 1, 1000, 1000**2, 1000**3
-		self.start = 0
-		self.end = 1
-		self.endRel = True
-		Event.__init__(self, ident, parent)
-
-	def setDict(self, data: dict[str, Any]) -> None:
-		Event.setDict(self, data)
-		if "duration" in data:
-			data["end"] = data["duration"]
-			data["endRel"] = True
-
-	def getRulesHash(self) -> int:
-		return hash(
-			str(
-				(
-					self.getTimeZoneStr(),
-					"largeScale",
-					self.scale,
-					self.start,
-					self.end,
-					self.endRel,
-				),
-			),
-		)
-		# hash(str(tupleObj)) is probably safer than hash(tupleObj)
-
-	def getEnd(self) -> int:
-		return self.start + self.end if self.endRel else self.end
-
-	def setDefaults(self, group: EventGroup | None = None) -> None:
-		Event.setDefaults(self, group=group)
-		if group and group.name == "largeScale":
-			if TYPE_CHECKING:
-				assert isinstance(group, LargeScaleEvent), f"{group=}"
-			self.scale = group.scale
-			self.start = group.getStartValue()
-
-	def getJd(self) -> int:
-		return to_jd(
-			self.start * self.scale,
-			1,
-			1,
-			self.calType,
-		)
-
-	def setJd(self, jd: int) -> None:
-		self.start = jd_to(jd, self.calType)[0] // self.scale
-
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
-		myStartJd = iceil(
-			to_jd(
-				int(self.scale * self.start),
-				1,
-				1,
-				self.calType,
-			),
-		)
-		myEndJd = ifloor(
-			to_jd(
-				int(self.scale * self.getEnd()),
-				1,
-				1,
-				self.calType,
-			),
-		)
-		return IntervalOccurSet.newFromStartEnd(
-			max(
-				self.getEpochFromJd(myStartJd),
-				self.getEpochFromJd(startJd),
-			),
-			min(
-				self.getEpochFromJd(myEndJd),
-				self.getEpochFromJd(endJd),
-			),
-		)
-
-	# def getIcsData(self, prettyDateTime=False):
-	# 	pass
 
 
 @classes.event.register
