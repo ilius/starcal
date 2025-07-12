@@ -17,7 +17,6 @@ from scal3.event_lib.trash import EventTrash
 
 if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
-	from scal3.ui_gtk.gtk_ud import CalObjType
 
 __all__ = ["EventUpdateQueue", "EventUpdateRecord"]
 
@@ -32,7 +31,7 @@ Usage:
 class EventUpdateRecord:
 	action: str
 	obj: EventType | EventGroupType | EventTrash
-	sender: CalObjType | None
+	sender: object  # CalObjType, but we don't use anything from it
 
 
 class ConsumerType(Protocol):
@@ -58,7 +57,7 @@ class EventUpdateQueue:
 		self,
 		action: str,
 		obj: EventType | EventGroupType | EventTrash,
-		sender: CalObjType | None,
+		sender: object,
 	) -> None:
 		if action not in {
 			"+",  # add/create event
@@ -120,7 +119,7 @@ class EventUpdateQueue:
 			if record is None:
 				return
 			for consumer in self._consumers:
-				if consumer is record.sender:  # type: ignore[comparison-overlap]
+				if consumer is record.sender:
 					continue
 				consumer.onEventUpdate(record)
 
