@@ -28,6 +28,7 @@ from typing import Any, Final, NamedTuple
 
 import scal3
 from scal3 import locale_man, logger
+from scal3.app_info import APP_NAME, COMMAND, VERSION_TAG
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.date_utils import jwday
@@ -36,7 +37,6 @@ from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.option import ListOption, Option
 from scal3.path import (
-	APP_NAME,
 	confDir,
 	plugDir,
 	plugDirUser,
@@ -93,14 +93,6 @@ __all__ = [
 	"weekNumberModeAuto",
 ]
 
-VERSION_TAG: Final[str] = "3.2.4"
-
-# BRANCH = join(sourceDir, "branch")
-# FIXME: figure out a policy for updating it
-
-APP_DESC: Final[str] = "StarCalendar"
-COMMAND = APP_NAME
-homePage: Final[str] = "http://ilius.github.io/starcal/"
 
 logger.init()
 log: Final = logger.get()

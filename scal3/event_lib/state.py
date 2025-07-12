@@ -24,7 +24,7 @@ from os.path import join, splitext
 from time import perf_counter
 from time import time as now
 
-from scal3.core import VERSION
+from scal3.app_info import VERSION_TAG as VERSION
 
 from .object_base import EventObjTextModel
 

@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 from gi.repository import GdkPixbuf
 from gi.repository import Gio as gio
 
-from scal3 import core
+from scal3.app_info import APP_DESC
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.starcal_types import MainWinType
@@ -33,7 +33,7 @@ class GioNotificationWrapper(gio.Notification):
 		self.app = mainWin.app
 		# --
 		gio.Notification.__init__(self)
-		self.set_title(core.APP_DESC)
+		self.set_title(APP_DESC)
 		# self.show()
 
 		action = gio.SimpleAction.new("onStatusIconClick")
