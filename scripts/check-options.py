@@ -13,6 +13,15 @@ from scal3.ui import conf, options
 
 ignoreMissingOptions = {
 	"localTzHist",
+	"RGB",
+	"Option",
+	"needRestartList",
+	"confOptionsLive",
+	"RGBA",
+	"confOptionsCustomize",
+	"ListOption",
+	"dayCalWinOptionsLive",
+	"confOptions",
 }
 
 attrNames = {name for name in dir(conf) if not name.startswith("_")} - {
@@ -37,7 +46,9 @@ for option in options.confOptionsData:
 	assert option.type, option.v3Name
 	if option.v3Name in ignoreMissingOptions:
 		continue
-	value = getattr(conf, option.v3Name)
+	if option.type == "float":
+		assert type(option.default) is float, f"{option=}"
+	value = getattr(conf, option.v3Name).v
 	# if not isinstance(value, option.type):
 	if option.default is not options.NOT_SET:
 		assert option.default == value, f"{option.default}!={value} for {option.v3Name}"
