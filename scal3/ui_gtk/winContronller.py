@@ -11,7 +11,8 @@ from scal3.path import svgDir
 from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
+from scal3.ui_gtk.customize import CustomizableCalBox
 from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 

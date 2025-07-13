@@ -17,42 +17,16 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
+from scal3.ui_gtk.stack_page import StackPage
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
 
-if TYPE_CHECKING:
-	from scal3.ui_gtk.customize import CustomizableCalObj
-
 __all__ = ["MyStack", "StackPage", "StackPageButton"]
-
-
-class StackPage:
-	def __init__(self) -> None:
-		self.pageWidget: gtk.Box | None = None
-		self.pageParent = ""
-		self.pageName = ""
-		self.pagePath = ""
-		self.pageTitle = ""
-		self.pageLabel = ""
-		self.pageIcon = ""
-		self.pageExpand = True
-		self.pageItem: CustomizableCalObj | None = None
-		self.iconSize = 0
-
-	def __str__(self) -> str:
-		return (
-			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
-			f"pageParent={self.pageParent!r})"
-		)
-
-	def __repr__(self) -> str:
-		return self.__str__()
 
 
 class MyStack(gtk.Stack):

@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 
 log = logger.get()
 
@@ -42,10 +43,9 @@ from scal3.ui_gtk import (
 	pack,
 )
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.cal_base import CalBase
+from scal3.ui_gtk.cal_obj import CalBase
 from scal3.ui_gtk.customize import (
 	CustomizableCalBox,
-	CustomizableCalObj,
 	newSubPageButton,
 )
 from scal3.ui_gtk.drawing import (

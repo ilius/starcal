@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
 	)
-	from scal3.ui_gtk.cal_base import CalBase
+	from scal3.ui_gtk.cal_obj import CalBase
 
 __all__ = [
 	"DayNumListOptionsWidget",

@@ -6,7 +6,7 @@ from scal3.app_info import APP_DESC
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.gtk_ud import commonSignals
+from scal3.ui_gtk.cal_obj_base import commonSignals
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
 

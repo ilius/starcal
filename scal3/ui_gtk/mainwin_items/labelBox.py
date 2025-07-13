@@ -38,10 +38,9 @@ from scal3.ui_gtk import (
 	timeout_add,
 )
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj, commonSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
-from scal3.ui_gtk.gtk_ud import CalObjWidget, commonSignals
 from scal3.ui_gtk.mywidgets.button import ConButton
 from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.utils import (

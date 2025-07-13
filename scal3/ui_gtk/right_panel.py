@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.option_ui import FloatSpinOptionUI, OptionUI
 
 log = logger.get()
@@ -12,7 +13,7 @@ from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gdk, gtk, pack, timeout_add
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.event.occurrence_view import (
 	DayOccurrenceView,
 )

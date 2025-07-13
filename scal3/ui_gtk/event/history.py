@@ -16,8 +16,8 @@ from scal3.s_object import SObjBinaryModel
 from scal3.time_utils import getJhmsFromEpoch
 from scal3.ui_gtk import Dialog, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
