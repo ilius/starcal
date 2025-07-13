@@ -5,9 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from gi.repository import Gtk as gtk
-
-	from scal3.ui_gtk.starcal import MainWin
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["doFullImport"]
@@ -15,9 +12,9 @@ __all__ = ["doFullImport"]
 
 
 def doFullImport(win: MainWinType) -> None:
-	import scal3.cal_types.import_all
-	import scal3.event_lib_import_all
-	import scal3.ui_gtk.event.import_all
+	import scal3.cal_types.import_all  # noqa: F401
+	import scal3.event_lib_import_all  # noqa: F401
+	import scal3.ui_gtk.event.import_all  # noqa: F401
 	from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
 
 	LimitedHeightDayOccurrenceView().getOptionsWidget()
@@ -56,4 +53,4 @@ def doFullImport(win: MainWinType) -> None:
 
 	from scal3.ui_gtk.pluginsText import PluginsTextBox
 
-	CalObj(win).getOptionsWidget()
+	PluginsTextBox(win).getOptionsWidget()
