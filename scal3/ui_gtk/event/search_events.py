@@ -33,6 +33,7 @@ from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import GdkPixbuf, Menu, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.event.common import SingleGroupComboBox
 from scal3.ui_gtk.event.export import EventListExportDialog
 from scal3.ui_gtk.event.utils import (
@@ -42,7 +43,6 @@ from scal3.ui_gtk.event.utils import (
 	eventWriteMenuItem,
 	menuItemFromEventGroup,
 )
-from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox

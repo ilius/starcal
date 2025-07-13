@@ -7,7 +7,7 @@ from scal3.locale_man import getMonthName, rtl, textNumEncode
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.pbar import MyProgressBar
 
 __all__ = ["CalObj"]

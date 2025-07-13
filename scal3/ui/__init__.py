@@ -70,7 +70,7 @@ if typing.TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.pytypes import CellCacheType
 	from scal3.ui.pytypes import CalTypeOptionsDict
-	from scal3.ui_gtk.gtk_ud import CalObjType
+	from scal3.ui_gtk.pytypes import CalObjType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 
