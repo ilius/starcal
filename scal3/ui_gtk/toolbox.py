@@ -15,10 +15,8 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, gdk, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.gtk_ud import commonSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if typing.TYPE_CHECKING:
@@ -40,15 +38,7 @@ type ButtonClickCallback = Callable[[GObject.Object], None]
 type ButtonPressCallback = Callable[[gtk.Widget, gdk.EventButton], None]
 
 
-@registerSignals
-class SignalHandler(SignalHandlerBase):
-	signals = commonSignals + [
-		("con-clicked", []),
-	]
-
-
 class BaseToolBoxItem(CustomizableCalObj):
-	Sig: type[SignalHandlerType] = SignalHandler
 	hasOptions = False
 	iconSize = Option(0)
 	preferIconName = Option(False)
