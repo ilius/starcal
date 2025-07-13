@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
-from scal3.ui_gtk.customize_base import CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.stack import StackPageButton
 
 log = logger.get()
@@ -26,11 +26,11 @@ from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.ui_gtk import getOrientation, gtk, pack
-from scal3.ui_gtk.gtk_ud import CalObjWidget
+from scal3.ui_gtk.cal_obj_base import CalObjWidget
 
 if TYPE_CHECKING:
 	from scal3.option import Option
-	from scal3.ui_gtk.stack import StackPage
+	from scal3.ui_gtk.stack_page import StackPage
 
 __all__ = [
 	"CustomizableCalBox",

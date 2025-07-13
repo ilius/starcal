@@ -64,9 +64,9 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
-from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj, DummyCalObj
+from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj, commonSignals
+from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk.gtk_ud import CalObjType, CalObjWidget
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
@@ -94,6 +94,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
+	from scal3.ui_gtk.pytypes import CalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
 	from scal3.ui_gtk.starcal_types import MainWinType, OptEvent, OptWidget
@@ -243,7 +244,7 @@ class MainWinVbox(CustomizableCalBox):
 
 @registerSignals
 class SignalHandler(SignalHandlerBase):
-	signals = ud.commonSignals + [
+	signals = commonSignals + [
 		("toggle-right-panel", []),
 	]
 

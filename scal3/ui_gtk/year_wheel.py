@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.color_utils import RGBA
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 
 log = logger.get()
 
@@ -36,6 +36,7 @@ from scal3.season import getSpringJdAfter
 from scal3.ui_gtk import gdk, getScrollValue, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
+from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	drawArcOutline,
@@ -47,7 +48,6 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
-from scal3.ui_gtk.gtk_ud import CalObjWidget
 
 if TYPE_CHECKING:
 	from collections.abc import Callable

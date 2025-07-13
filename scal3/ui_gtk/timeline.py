@@ -17,8 +17,6 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.events import LifetimeEvent, TaskEvent
-from scal3.ui_gtk.customize import CustomizableCalObj
 
 log = logger.get()
 
@@ -32,6 +30,7 @@ from gi.repository.PangoCairo import show_layout
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.event_lib import ev
+from scal3.event_lib.events import LifetimeEvent, TaskEvent
 from scal3.locale_man import localTz
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
@@ -54,13 +53,13 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import SVGButton
+from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj
 from scal3.ui_gtk.drawing import (
 	ImageContext,
 	fillColor,
 	newTextLayout,
 	setColor,
 )
-from scal3.ui_gtk.gtk_ud import CalObjWidget
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )

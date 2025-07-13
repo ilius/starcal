@@ -10,7 +10,7 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
