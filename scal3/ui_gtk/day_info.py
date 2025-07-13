@@ -17,6 +17,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
@@ -28,6 +30,9 @@ from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 
 __all__ = ["DayInfoDialog"]
 
@@ -158,7 +163,7 @@ class DayInfoDialog(CustomizableCalObj):
 
 	def appendDayInfoItem(
 		self,
-		item: CustomizableCalObj,
+		item: CustomizableCalObjType,
 		expander: bool = True,
 	) -> None:
 		self.appendItem(item)

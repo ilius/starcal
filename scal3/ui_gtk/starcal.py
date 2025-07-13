@@ -94,7 +94,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
-	from scal3.ui_gtk.pytypes import CalObjType
+	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
 	from scal3.ui_gtk.starcal_types import MainWinType, OptEvent, OptWidget
@@ -914,7 +914,7 @@ class MainWin(CalObjWidget):
 		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		item: CustomizableCalObj,
+		item: CustomizableCalObjType,
 	) -> None:
 		widget = item.w
 		# item.objName is in ("weekCal", "monthCal", ...)
@@ -1107,7 +1107,7 @@ class MainWin(CalObjWidget):
 		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		item: CustomizableCalObj,
+		item: CustomizableCalObjType,
 	) -> None:
 		widget = item.w
 		menu = self.menuMainCreate()
