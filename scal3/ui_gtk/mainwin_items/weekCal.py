@@ -77,6 +77,7 @@ if TYPE_CHECKING:
 	from scal3.pytypes import CellType, WeekStatusType
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
@@ -1452,7 +1453,7 @@ class CalObj(CalBase):
 			item.enable = False
 			self.appendItem(item)
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
+	def appendItem(self, item: CustomizableCalObjType) -> None:
 		super().appendItem(item)
 		if item.loaded:
 			pack(self.w, item.w, item.expand, item.expand)

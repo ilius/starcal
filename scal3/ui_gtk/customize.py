@@ -30,6 +30,7 @@ from scal3.ui_gtk.cal_obj_base import CalObjWidget
 
 if TYPE_CHECKING:
 	from scal3.option import Option
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.stack_page import StackPage
 
 __all__ = [
@@ -63,9 +64,9 @@ class DummyCalObj(CalObjWidget):
 		self.moduleName = f"{pkg}.{name}"
 		self.customizable = customizable
 		self.optionsWidget: gtk.Widget | None = None
-		self.items: list[CustomizableCalObj] = []
+		self.items: list[CustomizableCalObjType] = []
 
-	def getLoadedObj(self) -> CustomizableCalObj:
+	def getLoadedObj(self) -> CustomizableCalObjType:
 		module = __import__(
 			self.moduleName,
 			fromlist=["CalObj"],
@@ -73,8 +74,8 @@ class DummyCalObj(CalObjWidget):
 		CalObj = module.CalObj
 		obj = CalObj(ui.mainWin)
 		obj.enable = self.enable
-		assert isinstance(obj, CustomizableCalObj), f"{obj=}"
-		return obj
+		# assert isinstance(obj, CustomizableCalObjType), f"{obj=}"
+		return obj  # type: ignore[no-any-return]
 
 	def updateVars(self) -> None:
 		pass
@@ -98,8 +99,8 @@ class CustomizableCalBox(CustomizableCalObj):
 		self.initVars()
 		self.vertical = vertical
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
-		CustomizableCalObj.appendItem(self, item)
+	def appendItem(self, item: CustomizableCalObjType) -> None:
+		super().appendItem(item)
 		if item.loaded:
 			pack(self.w, item.w, item.expand, item.expand)
 			item.showHide()
@@ -118,7 +119,7 @@ class CustomizableCalBox(CustomizableCalObj):
 	# re-packing them all apears to be fast enough, so doing that instead
 
 	def moveItem(self, i: int, j: int) -> None:
-		CustomizableCalObj.moveItem(self, i, j)
+		super().moveItem(i, j)
 		self.repackAll()
 
 	def insertItemWidget(self, _i: int) -> None:
@@ -126,7 +127,7 @@ class CustomizableCalBox(CustomizableCalObj):
 
 
 def newSubPageButton(
-	item: CustomizableCalObj,
+	item: CustomizableCalObjType,
 	page: StackPage,
 	vertical: bool = False,
 	borderWidth: int = 10,

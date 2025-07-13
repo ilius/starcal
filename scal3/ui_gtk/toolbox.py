@@ -23,6 +23,7 @@ if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable, Iterator
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 
 __all__ = [
 	"BaseToolBoxItem",
@@ -48,7 +49,8 @@ class BaseToolBoxItem(CustomizableCalObj):
 
 	def __init__(self, continuousClick: bool) -> None:
 		super().__init__()
-		self.w: ConButton = ConButton(continuousClick=continuousClick)
+		self.button = ConButton(continuousClick=continuousClick)
+		self.w: gtk.Widget = self.button
 
 	def build(self) -> None:
 		pass
@@ -98,9 +100,9 @@ class ToolBoxItem(BaseToolBoxItem):
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
-		self.w.set_relief(gtk.ReliefStyle.NONE)
+		self.button.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.w.set_focus_on_click(False)  # type: ignore[no-untyped-call]
+		self.button.set_focus_on_click(False)  # type: ignore[no-untyped-call]
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -128,7 +130,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		self.bigPixbuf: GdkPixbuf.Pixbuf | None = None
 		self.image = gtk.Image()
 		self.image.show()
-		self.w.add(self.image)
+		self.button.add(self.image)
 		# ---
 		if imageName and not iconName:
 			iconName = iconNameByImageName.get(imageName, "")
@@ -215,9 +217,9 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		# ------
 		# this lines removes the background shadow of button
 		# and makes it look like a standard GtkToolButton on a GtkToolbar
-		self.w.set_relief(gtk.ReliefStyle.NONE)
+		self.button.set_relief(gtk.ReliefStyle.NONE)
 		# --
-		self.w.set_focus_on_click(False)  # type: ignore[no-untyped-call]
+		self.button.set_focus_on_click(False)  # type: ignore[no-untyped-call]
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		# ------
@@ -238,7 +240,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		# self.shortDesc = shortDesc  # FIXME
 		# ------
 		self.label = gtk.Label()
-		self.w.add(self.label)
+		self.button.add(self.label)
 		# ------
 		self.initVars()
 		if enableTooltip:
@@ -343,7 +345,7 @@ class StaticToolBox(BaseToolBox):
 		item.setVertical(self.vertical)
 		item.iconSize = self.iconSize
 		item.preferIconName = self.preferIconName
-		item.w.set_border_width(self.buttonBorder.v)
+		item.button.set_border_width(self.buttonBorder.v)
 		item.build()
 		item.onConfigChange()
 		self.setupItemSignals(item)
@@ -459,7 +461,7 @@ class CustomizableToolBox(StaticToolBox):
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
+	def appendItem(self, item: CustomizableCalObjType) -> None:
 		assert isinstance(item, BaseToolBoxItem), f"{item=}"
 		CustomizableCalObj.appendItem(self, item)
 		self.append(item)
@@ -476,7 +478,7 @@ class CustomizableToolBox(StaticToolBox):
 		buttonBorder = self.buttonBorder.v
 		buttonPadding = self.buttonPadding.v
 		for item in self._items:
-			item.w.set_border_width(buttonBorder)
+			item.button.set_border_width(buttonBorder)
 			self.box.set_child_packing(
 				child=item.w,
 				expand=False,

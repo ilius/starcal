@@ -19,33 +19,6 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-	from scal3.ui_gtk import gtk
-	from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
+from scal3.ui_gtk.pytypes import StackPage
 
 __all__ = ["StackPage"]
-
-
-class StackPage:
-	def __init__(self) -> None:
-		self.pageWidget: gtk.Box | None = None
-		self.pageParent = ""
-		self.pageName = ""
-		self.pagePath = ""
-		self.pageTitle = ""
-		self.pageLabel = ""
-		self.pageIcon = ""
-		self.pageExpand = True
-		self.pageItem: CustomizableCalObj | None = None
-		self.iconSize = 0
-
-	def __str__(self) -> str:
-		return (
-			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
-			f"pageParent={self.pageParent!r})"
-		)
-
-	def __repr__(self) -> str:
-		return self.__str__()
