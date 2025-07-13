@@ -43,6 +43,7 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.layout import WinLayoutBox
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CustomizeWindow"]
@@ -144,7 +145,7 @@ class CustomizeWindow(Dialog):
 		)
 		# should we save on Escape? or when clicking the X (close) button?
 		# ---
-		self.itemByPagePath: dict[str, CustomizableCalObj] = {}
+		self.itemByPagePath: dict[str, CustomizableCalObjType] = {}
 		self.enableParamByPagePath: dict[str, CheckOptionUI] = {}
 		self.rootItem = item
 		# ---
@@ -175,7 +176,7 @@ class CustomizeWindow(Dialog):
 			self.vbox.set_size_request(300, 450)
 
 	@staticmethod
-	def itemPixbuf(item: CustomizableCalObj) -> GdkPixbuf.Pixbuf | None:
+	def itemPixbuf(item: CustomizableCalObjType) -> GdkPixbuf.Pixbuf | None:
 		if not item.enable:
 			return None
 		if item.hasOptions or (item.itemListCustomizable and item.items):
@@ -185,7 +186,7 @@ class CustomizeWindow(Dialog):
 	def newItemList(
 		self,
 		parentPagePath: str,
-		parentItem: CustomizableCalObj,
+		parentItem: CustomizableCalObjType,
 		scrolled: bool = False,
 	) -> tuple[gtk.TreeView, gtk.Box]:
 		# column 0: bool: enable
@@ -449,7 +450,7 @@ class CustomizeWindow(Dialog):
 		self,
 		pagePath: str,
 		parentPagePath: str,
-		parentItem: CustomizableCalObj,
+		parentItem: CustomizableCalObjType,
 		itemIndex: int,
 	) -> StackPage:
 		item = parentItem.items[itemIndex]
@@ -538,10 +539,10 @@ class CustomizeWindow(Dialog):
 
 	@staticmethod
 	def loadItem(
-		parentItem: CustomizableCalObj,
+		parentItem: CustomizableCalObjType,
 		itemIndex: int,
 		enable: bool | None = None,
-	) -> CustomizableCalObj | None:
+	) -> CustomizableCalObjType | None:
 		item = parentItem.items[itemIndex]
 		if item.loaded:
 			if enable is not None:

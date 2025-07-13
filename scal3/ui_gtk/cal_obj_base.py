@@ -27,6 +27,7 @@ log = logger.get()
 from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import gdk
+from scal3.ui_gtk.pytypes import CustomizableCalObjType
 from scal3.ui_gtk.signals import (
 	SignalHandlerBase,
 	SignalHandlerType,
@@ -145,20 +146,20 @@ class CalObjWidget(CalObjBase):
 
 	def initVars(self) -> None:
 		self.s = self.Sig()
-		self.items: list[CustomizableCalObj] = []  # type: ignore[assignment]
+		self.items: list[CustomizableCalObjType] = []  # type: ignore[assignment]
 		self.enable = True
 
-	def __getitem__(self, key: str) -> CustomizableCalObj | None:
+	def __getitem__(self, key: str) -> CustomizableCalObjType | None:
 		for item in self.items:
 			if item.objName == key:
 				return item
 		return None
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
+	def appendItem(self, item: CustomizableCalObjType) -> None:
 		self.items.append(item)
 		self.connectItem(item)
 
-	def replaceItem(self, itemIndex: int, item: CustomizableCalObj) -> None:
+	def replaceItem(self, itemIndex: int, item: CustomizableCalObjType) -> None:
 		self.items[itemIndex] = item
 		self.connectItem(item)
 
@@ -169,7 +170,7 @@ class CalObjWidget(CalObjBase):
 		self.w.hide()
 
 
-class CustomizableCalObj(CalObjWidget):
+class CustomizableCalObj(CalObjWidget, CustomizableCalObjType):
 	customizable = True
 	hasOptions = True
 	itemListCustomizable = True
@@ -182,7 +183,7 @@ class CustomizableCalObj(CalObjWidget):
 	itemListSeparatePage = False
 	itemsPageTitle = ""
 	itemsPageButtonBorder = 5
-	params = ()
+	params: list[str] = []
 	# enableOptionUI = None
 
 	def initVars(self) -> None:
@@ -203,7 +204,7 @@ class CustomizableCalObj(CalObjWidget):
 			return self.enableParam.v
 		return self.enable
 
-	def getLoadedObj(self) -> CustomizableCalObj:
+	def getLoadedObj(self) -> CustomizableCalObjType:
 		return self
 
 	def getItemsData(self) -> list[tuple[str, bool]]:

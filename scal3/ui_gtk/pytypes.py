@@ -27,12 +27,12 @@ log = logger.get()
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
+	from scal3.option import Option
 	from scal3.ui_gtk import gdk, gtk
-	from scal3.ui_gtk.signals import (
-		SignalHandlerType,
-	)
+	from scal3.ui_gtk.signals import SignalHandlerType
 
-__all__ = ["CalObjType"]
+
+__all__ = ["CalObjType", "CustomizableCalObjType"]
 
 
 class CalObjType(Protocol):
@@ -63,3 +63,52 @@ class CalObjType(Protocol):
 	) -> None: ...
 	def updateVars(self) -> None: ...
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey) -> bool: ...
+
+
+class CustomizableCalObjType(CalObjType, Protocol):
+	w: gtk.Widget
+	customizable: bool
+	hasOptions: bool
+	itemListCustomizable: bool
+	vertical: bool | None
+	isWrapper: bool
+	enableParam: Option[bool] | None
+	optionsPageSpacing: int
+	itemListSeparatePage: bool
+	itemsPageTitle: str
+	itemsPageButtonBorder: int
+	params: list[str]
+	# enableOptionUI = None
+	items: list[CustomizableCalObjType]
+	itemHaveOptions: bool
+
+	def moveItem(self, i: int, j: int) -> None: ...
+	def onEnableCheckClick(self) -> None: ...
+	def getOptionsWidget(self) -> gtk.Widget | None: ...
+	def getSubPages(self) -> list[StackPage]: ...
+	def getLoadedObj(self) -> CustomizableCalObjType: ...
+	def replaceItem(self, itemIndex: int, item: CustomizableCalObjType) -> None: ...
+	def insertItemWidget(self, _i: int) -> None: ...
+
+
+class StackPage:
+	def __init__(self) -> None:
+		self.pageWidget: gtk.Box | None = None
+		self.pageParent = ""
+		self.pageName = ""
+		self.pagePath = ""
+		self.pageTitle = ""
+		self.pageLabel = ""
+		self.pageIcon = ""
+		self.pageExpand = True
+		self.pageItem: CustomizableCalObjType | None = None
+		self.iconSize = 0
+
+	def __str__(self) -> str:
+		return (
+			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
+			f"pageParent={self.pageParent!r})"
+		)
+
+	def __repr__(self) -> str:
+		return self.__str__()

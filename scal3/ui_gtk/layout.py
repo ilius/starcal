@@ -367,7 +367,7 @@ class WinLayoutBox(WinLayoutBase):
 	def getSubPages(self) -> list[StackPage]:
 		if self.subPages is not None:
 			return self.subPages
-		subPages = []
+		subPages: list[StackPage] = []
 		for item in self.items:
 			assert isinstance(item, WinLayoutBase), f"{item=}"
 			for page in item.getSubPages():

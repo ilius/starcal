@@ -1092,3 +1092,8 @@ class DayCal(CalBase):
 	# 	# TODO: if active cal types are changed, we should re-order buttons
 	# 	# hide extra buttons, and possibly add new buttons with their pages
 	# 	# in Customize window
+
+
+# if __name__ == "__main__":
+# 	if TYPE_CHECKING:
+# 		_c: CustomizableCalObjType = DayCal(ui.mainWin)

@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 	from scal3.font import Font
 	from scal3.option import Option
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["MainWinRightPanel"]
@@ -179,7 +180,7 @@ class MainWinRightPanel(CustomizableCalObj):
 			return
 		self.enableOptionUI.set(not self.enableOptionUI.get())
 
-	def appendItem(self, item: CustomizableCalObj) -> None:
+	def appendItem(self, item: CustomizableCalObjType) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)

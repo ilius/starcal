@@ -3,7 +3,7 @@ from typing import Any, Protocol
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
+from scal3.ui_gtk.pytypes import CustomizableCalObjType
 from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["MainWinType", "OptEvent", "OptWidget"]
@@ -49,7 +49,7 @@ class MainWinType(Protocol):
 		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		item: CustomizableCalObj,
+		item: CustomizableCalObjType,
 	) -> None: ...
 
 	def menuCellPopup(
@@ -57,5 +57,5 @@ class MainWinType(Protocol):
 		_sig: SignalHandlerType,
 		x: int,
 		y: int,
-		item: CustomizableCalObj,
+		item: CustomizableCalObjType,
 	) -> None: ...
