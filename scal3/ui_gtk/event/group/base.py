@@ -211,7 +211,7 @@ class BaseWidgetClass(gtk.Box):
 		self.colorButton.setRGBA(self.group.color)
 		if self.group.icon:
 			self.iconSelect.set_filename(self.group.icon)
-		self.calTypeCombo.set_active(self.group.calType)
+		self.calTypeCombo.setActive(self.group.calType)
 		# --
 		self.tzCheck.set_active(self.group.timeZoneEnable)
 		self.tzCombo.set_sensitive(self.group.timeZoneEnable)
