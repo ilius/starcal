@@ -132,7 +132,7 @@ class EventRule(SObjBase, EventRuleType):
 	def setRuleValue(self, data: Any) -> None:  # noqa: ARG002
 		log.warning(f"No implementation for {self.__class__.__name__}.setRuleValue")
 
-	def copy(self) -> Self:
+	def __copy__(self) -> Self:
 		newObj = self.__class__(self.parent)
 		newObj.fs = getattr(self, "fs", None)  # type: ignore[assignment]
 		newObj.copyFrom(self)
