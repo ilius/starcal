@@ -23,7 +23,7 @@ class Handler:
 		self._accounts = EventAccountsHolder.load(0, fs=fs)
 		self._groups = EventGroupsHolder.load(0, fs=fs)
 		assert self._groups is not None
-		self._trash = EventTrash.load(0, fs=fs)
+		self._trash = EventTrash.s_load(0, fs=fs)
 		assert self._trash is not None
 		self._groups.setTrash(self._trash)
 		self._notif = EventNotificationManager(self._groups)

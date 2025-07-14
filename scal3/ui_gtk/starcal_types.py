@@ -14,7 +14,8 @@ type OptEvent = gdk.Event | None
 
 
 class MainWinType(Protocol):
-	w: gtk.ApplicationWindow
+	win: gtk.ApplicationWindow
+	w: gtk.Widget
 	app: gtk.Application
 
 	def onStatusIconClick(self, _w: OptWidget = None) -> None: ...

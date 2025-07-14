@@ -43,7 +43,7 @@ from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 if TYPE_CHECKING:
-	from collections.abc import Callable
+	from collections.abc import Callable, Iterable
 
 	from scal3.event_update_queue import EventUpdateRecord
 	from scal3.pytypes import CompiledTimeFormat
@@ -140,6 +140,12 @@ class IntegatedWindowList(CalObjBase):
 	def replaceItem(self, itemIndex: int, item: CalObjType) -> None:
 		self.items[itemIndex] = item
 		self.connectItem(item)
+
+	def itemIter(self) -> Iterable[CalObjType]:
+		return iter(self.items)
+
+	def moveItem(self, i: int, j: int) -> None:
+		self.items.insert(j, self.items.pop(i))
 
 	def addCSSFunc(self, func: Callable[[], str]) -> None:
 		self.cssFuncList.append(func)

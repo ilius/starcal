@@ -247,7 +247,8 @@ class Column(ColumnBase):
 
 	def __init__(self, wcal: CalObj) -> None:
 		super().__init__()
-		self.w: ColumnDrawingArea = ColumnDrawingArea(self.getWidth)
+		self.dr = ColumnDrawingArea(self.getWidth)
+		self.w: gtk.Widget = self.dr
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		self.w.connect("draw", self.onExposeEvent)
@@ -1107,7 +1108,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		ColumnBase.__init__(self)
 		self.initVars()
 		self.wcal = wcal
-		self.colParent: ColumnParent = wcal.w
+		self.colParent: ColumnParent = wcal.box
 		self.updateCols()
 		self.updateDirection()
 		self.show()
@@ -1116,11 +1117,12 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		self.w.set_direction(ud.textDirDict[conf.wcal_daysOfMonth_dir.v])
 		# set_direction does not apply to existing children.
 		# that's why we remove children(columns) and add them again
-		columns = self.w.get_children()
+		box = self.box
+		columns = box.get_children()
 		for col in columns:
-			self.w.remove(col)
+			box.remove(col)
 		for col in columns:
-			pack(self.w, col, 1, 1)
+			pack(box, col, 1, 1)
 
 	def onWidthChange(self) -> None:
 		ColumnBase.onWidthChange(self)
@@ -1162,7 +1164,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		widthOption = self.getWidthOption()
 		if widthOption is None:
 			raise ValueError("widthProp is None")
-		count = len(self.w.get_children())
+		count = len(self.box.get_children())
 		return int(count * widthOption.v)
 
 	def updateCols(self) -> None:
@@ -1190,8 +1192,8 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 		elif n < n2:
 			for i in range(n, n2):
 				col = DaysOfMonthColumn(self.wcal, self, 0, i)
-				col.colParent = self.w
-				pack(self.w, col.w, 1, 1)
+				col.colParent = self.box
+				pack(self.box, col.w, 1, 1)
 				columns.append(col)
 		for i, calType in enumerate(calTypes.active):
 			col2 = columns[i]
@@ -1414,9 +1416,10 @@ class CalObj(CalBase):
 
 	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
-		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Widget = self.box
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
-		self.win = win
+		self.parentWin = win
 		# self.items: list[ColumnBase] = []
 		self.initCal()
 		# ----------------------
@@ -1456,11 +1459,11 @@ class CalObj(CalBase):
 	def appendItem(self, item: CustomizableCalObjType) -> None:
 		super().appendItem(item)
 		if item.loaded:
-			pack(self.w, item.w, item.expand, item.expand)
+			pack(self.box, item.w, item.expand, item.expand)
 			item.showHide()
 
 	def repackAll(self) -> None:
-		box = self.w
+		box = self.box
 		for child in box.get_children():
 			box.remove(child)
 		for item in self.items:

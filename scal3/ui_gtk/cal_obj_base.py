@@ -27,7 +27,6 @@ log = logger.get()
 from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import gdk
-from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 from scal3.ui_gtk.signals import (
 	SignalHandlerBase,
 	SignalHandlerType,
@@ -35,9 +34,11 @@ from scal3.ui_gtk.signals import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Iterable
+
 	from scal3.option import Option
 	from scal3.ui_gtk import gtk
-	from scal3.ui_gtk.pytypes import CalObjType
+	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType, StackPageType
 
 __all__ = [
 	"CalObjBase",
@@ -56,7 +57,7 @@ commonSignals: list[tuple[str, list[Any]]] = [
 
 @registerSignals
 class CommonSignalHandler(SignalHandlerBase):
-	signals: list[tuple[str, list[Any]]] = commonSignals
+	signals = commonSignals
 
 
 class CalObjBase:
@@ -70,8 +71,10 @@ class CalObjBase:
 	expand: bool = False
 
 	s: SignalHandlerType  # FIXME: instance
-	items: list[CalObjType]  # FIXME: instance
 	enable: bool  # FIXME: instance
+
+	def itemIter(self) -> Iterable[CalObjType]:
+		raise NotImplementedError
 
 	def broadcastConfigChange(
 		self,
@@ -83,7 +86,7 @@ class CalObjBase:
 			self.s.emit("config-change")
 		if sig is None:
 			sig = self.s
-		for item in self.items:
+		for item in self.itemIter():
 			if item.enable and item.s is not sig:
 				item.broadcastConfigChange(sig=sig, emit=False)
 
@@ -97,7 +100,7 @@ class CalObjBase:
 			self.s.emit("date-change")
 		if sig is None:
 			sig = self.s
-		for item in self.items:
+		for item in self.itemIter():
 			if item.enable and item.s is not sig:
 				item.broadcastDateChange(sig=sig, emit=False)
 
@@ -121,7 +124,7 @@ class CalObjBase:
 			self.show()
 		else:
 			self.hide()
-		for item in self.items:
+		for item in self.itemIter():
 			item.showHide()
 
 	def connectItem(self, item: CalObjType) -> None:
@@ -137,7 +140,7 @@ class CalObjBase:
 		return False
 
 	def moveItem(self, i: int, j: int) -> None:
-		self.items.insert(j, self.items.pop(i))
+		raise NotImplementedError
 
 
 class CalObjWidget(CalObjBase):
@@ -145,8 +148,20 @@ class CalObjWidget(CalObjBase):
 
 	def initVars(self) -> None:
 		self.s = self.Sig()
-		self.items: list[CustomizableCalObjType] = []  # type: ignore[assignment]
+		self.items: list[CustomizableCalObjType] = []
 		self.enable = True
+
+	def itemCount(self) -> int:
+		return len(self.items)
+
+	def itemIter(self) -> Iterable[CustomizableCalObjType]:
+		return iter(self.items)
+
+	def itemGet(self, index: int) -> CustomizableCalObjType:
+		return self.items[index]
+
+	def moveItem(self, i: int, j: int) -> None:
+		self.items.insert(j, self.items.pop(i))
 
 	def __getitem__(self, key: str) -> CustomizableCalObjType | None:
 		for item in self.items:
@@ -169,12 +184,11 @@ class CalObjWidget(CalObjBase):
 		self.w.hide()
 
 
-class CustomizableCalObj(CalObjWidget, CustomizableCalObjType):
+class CustomizableCalObj(CalObjWidget):
 	customizable = True
 	hasOptions = True
 	itemListCustomizable = True
-	vertical: bool | None = None
-	# vertical: only set (non-None) when `hasOptions and itemListCustomizable`
+	vertical = True
 	# vertical: True if items are on top of each other
 	isWrapper = False
 	enableParam: Option[bool] | None = None

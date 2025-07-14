@@ -216,7 +216,7 @@ class BasePlugin(SObjTextModel):
 			log.error("self.calType is None")
 			return
 		currentTimeStamp = strftime(icsTmFormat)
-		self.load(0, fs=null_fs)
+		self.s_load(0, fs=null_fs)
 		calType = self.calType
 		icsText = icsHeader
 		for jd in range(startJd, endJd):

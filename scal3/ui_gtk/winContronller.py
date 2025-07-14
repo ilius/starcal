@@ -68,7 +68,7 @@ themeFileSet = {
 
 
 class MainWinType(Protocol):
-	w: gtk.ApplicationWindow
+	win: gtk.ApplicationWindow
 	s: SignalHandlerType
 
 	def childButtonPress(
@@ -92,15 +92,17 @@ class WinConButton(CustomizableCalObj):
 
 	def __init__(self, controller: CalObj) -> None:
 		super().__init__()
-		self.w: gtk.EventBox = gtk.EventBox()
-		self.w.set_border_width(conf.winControllerBorder.v)
+		self.ebox = gtk.EventBox()
+		self.w: gtk.Widget = self.ebox
+		self.ebox.set_border_width(conf.winControllerBorder.v)
 		self.initVars()
 		# ---
 		self.controller = controller
 		self.build()
 		# ---
-		if controller.win:
-			self.w.connect("button-press-event", controller.win.childButtonPress)
+		win = controller.parentWin
+		if win:
+			self.w.connect("button-press-event", win.childButtonPress)
 		# ---
 		self.w.show_all()
 
@@ -136,11 +138,12 @@ class WinConButton(CustomizableCalObj):
 	def build(self) -> None:
 		self.im = gtk.Image()
 		self.setFocus(False)
-		self.w.add(self.im)
-		self.w.connect("enter-notify-event", self.enterNotify)
-		self.w.connect("leave-notify-event", self.leaveNotify)
-		self.w.connect("button-press-event", self.onButtonPress)
-		self.w.connect("button-release-event", self.onButtonRelease)
+		box = self.ebox
+		box.add(self.im)
+		box.connect("enter-notify-event", self.enterNotify)
+		box.connect("leave-notify-event", self.leaveNotify)
+		box.connect("button-press-event", self.onButtonPress)
+		box.connect("button-release-event", self.onButtonRelease)
 		set_tooltip(self.w, self.desc)  # FIXME
 
 	def enterNotify(self, _w: gtk.Widget, _ge: gdk.EventMotion) -> None:
@@ -165,10 +168,10 @@ class WinConButton(CustomizableCalObj):
 
 	def onButtonRelease(self, _b: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
-			self.onClick(self.controller.win, gevent)
+			self.onClick(self.controller.parentWin, gevent)
 			return True
 		if gevent.button == 3:
-			self.onRightClick(self.controller.win, gevent)
+			self.onRightClick(self.controller.parentWin, gevent)
 			return True
 		return False
 
@@ -209,7 +212,7 @@ class WinConButtonClose(WinConButton):
 	imageNamePress = "close-press"
 
 	def onClick(self, win: MainWinType, _ge: gdk.EventButton) -> None:  # noqa: PLR6301
-		win.w.emit("delete-event", gdk.Event())
+		win.win.emit("delete-event", gdk.Event())
 
 
 class WinConButtonRightPanel(WinConButton):
@@ -265,13 +268,13 @@ class CalObj(CustomizableCalBox):
 
 	def __init__(self, win: MainWinType) -> None:
 		CustomizableCalBox.__init__(self, vertical=False)
-		self.win = win
-		self.w.set_spacing(conf.winControllerSpacing.v)
+		self.parentWin = win
+		self.box.set_spacing(conf.winControllerSpacing.v)
 		self.w.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		# -----------
 		# passing `self` to ud.hasLightTheme does not work!
-		self.light = ud.hasLightTheme(win.w)
+		self.light = ud.hasLightTheme(win.win)
 		# -----------
 		for bname, enable in conf.winControllerButtons.v:
 			button = self.buttonClassDict[bname](self)
@@ -396,9 +399,9 @@ class CalObj(CustomizableCalBox):
 
 	def onButtonBorderChange(self) -> None:
 		for item in self.buttons:
-			item.w.set_border_width(conf.winControllerBorder.v)
+			item.ebox.set_border_width(conf.winControllerBorder.v)
 		self.updateButtons()
 
 	def onButtonPaddingChange(self) -> None:
-		self.w.set_spacing(conf.winControllerSpacing.v)
+		self.box.set_spacing(conf.winControllerSpacing.v)
 		self.updateButtons()

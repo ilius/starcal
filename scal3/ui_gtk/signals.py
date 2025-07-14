@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 from scal3 import logger
 
@@ -20,7 +20,7 @@ __all__ = [
 
 
 class SignalHandlerType(Protocol):
-	signals: list[tuple[str, list[Any]]]
+	signals: ClassVar[list[tuple[str, list[Any]]]]
 
 	def emit(self, signal_name: str, *args: Any) -> Any: ...
 
@@ -33,7 +33,7 @@ class SignalHandlerType(Protocol):
 
 
 class SignalHandlerBase(GObject.Object):
-	pass
+	signals: ClassVar[list[tuple[str, list[Any]]]]
 
 
 def registerSignals[T: type[SignalHandlerType]](cls: T) -> T:
@@ -57,4 +57,4 @@ def registerSignals[T: type[SignalHandlerType]](cls: T) -> T:
 
 @registerSignals
 class EmptySignalHandler(SignalHandlerBase):
-	signals: list[tuple[str, list[Any]]] = []
+	signals = []

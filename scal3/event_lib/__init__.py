@@ -189,8 +189,8 @@ def init(fs: FileSystem) -> None:
 	if state.allReadOnly:
 		log.info(f"Event lock file {lockPath} exists, EVENT DATA IS READ-ONLY")
 
-	state.info = InfoWrapper.load(0, fs=fs)
-	state.lastIds = LastIdsWrapper.load(0, fs=fs)
+	state.info = InfoWrapper.s_load(0, fs=fs)
+	state.lastIds = LastIdsWrapper.s_load(0, fs=fs)
 	assert state.lastIds is not None
 	state.lastIds.scan()
 

@@ -167,7 +167,7 @@ class SObjTextModel(SObj):
 		return cls.file
 
 	@classmethod
-	def load(
+	def s_load(
 		cls,
 		ident: int,
 		fs: FileSystem,
@@ -254,7 +254,7 @@ class SObjBinaryModel(SObj):
 		return cls.file
 
 	@classmethod
-	def load(
+	def s_load(
 		cls,
 		ident: int,  # noqa: ANN002
 		fs: FileSystem,
