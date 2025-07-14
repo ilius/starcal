@@ -232,7 +232,7 @@ class EventGroupType(EventContainerType, Protocol):
 	acceptsEventTypes: Sequence[str]
 	canConvertTo: list[str]
 	notificationEnabled: bool
-	notifyOccur: EventSearchTree
+	notifyOccur: EventSearchTree | None = None
 	remoteIds: tuple[int, str] | None
 	occurCount: int
 	showInDCal: bool
@@ -285,6 +285,7 @@ class EventGroupType(EventContainerType, Protocol):
 	def moveUp(self, index: int) -> None: ...
 	def moveDown(self, index: int) -> None: ...
 	def insert(self, index: int, event: EventType) -> None: ...
+	def updateCache(self, event: EventType) -> None: ...
 
 
 class AccountType(BaseTextModelType, Protocol):

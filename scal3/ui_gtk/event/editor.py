@@ -52,7 +52,7 @@ class EventEditorDialog(Dialog):
 		# ---
 		self.activeWidget = None
 		assert isinstance(event.parent, EventGroup), f"{event.parent=}"
-		self._group = event.parent
+		self._group: EventGroupType = event.parent
 		self.eventTypeOptions = list(self._group.acceptsEventTypes)
 		# ----
 		if event.name not in self.eventTypeOptions:

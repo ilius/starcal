@@ -273,10 +273,10 @@ class EventGroup(EventContainer, EventGroupType):
 			self.calType,
 		)
 		# --
-		self.occur: EventSearchTree
+		self.occur: EventSearchTree | None = None
 		# self.occurLoaded = False
 		self.occurCount = 0
-		self.notifyOccur: EventSearchTree
+		self.notifyOccur: EventSearchTree | None = None
 		self.initOccurrence()
 		# ---
 		self.setDefaults()
@@ -485,6 +485,7 @@ class EventGroup(EventContainer, EventGroupType):
 		# 	del self.eventIdByRemoteIds[event.remoteIds]
 		# except:
 		# 	pass
+		assert self.occur is not None
 		self.occurCount -= self.occur.delete(event.id)
 		return index
 
@@ -496,6 +497,7 @@ class EventGroup(EventContainer, EventGroupType):
 		# ---
 		self.idList = []
 		self.clearCache()
+		assert self.occur is not None
 		self.occur.clear()
 		self.occurCount = 0
 
@@ -580,6 +582,7 @@ class EventGroup(EventContainer, EventGroupType):
 		)
 		eid = event.id
 		assert eid is not None
+		assert self.occur is not None
 		self.occurCount -= self.occur.delete(eid)
 
 		occur = event.calcEventOccurrence()
@@ -590,6 +593,7 @@ class EventGroup(EventContainer, EventGroupType):
 			self.addOccur(t0, t1, eid)
 
 		if event.notifiers:
+			assert self.notifyOccur is not None
 			self.notificationEnabled = True
 			for t0, t1 in occur.getTimeRangeList():
 				self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, eid)
@@ -605,11 +609,13 @@ class EventGroup(EventContainer, EventGroupType):
 		self.notifyOccur = EventSearchTree()
 
 	def clear(self) -> None:
+		assert self.occur is not None
 		self.occur.clear()
 		self.occurCount = 0
 		self.notificationEnabled = False
 
 	def addOccur(self, t0: float, t1: float, eid: int) -> None:
+		assert self.occur is not None
 		self.occur.add(t0, t1, eid)
 		self.occurCount += 1
 
@@ -630,6 +636,7 @@ class EventGroup(EventContainer, EventGroupType):
 				self.addOccur(t0, t1, event.id)
 			if event.notifiers:
 				notificationEnabled = True
+				assert self.notifyOccur is not None
 				for t0, t1 in occur.getTimeRangeList():
 					self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, event.id)
 		self.notificationEnabled = notificationEnabled
@@ -835,6 +842,7 @@ class EventGroup(EventContainer, EventGroupType):
 		else:
 			del conds["time_to"]
 
+		assert self.occur is not None
 		for item in self.occur.search(time_from, time_to):
 			yield item.eid
 
