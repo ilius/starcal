@@ -96,10 +96,9 @@ class EventEditorDialog(Dialog):
 		if useSelectedDate:
 			self._event.setJd(ui.cells.current.jd)
 		activeWidget = self.activeWidget = makeWidget(event)
-		assert isinstance(activeWidget, common.WidgetClass), f"{activeWidget=}"
-		if self.isNew:
+		if self.isNew and isinstance(activeWidget, common.WidgetClass):
 			activeWidget.focusSummary()
-		pack(self.vbox, activeWidget, 1, 1)
+		pack(self.vbox, activeWidget, 1, 1)  # type: ignore[arg-type]
 		self.vbox.show()
 
 	def replaceExistingEvent(self, eventType: str) -> None:
