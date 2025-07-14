@@ -733,7 +733,7 @@ class DateAndTimeEventRule(DateEventRule):
 class DayTimeEventRule(EventRule):  # Moment Event
 	name = "dayTime"
 	desc = _("Time in Day")
-	provide = ("time",)
+	provide: Sequence[str] = ("time",)
 	conflict: Sequence[str] = (
 		"dayTimeRange",
 		"cycleLen",
@@ -1112,7 +1112,7 @@ class CycleWeeksEventRule(EventRule):
 class CycleLenEventRule(EventRule):
 	name = "cycleLen"  # or "cycle" FIXME
 	desc = _("Cycle (Days & Time)")
-	provide = ("time",)
+	provide: Sequence[str] = ("time",)
 	need: Sequence[str] = ("start",)
 	conflict: Sequence[str] = (
 		"date",

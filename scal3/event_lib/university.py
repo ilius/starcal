@@ -61,6 +61,7 @@ from .rules import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
 	from typing import Any
 
 	from scal3.event_lib.pytypes import EventContainerType, EventGroupType, OccurSetType
@@ -84,7 +85,7 @@ class WeeklyScheduleItem(NamedTuple):
 class UniversityTerm(EventGroup):
 	name = "universityTerm"
 	desc = _("University Term (Semester)")
-	acceptsEventTypes = (
+	acceptsEventTypes: Sequence[str] = (
 		"universityClass",
 		"universityExam",
 	)

@@ -31,6 +31,8 @@ from .event_base import Event
 from .groups import EventGroup
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
+
 	from scal3.event_lib.pytypes import OccurSetType
 	from scal3.filesystem import FileSystem
 
@@ -40,7 +42,7 @@ __all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
 
 
 class VcsBaseEventGroup(EventGroup):
-	acceptsEventTypes = ()
+	acceptsEventTypes: Sequence[str] = ()
 	myOptions: list[str] = [
 		"vcsType",
 		"vcsDir",
