@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from .pytypes import (
 	AccountType,
@@ -11,17 +11,29 @@ from .pytypes import (
 	EventType,
 )
 
+if TYPE_CHECKING:
+	from collections.abc import Iterator
+
 __all__ = ["classes"]
 
 
-class ClassGroup[T: BaseClassType](list[type[Any]]):
+class ClassGroup[T: BaseClassType]:
 	def __init__(self, tname: str) -> None:
-		list.__init__(self)
+		self.lst: list[type[T]] = []
 		self.tname = tname
 		self.names: list[str] = []
 		self.byName: dict[str, type[T]] = {}
 		self.byDesc: dict[str, type[T]] = {}
 		self.main: type[T] | None = None
+
+	def __iter__(self) -> Iterator[type[T]]:
+		return iter(self.lst)
+
+	def __getitem__(self, i: int) -> type[T]:
+		return self.lst[i]
+
+	def index(self, x: type[T]) -> int:
+		return self.lst.index(x)
 
 	def register(
 		self,
@@ -29,7 +41,7 @@ class ClassGroup[T: BaseClassType](list[type[Any]]):
 	) -> type[T]:
 		assert cls.name
 		cls.tname = self.tname
-		self.append(cls)
+		self.lst.append(cls)
 		self.names.append(cls.name)
 		self.byName[cls.name] = cls
 		self.byDesc[cls.desc] = cls
