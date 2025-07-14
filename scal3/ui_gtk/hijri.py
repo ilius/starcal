@@ -324,7 +324,7 @@ class EditDbDialog(Dialog):
 
 
 def tuneHijriMonthes(_widget: gtk.Widget | None = None) -> None:
-	dialog = EditDbDialog(transient_for=ui.prefWindow)
+	dialog = EditDbDialog(transient_for=ui.prefWindow.w)
 	dialog.resize(400, 400)
 	dialog.run2()
 
