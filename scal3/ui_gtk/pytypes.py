@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 
-__all__ = ["CalObjType", "CustomizableCalObjType"]
+__all__ = ["CalObjType", "CustomizableCalObjType", "StackPageType"]
 
 
 class CalObjType(Protocol):
