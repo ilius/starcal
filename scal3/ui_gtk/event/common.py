@@ -95,7 +95,7 @@ class WidgetClass(gtk.Box):
 		# ---
 		pack(hbox, gtk.Label(label=_("Calendar Type")))
 		combo = CalTypeCombo()
-		combo.set_active(calTypes.primary)  # overwritten in updateWidget()
+		combo.setActive(calTypes.primary)  # overwritten in updateWidget()
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
