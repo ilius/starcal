@@ -35,6 +35,9 @@ from scal3.ui_gtk.option_ui_extra import KeyBindingOptionUI
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import imageFromFile
 
+if typing.TYPE_CHECKING:
+	from scal3.ui_gtk.pytypes import StackPageType
+
 __all__ = ["TimeLinePreferencesWindow"]
 
 
@@ -903,10 +906,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# ----
 		self.vbox.show_all()
 
-	def gotoPageClicked(self, _b: gtk.Widget, page: StackPage) -> None:
+	def gotoPageClicked(self, _b: gtk.Widget, page: StackPageType) -> None:
 		self.stack.gotoPage(page.pagePath)
 
-	def newWideButton(self, page: StackPage) -> gtk.Widget:
+	def newWideButton(self, page: StackPageType) -> gtk.Widget:
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
 		hbox.set_border_width(10)
 		label = gtk.Label(label=page.pageLabel)

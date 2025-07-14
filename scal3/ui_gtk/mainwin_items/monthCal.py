@@ -55,6 +55,7 @@ if TYPE_CHECKING:
 	from scal3.pytypes import CellType, MonthStatusType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
@@ -114,7 +115,7 @@ class CalObj(CalBase):
 		for child in vbox.get_children():
 			child.destroy()
 		# ---
-		subPages = [self.cursorPage]
+		subPages: list[StackPageType] = [self.cursorPage]
 		n = len(calTypes.active)
 		while len(conf.mcalTypeParams.v) < n:
 			conf.mcalTypeParams.v.append(
@@ -288,7 +289,7 @@ class CalObj(CalBase):
 		self.updateTypeOptionsWidget()  # FIXME
 		return optionsWidget
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()

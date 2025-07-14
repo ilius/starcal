@@ -77,7 +77,7 @@ if TYPE_CHECKING:
 	from scal3.pytypes import CellType, WeekStatusType
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
-	from scal3.ui_gtk.pytypes import CustomizableCalObjType
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]
@@ -1566,7 +1566,7 @@ class CalObj(CalBase):
 		self.optionsWidget = optionsWidget
 		return optionsWidget
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()

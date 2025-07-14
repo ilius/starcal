@@ -71,6 +71,7 @@ from scal3.ui_gtk.utils import (
 
 if typing.TYPE_CHECKING:
 	from scal3.pytypes import PluginType
+	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["PreferencesWindow"]
 
@@ -194,7 +195,7 @@ class PreferencesWindow(gtk.Window):
 		self.uiOptionUIs: list[OptionUI] = []
 		self.gtkOptionUIs: list[OptionUI] = []  # FIXME
 		# -----
-		self.prefPages: list[StackPage] = []
+		self.prefPages: list[StackPageType] = []
 		# ----------------------------------------------
 		stack = MyStack(
 			iconSize=conf.stackIconSize.v,
@@ -1329,10 +1330,10 @@ class PreferencesWindow(gtk.Window):
 		pixcache.clearFiles()
 		pixcache.clear()
 
-	def onPageButtonClicked(self, _b: gtk.Widget, page: StackPage) -> None:
+	def onPageButtonClicked(self, _b: gtk.Widget, page: StackPageType) -> None:
 		self.stack.gotoPage(page.pagePath)
 
-	def newWideButton(self, page: StackPage) -> gtk.Button:
+	def newWideButton(self, page: StackPageType) -> gtk.Button:
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=self.spacing)
 		hbox.set_border_width(self.spacing)
 		label = gtk.Label(label=page.pageLabel)

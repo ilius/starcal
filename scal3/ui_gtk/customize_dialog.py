@@ -43,7 +43,7 @@ from scal3.ui_gtk.utils import (
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.layout import WinLayoutBox
-	from scal3.ui_gtk.pytypes import CustomizableCalObjType
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CustomizeWindow"]
@@ -362,7 +362,7 @@ class CustomizeWindow(Dialog):
 		model.remove(model.get_iter(str(i)))
 		treev.set_cursor(len(model) - 1)  # type: ignore[arg-type]
 
-	def _addPageItemsTree(self, page: StackPage) -> None:
+	def _addPageItemsTree(self, page: StackPageType) -> None:
 		pagePath = page.pagePath
 		item = page.pageItem
 		assert item is not None
@@ -397,7 +397,7 @@ class CustomizeWindow(Dialog):
 			),
 		)
 
-	def addPageObj(self, page: StackPage) -> None:
+	def addPageObj(self, page: StackPageType) -> None:
 		pagePath = page.pagePath
 		title = page.pageTitle
 		item = page.pageItem
@@ -452,7 +452,7 @@ class CustomizeWindow(Dialog):
 		parentPagePath: str,
 		parentItem: CustomizableCalObjType,
 		itemIndex: int,
-	) -> StackPage:
+	) -> StackPageType:
 		item = parentItem.items[itemIndex]
 		assert isinstance(item, CustomizableCalObj), f"{item=}"
 
