@@ -16,8 +16,3 @@ class DaySpinButton(SingleSpinButton[IntField, int]):
 	def set_range(self, minim: int, maxim: int) -> None:
 		self.field.setRange(minim, maxim)
 		self.set_text(self.field.getText())
-
-	def setValue(self, value: int | None) -> None:
-		if value is None:
-			return
-		self.field.setValue(value)

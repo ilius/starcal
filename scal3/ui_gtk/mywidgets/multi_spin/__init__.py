@@ -391,5 +391,14 @@ class SingleSpinButton[F: Field[Any], V](MultiSpinButton[F, V]):
 		# if isinstance(field, NumField):
 		# 	gtk.SpinButton.set_range(self, field.minim, field.maxim)
 
+	def setValue(self, value: V | None) -> None:
+		if value is None:
+			return
+		self.field.setValue(value)
+		self.entry.set_text(self.field.getText())
+
+	def getValue(self) -> V:
+		return self.field.getValue()  # type: ignore[no-any-return]
+
 	# def set_range(self, minim, maxim): FIXME
 	# 	gtk.SpinButton.set_range(self, minim, maxim)
