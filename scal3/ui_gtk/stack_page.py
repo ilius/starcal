@@ -15,10 +15,34 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from __future__ import annotations
 
-from scal3 import logger
+from typing import TYPE_CHECKING
 
-log = logger.get()
+if TYPE_CHECKING:
+	from gi.repository import Gtk as gtk
 
-from scal3.ui_gtk.pytypes import StackPage
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 
 __all__ = ["StackPage"]
+
+
+class StackPage:
+	def __init__(self) -> None:
+		self.pageWidget: gtk.Box | None = None
+		self.pageParent: str = ""
+		self.pageName: str = ""
+		self.pagePath: str = ""
+		self.pageTitle: str = ""
+		self.pageLabel: str = ""
+		self.pageIcon: str = ""
+		self.pageExpand: bool = True
+		self.pageItem: CustomizableCalObjType | None = None
+		self.iconSize: int = 0
+
+	def __str__(self) -> str:
+		return (
+			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
+			f"pageParent={self.pageParent!r})"
+		)
+
+	def __repr__(self) -> str:
+		return self.__str__()

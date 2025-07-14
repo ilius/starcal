@@ -25,8 +25,7 @@ if TYPE_CHECKING:
 
 	from scal3.font import Font
 	from scal3.option import Option
-	from scal3.ui_gtk.pytypes import CustomizableCalObjType
-	from scal3.ui_gtk.stack import StackPage
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 
 __all__ = ["MainWinRightPanel"]
 
@@ -218,7 +217,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		self.w.show_all()
 		ui.saveConfCustomize()
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
@@ -298,7 +297,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		if self.optionsWidget is not None:
 			return self.optionsWidget
 		optionsWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
-		subPages = []
+		subPages: list[StackPageType] = []
 		# ---
 		sizesVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=10)
 		page = StackPage()

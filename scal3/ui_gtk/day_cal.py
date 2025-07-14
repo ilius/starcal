@@ -79,6 +79,7 @@ if TYPE_CHECKING:
 		DayCalTypeWMOptionsDict,
 		PieGeoDict,
 	)
+	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["DayCal", "ParentWindowType"]
 
@@ -146,7 +147,7 @@ class DayCal(CalBase):
 		self._window: gtk.Window | None = None
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.subPages: list[StackPage] | None = None
+		self.subPages: list[StackPageType] | None = None
 		self._allButtons: list[BaseButton] = []
 		# ----------------------
 		# self.kTime = 0
@@ -350,7 +351,7 @@ class DayCal(CalBase):
 	def nextDayClicked(self, _ge: gdk.EventButton | None = None) -> None:
 		self.jdPlus(1)
 
-	def updateTypeOptionsWidget(self) -> list[StackPage]:
+	def updateTypeOptionsWidget(self) -> list[StackPageType]:
 		from scal3.ui_gtk.cal_type_options import DayNumListOptionsWidget
 
 		monthOptions = self.getMonthOptions(allCalTypes=True)
@@ -358,7 +359,7 @@ class DayCal(CalBase):
 		for child in vbox.get_children():
 			child.destroy()
 		# ---
-		subPages = []
+		subPages: list[StackPageType] = []
 		# ---
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		assert self.dayOptions
@@ -693,7 +694,7 @@ class DayCal(CalBase):
 		optionsWidget.show_all()
 		return optionsWidget
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()

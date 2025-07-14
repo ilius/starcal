@@ -126,11 +126,11 @@ class DayCalWindowCustomizeWindow(Dialog):
 		page.pageExpand = True
 		page.pageExpand = True
 		self.stack.addPage(page)
-		for page in dayCal.getSubPages():
-			if not page.pageParent:
-				page.pageParent = pageName  # FIXME: or pagePath?
-			page.pagePath = page.pageName
-			self.stack.addPage(page)
+		for subPage in dayCal.getSubPages():
+			if not subPage.pageParent:
+				subPage.pageParent = pageName  # FIXME: or pagePath?
+			subPage.pagePath = subPage.pageName
+			self.stack.addPage(subPage)
 		dayCal.s.connect("goto-page", self.gotoPageCallback)
 		# --
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)

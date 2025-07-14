@@ -27,7 +27,7 @@ log = logger.get()
 from typing import TYPE_CHECKING, Any
 
 from scal3.ui_gtk import gdk
-from scal3.ui_gtk.pytypes import CustomizableCalObjType
+from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 from scal3.ui_gtk.signals import (
 	SignalHandlerBase,
 	SignalHandlerType,
@@ -38,7 +38,6 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.ui_gtk import gtk
 	from scal3.ui_gtk.pytypes import CalObjType
-	from scal3.ui_gtk.stack_page import StackPage
 
 __all__ = [
 	"CalObjBase",
@@ -234,7 +233,7 @@ class CustomizableCalObj(CalObjWidget, CustomizableCalObjType):
 	def getOptionsWidget(self) -> gtk.Widget | None:  # noqa: PLR6301
 		return None
 
-	def getSubPages(self) -> list[StackPage]:  # noqa: PLR6301
+	def getSubPages(self) -> list[StackPageType]:  # noqa: PLR6301
 		return []
 
 	def insertItemWidget(self, _i: int) -> None:
