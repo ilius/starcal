@@ -30,7 +30,7 @@ from scal3.cal_types import calTypes
 from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
-from scal3.s_object import SObjBinaryModel
+from scal3.s_object import SObjBinaryModel, copyParams
 from scal3.time_utils import durationDecode, durationEncode
 
 from . import state
@@ -353,21 +353,15 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		HistoryEventObjBinaryModel.save(self)
 
 	def _copyFrom(self, other: EventType) -> None:
-		for attr in self.params:
-			setattr(
-				self,
-				attr,
-				deepcopy(getattr(other, attr)),
-			)
+		copyParams(self, other)
 
-		self.calType = other.calType
 		self.notifyBefore = other.notifyBefore[:]
 		# self.files = other.files.copy()
-		self.notifiers = other.notifiers.copy()  # FIXME
+		self.notifiers = deepcopy(other.notifiers)
 		self.copyRulesFrom(other)
 		self.addRequirements()
 
-	def copyFrom(self, other: Self) -> None:
+	def copyFrom(self, other: EventType) -> None:
 		self._copyFrom(other)
 		# ----
 		# copy dates between different rule types in different event types
