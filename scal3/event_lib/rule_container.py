@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from copy import copy
+
 from scal3 import logger
 from scal3.s_object import SObj
 
@@ -67,7 +69,7 @@ class RuleContainer(SObj):
 	def copyRulesDict(rulesDict: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
 		newRulesOd = {}
 		for ruleName, rule in rulesDict.items():
-			newRulesOd[ruleName] = rule.copy()
+			newRulesOd[ruleName] = copy(rule)
 		return newRulesOd
 
 	def __init__(self) -> None:

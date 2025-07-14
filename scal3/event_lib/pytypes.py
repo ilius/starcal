@@ -47,7 +47,6 @@ class BaseClassType(Protocol):
 	fs: FileSystem
 
 	def copyFrom(self, other: Self) -> None: ...
-	def copy(self) -> Self: ...
 
 
 class BaseTextModelType(BaseClassType, Protocol):

@@ -22,6 +22,7 @@ from scal3.color_utils import RGB, RGBA
 log = logger.get()
 
 from contextlib import suppress
+from copy import copy
 from os.path import join
 from time import perf_counter
 from time import time as now
@@ -521,7 +522,7 @@ class EventGroup(EventContainer):
 			self.setToCache(event)
 		event.afterModify()
 
-	def copy(self) -> Self:
+	def __copy__(self) -> Self:
 		newObj = self.__class__()
 		newObj.fs = self.fs
 		newObj.copyFrom(self)
@@ -540,9 +541,9 @@ class EventGroup(EventContainer):
 		return newGroup
 
 	def deepCopy(self) -> EventGroupType:
-		newGroup = self.copy()
+		newGroup = copy(self)
 		for event in self:
-			newEvent = event.copy()
+			newEvent = copy(event)
 			newEvent.save()
 			newGroup.append(newEvent)
 		return newGroup

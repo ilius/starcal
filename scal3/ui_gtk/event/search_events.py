@@ -20,6 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
+from copy import copy
 from os.path import join
 from time import localtime
 from typing import TYPE_CHECKING
@@ -639,7 +640,7 @@ class EventSearchWindow(CalObjWidget):
 		event: EventType,
 		new_group: EventGroupType,
 	) -> None:
-		new_event = event.copy()
+		new_event = copy(event)
 		new_event.save()
 		new_group.append(new_event)
 		new_group.save()

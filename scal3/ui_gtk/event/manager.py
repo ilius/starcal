@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from copy import copy
+
 from scal3 import logger
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
@@ -2097,7 +2099,7 @@ class EventManagerDialog(CalObjWidget):
 			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getGroupByPath(path)
-		newGroup = group.copy()
+		newGroup = copy(group)
 		ui.duplicateGroupTitle(newGroup)
 		newGroup.afterModify()
 		newGroup.save()
@@ -2695,7 +2697,7 @@ class EventManagerDialog(CalObjWidget):
 			newEvent = srcEvent
 			ui.eventUpdateQueue.put("r", srcGroup, self)
 		else:
-			newEvent = srcEvent.copy()
+			newEvent = copy(srcEvent)
 			newEvent.save()
 			tarGroup.insert(tarEventIndex, newEvent)
 			tarGroup.save()
