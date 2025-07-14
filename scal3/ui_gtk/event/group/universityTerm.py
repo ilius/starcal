@@ -125,9 +125,11 @@ class CourseListEditor(gtk.Box):
 		cur = self.treev.get_cursor()
 		try:
 			path, _col = cur
-			return path.get_indices()[0]
-		except (ValueError, IndexError):
+		except ValueError:
 			return None
+		if path is None:
+			return
+		return path.get_indices()[0]
 
 	def onAddClick(self, _button: Any) -> None:
 		index = self.getSelectedIndex()
