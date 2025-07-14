@@ -593,6 +593,8 @@ class DateEventRule(EventRule):
 		"duration",
 		"cycleLen",
 	)
+	params = ["date"]
+
 	# conflicts with all rules except for dayTime and dayTimeRange
 	# (and possibly hourList, minuteList, secondList)
 	# also conflict with "holiday" # FIXME
