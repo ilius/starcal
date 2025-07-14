@@ -93,7 +93,7 @@ class WidgetClass(common.WidgetClass):
 	def updateVars(self) -> None:  # FIXME
 		common.WidgetClass.updateVars(self)
 		self._event.setMonth(self.monthCombo.getValue())
-		self._event.setDay(int(self.daySpin.get_value()))
+		self._event.setDay(self.daySpin.getValue())
 		startRule = StartEventRule.getFrom(self._event)
 		if self.startYearCheck.get_active():
 			if startRule is None:
@@ -109,17 +109,21 @@ class WidgetClass(common.WidgetClass):
 		module = calTypes[newCalType]
 		if module is None:
 			raise RuntimeError(f"cal type '{newCalType}' not found")
+		yearStr = self.startYearSpin.get_text()
+		if not yearStr:
+			return
+		year = int(yearStr)
 		monthCombo = self.monthCombo
 		month = monthCombo.getValue()
 		monthCombo.build(newCalType)
 		y2, m2, d2 = convert(
-			int(self.startYearSpin.get_value()),
+			year,
 			month,
-			int(self.daySpin.get_value()),
+			self.daySpin.getValue(),
 			self._event.calType,
 			newCalType,
 		)
-		self.startYearSpin.set_value(y2)
+		self.startYearSpin.setValue(y2)
 		monthCombo.setValue(m2)
-		self.daySpin.set_value(d2)
+		self.daySpin.setValue(d2)
 		self._event.calType = newCalType
