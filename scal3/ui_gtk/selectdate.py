@@ -192,7 +192,7 @@ class SelectDateDialog(Dialog):
 		module = calTypes[calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		self.calTypeCombo.set_active(calType)
+		self.calTypeCombo.setActive(calType)
 		self.ymdBox.setCalType(calType)
 		self.dateInput.setMaxDay(module.maxMonthLen)
 
