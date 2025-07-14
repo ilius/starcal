@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import Any, ClassVar
+
 from scal3 import logger
 
 log = logger.get()
@@ -37,7 +39,7 @@ __all__ = ["SelectDateDialog"]
 
 @registerSignals
 class SelectDateDialog(Dialog):
-	signals = [
+	signals: ClassVar[list[tuple[str, list[Any]]]] = [
 		("response-date", [int, int, int]),
 	]
 

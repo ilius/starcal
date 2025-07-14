@@ -6,7 +6,7 @@ from scal3.ui_gtk.signals import registerSignals
 log = logger.get()
 
 from time import time as now
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from scal3 import ui
 from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
@@ -19,7 +19,7 @@ __all__ = ["ConButton"]
 
 @registerSignals
 class ConButton(gtk.Button):
-	signals: list[tuple[str, list[Any]]] = [
+	signals: ClassVar[list[tuple[str, list[Any]]]] = [
 		("con-clicked", []),
 	]
 

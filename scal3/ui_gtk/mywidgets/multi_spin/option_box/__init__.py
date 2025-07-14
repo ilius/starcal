@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from scal3.ui_gtk import Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
@@ -15,7 +15,7 @@ __all__ = ["MultiSpinOptionBox"]
 
 @registerSignals
 class MultiSpinOptionBox[F: Field[Any], V](gtk.Box):
-	signals: list[tuple[str, list[Any]]] = [
+	signals: ClassVar[list[tuple[str, list[Any]]]] = [
 		("activate", []),
 	]
 

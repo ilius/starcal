@@ -28,7 +28,6 @@ from scal3.locale_man import tr as _
 
 from . import state
 from .objects import HistoryEventObjBinaryModel
-from .pytypes import AccountType
 from .register import classes
 
 if TYPE_CHECKING:
@@ -37,7 +36,7 @@ if TYPE_CHECKING:
 
 	from scal3.filesystem import FileSystem
 
-	from .pytypes import EventGroupType
+	from .pytypes import AccountType, EventGroupType
 
 
 __all__ = ["Account", "DummyAccount", "accountsDir"]
@@ -67,7 +66,7 @@ class DummyAccount:
 		cls,
 		ident: int,
 		fs: FileSystem,
-	) -> None:
+	) -> AccountType | None:
 		pass
 
 	def getLoadedObj(self) -> None:
@@ -76,9 +75,12 @@ class DummyAccount:
 
 # Should not be registered, or instantiate directly
 @classes.account.setMain
-class Account(HistoryEventObjBinaryModel, AccountType):
+class Account(HistoryEventObjBinaryModel):
+	WidgetClass: Any
 	loaded = True
 	name = ""
+	tname = ""
+	nameAlias = ""
 	desc = ""
 	basicOptions = [  # FIXME
 		# "enable",
@@ -95,6 +97,14 @@ class Account(HistoryEventObjBinaryModel, AccountType):
 		"title",
 		"remoteGroups",
 	]
+
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem,
+	) -> AccountType | None:
+		return cls.s_load(ident, fs)
 
 	@classmethod
 	def getFile(cls, ident: int) -> str:

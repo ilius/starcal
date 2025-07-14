@@ -466,24 +466,25 @@ class YearWheelWindow(CalObjWidget):
 	desc = _("Year Wheel")
 
 	def __init__(self) -> None:
-		self.w: gtk.Window = gtk.Window()
+		self.win = win = gtk.Window()
+		self.w: gtk.Widget = self.win
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
 		size = int(min(ud.workAreaW, ud.workAreaH) * 0.9)
-		self.w.resize(size, size)
-		self.w.move(
+		win.resize(size, size)
+		win.move(
 			int((ud.workAreaW - size) / 2),
 			int((ud.workAreaH - size) / 2),
 		)
-		self.w.set_title(self.desc)
-		self.w.set_decorated(False)
-		self.w.connect("delete-event", self.onDeleteEvent)
-		self.w.connect("button-press-event", self.onButtonPress)
+		win.set_title(self.desc)
+		win.set_decorated(False)
+		win.connect("delete-event", self.onDeleteEvent)
+		win.connect("button-press-event", self.onButtonPress)
 		# ---
 		self._widget = yearWheel = YearWheel(self.onCloseClick)
-		self.w.connect("key-press-event", yearWheel.onKeyPress)
-		self.w.add(yearWheel.w)
+		win.connect("key-press-event", yearWheel.onKeyPress)
+		win.add(yearWheel.w)
 		yearWheel.show()
 		self.appendItem(yearWheel)
 
@@ -505,7 +506,7 @@ class YearWheelWindow(CalObjWidget):
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
-			self.w.begin_move_drag(
+			self.win.begin_move_drag(
 				gevent.button,
 				int(gevent.x_root),
 				int(gevent.y_root),

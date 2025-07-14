@@ -179,7 +179,7 @@ class CustomizeWindow(Dialog):
 	def itemPixbuf(item: CustomizableCalObjType) -> GdkPixbuf.Pixbuf | None:
 		if not item.enable:
 			return None
-		if item.hasOptions or (item.itemListCustomizable and item.items):
+		if item.hasOptions or (item.itemListCustomizable and item.itemCount()):
 			return pixbufFromFile("document-edit.svg", conf.treeIconSize.v)
 		return None
 
@@ -229,7 +229,7 @@ class CustomizeWindow(Dialog):
 		col.set_property("expand", False)
 		treev.append_column(col)
 		# -----
-		for item in parentItem.items:
+		for item in parentItem.itemIter():
 			if not item.customizable:
 				continue
 			assert item.objName, f"{item = }"
@@ -420,7 +420,7 @@ class CustomizeWindow(Dialog):
 			pack(page.pageWidget, hbox, 0, 0)
 			self.enableParamByPagePath[pagePath] = option
 
-		if item.itemListCustomizable and item.items:
+		if item.itemListCustomizable and item.itemCount():
 			self._addPageItemsTree(page)
 
 		if item.hasOptions:
@@ -453,7 +453,7 @@ class CustomizeWindow(Dialog):
 		parentItem: CustomizableCalObjType,
 		itemIndex: int,
 	) -> StackPageType:
-		item = parentItem.items[itemIndex]
+		item = parentItem.itemGet(itemIndex)
 		assert isinstance(item, CustomizableCalObj), f"{item=}"
 
 		title = item.desc
@@ -514,7 +514,7 @@ class CustomizeWindow(Dialog):
 		itemIter = model.get_iter(path)
 		pagePath = model.get_value(itemIter, 1)
 		itemIndex = path.get_indices()[0]
-		item = parentItem.items[itemIndex]
+		item = parentItem.itemGet(itemIndex)
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
 		if isinstance(parentItem, WinLayoutObj):  # if parentItem.isWrapper
@@ -543,7 +543,7 @@ class CustomizeWindow(Dialog):
 		itemIndex: int,
 		enable: bool | None = None,
 	) -> CustomizableCalObjType | None:
-		item = parentItem.items[itemIndex]
+		item = parentItem.itemGet(itemIndex)
 		if item.loaded:
 			if enable is not None:
 				item.enable = enable
@@ -582,8 +582,8 @@ class CustomizeWindow(Dialog):
 		itr = model.get_iter(str(itemIndex))
 		model.set_value(itr, 0, active)
 		parentItem = self.itemByPagePath[pagePath]
-		item = parentItem.items[itemIndex]
-		assert parentItem.items[itemIndex] == item
+		item = parentItem.itemGet(itemIndex)
+		assert parentItem.itemGet(itemIndex) == item
 		# ---
 		if active:
 			itemNew = self.loadItem(parentItem, itemIndex, enable=active)

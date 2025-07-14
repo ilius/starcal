@@ -283,12 +283,13 @@ class BaseToolBox(CustomizableCalObj):
 	) -> None:
 		super().__init__()
 		assert self.vertical is not None
-		self.w: gtk.EventBox = gtk.EventBox()
+		self.ebox = gtk.EventBox()
+		self.w: gtk.Widget = self.ebox
 		self.box = gtk.Box()
 		self.box.set_orientation(self.get_orientation())
 		self.box.set_homogeneous(homogeneous=False)
 		self.box.show()
-		self.w.add(self.box)
+		self.ebox.add(self.box)
 		self.funcOwner = funcOwner
 		self.preferIconName: Option[bool] = conf.useSystemIcons
 		self.iconSize: Option[int] = Option(iconSize or conf.toolbarIconSize.v)

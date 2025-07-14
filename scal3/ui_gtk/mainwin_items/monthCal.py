@@ -86,8 +86,8 @@ class CalObj(CalBase):
 
 	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
+		self.parentWin = win
 		self.w = gtk.DrawingArea()
-		self.win = win
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.pagePath = f"mainWin.mainPanel.{self.objName}"

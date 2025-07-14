@@ -31,10 +31,10 @@ class DemoWizardWindow(WizardWindow):
 		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, window: WizardWindow) -> None:
+		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = window
+			self.parentWin = win
 			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Cancel"), self.onCancelClick),
 				(_("Next"), self.onNextClick),
@@ -76,14 +76,14 @@ class DemoWizardWindow(WizardWindow):
 			pass
 
 		def onCancelClick(self, _w: gtk.Widget) -> None:
-			self.win.destroy()
+			self.parentWin.destroy()
 
 		def onNextClick(self, _w: gtk.Widget) -> None:
 			fpath = self.fcb.get_filename()
 			format_ = None
 			if self.radioJson.get_active():
 				format_ = "json"
-			self.win.showStep(1, {"format": format_, "fpath": fpath})
+			self.parentWin.showStep(1, {"format": format_, "fpath": fpath})
 
 	class SecondStep(gtk.Box):
 		desc = ""
@@ -91,10 +91,10 @@ class DemoWizardWindow(WizardWindow):
 		def getWidget(self) -> gtk.Box:
 			return self
 
-		def __init__(self, window: WizardWindow) -> None:
+		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = window
+			self.parentWin = win
 			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Back"), self.onBackClick),
 				(_("Close"), self.onCloseClick),
@@ -109,7 +109,7 @@ class DemoWizardWindow(WizardWindow):
 			self._fpath = ""
 
 		def run(self, args: dict[str, Any]) -> None:
-			self.win.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
+			self.parentWin.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
 
 		def _runAndCleanup(self, format_: str, fpath: str) -> None:
 			if format_ == "json":
@@ -121,10 +121,10 @@ class DemoWizardWindow(WizardWindow):
 			print(f"_runAndCleanup: {fpath=}")  # noqa: T201
 
 		def onBackClick(self, _w: gtk.Widget) -> None:
-			self.win.showStep(0)
+			self.parentWin.showStep(0)
 
 		def onCloseClick(self, _w: gtk.Widget) -> None:
-			self.win.destroy()
+			self.parentWin.destroy()
 
 	stepClasses = [
 		FirstStep,

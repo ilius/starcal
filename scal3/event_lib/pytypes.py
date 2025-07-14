@@ -47,13 +47,13 @@ class BaseClassType(Protocol):
 	fs: FileSystem
 
 
-class BaseTextModelType(BaseClassType, Protocol):
-	@classmethod
-	def load(
-		cls,
-		ident: int,
-		fs: FileSystem,
-	) -> Self | None: ...
+class BaseTextModelType(Protocol):
+	name: str
+	tname: str
+	desc: str
+	nameAlias: str
+	WidgetClass: Any
+	fs: FileSystem
 
 
 class OccurSetType(Protocol):
@@ -248,6 +248,13 @@ class EventGroupType(EventContainerType, Protocol):
 	deletedRemoteEvents: dict[int, tuple[float, int, str, str]]
 	addEventsToBeginning: bool
 
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem,
+	) -> EventGroupType | None: ...
+
 	@property
 	def mustId(self) -> int: ...
 
@@ -302,6 +309,13 @@ class AccountType(BaseTextModelType, Protocol):
 	title: str
 	loaded: bool
 	remoteGroups: list[dict[str, Any]]
+
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem,
+	) -> AccountType | None: ...
 
 	def __init__(self, ident: int | None = None) -> None: ...
 	def setId(self, ident: int | None = None) -> None: ...

@@ -35,15 +35,16 @@ class CalObj(CustomizableCalObj):
 
 	def __init__(self, win: gtk.Window) -> None:
 		super().__init__()
-		self.win = win
+		self.parentWin = win
 
-		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Widget = self.box
 		self.initVars()
 		# ----
 		self.labelBox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		pack(self.w, self.labelBox, 1, 1)
+		pack(self.box, self.labelBox, 1, 1)
 		resizeB = ResizeButton(win)
-		pack(self.w, resizeB, 0, 0)
+		pack(self.box, resizeB, 0, 0)
 		if rtl:
 			self.w.set_direction(gtk.TextDirection.LTR)
 			self.labelBox.set_direction(gtk.TextDirection.LTR)

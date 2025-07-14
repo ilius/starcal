@@ -94,18 +94,19 @@ class CustomizableCalBox(CustomizableCalObj):
 
 	def __init__(self, vertical: bool) -> None:
 		super().__init__()
-		self.w: gtk.Box = gtk.Box(orientation=getOrientation(vertical))
+		self.box = gtk.Box(orientation=getOrientation(vertical))
+		self.w: gtk.Widget = self.box
 		self.initVars()
 		self.vertical = vertical
 
 	def appendItem(self, item: CustomizableCalObjType) -> None:
 		super().appendItem(item)
 		if item.loaded:
-			pack(self.w, item.w, item.expand, item.expand)
+			pack(self.box, item.w, item.expand, item.expand)
 			item.showHide()
 
 	def repackAll(self) -> None:
-		box = self.w
+		box = self.box
 		for child in box.get_children():
 			box.remove(child)
 		for item in self.items:

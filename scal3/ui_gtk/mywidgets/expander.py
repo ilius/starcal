@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.signals import registerSignals
@@ -70,7 +70,7 @@ class ExpanderFrameTitle(gtk.Button):
 
 @registerSignals
 class ExpanderFrame(gtk.Frame):
-	signals: list[tuple[str, list[Any]]] = [
+	signals: ClassVar[list[tuple[str, list[Any]]]] = [
 		("activate", []),
 	]
 

@@ -46,7 +46,7 @@ class EventsImportWindow(WizardWindow):
 		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = win
+			self.parentWin = win
 			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Cancel"), self.onCancelClick),
 				(_("Next"), self.onNextClick),
@@ -88,7 +88,7 @@ class EventsImportWindow(WizardWindow):
 			pass
 
 		def onCancelClick(self, _obj: Any) -> None:
-			self.win.destroy()
+			self.parentWin.destroy()
 
 		def onNextClick(self, _obj: Any) -> None:
 			fpath = self.fcb.get_filename()
@@ -101,7 +101,7 @@ class EventsImportWindow(WizardWindow):
 			else:
 				return
 			# setRunArgs()
-			self.win.showStep(1, {"format": format_, "fpath": fpath})
+			self.parentWin.showStep(1, {"format": format_, "fpath": fpath})
 
 	class SecondStep(gtk.Box):
 		desc = ""
@@ -112,7 +112,7 @@ class EventsImportWindow(WizardWindow):
 		def __init__(self, win: WizardWindow) -> None:
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
-			self.win = win
+			self.parentWin = win
 			self.buttons: list[tuple[str, Callable[[gtk.Button], None]]] = [
 				(_("Back"), self.onBackClick),
 				(_("Close"), self.onCloseClick),
@@ -144,7 +144,7 @@ class EventsImportWindow(WizardWindow):
 
 		def run(self, args: dict[str, Any]) -> None:
 			self.redirectStdOutErr()
-			self.win.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
+			self.parentWin.waitingDo(self._runAndCleanup, args["format"], args["fpath"])
 
 		def setRunArgs(self, format_: str, fpath: str) -> None:
 			self._format = format_
@@ -198,10 +198,10 @@ class EventsImportWindow(WizardWindow):
 					)
 
 		def onBackClick(self, _obj: Any) -> None:
-			self.win.showStep(0)
+			self.parentWin.showStep(0)
 
 		def onCloseClick(self, _obj: Any) -> None:
-			self.win.destroy()
+			self.parentWin.destroy()
 
 	if TYPE_CHECKING:
 		_step: StepType = SecondStep(WizardWindow(""))

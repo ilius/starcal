@@ -136,7 +136,8 @@ class MainWinRightPanel(CustomizableCalObj):
 
 	def __init__(self) -> None:
 		super().__init__()
-		self.w: gtk.Paned = VericalPanedWithWidthFunc(getWidth=self.getWidth)
+		self.paned = VericalPanedWithWidthFunc(getWidth=self.getWidth)
+		self.w: gtk.Widget = self.paned
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		# ---
 		self.initVars()
@@ -187,7 +188,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.ShadowType.IN)
 		frame.add(swin)
-		self.w.add(frame)
+		self.paned.add(frame)
 		item.show()
 
 	def addItems(self) -> None:
@@ -205,9 +206,9 @@ class MainWinRightPanel(CustomizableCalObj):
 			parent = item.w.get_parent()
 			assert isinstance(parent, gtk.Container), f"{parent=}"
 			parent.remove(item.w)
-		for child in self.w.get_children():
+		for child in self.paned.get_children():
 			# child is Frame, containing a ScrolledWindow, containing item
-			self.w.remove(child)
+			self.paned.remove(child)
 		self.items = []
 		self.addItems()
 
@@ -227,22 +228,22 @@ class MainWinRightPanel(CustomizableCalObj):
 		self.eventItem.onDateChange()
 
 	def onBorderWidthChange(self) -> None:
-		self.w.set_border_width(conf.mainWinRightPanelBorderWidth.v)
+		self.paned.set_border_width(conf.mainWinRightPanelBorderWidth.v)
 
 	def updatePosition(self, height: int) -> None:
 		log.debug(
 			f"updatePosition: {height=}, {self.setPosAtHeight=}, "
-			f"pos={self.w.get_position()}",
+			f"pos={self.paned.get_position()}",
 		)
 		if height <= 1:
 			return
 		if height != self.setPosAtHeight:
 			pos = int(height * conf.mainWinRightPanelRatio.v)
-			self.w.set_position(pos)
+			self.paned.set_position(pos)
 			self.setPosAtHeight = height
 			timeout_add(10, self.updateWidth)
 			return
-		conf.mainWinRightPanelRatio.v = self.w.get_position() / height
+		conf.mainWinRightPanelRatio.v = self.paned.get_position() / height
 		ui.saveLiveConf()
 
 	def onSizeAllocate(self, _w: gtk.Widget, requisition: gtk.Requisition) -> None:
@@ -277,10 +278,10 @@ class MainWinRightPanel(CustomizableCalObj):
 	"""
 
 	def getWidth(self) -> int:  # noqa: PLR6301
-		# TODO: add self.win: gtk.Window, use it instead of ui.mainWin.w
+		# TODO: add self.parentWin: gtk.Window, use it instead of ui.mainWin.w
 		if conf.mainWinRightPanelWidthRatioEnable.v:
-			if ui.mainWin and ui.mainWin.w.is_maximized():
-				winWidth = ui.mainWin.w.get_size()[0]
+			if ui.mainWin and ui.mainWin.win.is_maximized():
+				winWidth = ui.mainWin.win.get_size()[0]
 			else:
 				winWidth = conf.winWidth.v
 			return int(conf.mainWinRightPanelWidthRatio.v * winWidth)

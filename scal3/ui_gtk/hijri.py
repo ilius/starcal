@@ -383,7 +383,7 @@ def checkHijriMonthsExpiration() -> None:
 	if isfile(hijri.monthDbExpiredIgnoreFile):
 		# user previously checked "Don't show this again" checkbox
 		return
-	dialog = HijriMonthsExpirationDialog(transient_for=ui.mainWin.w)
+	dialog = HijriMonthsExpirationDialog(transient_for=ui.mainWin.win)
 	dialog.run()
 
 

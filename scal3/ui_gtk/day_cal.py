@@ -85,7 +85,8 @@ __all__ = ["DayCal", "ParentWindowType"]
 
 
 class ParentWindowType(Protocol):
-	w: gtk.Window
+	w: gtk.Widget
+	win: gtk.Window
 
 	def customizeShow(
 		self,
@@ -141,10 +142,10 @@ class DayCal(CalBase):
 
 	def __init__(self, win: ParentWindowType) -> None:
 		super().__init__()
-		self.w: gtk.DrawingArea = gtk.DrawingArea()
+		self.w: gtk.Widget = gtk.DrawingArea()
 		# FIXME: rename one of these two attrs:
 		self.parentWin = win
-		self._window: gtk.Window | None = None
+		self.myWin: gtk.Window | None = None
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.subPages: list[StackPageType] | None = None
@@ -429,8 +430,8 @@ class DayCal(CalBase):
 		return subPages
 
 	def getWindow(self) -> gtk.Window:
-		assert self._window is not None
-		return self._window
+		assert self.myWin is not None
+		return self.myWin
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.option_ui import (

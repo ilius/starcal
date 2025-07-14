@@ -1,6 +1,5 @@
 from time import localtime
 from time import time as now
-from typing import Any
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui_gtk import timeout_add
@@ -12,7 +11,7 @@ __all__ = ["TimerButton"]
 
 @registerSignals
 class SignalHandler(SignalHandlerBase):
-	signals: list[tuple[str, list[Any]]] = [
+	signals = [
 		("time-elapse", []),
 	]
 

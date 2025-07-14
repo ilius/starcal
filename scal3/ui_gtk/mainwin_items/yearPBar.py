@@ -17,12 +17,13 @@ class CalObj(CustomizableCalObj):
 	hasOptions = False
 
 	def __init__(self, win: gtk.Window) -> None:
-		self.w: gtk.Frame = gtk.Frame()
-		self.win = win
-		self.w.set_shadow_type(gtk.ShadowType.ETCHED_IN)
-		self.w.set_border_width(0)
+		self.frame = gtk.Frame()
+		self.w: gtk.Widget = self.frame
+		self.parentWin = win
+		self.frame.set_shadow_type(gtk.ShadowType.ETCHED_IN)
+		self.frame.set_border_width(0)
 		self.pbar = MyProgressBar()
-		self.w.add(self.pbar.w)
+		self.frame.add(self.pbar.w)
 		self.pbar.w.show()
 		self.initVars()
 
