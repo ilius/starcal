@@ -182,6 +182,7 @@ class EventGroupNotificationThread(Thread):
 		group = self.group
 
 		tm = now()
+		assert group.notifyOccur is not None
 		occurItems: list[OccurItem] = list(group.notifyOccur.search(tm, tm + interval))
 		log.info(f"{tm=}, {tm + interval=}, {occurItems=}")
 
