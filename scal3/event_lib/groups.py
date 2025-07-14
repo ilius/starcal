@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.color_utils import RGB, RGBA
+from scal3.s_object import copyParams
 
 log = logger.get()
 
@@ -104,7 +105,8 @@ class EventGroup(EventContainer):
 		"deletedRemoteEvents",
 	]
 	params = EventContainer.params + [
-		# "enable",
+		"calType",
+		"enable",
 		"showInDCal",
 		"showInWCal",
 		"showInMCal",
@@ -523,20 +525,16 @@ class EventGroup(EventContainer):
 		event.afterModify()
 
 	def __copy__(self) -> Self:
-		newObj = self.__class__()
-		newObj.fs = self.fs
-		newObj.copyFrom(self)
-		newObj.removeAll()
-		return newObj
-
-	def copyFrom(self, other: Self) -> None:
-		EventContainer.copyFrom(self, other)
-		self.enable = other.enable
+		newGroup = self.__class__()
+		newGroup.fs = self.fs
+		copyParams(newGroup, self)
+		newGroup.removeAll()
+		return newGroup
 
 	def copyAs(self, newGroupType: str) -> EventGroupType:
 		newGroup: EventGroupType = classes.group.byName[newGroupType]()
 		newGroup.fs = self.fs
-		newGroup.copyFrom(self)
+		copyParams(newGroup, self)
 		newGroup.removeAll()
 		return newGroup
 
@@ -908,6 +906,7 @@ class EventGroup(EventContainer):
 class TaskList(EventGroup):
 	name = "taskList"
 	desc = _("Task List")
+	params = EventGroup.params + ["defaultDuration"]
 	acceptsEventTypes: Sequence[str] = (
 		"task",
 		"allDayTask",
@@ -930,12 +929,6 @@ class TaskList(EventGroup):
 	def __init__(self, ident: int | None = None) -> None:
 		EventGroup.__init__(self, ident)
 		self.defaultDuration = (0.0, 1)  # (value, unit)
-
-	def copyFrom(self, other: EventGroup) -> None:
-		EventGroup.copyFrom(self, other)
-		if other.name == self.name:
-			assert isinstance(other, TaskList), f"{other=}"
-			self.defaultDuration = other.defaultDuration[:]
 
 	def getDict(self) -> dict[str, Any]:
 		data = EventGroup.getDict(self)

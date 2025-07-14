@@ -42,7 +42,7 @@ from scal3.filesystem import null_fs
 from scal3.interval_utils import simplifyNumList
 from scal3.locale_man import floatEncode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.s_object import SObjBase
+from scal3.s_object import SObjBase, copyParams
 from scal3.time_utils import (
 	durationDecode,
 	durationEncode,
@@ -133,10 +133,10 @@ class EventRule(SObjBase, EventRuleType):
 		log.warning(f"No implementation for {self.__class__.__name__}.setRuleValue")
 
 	def __copy__(self) -> Self:
-		newObj = self.__class__(self.parent)
-		newObj.fs = getattr(self, "fs", None)  # type: ignore[assignment]
-		newObj.copyFrom(self)
-		return newObj
+		newRule = self.__class__(self.parent)
+		newRule.fs = getattr(self, "fs", None)  # type: ignore[assignment]
+		copyParams(newRule, self)
+		return newRule
 
 	def getCalType(self) -> int:
 		return self.parent.calType

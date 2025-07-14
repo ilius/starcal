@@ -97,7 +97,11 @@ class UniversityTerm(EventGroup):
 		("time", _("Time"), True),
 	]
 	sortByDefault = "time"
-	params = EventGroup.params + ["courses"]
+	params = EventGroup.params + [
+		"classTimeBounds",
+		"classesEndDate",
+		"courses",
+	]
 	paramsOrder = EventGroup.paramsOrder + [
 		"classTimeBounds",
 		"classesEndDate",
@@ -290,13 +294,6 @@ class UniversityTerm(EventGroup):
 	# 	self.lastCourseId += 1
 	# 	log.info(f"getNewCourseID: {self.lastCourseId=}")
 	# 	return self.lastCourseId
-
-	def copyFrom(self, other: EventGroup) -> None:
-		EventGroup.copyFrom(self, other)
-		if other.name == self.name:
-			assert isinstance(other, UniversityTerm), f"{other=}"
-			self.classesEndDate = other.classesEndDate[:]
-			self.classTimeBounds = other.classTimeBounds[:]
 
 	def getDict(self) -> dict[str, Any]:
 		data = EventGroup.getDict(self)

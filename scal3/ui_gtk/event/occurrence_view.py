@@ -373,7 +373,7 @@ class DayOccurrenceView(CustomizableCalObj):
 			)
 			return
 
-		newEvent.copyFrom(event)  # type: ignore[arg-type]
+		newEvent.copyFrom(event)
 		startEpoch, endEpoch = occurData.time_epoch
 		newEvent.setStartEpoch(startEpoch)
 		newEvent.setEndEpoch(endEpoch)
