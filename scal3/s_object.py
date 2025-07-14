@@ -103,7 +103,7 @@ class SObj(SObjBase):
 			if key in self.params:
 				setattr(self, key, value)
 
-	def copy(self) -> Self:
+	def __copy__(self) -> Self:
 		newObj = self.__class__()
 		newObj.fs = self.fs
 		newObj.copyFrom(self)
