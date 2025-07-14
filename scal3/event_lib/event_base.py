@@ -161,6 +161,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		ident: int | None = None,
 		parent: EventContainerType | None = None,
 	) -> None:
+		RuleContainer.__init__(self)
 		if ident is None:
 			self.id = None
 		else:
@@ -171,7 +172,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.parent: EventContainerType | None = parent
 		self.calType: int
 		if parent is not None:
-			self.calType = parent.calType
+			self.calType = parent.calType  # must set after RuleContainer.__init__
 		else:
 			self.calType = calTypes.primary
 		self.icon: str | None = self.__class__.getDefaultIcon()
@@ -179,7 +180,6 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.description = ""
 		self.files: list[str] = []
 		# ------
-		RuleContainer.__init__(self)
 		self.timeZoneEnable = not self.isAllDay
 		self.notifiers: list[EventNotifierType] = []
 		self.notifyBefore = (30.0, 60)  # (value, unit) like DurationEventRule
