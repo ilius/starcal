@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.option import ListOption, Option
+	from scal3.ui_gtk.pytypes import StackPageType
 
 
 __all__ = ["WinLayoutBox", "WinLayoutObj"]
@@ -61,7 +62,7 @@ class WinLayoutBase(CustomizableCalObj):
 		self.optionsButtonBox: gtk.Box | None = None
 		self.optionsButton: StackPageButton | None = None
 		self.optionsButtonEnable = True
-		self.subPages: list[StackPage] | None = None
+		self.subPages: list[StackPageType] | None = None
 		# ----
 		CustomizableCalObj.__init__(self)
 		self.initVars()
@@ -198,7 +199,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.optionsButtonBox = vbox
 		return vbox
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsButtonBox()
@@ -364,10 +365,10 @@ class WinLayoutBox(WinLayoutBase):
 				tmpItem.moveButton.action = action
 		self.onConfigChange()
 
-	def getSubPages(self) -> list[StackPage]:
+	def getSubPages(self) -> list[StackPageType]:
 		if self.subPages is not None:
 			return self.subPages
-		subPages: list[StackPage] = []
+		subPages: list[StackPageType] = []
 		for item in self.items:
 			assert isinstance(item, WinLayoutBase), f"{item=}"
 			for page in item.getSubPages():

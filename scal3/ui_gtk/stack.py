@@ -22,9 +22,14 @@ from scal3.ui_gtk.stack_page import StackPage
 log = logger.get()
 
 
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["MyStack", "StackPage", "StackPageButton"]
 
@@ -169,7 +174,7 @@ class MyStack(gtk.Stack):
 		hbox.show_all()
 		return hbox
 
-	def addPage(self, page: StackPage) -> None:
+	def addPage(self, page: StackPageType) -> None:
 		pagePath = page.pagePath
 		log.debug(f"MyStack: {pagePath=}")
 		parentName = page.pageParent

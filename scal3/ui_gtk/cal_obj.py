@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 	from gi.overrides import GObject
 
 	from scal3.pytypes import CellType
-	from scal3.ui_gtk.stack_page import StackPage
+	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalBase"]
@@ -70,7 +70,7 @@ class CalBase(CustomizableCalObj):
 		if self.doubleClickEnable:
 			self.s.connect("double-button-press", ui.cells.current.dayOpenEvolution)
 		# ---
-		self.subPages: list[StackPage] | None = None
+		self.subPages: list[StackPageType] | None = None
 
 	def gotoJd(self, jd: int) -> None:
 		ui.cells.gotoJd(jd)

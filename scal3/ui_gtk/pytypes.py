@@ -85,30 +85,33 @@ class CustomizableCalObjType(CalObjType, Protocol):
 	def moveItem(self, i: int, j: int) -> None: ...
 	def onEnableCheckClick(self) -> None: ...
 	def getOptionsWidget(self) -> gtk.Widget | None: ...
-	def getSubPages(self) -> list[StackPage]: ...
+	def getSubPages(self) -> list[StackPageType]: ...
 	def getLoadedObj(self) -> CustomizableCalObjType: ...
 	def replaceItem(self, itemIndex: int, item: CustomizableCalObjType) -> None: ...
 	def insertItemWidget(self, _i: int) -> None: ...
 
 
-class StackPage:
-	def __init__(self) -> None:
-		self.pageWidget: gtk.Box | None = None
-		self.pageParent = ""
-		self.pageName = ""
-		self.pagePath = ""
-		self.pageTitle = ""
-		self.pageLabel = ""
-		self.pageIcon = ""
-		self.pageExpand = True
-		self.pageItem: CustomizableCalObjType | None = None
-		self.iconSize = 0
+class StackPageType(Protocol):
+	pageWidget: gtk.Box | None
+	pageParent: str
+	pageName: str
+	pagePath: str
+	pageTitle: str
+	pageLabel: str
+	pageIcon: str
+	pageExpand: bool
+	pageItem: CustomizableCalObjType | None
+	iconSize: int
 
-	def __str__(self) -> str:
-		return (
-			f"StackPage(pageName={self.pageName!r}, pagePath={self.pagePath!r}, "
-			f"pageParent={self.pageParent!r})"
-		)
-
-	def __repr__(self) -> str:
-		return self.__str__()
+	# error: Protocol members cannot be defined via assignment to self  [misc]
+	# def __init__(self) -> None:
+	# 	self.pageWidget: gtk.Box | None
+	# 	self.pageParent: str
+	# 	self.pageName: str
+	# 	self.pagePath: str
+	# 	self.pageTitle: str
+	# 	self.pageLabel: str
+	# 	self.pageIcon: str
+	# 	self.pageExpand: bool
+	# 	self.pageItem: CustomizableCalObjType | None
+	# 	self.iconSize: int
