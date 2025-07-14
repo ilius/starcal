@@ -59,7 +59,7 @@ from .rules import (
 if TYPE_CHECKING:
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
+	from scal3.event_lib.pytypes import EventGroupType, EventType, OccurSetType
 
 	from .groups import TaskList, YearlyGroup
 	from .pytypes import EventRuleType
@@ -315,7 +315,7 @@ class TaskEvent(SingleStartEndEvent):
 			else:
 				raise RuntimeError("no end rule nor duration rule")
 
-	def copyFrom(self, other: Event) -> None:
+	def copyFrom(self, other: EventType) -> None:
 		Event.copyFrom(self, other)
 		myStart = StartEventRule.getFrom(self)
 		if myStart is None:
@@ -472,7 +472,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.setEndJd(ics.getJdByIcsDate(data["DTEND"]))  # FIXME
 		return True
 
-	def copyFrom(self, other: Event) -> None:
+	def copyFrom(self, other: EventType) -> None:
 		SingleStartEndEvent.copyFrom(self, other)
 		if other.name == self.name:
 			assert isinstance(other, AllDayTaskEvent), f"{other=}"

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
+from scal3.s_object import copyParams
 from scal3.ui_gtk.event.group.base import makeGroupWidget
 
 log = logger.get()
@@ -102,7 +103,7 @@ class GroupEditorDialog(Dialog):
 			if group.icon:
 				self._group.icon = group.icon
 		if not self.isNew:
-			group.copyFrom(self._group)
+			copyParams(group, self._group)
 		group.setId(self._group.id)
 		if self.isNew:
 			group.title = self.getNewGroupTitle(group.desc)

@@ -36,6 +36,7 @@ __all__ = [
 	"SObjBase",
 	"SObjBinaryModel",
 	"SObjTextModel",
+	"copyParams",
 	"getObjectPath",
 	"objectDirName",
 ]
@@ -57,6 +58,32 @@ class ParentSObj(Protocol):
 	def getPath(self) -> list[int]: ...
 
 
+# class WithParams(Protocol):
+# 	params: list[str]
+
+
+# def copyParams[T](target: T, source: T) -> None:
+# 	if hasattr(target, "copyFrom"):
+# 		target.copyFrom(source)
+# 		return
+# 	_copyParams(target, source)
+
+
+def copyParams[T](target: T, source: T) -> None:
+	from copy import deepcopy
+
+	for attr in target.params:  # type: ignore[attr-defined]
+		try:
+			value = getattr(source, attr)
+		except AttributeError:
+			continue
+		setattr(
+			target,
+			attr,
+			deepcopy(value),
+		)
+
+
 class SObjBase:
 	name = ""
 	id: int | None
@@ -73,20 +100,6 @@ class SObjBase:
 
 	def __bool__(self) -> bool:
 		raise NotImplementedError
-
-	def copyFrom(self, other: Self) -> None:
-		from copy import deepcopy
-
-		for attr in self.params:
-			try:
-				value = getattr(other, attr)
-			except AttributeError:
-				continue
-			setattr(
-				self,
-				attr,
-				deepcopy(value),
-			)
 
 
 class SObj(SObjBase):
@@ -106,7 +119,10 @@ class SObj(SObjBase):
 	def __copy__(self) -> Self:
 		newObj = self.__class__()
 		newObj.fs = self.fs
-		newObj.copyFrom(self)
+		if hasattr(newObj, "copyFrom"):
+			newObj.copyFrom(self)
+		else:
+			copyParams(newObj, self)
 		return newObj
 
 	def getIdPath(self) -> list[int]:

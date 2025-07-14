@@ -19,7 +19,7 @@ from __future__ import annotations
 from copy import copy
 
 from scal3 import logger
-from scal3.s_object import SObj
+from scal3.s_object import SObj, copyParams
 
 log = logger.get()
 
@@ -213,7 +213,8 @@ class RuleContainer(SObj):
 	def copyRulesFrom(self, other: RuleContainerType) -> None:
 		for ruleType, rule in other.rulesDict.items():
 			if self.supportedRules is None or ruleType in self.supportedRules:
-				self.getAddRule(ruleType).copyFrom(rule)
+				rule2 = self.getAddRule(ruleType)
+				copyParams(rule2, rule)
 
 	def copySomeRuleTypesFrom(
 		self,
@@ -231,7 +232,8 @@ class RuleContainer(SObj):
 			rule = other.getRule(ruleType)
 			if rule is None:
 				continue
-			self.getAddRule(ruleType).copyFrom(rule)
+			rule2 = self.getAddRule(ruleType)
+			copyParams(rule2, rule)
 
 	def getTimeZoneObj(self) -> tzinfo:
 		if self.timeZoneEnable and self.timeZone:

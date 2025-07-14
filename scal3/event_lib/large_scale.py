@@ -172,6 +172,7 @@ class LargeScaleGroup(EventGroup):
 	name = "largeScale"
 	desc = _("Large Scale Events Group")
 	acceptsEventTypes: Sequence[str] = ("largeScale",)
+	params = EventGroup.params + ["scale"]
 	sortBys = EventGroup.sortBys + [
 		("start", _("Start"), True),
 		("end", _("End"), True),
@@ -199,12 +200,6 @@ class LargeScaleGroup(EventGroup):
 		self.showInWCal = False
 		self.showInMCal = False
 		self.showInStatusIcon = False
-
-	def copyFrom(self, other: EventGroup) -> None:
-		EventGroup.copyFrom(self, other)
-		if other.name == self.name:
-			assert isinstance(other, LargeScaleGroup), f"{other=}"
-			self.scale = other.scale
 
 	def getDict(self) -> dict[str, Any]:
 		data = EventGroup.getDict(self)

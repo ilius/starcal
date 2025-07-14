@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from scal3 import event_lib
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
+from scal3.s_object import copyParams
 from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event import EventWidgetType, makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
@@ -79,7 +80,7 @@ class AccountEditorDialog(Dialog):
 		cls = event_lib.classes.account[self.comboType.get_active()]
 		account = cls()
 		if self.account:
-			account.copyFrom(self.account)
+			copyParams(account, self.account)
 			account.setId(self.account.id)
 			del self.account
 		if self.isNew:

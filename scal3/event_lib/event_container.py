@@ -22,7 +22,7 @@ log = logger.get()
 
 import json
 from time import time as now
-from typing import TYPE_CHECKING, Protocol, Self
+from typing import TYPE_CHECKING, Protocol
 
 import mytz
 from scal3 import locale_man, logger
@@ -104,6 +104,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	]
 	# HistoryEventObjBinaryModel.params is empty
 	params: list[str] = [
+		"calType",
 		"timeZoneEnable",
 		"timeZone",
 		"icon",
@@ -296,10 +297,6 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		self.idList.remove(event.id)
 		event.parent = None
 		return index
-
-	def copyFrom(self, other: Self) -> None:
-		HistoryEventObjBinaryModel.copyFrom(self, other)
-		self.calType = other.calType
 
 	def getDict(self) -> dict[str, Any]:
 		data = HistoryEventObjBinaryModel.getDict(self)
