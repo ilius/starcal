@@ -18,7 +18,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from scal3 import logger
 
@@ -76,7 +76,7 @@ class AutoSizeEntry(gtk.Entry):
 
 @registerSignals
 class MultiSpinButton[F: Field[Any], V](gtk.Box):
-	signals: list[tuple[str, list[Any]]] = [
+	signals: ClassVar[list[tuple[str, list[Any]]]] = [
 		("changed", []),
 		("activate", []),
 		("first-min", []),

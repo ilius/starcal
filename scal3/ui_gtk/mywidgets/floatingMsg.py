@@ -87,14 +87,14 @@ class FloatingMsg(gtk.DrawingArea):
 		self.connect("draw", self.onExposeEvent)
 		self.connect("realize", self.on_realize)
 		# --------
-		self.win: gtk.Window | None = None
+		self.myWin: gtk.Window | None = None
 		if createWindow:
-			self.win = gtk.Window(type=gtk.WindowType.POPUP)
+			self.myWin = gtk.Window(type=gtk.WindowType.POPUP)
 			# ^ gtk.WindowType.POPUP ?
-			self.win.add(self)
-			self.win.set_decorated(False)
-			self.win.set_property("skip-taskbar-hint", True)
-			self.win.set_keep_above(True)
+			self.myWin.add(self)
+			self.myWin.set_decorated(False)
+			self.myWin.set_property("skip-taskbar-hint", True)
+			self.myWin.set_keep_above(True)
 
 	@staticmethod
 	def isRtl(line: str, layout: pango.Layout | None) -> bool:
@@ -116,8 +116,8 @@ class FloatingMsg(gtk.DrawingArea):
 		size = self.layout.get_pixel_size()
 		self.height = size[1]
 		self.set_size_request(screenWidth, self.height)
-		if self.win is not None:
-			self.win.resize(screenWidth, self.height)
+		if self.myWin is not None:
+			self.myWin.resize(screenWidth, self.height)
 		self.textWidth = size[0]
 		self.startXpos = -self.textWidth if self.rtl else screenWidth
 		self.xpos = self.startXpos
@@ -128,9 +128,9 @@ class FloatingMsg(gtk.DrawingArea):
 		_genvent: gdk.Event | None = None,
 	) -> None:
 		self.isFinished = True
-		if self.win is not None:
-			self.win.destroy()
-			self.win = None
+		if self.myWin is not None:
+			self.myWin.destroy()
+			self.myWin = None
 		self.destroy()
 		if self.finishFunc:
 			self.finishFunc()
@@ -184,8 +184,8 @@ class FloatingMsg(gtk.DrawingArea):
 
 	def show(self) -> None:
 		gtk.DrawingArea.show(self)
-		if self.win is not None:
-			self.win.show()
+		if self.myWin is not None:
+			self.myWin.show()
 
 
 class MyLabel(gtk.DrawingArea):

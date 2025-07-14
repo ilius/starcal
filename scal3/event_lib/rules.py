@@ -18,8 +18,6 @@ from __future__ import annotations
 
 from scal3 import locale_man, logger
 
-from .pytypes import EventRuleType, OccurSetType
-
 log = logger.get()
 
 import json
@@ -68,7 +66,7 @@ if TYPE_CHECKING:
 	from collections.abc import Sequence
 	from typing import Any
 
-	from .pytypes import EventType, RuleContainerType
+	from .pytypes import EventType, OccurSetType, RuleContainerType
 
 	# _ruleDymmy: EventRuleType = EventRule(Event())
 
@@ -101,7 +99,7 @@ dayLen = 86400
 
 # Should not be registered, or instantiate directly
 @classes.rule.setMain
-class EventRule(SObjBase, EventRuleType):
+class EventRule(SObjBase):
 	name = ""
 	tname = ""
 	nameAlias = ""

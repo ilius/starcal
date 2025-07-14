@@ -164,6 +164,14 @@ class EventGroup(EventContainer):
 	)
 	WidgetClass: Any
 
+	@classmethod
+	def load(
+		cls,
+		ident: int,
+		fs: FileSystem,
+	) -> EventGroupType | None:
+		return cls.s_load(ident, fs)
+
 	@property
 	def mustId(self) -> int:
 		assert self.id is not None

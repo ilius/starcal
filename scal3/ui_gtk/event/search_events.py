@@ -734,7 +734,7 @@ class EventSearchWindow(CalObjWidget):
 		eid = self.treeModel[path][1]
 		group = ev.groups[gid]
 		event = group[eid]
-		EventHistoryDialog(event, transient_for=self.w).w.run()
+		EventHistoryDialog(event, transient_for=self.w).dialog.run()
 
 	def genRightClickMenu(self, path: str) -> gtk.Menu:
 		gid = self.treeModel[path][0]

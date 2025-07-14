@@ -62,7 +62,7 @@ class CalObj(CustomizableToolBox):
 			win,
 			continuousClick=False,
 		)
-		self.win = win
+		self.parentWin = win
 		self.mainMenuItem = MainMenuToolBoxItem()
 		self.defaultItems = [
 			self.mainMenuItem,

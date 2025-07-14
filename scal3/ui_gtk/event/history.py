@@ -67,19 +67,20 @@ class EventHistoryDialog(CalObjWidget):
 		transient_for: gtk.Window | None = None,
 	) -> None:
 		checkEventsReadOnly()
-		self.w: Dialog = Dialog(transient_for=transient_for)
-		self.w.set_title(_("History") + ": " + event.summary)
+		self.dialog = Dialog(transient_for=transient_for)
+		self.w: gtk.Widget = self.dialog
+		self.dialog.set_title(_("History") + ": " + event.summary)
 		self._event = event
 		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
 
 		dialog_add_button(
-			self.w,
+			self.dialog,
 			res=gtk.ResponseType.OK,
 			imageName="window-close.svg",
 			label=_("_Close"),
 		)
 
-		self.w.connect("response", self.onResponse)
+		self.dialog.connect("response", self.onResponse)
 
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
@@ -108,7 +109,7 @@ class EventHistoryDialog(CalObjWidget):
 		leftVbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		hpan.add2(leftVbox)
 		hpan.set_position(600)
-		pack(self.w.vbox, hpan, expand=True, fill=True)
+		pack(self.dialog.vbox, hpan, expand=True, fill=True)
 
 		actionBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=5)
 		pack(leftVbox, actionBox, padding=30)
@@ -220,8 +221,8 @@ class EventHistoryDialog(CalObjWidget):
 		col.set_property("expand", True)
 
 		self.load()
-		self.w.vbox.show_all()
-		self.w.resize(ud.workAreaW, int(ud.workAreaH * 0.9))
+		self.dialog.vbox.show_all()
+		self.dialog.resize(ud.workAreaW, int(ud.workAreaH * 0.9))
 
 	def onResponse(self, _w: Any, _e: Any) -> None:
 		self.hide()

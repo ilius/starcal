@@ -147,12 +147,12 @@ class MainWinVbox(CustomizableCalBox):
 
 	def __init__(self, win: MainWinType) -> None:
 		CustomizableCalBox.__init__(self, vertical=True)
-		self.win = win
+		self.parentWin = win
 		self.initVars()
 
 	def connectItem(self, item: CalObjType) -> None:
 		super().connectItem(item)
-		win = self.win
+		win = self.parentWin
 		signalNames = {sigTup[0] for sigTup in item.s.signals}
 		if "popup-cell-menu" in signalNames:
 			item.s.connect("popup-cell-menu", win.menuCellPopup, item)
@@ -164,7 +164,7 @@ class MainWinVbox(CustomizableCalBox):
 			item.s.connect("day-info", win.dayInfoShow)
 
 	def createItems(self) -> None:
-		win = self.win
+		win = self.parentWin
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
 
 		for name, enable in conf.mainWinItems.v:
@@ -256,7 +256,7 @@ class MainWin(CalObjWidget):
 	timeout = 1  # second
 
 	def autoResize(self) -> None:
-		self.w.resize(conf.winWidth.v, conf.winHeight.v)
+		self.win.resize(conf.winWidth.v, conf.winHeight.v)
 
 	# def maximize(self):
 	# 	pass
@@ -270,7 +270,8 @@ class MainWin(CalObjWidget):
 			appId += "2"
 		self.app = gtk.Application(application_id=appId)
 		self.app.register(gio.Cancellable.new())
-		self.w: gtk.ApplicationWindow = gtk.ApplicationWindow(application=self.app)
+		self.win = win = gtk.ApplicationWindow(application=self.app)
+		self.w: gtk.Widget = self.win
 		# ---
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
@@ -302,23 +303,23 @@ class MainWin(CalObjWidget):
 		# log.debug("windowList.items", [item.objName for item in ud.windowList.items])
 		# -----------
 		# self.connect("window-state-event", selfStateEvent)
-		self.w.set_title(f"{APP_DESC} {core.VERSION}")
+		win.set_title(f"{APP_DESC} {core.VERSION}")
 		# self.connect("main-show", lambda arg: self.present())
 		# self.connect("main-hide", lambda arg: self.hide())
-		self.w.set_decorated(False)
-		self.w.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
+		win.set_decorated(False)
+		win.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
 		# self.w.set_skip_taskbar_hint  # FIXME
-		self.w.set_role("starcal")
+		win.set_role("starcal")
 		# self.w.set_focus_on_map(True)#????????
 		# self.w.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		# self.w.connect("realize", self.onRealize)
-		self.w.set_default_size(conf.winWidth.v, 1)
-		self.w.move(conf.winX.v, conf.winY.v)
+		win.set_default_size(conf.winWidth.v, 1)
+		win.move(conf.winX.v, conf.winY.v)
 		# -------------------------------------------------------------
-		self.w.connect("focus-in-event", self.focusIn, "Main")
-		self.w.connect("focus-out-event", self.focusOut, "Main")
-		self.w.connect("key-press-event", self.onKeyPress)
-		self.w.connect("configure-event", self.onConfigureEvent)
+		win.connect("focus-in-event", self.focusIn, "Main")
+		win.connect("focus-out-event", self.focusOut, "Main")
+		win.connect("key-press-event", self.onKeyPress)
+		win.connect("configure-event", self.onConfigureEvent)
 		self.s.connect("toggle-right-panel", self.onToggleRightPanel)
 		# -------------------------------------------------------------
 		"""
@@ -443,10 +444,10 @@ class MainWin(CalObjWidget):
 		self.appendItem(self.layout)
 		self.vbox = self.layout.getWidget()
 		self.vbox.show()
-		self.w.add(self.vbox)
+		win.add(self.vbox)
 		# --------------------
 		if conf.winMaximized.v:
-			self.w.maximize()
+			win.maximize()
 		# --------------------
 		# ui.prefWindow = None
 		self.exportDialog: ExportDialog | None = None
@@ -457,9 +458,9 @@ class MainWin(CalObjWidget):
 		self.menuMain: gtk.Menu | None = None
 		self.menuCell: gtk.Menu | None = None
 		# -----
-		self.w.set_keep_above(conf.winKeepAbove.v)
+		win.set_keep_above(conf.winKeepAbove.v)
 		if conf.winSticky.v:
-			self.w.stick()
+			win.stick()
 		# ------------------------------------------------------------
 		self.statusIconInit()
 		listener.dateChange.add(self)
@@ -519,17 +520,17 @@ class MainWin(CalObjWidget):
 		self.rightPanel.onToggleFromMainWin()
 
 		if conf.mainWinRightPanelResizeOnToggle.v:
-			ww, wh = self.w.get_size()
+			ww, wh = self.win.get_size()
 			mw = conf.mainWinRightPanelWidth.v
 			if enable:
 				ww += mw
 			else:
 				ww -= mw
 			if rtl:
-				wx, wy = self.w.get_position()
+				wx, wy = self.win.get_position()
 				wx += mw * (-1 if enable else 1)
-				self.w.move(wx, wy)
-			self.w.resize(ww, wh)
+				self.win.move(wx, wy)
+			self.win.resize(ww, wh)
 
 	def onToggleRightPanel(self, _sig: SignalHandlerType) -> None:
 		self.ignoreConfigureEvent = True
@@ -546,7 +547,7 @@ class MainWin(CalObjWidget):
 
 		if self.statusBar is not None:
 			return self.statusBar
-		self.statusBar = StatusBar(self.w)
+		self.statusBar = StatusBar(self.win)
 		return self.statusBar
 
 	@staticmethod
@@ -614,23 +615,23 @@ class MainWin(CalObjWidget):
 
 	def focusOutDo(self) -> bool:
 		if not self.focus:  # and t-self.focusOutTime>0.002:
-			self.w.set_keep_above(conf.winKeepAbove.v)
+			self.win.set_keep_above(conf.winKeepAbove.v)
 			if self.winCon and self.winCon.enable:
 				self.winCon.windowFocusOut()
 		return False
 
 	def toggleMinimized(self, _ge: gdk.EventButton) -> None:
 		if conf.winTaskbar.v:
-			self.w.iconify()
+			self.win.iconify()
 			return
 		self.w.emit("delete-event", gdk.Event.new(gdk.EventType.DELETE))
 
 	def toggleMaximized(self, _ge: gdk.EventButton) -> None:
 		if conf.winMaximized.v:
-			self.w.unmaximize()
+			self.win.unmaximize()
 		else:
 			self.unmaxWinWidth = conf.winWidth.v
-			self.w.maximize()
+			self.win.maximize()
 		conf.winMaximized.v = not conf.winMaximized.v
 		ui.saveLiveConf()
 
@@ -645,7 +646,7 @@ class MainWin(CalObjWidget):
 		else:
 			return
 		conf.winWidth.v = ww
-		self.w.resize(ww, conf.winHeight.v)
+		self.win.resize(ww, conf.winHeight.v)
 
 	def screenSizeChanged(self, rect: gdk.Rectangle) -> None:
 		if conf.winMaximized.v:
@@ -656,22 +657,22 @@ class MainWin(CalObjWidget):
 		winY = min(conf.winY.v, rect.height - conf.winHeight.v)
 
 		if (winWidth, winHeight) != (conf.winWidth.v, conf.winHeight.v):
-			self.w.resize(winWidth, winHeight)
+			self.win.resize(winWidth, winHeight)
 
 		if (winX, winY) != (conf.winX.v, conf.winY.v):
-			self.w.move(winX, winY)
+			self.win.move(winX, winY)
 
 	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
 		if self.ignoreConfigureEvent:
 			return None
-		wx, wy = self.w.get_position()
+		wx, wy = self.win.get_position()
 		# maxPosDelta = max(
 		# 	abs(conf.winX.v - wx),
 		# 	abs(conf.winY.v - wy),
 		# )
 		# log.debug(wx, wy)
-		ww, wh = self.w.get_size()
-		if self.w.get_property("visible"):
+		ww, wh = self.win.get_size()
+		if self.win.get_property("visible"):
 			conf.winX.v, conf.winY.v = (wx, wy)
 		if not conf.winMaximized.v:
 			conf.winWidth.v = ww
@@ -695,7 +696,7 @@ class MainWin(CalObjWidget):
 		elif b == 1:
 			# FIXME: used to cause problems with `ConButton`
 			# when using 'pressed' and 'released' signals
-			self.w.begin_move_drag(
+			self.win.begin_move_drag(
 				gevent.button,
 				int(gevent.x_root),
 				int(gevent.y_root),
@@ -716,7 +717,7 @@ class MainWin(CalObjWidget):
 		x, y = int(gevent.x_root), int(gevent.y_root)
 		result = False
 		if b == 1:
-			self.w.begin_move_drag(gevent.button, x, y, gevent.time)
+			self.win.begin_move_drag(gevent.button, x, y, gevent.time)
 			result = True
 		elif b == 3:
 			menuMain = self.menuMainCreate()
@@ -739,7 +740,7 @@ class MainWin(CalObjWidget):
 			self.menuMain.hide()
 		conf.winMaximized.v = False
 		ui.updateFocusTime()
-		self.w.begin_resize_drag(
+		self.win.begin_resize_drag(
 			gdk.WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
@@ -853,7 +854,7 @@ class MainWin(CalObjWidget):
 		eventNew = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			transient_for=self.w,
+			transient_for=self.win,
 		).run2()
 		if eventNew is None:
 			return
@@ -1154,7 +1155,7 @@ class MainWin(CalObjWidget):
 			eventType,
 			useSelectedDate=True,
 			title=title,
-			transient_for=self.w,
+			transient_for=self.win,
 		)
 		if event is None:
 			return
@@ -1173,16 +1174,16 @@ class MainWin(CalObjWidget):
 	def onKeepAboveClick(self, check: CheckMenuItem) -> None:
 		print(check)
 		act = check.get_active()
-		self.w.set_keep_above(act)
+		self.win.set_keep_above(act)
 		conf.winKeepAbove.v = act
 		ui.saveLiveConf()
 
 	def onStickyClick(self, check: CheckMenuItem) -> None:
 		if check.get_active():
-			self.w.stick()
+			self.win.stick()
 			conf.winSticky.v = True
 		else:
-			self.w.unstick()
+			self.win.unstick()
 			conf.winSticky.v = False
 		ui.saveLiveConf()
 
@@ -1553,14 +1554,14 @@ class MainWin(CalObjWidget):
 			# log.debug(conf.winX.v, conf.winY.v)
 			self.hide()
 		else:
-			self.w.move(conf.winX.v, conf.winY.v)
+			self.win.move(conf.winX.v, conf.winY.v)
 			# every calling of .hide() and .present(), makes dialog not on top
 			# (forgets being on top)
-			self.w.set_keep_above(conf.winKeepAbove.v)
+			self.win.set_keep_above(conf.winKeepAbove.v)
 			if conf.winSticky.v:
-				self.w.stick()
-			self.w.deiconify()
-			self.w.present()
+				self.win.stick()
+			self.win.deiconify()
+			self.win.present()
 			self.focusIn()
 			# in LXDE, the window was not focused without self.focusIn()
 			# while worked in Xfce and GNOME.
@@ -1644,7 +1645,7 @@ class MainWin(CalObjWidget):
 			showError(
 				"Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu"
 				" or any askpass program to use with sudo",
-				transient_for=self.w,
+				transient_for=self.win,
 			)
 			return
 		Popen(ud.adjustTimeCmd, env=ud.adjustTimeEnv)
@@ -1672,7 +1673,7 @@ class MainWin(CalObjWidget):
 					logoSize,
 					logoSize,
 				),
-				transient_for=self.w,
+				transient_for=self.win,
 			)
 			# add Donate button, FIXME
 			dialog.connect("delete-event", self.aboutHide)
@@ -1695,7 +1696,7 @@ class MainWin(CalObjWidget):
 		if not ui.prefWindow:
 			from scal3.ui_gtk.preferences import PreferencesWindow
 
-			ui.prefWindow = PreferencesWindow(transient_for=self.w)
+			ui.prefWindow = PreferencesWindow(transient_for=self.win)
 			ui.prefWindow.updatePrefGui()
 		if self.customizeWindow and self.customizeWindow.is_visible():
 			log.warning("customize window is open")
@@ -1706,7 +1707,7 @@ class MainWin(CalObjWidget):
 		if ui.eventManDialog is None:
 			from scal3.ui_gtk.event.manager import EventManagerDialog
 
-			ui.eventManDialog = EventManagerDialog(transient_for=self.w)
+			ui.eventManDialog = EventManagerDialog(transient_for=self.win)
 
 	def eventManShow(
 		self,
@@ -1784,7 +1785,7 @@ class MainWin(CalObjWidget):
 		if not self.selectDateDialog:
 			from scal3.ui_gtk.selectdate import SelectDateDialog
 
-			self.selectDateDialog = SelectDateDialog(transient_for=self.w)
+			self.selectDateDialog = SelectDateDialog(transient_for=self.win)
 			self.selectDateDialog.connect(
 				"response-date",
 				self.selectDateResponse,
@@ -1795,17 +1796,17 @@ class MainWin(CalObjWidget):
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
 
-			self.dayInfoDialog = DayInfoDialog(transient_for=self.w)
+			self.dayInfoDialog = DayInfoDialog(transient_for=self.win)
 			self.s.emit("date-change")
-		openWindow(self.dayInfoDialog.w)
+		openWindow(self.dayInfoDialog.dialog)
 
 	def dayInfoShowFromMenu(self, _w: gtk.Widget) -> None:
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
 
-			self.dayInfoDialog = DayInfoDialog(transient_for=self.w)
+			self.dayInfoDialog = DayInfoDialog(transient_for=self.win)
 			self.s.emit("date-change")
-		openWindow(self.dayInfoDialog.w)
+		openWindow(self.dayInfoDialog.dialog)
 
 	def customizeWindowCreate(self) -> CustomizeWindow:
 		if not self.customizeWindow:
@@ -1813,7 +1814,7 @@ class MainWin(CalObjWidget):
 
 			self.customizeWindow = customizeWindow = CustomizeWindow(
 				self.layout,
-				transient_for=self.w,
+				transient_for=self.win,
 			)
 			return customizeWindow
 
@@ -1838,7 +1839,7 @@ class MainWin(CalObjWidget):
 		if not self.exportDialog:
 			from scal3.ui_gtk.export import ExportDialog
 
-			self.exportDialog = ExportDialog(transient_for=self.w)
+			self.exportDialog = ExportDialog(transient_for=self.win)
 		self.exportDialog.showDialog(year, month)
 
 	def onExportClick(self, _w: OptWidget = None) -> None:
@@ -1961,7 +1962,7 @@ def main() -> None:
 	# 	mainWin.export.exportSvg(f"{core.deskDir}/2010-01.svg", [(2010, 1)])
 	# 	sys.exit(0)
 	if action == "show" or not mainWin.sicon:
-		mainWin.w.present()
+		mainWin.win.present()
 	if conf.showDesktopWidget.v:
 		mainWin.dayCalWinShow()
 	# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))

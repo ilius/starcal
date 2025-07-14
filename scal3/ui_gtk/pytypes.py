@@ -27,6 +27,8 @@ log = logger.get()
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
+	from collections.abc import Iterable
+
 	from scal3.option import Option
 	from scal3.ui_gtk import gdk, gtk
 	from scal3.ui_gtk.signals import SignalHandlerType
@@ -43,7 +45,7 @@ class CalObjType(Protocol):
 	customizable: bool
 	myKeys: set[str]
 	expand: bool
-	Sig: type[SignalHandlerType]
+	# Sig: type[SignalHandlerType]
 	s: SignalHandlerType
 
 	def show(self) -> None: ...
@@ -70,7 +72,7 @@ class CustomizableCalObjType(CalObjType, Protocol):
 	customizable: bool
 	hasOptions: bool
 	itemListCustomizable: bool
-	vertical: bool | None
+	vertical: bool
 	isWrapper: bool
 	enableParam: Option[bool] | None
 	optionsPageSpacing: int
@@ -79,9 +81,11 @@ class CustomizableCalObjType(CalObjType, Protocol):
 	itemsPageButtonBorder: int
 	params: list[str]
 	# enableOptionUI = None
-	items: list[CustomizableCalObjType]
 	itemHaveOptions: bool
 
+	def itemCount(self) -> int: ...
+	def itemIter(self) -> Iterable[CustomizableCalObjType]: ...
+	def itemGet(self, index: int) -> CustomizableCalObjType: ...
 	def moveItem(self, i: int, j: int) -> None: ...
 	def onEnableCheckClick(self) -> None: ...
 	def getOptionsWidget(self) -> gtk.Widget | None: ...
@@ -102,16 +106,3 @@ class StackPageType(Protocol):
 	pageExpand: bool
 	pageItem: CustomizableCalObjType | None
 	iconSize: int
-
-	# error: Protocol members cannot be defined via assignment to self  [misc]
-	# def __init__(self) -> None:
-	# 	self.pageWidget: gtk.Box | None
-	# 	self.pageParent: str
-	# 	self.pageName: str
-	# 	self.pagePath: str
-	# 	self.pageTitle: str
-	# 	self.pageLabel: str
-	# 	self.pageIcon: str
-	# 	self.pageExpand: bool
-	# 	self.pageItem: CustomizableCalObjType | None
-	# 	self.iconSize: int

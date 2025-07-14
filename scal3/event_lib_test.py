@@ -24,7 +24,7 @@ event_lib.init(fs)
 print("Loading groups")
 eventGroups = event_lib.EventGroupsHolder.load(0, fs=fs)
 print("Loading trash")
-eventTrash = event_lib.EventTrash.load(0, fs=fs)
+eventTrash = event_lib.EventTrash.s_load(0, fs=fs)
 
 
 class TestEventLib(unittest.TestCase):

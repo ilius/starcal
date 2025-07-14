@@ -198,15 +198,16 @@ class DayCalWindowWidget(DayCal):
 		if not self.customizeWindow:
 			self.customizeWindow = DayCalWindowCustomizeWindow(
 				self,
-				transient_for=self._window,
+				transient_for=self.myWin,
 			)
 
 	def openCustomize(self, _w: gtk.Widget) -> None:
 		self.customizeWindowCreate()
-		assert self._window is not None
+		win = self.myWin
+		assert win is not None
 		assert self.customizeWindow is not None
-		x, y = self._window.get_position()
-		w, h = self._window.get_size()
+		x, y = win.get_position()
+		w, h = win.get_size()
 		cw, ch = self.customizeWindow.get_size()
 		cx = x + w + 5
 		cy = y
@@ -313,27 +314,28 @@ class DayCalWindow(CalObjWidget):
 
 	def __init__(self) -> None:
 		super().__init__()
-		self.w: gtk.Window = gtk.Window()
+		self.win = win = gtk.Window()
+		self.w: gtk.Widget = self.win
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
-		self.w.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
-		self.w.move(conf.dcalWinX.v, conf.dcalWinY.v)
-		self.w.set_skip_taskbar_hint(True)
-		self.w.set_decorated(False)
-		self.w.set_keep_below(True)
-		self.w.stick()
+		win.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
+		win.move(conf.dcalWinX.v, conf.dcalWinY.v)
+		win.set_skip_taskbar_hint(True)
+		win.set_decorated(False)
+		win.set_keep_below(True)
+		win.stick()
 		# ---
 		if TYPE_CHECKING:
 			_win: ParentWindowType = self
 		self._widget = DayCalWindowWidget(self)
-		self._widget._window = self.w  # noqa: SLF001
+		self._widget.myWin = win  # noqa: SLF001
 
 		self.w.connect("key-press-event", self._widget.onKeyPress)
 		self.w.connect("delete-event", self.onDeleteEvent)
 		self.w.connect("configure-event", self.configureEvent)
 
-		self.w.add(self._widget.w)
+		win.add(self._widget.w)
 		self._widget.show()
 		self.appendItem(self._widget)
 
@@ -393,10 +395,11 @@ class DayCalWindow(CalObjWidget):
 		return True
 
 	def configureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
-		if not self.w.get_property("visible"):
+		win = self.win
+		if not win.get_property("visible"):
 			return None
-		wx, wy = self.w.get_position()
-		ww, wh = self.w.get_size()
+		wx, wy = win.get_position()
+		ww, wh = win.get_size()
 		conf.dcalWinX.v, conf.dcalWinY.v = (wx, wy)
 		conf.dcalWinWidth.v = ww
 		conf.dcalWinHeight.v = wh

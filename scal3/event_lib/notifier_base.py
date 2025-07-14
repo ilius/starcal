@@ -20,11 +20,10 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3.s_object import SObj
 
-from .pytypes import EventNotifierType
 from .register import classes
 
 if TYPE_CHECKING:
@@ -37,7 +36,9 @@ __all__ = ["EventNotifier"]
 
 # Should not be registered, or instantiate directly
 @classes.notifier.setMain
-class EventNotifier(SObj, EventNotifierType):
+class EventNotifier(SObj):
+	WidgetClass: Any
+
 	name = ""
 	tname = ""
 	nameAlias = ""

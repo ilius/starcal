@@ -233,7 +233,8 @@ class WinLayoutBox(WinLayoutBase):
 		self.itemsParam = itemsParam
 		self.buttonSpacing = buttonSpacing
 		self.arrowSize = arrowSize
-		self.w: gtk.Box = gtk.Box(orientation=getOrientation(vertical))
+		self.box = gtk.Box(orientation=getOrientation(vertical))
+		self.w: gtk.Widget = self.box
 		# ---
 		WinLayoutBase.__init__(
 			self,
@@ -264,7 +265,7 @@ class WinLayoutBox(WinLayoutBase):
 			box.hide()
 
 	def createWidget(self) -> None:
-		box = self.w
+		box = self.box
 		for child in box.get_children():
 			box.remove(child)
 

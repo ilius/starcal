@@ -1043,7 +1043,8 @@ class TimeLineWindow(CalObjWidget):
 
 	def __init__(self) -> None:
 		win = gtk.Window()
-		self.w: gtk.Window = win
+		self.win = win
+		self.w: gtk.Widget = win
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
@@ -1081,7 +1082,7 @@ class TimeLineWindow(CalObjWidget):
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		if gevent.button == 1:
-			self.w.begin_move_drag(
+			self.win.begin_move_drag(
 				gevent.button,
 				int(gevent.x_root),
 				int(gevent.y_root),

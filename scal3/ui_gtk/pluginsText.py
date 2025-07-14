@@ -35,10 +35,11 @@ class PluginsTextView(CustomizableCalObj):
 
 	def __init__(self) -> None:
 		super().__init__()
-		self.w: gtk.TextView = gtk.TextView()
-		self.w.set_editable(False)
-		self.w.set_cursor_visible(False)
-		self.w.connect("button-press-event", self.onButtonPress)
+		self.t = gtk.TextView()
+		self.w: gtk.Widget = self.t
+		self.t.set_editable(False)
+		self.t.set_cursor_visible(False)
+		self.t.connect("button-press-event", self.onButtonPress)
 		self.occurOffsets: list[tuple[int, tuple[PluginType, str]]] = []
 		self.initVars()
 
@@ -49,10 +50,10 @@ class PluginsTextView(CustomizableCalObj):
 	# 	return False
 
 	def get_text(self) -> str:
-		return buffer_get_text(self.w.get_buffer())
+		return buffer_get_text(self.t.get_buffer())
 
 	def has_selection(self) -> bool:
-		buf = self.w.get_buffer()
+		buf = self.t.get_buffer()
 		try:
 			buf.get_selection_bounds()
 		except ValueError:
@@ -61,7 +62,7 @@ class PluginsTextView(CustomizableCalObj):
 			return True
 
 	def copy(self, _item: gtk.Widget) -> None:
-		buf = self.w.get_buffer()
+		buf = self.t.get_buffer()
 		bounds = buf.get_selection_bounds()
 		if not bounds:
 			return
@@ -74,7 +75,7 @@ class PluginsTextView(CustomizableCalObj):
 
 	def onDateChange(self) -> None:
 		super().onDateChange()
-		textbuff = self.w.get_buffer()
+		textbuff = self.t.get_buffer()
 		textbuff.set_text("")
 		occurOffsets = []
 		eventSep = "\n"
@@ -89,7 +90,7 @@ class PluginsTextView(CustomizableCalObj):
 		self.occurOffsets = occurOffsets
 
 	def findPluginByY(self, y: int) -> tuple[PluginType, str] | None:
-		lineIter, _lineTop = self.w.get_line_at_y(y)
+		lineIter, _lineTop = self.t.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
 		for lastEndOffset, occurData in reversed(self.occurOffsets):
@@ -173,7 +174,7 @@ class PluginsTextView(CustomizableCalObj):
 		openWindow(about)  # FIXME
 
 	def addText(self, text: str) -> None:
-		textbuff = self.w.get_buffer()
+		textbuff = self.t.get_buffer()
 		endIter = textbuff.get_bounds()[1]
 
 		text = text.replace("&", "&amp;")
@@ -192,7 +193,7 @@ class PluginsTextView(CustomizableCalObj):
 			return False
 		# ----
 		iter_ = None
-		buf_x, buf_y = self.w.window_to_buffer_coords(
+		buf_x, buf_y = self.t.window_to_buffer_coords(
 			gtk.TextWindowType.TEXT,
 			int(gevent.x),
 			int(gevent.y),
@@ -201,7 +202,7 @@ class PluginsTextView(CustomizableCalObj):
 		word = ""
 		if buf_x is not None and buf_y is not None:
 			# overText, iter_, trailing = ...
-			iter_ = self.w.get_iter_at_position(buf_x, buf_y)[1]
+			iter_ = self.t.get_iter_at_position(buf_x, buf_y)[1]
 			pos = iter_.get_offset()
 			word = findWordByPos(text, pos)[0]
 		# ----
@@ -274,7 +275,8 @@ class PluginsTextBox(CustomizableCalObj):
 		styleClass: str = "",
 	) -> None:
 		super().__init__()
-		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self.box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self.w: gtk.Widget = self.box
 		self.initVars()
 		# ----
 		self.styleClass = styleClass
@@ -287,8 +289,8 @@ class PluginsTextBox(CustomizableCalObj):
 		self.tabToNewline = tabToNewline
 		# ----
 		self.textview = PluginsTextView()
-		self.textview.w.set_wrap_mode(gtk.WrapMode.WORD)
-		self.textbuff = self.textview.w.get_buffer()
+		self.textview.t.set_wrap_mode(gtk.WrapMode.WORD)
+		self.textbuff = self.textview.t.get_buffer()
 		# ---
 		self.insideExpanderParam = insideExpanderParam
 		self.justificationParam = justificationParam
@@ -303,7 +305,7 @@ class PluginsTextBox(CustomizableCalObj):
 		if justificationParam:
 			self.updateJustification()
 		else:
-			self.textview.w.set_justification(gtk.Justification.CENTER)
+			self.textview.t.set_justification(gtk.Justification.CENTER)
 		# ---
 		self.appendItem(self.textview)
 		# ---
@@ -314,12 +316,12 @@ class PluginsTextBox(CustomizableCalObj):
 			if self.expanderEnable:
 				self.textview.show()
 				self.expander.add(self.textview.w)
-				pack(self.w, self.expander)
+				pack(self.box, self.expander)
 				self.expander.set_expanded(conf.pluginsTextIsExpanded.v)
 			else:
-				pack(self.w, self.textview.w, 1, 1)
+				pack(self.box, self.textview.w, 1, 1)
 		else:
-			pack(self.w, self.textview.w, 1, 1)
+			pack(self.box, self.textview.w, 1, 1)
 
 	def getCSS(self) -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
@@ -337,7 +339,7 @@ class PluginsTextBox(CustomizableCalObj):
 		if not self.justificationParam:
 			return
 		value = self.justificationParam.v
-		self.textview.w.set_justification(ud.justificationByName[value])
+		self.textview.t.set_justification(ud.justificationByName[value])
 
 	@staticmethod
 	def onButtonPress(_widget: gtk.Widget, _ge: gdk.EventButton) -> bool:
@@ -399,14 +401,14 @@ class PluginsTextBox(CustomizableCalObj):
 		self.expanderEnable = enable
 		if enable:
 			if not prevEnable:
-				self.w.remove(self.textview.w)
+				self.box.remove(self.textview.w)
 				self.expander.add(self.textview.w)
-				pack(self.w, self.expander)
+				pack(self.box, self.expander)
 				self.expander.show_all()
 		elif prevEnable:
 			self.expander.remove(self.textview.w)
-			self.w.remove(self.expander)
-			pack(self.w, self.textview.w)
+			self.box.remove(self.expander)
+			pack(self.box, self.textview.w)
 			self.textview.show()
 		self.broadcastDateChange()
 

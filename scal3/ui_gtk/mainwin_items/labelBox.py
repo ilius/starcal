@@ -66,7 +66,8 @@ class BaseLabel(CustomizableCalObj):
 
 	def __init__(self, calType: int) -> None:
 		super().__init__()
-		self.w: gtk.EventBox = gtk.EventBox()
+		self.ebox = gtk.EventBox()
+		self.w: gtk.Widget = self.ebox
 		self.calType = calType
 
 
@@ -111,7 +112,7 @@ class MonthLabel(BaseLabel):
 		# ---
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
-		self.w.add(self.label)
+		self.ebox.add(self.label)
 		self.menu = Menu()
 		self.menu.set_border_width(0)
 		self.menuLabels: list[gtk.Label] = []
@@ -232,7 +233,7 @@ class IntLabel(BaseLabel):
 		# self.delay = delay
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
-		self.w.add(self.label)
+		self.ebox.add(self.label)
 		self.menu: Menu | None = None
 		self.w.connect("button-press-event", self.onButtonPress)
 		self.active = active
@@ -458,7 +459,8 @@ class SmallNoFocusButton(ConButton):
 
 class YearLabelButtonBox(CalObjWidget):
 	def __init__(self, calType: int) -> None:
-		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Widget = self.box
 		self.initVars()
 		# ---
 		self.removeButton = SmallNoFocusButton(
@@ -471,13 +473,13 @@ class YearLabelButtonBox(CalObjWidget):
 			self.onNextClick,
 			_("Next Year"),
 		)
-		pack(self.w, self.removeButton)
+		pack(self.box, self.removeButton)
 		# ---
 		self.label = YearLabel(calType)
-		pack(self.w, self.label.w)
+		pack(self.box, self.label.w)
 		self.appendItem(self.label)
 		# ---
-		pack(self.w, self.addButton)
+		pack(self.box, self.addButton)
 
 	def onPrevClick(self, _b: gtk.Widget) -> None:
 		ui.cells.yearPlus(-1)
@@ -555,8 +557,9 @@ class CalObj(CustomizableCalObj):
 
 	def __init__(self, win: MainWinType) -> None:
 		super().__init__()
-		self.win = win
-		self.w: gtk.Box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.parentWin = win
+		self.box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.w: gtk.Widget = self.box
 		self.initVars()
 		self.w.get_style_context().add_class(self.styleClass)
 		# self.set_border_width(2)
@@ -573,7 +576,7 @@ class CalObj(CustomizableCalObj):
 
 	def updateIconSize(self) -> None:
 		alphabet = locale_man.getAlphabet()
-		height = calcTextPixelSize(self.win.w, alphabet, font=self.getFont())[1]
+		height = calcTextPixelSize(self.parentWin.w, alphabet, font=self.getFont())[1]
 		conf.labelBoxIconSize.v = int(height * 0.6)
 
 	def updateTextWidth(self) -> None:
@@ -612,35 +615,35 @@ class CalObj(CustomizableCalObj):
 		self.updateIconSize()
 		# ----
 		self.items = []
-		for child in self.w.get_children():
+		for child in self.box.get_children():
 			child.destroy()
 		# ---
 		monthLabels = []
 		calType = calTypes.primary
 		# --
 		ybox = YearLabelButtonBox(calType)
-		pack(self.w, ybox.w)
+		pack(self.box, ybox.w)
 		# FIXME: self.appendItem(ybox)  and self.appendItem(mbox)
 		self.appendItem(ybox.label)
 		self.ybox = ybox
 		# --
-		pack(self.w, self.newSeparator(), 1, 1)
+		pack(self.box, self.newSeparator(), 1, 1)
 		# --
 		mbox = MonthLabelButtonBox(calType)
-		pack(self.w, mbox.w)
+		pack(self.box, mbox.w)
 		self.appendItem(mbox.label)
 		monthLabels.append(mbox.label)
 		self.mbox = mbox
 		# ----
 		label: CustomizableCalObj
 		for _i, calType in list(enumerate(calTypes.active))[1:]:
-			pack(self.w, self.newSeparator(), 1, 1)
+			pack(self.box, self.newSeparator(), 1, 1)
 			label = YearLabel(calType)
-			pack(self.w, label.w)
+			pack(self.box, label.w)
 			self.appendItem(label)
 			# ---------------
 			label = MonthLabel(calType)
-			pack(self.w, label.w, padding=5)
+			pack(self.box, label.w, padding=5)
 			monthLabels.append(label)
 			self.appendItem(label)
 		# ----
@@ -692,7 +695,7 @@ class CalObj(CustomizableCalObj):
 		self.updateTextWidth()
 
 	def onBorderWidthChange(self) -> None:
-		self.w.set_border_width(conf.labelBoxBorderWidth.v)
+		self.box.set_border_width(conf.labelBoxBorderWidth.v)
 
 	def onMenuColorChange(self) -> None:
 		self.onDateChange()

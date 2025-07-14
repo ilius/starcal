@@ -21,14 +21,15 @@ class WidgetClass(gtk.Box):
 		self.rule = rule
 		# ---
 		gtk.Box.__init__(self)
-		self.w: gtk.Box = self
+		box: gtk.Box = self
+		self.w: gtk.Widget = self
 		# ---
 		self.dateInput = DateButton()
-		pack(self.w, self.dateInput)
+		pack(box, self.dateInput)
 		# ---
-		pack(self.w, gtk.Label(label="   " + _("Time")))
+		pack(box, gtk.Label(label="   " + _("Time")))
 		self.timeInput = TimeButton()
-		pack(self, self.timeInput)
+		pack(box, self.timeInput)
 
 	def updateWidget(self) -> None:
 		self.dateInput.set_value(self.rule.date)
