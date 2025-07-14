@@ -1046,6 +1046,7 @@ class DateEventRule(EventRule):
 	# conflicts with all rules except for dayTime and dayTimeRange
 	# (and possibly hourList, minuteList, secondList)
 	# also conflict with "holiday" # FIXME
+	params = ["date"]
 
 	def getServerString(self) -> str:
 		y, m, d = self.date
