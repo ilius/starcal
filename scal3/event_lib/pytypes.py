@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Any, NotRequired, Protocol, Self, TypedDict
+from typing import (
+	IO,
+	TYPE_CHECKING,
+	Any,
+	NotRequired,
+	Protocol,
+	Self,
+	TypedDict,
+	runtime_checkable,
+)
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator, Sequence
@@ -288,6 +297,7 @@ class EventGroupType(EventContainerType, Protocol):
 	def updateCache(self, event: EventType) -> None: ...
 
 
+@runtime_checkable
 class AccountType(BaseTextModelType, Protocol):
 	id: int | None
 	uuid: str | None

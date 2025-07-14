@@ -85,7 +85,7 @@ class VcsTagEvent(VcsEpochBaseEvent):
 		self.author = ""
 
 
-@classes.group.register
+@classes.group.register  # type: ignore[arg-type]
 class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	name = "vcs"
 	desc = _("VCS Repository (Commits)")
@@ -171,7 +171,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		return event
 
 
-@classes.group.register
+@classes.group.register  # type: ignore[arg-type]
 class VcsTagEventGroup(VcsEpochBaseEventGroup):
 	name = "vcsTag"
 	desc = _("VCS Repository (Tags)")
