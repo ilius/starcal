@@ -37,6 +37,7 @@ from .occur import IntervalOccurSet
 from .register import classes
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
 	from typing import Any
 
 	from scal3.event_lib.pytypes import (
@@ -170,7 +171,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 class LargeScaleGroup(EventGroup):
 	name = "largeScale"
 	desc = _("Large Scale Events Group")
-	acceptsEventTypes = ("largeScale",)
+	acceptsEventTypes: Sequence[str] = ("largeScale",)
 	sortBys = EventGroup.sortBys + [
 		("start", _("Start"), True),
 		("end", _("End"), True),

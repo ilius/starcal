@@ -54,18 +54,22 @@ from .occur import (
 	JdOccurSet,
 	TimeListOccurSet,
 )
-from .pytypes import EventGroupType, OccurSetType
 from .register import classes
 
 if TYPE_CHECKING:
-	from collections.abc import Iterator
+	from collections.abc import Iterator, Sequence
 	from typing import Any
 
 	from scal3.color_utils import ColorType
 	from scal3.event_search_tree import EventSearchTree
 	from scal3.filesystem import FileSystem
 
-	from .pytypes import EventSearchConditionDict, EventType
+	from .pytypes import (
+		EventGroupType,
+		EventSearchConditionDict,
+		EventType,
+		OccurSetType,
+	)
 
 
 __all__ = [
@@ -82,7 +86,7 @@ groupsDir = join("event", "groups")
 
 @classes.group.register
 @classes.group.setMain
-class EventGroup(EventContainer, EventGroupType):
+class EventGroup(EventContainer):
 	name = "group"
 	nameAlias = ""
 	tname = ""
@@ -147,7 +151,7 @@ class EventGroup(EventContainer, EventGroupType):
 		"deletedRemoteEvents",
 		"idList",
 	]
-	importExportExclude = (
+	importExportExclude: Sequence[str] = (
 		"remoteIds",
 		"remoteSyncEnable",
 		"remoteSyncDuration",
@@ -903,7 +907,7 @@ class EventGroup(EventContainer, EventGroupType):
 class TaskList(EventGroup):
 	name = "taskList"
 	desc = _("Task List")
-	acceptsEventTypes = (
+	acceptsEventTypes: Sequence[str] = (
 		"task",
 		"allDayTask",
 	)
@@ -947,7 +951,7 @@ class TaskList(EventGroup):
 class NoteBook(EventGroup):
 	name = "noteBook"
 	desc = _("Note Book")
-	acceptsEventTypes = ("dailyNote",)
+	acceptsEventTypes: Sequence[str] = ("dailyNote",)
 	canConvertTo: list[str] = [
 		"yearly",
 		"taskList",
@@ -966,7 +970,7 @@ class NoteBook(EventGroup):
 class YearlyGroup(EventGroup):
 	name = "yearly"
 	desc = _("Yearly Events Group")
-	acceptsEventTypes = ("yearly",)
+	acceptsEventTypes: Sequence[str] = ("yearly",)
 	canConvertTo: list[str] = ["noteBook"]
 	params = EventGroup.params + ["showDate"]
 
@@ -980,7 +984,7 @@ class LifetimeGroup(EventGroup):
 	name = "lifetime"
 	nameAlias = "lifeTime"
 	desc = _("Lifetime Events Group")
-	acceptsEventTypes = ("lifetime",)
+	acceptsEventTypes: Sequence[str] = ("lifetime",)
 	sortBys = EventGroup.sortBys + [
 		("start", _("Start"), True),
 	]
