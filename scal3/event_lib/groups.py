@@ -17,8 +17,6 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.color_utils import RGB, RGBA
-from scal3.s_object import copyParams
 
 log = logger.get()
 
@@ -32,12 +30,11 @@ from typing import IO, TYPE_CHECKING, Self
 from cachetools import LRUCache
 
 from scal3 import ics
-from scal3.cal_types import (
-	getSysDate,
-	to_jd,
-)
+from scal3.cal_types import getSysDate, to_jd
+from scal3.color_utils import RGB, RGBA
 from scal3.dict_utils import makeOrderedDict
 from scal3.locale_man import tr as _
+from scal3.s_object import copyParams
 from scal3.time_utils import (
 	durationDecode,
 	durationEncode,
