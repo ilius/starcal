@@ -1,4 +1,3 @@
-
 from scal3.event_lib.groups import TaskList
 from scal3.event_lib.pytypes import EventGroupType
 from scal3.filesystem import FileSystem  # noqa: F401
