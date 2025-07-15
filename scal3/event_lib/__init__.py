@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from scal3 import logger
 
-log = logger.get()
+log = logger.init()
 
 import json
 from os.path import join

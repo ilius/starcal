@@ -26,8 +26,12 @@ from datetime import datetime
 from os.path import isdir, isfile, join, split
 from typing import Any, Final, NamedTuple
 
+from scal3 import logger
+
+log: Final = logger.init()
+
 import scal3
-from scal3 import locale_man, logger
+from scal3 import locale_man
 from scal3.app_info import APP_NAME, COMMAND, VERSION_TAG
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
@@ -93,10 +97,6 @@ __all__ = [
 	"weekDayNameAb",
 	"weekNumberModeAuto",
 ]
-
-
-logger.init()
-log: Final = logger.get()
 
 # __plugin_api_get__ = [
 # 	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
