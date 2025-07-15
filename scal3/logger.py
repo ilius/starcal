@@ -57,7 +57,7 @@ log: LoggerType = FallbackLogger()
 logLevel: Final[Option[int]] = Option(logging.INFO)
 
 
-def init() -> None:
+def init() -> LoggerType:
 	global log
 	import json
 	import os
@@ -111,8 +111,10 @@ def init() -> None:
 	if warningsEnv:
 		warnings.filterwarnings(warningsEnv)  # type: ignore[arg-type]
 
+	return log
+
 
 def get() -> LoggerType:
 	if log is None:
-		init()
+		return init()
 	return log
