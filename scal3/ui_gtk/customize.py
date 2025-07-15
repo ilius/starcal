@@ -110,9 +110,9 @@ class CustomizableCalBox(CustomizableCalObj):
 		for child in box.get_children():
 			box.remove(child)
 		for item in self.items:
-			if item.enable:
+			if item.loaded:
 				pack(box, item.w, item.expand, item.expand)
-				item.show()
+				item.showHide()
 
 	# Disabled the old implementation (with reorder_child) because it was
 	# very buggy with Gtk3. Removing all (active) items from gtk.Box and

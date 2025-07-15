@@ -1467,9 +1467,9 @@ class CalObj(CalBase):
 		for child in box.get_children():
 			box.remove(child)
 		for item in self.items:
-			if item.enable:
+			if item.loaded:
 				pack(box, item.w, item.expand, item.expand)
-				item.show()
+				item.showHide()
 
 	def moveItem(self, i: int, j: int) -> None:
 		CustomizableCalObj.moveItem(self, i, j)
