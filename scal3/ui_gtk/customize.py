@@ -44,7 +44,6 @@ class DummyCalObj(CalObjWidget):
 	loaded = False
 	itemListCustomizable = False
 	hasOptions = False
-	isWrapper = False
 	enableParam: Option[bool] | None = None
 	itemListSeparatePage = False
 
