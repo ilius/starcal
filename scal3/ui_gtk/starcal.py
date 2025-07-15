@@ -23,7 +23,7 @@ import signal
 import sys
 from os.path import dirname, join
 from time import localtime, perf_counter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
@@ -252,7 +252,7 @@ class SignalHandler(SignalHandlerBase):
 class MainWin(CalObjWidget):
 	objName = "mainWin"
 	desc = _("Main Window")
-	Sig: type[SignalHandlerType] = SignalHandler
+	Sig: ClassVar[type[SignalHandlerType]] = SignalHandler
 	timeout = 1  # second
 
 	def autoResize(self) -> None:

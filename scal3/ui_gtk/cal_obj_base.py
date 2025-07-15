@@ -24,7 +24,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from scal3.ui_gtk import gdk
 from scal3.ui_gtk.signals import (
@@ -66,7 +66,7 @@ class CalObjBase:
 	loaded: bool = True
 	customizable: bool = False
 	itemHaveOptions: bool = True
-	Sig: type[SignalHandlerType] = CommonSignalHandler
+	Sig: ClassVar[type[SignalHandlerType]] = CommonSignalHandler
 	myKeys: set[str] = set()
 	expand: bool = False
 
@@ -190,7 +190,6 @@ class CustomizableCalObj(CalObjWidget):
 	itemListCustomizable = True
 	vertical = True
 	# vertical: True if items are on top of each other
-	isWrapper = False
 	enableParam: Option[bool] | None = None
 	optionsPageSpacing = 0
 	itemListSeparatePage = False

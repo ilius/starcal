@@ -45,7 +45,6 @@ class CalObjType(Protocol):
 	customizable: bool
 	myKeys: set[str]
 	expand: bool
-	# Sig: type[SignalHandlerType]
 	s: SignalHandlerType
 
 	def show(self) -> None: ...
@@ -69,11 +68,9 @@ class CalObjType(Protocol):
 
 class CustomizableCalObjType(CalObjType, Protocol):
 	w: gtk.Widget
-	customizable: bool
 	hasOptions: bool
 	itemListCustomizable: bool
 	vertical: bool
-	isWrapper: bool
 	enableParam: Option[bool] | None
 	optionsPageSpacing: int
 	itemListSeparatePage: bool

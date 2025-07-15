@@ -517,7 +517,7 @@ class CustomizeWindow(Dialog):
 		item = parentItem.itemGet(itemIndex)
 
 		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
-		if isinstance(parentItem, WinLayoutObj):  # if parentItem.isWrapper
+		if isinstance(parentItem, WinLayoutObj):
 			parentWidget = parentItem.getItem()
 			assert isinstance(parentWidget, CustomizableCalObj), f"{parentWidget=}"
 			parentItem = parentWidget

@@ -97,8 +97,6 @@ class MoveButton(gtk.Button):
 
 
 class WinLayoutObj(WinLayoutBase):
-	isWrapper = True
-
 	def __init__(
 		self,
 		name: str,
