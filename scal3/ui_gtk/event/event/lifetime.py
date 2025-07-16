@@ -27,7 +27,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import LifetimeEvent
+	from scal3.event_lib.lifetime import LifetimeEvent
 
 __all__ = ["WidgetClass"]
 
