@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING, Any, Self
 from scal3 import logger
 from scal3.utils import toStr
 
-from .events import TaskEvent
 from .occur import TimeListOccurSet
+from .task import TaskEvent
 
 log = logger.get()
 
