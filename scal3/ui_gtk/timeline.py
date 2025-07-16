@@ -30,7 +30,8 @@ from gi.repository.PangoCairo import show_layout
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.event_lib import ev
-from scal3.event_lib.events import LifetimeEvent, TaskEvent
+from scal3.event_lib.events import LifetimeEvent
+from scal3.event_lib.task import TaskEvent
 from scal3.locale_man import localTz
 from scal3.locale_man import tr as _
 from scal3.time_utils import (

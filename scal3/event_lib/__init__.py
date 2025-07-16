@@ -87,6 +87,7 @@ from . import (
 	large_scale,  # noqa: F401
 	notifiers,  # noqa: F401
 	state,
+	task,  # noqa: F401
 	university,  # noqa: F401
 	vcs,  # noqa: F401
 )
