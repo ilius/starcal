@@ -5,7 +5,7 @@ from threading import Thread
 from time import sleep
 
 from scal3 import logger
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.event_lib.pytypes import EventGroupType
 
 log = logger.get()

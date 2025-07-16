@@ -99,7 +99,7 @@ from . import (
 from .accounts import Account, accountsDir
 from .accounts_holder import EventAccountsHolder
 from .event_base import Event, eventsDir
-from .groups import EventGroup, groupsDir
+from .group import EventGroup, groupsDir
 from .groups_holder import EventGroupsHolder
 from .handler import Handler
 from .icon import WithIcon
