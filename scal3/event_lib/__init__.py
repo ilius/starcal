@@ -87,6 +87,7 @@ from . import (
 	large_scale,  # noqa: F401
 	lifetime,  # noqa: F401
 	monthly,  # noqa: F401
+	note,  # noqa: F401
 	notifiers,  # noqa: F401
 	state,
 	task,  # noqa: F401
@@ -98,10 +99,11 @@ from . import (
 from .accounts import Account, accountsDir
 from .accounts_holder import EventAccountsHolder
 from .event_base import Event, eventsDir
-from .groups import EventGroup, NoteBook, groupsDir
+from .groups import EventGroup, groupsDir
 from .groups_holder import EventGroupsHolder
 from .handler import Handler
 from .icon import WithIcon
+from .note import NoteBook
 from .objects import iterObjectFiles
 from .occur import JdOccurSet
 from .occur_data import getDayOccurrenceData

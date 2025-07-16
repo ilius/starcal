@@ -8,7 +8,7 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import DailyNoteEvent
+	from scal3.event_lib.note import DailyNoteEvent
 
 __all__ = ["WidgetClass"]
 
