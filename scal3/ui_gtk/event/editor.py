@@ -117,15 +117,17 @@ class EventEditorDialog(Dialog):
 			self.replaceExistingEvent(eventType)
 			return
 
-		restoreDict = {}
+		summary = ""
+		description = ""
 		if self._event:
-			if self._event.summary and self._event.summary != self._event.desc:
-				restoreDict["summary"] = self._event.summary
-			if self._event.description:
-				restoreDict["description"] = self._event.description
+			if self._event.summary != self._event.desc:
+				summary = self._event.summary
+			description = self._event.description
 		self._event = self._group.create(eventType)
-		for attr, value in restoreDict.items():
-			setattr(self._event, attr, value)
+		if summary:
+			self._event.summary = summary
+		if description:
+			self._event.description = description
 
 	def typeChanged(self, combo: gtk.ComboBox) -> None:
 		if self.activeWidget:
