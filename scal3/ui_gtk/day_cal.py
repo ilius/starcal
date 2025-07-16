@@ -46,7 +46,6 @@ from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
 from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	GLibError,
 	gdk,
 	getScrollValue,
@@ -1006,7 +1005,7 @@ class DayCal(CalBase):
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
-		double = gevent.type == TWO_BUTTON_PRESS
+		double = gevent.type == gdk.EventType.DOUBLE_BUTTON_PRESS
 
 		if b == 1:
 			buttons = self._allButtons
