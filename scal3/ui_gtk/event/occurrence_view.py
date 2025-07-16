@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import event_lib, ui
 from scal3.event_lib import ev
-from scal3.event_lib.events import SingleStartEndEvent
+from scal3.event_lib.event_base import SingleStartEndEvent
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import Menu, gdk, gtk, pack

@@ -34,7 +34,7 @@ from scal3.locale_man import tr as _
 from scal3.utils import iceil, ifloor
 
 from .common import getCurrentJd
-from .event_base import Event, SingleStartEndEvent
+from .event_base import Event
 from .occur import JdOccurSet
 from .register import classes
 from .rules import (
@@ -58,7 +58,6 @@ __all__ = [
 	"DailyNoteEvent",
 	"Event",
 	"MonthlyEvent",
-	"SingleStartEndEvent",
 	"WeeklyEvent",
 	"YearlyEvent",
 ]
