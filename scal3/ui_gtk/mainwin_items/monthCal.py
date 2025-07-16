@@ -32,7 +32,6 @@ from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -610,7 +609,7 @@ class CalObj(CalBase):
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
-			if gevent.type == TWO_BUTTON_PRESS:
+			if gevent.type == gdk.EventType.DOUBLE_BUTTON_PRESS:
 				self.s.emit("double-button-press")
 			if (
 				b == 3 and cell.month == ui.cells.current.month

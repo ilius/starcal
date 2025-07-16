@@ -46,7 +46,6 @@ except ImportError:
 
 
 __all__ = [
-	"TWO_BUTTON_PRESS",
 	"Dialog",
 	"GLibError",
 	"GdkPixbuf",
@@ -64,8 +63,6 @@ __all__ = [
 	"timeout_add_seconds",
 	# "rsvg",
 ]
-
-TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
 
 
 def pack(

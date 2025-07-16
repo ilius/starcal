@@ -45,7 +45,7 @@ class ClassGroup[T: BaseClassType]:
 		self.names.append(cls.name)
 		self.byName[cls.name] = cls
 		self.byDesc[cls.desc] = cls
-		nameAlias = getattr(cls, "nameAlias", None)
+		nameAlias = cls.nameAlias
 		if nameAlias:
 			self.byName[nameAlias] = cls
 		return cls

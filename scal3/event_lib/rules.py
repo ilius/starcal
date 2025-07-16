@@ -132,7 +132,7 @@ class EventRule(SObjBase):
 
 	def __copy__(self) -> Self:
 		newRule = self.__class__(self.parent)
-		newRule.fs = getattr(self, "fs", None)  # type: ignore[assignment]
+		newRule.fs = self.fs
 		copyParams(newRule, self)
 		return newRule
 
