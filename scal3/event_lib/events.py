@@ -48,6 +48,28 @@ __all__ = [
 
 
 @classes.event.register
+class CustomEvent(Event):
+	name = "custom"
+	desc = _("Custom Event")
+	isAllDay = False
+
+	def getV4Dict(self) -> dict[str, Any]:
+		data = Event.getV4Dict(self)
+		data.update(
+			{
+				"rules": [
+					{
+						"type": ruleName,
+						"value": rule.getServerString(),
+					}
+					for ruleName, rule in self.rulesDict.items()
+				],
+			},
+		)
+		return data
+
+
+@classes.event.register
 class DailyNoteEvent(Event):
 	name = "dailyNote"
 	desc = _("Daily Note")
@@ -114,25 +136,3 @@ class DailyNoteEvent(Event):
 	def setIcsData(self, data: dict[str, str]) -> bool:
 		self.setJd(ics.getJdByIcsDate(data["DTSTART"]))
 		return True
-
-
-@classes.event.register
-class CustomEvent(Event):
-	name = "custom"
-	desc = _("Custom Event")
-	isAllDay = False
-
-	def getV4Dict(self) -> dict[str, Any]:
-		data = Event.getV4Dict(self)
-		data.update(
-			{
-				"rules": [
-					{
-						"type": ruleName,
-						"value": rule.getServerString(),
-					}
-					for ruleName, rule in self.rulesDict.items()
-				],
-			},
-		)
-		return data
