@@ -28,7 +28,7 @@ log = logger.get()
 
 
 from .event_base import Event
-from .groups import EventGroup
+from .group import EventGroup
 
 if TYPE_CHECKING:
 	from collections.abc import Sequence

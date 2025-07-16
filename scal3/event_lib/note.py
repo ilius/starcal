@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 
 log = logger.get()
 

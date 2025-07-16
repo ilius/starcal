@@ -8,7 +8,7 @@ log = logger.get()
 
 
 from scal3 import core, ui
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.format_time import compileTmFormat
 from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _

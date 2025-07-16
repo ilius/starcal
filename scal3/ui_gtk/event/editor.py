@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import event_lib, locale_man, ui
 from scal3.event_lib import ev
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget

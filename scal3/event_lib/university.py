@@ -32,7 +32,7 @@ from scal3.cal_types import (
 	to_jd,
 )
 from scal3.date_utils import dateDecode, dateEncode, jwday
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
 from scal3.time_utils import (

@@ -12,7 +12,7 @@ from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.group import EventGroup
 
 __all__ = ["WidgetClass"]
 

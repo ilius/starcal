@@ -27,7 +27,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import EventGroup
+	from scal3.event_lib.group import EventGroup
 	from scal3.event_lib.pytypes import EventGroupType
 
 __all__ = ["BaseWidgetClass", "makeGroupWidget"]
