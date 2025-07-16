@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 
 	from scal3.event_lib.university import UniversityTerm, WeeklyScheduleItem
 
-__all__ = ["WidgetClass"]
+__all__ = ["WidgetClass", "viewWeeklySchedule"]
 
 
 class CourseListEditor(gtk.Box):

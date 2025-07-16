@@ -44,10 +44,6 @@ __all__ = [
 # (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
 # (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
 class ModuleOptionUI:
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return str(value)
-
 	def __init__(
 		self,
 		option: Option,
@@ -97,10 +93,6 @@ class ModuleOptionUI:
 
 # ("button", LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
 class ModuleOptionButton:
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return str(value)
-
 	def __init__(self, opt: tuple) -> None:
 		funcName = opt[2]
 		clickedFunc = getattr(

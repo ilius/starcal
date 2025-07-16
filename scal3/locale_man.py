@@ -416,19 +416,12 @@ def loadTranslator() -> TranslateFunc:
 		elif isinstance(s, float):
 			return floatEncode(str(s))
 		else:
-			# pgettext is added in Python 3.8
-			# even the word "context" does not exist in docs of 3.7
-			# https://docs.python.org/3.7/library/gettext.html
-			if ctx and hasattr(transObj, "pgettext"):
+			if ctx:
 				s = toStr(transObj.pgettext(ctx, s))
 			else:
 				s = toStr(transObj.gettext(s))
 			if default is not None and s == orig:
 				s = default
-			# if args:
-			# 	s %= args
-			# if kwargs:
-			# 	s %= kwargs
 			if nums:
 				s = textNumEncode(s)
 		return s

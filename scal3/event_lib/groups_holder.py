@@ -73,11 +73,6 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 	def setTrash(self, trash: EventTrash) -> None:
 		self.trash = trash
 
-	def groupOrTrash(self, ident: int) -> EventGroupType | EventTrash:
-		if ident == -1 and self.trash is not None:
-			return self.trash
-		return self.byId[ident]
-
 	def create(self, groupName: str) -> EventGroupType:
 		group = classes.group.byName[groupName]()
 		group.fs = self.fs
@@ -226,11 +221,6 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 
 		self.save()
 		return res
-
-	def importJsonFile(self, fpath: str) -> EventGroupsImportResult:
-		with self.fs.open(fpath, "rb") as fp:
-			jsonStr = fp.read()
-		return self.importData(json.loads(jsonStr))
 
 	def exportToIcs(self, fpath: str, gidList: list[int]) -> None:
 		fp = self.fs.open(fpath, "w")
