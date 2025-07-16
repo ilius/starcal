@@ -35,4 +35,4 @@ class EventObjTextModel(SObjTextModel):
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return
-		SObjTextModel.save(self)
+		super().save()

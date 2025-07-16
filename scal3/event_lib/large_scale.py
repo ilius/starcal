@@ -90,10 +90,10 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		self.start = 0
 		self.end = 1
 		self.endRel = True
-		Event.__init__(self, ident, parent)
+		super().__init__(ident, parent)
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		Event.setDict(self, data)
+		super().setDict(data)
 		if "duration" in data:
 			data["end"] = data["duration"]
 			data["endRel"] = True
@@ -117,7 +117,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		return self.start + self.end if self.endRel else self.end
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		if group and group.name == "largeScale":
 			if TYPE_CHECKING:
 				assert isinstance(group, LargeScaleEvent), f"{group=}"
@@ -190,7 +190,7 @@ class LargeScaleGroup(EventGroup):
 
 	def __init__(self, ident: int | None = None) -> None:
 		self.scale = 1  # 1, 1000, 1000**2, 1000**3
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 
 	def setDefaults(self) -> None:
 		self.startJd = 0
@@ -207,7 +207,7 @@ class LargeScaleGroup(EventGroup):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
+		super().setDict(data)
 		with suppress(KeyError):
 			self.scale = data["scale"]
 

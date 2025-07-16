@@ -274,7 +274,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return "\n".join(lines)
 
 	# def addRequirements(self):
-	# 	RuleContainer.addRequirements(self)
+	# 	super().addRequirements()
 	# 	notifierNames = (notifier.name for notifier in self.notifiers)
 	# 	for name in self.requiredNotifiers:
 	# 		if not name in notifierNames:
@@ -350,7 +350,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		if self.id is None:
 			self.setId()
 		# self.fs.makeDir(self.dir)
-		HistoryEventObjBinaryModel.save(self)
+		super().save()
 
 	def _copyFrom(self, other: EventType) -> None:
 		copyParams(self, other)

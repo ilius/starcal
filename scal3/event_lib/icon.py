@@ -1,3 +1,4 @@
+import abc
 import os
 from os.path import isabs, join, split
 from typing import Any
@@ -7,7 +8,7 @@ from scal3.path import pixDir, svgDir
 __all__ = ["WithIcon", "iconAbsToRelativelnData"]
 
 
-class WithIcon:
+class WithIcon(abc.ABC):
 	icon: str | None
 
 	def getIcon(self) -> str | None:

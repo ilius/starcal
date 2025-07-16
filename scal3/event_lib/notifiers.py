@@ -50,7 +50,7 @@ class AlarmNotifier(EventNotifier):
 	]
 
 	def __init__(self, event: EventType) -> None:
-		EventNotifier.__init__(self, event)
+		super().__init__(event)
 		self.alarmSound: str | None = None  # FIXME
 		self.playerCmd = "mplayer"
 
@@ -72,7 +72,7 @@ class FloatingMsgNotifier(EventNotifier):
 	]
 
 	def __init__(self, event: EventType) -> None:
-		EventNotifier.__init__(self, event)
+		super().__init__(event)
 		# ---
 		self.fillWidth = False
 		self.speed = 100
@@ -92,7 +92,7 @@ class WindowMsgNotifier(EventNotifier):
 	params = ["extraMessage"]
 
 	def __init__(self, event: EventType) -> None:
-		EventNotifier.__init__(self, event)
+		super().__init__(event)
 		# window icon, FIXME
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
@@ -111,7 +111,7 @@ class CommandNotifier(EventNotifier):
 	]
 
 	def __init__(self, event: EventType) -> None:
-		EventNotifier.__init__(self, event)
+		super().__init__(event)
 		self.command = ""
 		self.pyEval = False
 

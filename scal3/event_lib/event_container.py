@@ -305,7 +305,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		HistoryEventObjBinaryModel.setDict(self, data)
+		super().setDict(data)
 		if "calType" in data:
 			calType = data["calType"]
 			try:
