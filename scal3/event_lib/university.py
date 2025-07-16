@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.event_lib.events import DailyNoteEvent
+from scal3.event_lib.note import DailyNoteEvent
 from scal3.event_lib.occur import IntervalOccurSet
 
 log = logger.get()

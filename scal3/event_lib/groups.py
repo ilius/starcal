@@ -71,7 +71,6 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"EventGroup",
-	"NoteBook",
 	"groupsDir",
 ]
 
@@ -900,22 +899,3 @@ class EventGroup(EventContainer):
 					)
 
 		return patchList
-
-
-@classes.group.register
-class NoteBook(EventGroup):
-	name = "noteBook"
-	desc = _("Note Book")
-	acceptsEventTypes: Sequence[str] = ("dailyNote",)
-	canConvertTo: list[str] = [
-		"yearly",
-		"taskList",
-	]
-	# actions = EventGroup.actions + []
-	sortBys = EventGroup.sortBys + [("date", _("Date"), True)]
-	sortByDefault = "date"
-
-	def getSortByValue(self, event: EventType, attr: str) -> Any:
-		if event.name in self.acceptsEventTypes and attr == "date":
-			return event.getJd()
-		return EventGroup.getSortByValue(self, event, attr)
