@@ -33,11 +33,10 @@ from scal3 import ics
 from scal3.cal_types import getSysDate, to_jd
 from scal3.color_utils import RGB, RGBA
 from scal3.dict_utils import makeOrderedDict
+from scal3.event_lib.event_ics import exportEventToIcsFileObj
 from scal3.locale_man import tr as _
 from scal3.s_object import copyParams
-from scal3.time_utils import (
-	getEpochFromJd,
-)
+from scal3.time_utils import getEpochFromJd
 
 from . import state
 from .event_container import EventContainer
@@ -45,11 +44,6 @@ from .groups_import import (
 	IMPORT_MODE_APPEND,
 	IMPORT_MODE_OVERRIDE_MODIFIED,
 	EventGroupsImportResult,
-)
-from .occur import (
-	IntervalOccurSet,
-	JdOccurSet,
-	TimeListOccurSet,
 )
 from .register import classes
 
@@ -654,84 +648,10 @@ class EventGroup(EventContainer):
 		# 	f"{self.occur.calcAvgDepth():.1f}"
 		# )
 
-	@staticmethod
-	def _exportToIcsFpEvent(
-		fp: IO[str],
-		event: EventType,
-		currentTimeStamp: str,
-	) -> None:
-		# log.debug("exportToIcsFp", event.id)
-
-		commonText = (
-			"\n".join(
-				[
-					"BEGIN:VEVENT",
-					"CREATED:" + currentTimeStamp,
-					"DTSTAMP:" + currentTimeStamp,  # FIXME
-					"LAST-MODIFIED:" + currentTimeStamp,
-					"SUMMARY:" + event.getSummary().replace("\n", "\\n"),
-					"DESCRIPTION:" + event.getDescription().replace("\n", "\\n"),
-					# "CATEGORIES:" + self.title,  # FIXME
-					"CATEGORIES:" + event.name,  # FIXME
-					"LOCATION:",
-					"SEQUENCE:0",
-					"STATUS:CONFIRMED",
-					"UID:" + event.icsUID(),
-				],
-			)
-			+ "\n"
-		)
-
-		icsData = event.getIcsData()
-		if icsData is not None:
-			vevent = commonText
-			for key, value in icsData:
-				vevent += key + ":" + value + "\n"
-			vevent += "END:VEVENT\n"
-			fp.write(vevent)
-			return
-
-		occur = event.calcEventOccurrence()
-		if not occur:
-			return
-		if isinstance(occur, JdOccurSet):
-			# for sectionStartJd in occur.getDaysJdList():
-			# 	sectionEndJd = sectionStartJd + 1
-			for sectionStartJd, sectionEndJd in occur.calcJdRanges():
-				vevent = commonText
-				vevent += "\n".join(
-					[
-						"DTSTART;VALUE=DATE:" + ics.getIcsDateByJd(sectionStartJd),
-						"DTEND;VALUE=DATE:" + ics.getIcsDateByJd(sectionEndJd),
-						"TRANSP:TRANSPARENT",
-						# http://www.kanzaki.com/docs/ical/transp.html
-						"END:VEVENT\n",
-					],
-				)
-				fp.write(vevent)
-		elif isinstance(occur, IntervalOccurSet | TimeListOccurSet):
-			for startEpoch, endEpoch in occur.getTimeRangeList():
-				vevent = commonText
-				parts = [
-					"DTSTART:" + ics.getIcsTimeByEpoch(startEpoch),
-				]
-				if endEpoch is not None and endEpoch - startEpoch > 1:
-					# FIXME why is endEpoch sometimes float?
-					parts.append("DTEND:" + ics.getIcsTimeByEpoch(int(endEpoch)))
-				parts += [
-					"TRANSP:OPAQUE",  # FIXME
-					# http://www.kanzaki.com/docs/ical/transp.html
-					"END:VEVENT\n",
-				]
-				vevent += "\n".join(parts)
-				fp.write(vevent)
-		else:
-			raise TypeError(f"invalid type {type(occur)} for occur")
-
 	def exportToIcsFp(self, fp: IO[str]) -> None:
 		currentTimeStamp = ics.getIcsTimeByEpoch(now())
 		for event in self:
-			self._exportToIcsFpEvent(fp, event, currentTimeStamp)
+			exportEventToIcsFileObj(fp, event, currentTimeStamp)
 
 	def exportData(self) -> dict[str, Any]:
 		data = self.getDict()
