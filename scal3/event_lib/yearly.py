@@ -257,7 +257,7 @@ class YearlyEvent(Event):
 		startRule = StartEventRule.getFrom(self)
 		if startRule is not None:
 			startYear = startRule.getDate(GREGORIAN)[0]
-		elif getattr(self.parent, "startJd", None):
+		elif self.parent is not None:
 			assert self.parent is not None
 			startYear = jd_to(self.parent.startJd, GREGORIAN)[0]
 		jd = to_jd(

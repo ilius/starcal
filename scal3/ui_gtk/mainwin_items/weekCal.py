@@ -36,7 +36,6 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
-	TWO_BUTTON_PRESS,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -1647,7 +1646,7 @@ class CalObj(CalBase):
 		i = int(y_col * 7.0 / self.w.get_allocation().height)
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
-		if gevent.type == TWO_BUTTON_PRESS:
+		if gevent.type == gdk.EventType.DOUBLE_BUTTON_PRESS:
 			self.s.emit("double-button-press")
 		if gevent.button == 3:
 			coords = col.w.translate_coordinates(self.w, x_col, y_col)
