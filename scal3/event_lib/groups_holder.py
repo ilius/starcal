@@ -63,7 +63,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self,
 		ident: int | None = None,
 	) -> None:
-		ObjectsHolderTextModel.__init__(self)
+		super().__init__()
 		self.id = ident
 		self.parent = None
 		self.idByUuid = {}
@@ -86,12 +86,12 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 	def delete(self, group: EventGroupType) -> None:
 		assert not group.idList  # FIXME
 		group.parent = None
-		ObjectsHolderTextModel.delete(self, group)
+		super().delete(group)
 
 	def setList(self, data: list[int]) -> None:
 		self.clear()
 		if data:
-			ObjectsHolderTextModel.setList(self, data)
+			super().setList(data)
 			for group in self:
 				assert group.id is not None
 				# if TYPE_CHECKING:

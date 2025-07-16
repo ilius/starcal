@@ -48,7 +48,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		return classes.account.main
 
 	def __init__(self, ident: int | None = None) -> None:
-		ObjectsHolderTextModel.__init__(self)
+		super().__init__()
 		self.id = ident
 		self.parent = None
 		self.idByUuid: dict[str, int] = {}

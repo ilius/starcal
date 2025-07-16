@@ -60,7 +60,7 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 	]
 
 	def __init__(self, parent: EventContainerType, ident: str) -> None:
-		Event.__init__(self, parent=parent)
+		super().__init__(parent=parent)
 		# commit full hash:
 		self.id = ident  # type: ignore[assignment]
 		# ---
@@ -78,7 +78,7 @@ class VcsTagEvent(VcsEpochBaseEvent):
 	# params = VcsEpochBaseEvent.params +
 
 	def __init__(self, parent: EventContainerType, ident: str) -> None:
-		Event.__init__(self, parent=parent)
+		super().__init__(parent=parent)
 		# tag name
 		self.id = ident  # type: ignore[assignment]
 		self.epoch = None
@@ -98,7 +98,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myOptions
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
+		super().__init__(ident)  # type: ignore[arg-type]
 		self.showAuthor = True
 		self.showShortHash = True
 		self.showStat = True
@@ -179,7 +179,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + ["showStat"]
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsEpochBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
+		super().__init__(ident)  # type: ignore[arg-type]
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
@@ -263,7 +263,7 @@ class VcsDailyStatEvent(Event):
 		return True
 
 	def __init__(self, parent: EventContainerType, jd: int) -> None:
-		Event.__init__(self, parent=parent)
+		super().__init__(parent=parent)
 		self.id = jd  # ID is Julian Day
 
 	def save(self) -> None:
@@ -288,12 +288,12 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 	desc = _("VCS Repository (Daily Stat)")
 
 	def __init__(self, ident: str | None = None) -> None:
-		VcsBaseEventGroup.__init__(self, ident)  # type: ignore[arg-type]
+		super().__init__(ident)  # type: ignore[arg-type]
 		# statByJd value: (commitsCount, lastCommitId)
 		self.statByJd: dict[int, tuple[int, str]] = {}
 
 	def clear(self) -> None:
-		VcsBaseEventGroup.clear(self)
+		super().clear()
 		self.statByJd = {}
 
 	def updateOccurrence(self) -> None:
