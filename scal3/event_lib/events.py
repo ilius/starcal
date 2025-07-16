@@ -40,8 +40,8 @@ from scal3.time_utils import (
 from scal3.utils import iceil, ifloor
 
 from .common import getCurrentJd
-from .event_base import Event
-from .occur import IntervalOccurSet, JdOccurSet
+from .event_base import Event, SingleStartEndEvent
+from .occur import JdOccurSet
 from .register import classes
 from .rules import (
 	CycleWeeksEventRule,
@@ -80,68 +80,6 @@ __all__ = [
 dayLen = 86400
 icsMinStartYear = 1970
 # icsMaxEndYear = 2050
-
-
-class SingleStartEndEvent(Event):
-	isSingleOccur = True
-
-	def setStartEpoch(self, epoch: int) -> None:
-		start = StartEventRule.addOrGetFrom(self)
-		start.setEpoch(epoch)
-
-	def setEndEpoch(self, epoch: int) -> None:
-		end = EndEventRule.addOrGetFrom(self)
-		end.setEpoch(epoch)
-
-	def setJd(self, jd: int) -> None:
-		start = StartEventRule.addOrGetFrom(self)
-		start.setJd(jd)
-
-	def setJdExact(self, jd: int) -> None:
-		start = StartEventRule.addOrGetFrom(self)
-		end = EndEventRule.addOrGetFrom(self)
-		start.setJdExact(jd)
-		end.setJdExact(jd + 1)
-
-	def setEndDateTime(
-		self, date: tuple[int, int, int], hms: tuple[int, int, int]
-	) -> None:
-		self.removeSomeRuleTypes("duration")
-		end = EndEventRule.addOrGetFrom(self)
-		end.date = date
-		end.time = hms
-
-	def setEndDuration(self, value: float, unit: int) -> None:
-		self.removeSomeRuleTypes("end")
-		duration = DurationEventRule.addOrGetFrom(self)
-		duration.value = value
-		duration.unit = unit
-
-	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
-		return [
-			(
-				"DTSTART",
-				ics.getIcsTimeByEpoch(
-					self.getStartEpoch(),
-					prettyDateTime,
-				),
-			),
-			(
-				"DTEND",
-				ics.getIcsTimeByEpoch(
-					self.getEndEpoch(),
-					prettyDateTime,
-				),
-			),
-			("TRANSP", "OPAQUE"),
-			("CATEGORIES", self.name),  # FIXME
-		]
-
-	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
-		return IntervalOccurSet.newFromStartEnd(
-			max(self.getEpochFromJd(startJd), self.getStartEpoch()),
-			min(self.getEpochFromJd(endJd), self.getEndEpoch()),
-		)
 
 
 @classes.event.register
