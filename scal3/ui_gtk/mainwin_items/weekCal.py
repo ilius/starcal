@@ -56,7 +56,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
 	BaseToolBoxItem,
@@ -100,35 +100,18 @@ class ColumnParent(Protocol):
 
 class ColumnBase(CustomizableCalObj):
 	itemListCustomizable = False
-	customizeWidth = False
-	customizeExpand = False
-	customizeFont = False
 	autoButtonPressHandler = True
-	# --
+	widthOption: Option[int] | None = None
+	expandOption: Option[bool] | None = None
+	fontOption: Option[str | None] | None = None
 
 	def __init__(self) -> None:
 		super().__init__()
 		self.colParent: ColumnParent | None = None
 		self.calType = 0
 
-	@classmethod
-	def getWidthAttr(cls) -> str:
-		# v4: f"wcal.{cls.objName}.width"
-		return f"wcal_{cls.objName}_width"
-
-	def getWidthOption(self) -> Option[float] | None:
-		return getattr(conf, self.getWidthAttr(), None)
-
-	def getExpandOption(self) -> Option[bool] | None:
-		# v4: f"wcal.{self.objName}.expand"
-		return getattr(conf, f"wcal_{self.objName}_expand", None)
-
-	def getFontOption(self) -> Option[str] | None:
-		# v4: f"wcal.{self.objName}.font"
-		return getattr(conf, f"wcalFont_{self.objName}", None)
-
 	def getFontFamily(self) -> str:
-		option = self.getFontOption()
+		option = self.fontOption
 		if option and option.v:
 			return option.v
 		return ""
@@ -141,7 +124,6 @@ class ColumnBase(CustomizableCalObj):
 	def getOptionsWidget(self) -> gtk.Widget | None:
 		from scal3.ui_gtk.option_ui import (
 			CheckOptionUI,
-			FloatSpinOptionUI,
 			FontFamilyOptionUI,
 		)
 
@@ -154,13 +136,11 @@ class ColumnBase(CustomizableCalObj):
 		)
 		option: OptionUI
 		# ----
-		if self.customizeWidth:
-			widthOption = self.getWidthOption()
-			assert widthOption is not None
-			option = FloatSpinOptionUI(
+		if self.widthOption is not None:
+			widthOption = self.widthOption
+			option = IntSpinOptionUI(
 				option=widthOption,
 				bounds=(1, 999),
-				digits=1,
 				step=1,
 				label=_("Width"),
 				live=True,
@@ -168,9 +148,8 @@ class ColumnBase(CustomizableCalObj):
 			)
 			pack(optionsWidget, option.getWidget())
 		# ----
-		if self.customizeExpand:
-			expandOption = self.getExpandOption()
-			assert expandOption is not None
+		if self.expandOption is not None:
+			expandOption = self.expandOption
 			option = CheckOptionUI(
 				option=expandOption,
 				label=_("Expand"),
@@ -179,9 +158,8 @@ class ColumnBase(CustomizableCalObj):
 			)
 			pack(optionsWidget, option.getWidget())
 		# ----
-		if self.customizeFont:
-			fontOption = self.getFontOption()
-			assert fontOption is not None
+		if self.fontOption is not None:
+			fontOption = self.fontOption
 			option = FontFamilyOptionUI(
 				option=fontOption,
 				hasAuto=True,
@@ -218,7 +196,7 @@ class ColumnBase(CustomizableCalObj):
 		)
 
 	def onExpandCheckClick(self) -> None:
-		option = self.getExpandOption()
+		option = self.expandOption
 		assert option is not None
 		self.expand = option.v
 		self.updatePacking()
@@ -255,14 +233,15 @@ class Column(ColumnBase):
 		# self.w.connect("event", show_event)
 		self.wcal = wcal
 		self.colParent: ColumnParent = wcal  # type: ignore[assignment]
-		if self.customizeExpand:
-			expandOption = self.getExpandOption()
+		if self.expandOption is not None:
+			expandOption = self.expandOption
 			assert expandOption is not None
 			self.expand = expandOption.v
 
 	def getWidth(self) -> int:
-		widthOption = self.getWidthOption()
+		widthOption = self.widthOption
 		if widthOption is None:
+			assert self.expand, f"{self=}"
 			return 0
 		return int(widthOption.v)
 
@@ -627,11 +606,11 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 class WeekDaysColumn(Column):
 	objName = "weekDays"
 	desc = _("Week Days")
+	widthOption = conf.wcal_weekDays_width
+	expandOption = conf.wcal_weekDays_expand
+	fontOption = conf.wcalFont_weekDays
 	colorizeHolidayText = True
 	showCursor = True
-	customizeWidth = True
-	customizeExpand = True
-	customizeFont = True
 	optionsPageSpacing = 20
 
 	def drawColumn(self, cr: ImageContext) -> None:
@@ -654,8 +633,8 @@ class WeekDaysColumn(Column):
 class PluginsTextColumn(Column):
 	objName = "pluginsText"
 	desc = _("Plugins Text")
+	fontOption = conf.wcalFont_pluginsText
 	expand = True
-	customizeFont = True
 	truncateText = False
 	optionsPageSpacing = 20
 
@@ -699,7 +678,7 @@ class PluginsTextColumn(Column):
 class EventsIconColumn(Column):
 	objName = "eventsIcon"
 	desc = _("Events Icon")
-	customizeWidth = True
+	widthOption = conf.wcal_eventsIcon_width
 	optionsPageSpacing = 20
 
 	def drawColumn(self, cr: ImageContext) -> None:
@@ -752,8 +731,8 @@ class EventsIconColumn(Column):
 class EventsCountColumn(Column):
 	objName = "eventsCount"
 	desc = _("Events Count")
-	customizeWidth = True
-	customizeExpand = True
+	widthOption = conf.wcal_eventsCount_width
+	expandOption = conf.wcal_eventsCount_expand
 	optionsPageSpacing = 40
 
 	def getDayTextData(self, i: int) -> list[tuple[str, ColorType | None]]:
@@ -784,8 +763,8 @@ class EventsCountColumn(Column):
 class EventsTextColumn(Column):
 	objName = "eventsText"
 	desc = _("Events Text")
+	fontOption = conf.wcalFont_eventsText
 	expand = True
-	customizeFont = True
 	truncateText = False
 	optionsPageSpacing = 20
 
@@ -896,8 +875,8 @@ class EventsTextColumn(Column):
 class EventsBoxColumn(Column):
 	objName = "eventsBox"
 	desc = _("Events Box")
+	fontOption = conf.wcalFont_eventsBox
 	expand = True  # FIXME
-	customizeFont = True
 	optionsPageSpacing = 40
 
 	def __init__(self, wcal: CalObj) -> None:
@@ -1056,6 +1035,8 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 class DaysOfMonthColumn(Column):
 	colorizeHolidayText = True
 	showCursor = True
+	widthOption = conf.wcal_daysOfMonth_width
+	expandOption = conf.wcal_daysOfMonth_expand
 
 	def __init__(
 		self,
@@ -1068,10 +1049,6 @@ class DaysOfMonthColumn(Column):
 		self.cgroup = cgroup
 		self.calType = calType
 		self.index = index
-
-	@classmethod
-	def getWidthAttr(cls) -> str:
-		return "wcal_daysOfMonth_width"
 
 	def drawColumn(self, cr: ImageContext) -> None:
 		status = self.wcal.status
@@ -1098,8 +1075,6 @@ class DaysOfMonthColumn(Column):
 class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 	objName = "daysOfMonth"
 	desc = _("Days of Month")
-	customizeWidth = True
-	customizeExpand = True
 	optionsPageSpacing = 15
 
 	def __init__(self, wcal: CalObj) -> None:
@@ -1160,7 +1135,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 			item.updatePacking()
 
 	def getWidth(self) -> int:
-		widthOption = self.getWidthOption()
+		widthOption = self.widthOption
 		if widthOption is None:
 			raise ValueError("widthProp is None")
 		count = len(self.box.get_children())
@@ -1242,8 +1217,8 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 class MoonStatusColumn(Column):
 	objName = "moonStatus"
 	desc = _("Moon Status")
+	widthOption = conf.wcal_moonStatus_width
 	showCursor = False
-	customizeWidth = True
 	optionsPageSpacing = 40
 
 	def __init__(self, wcal: CalObj) -> None:
