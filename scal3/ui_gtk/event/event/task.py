@@ -25,7 +25,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import TaskEvent
+	from scal3.event_lib.task import TaskEvent
 
 __all__ = ["WidgetClass"]
 
