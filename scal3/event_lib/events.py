@@ -38,11 +38,8 @@ from .event_base import Event
 from .occur import JdOccurSet
 from .register import classes
 from .rules import (
-	CycleWeeksEventRule,
 	DateEventRule,
 	DayOfMonthEventRule,
-	DayTimeRangeEventRule,
-	EndEventRule,
 	MonthEventRule,
 	StartEventRule,
 )
@@ -57,7 +54,6 @@ if TYPE_CHECKING:
 __all__ = [
 	"DailyNoteEvent",
 	"Event",
-	"WeeklyEvent",
 	"YearlyEvent",
 ]
 
@@ -357,55 +353,6 @@ class YearlyEvent(Event):
 		self.setDay(day)
 		self.calType = GREGORIAN
 		return True
-
-
-@classes.event.register
-class WeeklyEvent(Event):
-	name = "weekly"
-	desc = _("Weekly Event")
-	iconName = ""
-	requiredRules = [
-		"start",
-		"end",
-		"cycleWeeks",
-		"dayTimeRange",
-	]
-	supportedRules = requiredRules
-	isAllDay = False
-
-	def getV4Dict(self) -> dict[str, Any]:
-		data = Event.getV4Dict(self)
-		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
-		assert dayTimeRange is not None
-		startSec, endSec = dayTimeRange.getSecondsRange()
-		start = StartEventRule.getFrom(self)
-		assert start is not None
-		end = EndEventRule.getFrom(self)
-		assert end is not None
-		cycleWeeks = CycleWeeksEventRule.getFrom(self)
-		assert cycleWeeks is not None
-		data.update(
-			{
-				"startJd": start.getJd(),
-				"endJd": end.getJd(),
-				"cycleWeeks": cycleWeeks.getRuleValue(),
-				"dayStartSeconds": startSec,
-				"dayEndSeconds": endSec,
-			},
-		)
-		return data
-
-	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		super().setDefaults(group=group)
-		jd = getCurrentJd()
-		start = StartEventRule.getFrom(self)
-		if start is None:
-			raise RuntimeError("no start rule")
-		end = EndEventRule.getFrom(self)
-		if end is None:
-			raise RuntimeError("no end rule")
-		start.setJd(jd)
-		end.setJd(jd + 8)
 
 
 @classes.event.register

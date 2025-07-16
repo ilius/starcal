@@ -92,6 +92,7 @@ from . import (
 	task,  # noqa: F401
 	university,  # noqa: F401
 	vcs,  # noqa: F401
+	weekly,  # noqa: F401
 )
 from .accounts import Account, accountsDir
 from .accounts_holder import EventAccountsHolder
