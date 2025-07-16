@@ -20,7 +20,6 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import TypedDict
 
 from cachetools import LRUCache
 
@@ -33,9 +32,6 @@ from scal3.ui import conf
 from scal3.week_status import WeekStatus
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Sequence
-
-	from scal3.color_utils import ColorType
 	from scal3.event_lib.occur_data import DayOccurData
 	from scal3.pytypes import (
 		CellType,
@@ -46,18 +42,6 @@ if typing.TYPE_CHECKING:
 	)
 
 __all__ = ["Cell", "init"]
-
-
-class EventDataDict(TypedDict):
-	time: str  # time descriptive string
-	time_epoch: int  # epoch time
-	is_allday: bool
-	text: Sequence[str]  # of text lines
-	icon: str  # icon path
-	color: ColorType
-	ids: tuple[int, int]  # (gid, eid)
-	show: tuple[bool, bool, bool]  # (showInDCal, showInWCal, showInMCal)
-	showInStatusIcon: bool
 
 
 class Cell:

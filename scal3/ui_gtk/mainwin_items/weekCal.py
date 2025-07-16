@@ -74,7 +74,7 @@ if TYPE_CHECKING:
 
 	from scal3.color_utils import ColorType
 	from scal3.option import Option
-	from scal3.pytypes import CellType, WeekStatusType
+	from scal3.pytypes import WeekStatusType
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
@@ -1409,10 +1409,6 @@ class CalObj(CalBase):
 
 	def do_get_preferred_height(self) -> tuple[int, int]:  # noqa: PLR6301
 		return 0, int(conf.winHeight.v / 3)
-
-	@staticmethod
-	def getCellPagePlus(cell: CellType, plus: int) -> CellType:
-		return ui.cells.getCell(cell.jd + 7 * plus)
 
 	def __init__(self, win: MainWinType) -> None:
 		super().__init__()

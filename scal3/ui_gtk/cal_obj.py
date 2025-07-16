@@ -30,7 +30,6 @@ from scal3.ui_gtk.drawing import newDndDatePixbuf
 if TYPE_CHECKING:
 	from gi.overrides import GObject
 
-	from scal3.pytypes import CellType
 	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
@@ -95,10 +94,6 @@ class CalBase(CustomizableCalObj):
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:  # noqa: ARG002
 		self.w.queue_draw()
-
-	@staticmethod
-	def getCellPagePlus(cell: CellType, plus: int) -> CellType:  # use for sliding
-		raise NotImplementedError
 
 	def defineDragAndDrop(self) -> None:
 		self.w.drag_source_set(

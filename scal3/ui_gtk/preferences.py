@@ -1683,7 +1683,6 @@ class PreferencesWindow(gtk.Window):
 		)
 		# --
 		menu.show_all()
-		self.tmpMenu = menu
 		menu.popup(None, None, None, None, 3, gevent.time)
 		return True
 
@@ -2024,7 +2023,6 @@ class PreferencesWindow(gtk.Window):
 			# 	menu = Menu()
 			# 	#
 			# 	menu.show_all()
-			# 	self.tmpMenu = menu
 			# 	menu.popup(None, None, None, None, 3, gevent.time)
 			return True
 		return False

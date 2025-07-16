@@ -595,17 +595,17 @@ class CustomizeWindow(Dialog):
 		item.showHide()
 		# calling item.onConfigChange() causes labelBox not to hide when unchecked
 
-	def updateMainPanelTreeEnableChecks(self) -> None:
-		pass
-		# FIXME: called from MainWin
-		# treev = self.treev_root
-		# model = self._listStore
-		# for i, item in enumerate(self.mainPanelItem.items):
-		# 	model.set_value(
-		# 		model.get_iter((i,)),
-		# 		0,
-		# 		item.enable,
-		# 	)
+	# def updateMainPanelTreeEnableChecks(self) -> None:
+	# 	pass
+	# 	# FIXME: called from MainWin
+	# 	treev = self.treev_root
+	# 	model = self._listStore
+	# 	for i, item in enumerate(self.mainPanelItem.items):
+	# 		model.set_value(
+	# 			model.get_iter((i,)),
+	# 			0,
+	# 			item.enable,
+	# 		)
 
 	def save(self) -> None:
 		item = self.rootItem

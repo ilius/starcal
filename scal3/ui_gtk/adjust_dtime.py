@@ -74,7 +74,6 @@ class AdjusterDialog(Dialog):
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
 		)
-		# self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
 		self.buttonSet = dialog_add_button(
 			self,
 			res=gtk.ResponseType.OK,

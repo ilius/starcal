@@ -506,4 +506,3 @@ eventSearchWin: Any = None
 timeLineWin: Any = None
 dayCalWin: Any = None
 yearWheelWin: Any = None
-weekCalWin: Any = None

@@ -46,13 +46,13 @@ keyFuncIndex0 = operator.itemgetter(0)
 
 
 class DayOccurData(NamedTuple):
-	time: str
+	time: str  # time descriptive string
 	time_epoch: tuple[int, int]
 	is_allday: bool
-	text: list[str]
-	icon: str | None
+	text: list[str]  # of text lines
+	icon: str | None  # icon path
 	color: ColorType
-	ids: tuple[int, int]
+	ids: tuple[int, int]  # (groupId, eventId)
 	show: tuple[bool, bool, bool]  # (showInDCal, showInWCal, showInMCal)
 	showInStatusIcon: bool
 

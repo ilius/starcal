@@ -701,7 +701,6 @@ class TimeLine(CustomizableCalObj):
 				)
 				# --
 				menu.show_all()
-				self.tmpMenu = menu
 				menu.popup(None, None, None, None, 3, gevent.time)
 		return False
 

@@ -28,9 +28,10 @@ if TYPE_CHECKING:
 
 __all__ = ["createPatchListFromGroup"]
 
+
 def createPatchListFromGroup(
 	group: EventGroupType,
-    sinceEpoch: int,
+	sinceEpoch: int,
 ) -> list[dict[str, Any]]:
 	patchList = []
 
