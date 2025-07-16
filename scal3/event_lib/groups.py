@@ -71,7 +71,6 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"EventGroup",
-	"LifetimeGroup",
 	"NoteBook",
 	"groupsDir",
 ]
@@ -920,42 +919,3 @@ class NoteBook(EventGroup):
 		if event.name in self.acceptsEventTypes and attr == "date":
 			return event.getJd()
 		return EventGroup.getSortByValue(self, event, attr)
-
-
-@classes.group.register
-class LifetimeGroup(EventGroup):
-	name = "lifetime"
-	nameAlias = "lifeTime"
-	desc = _("Lifetime Events Group")
-	acceptsEventTypes: Sequence[str] = ("lifetime",)
-	sortBys = EventGroup.sortBys + [
-		("start", _("Start"), True),
-	]
-	params = EventGroup.params + ["showSeparateYmdInputs"]
-
-	def getSortByValue(self, event: EventType, attr: str) -> Any:
-		if event.name in self.acceptsEventTypes:
-			if attr == "start":
-				return event.getStartJd()
-			if attr == "end":
-				return event.getEndJd()
-		return EventGroup.getSortByValue(self, event, attr)
-
-	def __init__(self, ident: int | None = None) -> None:
-		self.showSeparateYmdInputs = False
-		super().__init__(ident)
-
-	def setDict(self, data: dict[str, Any]) -> None:
-		if "showSeperatedYmdInputs" in data:
-			# misspell in < 3.1.x
-			data["showSeparateYmdInputs"] = data["showSeperatedYmdInputs"]
-		if "showSeparatedYmdInputs" in data:
-			data["showSeparateYmdInputs"] = data["showSeparatedYmdInputs"]
-		super().setDict(data)
-
-	def setDefaults(self) -> None:
-		# only show in time line
-		self.showInDCal = False
-		self.showInWCal = False
-		self.showInMCal = False
-		self.showInStatusIcon = False

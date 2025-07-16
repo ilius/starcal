@@ -7,7 +7,7 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import LifetimeGroup
+	from scal3.event_lib.lifetime import LifetimeGroup
 
 __all__ = ["WidgetClass"]
 
