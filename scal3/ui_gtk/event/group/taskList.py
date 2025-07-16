@@ -8,7 +8,7 @@ from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 if TYPE_CHECKING:
-	from scal3.event_lib.groups import TaskList
+	from scal3.event_lib.task import TaskList
 
 __all__ = ["WidgetClass"]
 
