@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scal3.event_lib.groups import LifetimeGroup
+from scal3.event_lib.lifetime import LifetimeGroup
 from scal3.event_lib.rules import EndEventRule, StartEventRule
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
