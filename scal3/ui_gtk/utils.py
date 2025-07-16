@@ -766,20 +766,3 @@ def getGtkWindow(widget: gtk.Widget) -> gtk.Window | None:
 	if isinstance(top, gtk.Window):
 		return top
 	return None
-
-
-class TextViewWithWidthFunc(gtk.TextView):
-	def __init__(self, getWidth: Callable[[], int] | None) -> None:
-		gtk.TextView.__init__(self)
-		self.getWidth = getWidth
-
-	def do_get_preferred_width(self) -> tuple[int, int]:  # noqa: PLR6301
-		# must return minimum_size, natural_size
-		if self.getWidth is None:
-			return 0, 0
-		width = self.getWidth()
-		print(f"{width=}")
-		return width, width
-
-	def do_get_preferred_width_for_height(self, _size: int) -> tuple[int, int]:
-		return self.do_get_preferred_width()

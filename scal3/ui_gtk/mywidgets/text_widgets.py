@@ -112,7 +112,6 @@ class ReadOnlyTextView(gtk.TextView):
 			)
 		# ----
 		menu.show_all()
-		self.tmpMenu = menu
 		menu.popup(
 			None,
 			None,

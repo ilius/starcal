@@ -86,7 +86,6 @@ class EventEditorDialog(Dialog):
 			# ----
 			# self.activeWidget = makeWidget(event)
 			combo.connect("changed", self.typeChanged)
-			self.comboEventType = combo
 		else:
 			pack(hbox, gtk.Label(label=":  " + event.desc))
 		pack(hbox, gtk.Label(), 1, 1)

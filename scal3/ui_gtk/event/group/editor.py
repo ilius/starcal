@@ -71,9 +71,6 @@ class GroupEditorDialog(Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo: gtk.ComboBox) -> None:
-		pass
-
 	@staticmethod
 	def getNewGroupTitle(baseTitle: str) -> str:
 		usedTitles = {group.title for group in ev.groups}

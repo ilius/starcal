@@ -786,7 +786,6 @@ class EventSearchWindow(CalObjWidget):
 			return
 		if etime is None:
 			etime = gtk.get_current_event_time()
-		self.tmpMenu = menu
 		menu.popup(None, None, None, None, 3, etime)
 
 	def onTreeviewButtonPress(
@@ -840,7 +839,6 @@ class EventSearchWindow(CalObjWidget):
 				win = self.w.get_window()
 				assert win is not None
 				_foo, wx, wy = win.get_origin()
-				self.tmpMenu = menu
 				menu.popup(
 					None,
 					None,

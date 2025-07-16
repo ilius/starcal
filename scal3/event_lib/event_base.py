@@ -433,9 +433,6 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def getNotifiersData(self) -> list[tuple[str, dict[str, Any]]]:
 		return [(notifier.name, notifier.getDict()) for notifier in self.notifiers]
 
-	def getNotifiersDict(self) -> dict[str, dict[str, Any]]:
-		return dict(self.getNotifiersData())
-
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		"""StartJd and endJd are float jd."""
 		# cache Occurrences  # FIXME

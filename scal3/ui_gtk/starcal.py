@@ -296,8 +296,6 @@ class MainWin(CalObjWidget):
 		# ui.timeLineWin = None
 		# ui.yearWheelWin = None
 		# ---
-		# ui.weekCalWin = WeekCalWindow()
-		# ud.windowList.appendItem(ui.weekCalWin)
 		# ---
 		self.dayInfoDialog: DayInfoDialog | None = None
 		# log.debug("windowList.items", [item.objName for item in ud.windowList.items])
@@ -1021,11 +1019,6 @@ class MainWin(CalObjWidget):
 				func=self.dayCalWinShow,
 			),
 		)
-		# moreMenu.add(ImageMenuItem(
-		# 	"Week Calendar",
-		# 	imageName="week-calendar.svg",
-		# 	func=self.weekCalShow,
-		# ))
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("Export to {format}").format(format="HTML"),
@@ -1267,9 +1260,6 @@ class MainWin(CalObjWidget):
 				self.clockTr.destroy()
 				self.clockTr = None
 	"""
-
-	# def weekCalShow(self, _w: OptWidget = None, data: Any = None):
-	# 	openWindow(ui.weekCalWin.w)
 
 	@staticmethod
 	def useAppIndicator() -> bool:

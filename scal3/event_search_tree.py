@@ -33,11 +33,6 @@ if TYPE_CHECKING:
 __all__ = ["EventSearchTree", "OccurItem"]
 
 
-# epsTm: seconds
-# TODO: configure somewhere?
-epsTm = 0.01
-
-
 OccurItem = namedtuple(
 	"OccurItem",
 	[
@@ -249,8 +244,6 @@ class EventSearchTree:
 				f"\t{strftime(f, localtime(t1))}",
 			)
 		# ---
-		# if t0 == t1:
-		# 	t1 += epsTm  # needed? FIXME
 		mt = (t0 + t1) / 2.0
 		dt = (t1 - t0) / 2.0
 		# ---

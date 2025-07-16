@@ -261,7 +261,6 @@ class DayOccurrenceView(CustomizableCalObj):
 		self.addExtraMenuItems(menu)
 		# ----
 		menu.show_all()
-		self.tmpMenu = menu
 		menu.popup(
 			None,
 			None,

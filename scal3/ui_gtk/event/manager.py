@@ -93,10 +93,7 @@ __all__ = ["EventManagerDialog"]
 
 type W = gtk.Widget
 
-type EventOrGroup = lib.Event | lib.EventGroup
-
 confPath = join(confDir, "event", "manager.json")
-
 
 eventManPos: Final[Option[tuple[int, int]]] = Option((0, 0))
 eventManShowDescription: Final[Option[bool]] = Option(True)
@@ -283,12 +280,10 @@ class EventManagerDialog(CalObjWidget):
 			enableAllItem = MenuItem(_("Enable All Groups"))
 			enableAllItem.connect("activate", self.onEnableAllClick)
 			editMenu.append(enableAllItem)
-			self.mbarEnableAllItem = enableAllItem
 			# --
 			disableAllItem = MenuItem(_("Disable All Groups"))
 			disableAllItem.connect("activate", self.onDisableAllClick)
 			editMenu.append(disableAllItem)
-			self.mbarDisableAllItem = disableAllItem
 		# ----
 		viewItem = MenuItem(_("_View"))
 		viewMenu = Menu()
@@ -1669,7 +1664,6 @@ class EventManagerDialog(CalObjWidget):
 			return
 		if etime is None:
 			etime = gtk.get_current_event_time()
-		self.tmpMenu = menu
 		menu.popup(None, None, None, None, 3, etime)
 
 	# def onTreeviewRealize(self, gevent):
@@ -1728,7 +1722,6 @@ class EventManagerDialog(CalObjWidget):
 		assert dcord is not None
 		dx, dy = dcord
 		_foo, wx, wy = win.get_origin()
-		self.tmpMenu = menu
 		menu.popup(
 			None,
 			None,

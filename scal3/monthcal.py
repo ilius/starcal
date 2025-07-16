@@ -30,11 +30,6 @@ if TYPE_CHECKING:
 __all__ = ["getMonthDesc"]
 
 
-pluginName = "MonthCal"
-
-# ------------------------
-
-
 # TODO: write test for it
 def getMonthDesc(status: MonthStatusType | None = None) -> str:
 	if not status:

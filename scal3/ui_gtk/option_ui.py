@@ -29,7 +29,7 @@ from typing import Any
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
 from scal3.ui_gtk import GdkPixbuf, getOrientation, gtk, pack
-from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
+from scal3.ui_gtk.font_utils import gfontDecode
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.utils import (
@@ -80,10 +80,6 @@ class OptionUI:
 	# obj = object.__new__(cls)
 	# return obj
 
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return str(value)
-
 	def get(self) -> Any:
 		raise NotImplementedError
 
@@ -101,12 +97,6 @@ class OptionUI:
 
 
 class ComboTextOptionUI(OptionUI):
-	# valueString is not used anywhere!
-	# and I was using self here!
-	# @classmethod
-	# def valueString(cls, value: Any) -> str:
-	# 	return self._combo.get_model()[value]
-
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -333,10 +323,6 @@ class ComboImageTextOptionUI(OptionUI):
 
 
 class FontOptionUI(OptionUI):
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return gfontEncode(value)
-
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
@@ -426,16 +412,6 @@ class CheckOptionUI(OptionUI):
 class ColorOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
-
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		if value is None:
-			return "None"
-		if len(value) == 3:
-			return f"rgb{value}"
-		if len(value) == 4:
-			return f"rgba{value}"
-		raise ValueError(f"unexpected value {value!r}")
 
 	def __init__(
 		self,

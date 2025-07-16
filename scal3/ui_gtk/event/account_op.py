@@ -11,7 +11,6 @@ from scal3.ui_gtk.event import EventWidgetType, makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
-	from scal3.event_lib.accounts import Account
 	from scal3.event_lib.pytypes import AccountType
 
 __all__ = ["AccountEditorDialog"]
@@ -70,9 +69,6 @@ class AccountEditorDialog(Dialog):
 		self.vbox.show_all()
 		self.typeChanged()
 
-	def dateModeChanged(self, combo: gtk.ComboBox) -> None:
-		pass
-
 	def typeChanged(self, _combo: gtk.ComboBox | None = None) -> None:
 		if self.activeWidget:
 			self.activeWidget.updateVars()
@@ -107,7 +103,7 @@ class AccountEditorDialog(Dialog):
 		return self.account
 
 
-class FetchRemoteGroupsDialog(Dialog):
-	def __init__(self, account: Account) -> None:
-		Dialog.__init__(self)
-		self.account = account
+# class FetchRemoteGroupsDialog(Dialog):
+# 	def __init__(self, account: Account) -> None:
+# 		Dialog.__init__(self)
+# 		self.account = account

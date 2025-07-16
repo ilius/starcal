@@ -145,7 +145,6 @@ class AccountGroupBox(gtk.Box):
 		)
 		button.connect("clicked", self.onFetchClick)
 		pack(self, button)
-		self.fetchButton = button
 		# --
 		label = gtk.Label()
 		label.set_xalign(0.1)
