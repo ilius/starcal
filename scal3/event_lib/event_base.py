@@ -26,6 +26,7 @@ from time import time as now
 from typing import TYPE_CHECKING, Self
 
 import mytz
+from scal3 import ics
 from scal3.cal_types import calTypes
 from scal3.filesystem import null_fs
 from scal3.locale_man import tr as _
@@ -38,10 +39,10 @@ from .common import compressLongInt, eventTextSep, getCompactTime
 from .exceptions import BadEventFile
 from .icon import WithIcon, iconAbsToRelativelnData
 from .objects import HistoryEventObjBinaryModel
-from .occur import JdOccurSet
+from .occur import IntervalOccurSet, JdOccurSet
 from .register import classes
 from .rule_container import RuleContainer
-from .rules import DateEventRule, EndEventRule, StartEventRule
+from .rules import DateEventRule, DurationEventRule, EndEventRule, StartEventRule
 
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterator
@@ -58,7 +59,7 @@ if TYPE_CHECKING:
 	)
 
 
-__all__ = ["Event", "eventsDir"]
+__all__ = ["Event", "SingleStartEndEvent", "eventsDir"]
 
 eventsDir = join("event", "events")
 
@@ -641,3 +642,65 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			patch["newEventType"] = self.name
 
 		return patch
+
+
+class SingleStartEndEvent(Event):
+	isSingleOccur = True
+
+	def setStartEpoch(self, epoch: int) -> None:
+		start = StartEventRule.addOrGetFrom(self)
+		start.setEpoch(epoch)
+
+	def setEndEpoch(self, epoch: int) -> None:
+		end = EndEventRule.addOrGetFrom(self)
+		end.setEpoch(epoch)
+
+	def setJd(self, jd: int) -> None:
+		start = StartEventRule.addOrGetFrom(self)
+		start.setJd(jd)
+
+	def setJdExact(self, jd: int) -> None:
+		start = StartEventRule.addOrGetFrom(self)
+		end = EndEventRule.addOrGetFrom(self)
+		start.setJdExact(jd)
+		end.setJdExact(jd + 1)
+
+	def setEndDateTime(
+		self, date: tuple[int, int, int], hms: tuple[int, int, int]
+	) -> None:
+		self.removeSomeRuleTypes("duration")
+		end = EndEventRule.addOrGetFrom(self)
+		end.date = date
+		end.time = hms
+
+	def setEndDuration(self, value: float, unit: int) -> None:
+		self.removeSomeRuleTypes("end")
+		duration = DurationEventRule.addOrGetFrom(self)
+		duration.value = value
+		duration.unit = unit
+
+	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		return [
+			(
+				"DTSTART",
+				ics.getIcsTimeByEpoch(
+					self.getStartEpoch(),
+					prettyDateTime,
+				),
+			),
+			(
+				"DTEND",
+				ics.getIcsTimeByEpoch(
+					self.getEndEpoch(),
+					prettyDateTime,
+				),
+			),
+			("TRANSP", "OPAQUE"),
+			("CATEGORIES", self.name),  # FIXME
+		]
+
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		return IntervalOccurSet.newFromStartEnd(
+			max(self.getEpochFromJd(startJd), self.getStartEpoch()),
+			min(self.getEpochFromJd(endJd), self.getEndEpoch()),
+		)
