@@ -194,7 +194,7 @@ class TaskEvent(SingleStartEndEvent):
 		self.setEndDuration(value, unit)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		tt = localtime()
 		self.setStart(
 			getSysDate(self.calType),
@@ -316,7 +316,7 @@ class TaskEvent(SingleStartEndEvent):
 				raise RuntimeError("no end rule nor duration rule")
 
 	def copyFrom(self, other: EventType) -> None:
-		Event.copyFrom(self, other)
+		super().copyFrom(other)
 		myStart = StartEventRule.getFrom(self)
 		if myStart is None:
 			raise KeyError
@@ -384,7 +384,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.setEndDurationDays(1)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		jd = getCurrentJd()
 		self.setJd(jd)
 		self.setEndDurationDays(1)
@@ -473,7 +473,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		return True
 
 	def copyFrom(self, other: EventType) -> None:
-		SingleStartEndEvent.copyFrom(self, other)
+		super().copyFrom(other)
 		if other.name == self.name:
 			assert isinstance(other, AllDayTaskEvent), f"{other=}"
 			kind, value = other.getEnd()
@@ -525,7 +525,7 @@ class DailyNoteEvent(Event):
 		rule.setJd(jd)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		self.setDate(*getSysDate(self.calType))
 
 	# startJd and endJd can be float jd
@@ -611,7 +611,7 @@ class YearlyEvent(Event):
 		return rule
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		_y, m, d = getSysDate(self.calType)
 		self.setMonth(m)
 		self.setDay(d)
@@ -673,7 +673,7 @@ class YearlyEvent(Event):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		Event.setDict(self, data)
+		super().setDict(data)
 		try:
 			startYear = int(data["startYear"])
 		except KeyError:
@@ -807,7 +807,7 @@ class MonthlyEvent(Event):
 		return data
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		year, month, day = jd_to(getCurrentJd(), self.calType)
 		start = StartEventRule.getFrom(self)
 		if start is not None:
@@ -878,7 +878,7 @@ class WeeklyEvent(Event):
 		return data
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		jd = getCurrentJd()
 		start = StartEventRule.getFrom(self)
 		if start is None:
@@ -928,7 +928,7 @@ class LifetimeEvent(SingleStartEndEvent):
 		if rule.name in {"start", "end"}:
 			assert isinstance(rule, DateAndTimeEventRule), f"{rule=}"
 			rule.time = (0, 0, 0)
-		SingleStartEndEvent.addRule(self, rule)
+		super().addRule(rule)
 
 	def modifyPos(self, newStartEpoch: int) -> None:
 		start = StartEventRule.getFrom(self)

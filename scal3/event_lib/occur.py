@@ -70,7 +70,7 @@ class JdOccurSet(OccurSet):
 	name = "jdSet"
 
 	def __init__(self, jdSet: set[int] | None = None) -> None:
-		OccurSet.__init__(self)
+		super().__init__()
 		if jdSet is None:
 			jdSet = set()
 		else:
@@ -147,7 +147,7 @@ class IntervalOccurSet(OccurSet):
 	name = "timeRange"
 
 	def __init__(self, rangeList: list[tuple[int, int]] | None = None) -> None:
-		OccurSet.__init__(self)
+		super().__init__()
 		if not rangeList:
 			rangeList = []
 		self.rangeList = rangeList
@@ -215,7 +215,7 @@ class TimeListOccurSet(OccurSet):
 		self,
 		epochList: Iterable[int] | None = None,
 	) -> None:
-		OccurSet.__init__(self)
+		super().__init__()
 		self.startEpoch = 0
 		self.endEpoch = 0
 		self.stepSeconds = -1

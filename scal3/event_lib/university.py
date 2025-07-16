@@ -144,7 +144,7 @@ class UniversityTerm(EventGroup):
 		return EventGroup.getSortByValue(self, event, attr)
 
 	def __init__(self, ident: int | None = None) -> None:
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 		self.classesEndDate = getSysDate(self.calType)  # FIXME
 		self.setCourses([])  # list of (courseId, courseName, courseUnits)
 		self.classTimeBounds = [
@@ -306,7 +306,7 @@ class UniversityTerm(EventGroup):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
+		super().setDict(data)
 		# self.setCourses(data["courses"])
 		if "classesEndDate" in data:
 			try:
@@ -319,7 +319,7 @@ class UniversityTerm(EventGroup):
 			)
 
 	def afterModify(self) -> None:
-		EventGroup.afterModify(self)
+		super().afterModify()
 		for event in self:
 			try:
 				event.updateSummary()
@@ -378,14 +378,14 @@ class UniversityClassEvent(Event):
 		parent: EventContainerType | None = None,
 	) -> None:
 		# assert parent is not None
-		Event.__init__(self, ident, parent)
+		super().__init__(ident, parent)
 		self.courseId: int | None = None  # FIXME
 
 	def setDefaults(
 		self,
 		group: EventGroupType | None = None,
 	) -> None:
-		Event.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		if group and group.name == "universityTerm":
 			if TYPE_CHECKING:
 				assert isinstance(group, UniversityTerm), f"{group=}"
@@ -512,11 +512,11 @@ class UniversityExamEvent(DailyNoteEvent):
 		parent: EventContainerType | None = None,
 	) -> None:
 		# assert group is not None  # FIXME
-		DailyNoteEvent.__init__(self, ident, parent)
+		super().__init__(ident, parent)
 		self.courseId: int | None = None  # FIXME
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
-		DailyNoteEvent.setDefaults(self, group=group)
+		super().setDefaults(group=group)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		if dayTimeRange is None:
 			raise RuntimeError("no dayTimeRange rule")

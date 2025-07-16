@@ -53,7 +53,7 @@ class VcsBaseEventGroup(EventGroup):
 		self.vcsType = "git"
 		self.vcsDir = ""
 		self.vcsBranch = "main"
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 
 	def __str__(self) -> str:
 		return (
@@ -110,10 +110,10 @@ class VcsBaseEventGroup(EventGroup):
 
 	def afterModify(self) -> None:
 		self.updateVcsModuleObj()
-		EventGroup.afterModify(self)
+		super().afterModify()
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
+		super().setDict(data)
 		self.updateVcsModuleObj()
 
 
@@ -124,14 +124,14 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 	def __init__(self, ident: int | None = None) -> None:
 		self.showSeconds = True
 		self.vcsIds: list[int] = []
-		VcsBaseEventGroup.__init__(self, ident)
+		super().__init__(ident)
 
 	def clear(self) -> None:
-		EventGroup.clear(self)
+		super().clear()
 		self.vcsIds = []
 
 	def addOccur(self, t0: float, t1: float, eid: int) -> None:
-		EventGroup.addOccur(self, t0, t1, eid)
+		super().addOccur(t0, t1, eid)
 		self.vcsIds.append(eid)
 
 	def getRulesHash(self) -> int:

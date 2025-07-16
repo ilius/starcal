@@ -145,7 +145,7 @@ class Account(HistoryEventObjBinaryModel):
 	def save(self) -> None:
 		if self.id is None:
 			self.setId()
-		HistoryEventObjBinaryModel.save(self)
+		super().save()
 
 	def setId(self, ident: int | None = None) -> None:
 		assert state.lastIds is not None

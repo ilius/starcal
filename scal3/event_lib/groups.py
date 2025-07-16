@@ -240,7 +240,7 @@ class EventGroup(EventContainer):
 		return f"{self.__class__.__name__}(ident={self.id!r}, title='{self.title}')"
 
 	def __init__(self, ident: int | None = None) -> None:
-		EventContainer.__init__(self, title=self.desc)
+		super().__init__(title=self.desc)
 		if ident is None:
 			self.id = None
 		else:
@@ -337,7 +337,7 @@ class EventGroup(EventContainer):
 			raise RuntimeError("event group is read-only right now")
 		if self.id is None:
 			self.setId()
-		EventContainer.save(self)
+		super().save()
 
 	def getSyncDurationSec(self) -> float:
 		"""Return Sync Duration in seconds (int)."""
@@ -404,7 +404,7 @@ class EventGroup(EventContainer):
 			]
 			del data["showInCal"]
 
-		EventContainer.setDict(self, data)
+		super().setDict(data)
 
 		self.color = RGBA.fromList(self.color)
 
@@ -514,7 +514,7 @@ class EventGroup(EventContainer):
 		self.occurCount = 0
 
 	def postAdd(self, event: EventType) -> None:
-		EventContainer.postAdd(self, event)
+		super().postAdd(event)
 		self.setToCache(event)
 		# if event.remoteIds:
 		# 	self.eventIdByRemoteIds[event.remoteIds] = event.id
@@ -576,7 +576,7 @@ class EventGroup(EventContainer):
 				yield event, occur
 
 	def afterModify(self) -> None:  # FIXME
-		EventContainer.afterModify(self)
+		super().afterModify()
 		self.initOccurrence()
 		# ----
 		if self.enable:
@@ -932,7 +932,7 @@ class TaskList(EventGroup):
 		return EventGroup.getSortByValue(self, event, attr)
 
 	def __init__(self, ident: int | None = None) -> None:
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 		self.defaultDuration = (0.0, 1)  # (value, unit)
 
 	def getDict(self) -> dict[str, Any]:
@@ -941,7 +941,7 @@ class TaskList(EventGroup):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		EventGroup.setDict(self, data)
+		super().setDict(data)
 		if "defaultDuration" in data:
 			self.defaultDuration = durationDecode(data["defaultDuration"])
 
@@ -974,7 +974,7 @@ class YearlyGroup(EventGroup):
 	params = EventGroup.params + ["showDate"]
 
 	def __init__(self, ident: int | None = None) -> None:
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 		self.showDate = True
 
 
@@ -999,7 +999,7 @@ class LifetimeGroup(EventGroup):
 
 	def __init__(self, ident: int | None = None) -> None:
 		self.showSeparateYmdInputs = False
-		EventGroup.__init__(self, ident)
+		super().__init__(ident)
 
 	def setDict(self, data: dict[str, Any]) -> None:
 		if "showSeperatedYmdInputs" in data:
@@ -1007,7 +1007,7 @@ class LifetimeGroup(EventGroup):
 			data["showSeparateYmdInputs"] = data["showSeperatedYmdInputs"]
 		if "showSeparatedYmdInputs" in data:
 			data["showSeparateYmdInputs"] = data["showSeparatedYmdInputs"]
-		EventGroup.setDict(self, data)
+		super().setDict(data)
 
 	def setDefaults(self) -> None:
 		# only show in time line
