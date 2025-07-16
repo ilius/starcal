@@ -33,7 +33,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import WeeklyEvent
+	from scal3.event_lib.weekly import WeeklyEvent
 
 __all__ = ["WidgetClass"]
 
