@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.groups import EventGroup
 
 log = logger.get()
 
@@ -29,6 +30,8 @@ from scal3.cal_types import (
 )
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
+	durationDecode,
+	durationEncode,
 	jsonTimeFromEpoch,
 )
 
@@ -43,15 +46,54 @@ from .rules import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
 	from typing import Any
 
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 
-	from .groups import TaskList
 
-__all__ = ["AllDayTaskEvent", "TaskEvent"]
+__all__ = ["AllDayTaskEvent", "TaskEvent", "TaskList"]
 
 dayLen = 86400
+
+
+@classes.group.register
+class TaskList(EventGroup):
+	name = "taskList"
+	desc = _("Task List")
+	params = EventGroup.params + ["defaultDuration"]
+	acceptsEventTypes: Sequence[str] = (
+		"task",
+		"allDayTask",
+	)
+	# actions = EventGroup.actions + []
+	sortBys = EventGroup.sortBys + [
+		("start", _("Start"), True),
+		("end", _("End"), True),
+	]
+	sortByDefault = "start"
+
+	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		if event.name in self.acceptsEventTypes:
+			if attr == "start":
+				return event.getStartEpoch()
+			if attr == "end":
+				return event.getEndEpoch()
+		return EventGroup.getSortByValue(self, event, attr)
+
+	def __init__(self, ident: int | None = None) -> None:
+		super().__init__(ident)
+		self.defaultDuration = (0.0, 1)  # (value, unit)
+
+	def getDict(self) -> dict[str, Any]:
+		data = EventGroup.getDict(self)
+		data["defaultDuration"] = durationEncode(*self.defaultDuration)
+		return data
+
+	def setDict(self, data: dict[str, Any]) -> None:
+		super().setDict(data)
+		if "defaultDuration" in data:
+			self.defaultDuration = durationDecode(data["defaultDuration"])
 
 
 @classes.event.register
