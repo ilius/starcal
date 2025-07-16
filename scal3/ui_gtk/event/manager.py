@@ -33,7 +33,7 @@ from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.datetime_utils import epochDateTimeEncode
 from scal3.event_lib import ev
 from scal3.event_lib.event_base import Event
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.event_lib.trash import EventTrash
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _

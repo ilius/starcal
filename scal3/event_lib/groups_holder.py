@@ -34,7 +34,7 @@ from scal3.locale_man import tr as _
 from scal3.s_object import SObjBinaryModel
 
 from .event_base import eventsDir
-from .groups import EventGroup, groupsDir
+from .group import EventGroup, groupsDir
 from .groups_import import (
 	IMPORT_MODE_SKIP_MODIFIED,
 	EventGroupsImportResult,

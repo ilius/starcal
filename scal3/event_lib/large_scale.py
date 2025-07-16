@@ -28,7 +28,7 @@ from scal3.cal_types import (
 	jd_to,
 	to_jd,
 )
-from scal3.event_lib.groups import EventGroup
+from scal3.event_lib.group import EventGroup
 from scal3.locale_man import tr as _
 from scal3.utils import iceil, ifloor
 
