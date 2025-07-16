@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.event_lib.groups import EventGroup
 
 log = logger.get()
 
@@ -44,16 +45,28 @@ from .rules import (
 )
 
 if TYPE_CHECKING:
+	from collections.abc import Sequence
 	from typing import Any
 
 	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
 
-	from .groups import YearlyGroup
-
-__all__ = ["YearlyEvent"]
+__all__ = ["YearlyEvent", "YearlyGroup"]
 
 icsMinStartYear = 1970
 # icsMaxEndYear = 2050
+
+
+@classes.group.register
+class YearlyGroup(EventGroup):
+	name = "yearly"
+	desc = _("Yearly Events Group")
+	acceptsEventTypes: Sequence[str] = ("yearly",)
+	canConvertTo: list[str] = ["noteBook"]
+	params = EventGroup.params + ["showDate"]
+
+	def __init__(self, ident: int | None = None) -> None:
+		super().__init__(ident)
+		self.showDate = True
 
 
 @classes.event.register

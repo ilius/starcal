@@ -73,7 +73,6 @@ __all__ = [
 	"EventGroup",
 	"LifetimeGroup",
 	"NoteBook",
-	"YearlyGroup",
 	"groupsDir",
 ]
 
@@ -921,19 +920,6 @@ class NoteBook(EventGroup):
 		if event.name in self.acceptsEventTypes and attr == "date":
 			return event.getJd()
 		return EventGroup.getSortByValue(self, event, attr)
-
-
-@classes.group.register
-class YearlyGroup(EventGroup):
-	name = "yearly"
-	desc = _("Yearly Events Group")
-	acceptsEventTypes: Sequence[str] = ("yearly",)
-	canConvertTo: list[str] = ["noteBook"]
-	params = EventGroup.params + ["showDate"]
-
-	def __init__(self, ident: int | None = None) -> None:
-		super().__init__(ident)
-		self.showDate = True
 
 
 @classes.group.register
