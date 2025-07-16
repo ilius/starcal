@@ -785,37 +785,3 @@ class EventGroup(EventContainer):
 				if event.uuid is None:
 					event.save()
 				yield event
-
-	def createPatchList(self, sinceEpoch: int) -> list[dict[str, Any]]:
-		patchList = []
-
-		for event in self:
-			# if not event.remoteIds:  # FIXME
-			eventHist = event.loadHistory()
-			if not eventHist:
-				log.info(f"{eventHist = }")
-				continue
-			# assert event.modified == eventHist[0][0]
-			if eventHist[0][0] > sinceEpoch:
-				creationEpoch = eventHist[-1][0]
-				if creationEpoch > sinceEpoch:
-					patchList.append(
-						{
-							"eventId": event.id,
-							"eventType": event.name,
-							"action": "add",
-							"newEventData": event.getV4Dict(),
-						},
-					)
-				else:
-					sinceHash = None
-					for tmpEpoch, tmpHash in eventHist:
-						sinceHash = tmpHash
-						if tmpEpoch <= sinceEpoch:
-							break
-					assert sinceHash is not None  # FIXME?
-					patchList.append(
-						event.createPatchByHash(sinceHash),
-					)
-
-		return patchList
