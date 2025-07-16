@@ -31,10 +31,6 @@ from scal3.cal_types import (
 )
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
-from scal3.time_utils import (
-	getFloatJdFromEpoch,
-	roundEpochToDay,
-)
 from scal3.utils import iceil, ifloor
 
 from .common import getCurrentJd
@@ -43,7 +39,6 @@ from .occur import JdOccurSet
 from .register import classes
 from .rules import (
 	CycleWeeksEventRule,
-	DateAndTimeEventRule,
 	DateEventRule,
 	DayOfMonthEventRule,
 	DayTimeRangeEventRule,
@@ -58,12 +53,10 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
 
 	from .groups import YearlyGroup
-	from .pytypes import EventRuleType
 
 __all__ = [
 	"DailyNoteEvent",
 	"Event",
-	"LifetimeEvent",
 	"MonthlyEvent",
 	"SingleStartEndEvent",
 	"WeeklyEvent",
@@ -484,68 +477,6 @@ class WeeklyEvent(Event):
 			raise RuntimeError("no end rule")
 		start.setJd(jd)
 		end.setJd(jd + 8)
-
-
-@classes.event.register
-class LifetimeEvent(SingleStartEndEvent):
-	name = "lifetime"
-	nameAlias = "lifeTime"
-	desc = _("Lifetime Event")
-	requiredRules = [
-		"start",
-		"end",
-	]
-	supportedRules = [
-		"start",
-		"end",
-	]
-	isAllDay = True
-
-	# def setDefaults(self):
-	# 	start = StartEventRule.getFrom(self)
-	# 	if XX is not None:
-	# 		start.date = ...
-
-	def getV4Dict(self) -> dict[str, str]:
-		data = Event.getV4Dict(self)
-		data.update(
-			{
-				"startJd": self.getStartJd(),
-				"endJd": self.getEndJd(),
-			},
-		)
-		return data
-
-	def setJd(self, jd: int) -> None:
-		StartEventRule.addOrGetFrom(self).setJdExact(jd)
-		EndEventRule.addOrGetFrom(self).setJdExact(jd)
-
-	def addRule(self, rule: EventRuleType) -> None:
-		if rule.name in {"start", "end"}:
-			assert isinstance(rule, DateAndTimeEventRule), f"{rule=}"
-			rule.time = (0, 0, 0)
-		super().addRule(rule)
-
-	def modifyPos(self, newStartEpoch: int) -> None:
-		start = StartEventRule.getFrom(self)
-		assert start is not None
-		end = EndEventRule.getFrom(self)
-		assert end is not None
-		newStartJd = round(getFloatJdFromEpoch(newStartEpoch))
-		end.setJdExact(end.getJd() + newStartJd - start.getJd())
-		start.setJdExact(newStartJd)
-
-	def modifyStart(self, newEpoch: int) -> None:
-		start = StartEventRule.getFrom(self)
-		if start is None:
-			raise RuntimeError("no start rule")
-		start.setEpoch(roundEpochToDay(newEpoch))
-
-	def modifyEnd(self, newEpoch: int) -> None:
-		end = EndEventRule.getFrom(self)
-		if end is None:
-			raise RuntimeError("no end rule")
-		end.setEpoch(roundEpochToDay(newEpoch))
 
 
 @classes.event.register
