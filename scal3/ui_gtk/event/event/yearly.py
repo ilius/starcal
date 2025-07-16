@@ -29,7 +29,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 
 if TYPE_CHECKING:
-	from scal3.event_lib.events import YearlyEvent
+	from scal3.event_lib.yearly import YearlyEvent
 
 __all__ = ["WidgetClass"]
 
