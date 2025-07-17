@@ -1,6 +1,7 @@
 [tool.ruff]
 target-version = "py312"
 line-length = 88
+lint.future-annotations = true
 
 # see https://docs.astral.sh/ruff/rules/
 lint.select = [
@@ -138,7 +139,9 @@ exclude = [
 lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
-"plugins/*/*.py" = ["ANN"]
+"scal3/event_lib/typing_test.py" = [
+	"TC001", # Move application import ... into a type-checking block
+]
 "scal3/event_lib_import_all.py" = [
 	"F401", # imported but unused
 	"F811", # Redefinition of unused ...

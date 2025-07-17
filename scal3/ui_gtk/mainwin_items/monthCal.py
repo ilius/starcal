@@ -40,7 +40,6 @@ from scal3.ui_gtk import (
 from scal3.ui_gtk.cal_obj import CalBase
 from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.drawing import (
-	ImageContext,
 	drawOutlineRoundedRect,
 	drawRoundedRect,
 	fillColor,
@@ -53,6 +52,9 @@ from scal3.ui_gtk.utils import newAlignLabel, pixbufFromFile
 if TYPE_CHECKING:
 	from scal3.pytypes import CellType, MonthStatusType
 	from scal3.ui.pytypes import CalTypeOptionsDict
+	from scal3.ui_gtk.drawing import (
+		ImageContext,
+	)
 	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType

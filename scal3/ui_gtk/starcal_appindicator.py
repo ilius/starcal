@@ -28,7 +28,6 @@ from os.path import dirname, join
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 import gi
-from gi.repository import GdkPixbuf
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
@@ -45,6 +44,8 @@ from typing import TYPE_CHECKING
 from gi.repository import AppIndicator3 as appindicator
 
 if TYPE_CHECKING:
+	from gi.repository import GdkPixbuf
+
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["IndicatorStatusIconWrapper"]

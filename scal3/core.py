@@ -37,7 +37,7 @@ from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.date_utils import jwday
 from scal3.event_lib.common import firstWeekDay
-from scal3.filesystem import DefaultFileSystem, FileSystem
+from scal3.filesystem import DefaultFileSystem
 from scal3.json_utils import dataToCompactJson, dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.option import ListOption, Option
@@ -53,6 +53,7 @@ from scal3.plugin_man import loadPlugin
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.filesystem import FileSystem
 	from scal3.pytypes import PluginType
 
 try:

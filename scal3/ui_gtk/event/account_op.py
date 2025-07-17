@@ -7,11 +7,12 @@ from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.s_object import copyParams
 from scal3.ui_gtk import Dialog, gtk, pack
-from scal3.ui_gtk.event import EventWidgetType, makeWidget
+from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import AccountType
+	from scal3.ui_gtk.event import EventWidgetType
 
 __all__ = ["AccountEditorDialog"]
 

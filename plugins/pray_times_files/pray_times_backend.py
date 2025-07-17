@@ -30,6 +30,7 @@
 
 import math
 from math import floor
+from typing import Any
 
 __all__ = ["PrayTimes", "methodsList", "timeNames"]
 
@@ -72,12 +73,12 @@ highLatMethods = (
 class Method:
 	def __init__(
 		self,
-		name,
-		desc,
-		fajr=15,
-		isha=15,
-		maghrib="0 min",
-		midnight=MIDNIGHT_STANDARD,
+		name: str,
+		desc: str,
+		fajr: float = 15,
+		isha: str | float = 15,
+		maghrib: str | float = "0 min",
+		midnight: int = MIDNIGHT_STANDARD,
 	) -> None:
 		self.name = name
 		self.desc = desc
@@ -148,76 +149,76 @@ methodsDict = {m.name: m for m in methodsList}
 # ------------------------- Functions ------------------------------------
 
 
-def isMin(tm):
+def isMin(tm: str | float) -> bool:
 	return isinstance(tm, str) and tm.endswith("min")
 
 
-def minEval(tm):
+def minEval(tm: str | float) -> float:
 	return float(tm.split(" ")[0]) if isinstance(tm, str) else tm
 
 
-def dirSign(direction) -> int:
+def dirSign(direction: str) -> int:
 	return -1 if direction == "ccw" else 1
 
 
-def dtr(d):
+def dtr(d: float) -> float:
 	return (d * math.pi) / 180
 
 
-def rtd(r):
+def rtd(r: float) -> float:
 	return (r * 180) / math.pi
 
 
-def sin(d):
+def sin(d: float) -> float:
 	return math.sin(dtr(d))
 
 
-def cos(d):
+def cos(d: float) -> float:
 	return math.cos(dtr(d))
 
 
-def tan(d):
+def tan(d: float) -> float:
 	return math.tan(dtr(d))
 
 
-def arcsin(d):
+def arcsin(d: float) -> float:
 	return rtd(math.asin(d))
 
 
-def arccos(d):
+def arccos(d: float) -> float:
 	return rtd(math.acos(d))
 
 
-def arctan(d):
+def arctan(d: float) -> float:
 	return rtd(math.atan(d))
 
 
-def arccot(x):
+def arccot(x: float) -> float:
 	return rtd(math.atan(1 / x))
 
 
-def arctan2(y, x):
+def arctan2(y: float, x: float) -> float:
 	return rtd(math.atan2(y, x))
 
 
-def fix(a, b):
+def fix(a: float, b: float) -> float:
 	a -= b * floor(a / b)
 	return a + b if a < 0 else a
 
 
-def fixAngle(a):
+def fixAngle(a: float) -> float:
 	return fix(a, 360)
 
 
-def fixHour(a):
+def fixHour(a: float) -> float:
 	return fix(a, 24)
 
 
-def timeDiff(time1, time2):
+def timeDiff(time1: float, time2: float) -> float:
 	return fixHour(time2 - time1)
 
 
-def timesMiddle(time1, time2):
+def timesMiddle(time1: float, time2: float) -> float:
 	return time1 + fixHour(time2 - time1) / 2
 
 
@@ -229,14 +230,14 @@ class PrayTimes:
 
 	def __init__(
 		self,
-		lat,
-		lng,
-		elv=0,
-		methodName="Tehran",
-		imsak="10 min",
-		asrMode=ASR_STANDARD,
-		highLats="NightMiddle",
-		timeFormat="24h",
+		lat: float,
+		lng: float,
+		elv: float = 0,
+		methodName: str = "Tehran",
+		imsak: float | str = "10 min",
+		asrMode: int = ASR_STANDARD,
+		highLats: str = "NightMiddle",
+		timeFormat: str = "24h",
 	) -> None:
 		"""
 		TimeFormat possible values:
@@ -254,7 +255,7 @@ class PrayTimes:
 		self.highLats = highLats
 		self.timeFormat = timeFormat
 
-	def getTimesByJd(self, jd, utcOffset):
+	def getTimesByJd(self, jd: int, utcOffset: int) -> dict[str, float]:
 		"""Return prayer times for a given julian day."""
 		# if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
 		# log.debug(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
@@ -262,7 +263,7 @@ class PrayTimes:
 		self.jDate = jd - 0.5 - self.lng / 360
 		return self.computeTimes()
 
-	def getFormattedTime(self, tm, timeFormat=None):
+	def getFormattedTime(self, tm: float, timeFormat: str | None = None) -> float | str:
 		"""Convert float time to the given timeFormat (see timeFormats)."""
 		assert isinstance(tm, float)
 		if not timeFormat:
@@ -282,11 +283,11 @@ class PrayTimes:
 			return f"{(hours - 1) % 12 + 1:d}:{minutes:02d}"
 		raise ValueError(f"bad time format '{timeFormat}'")
 
-	def midDay(self, tm):
+	def midDay(self, tm: float) -> float:
 		"""Compute mid-day time."""
 		return fixHour(12 - self.sunEquation(self.jDate + tm))
 
-	def sunAngleTime(self, angle, tm, direction="cw"):
+	def sunAngleTime(self, angle: float, tm: float, direction: str = "cw") -> float:
 		"""Compute the time at which sun reaches a specific angle below horizon."""
 		decl = self.sunDeclination(self.jDate + tm)
 		noon = self.midDay(tm)
@@ -302,7 +303,7 @@ class PrayTimes:
 		# 	return 0
 		return noon + dirSign(direction) * t
 
-	def asrTime(self, factor, tm):
+	def asrTime(self, factor: float, tm: float) -> float:
 		"""Compute asr time."""
 		return self.sunAngleTime(
 			-arccot(
@@ -331,7 +332,7 @@ class PrayTimes:
 	"""
 
 	@staticmethod
-	def sunDeclination(jd):
+	def sunDeclination(jd: float) -> float:
 		D = jd - 2451545.0
 		g = fixAngle(357.529 + 0.98560028 * D)
 		q = fixAngle(280.459 + 0.98564736 * D)
@@ -340,7 +341,7 @@ class PrayTimes:
 		return arcsin(sin(e) * sin(L))
 
 	@staticmethod
-	def sunEquation(jd):
+	def sunEquation(jd: float) -> float:
 		D = jd - 2451545.0
 		g = fixAngle(357.529 + 0.98560028 * D)
 		q = fixAngle(280.459 + 0.98564736 * D)
@@ -352,9 +353,9 @@ class PrayTimes:
 	# ---------------------- Compute Prayer Times -----------------------
 
 	# compute prayer times
-	def computeTimes(self):
+	def computeTimes(self) -> dict[str, float]:
 		# default times
-		times = {
+		times: dict[str, float] = {
 			"imsak": 5,
 			"fajr": 5,
 			"sunrise": 6,
@@ -370,6 +371,7 @@ class PrayTimes:
 			# computePrayerTimes
 			# dayPortion
 			for key in times:
+				# assert isinstance(times[key], float)
 				times[key] /= 24
 			times["imsak"] = self.sunAngleTime(
 				minEval(self.imsak),
@@ -459,13 +461,14 @@ class PrayTimes:
 		# for key in times:
 		# 	times[key] = self.getFormattedTime(times[key], timeFormat)
 
-		times["timezone"] = f"GMT{self.utcOffset:+.1f}"
+		result: dict[str, Any] = times.copy()
+		result["timezone"] = f"GMT{self.utcOffset:+.1f}"
 		# ^^^ utcOffset is not timeZone FIXME
 
-		return times
+		return result
 
 	# return sun angle for sunset/sunrise
-	def riseSetAngle(self):
+	def riseSetAngle(self) -> float:
 		# earthRad = 6371009 # in meters
 		# angle = arccos(earthRad/(earthRad+self.elv))
 		angle = 0.0347 * math.sqrt(self.elv)  # an approximation
@@ -473,7 +476,14 @@ class PrayTimes:
 
 	# def tuneTimes:  # FIXME
 
-	def adjustHLTime(self, tm, base, angle, night, direction="cw"):
+	def adjustHLTime(
+		self,
+		tm: float,
+		base: float,
+		angle: float,
+		night: float,
+		direction: str = "cw",
+	) -> float:
 		"""Adjust a time for higher latitudes."""
 		# nightPortion: the night portion used for adjusting times in
 		# higher latitudes

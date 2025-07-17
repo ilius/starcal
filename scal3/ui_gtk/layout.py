@@ -23,18 +23,20 @@ log = logger.get()
 
 from typing import TYPE_CHECKING
 
-from scal3.ui_gtk import gdk, getOrientation, gtk, pack
+from scal3.ui_gtk import getOrientation, gtk, pack
 from scal3.ui_gtk.customize import (
 	newSubPageButton,
 )
-from scal3.ui_gtk.stack import StackPage, StackPageButton
+from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import imageFromIconName, setImageClassButton
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.option import ListOption, Option
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.pytypes import StackPageType
+	from scal3.ui_gtk.stack import StackPageButton
 
 
 __all__ = ["WinLayoutBox", "WinLayoutObj"]

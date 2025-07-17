@@ -25,11 +25,12 @@ from typing import TYPE_CHECKING
 from scal3 import event_lib
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pack
-from scal3.ui_gtk.event import EventWidgetType, common, makeWidget
+from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
 if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventRuleType, EventType
+	from scal3.ui_gtk.event import EventWidgetType
 
 __all__ = ["WidgetClass"]
 

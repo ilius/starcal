@@ -35,7 +35,7 @@ from scal3.ui import conf
 from scal3.ui_gtk import Dialog, Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
-from scal3.ui_gtk.day_cal import DayCal, ParentWindowType
+from scal3.ui_gtk.day_cal import DayCal
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
@@ -53,6 +53,7 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.pytypes import CellType
 	from scal3.ui_gtk.cal_obj import CalBase
+	from scal3.ui_gtk.day_cal import ParentWindowType
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["DayCalWindow"]

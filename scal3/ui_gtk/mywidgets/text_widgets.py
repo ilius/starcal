@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Menu, gdk, gtk
+from scal3.ui_gtk import Menu, gtk
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import buffer_get_text, setClipboard
 from scal3.utils import findWordByPos, toStr
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 
 __all__ = ["ReadOnlyTextView"]
 

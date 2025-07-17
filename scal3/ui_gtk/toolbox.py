@@ -4,7 +4,7 @@ from gi.overrides import GObject
 
 from scal3 import logger
 from scal3.option import Option
-from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import IntSpinOptionUI
 
 log = logger.get()
 
@@ -23,6 +23,7 @@ if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable, Iterator
 
 	from scal3.ui.pytypes import CustomizableToolBoxDict
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 
 __all__ = [

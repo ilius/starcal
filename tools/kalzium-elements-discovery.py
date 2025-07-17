@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 import sys
 from xml.etree.ElementTree import XML
 

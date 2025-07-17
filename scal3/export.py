@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 from scal3 import core, locale_man, ui
 from scal3.app_info import APP_DESC, homePage
 from scal3.cal_types import calTypes
-from scal3.color_utils import RGB, ColorType
+from scal3.color_utils import RGB
 from scal3.locale_man import tr as _
 from scal3.monthcal import getMonthDesc
 from scal3.ui import conf
@@ -29,6 +29,7 @@ from scal3.ui.font import getOptionsFont
 if TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
+	from scal3.color_utils import ColorType
 	from scal3.pytypes import CellType, MonthStatusType
 
 __all__ = ["exportToHtml"]

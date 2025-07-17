@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# mypy: ignore-errors
+
 from struct import unpack
 
 from six import BytesIO, b

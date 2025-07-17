@@ -41,7 +41,7 @@ from scal3.time_utils import (
 	getUtcOffsetByJd,
 )
 from scal3.timeline import conf
-from scal3.timeline.funcs import TimeLineData, calcTimeLineData
+from scal3.timeline.funcs import calcTimeLineData
 from scal3.timeline.utils import dayLen, fontFamily
 from scal3.ui_gtk import (
 	Menu,
@@ -56,7 +56,6 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import SVGButton
 from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj
 from scal3.ui_gtk.drawing import (
-	ImageContext,
 	fillColor,
 	newTextLayout,
 	setColor,
@@ -79,7 +78,11 @@ if TYPE_CHECKING:
 
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.timeline.box import Box
+	from scal3.timeline.funcs import TimeLineData
 	from scal3.timeline.tick import Tick
+	from scal3.ui_gtk.drawing import (
+		ImageContext,
+	)
 	from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
 __all__ = ["TimeLineWindow"]

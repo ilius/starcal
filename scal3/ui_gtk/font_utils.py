@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from gi.repository import Gtk as gtk
+from typing import TYPE_CHECKING
+
 from gi.repository import Pango as pango
 
 from scal3.font import Font
+
+if TYPE_CHECKING:
+	from gi.repository import Gtk as gtk
 
 __all__ = [
 	"getFontFamilyList",

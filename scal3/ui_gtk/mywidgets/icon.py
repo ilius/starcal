@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from os.path import join
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.path import pixDir
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, gdk, gtk
+from scal3.ui_gtk import Menu, gtk
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.utils import (
@@ -16,6 +17,9 @@ from scal3.ui_gtk.utils import (
 	resolveImagePath,
 	widgetActionCallback,
 )
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 
 __all__ = ["IconSelectButton"]
 # FIXME

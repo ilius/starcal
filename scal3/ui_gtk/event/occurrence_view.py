@@ -26,7 +26,7 @@ from scal3.event_lib import ev
 from scal3.event_lib.event_base import SingleStartEndEvent
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, gdk, gtk, pack
+from scal3.ui_gtk import Menu, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.font_utils import gfontEncode
@@ -43,6 +43,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.font import Font
 	from scal3.option import Option
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.option_ui import OptionUI
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]

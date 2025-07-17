@@ -1,8 +1,13 @@
 # from scal3.locale_man import tr as _
 from __future__ import annotations
 
-from scal3.ui_gtk import GdkPixbuf, gtk
+from typing import TYPE_CHECKING
+
+from scal3.ui_gtk import gtk
 from scal3.ui_gtk.utils import pixbufFromFile
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import GdkPixbuf
 
 __all__ = ["AboutDialog"]
 

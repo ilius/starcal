@@ -24,15 +24,19 @@ log = logger.get()
 
 import os
 from os.path import isfile
+from typing import TYPE_CHECKING
 
 from scal3 import ui
 from scal3.cal_types import calTypes, hijri, jd_to, to_jd
 from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 
 __all__ = ["checkHijriMonthsExpiration"]
 

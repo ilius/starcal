@@ -23,7 +23,7 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.color_utils import black, yellow
 from scal3.ui_gtk import gdk, gtk, timeout_add
-from scal3.ui_gtk.drawing import ImageContext, newTextLayout, setColor
+from scal3.ui_gtk.drawing import newTextLayout, setColor
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 	from gi.repository import Pango as pango
 
 	from scal3.color_utils import ColorType
+	from scal3.ui_gtk.drawing import ImageContext
 
 __all__ = [
 	"FloatingMsg",

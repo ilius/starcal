@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 from os.path import isfile, join
+from typing import Any
 
 from packaging.version import parse as parse_version
 
@@ -22,7 +23,7 @@ with open(f"{scalDir}/app_info.py", encoding="utf-8") as _file:
 	for _i in range(1000):
 		line = _file.readline()
 		if line.startswith("VERSION_TAG"):
-			tmpLocals = {}
+			tmpLocals: dict[str, Any] = {}
 			exec(line, {}, tmpLocals)
 			VERSION = tmpLocals["VERSION_TAG"]
 			break

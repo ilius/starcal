@@ -9,10 +9,12 @@ from time import time as now
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from scal3 import ui
-from scal3.ui_gtk import Dialog, gdk, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, gtk, pack, timeout_add
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.ui_gtk import gdk
 
 __all__ = ["ConButton"]
 

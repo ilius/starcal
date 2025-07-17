@@ -26,7 +26,6 @@ log = logger.get()
 from time import perf_counter
 from typing import TYPE_CHECKING
 
-from scal3 import ui
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.timeline import conf
@@ -36,6 +35,8 @@ if TYPE_CHECKING:
 	from collections.abc import Sequence
 
 	from igraph import Graph
+
+	from scal3 import ui
 
 __all__ = ["Box", "calcEventBoxes"]
 

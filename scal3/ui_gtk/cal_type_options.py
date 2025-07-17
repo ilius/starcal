@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
-from scal3.option import ItemOption, ListOption, Option
+from scal3.option import ItemOption
 
 log = logger.get()
 
@@ -30,6 +30,7 @@ from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import gtk, pack
 
 if TYPE_CHECKING:
+	from scal3.option import ListOption, Option
 	from scal3.ui.pytypes import (
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
