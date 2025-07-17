@@ -137,7 +137,7 @@ def dead(pid: int) -> bool:
 # def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
-def goodkill(pid: int, interval: int = 1, hung: int = 20) -> None:
+def goodkill(pid: int, interval: float = 1, hung: int = 20) -> None:
 	"""Let process die gracefully, gradually send harsher signals if necessary."""
 	from signal import SIGHUP, SIGINT, SIGKILL, SIGTERM
 	from time import sleep

@@ -29,13 +29,14 @@ from gi.repository.PangoCairo import show_layout
 from scal3 import ui
 from scal3.timeline import conf
 from scal3.ui import conf as uiConf
-from scal3.ui_gtk.drawing import ImageContext, fillColor
+from scal3.ui_gtk.drawing import fillColor
 from scal3.ui_gtk.font_utils import pfontEncode
 
 if TYPE_CHECKING:
 	from gi.repository import Gtk as gtk
 
 	from scal3.timeline.box import Box
+	from scal3.ui_gtk.drawing import ImageContext
 
 __all__ = ["drawBoxBG", "drawBoxBorder", "drawBoxText"]
 

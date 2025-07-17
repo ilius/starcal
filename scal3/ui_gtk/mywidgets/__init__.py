@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.color_utils import RGB, RGBA, ColorType, RawColor
+from scal3.color_utils import RGBA, ColorType
 
 log = logger.get()
 
@@ -36,6 +36,7 @@ from scal3.ui_gtk.utils import buffer_get_text
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.color_utils import RGB, RawColor
 	from scal3.font import Font
 
 __all__ = ["ColorType", "MyColorButton", "MyFontButton", "TextFrame", "ui"]

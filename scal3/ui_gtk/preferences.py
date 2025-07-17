@@ -47,7 +47,6 @@ from scal3.ui_gtk.option_ui import (
 	FontOptionUI,
 	ImageFileChooserOptionUI,
 	IntSpinOptionUI,
-	OptionUI,
 	WidthHeightOptionUI,
 )
 from scal3.ui_gtk.option_ui_extra import (
@@ -71,6 +70,9 @@ from scal3.ui_gtk.utils import (
 
 if typing.TYPE_CHECKING:
 	from scal3.pytypes import PluginType
+	from scal3.ui_gtk.option_ui import (
+		OptionUI,
+	)
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["PreferencesWindow"]

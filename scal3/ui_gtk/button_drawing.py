@@ -21,14 +21,16 @@ from typing import TYPE_CHECKING
 
 from scal3.drawing import getAbsPos
 from scal3.path import svgDir
-from scal3.ui_gtk import GdkPixbuf, gdk
-from scal3.ui_gtk.drawing import ImageContext, drawOutlineRoundedRect
+from scal3.ui_gtk import gdk
+from scal3.ui_gtk.drawing import drawOutlineRoundedRect
 from scal3.ui_gtk.utils import pixbufFromFile, pixbufFromFileMust, pixbufFromIconName
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.color_utils import ColorType
+	from scal3.ui_gtk import GdkPixbuf
+	from scal3.ui_gtk.drawing import ImageContext
 
 __all__ = ["BaseButton", "Button", "SVGButton"]
 

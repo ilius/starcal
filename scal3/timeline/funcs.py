@@ -24,6 +24,7 @@ log = logger.get()
 
 from bisect import bisect_left, bisect_right
 from math import log10
+from typing import TYPE_CHECKING
 
 from scal3 import core, ui
 from scal3.cal_types import calTypes
@@ -38,7 +39,7 @@ from scal3.time_utils import (
 	getUtcOffsetByJd,
 )
 from scal3.timeline import conf
-from scal3.timeline.box import Box, calcEventBoxes
+from scal3.timeline.box import calcEventBoxes
 from scal3.timeline.tick import Tick
 from scal3.timeline.utils import (
 	avgMonthLen,
@@ -48,6 +49,9 @@ from scal3.timeline.utils import (
 )
 from scal3.ui.funcs import getHolidaysJdList
 from scal3.utils import iceil, ifloor
+
+if TYPE_CHECKING:
+	from scal3.timeline.box import Box
 
 __all__ = ["TimeLineData", "calcTimeLineData"]
 

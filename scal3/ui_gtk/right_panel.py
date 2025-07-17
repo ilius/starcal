@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI
 
 log = logger.get()
 
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 	from scal3.font import Font
 	from scal3.option import Option
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 
 __all__ = ["MainWinRightPanel"]

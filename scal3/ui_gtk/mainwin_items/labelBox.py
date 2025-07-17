@@ -31,7 +31,6 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import (
 	Menu,
 	MenuItem,
-	gdk,
 	getScrollValue,
 	gtk,
 	pack,
@@ -42,7 +41,7 @@ from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj, commonSi
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.utils import (
 	get_menu_width,
 	imageFromIconName,
@@ -53,7 +52,11 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.ui_gtk import (
+		gdk,
+	)
 	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.signals import SignalHandlerType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["CalObj"]

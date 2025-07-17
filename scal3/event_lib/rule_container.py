@@ -31,6 +31,9 @@ if TYPE_CHECKING:
 	from typing import Any
 
 	from scal3.filesystem import FileSystem
+	from scal3.time_utils import (
+		HMS,
+	)
 
 	from .pytypes import EventRuleType, RuleContainerType
 
@@ -39,7 +42,6 @@ import mytz
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.time_utils import (
-	HMS,
 	getEpochFromJd,
 	getEpochFromJhms,
 	getJdFromEpoch,

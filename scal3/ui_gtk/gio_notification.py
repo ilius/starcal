@@ -18,12 +18,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from gi.repository import GdkPixbuf
 from gi.repository import Gio as gio
 
 from scal3.app_info import APP_DESC
 
 if TYPE_CHECKING:
+	from gi.repository import GdkPixbuf
+
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 

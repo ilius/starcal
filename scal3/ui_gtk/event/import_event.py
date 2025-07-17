@@ -16,10 +16,12 @@ from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.ui_gtk import gdk, pack
-from scal3.ui_gtk.wizard import StepType, WizardWindow
+from scal3.ui_gtk.wizard import WizardWindow
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.ui_gtk.wizard import StepType
 
 __all__ = ["EventsImportWindow"]
 

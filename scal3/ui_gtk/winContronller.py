@@ -13,12 +13,13 @@ from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.customize import CustomizableCalBox
-from scal3.ui_gtk.option_ui import IntSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import IntSpinOptionUI
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 if TYPE_CHECKING:
 	from collections.abc import Iterator
 
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["CalObj"]

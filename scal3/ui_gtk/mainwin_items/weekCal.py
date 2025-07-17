@@ -48,7 +48,6 @@ from scal3.ui_gtk.customize import (
 	newSubPageButton,
 )
 from scal3.ui_gtk.drawing import (
-	ImageContext,
 	drawOutlineRoundedRect,
 	drawRoundedRect,
 	fillColor,
@@ -56,10 +55,9 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
-	BaseToolBoxItem,
 	CustomizableToolBox,
 	LabelToolBoxItem,
 	ToolBoxItem,
@@ -76,8 +74,15 @@ if TYPE_CHECKING:
 	from scal3.pytypes import WeekStatusType
 	from scal3.timeline.box import Box as TimeLineBox
 	from scal3.ui.pytypes import WeekCalDayNumOptionsDict
+	from scal3.ui_gtk.drawing import (
+		ImageContext,
+	)
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
+	from scal3.ui_gtk.toolbox import (
+		BaseToolBoxItem,
+	)
 
 __all__ = ["CalObj"]
 

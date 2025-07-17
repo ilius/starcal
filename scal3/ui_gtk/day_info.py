@@ -23,7 +23,7 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import Dialog, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
@@ -32,6 +32,7 @@ from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 
 __all__ = ["DayInfoDialog"]

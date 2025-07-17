@@ -7,11 +7,11 @@ __all__ = ["earthDistance"]
 earthR = 6370
 
 
-def sind(x):
+def sind(x: float) -> float:
 	return math.sin(pi / 180 * x)
 
 
-def cosd(x):
+def cosd(x: float) -> float:
 	return math.cos(pi / 180 * x)
 
 
@@ -21,7 +21,7 @@ def cosd(x):
 # 	) / 15
 
 
-def earthDistance(lat1, lng1, lat2, lng2):
+def earthDistance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
 	# if lat1==lat2 and lng1==lng2:
 	# 	return 0
 	dx = lng2 - lng1

@@ -15,17 +15,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
-
+from __future__ import annotations
 
 import json
 import os
 import sys
 from os.path import dirname, isdir, isfile, join
 from time import time as now
-from typing import Final
+from typing import TYPE_CHECKING, Any, Final
 
 from scal3.option import Option
-from scal3.pytypes import CellType
 
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):
@@ -65,6 +64,9 @@ from scal3.time_utils import (
 from scal3.ui_gtk import gtk
 from scal3.ui_gtk.app_info import popenFile
 
+if TYPE_CHECKING:
+	from scal3.pytypes import CellType
+
 log = logger.get()
 
 # else:
@@ -85,7 +87,7 @@ def getCurrentJd() -> int:
 
 def readLocationData() -> list[tuple[str, str, float, float]]:
 	locationsDir = join(sourceDir, "data", "locations")
-	placeTransDict = {}
+	placeTransDict: dict[str, str] = {}
 
 	def readTransFile(transPath: str) -> None:
 		if not isfile(transPath):
@@ -173,7 +175,7 @@ class PrayTimeEventRule(EventRule):
 """
 
 
-class TextPlugin(BaseJsonPlugin, TextPluginUI):
+class TextPlugin(BaseJsonPlugin):
 	name = "pray_times"
 	# all options (except for "enable" and "show_date") will be
 	# saved in file confPath
@@ -187,12 +189,6 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		"isha",
 	)
 
-	def open_configure(self) -> None:
-		TextPluginUI.open_configure(self)
-
-	def open_about(self) -> bool:
-		return TextPluginUI.open_about(self)
-
 	def __init__(self, _file: str) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
@@ -201,14 +197,15 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			self,
 			_file,
 		)
+		self.ui = TextPluginUI(self)
 		self.lastDayMerge = False
-		self._cityData = None
+		self._cityData: list[tuple[str, str, float, float]] | None = None
 		# --------------
 		confNeedsSave = False
 		# ------
 		self.locName = Option("")
-		self.lat = Option(0)
-		self.lng = Option(0)
+		self.lat = Option(0.0)
+		self.lng = Option(0.0)
 		self.method = Option("")
 		# ------
 		self.imsak = Option(10)  # minutes before Fajr (Morning Azan)
@@ -237,7 +234,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# --
 		self.disclaimerLastEpoch = Option(0)
 		# -------
-		self.confOptions: Final[dict[str, Option]] = {
+		self.confOptions: Final[dict[str, Option[Any]]] = {
 			"lat": self.lat,
 			"lng": self.lng,
 			"method": self.method,
@@ -281,7 +278,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		if confNeedsSave:
 			self.saveConfig()
 		# -------
-		self.makeWidget()  # FIXME
+		self.ui.makeWidget()  # FIXME
 		# self.onCurrentDateChange(localtime()[:3])
 		# ---
 		# self.doPlayPreAzan()
@@ -289,6 +286,14 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		# self.doPlayAzan()  # for testing
 		# ---
 		self.checkShowDisclaimer()
+
+	def open_configure(self) -> None:
+		self.ui.open_configure()
+
+	def open_about(self) -> bool:
+		# WTF: mypy:
+		# Returning Any from function declared to return "bool"  [no-any-return]
+		return self.ui.open_about()  # type: ignore[no-any-return]
 
 	def getCityData(self) -> list[tuple[str, str, float, float]]:
 		if self._cityData is not None:
@@ -464,6 +469,6 @@ if __name__ == "__main__":
 	dialog.connect("delete-event", gtk.main_quit)
 	# dialog.connect("response", gtk.main_quit)
 	dialog.resize(600, 600)
-	result = dialog.run()
+	result = dialog.run2()
 	log.info(f"{result}")
 	# gtk.main()

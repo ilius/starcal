@@ -64,16 +64,15 @@ from scal3.ui_gtk import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
-from scal3.ui_gtk.cal_obj_base import CalObjWidget, CustomizableCalObj, commonSignals
+from scal3.ui_gtk.cal_obj_base import CalObjWidget, commonSignals
 from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
-	CheckMenuItem,
 	ImageMenuItem,
 )
-from scal3.ui_gtk.signals import SignalHandlerBase, SignalHandlerType, registerSignals
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
 	get_menu_height,
@@ -91,12 +90,17 @@ if TYPE_CHECKING:
 
 	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.ui_gtk.about import AboutDialog
+	from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
+	from scal3.ui_gtk.menuitems import (
+		CheckMenuItem,
+	)
 	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
+	from scal3.ui_gtk.signals import SignalHandlerType
 	from scal3.ui_gtk.starcal_types import MainWinType, OptEvent, OptWidget
 	from scal3.ui_gtk.statusBar import CalObj as StatusBar
 	from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj

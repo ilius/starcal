@@ -6,12 +6,13 @@ from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.menuitems import ImageMenuItem, ItemCallback
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import confirm, pixbufFromFile, showError
 
 if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui_gtk import GdkPixbuf, gtk
+	from scal3.ui_gtk.menuitems import ItemCallback
 
 __all__ = [
 	"checkEventsReadOnly",

@@ -22,7 +22,7 @@ from scal3.ui_gtk.cal_type_options import (
 	MonthNameListOptionsWidget,
 	WeekDayNameOptionsWidget,
 )
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
 
 log = logger.get()
 
@@ -52,11 +52,10 @@ from scal3.ui_gtk import (
 	gtk,
 	pack,
 )
-from scal3.ui_gtk.button_drawing import BaseButton, Button, SVGButton
+from scal3.ui_gtk.button_drawing import Button, SVGButton
 from scal3.ui_gtk.cal_obj import CalBase
 from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.drawing import (
-	ImageContext,
 	drawPieOutline,
 	fillColor,
 	newTextLayout,
@@ -78,6 +77,11 @@ if TYPE_CHECKING:
 		DayCalTypeWMOptionsDict,
 		PieGeoDict,
 	)
+	from scal3.ui_gtk.button_drawing import BaseButton
+	from scal3.ui_gtk.drawing import (
+		ImageContext,
+	)
+	from scal3.ui_gtk.option_ui import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["DayCal", "ParentWindowType"]

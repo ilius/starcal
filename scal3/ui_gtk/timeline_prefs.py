@@ -29,13 +29,15 @@ from scal3.ui_gtk.option_ui import (
 	ColorOptionUI,
 	FloatSpinOptionUI,
 	IntSpinOptionUI,
-	OptionUI,
 )
 from scal3.ui_gtk.option_ui_extra import KeyBindingOptionUI
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import imageFromFile
 
 if typing.TYPE_CHECKING:
+	from scal3.ui_gtk.option_ui import (
+		OptionUI,
+	)
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["TimeLinePreferencesWindow"]

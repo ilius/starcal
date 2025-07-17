@@ -1,9 +1,15 @@
-from scal3.event_lib.large_scale import LargeScaleGroup
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+
+if TYPE_CHECKING:
+	from scal3.event_lib.large_scale import LargeScaleGroup
 
 __all__ = ["WidgetClass"]
 maxStartEnd = 999999
