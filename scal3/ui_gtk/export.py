@@ -27,7 +27,7 @@ from scal3.cal_types import calTypes
 from scal3.export import exportToHtml
 from scal3.locale_man import tr as _
 from scal3.path import homeDir
-from scal3.ui_gtk import Dialog, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, gtk, pack
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -36,6 +36,8 @@ from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.ui_gtk import gdk
 
 __all__ = ["ExportDialog", "ExportToIcsDialog"]
 

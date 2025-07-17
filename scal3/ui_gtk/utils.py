@@ -22,8 +22,7 @@ log = logger.get()
 from os.path import isabs, join
 from typing import TYPE_CHECKING, Any
 
-from scal3 import ui
-from scal3.color_utils import ColorType, rgbToCSS
+from scal3.color_utils import rgbToCSS
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
@@ -49,6 +48,9 @@ from scal3.utils import toBytes
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3 import ui
+	from scal3.color_utils import ColorType
 
 __all__ = [
 	"CopyLabelMenuItem",

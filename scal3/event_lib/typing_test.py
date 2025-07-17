@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scal3.event_lib.pytypes import EventGroupType
 from scal3.event_lib.task import TaskList
 from scal3.filesystem import FileSystem  # noqa: F401
@@ -16,8 +18,12 @@ print(isinstance(acc, AccountType))  # Should be True
 # from typing import reveal_type
 # reveal_type(acc)
 
+from typing import TYPE_CHECKING
+
 from scal3.event_lib.notifiers import AlarmNotifier
-from scal3.event_lib.pytypes import EventNotifierType
+
+if TYPE_CHECKING:
+	from scal3.event_lib.pytypes import EventNotifierType
 
 notif: EventNotifierType = AlarmNotifier(None)  # type: ignore[arg-type]
 

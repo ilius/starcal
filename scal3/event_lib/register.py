@@ -3,16 +3,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .pytypes import (
-	AccountType,
 	BaseClassType,
-	EventGroupType,
-	EventNotifierType,
-	EventRuleType,
-	EventType,
 )
 
 if TYPE_CHECKING:
 	from collections.abc import Iterator
+
+	from .pytypes import (
+		AccountType,
+		EventGroupType,
+		EventNotifierType,
+		EventRuleType,
+		EventType,
+	)
 
 __all__ = ["classes"]
 

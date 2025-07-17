@@ -30,13 +30,17 @@ import subprocess
 import sys
 from contextlib import suppress
 from time import sleep
+from typing import TYPE_CHECKING
 
 from scal3.ui import conf
-from scal3.ui_gtk import gdk, gtk, pack, source_remove, timeout_add
+from scal3.ui_gtk import gtk, pack, source_remove, timeout_add
 from scal3.ui_gtk.utils import (
 	imageFromFile,
 	pixbufFromFile,
 )
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 
 # Control
 SEEK_TIME_SMALL = 10  # in seconds

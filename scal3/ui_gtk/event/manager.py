@@ -39,7 +39,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.option import Option
 from scal3.path import confDir
-from scal3.ui_gtk import Dialog, GdkPixbuf, Menu, MenuItem, gdk, gtk, pack
+from scal3.ui_gtk import GdkPixbuf, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.event import common, setActionFuncs
@@ -85,6 +85,7 @@ if typing.TYPE_CHECKING:
 		EventType,
 	)
 	from scal3.event_update_queue import EventUpdateRecord
+	from scal3.ui_gtk import Dialog
 	from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
 
 __all__ = ["EventManagerDialog"]

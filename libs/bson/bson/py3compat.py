@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 # Copyright 2009-2015 MongoDB, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you

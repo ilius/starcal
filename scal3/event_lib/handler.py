@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scal3.event_notification_thread import EventNotificationManager
-from scal3.filesystem import FileSystem
 
 from . import state
 from .accounts_holder import EventAccountsHolder
 from .groups_holder import EventGroupsHolder
-from .state import InfoWrapper, LastIdsWrapper
 from .trash import EventTrash
+
+if TYPE_CHECKING:
+	from scal3.filesystem import FileSystem
+
+	from .state import InfoWrapper, LastIdsWrapper
 
 __all__ = ["Handler"]
 

@@ -32,7 +32,7 @@ from scal3.time_utils import durationUnitsAbs, durationUnitValues
 from scal3.ui import conf
 from scal3.ui_gtk import GdkPixbuf, gtk, pack
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.event import EventWidgetType, makeWidget
+from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -40,6 +40,7 @@ from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.ui_gtk.event import EventWidgetType
 
 try:
 	from scal3.ui_gtk.mywidgets.source_editor import SourceEditorWithFrame

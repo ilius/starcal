@@ -38,7 +38,6 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.drawing import (
-	ImageContext,
 	drawArcOutline,
 	drawCircle,
 	drawCircleOutline,
@@ -51,6 +50,10 @@ from scal3.ui_gtk.drawing import (
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
+
+	from scal3.ui_gtk.drawing import (
+		ImageContext,
+	)
 
 
 __all__ = ["YearWheelWindow"]

@@ -23,6 +23,7 @@ log = logger.init()
 import json
 from os.path import join
 from time import perf_counter
+from typing import TYPE_CHECKING
 
 from scal3.cal_types import (
 	GREGORIAN,
@@ -39,7 +40,7 @@ from scal3.date_utils import (
 	getJdRangeForMonth,
 	jwday,
 )
-from scal3.filesystem import DefaultFileSystem, FileSystem
+from scal3.filesystem import DefaultFileSystem
 from scal3.interval_utils import (
 	intersectionOfTwoIntervalList,
 	simplifyNumList,
@@ -110,6 +111,9 @@ from .occur_data import getDayOccurrenceData
 from .register import classes
 from .state import InfoWrapper, LastIdsWrapper
 from .trash import EventTrash
+
+if TYPE_CHECKING:
+	from scal3.filesystem import FileSystem
 
 __all__ = [
 	"GREGORIAN",

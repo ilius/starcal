@@ -29,7 +29,6 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from scal3.ui_gtk import gdk
 from scal3.ui_gtk.signals import (
 	SignalHandlerBase,
-	SignalHandlerType,
 	registerSignals,
 )
 
@@ -39,6 +38,9 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.ui_gtk import gtk
 	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType, StackPageType
+	from scal3.ui_gtk.signals import (
+		SignalHandlerType,
+	)
 
 __all__ = [
 	"CalObjBase",

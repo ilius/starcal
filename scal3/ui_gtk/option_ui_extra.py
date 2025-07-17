@@ -29,7 +29,7 @@ from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI, OptionUI
+from scal3.ui_gtk.option_ui import OptionUI
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import set_tooltip
 
@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 	from scal3.option import ListOption, Option, StrDictOption
+	from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
 
 __all__ = [
 	"ActiveCalsTreeView",

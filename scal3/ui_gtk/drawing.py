@@ -26,17 +26,20 @@ from os.path import join
 from typing import TYPE_CHECKING
 
 from scal3 import ui
-from scal3.color_utils import RGB, RGBA, ColorType, RawColor, rgbToHtmlColor
+from scal3.color_utils import rgbToHtmlColor
 from scal3.font import Font
 from scal3.locale_man import cutText
 from scal3.path import sourceDir
-from scal3.ui_gtk import GdkPixbuf, gtk
+from scal3.ui_gtk import GdkPixbuf
 from scal3.ui_gtk.font_utils import pfontEncode
 from scal3.utils import toBytes
 
 if TYPE_CHECKING:
 	import cairo
 	from gi.repository import Pango as pango
+
+	from scal3.color_utils import RGB, RGBA, ColorType, RawColor
+	from scal3.ui_gtk import gtk
 
 
 __all__ = [

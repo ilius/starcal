@@ -303,7 +303,7 @@ class SObjBinaryModel(SObj):
 			raise OSError(
 				f"sha1 diggest does not match for object file '{fpath}'",
 			)
-		data = bson.loads(bsonBytes)
+		data = bson.loads(bsonBytes)  # type: ignore[no-untyped-call]
 		assert isinstance(data, dict), f"{data=}"
 		return data
 
@@ -362,7 +362,7 @@ class SObjBinaryModel(SObj):
 	@classmethod
 	def saveData(cls, data: dict[str, Any], fs: FileSystem) -> str:
 		data = dict(sorted(data.items()))
-		bsonBytes = bytes(bson.dumps(data))
+		bsonBytes = bytes(bson.dumps(data))  # type: ignore[no-untyped-call]
 		hash_ = sha1(bsonBytes).hexdigest()
 		dpath, fpath = getObjectPath(hash_)
 		if not fs.isfile(fpath):
