@@ -47,7 +47,6 @@ __all__ = [
 	"toBytes",
 	"toStr",
 	"urlToPath",
-	"versionLessThan",
 ]
 
 
@@ -93,16 +92,6 @@ def cmp(a: Comparable, b: Comparable) -> int:
 
 def intcmp(a: int, b: int) -> int:
 	return 0 if a == b else (1 if a > b else -1)
-
-
-def versionLessThan(v0: str, v1: str) -> bool:
-	from packaging import version
-
-	return version.parse(v0) < version.parse(v1)
-
-
-# Note: to check if saved preferences are older than a version:
-# versionLessThan(core.prefVersion, v)
 
 
 def restartLow() -> typing.NoReturn:
