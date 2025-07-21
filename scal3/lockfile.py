@@ -10,15 +10,19 @@ import os
 from collections import OrderedDict
 from os.path import exists, isfile
 from time import time as now
+from typing import TYPE_CHECKING
 
 import psutil
 
 from scal3.json_utils import dataToPrettyJson
 
+if TYPE_CHECKING:
+	from psutil import Process
+
 __all__ = ["checkAndSaveJsonLockFile"]
 
 
-def get_cmdline(proc: psutil.Process) -> list[str]:
+def get_cmdline(proc: Process) -> list[str]:
 	# log.debug(psutil.version_info, proc.cmdline)
 	if isinstance(proc.cmdline, list):  # psutil < 2.0
 		return proc.cmdline

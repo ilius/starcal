@@ -23,10 +23,9 @@ from scal3.config_utils import (
 from scal3.path import confDir, sysConfDir
 from scal3.timeline import conf
 from scal3.timeline.conf import confOptions
-from scal3.timeline.options import confOptionsData
 from scal3.ui import conf as uiconf
 
-__all__ = ["confOptionsData", "saveConf"]
+__all__ = ["saveConf"]
 
 sysConfPath = join(sysConfDir, "timeline.json")
 

@@ -31,8 +31,10 @@ __all__ = [
 	"getEpochByIcsTime",
 	"getIcsDateByJd",
 	"getIcsTimeByEpoch",
+	"getJdByIcsDate",
 	"icsHeader",
 	"icsTmFormat",
+	"splitIcsValue",
 ]
 
 icsTmFormat = "%Y%m%dT%H%M%S"

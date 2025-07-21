@@ -36,7 +36,8 @@ if TYPE_CHECKING:
 
 	from igraph import Graph
 
-	from scal3 import ui
+	from scal3.color_utils import ColorType
+
 
 __all__ = ["Box", "calcEventBoxes"]
 
@@ -61,7 +62,7 @@ class Box:
 		u0: float,
 		du: float,
 		text: str = "",
-		color: ui.ColorType | None = None,
+		color: ColorType | None = None,
 		ids: tuple[int, int] | None = None,
 		lineW: float = 2,
 	) -> None:

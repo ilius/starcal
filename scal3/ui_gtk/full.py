@@ -18,6 +18,7 @@ from scal3.event_lib import ev
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk import pixcache, starcal
 from scal3.ui_gtk.event.export import MultiGroupExportDialog
+from scal3.ui_gtk.event.group.universityTerm import viewWeeklySchedule  # noqa: F401
 from scal3.ui_gtk.starcal_import_all import doFullImport
 
 ui.init()

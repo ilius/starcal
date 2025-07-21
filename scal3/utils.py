@@ -33,7 +33,6 @@ if typing.TYPE_CHECKING:
 __all__ = [
 	"Comparable",
 	"arange",
-	"cmp",
 	"findNearestIndex",
 	"findNearestNum",
 	"findWordByPos",

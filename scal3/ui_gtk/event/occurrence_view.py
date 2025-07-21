@@ -620,7 +620,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 # 	def __init__(self, abbreviateWeekDays: bool = False) -> None:
 # 		self.initVars()
 # 		self.abbreviateWeekDays = abbreviateWeekDays
-# 		self.absWeekNumber = core.getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
+# 		self.absWeekNumber = getAbsWeekNumberFromJd.v(ui.cells.current.jd)  # FIXME
 # 		gtk.TreeView.__init__(self)
 # 		self.set_headers_visible(False)
 # 		self.ls = gtk.ListStore(

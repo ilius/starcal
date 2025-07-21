@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from scal3.event_lib.yearly import YearlyGroup
+from typing import TYPE_CHECKING
+
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
-__all__ = ["WidgetClass", "YearlyGroup"]
+if TYPE_CHECKING:
+	from scal3.event_lib.yearly import YearlyGroup
+
+__all__ = ["WidgetClass"]
 
 
 class WidgetClass(NormalWidgetClass):

@@ -20,7 +20,8 @@ if TYPE_CHECKING:
 	from dateutil.tz.tz import tzfile
 
 
-__all__ = ["UTC", "gettz"]
+__all__ = ["UTC", "defaultTZ", "gettz"]
+
 defaultTZ: TimeZone | None = None
 tzErrCount = 0
 

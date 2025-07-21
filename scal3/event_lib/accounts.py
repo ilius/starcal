@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 	from .pytypes import AccountType, EventGroupType
 
 
-__all__ = ["Account", "DummyAccount", "accountsDir"]
+__all__ = ["Account", "accountsDir"]
 accountsDir = join("event", "accounts")
 
 

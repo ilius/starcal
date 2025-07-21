@@ -29,14 +29,13 @@ from scal3.s_object import (
 )
 
 from . import state
-from .object_base import EventObjTextModel
 
 if TYPE_CHECKING:
 	from collections.abc import Iterable
 
 	from scal3.filesystem import FileSystem
 
-__all__ = ["EventObjTextModel", "HistoryEventObjBinaryModel", "iterObjectFiles"]
+__all__ = ["HistoryEventObjBinaryModel", "iterObjectFiles"]
 
 
 class HistoryEventObjBinaryModel(SObjBinaryModel):

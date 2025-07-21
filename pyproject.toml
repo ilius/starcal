@@ -279,7 +279,11 @@ path = "libs/bson/"
 disable = ["fixit.rules"]
 
 [tool.import-analyzer]
-exclude = ["libs/", "build/"]
+exclude = [
+	"libs/",
+	"build/",
+	"scal3/ui/conf.py"
+]
 exclude_toplevel_module = [
 	"cachetools",
 	"cairo",

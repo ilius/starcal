@@ -19,7 +19,6 @@ from os.path import join
 from typing import Any, NamedTuple
 
 from scal3.color_utils import RGB, RGBA
-from scal3.font import Font
 
 __all__ = [
 	"CUSTOMIZE",
@@ -28,7 +27,6 @@ __all__ = [
 	"MAIN_CONF",
 	"NEED_RESTART",
 	"NOT_SET",
-	"Font",
 	"confOptionsData",
 	"getParamNamesWithFlag",
 ]

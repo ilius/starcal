@@ -15,7 +15,7 @@ from scal3.path import svgDir
 if TYPE_CHECKING:
 	from collections.abc import Sequence
 
-__all__ = ["eventTags", "eventTagsDesc"]
+__all__ = ["eventTags"]
 
 
 eventIconDir = join(svgDir, "event")

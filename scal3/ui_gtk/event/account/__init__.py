@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 __all__ = [
 	"AccountCombo",
 	"AccountGroupBox",
-	"AccountGroupCombo",
 	"BaseWidgetClass",
 ]
 

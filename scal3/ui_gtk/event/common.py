@@ -58,6 +58,7 @@ __all__ = [
 	"SingleGroupComboBox",
 	"WidgetClass",
 	"getGroupRow",
+	"getTreeGroupPixbuf",
 ]
 
 

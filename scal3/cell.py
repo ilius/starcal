@@ -41,7 +41,7 @@ if typing.TYPE_CHECKING:
 		WeekStatusType,
 	)
 
-__all__ = ["Cell", "init"]
+__all__ = ["init"]
 
 
 class Cell:
