@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import typing
+from typing import Any
 
 from scal3 import timeline
 from scal3.locale_man import tr as _
@@ -870,13 +871,11 @@ class TimeLinePreferencesWindow(gtk.Window):
 		grid.set_column_spacing(15)
 		grid.set_border_width(20)
 		# ----
-		self.defaultWidget = None
 		firstPageDoubleSize = len(mainPages) % 2 == 1
 		if firstPageDoubleSize:
 			page = mainPages.pop(0)
 			button = self.newWideButton(page)
 			grid.attach(button, 0, 0, colN, 1)
-			self.defaultWidget = button
 		# ---
 		N = len(mainPages)
 		colBN = (N - 1) // colN + 1
@@ -888,8 +887,6 @@ class TimeLinePreferencesWindow(gtk.Window):
 				page = mainPages[page_i]
 				button = self.newWideButton(page)
 				grid.attach(button, col_i, row_i + 1, 1, 1)
-				if page_i == 0 and not firstPageDoubleSize:
-					self.defaultWidget = button
 		grid.show_all()
 		pageWidget = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 		pack(pageWidget, grid, True, True)
@@ -929,7 +926,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 	def onDelete(
 		self,
 		_widget: gtk.Widget | None = None,
-		_data: typing.Any = None,
+		_data: Any = None,
 	) -> bool:
 		self.hide()
 		return True

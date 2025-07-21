@@ -8,7 +8,7 @@ from typing import Final, Protocol
 from scal3.option import Option
 from scal3.path import confDir
 
-__all__ = ["FallbackLogger", "get", "init", "logLevel"]
+__all__ = ["FallbackLogger", "confPath", "get", "init", "logLevel"]
 
 
 confPath = join(confDir, "log.json")

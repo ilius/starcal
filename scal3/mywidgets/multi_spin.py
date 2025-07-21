@@ -43,8 +43,6 @@ __all__ = [
 	"HourField",
 	"IntField",
 	"MonthField",
-	"NumField",
-	"StrConField",
 	"YearField",
 	"Z60Field",
 ]

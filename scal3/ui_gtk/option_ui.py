@@ -50,25 +50,17 @@ __all__ = [
 	"CheckOptionUI",
 	"ColorOptionUI",
 	"ComboEntryTextOptionUI",
-	"ComboImageTextOptionUI",
 	"ComboTextOptionUI",
 	"DirectionOptionUI",
-	"FileChooserOptionUI",
 	"FloatSpinOptionUI",
 	"FontFamilyOptionUI",
 	"FontOptionUI",
-	"HListOptionUI",
 	"IconChooserOptionUI",
 	"ImageFileChooserOptionUI",
 	"IntSpinOptionUI",
 	"JustificationOptionUI",
-	"ListOptionUI",
 	"OptionUI",
-	"RadioHListOptionUI",
-	"RadioListOptionUI",
-	"RadioVListOptionUI",
 	"TextOptionUI",
-	"VListOptionUI",
 	"WidthHeightOptionUI",
 ]
 
@@ -893,76 +885,76 @@ class IconChooserOptionUI(OptionUI):
 			self._onChangeFunc()
 
 
-class RadioListOptionUI(OptionUI):
-	def getWidget(self) -> gtk.Widget:
-		return self._widget
+# class RadioListOptionUI(OptionUI):
+# 	def getWidget(self) -> gtk.Widget:
+# 		return self._widget
 
-	def __init__(
-		self,
-		vertical: bool,
-		option: Option[int | None],
-		texts: list[str],
-		label: str | None = None,
-	) -> None:
-		self.num = len(texts)
-		self.option = option
-		if vertical:
-			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		else:
-			box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		self._widget = box
-		self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
-		first = self.radios[0]
-		if label is not None:
-			pack(box, gtk.Label(label=label))
-			pack(box, gtk.Label(), 1, 1)
-		pack(box, first)
-		for r in self.radios[1:]:
-			pack(box, gtk.Label(), 1, 1)
-			pack(box, r)
-			r.join_group(first)
-		pack(box, gtk.Label(), 1, 1)  # FIXME
+# 	def __init__(
+# 		self,
+# 		vertical: bool,
+# 		option: Option[int | None],
+# 		texts: list[str],
+# 		label: str | None = None,
+# 	) -> None:
+# 		self.num = len(texts)
+# 		self.option = option
+# 		if vertical:
+# 			box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+# 		else:
+# 			box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+# 		self._widget = box
+# 		self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
+# 		first = self.radios[0]
+# 		if label is not None:
+# 			pack(box, gtk.Label(label=label))
+# 			pack(box, gtk.Label(), 1, 1)
+# 		pack(box, first)
+# 		for r in self.radios[1:]:
+# 			pack(box, gtk.Label(), 1, 1)
+# 			pack(box, r)
+# 			r.join_group(first)
+# 		pack(box, gtk.Label(), 1, 1)  # FIXME
 
-	def get(self) -> int | None:
-		for i in range(self.num):
-			if self.radios[i].get_active():
-				return i
-		return None
+# 	def get(self) -> int | None:
+# 		for i in range(self.num):
+# 			if self.radios[i].get_active():
+# 				return i
+# 		return None
 
-	def set(self, index: int) -> None:
-		self.radios[index].set_active(True)
-
-
-class RadioHListOptionUI(RadioListOptionUI):
-	def __init__(
-		self,
-		option: Option[int | None],
-		texts: list[str],
-		label: str | None = None,
-	) -> None:
-		RadioListOptionUI.__init__(
-			self,
-			vertical=False,
-			option=option,
-			texts=texts,
-			label=label,
-		)
+# 	def set(self, index: int) -> None:
+# 		self.radios[index].set_active(True)
 
 
-class RadioVListOptionUI(RadioListOptionUI):
-	def __init__(
-		self,
-		option: Option[int | None],
-		texts: list[str],
-		label: str | None = None,
-	) -> None:
-		RadioListOptionUI.__init__(
-			self,
-			vertical=True,
-			option=option,
-			texts=texts,
-			label=label,
-		)
+# class RadioHListOptionUI(RadioListOptionUI):
+# 	def __init__(
+# 		self,
+# 		option: Option[int | None],
+# 		texts: list[str],
+# 		label: str | None = None,
+# 	) -> None:
+# 		RadioListOptionUI.__init__(
+# 			self,
+# 			vertical=False,
+# 			option=option,
+# 			texts=texts,
+# 			label=label,
+# 		)
+
+
+# class RadioVListOptionUI(RadioListOptionUI):
+# 	def __init__(
+# 		self,
+# 		option: Option[int | None],
+# 		texts: list[str],
+# 		label: str | None = None,
+# 	) -> None:
+# 		RadioListOptionUI.__init__(
+# 			self,
+# 			vertical=True,
+# 			option=option,
+# 			texts=texts,
+# 			label=label,
+# 		)
 
 
 class ListOptionUI(OptionUI):
@@ -1014,18 +1006,18 @@ class HListOptionUI(ListOptionUI):
 		)
 
 
-class VListOptionUI(ListOptionUI):
-	def __init__(
-		self,
-		option: ListOption[Any],
-		items: list[OptionUI] | None = None,
-	) -> None:
-		ListOptionUI.__init__(
-			self,
-			vertical=True,
-			option=option,
-			items=items,
-		)
+# class VListOptionUI(ListOptionUI):
+# 	def __init__(
+# 		self,
+# 		option: ListOption[Any],
+# 		items: list[OptionUI] | None = None,
+# 	) -> None:
+# 		ListOptionUI.__init__(
+# 			self,
+# 			vertical=True,
+# 			option=option,
+# 			items=items,
+# 		)
 
 
 class DirectionOptionUI(OptionUI):

@@ -29,25 +29,17 @@ from typing import Any
 
 from scal3 import core, event_lib, locale_man
 from scal3.cal_types import calTypes
-from scal3.color_utils import ColorType
 from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
 )
 from scal3.event_lib import common as event_common
 from scal3.event_lib import ev
-from scal3.event_lib.accounts_holder import EventAccountsHolder
-from scal3.event_lib.event_base import Event
-from scal3.event_lib.groups_holder import EventGroupsHolder
-from scal3.event_notification_thread import EventNotificationManager
 from scal3.event_tags import eventTags
 from scal3.event_update_queue import EventUpdateQueue
-from scal3.filesystem import FileSystem
 from scal3.font import Font
 from scal3.locale_man import tr as _
-from scal3.option import Option
 from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
-from scal3.s_object import SObj
 from scal3.ui import conf
 from scal3.ui.conf import (
 	confOptions,
@@ -55,19 +47,13 @@ from scal3.ui.conf import (
 	confOptionsLive,
 )
 from scal3.ui.funcs import checkEnabledNamesItems
-from scal3.ui.options import (
-	CUSTOMIZE,
-	LIVE,
-	MAIN_CONF,
-	NEED_RESTART,
-	confOptionsData,
-	getParamNamesWithFlag,
-)
+from scal3.ui.options import confOptionsData
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
 	from scal3.event_lib.pytypes import EventGroupType, EventType
+	from scal3.option import Option
 	from scal3.pytypes import CellCacheType
 	from scal3.ui.pytypes import CalTypeOptionsDict
 	from scal3.ui_gtk.pytypes import CalObjType
@@ -75,19 +61,9 @@ if typing.TYPE_CHECKING:
 
 
 __all__ = [
-	"CUSTOMIZE",
-	"LIVE",
-	"MAIN_CONF",
-	"NEED_RESTART",
-	"ColorType",
-	"Event",
-	"EventAccountsHolder",
-	"EventGroupsHolder",
-	"EventNotificationManager",
-	"FileSystem",
 	"Font",
-	"Option",
-	"SObj",
+	"appIcon",
+	"appLogo",
 	"cells",
 	"checkMainWinItems",
 	"checkNeedRestart",
@@ -96,17 +72,16 @@ __all__ = [
 	"disableRedraw",
 	"dragGetCalType",
 	"duplicateGroupTitle",
-	"ev",
 	"eventManDialog",
 	"eventSearchWin",
 	"eventTags",
 	"eventUpdateQueue",
 	"focusTime",
 	"fontDefault",
+	"fontDefaultInit",
 	"getActiveMonthCalOptions",
 	"getEvent",
 	"getFont",
-	"getParamNamesWithFlag",
 	"init",
 	"initFonts",
 	"iterAllEvents",
@@ -121,9 +96,13 @@ __all__ = [
 	"saveConfCustomize",
 	"saveLiveConf",
 	"saveLiveConfDelay",
+	"saveLiveConfLoop",
 	"timeLineWin",
+	"timeout_initial",
 	"timeout_repeat",
+	"uiName",
 	"updateFocusTime",
+	"winControllerThemeList",
 	"yearWheelWin",
 ]
 # -------------------------------------------------------

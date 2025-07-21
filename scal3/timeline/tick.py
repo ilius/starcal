@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 from scal3.timeline import conf
 
 if TYPE_CHECKING:
-	from scal3 import ui
+	from scal3.color_utils import ColorType
 
 __all__ = ["Tick"]
 
@@ -33,7 +33,7 @@ class Tick:
 		pos: float,
 		unitSize: float,
 		label: str,
-		color: ui.ColorType | None = None,
+		color: ColorType | None = None,
 	) -> None:
 		self.epoch = epoch
 		self.pos = pos  # pixel position

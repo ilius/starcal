@@ -25,6 +25,7 @@ log = logger.get()
 import typing
 from contextlib import suppress
 from os.path import isfile, join
+from typing import Any
 
 from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
@@ -240,7 +241,6 @@ class PreferencesWindow(gtk.Window):
 		page = mainPages.pop(0)
 		button = self.newWideButton(page)
 		grid.attach(button, 0, 0, colN, 1)
-		self.defaultWidget = button
 		# ---
 		N = len(mainPages)
 		rowN = (N - 1) // colN + 1
@@ -699,7 +699,7 @@ class PreferencesWindow(gtk.Window):
 			self.prefPages.append(page)
 			# -----
 			regionalSubPages.append(page)
-			optionUI: typing.Any
+			optionUI: Any
 			for rawOpt in mod.options:
 				if rawOpt[0] == "button":
 					try:
@@ -1363,7 +1363,7 @@ class PreferencesWindow(gtk.Window):
 	def onDelete(
 		self,
 		_widget: gtk.Widget | None = None,
-		_data: typing.Any = None,
+		_data: Any = None,
 	) -> bool:
 		self.hide()
 		return True
