@@ -19,13 +19,12 @@
 from __future__ import annotations
 
 from scal3 import logger
-from scal3.color_utils import RGBA, ColorType
+from scal3.color_utils import RGBA
 
 log = logger.get()
 
 from typing import TYPE_CHECKING
 
-from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pango
 from scal3.ui_gtk.color_utils import rgbaToGdkRGBA
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
 	from scal3.color_utils import RGB, RawColor
 	from scal3.font import Font
 
-__all__ = ["ColorType", "MyColorButton", "MyFontButton", "TextFrame", "ui"]
+__all__ = ["MyColorButton", "MyFontButton", "TextFrame"]
 
 
 class MyFontButton(gtk.FontButton):

@@ -27,14 +27,14 @@ log = logger.get()
 from time import perf_counter
 
 from scal3 import locale_man, ui
-from scal3.mywidgets.multi_spin import ContainerField, Field
+from scal3.mywidgets.multi_spin import Field
 from scal3.ui_gtk import gdk, getScrollValue, gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import calcTextPixelWidth
 from scal3.ui_gtk.signals import registerSignals
 from scal3.ui_gtk.utils import imageClassButton
 from scal3.utils import toStr
 
-__all__ = ["ContainerField", "MultiSpinButton", "SingleSpinButton"]
+__all__ = ["MultiSpinButton", "SingleSpinButton"]
 
 
 class AutoSizeEntry(gtk.Entry):

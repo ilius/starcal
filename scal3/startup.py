@@ -11,7 +11,7 @@ from scal3.core import APP_NAME
 from scal3.os_utils import makeDir, osName
 from scal3.path import homeDir, sourceDir
 
-__all__ = ["addStartup", "removeStartup"]
+__all__ = ["addStartup", "checkStartup", "removeStartup"]
 
 
 comDeskDir = f"{homeDir}/.config/autostart"
@@ -42,7 +42,7 @@ Name={APP_DESC} {core.VERSION}
 Icon=starcal32
 Exec={COMMAND}"""
 		# FIXME: double quotes needed when the exec path has space
-		# f"{core.COMMAND!r}" or repr(core.COMMAND) adds single quotes
+		# f"{COMMAND!r}" or repr(COMMAND) adds single quotes
 		# does it work with single quotes too??
 		makeDir(comDeskDir)
 		try:

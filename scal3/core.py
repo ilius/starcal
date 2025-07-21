@@ -32,7 +32,7 @@ log: Final = logger.init()
 
 import scal3
 from scal3 import locale_man
-from scal3.app_info import APP_NAME, COMMAND, VERSION_TAG
+from scal3.app_info import APP_NAME, VERSION_TAG
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.date_utils import jwday
@@ -65,14 +65,13 @@ except NameError:
 
 __all__ = [
 	"APP_NAME",
-	"COMMAND",
 	"GREGORIAN",
 	"VERSION",
+	"aboutText",
 	"allPlugList",
 	"firstWeekDay",
 	"firstWeekDayAuto",
 	"fs",
-	"getAbsWeekNumberFromJd",
 	"getCurrentJd",
 	"getDeletedPluginsTable",
 	"getPluginsTable",
@@ -80,13 +79,14 @@ __all__ = [
 	"getWeekDateFromJd",
 	"getWeekDay",
 	"getWeekDayAuto",
+	"getWeekDayN",
 	"getWeekNumber",
-	"getWeekNumberByJd",
 	"holidayWeekDays",
 	"init",
 	"jd_to",
 	"jd_to_primary",
 	"jwday",
+	"licenseText",
 	"log",
 	"plugIndex",
 	"primary_to_jd",
@@ -94,8 +94,10 @@ __all__ = [
 	"saveConf",
 	"stopRunningThreads",
 	"updatePlugins",
+	"version",
 	"weekDayName",
 	"weekDayNameAb",
+	"weekNumberMode",
 	"weekNumberModeAuto",
 ]
 
@@ -343,10 +345,6 @@ def getWeekNumberByJd(jd: int) -> int:
 def getWeekDateFromJd(jd: int) -> tuple[int, int]:
 	"""Return (absWeekNumber, weekDay)."""
 	return divmod(jd - firstWeekDay.v + 1, 7)
-
-
-def getAbsWeekNumberFromJd(jd: int) -> int:
-	return getWeekDateFromJd(jd)[0]
 
 
 def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:

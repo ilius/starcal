@@ -28,7 +28,18 @@ from scal3.option import Option
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
-__all__ = ["desc", "getMonthLen", "hijriUseDB", "jd_to", "monthDb", "name", "to_jd"]
+__all__ = [
+	"desc",
+	"getMonthLen",
+	"hijriUseDB",
+	"jd_to",
+	"monthDb",
+	"monthDbExpiredIgnoreFile",
+	"monthName",
+	"name",
+	"to_jd",
+	"to_jd_c",
+]
 
 log = logger.get()
 

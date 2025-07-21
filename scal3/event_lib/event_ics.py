@@ -76,8 +76,6 @@ def exportEventToIcsFileObj(
 	if not occur:
 		return
 	if isinstance(occur, JdOccurSet):
-		# for sectionStartJd in occur.getDaysJdList():
-		# 	sectionEndJd = sectionStartJd + 1
 		for sectionStartJd, sectionEndJd in occur.calcJdRanges():
 			vevent = commonText
 			vevent += "\n".join(

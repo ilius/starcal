@@ -6,18 +6,8 @@ from scal3.color_utils import RGB
 
 __all__ = [
 	"gdkColorToRgb",
-	"rgbToGdkColor",
 	"rgbaToGdkRGBA",
 ]
-
-
-def rgbToGdkColor(r: int, g: int, b: int, a: int = 255) -> gdk.Color:  # noqa: ARG001
-	"""r, g, b are in range(256)."""
-	c = gdk.Color()
-	c.red = r * 257
-	c.blue = g * 257
-	c.green = b * 257
-	return c
 
 
 def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:

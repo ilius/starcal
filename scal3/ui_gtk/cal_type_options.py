@@ -39,7 +39,6 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"DayNumListOptionsWidget",
-	"DayNumOptionsWidget",
 	"MonthNameListOptionsWidget",
 	"WeekDayNameOptionsWidget",
 ]

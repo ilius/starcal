@@ -49,8 +49,8 @@ from scal3.utils import toBytes
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from scal3 import ui
 	from scal3.color_utils import ColorType
+	from scal3.font import Font
 
 __all__ = [
 	"CopyLabelMenuItem",
@@ -60,21 +60,15 @@ __all__ = [
 	"confirm",
 	"cssTextStyle",
 	"dialog_add_button",
-	"getBackgroundColor",
-	"getBackgroundColorCSS",
 	"getGtkWindow",
 	"get_menu_height",
 	"get_menu_width",
 	"get_pixbuf_hash",
-	"hideList",
 	"imageClassButton",
 	"imageFromFile",
 	"imageFromIconName",
-	"imageFromIconNameWithPixelSize",
-	"labelIconButton",
 	"labelImageButton",
 	"newAlignLabel",
-	"newButtonImageBox",
 	"newHSep",
 	"openWindow",
 	"pixbufFromFile",
@@ -87,10 +81,7 @@ __all__ = [
 	"set_tooltip",
 	"showError",
 	"showInfo",
-	"showList",
 	"showMsg",
-	"showWarning",
-	"show_event",
 	"widgetActionCallback",
 	"window_set_size_aspect",
 ]
@@ -108,16 +99,6 @@ def widgetActionCallback[*Ts](
 	return func2
 
 
-def hideList(widgets: list[gtk.Widget]) -> None:
-	for w in widgets:
-		w.hide()
-
-
-def showList(widgets: list[gtk.Widget]) -> None:
-	for w in widgets:
-		w.show()
-
-
 def set_tooltip(widget: gtk.Widget, text: str) -> None:
 	widget.set_tooltip_text(text)
 
@@ -130,16 +111,16 @@ def buffer_get_text(b: gtk.TextBuffer) -> str:
 	)
 
 
-def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
-	# try:
-	# 	value = gevent.get_value()
-	# except AttributeError:
-	# 	value = "NONE"
-	log.debug(
-		# f"{type(widget).__class__.__name__}, " +
-		f"{widget.__class__.__name__}, {gevent.type.value_name=}",
-	)
-	# gevent.send_event
+# def show_event(widget: gtk.Widget, gevent: gdk.Event) -> None:
+# 	# try:
+# 	# 	value = gevent.get_value()
+# 	# except AttributeError:
+# 	# 	value = "NONE"
+# 	log.debug(
+# 		# f"{type(widget).__class__.__name__}, " +
+# 		f"{widget.__class__.__name__}, {gevent.type.value_name=}",
+# 	)
+# 	# gevent.send_event
 
 
 def setClipboard(text: str, clipboard: gtk.Clipboard | None = None) -> None:
@@ -176,27 +157,6 @@ def imageFromIconName(
 	except AttributeError:
 		# just in case new_from_stock was removed
 		return gtk.Image.new_from_icon_name(iconName, size)
-
-
-# this is not working, image.get_pixbuf returns None!
-def imageFromIconNameWithPixelSize(
-	iconName: str,
-	size: int,
-) -> gtk.Image:
-	image = imageFromIconName(
-		iconName,
-		size=gtk.IconSize.DIALOG,
-	)
-	pixbuf = image.get_pixbuf()
-	if pixbuf is None:
-		raise RuntimeError("pixbuf is None")
-	pixbuf = pixbuf.scale_simple(
-		size,
-		size,
-		GdkPixbuf.InterpType.BILINEAR,
-	)
-	image.set_from_pixbuf(pixbuf)
-	return image
 
 
 def imageFromFile(path: str, size: int = 0) -> gtk.Image:
@@ -296,26 +256,6 @@ def newButtonImageBox(label: str, image: gtk.Image, spacing: int = 0) -> gtk.Box
 		pack(hbox, labelObj, 0, 0)
 	hbox.show_all()
 	return hbox
-
-
-def labelIconButton(
-	label: str = "",
-	iconName: str = "",
-	size: gtk.IconSize = gtk.IconSize.BUTTON,
-) -> gtk.Button:
-	button = gtk.Button()
-	if conf.buttonIconEnable.v:
-		button.add(
-			newButtonImageBox(
-				label,
-				imageFromIconName(iconName, size),
-				spacing=int(size / 2),
-			),
-		)
-		return button
-	button.set_label(label)
-	button.set_use_underline(True)
-	return button
 
 
 def labelImageButton(
@@ -549,23 +489,6 @@ def showError(
 	)
 
 
-def showWarning(
-	msg: str,
-	transient_for: gtk.Window | None = None,
-	title: str = "",
-	borderWidth: int = 10,
-	selectable: bool = False,
-) -> None:
-	showMsg(
-		msg,
-		imageName="dialog-warning.svg",
-		transient_for=transient_for,
-		title=title,
-		borderWidth=borderWidth,
-		selectable=selectable,
-	)
-
-
 def showInfo(
 	msg: str,
 	transient_for: gtk.Window | None = None,
@@ -726,7 +649,7 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: ui.Font | None = None,
+	font: Font | None = None,
 	fgColor: ColorType | None = None,
 	bgColor: ColorType | None = None,
 	extra: dict[str, str] | None = None,

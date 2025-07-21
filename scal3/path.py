@@ -32,15 +32,11 @@ __all__ = [
 	"modDir",
 	"pixDir",
 	"plugDir",
-	"plugDirName",
 	"plugDirUser",
-	"purpleDir",
-	"scalDir",
 	"sourceDir",
 	"svgDir",
 	"sysConfDir",
 	"tmpDir",
-	"userPlugConf",
 ]
 
 osName = getOsName()
