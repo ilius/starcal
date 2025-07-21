@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"CustomizableCalBox",
-	"CustomizableCalObj",
 	"DummyCalObj",
 	"newSubPageButton",
 ]

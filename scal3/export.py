@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
 	from scal3.color_utils import ColorType
+	from scal3.font import Font
 	from scal3.pytypes import CellType, MonthStatusType
 
 __all__ = ["exportToHtml"]
@@ -72,7 +73,7 @@ def colorComposite(front: ColorType, back: ColorType) -> RGB:
 	# and don't multiply others by `a0`
 
 
-def formatFont(font: ui.Font) -> tuple[str, float]:
+def formatFont(font: Font) -> tuple[str, float]:
 	face = font.family
 	assert face is not None
 	if font.bold:

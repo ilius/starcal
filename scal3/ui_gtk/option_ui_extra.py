@@ -40,20 +40,13 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
 
 __all__ = [
-	"ActiveCalsTreeView",
 	"ActiveInactiveCalsOptionUI",
-	"ActiveInactiveCalsOptionUIToolbar",
-	"ActiveInactveCalsTreeview",
 	"CalTypeOptionUI",
 	"CheckStartupOptionUI",
 	"FixedSizeOrRatioOptionUI",
-	"InactiveCalsTreeView",
 	"KeyBindingOptionUI",
 	"LangOptionUI",
 	"WeekDayCheckListOptionUI",
-	"newBox",
-	"treeviewSelect",
-	# "ToolbarIconSizeOptionUI",
 ]
 
 

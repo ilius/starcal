@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from gi.repository import Pango as pango
 
 from scal3.font import Font
 
-if TYPE_CHECKING:
-	from gi.repository import Gtk as gtk
-
 __all__ = [
-	"getFontFamilyList",
 	"gfontDecode",
 	"gfontEncode",
-	"pfontDecode",
 	"pfontEncode",
 ]
 
@@ -55,10 +48,3 @@ def gfontDecode(gfont: str) -> Font:
 
 def gfontEncode(font: Font) -> str:
 	return pfontEncode(font).to_string()
-
-
-def getFontFamilyList(widget: gtk.Widget) -> list[str]:
-	return sorted(
-		(f.get_name() for f in widget.get_pango_context().list_families()),
-		key=str.upper,
-	)

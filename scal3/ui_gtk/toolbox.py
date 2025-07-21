@@ -30,7 +30,6 @@ __all__ = [
 	"BaseToolBoxItem",
 	"CustomizableToolBox",
 	"LabelToolBoxItem",
-	"StaticToolBox",
 	"ToolBoxItem",
 	"VerticalStaticToolBox",
 ]

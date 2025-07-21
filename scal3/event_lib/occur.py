@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 
 	from .pytypes import EventType
 
-__all__ = ["IntervalOccurSet", "JdOccurSet", "OccurSet", "TimeListOccurSet"]
+__all__ = ["IntervalOccurSet", "JdOccurSet", "TimeListOccurSet"]
 
 
 class OccurSet(SObj):

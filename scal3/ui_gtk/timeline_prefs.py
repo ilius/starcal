@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import typing
+from typing import Any
 
 from scal3 import timeline
 from scal3.locale_man import tr as _
@@ -929,7 +930,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 	def onDelete(
 		self,
 		_widget: gtk.Widget | None = None,
-		_data: typing.Any = None,
+		_data: Any = None,
 	) -> bool:
 		self.hide()
 		return True

@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 
 __all__ = [
-	"EmptySignalHandler",
 	"SignalHandlerBase",
 	"SignalHandlerType",
 	"registerSignals",
@@ -55,6 +54,6 @@ def registerSignals[T: type[SignalHandlerType]](cls: T) -> T:
 	return cls
 
 
-@registerSignals
-class EmptySignalHandler(SignalHandlerBase):
-	signals = []
+# @registerSignals
+# class EmptySignalHandler(SignalHandlerBase):
+# 	signals = []

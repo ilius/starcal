@@ -1867,7 +1867,7 @@ class MainWin(CalObjWidget):
 # -------------------------------------------------------------------------3
 
 
-# core.COMMAND = sys.argv[0] # OR __file__ # ????????
+# app_info.COMMAND = sys.argv[0] # OR __file__ # ????????
 
 
 gtk.init_check(sys.argv)  # type: ignore[call-arg]
