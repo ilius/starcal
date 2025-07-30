@@ -583,7 +583,7 @@ useAsciiJson = False
 
 licenseText = _("__license__")
 if licenseText in {"__license__", ""}:
-	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:
+	with open(f"{sourceDir}/_license-dialog", encoding="utf-8") as fp:
 		licenseText = fp.read()
 
 aboutText = _("aboutText")
