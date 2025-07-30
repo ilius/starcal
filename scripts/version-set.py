@@ -16,7 +16,7 @@ def main() -> None:
 	# replaceVar(join(rootDir, "pyproject.toml"), "version", versionQuoted)
 
 	# update copyright year number
-	for fname in ("about", "license-dialog"):
+	for fname in ("about", "_license-dialog"):
 		with open(fname, encoding="utf-8") as file:
 			text = file.read()
 		pos = text.find("© ")
