@@ -19,6 +19,7 @@ from __future__ import annotations
 from scal3 import logger
 from scal3.app_info import APP_DESC
 from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionUI
+from scal3.ui_gtk.preferences.plugins import PreferencesPluginsToolbar
 
 log = logger.get()
 
@@ -77,72 +78,6 @@ if typing.TYPE_CHECKING:
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["PreferencesWindow"]
-
-
-class PreferencesPluginsToolbar(VerticalStaticToolBox):
-	def __init__(self, parent: PreferencesWindow) -> None:
-		VerticalStaticToolBox.__init__(
-			self,
-			parent,
-			# buttonBorder=0,
-			# buttonPadding=0,
-		)
-		# with iconSize < 20, the button would not become smaller
-		# so 20 is the best size
-		self.extend(
-			[
-				ToolBoxItem(
-					name="goto-top",
-					imageName="go-top.svg",
-					onClick=parent.plugTreeviewTop,
-					desc=_("Move to top"),
-					continuousClick=False,
-				),
-				ToolBoxItem(
-					name="go-up",
-					imageName="go-up.svg",
-					onClick=parent.plugTreeviewUp,
-					desc=_("Move up"),
-					continuousClick=False,
-				),
-				ToolBoxItem(
-					name="go-down",
-					imageName="go-down.svg",
-					onClick=parent.plugTreeviewDown,
-					desc=_("Move down"),
-					continuousClick=False,
-				),
-				ToolBoxItem(
-					name="goto-bottom",
-					imageName="go-bottom.svg",
-					onClick=parent.plugTreeviewBottom,
-					desc=_("Move to bottom"),
-					continuousClick=False,
-				),
-			],
-		)
-		self.buttonAdd = self.append(
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick=parent.onPlugAddClick,
-				desc=_("Add"),
-				continuousClick=False,
-			),
-		)
-		self.buttonAdd.w.set_sensitive(False)
-		self.append(
-			ToolBoxItem(
-				name="delete",
-				imageName="edit-delete.svg",
-				onClick=parent.onPlugDeleteClick,
-				desc=_("Delete"),
-				continuousClick=False,
-			),
-		)
-
-	def setCanAdd(self, canAdd: bool) -> None:
-		self.buttonAdd.w.set_sensitive(canAdd)
 
 
 class PreferencesWindow(gtk.Window):
@@ -1328,11 +1263,11 @@ class PreferencesWindow(gtk.Window):
 		ud.windowList.updateCSS()
 
 	@staticmethod
-	def onClearImageCacheClick(_b: gtk.Widget) -> None:
+	def onClearImageCacheClick(_w: gtk.Widget) -> None:
 		pixcache.clearFiles()
 		pixcache.clear()
 
-	def onPageButtonClicked(self, _b: gtk.Widget, page: StackPageType) -> None:
+	def onPageButtonClicked(self, _w: gtk.Widget, page: StackPageType) -> None:
 		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPageType) -> gtk.Button:
@@ -1688,7 +1623,7 @@ class PreferencesWindow(gtk.Window):
 		menu.popup(None, None, None, None, 3, gevent.time)
 		return True
 
-	def onPlugAddClick(self, _b: gtk.Widget) -> None:
+	def onPlugAddClick(self, _w: gtk.Widget) -> None:
 		# FIXME
 		# Reize window to show all texts
 		# self.plugAddTreeview.columns_autosize()  # FIXME
@@ -1747,7 +1682,7 @@ class PreferencesWindow(gtk.Window):
 	def plugSetCursor(self, index: int) -> None:
 		self.plugTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
 
-	def plugTreeviewTop(self, _b: gtk.Widget) -> None:
+	def plugTreeviewTop(self, _w: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1760,7 +1695,7 @@ class PreferencesWindow(gtk.Window):
 		listStore.remove(listStore.get_iter(str(index + 1)))
 		self.plugSetCursor(0)
 
-	def plugTreeviewBottom(self, _b: gtk.Widget) -> None:
+	def plugTreeviewBottom(self, _w: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1773,7 +1708,7 @@ class PreferencesWindow(gtk.Window):
 		listStore.remove(listStore.get_iter(str(index)))
 		self.plugSetCursor(len(listStore) - 1)
 
-	def plugTreeviewUp(self, _b: gtk.Widget) -> None:
+	def plugTreeviewUp(self, _w: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1788,7 +1723,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.plugSetCursor(index - 1)
 
-	def plugTreeviewDown(self, _b: gtk.Widget) -> None:
+	def plugTreeviewDown(self, _w: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1838,7 +1773,7 @@ class PreferencesWindow(gtk.Window):
 				t.get_iter(str(dest[0].get_indices()[0])),
 			)
 
-	def onPlugDeleteClick(self, _b: gtk.Widget) -> None:
+	def onPlugDeleteClick(self, _w: gtk.Widget) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1912,20 +1847,20 @@ class PreferencesWindow(gtk.Window):
 		ev.accounts.save()
 		self.accountsTreeModel[index][2] = accountNew.title
 
-	def onAccountsEditClick(self, _b: gtk.Widget) -> None:
+	def onAccountsEditClick(self, _w: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur.get_indices()[0]
 		self.editAccount(index)
 
-	def onAccountsRegisterClick(self, _b: gtk.Widget) -> None:
+	def onAccountsRegisterClick(self, _w: gtk.Widget) -> None:
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 
 		win = StarCalendarRegisterDialog(transient_for=self)
 		win.run()  # type: ignore[no-untyped-call]
 
-	def onAccountsAddClick(self, _b: gtk.Widget) -> None:
+	def onAccountsAddClick(self, _w: gtk.Widget) -> None:
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		account = AccountEditorDialog(transient_for=self).run2()
@@ -1951,7 +1886,7 @@ class PreferencesWindow(gtk.Window):
 			return
 		account.save()
 
-	def onAccountsDeleteClick(self, _b: gtk.Widget) -> None:
+	def onAccountsDeleteClick(self, _w: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1972,7 +1907,7 @@ class PreferencesWindow(gtk.Window):
 	def accountSetCursor(self, index: int) -> None:
 		self.accountsTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
 
-	def onAccountsUpClick(self, _b: gtk.Widget) -> None:
+	def onAccountsUpClick(self, _w: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1989,7 +1924,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.accountSetCursor(index - 1)
 
-	def onAccountsDownClick(self, _b: gtk.Widget) -> None:
+	def onAccountsDownClick(self, _w: gtk.Widget) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
