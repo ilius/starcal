@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.preferences.lang_caltype import PreferencesLanguageCalTypes
 
 log = logger.get()
 
@@ -28,7 +29,7 @@ from typing import Any
 from scal3 import core, locale_man, ui
 from scal3.app_info import APP_DESC
 from scal3.cal_types import calTypes
-from scal3.locale_man import getLocaleFirstWeekDay, langSh
+from scal3.locale_man import getLocaleFirstWeekDay
 from scal3.locale_man import tr as _
 from scal3.path import sourceDir, svgDir
 from scal3.ui import conf
@@ -49,9 +50,7 @@ from scal3.ui_gtk.option_ui import (
 	WidthHeightOptionUI,
 )
 from scal3.ui_gtk.option_ui_extra import (
-	ActiveInactiveCalsOptionUI,
 	CheckStartupOptionUI,
-	LangOptionUI,
 	WeekDayCheckListOptionUI,
 )
 from scal3.ui_gtk.preferences.accounts import PreferencesAccountsTab
@@ -204,41 +203,12 @@ class PreferencesWindow(gtk.Window):
 		self.vbox.connect("realize", self.onMainVBoxRealize)
 
 	def _initPageLangCalTypes(self) -> None:
-		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=self.spacing)
-		vbox.set_border_width(int(self.spacing / 2))
-		page = StackPage()
-		page.pageWidget = vbox
-		page.pageName = "lang_calTypes"
-		page.pageTitle = _("Language and Calendar Types")
-		page.pageLabel = _("_Language and Calendar Types")
-		page.pageIcon = "preferences-desktop-locale.png"
-		self.prefPages.append(page)
-		# --------------------------
-		hbox = gtk.Box(
-			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
-		)
-		pack(hbox, gtk.Label(label=_("Language")))
-		itemLang = LangOptionUI()
-		self.localeOptionUIs.append(itemLang)
-		# ---
-		pack(hbox, itemLang.getWidget())
-		if langSh != "en":
-			pack(hbox, gtk.Label(label="Language"))
-		pack(vbox, hbox)
-		# --------------------------
-		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-		frame = gtk.Frame()
-		frame.set_label(_("Calendar Types"))
-		itemCals = ActiveInactiveCalsOptionUI()
-		self.coreOptionUIs.append(itemCals)
-		itemCalsWidget = itemCals.getWidget()
-		assert isinstance(itemCalsWidget, gtk.Container), f"{itemCalsWidget=}"
-		itemCalsWidget.set_border_width(10)
-		frame.add(itemCalsWidget)
-		pack(hbox, frame, 1, 1)
-		hbox.set_border_width(5)
-		frame.set_border_width(0)
-		pack(vbox, hbox, 1, 1)
+		tab = PreferencesLanguageCalTypes(window=self, spacing=self.spacing)
+		self.langCalTypesTab = tab
+		self.prefPages.append(tab.page)
+		self.localeOptionUIs.append(tab.langOption)
+		self.coreOptionUIs.append(tab.calsOption)
+
 
 	def _initPageGeneral(self) -> None:
 		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=self.spacing)
