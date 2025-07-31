@@ -1021,7 +1021,7 @@ class PreferencesWindow(gtk.Window):
 		# ------------------- Saving gtk_ud config
 		ud.saveConf()
 		# ----------------------- Updating GUI ---------------------------
-		ud.windowList.onConfigChange()
+		ud.windowList.broadcastConfigChange()
 		if self.checkNeedRestart():
 			d = Dialog(
 				title=_("Restart " + APP_DESC),
