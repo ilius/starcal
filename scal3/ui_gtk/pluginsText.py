@@ -146,12 +146,11 @@ class PluginsTextView(CustomizableCalObj):
 	def addExtraMenuItems(self, menu: gtk.Menu) -> None:
 		pass
 
-	@staticmethod
-	def onPlugConfClick(plug: PluginType) -> None:
+	def onPlugConfClick(self, plug: PluginType) -> None:
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
-		ud.windowList.onConfigChange()
+		self.broadcastConfigChange()
 
 	def onPlugAboutClick(self, plug: PluginType) -> None:
 		from scal3.ui_gtk.about import AboutDialog

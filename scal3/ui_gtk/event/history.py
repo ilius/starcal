@@ -226,7 +226,7 @@ class EventHistoryDialog(CalObjWidget):
 
 	def onResponse(self, _w: Any, _e: Any) -> None:
 		self.hide()
-		ud.windowList.onConfigChange()
+		ud.windowList.broadcastConfigChange()
 
 	@staticmethod
 	def setColumnWidth(
