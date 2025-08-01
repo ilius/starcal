@@ -42,7 +42,8 @@ from scal3.ui_gtk.utils import newAlignLabel
 if typing.TYPE_CHECKING:
 	from scal3.ui_gtk.option_ui import OptionUI
 
-__all__ = ['PreferencesStatusIcon']
+__all__ = ["PreferencesStatusIcon"]
+
 
 class PreferencesStatusIcon:
 	def __init__(self, spacing: int) -> None:
