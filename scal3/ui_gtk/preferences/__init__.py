@@ -112,8 +112,6 @@ class PreferencesWindow(gtk.Window):
 		stack.setupWindowTitle(self, _("Preferences"), False)
 		self.stack = stack
 		# --------------------------------------------------------------------
-		self.initialLogLevel = logger.logLevel
-		# --------------------------------------------------------------------
 		self._initPageLangCalTypes()  # Page Language and Calendar Types)
 		self._initPageGeneral()  # Page General
 		self._initPageAppearance()  # Page Appearance
@@ -385,6 +383,7 @@ class PreferencesWindow(gtk.Window):
 		# ------------------- Saving logger config
 		assert self.loggerOptionUI is not None
 		self.loggerOptionUI.save()
+		log.setLevel(logger.logLevel.v)
 		# ------------------- Saving calendar types config
 		for mod in calTypes:
 			mod.save()
@@ -443,9 +442,7 @@ class PreferencesWindow(gtk.Window):
 	def checkNeedRestart(self) -> bool:
 		if ui.mainWin is None:
 			return False
-		if ui.checkNeedRestart():
-			return True
-		return logger.logLevel != self.initialLogLevel
+		return ui.checkNeedRestart()
 
 	def refreshAccounts(self) -> None:
 		self.accountsTab.refreshAccounts()
