@@ -39,7 +39,7 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from scal3.pytypes import PluginType
 
-__all__ = ["PreferencesPluginsTab"]
+__all__ = ["PreferencesPlugins"]
 
 
 class PreferencesWindowType(Protocol):
@@ -117,17 +117,16 @@ class PreferencesPluginsToolbar(VerticalStaticToolBox):
 		self.buttonAdd.w.set_sensitive(canAdd)
 
 
-class PreferencesPluginsTab:
-	def __init__(self, spacing: int, window: gtk.Window) -> None:
-		self.spacing = spacing
+class PreferencesPlugins:
+	def __init__(self, window: gtk.Window, spacing: int) -> None:
 		self.window = window
 		vbox = gtk.Box(
 			orientation=gtk.Orientation.VERTICAL,
-			spacing=int(self.spacing / 2),
+			spacing=int(spacing / 2),
 		)
 		page = StackPage()
 		self.page = page
-		vbox.set_border_width(int(self.spacing / 2))
+		vbox.set_border_width(int(spacing / 2))
 		page.pageWidget = vbox
 		page.pageName = "plugins"
 		page.pageTitle = _("Plugins")
@@ -355,7 +354,7 @@ class PreferencesPluginsTab:
 		core.allPlugList.v[plugI] = plug2
 		return plug
 
-	def updateGui(self) -> None:
+	def updatePrefGui(self) -> None:
 		model = self.plugListStore
 		model.clear()
 		for p in core.getPluginsTable():
