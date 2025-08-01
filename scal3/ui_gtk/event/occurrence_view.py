@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
 
@@ -56,6 +57,7 @@ class DayOccurrenceView(CustomizableCalObj):
 
 	def __init__(
 		self,
+		parentWin: gtk.Window | None,
 		eventSepParam: Option[str] | None = None,
 		justificationParam: Option[str] | None = None,
 		fontEnableParam: Option[bool] | None = None,
@@ -68,6 +70,7 @@ class DayOccurrenceView(CustomizableCalObj):
 		super().__init__()
 		self.t = gtk.TextView()
 		self.w: gtk.Widget = self.t
+		self.parentWin = parentWin
 		self.t.set_editable(False)
 		self.t.set_cursor_visible(False)
 		self.t.set_wrap_mode(wrapMode)
@@ -540,7 +543,7 @@ class DayOccurrenceView(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
-		if not confirmEventTrash(event, transient_for=ui.mainWin.win):
+		if not confirmEventTrash(event, transient_for=self.parentWin):
 			return
 		ui.moveEventToTrash(ev.groups[groupId], event, self)
 		self.onConfigChange()
@@ -557,16 +560,18 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 
 	def __init__(
 		self,
+		mainWin: MainWinType,
 		eventSepParam: Option[str] | None = None,
 	) -> None:
 		super().__init__()
 		self.swin = gtk.ScrolledWindow()
 		self.w: gtk.Widget = self.swin
 		self.swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
+		self.mainWin = mainWin
 		# ---
 		self.initVars()
 		# ---
-		item = DayOccurrenceView(eventSepParam=eventSepParam)
+		item = DayOccurrenceView(parentWin=mainWin.win, eventSepParam=eventSepParam)
 		item.show()
 		self._item = item
 		self.swin.add(item.w)
@@ -608,8 +613,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 
 	def onMaximumHeightChange(self) -> None:
 		self.w.queue_resize()
-		assert ui.mainWin is not None
-		ui.mainWin.autoResize()
+		self.mainWin.autoResize()
 
 
 #

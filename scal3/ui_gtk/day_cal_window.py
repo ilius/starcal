@@ -24,7 +24,7 @@ log = logger.get()
 import os
 from os.path import join
 from time import perf_counter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from scal3 import ui
 from scal3.config_utils import loadSingleConfig, saveSingleConfig
@@ -55,6 +55,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.cal_obj import CalBase
 	from scal3.ui_gtk.day_cal import ParentWindowType
 	from scal3.ui_gtk.signals import SignalHandlerType
+	from scal3.ui_gtk.starcal_types import OptWidget
 
 __all__ = ["DayCalWindow"]
 
@@ -88,6 +89,12 @@ def liveConfChanged() -> None:
 			saveLiveConfLoop,
 		)
 		lastLiveConfChangeTime = tm
+
+
+class MainWinType(Protocol):
+	def dayInfoShow(self, _sig: SignalHandlerType | None = None) -> None: ...
+	def onStatusIconClick(self, _w: OptWidget = None) -> None: ...
+	def getStatusIconPopupItems(self) -> list[gtk.MenuItem]: ...
 
 
 class DayCalWindowCustomizeWindow(Dialog):
@@ -185,8 +192,9 @@ class DayCalWindowWidget(DayCal):
 	}
 	seasonPieTextColor = conf.dcalWinSeasonPieTextColor
 
-	def __init__(self, win: ParentWindowType) -> None:
+	def __init__(self, win: ParentWindowType, mainWin: MainWinType | None) -> None:
 		DayCal.__init__(self, win)
+		self.mainWin = mainWin
 		self.w.set_size_request(50, 50)
 		self.menu: gtk.Menu | None = None
 		self.customizeWindow: DayCalWindowCustomizeWindow | None = None
@@ -232,8 +240,8 @@ class DayCalWindowWidget(DayCal):
 					if button.contains(x, y, w, h):
 						button.onPress(gevent)
 						return True
-			if ui.mainWin:
-				ui.mainWin.onStatusIconClick()
+			if self.mainWin:
+				self.mainWin.onStatusIconClick()
 				return True
 		elif b == 3:
 			self.popupMenuOnButtonPress(obj, gevent)
@@ -272,13 +280,13 @@ class DayCalWindowWidget(DayCal):
 		if menu is not None:
 			menu.show_all()
 			return menu
-		assert ui.mainWin is not None
+		assert self.mainWin is not None
 		menu = Menu()
 		if os.sep == "\\":
 			from scal3.ui_gtk.windows import setupMenuHideOnLeave
 
 			setupMenuHideOnLeave(menu)
-		items = ui.mainWin.getStatusIconPopupItems()
+		items = self.mainWin.getStatusIconPopupItems()
 		items.insert(
 			5,
 			ImageMenuItem(
@@ -313,10 +321,11 @@ class DayCalWindow(CalObjWidget):
 	objName = "dayCalWin"
 	desc = _("Day Calendar Window")
 
-	def __init__(self) -> None:
+	def __init__(self, mainWin: MainWinType | None) -> None:
 		super().__init__()
 		self.win = win = gtk.Window()
 		self.w: gtk.Widget = self.win
+		self.mainWin = mainWin
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
@@ -329,7 +338,7 @@ class DayCalWindow(CalObjWidget):
 		# ---
 		if TYPE_CHECKING:
 			_win: ParentWindowType = self
-		self._widget = DayCalWindowWidget(self)
+		self._widget = DayCalWindowWidget(self, self.mainWin)
 		self._widget.myWin = win  # noqa: SLF001
 
 		self.w.connect("key-press-event", self._widget.onKeyPress)
@@ -383,13 +392,13 @@ class DayCalWindow(CalObjWidget):
 	def prefUpdateBgColor(self, cal: CalBase) -> None:
 		pass
 
-	@staticmethod
-	def dayInfoShow(_w: gtk.Widget | None = None) -> None:
-		assert ui.mainWin is not None
-		ui.mainWin.dayInfoShow()
+	def dayInfoShow(self, _w: gtk.Widget | None = None) -> None:
+		if self.mainWin is None:
+			return
+		self.mainWin.dayInfoShow()
 
 	def onDeleteEvent(self, _arg: Any = None, _ge: Any = None) -> bool:
-		if ui.mainWin:
+		if self.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()

@@ -33,7 +33,6 @@ from scal3.ui_gtk.stack import StackPage
 __all__ = ["PreferencesLanguageCalTypes"]
 
 
-
 class PreferencesLanguageCalTypes:
 	def __init__(self, window: gtk.Window, spacing: int) -> None:
 		self.win = window
@@ -73,4 +72,3 @@ class PreferencesLanguageCalTypes:
 		hbox.set_border_width(5)
 		frame.set_border_width(0)
 		pack(vbox, hbox, 1, 1)
-
