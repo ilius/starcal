@@ -87,6 +87,7 @@ if typing.TYPE_CHECKING:
 	from scal3.event_update_queue import EventUpdateRecord
 	from scal3.ui_gtk import Dialog
 	from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["EventManagerDialog"]
 
@@ -170,11 +171,15 @@ class EventManagerDialog(CalObjWidget):
 	objName = "eventMan"
 	desc = _("Event Manager")
 
-	def __init__(self, transient_for: gtk.Window | None = None) -> None:
+	def __init__(
+		self,
+		mainWin: MainWinType,
+	) -> None:
 		loadConf()
 		checkEventsReadOnly()  # FIXME
-		self.dialog = dialog = MyDialog(transient_for=transient_for)
+		self.dialog = dialog = MyDialog(transient_for=mainWin.win)
 		self.w: gtk.Widget = self.dialog
+		self.mainWin = mainWin
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
@@ -1790,10 +1795,8 @@ class EventManagerDialog(CalObjWidget):
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self.dialog).present()
 
-	@staticmethod
-	def onMenuBarSearchClick(_menuItem: gtk.MenuItem) -> None:
-		assert ui.mainWin is not None
-		ui.mainWin.eventSearchShow()
+	def onMenuBarSearchClick(self, _menuItem: gtk.MenuItem) -> None:
+		self.mainWin.eventSearchShow()
 
 	def _do_checkForOrphans(self) -> None:
 		newGroup = ev.groups.checkForOrphans()

@@ -209,7 +209,6 @@ class PreferencesWindow(gtk.Window):
 		self.localeOptionUIs.append(tab.langOption)
 		self.coreOptionUIs.append(tab.calsOption)
 
-
 	def _initPageGeneral(self) -> None:
 		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=self.spacing)
 		vbox.set_border_width(int(self.spacing / 2))

@@ -45,8 +45,7 @@ class MainWinType(Protocol):
 	@staticmethod
 	def getStatusIconTooltip() -> str: ...
 
-	@staticmethod
-	def dayCalWinShow(_w: OptWidget = None, _ge: OptEvent = None) -> None: ...
+	def dayCalWinShow(self, _w: OptWidget = None, _ge: OptEvent = None) -> None: ...
 
 	def menuMainPopup(
 		self,

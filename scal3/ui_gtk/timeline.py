@@ -1044,10 +1044,11 @@ class TimeLineWindow(CalObjWidget):
 	objName = "timeLineWin"
 	desc = _("Time Line")
 
-	def __init__(self) -> None:
+	def __init__(self, parentWin: gtk.Window | None) -> None:
 		win = gtk.Window()
 		self.win = win
 		self.w: gtk.Widget = win
+		self.parentWin = parentWin
 		self.initVars()
 		ud.windowList.appendItem(self)
 		# ---
@@ -1071,14 +1072,14 @@ class TimeLineWindow(CalObjWidget):
 		_widget: gtk.Widget | None = None,
 		_event: gdk.Event | None = None,
 	) -> bool:
-		if ui.mainWin:
+		if self.parentWin:
 			self.hide()
 		else:
 			gtk.main_quit()  # FIXME
 		return True
 
 	def onCloseClick(self) -> None:
-		if ui.mainWin:
+		if self.parentWin:
 			self.hide()
 		else:
 			gtk.main_quit()  # FIXME
@@ -1096,7 +1097,7 @@ class TimeLineWindow(CalObjWidget):
 
 
 if __name__ == "__main__":
-	win = TimeLineWindow()
+	win = TimeLineWindow(None)
 	# win.tline.timeWidth = 100 * minYearLenSec  # 2 * 10**17
 	# win.tline.timeStart = now() - win.tline.timeWidth  # -10**17
 	win.show()

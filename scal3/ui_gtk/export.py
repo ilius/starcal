@@ -191,32 +191,6 @@ class ExportDialog(MyDialog):
 		self.resize(1, 1)
 		openWindow(self)
 
-	"""
-	def exportSvg(self, path, monthList):-- FIXME
-		# monthList is a list of tuples (year, month)
-		#import cairo
-		hspace = 20
-		mcal = ui.mainWin.mcal
-		aloc = mcal.get_allocation()
-		n = len(monthList)
-		w = aloc.width
-		h = n * aloc.height + (n - 1) * hspace
-		surface = cairo.SVGSurface(f"{path}.svg", w, h)
-		cr = ImageContext(surface)
-		year = ui.cells.current.year
-		month = ui.cells.current.month
-		day = self.mcal.day
-		ui.mainWin.show() # ??????????????
-		for i in range(n):
-			surface.set_device_offset(0, i*(h0+hspace))
-			mcal.dateChange((monthList[i][0], monthList[i][1], 1))
-			mcal.drawAll(cr=cr, cursor=False)
-			mcal.queue_draw()
-		ui.mainWin.dateChange((year, month, day))
-		surface.flush()
-		surface.finish()
-	"""
-
 
 class ExportToIcsDialog(MyDialog):
 	def __init__(
