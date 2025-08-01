@@ -39,7 +39,8 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from scal3.ui_gtk.option_ui import OptionUI
 
-__all__ = ['PreferencesAdvanced']
+__all__ = ["PreferencesAdvanced"]
+
 
 class PreferencesAdvanced:
 	def __init__(self, spacing: int) -> None:
