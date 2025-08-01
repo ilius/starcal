@@ -34,6 +34,7 @@ __all__ = ["MainWinRightPanel"]
 class RightPanelDayOccurrenceView(DayOccurrenceView):
 	def __init__(
 		self,
+		parentWin: gtk.Window,
 		rightPanel: MainWinRightPanel | None = None,
 		eventSepParam: Option[str] | None = None,
 		justificationParam: Option[str] | None = None,
@@ -46,6 +47,7 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 	) -> None:
 		DayOccurrenceView.__init__(
 			self,
+			parentWin=parentWin,
 			eventSepParam=eventSepParam,
 			justificationParam=justificationParam,
 			fontEnableParam=fontEnableParam,
@@ -135,11 +137,12 @@ class MainWinRightPanel(CustomizableCalObj):
 	itemListCustomizable = False
 	optionsPageSpacing = 5
 
-	def __init__(self) -> None:
+	def __init__(self, parentWin: gtk.Window) -> None:
 		super().__init__()
 		self.paned = VericalPanedWithWidthFunc(getWidth=self.getWidth)
 		self.w: gtk.Widget = self.paned
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+		self.parentWin = parentWin
 		# ---
 		self.initVars()
 		self.setPosAtHeight = 0
@@ -147,6 +150,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		self.w.connect("size-allocate", self.onSizeAllocate)
 		# ---
 		self.eventItem = RightPanelDayOccurrenceView(
+			parentWin=parentWin,
 			# getWidth=self.getWidth,
 			rightPanel=self,
 			eventSepParam=conf.mainWinRightPanelEventSep,
@@ -279,10 +283,9 @@ class MainWinRightPanel(CustomizableCalObj):
 	"""
 
 	def getWidth(self) -> int:  # noqa: PLR6301
-		# TODO: add self.parentWin: gtk.Window, use it instead of ui.mainWin.w
 		if conf.mainWinRightPanelWidthRatioEnable.v:
-			if ui.mainWin and ui.mainWin.win.is_maximized():
-				winWidth = ui.mainWin.win.get_size()[0]
+			if self.parentWin.is_maximized():
+				winWidth = self.parentWin.get_size()[0]
 			else:
 				winWidth = conf.winWidth.v
 			return int(conf.mainWinRightPanelWidthRatio.v * winWidth)

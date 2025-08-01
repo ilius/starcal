@@ -162,7 +162,7 @@ class DayInfoDialog(CustomizableCalObj):
 		self.appendDayInfoItem(AllDateLabelsVBox())
 		self.appendDayInfoItem(DayInfoJulianDayHBox(), expander=False)
 		self.appendDayInfoItem(PluginsTextView())
-		self.appendDayInfoItem(DayOccurrenceView())
+		self.appendDayInfoItem(DayOccurrenceView(parentWin=self.w))
 		# ---
 		dialog.vbox.show_all()
 

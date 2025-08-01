@@ -506,7 +506,7 @@ class MainWin(CalObjWidget):
 
 		if self.rightPanel is not None:
 			return self.rightPanel
-		self.rightPanel = MainWinRightPanel()
+		self.rightPanel = MainWinRightPanel(self.win)
 		self.rightPanel.onConfigChange()
 		return self.rightPanel
 
@@ -558,11 +558,13 @@ class MainWin(CalObjWidget):
 
 		return PluginsTextBox(insideExpanderParam=conf.pluginsTextInsideExpander)
 
-	@staticmethod
-	def createEventDayView() -> CustomizableCalObj:
+	def createEventDayView(self) -> CustomizableCalObj:
 		from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
 
-		return LimitedHeightDayOccurrenceView(eventSepParam=conf.eventDayViewEventSep)
+		return LimitedHeightDayOccurrenceView(
+			self,
+			eventSepParam=conf.eventDayViewEventSep,
+		)
 
 	def selectDateResponse(self, _w: gtk.Widget, y: int, m: int, d: int) -> None:
 		ui.cells.changeDate(y, m, d)
@@ -1701,7 +1703,7 @@ class MainWin(CalObjWidget):
 		if ui.eventManDialog is None:
 			from scal3.ui_gtk.event.manager import EventManagerDialog
 
-			ui.eventManDialog = EventManagerDialog(transient_for=self.win)
+			ui.eventManDialog = EventManagerDialog(self)
 
 	def eventManShow(
 		self,
@@ -1730,37 +1732,37 @@ class MainWin(CalObjWidget):
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
 
-	@staticmethod
 	def dayCalWinShow(
+		self,
 		_w: OptWidget = None,
 		_ge: OptEvent = None,
 	) -> None:
 		if not ui.dayCalWin:
 			from scal3.ui_gtk.day_cal_window import DayCalWindow
 
-			ui.dayCalWin = DayCalWindow()
+			ui.dayCalWin = DayCalWindow(self)
 		ui.dayCalWin.w.present()
 
-	@staticmethod
 	def timeLineShow(
+		self,
 		_w: OptWidget = None,
 		_ge: OptEvent = None,
 	) -> None:
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
 
-			ui.timeLineWin = TimeLineWindow()
+			ui.timeLineWin = TimeLineWindow(self.win)
 		openWindow(ui.timeLineWin.w)
 
-	@staticmethod
 	def timeLineShowSelectedDay(
+		self,
 		_w: OptWidget = None,
 		_ge: OptEvent = None,
 	) -> None:
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
 
-			ui.timeLineWin = TimeLineWindow()
+			ui.timeLineWin = TimeLineWindow(self.win)
 		ui.timeLineWin.showDayInWeek(ui.cells.current.jd)
 		openWindow(ui.timeLineWin.w)
 
@@ -1942,8 +1944,7 @@ def main() -> None:
 	ev.info.updateAndSave()
 	# -------------------------------
 	mainWin = MainWin(statusIconMode=statusIconMode)
-	# ud.windowList.broadcastDateChange()
-	ud.windowList.broadcastConfigChange()
+	mainWin.broadcastConfigChange()
 	if TYPE_CHECKING:
 		_mainWin: CalObjType = mainWin
 	if os.getenv("STARCAL_FULL_IMPORT"):
