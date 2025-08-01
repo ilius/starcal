@@ -27,17 +27,14 @@ from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import confirm, showError
 
-__all__ = ["PreferencesAccountsTab"]
+__all__ = ["PreferencesAccounts"]
 
 
-class PreferencesAccountsTab:
+class PreferencesAccounts:
 	def __init__(self, window: gtk.Window, spacing: int) -> None:
 		self.win = window
-		self.spacing = spacing
-		vbox = gtk.Box(
-			orientation=gtk.Orientation.VERTICAL, spacing=int(self.spacing / 2)
-		)
-		vbox.set_border_width(int(self.spacing / 2))
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=int(spacing / 2))
+		vbox.set_border_width(int(spacing / 2))
 		page = StackPage()
 		self.page = page
 		page.pageWidget = vbox

@@ -36,9 +36,8 @@ __all__ = ["PreferencesLanguageCalTypes"]
 class PreferencesLanguageCalTypes:
 	def __init__(self, window: gtk.Window, spacing: int) -> None:
 		self.win = window
-		self.spacing = spacing
-		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=self.spacing)
-		vbox.set_border_width(int(self.spacing / 2))
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=spacing)
+		vbox.set_border_width(int(spacing / 2))
 		page = StackPage()
 		self.page = page
 		page.pageWidget = vbox
@@ -47,9 +46,7 @@ class PreferencesLanguageCalTypes:
 		page.pageLabel = _("_Language and Calendar Types")
 		page.pageIcon = "preferences-desktop-locale.png"
 		# --------------------------
-		hbox = gtk.Box(
-			orientation=gtk.Orientation.HORIZONTAL, spacing=int(self.spacing / 2)
-		)
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=int(spacing / 2))
 		pack(hbox, gtk.Label(label=_("Language")))
 		langOption = LangOptionUI()
 		self.langOption = langOption
