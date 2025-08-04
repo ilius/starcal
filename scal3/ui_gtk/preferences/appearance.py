@@ -25,17 +25,15 @@ import typing
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.option_ui import (
-	CheckOptionUI,
-	ColorOptionUI,
-	FontOptionUI,
-	OptionUI,
-)
+from scal3.ui_gtk.option_ui.base import OptionUI
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
+from scal3.ui_gtk.option_ui.color import ColorOptionUI
+from scal3.ui_gtk.option_ui.font import FontOptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel, newHSep
 
 if typing.TYPE_CHECKING:
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["PreferencesAppearance"]
 

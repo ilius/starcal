@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 	from scal3.font import Font
 	from scal3.option import Option
 	from scal3.ui_gtk import gdk
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["DayOccurrenceView", "LimitedHeightDayOccurrenceView"]
@@ -129,13 +129,11 @@ class DayOccurrenceView(CustomizableCalObj):
 		self.t.set_justification(ud.justificationByName[value])
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckFontOptionUI,
-			CheckOptionUI,
-			FontOptionUI,
-			JustificationOptionUI,
-			TextOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckFontOptionUI
+		from scal3.ui_gtk.option_ui.font import FontOptionUI
+		from scal3.ui_gtk.option_ui.justification import JustificationOptionUI
+		from scal3.ui_gtk.option_ui.text import TextOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -589,7 +587,7 @@ class LimitedHeightDayOccurrenceView(CustomizableCalObj):
 		return height, height
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import IntSpinOptionUI
+		from scal3.ui_gtk.option_ui.spin import IntSpinOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

@@ -29,7 +29,7 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import Dialog, GdkPixbuf, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import DummyCalObj, newSubPageButton
-from scal3.ui_gtk.option_ui import CheckOptionUI
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,

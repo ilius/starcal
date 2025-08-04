@@ -55,7 +55,7 @@ from scal3.ui_gtk.drawing import (
 	setColor,
 )
 from scal3.ui_gtk.mywidgets import MyFontButton
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
+from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI, IntSpinOptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
 	CustomizableToolBox,
@@ -77,7 +77,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.drawing import (
 		ImageContext,
 	)
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 	from scal3.ui_gtk.toolbox import (
@@ -127,10 +127,8 @@ class ColumnBase(CustomizableCalObj):
 		self.w.queue_resize()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckOptionUI,
-			FontFamilyOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.font import FontFamilyOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -469,7 +467,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import IconChooserOptionUI
+		from scal3.ui_gtk.option_ui.file import IconChooserOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -663,7 +661,7 @@ class PluginsTextColumn(Column):
 		)
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.option_ui import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
 
 		# -----
 		option = CheckOptionUI(
@@ -814,11 +812,9 @@ class EventsTextColumn(Column):
 		self.onDateChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.option_ui import (
-			CheckColorOptionUI,
-			CheckOptionUI,
-			ColorOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
 
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
@@ -1110,7 +1106,7 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 			item.onWidthChange()
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.option_ui import DirectionOptionUI
+		from scal3.ui_gtk.option_ui.direction import DirectionOptionUI
 
 		# ---
 		option = DirectionOptionUI(
@@ -1346,7 +1342,7 @@ class MoonStatusColumn(Column):
 		cr.scale(1 / scaleFact, 1 / scaleFact)
 
 	def addExtraOptionsWidget(self, optionsWidget: gtk.Box) -> None:
-		from scal3.ui_gtk.option_ui import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
 
 		# ----
 		option = CheckOptionUI(
@@ -1454,11 +1450,9 @@ class CalObj(CalBase):
 		self.repackAll()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckColorOptionUI,
-			CheckOptionUI,
-			ColorOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

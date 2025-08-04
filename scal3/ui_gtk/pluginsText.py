@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.pytypes import PluginType
 	from scal3.ui_gtk import gdk
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["PluginsTextBox"]
 
@@ -347,12 +347,10 @@ class PluginsTextBox(CustomizableCalObj):
 		return True
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckFontOptionUI,
-			CheckOptionUI,
-			FontOptionUI,
-			JustificationOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckFontOptionUI
+		from scal3.ui_gtk.option_ui.font import FontOptionUI
+		from scal3.ui_gtk.option_ui.justification import JustificationOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

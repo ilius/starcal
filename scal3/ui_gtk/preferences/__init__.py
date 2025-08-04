@@ -31,7 +31,7 @@ from scal3.ui import conf
 from scal3.ui_gtk import Dialog, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.option_ui import CheckOptionUI
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
 from scal3.ui_gtk.option_ui_extra import CheckStartupOptionUI
 from scal3.ui_gtk.preferences.accounts import PreferencesAccounts
 from scal3.ui_gtk.preferences.advanced import PreferencesAdvanced
@@ -46,7 +46,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 
 if typing.TYPE_CHECKING:
 	from scal3.ui_gtk.log_pref import LogLevelOptionUI
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["PreferencesWindow"]
