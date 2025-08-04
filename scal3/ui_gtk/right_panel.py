@@ -311,7 +311,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self.s, page, borderWidth=10)
 		pack(optionsWidget, button)
 		option: OptionUI
 		# -----
@@ -359,7 +359,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self.s, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
 		option = IntSpinOptionUI(
@@ -385,7 +385,7 @@ class MainWinRightPanel(CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self.s, page, borderWidth=10)
 		pack(optionsWidget, button)
 		# ---
 		pluginOptionsWidget = self.plugItem.getOptionsWidget()

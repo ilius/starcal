@@ -151,7 +151,7 @@ class CalObj(CalBase):
 			)
 			page.pageExpand = False
 			subPages.append(page)
-			button = newSubPageButton(self, page, borderWidth=7)
+			button = newSubPageButton(self.s, page, borderWidth=7)
 			pack(vbox, button, padding=3)
 		# ---
 		vbox.show_all()
@@ -277,7 +277,7 @@ class CalObj(CalBase):
 		page.pageIcon = ""
 		self.cursorPage = page
 		# ---
-		button = newSubPageButton(self, page, borderWidth=7)
+		button = newSubPageButton(self.s, page, borderWidth=7)
 		pack(optionsWidget, button, padding=5)
 		# --------
 		self.optionsWidget = optionsWidget
