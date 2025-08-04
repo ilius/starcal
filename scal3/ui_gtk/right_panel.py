@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI
+from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI
 
 log = logger.get()
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 	from scal3.font import Font
 	from scal3.option import Option
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 
 __all__ = ["MainWinRightPanel"]
@@ -292,10 +292,8 @@ class MainWinRightPanel(CustomizableCalObj):
 		return conf.mainWinRightPanelWidth.v
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckOptionUI,
-			IntSpinOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.spin import IntSpinOptionUI
 		from scal3.ui_gtk.option_ui_extra import FixedSizeOrRatioOptionUI
 		from scal3.ui_gtk.stack import StackPage
 

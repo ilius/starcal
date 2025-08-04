@@ -28,19 +28,17 @@ from scal3.locale_man import tr as _
 from scal3.path import sourceDir, svgDir
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.option_ui import (
-	CheckColorOptionUI,
-	CheckOptionUI,
-	ColorOptionUI,
-	FontFamilyOptionUI,
-	ImageFileChooserOptionUI,
-	WidthHeightOptionUI,
-)
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
+from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+from scal3.ui_gtk.option_ui.color import ColorOptionUI
+from scal3.ui_gtk.option_ui.file import ImageFileChooserOptionUI
+from scal3.ui_gtk.option_ui.font import FontFamilyOptionUI
+from scal3.ui_gtk.option_ui.geo import WidthHeightOptionUI
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import newAlignLabel
 
 if typing.TYPE_CHECKING:
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["PreferencesStatusIcon"]
 

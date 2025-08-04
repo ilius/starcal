@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from scal3 import logger
 from scal3.ui import conf
-from scal3.ui_gtk.option_ui import IntSpinOptionUI
+from scal3.ui_gtk.option_ui.spin import IntSpinOptionUI
 
 log = logger.get()
 
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.drawing import (
 		ImageContext,
 	)
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
@@ -181,12 +181,10 @@ class CalObj(CalBase):
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckColorOptionUI,
-			CheckOptionUI,
-			ColorOptionUI,
-			FloatSpinOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
+		from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

@@ -24,7 +24,7 @@ log = logger.get()
 from scal3.json_utils import dataToCompactJson
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.option_ui import OptionUI
+from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["LogLevelOptionUI"]
 

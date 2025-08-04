@@ -15,7 +15,7 @@ from scal3.ui_gtk.mywidgets.label import SLabel
 from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["CalObj"]
 
@@ -82,11 +82,9 @@ class CalObj(CustomizableCalObj):
 			label.set_label(text)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckColorOptionUI,
-			CheckOptionUI,
-			ColorOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

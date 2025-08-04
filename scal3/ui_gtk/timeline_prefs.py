@@ -24,10 +24,10 @@ from scal3.timeline import conf
 from scal3.ui import conf as uiconf
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.option_ui import (
-	CheckColorOptionUI,
-	CheckOptionUI,
-	ColorOptionUI,
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
+from scal3.ui_gtk.option_ui.check_mix import CheckColorOptionUI
+from scal3.ui_gtk.option_ui.color import ColorOptionUI
+from scal3.ui_gtk.option_ui.spin import (
 	FloatSpinOptionUI,
 	IntSpinOptionUI,
 )
@@ -36,9 +36,7 @@ from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import imageFromFile
 
 if typing.TYPE_CHECKING:
-	from scal3.ui_gtk.option_ui import (
-		OptionUI,
-	)
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["TimeLinePreferencesWindow"]

@@ -22,7 +22,7 @@ from scal3.ui_gtk.cal_type_options import (
 	MonthNameListOptionsWidget,
 	WeekDayNameOptionsWidget,
 )
-from scal3.ui_gtk.option_ui import FloatSpinOptionUI, IntSpinOptionUI
+from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI, IntSpinOptionUI
 
 log = logger.get()
 
@@ -81,7 +81,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.drawing import (
 		ImageContext,
 	)
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 
 __all__ = ["DayCal", "ParentWindowType"]
@@ -437,10 +437,8 @@ class DayCal(CalBase):
 		return self.myWin
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
-			CheckOptionUI,
-			ColorOptionUI,
-		)
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

@@ -32,12 +32,13 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_type_option_ui import ModuleOptionButton, ModuleOptionUI
-from scal3.ui_gtk.option_ui import CheckOptionUI, ComboEntryTextOptionUI
+from scal3.ui_gtk.option_ui.check import CheckOptionUI
+from scal3.ui_gtk.option_ui.combo import ComboEntryTextOptionUI
 from scal3.ui_gtk.option_ui_extra import WeekDayCheckListOptionUI
 from scal3.ui_gtk.stack import StackPage
 
 if typing.TYPE_CHECKING:
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 
 __all__ = ["PreferencesRegionalTab"]
 

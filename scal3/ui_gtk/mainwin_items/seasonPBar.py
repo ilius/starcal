@@ -51,7 +51,7 @@ class CalObj(CustomizableCalObj):
 		self.pbar.set_fraction(frac)
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget

@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk import (
 		gdk,
 	)
-	from scal3.ui_gtk.option_ui import OptionUI
+	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.signals import SignalHandlerType
 	from scal3.ui_gtk.starcal_types import MainWinType
 
@@ -704,14 +704,14 @@ class CalObj(CustomizableCalObj):
 		self.onDateChange()
 
 	def getOptionsWidget(self) -> gtk.Widget | None:
-		from scal3.ui_gtk.option_ui import (
+		from scal3.ui_gtk.option_ui.check import CheckOptionUI
+		from scal3.ui_gtk.option_ui.check_mix import (
 			CheckColorOptionUI,
 			CheckFontOptionUI,
-			CheckOptionUI,
-			ColorOptionUI,
-			FontOptionUI,
-			IntSpinOptionUI,
 		)
+		from scal3.ui_gtk.option_ui.color import ColorOptionUI
+		from scal3.ui_gtk.option_ui.font import FontOptionUI
+		from scal3.ui_gtk.option_ui.spin import IntSpinOptionUI
 
 		if self.optionsWidget:
 			return self.optionsWidget
