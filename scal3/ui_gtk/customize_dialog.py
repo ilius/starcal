@@ -391,7 +391,7 @@ class CustomizeWindow(Dialog):
 		pack(
 			page.pageWidget,
 			newSubPageButton(
-				item,
+				item.s,
 				itemsPage,
 				borderWidth=item.itemsPageButtonBorder,
 			),

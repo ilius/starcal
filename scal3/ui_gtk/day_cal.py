@@ -409,7 +409,7 @@ class DayCal(CalBase):
 			page.pageLabel = _("Month Name")
 			page.pageExpand = False
 			subPages.append(page)
-			pack(pageWidget, newSubPageButton(self, page), padding=4)
+			pack(pageWidget, newSubPageButton(self.s, page), padding=4)
 			# ---
 			pageWidget.show_all()
 			page = StackPage()
@@ -419,7 +419,7 @@ class DayCal(CalBase):
 			page.pageLabel = calTypeDesc
 			page.pageExpand = False
 			subPages.append(page)
-			self.buttons1.append(newSubPageButton(self, page))
+			self.buttons1.append(newSubPageButton(self.s, page))
 			# ---
 			c = self.getCell()
 			dayWidget.setFontPreviewText(
@@ -474,7 +474,7 @@ class DayCal(CalBase):
 		page.pageLabel = _("Buttons")
 		page.pageExpand = False
 		subPages.append(page)
-		buttons2.append(newSubPageButton(self, page))
+		buttons2.append(newSubPageButton(self.s, page))
 		# ---
 		if self.widgetButtonsEnable:
 			option = CheckOptionUI(
@@ -560,7 +560,7 @@ class DayCal(CalBase):
 			page.pageLabel = _("Week Day")
 			page.pageExpand = False
 			subPages.append(page)
-			buttons2.append(newSubPageButton(self, page))
+			buttons2.append(newSubPageButton(self.s, page))
 			# ---
 			c = self.getCell()
 			text = core.getWeekDayAuto(
@@ -579,7 +579,7 @@ class DayCal(CalBase):
 		page.pageLabel = _("Events")
 		page.pageExpand = False
 		subPages.append(page)
-		buttons2.append(newSubPageButton(self, page))
+		buttons2.append(newSubPageButton(self.s, page))
 		# ---
 		if self.eventIconSize:
 			option = IntSpinOptionUI(
@@ -613,7 +613,7 @@ class DayCal(CalBase):
 			page.pageLabel = _("Season Pie")
 			page.pageExpand = False
 			subPages.append(page)
-			buttons2.append(newSubPageButton(self, page))
+			buttons2.append(newSubPageButton(self.s, page))
 			# ---
 			option = CheckOptionUI(
 				option=self.seasonPieEnable,

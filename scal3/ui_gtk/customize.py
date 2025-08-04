@@ -31,6 +31,7 @@ from scal3.ui_gtk.cal_obj_base import CalObjWidget
 if TYPE_CHECKING:
 	from scal3.option import Option
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
+	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = [
 	"CustomizableCalBox",
@@ -125,7 +126,7 @@ class CustomizableCalBox(CustomizableCalObj):
 
 
 def newSubPageButton(
-	item: CustomizableCalObjType,
+	sig: SignalHandlerType,
 	page: StackPageType,
 	vertical: bool = False,
 	borderWidth: int = 10,
@@ -152,7 +153,7 @@ def newSubPageButton(
 	def onClick(_b: gtk.Button, page: StackPageType) -> None:
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
-		item.s.emit("goto-page", page.pagePath)
+		sig.emit("goto-page", page.pagePath)
 
 	button.connect("clicked", onClick, page)
 	button.show_all()

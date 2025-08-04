@@ -185,7 +185,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.subPages = [page]
 		# assert self.vertical is not None
 		button = newSubPageButton(
-			item,
+			item.s,
 			page,
 			vertical=self.vertical,
 			borderWidth=self.buttonBorder,

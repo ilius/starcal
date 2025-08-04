@@ -1531,7 +1531,7 @@ class CalObj(CalBase):
 		page.pageIcon = ""
 		self.subPages = [page]
 		# ---
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self.s, page, borderWidth=10)
 		pack(optionsWidget, button, padding=10)
 		# ---------
 		optionsWidget.show_all()
