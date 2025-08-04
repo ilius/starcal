@@ -72,8 +72,6 @@ class WinLayoutBase(CustomizableCalObj):
 	def getOptionsButtonBox(self) -> gtk.Box:
 		raise NotImplementedError
 
-	def getWidget(self) -> gtk.Widget:
-		raise NotImplementedError
 
 
 class MoveButton(gtk.Button):
@@ -132,9 +130,6 @@ class WinLayoutObj(WinLayoutBase):
 			enableParam=enableParam,
 		)
 		self.appendItem(item)
-
-	def getWidget(self) -> gtk.Widget:
-		return self.w
 
 	def getItem(self) -> CustomizableCalObj:
 		return self._item
