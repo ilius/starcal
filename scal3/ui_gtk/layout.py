@@ -73,7 +73,6 @@ class WinLayoutBase(CustomizableCalObj):
 		raise NotImplementedError
 
 
-
 class MoveButton(gtk.Button):
 	def __init__(
 		self,
