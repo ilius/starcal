@@ -55,9 +55,9 @@ class ImageMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
+		func: ItemCallback | None = None,
 		imageName: str | None = None,
 		pixbuf: GdkPixbuf.Pixbuf | None = None,
-		func: ItemCallback | None = None,
 		signalName: str = "activate",
 	) -> None:
 		gtk.MenuItem.__init__(self)
@@ -105,12 +105,27 @@ class ImageMenuItem(gtk.MenuItem):
 		return self._image
 
 
+class ResizeMenuItem(ImageMenuItem):
+	def __init__(
+		self,
+		label: str = "",
+		func: ItemCallback | None = None,
+	) -> None:
+		super().__init__(
+			label=label,
+			imageName="resize.svg",
+			pixbuf=None,
+			func=func,
+			signalName="button-press-event",
+		)
+
+
 class CheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		active: bool = False,
 		func: ItemCallback | None = None,
+		active: bool = False,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._check = gtk.CheckButton(label=" " + label)
@@ -150,8 +165,8 @@ class CustomCheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		active: bool = False,
 		func: ItemCallback | None = None,
+		active: bool = False,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()

@@ -51,14 +51,13 @@ from scal3.locale_man import rtl  # import scal3.locale_man after core
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, sourceDir
 from scal3.ui import conf
-from scal3.ui.msgs import menuMainItemDefs
+from scal3.ui.mainmenuitems import menuMainItemDefs
 from scal3.ui_gtk import (
 	GdkPixbuf,
 	Menu,
 	gdk,
 	gtk,
 	listener,
-	menuitems,
 	pixcache,
 	timeout_add,
 )
@@ -69,9 +68,7 @@ from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
@@ -94,9 +91,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
-	from scal3.ui_gtk.menuitems import (
-		CheckMenuItem,
-	)
+	from scal3.ui_gtk.menuitems import CheckMenuItem
 	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
@@ -1089,13 +1084,14 @@ class MainWin(CalObjWidget):
 			return self.menuMain
 		menu = gtk.Menu(reserve_toggle_size=False)
 		# ----
-		for optionsTmp in menuMainItemDefs.values():
-			options = dict(optionsTmp)  # make a copy before modify
-			cls = getattr(menuitems, options.pop("cls"))
-			options["func"] = getattr(self, options["func"])
-			if "active" in options:
-				options["active"] = getattr(conf, options["active"])
-			menu.add(cls(**options))
+		for itemDict in menuMainItemDefs.values():
+			menu.add(
+				itemDict["cls"](
+					label=itemDict["label"],
+					func=getattr(self, itemDict["func"]),
+					**itemDict["args"],
+				)
+			)
 		# -------
 		menu.show_all()
 		self.menuMain = menu
@@ -1171,7 +1167,6 @@ class MainWin(CalObjWidget):
 		ui.saveLiveConf()
 
 	def onKeepAboveClick(self, check: CheckMenuItem) -> None:
-		print(check)
 		act = check.get_active()
 		self.win.set_keep_above(act)
 		conf.winKeepAbove.v = act

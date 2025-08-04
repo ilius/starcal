@@ -15,7 +15,10 @@
 
 from __future__ import annotations
 
+from typing import NotRequired, TypedDict
+
 from scal3 import logger
+from scal3.ui_gtk.menuitems import CheckMenuItem, ImageMenuItem, ResizeMenuItem
 
 log = logger.get()
 
@@ -25,114 +28,125 @@ from scal3.locale_man import tr as _
 __all__ = ["menuMainItemDefs"]
 
 
-menuMainItemDefs = {
+class MainMenuItemArgsType(TypedDict):
+	imageName: NotRequired[str | None]  # for ImageMenuItem
+	active: NotRequired[str | None]  # for CheckMenuItem
+
+
+class MainMenuItemType(TypedDict):
+	cls: type
+	label: str
+	func: str
+	args: MainMenuItemArgsType
+
+
+menuMainItemDefs: dict[str, MainMenuItemType] = {
 	"resize": dict(
-		cls="ImageMenuItem",
+		cls=ResizeMenuItem,
 		label=_("Resize"),
-		imageName="resize.svg",
 		func="onResizeFromMenu",
-		signalName="button-press-event",
+		args={},
 	),
 	"onTop": dict(
-		cls="CheckMenuItem",
+		cls=CheckMenuItem,
 		label=_("_On Top"),
 		func="onKeepAboveClick",
-		active="winKeepAbove",
+		args={"active": "winKeepAbove"},
 	),
 	"onAllDesktops": dict(
-		cls="CheckMenuItem",
+		cls=CheckMenuItem,
 		label=_("On All De_sktops"),
 		func="onStickyClick",
-		active="winSticky",
+		args={"active": "winSticky"},
 	),
 	"today": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Select _Today"),
-		imageName="go-home.svg",
 		func="goToday",
+		args={"imageName": "go-home.svg"},
 	),
 	"selectDate": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Select _Date..."),
-		imageName="select-date.svg",
 		func="selectDateShow",
+		args={"imageName": "select-date.svg"},
 	),
 	"dayInfo": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Day Info"),
-		imageName="info.svg",
 		func="dayInfoShow",
+		args={"imageName": "info.svg"},
 	),
 	"customize": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("_Customize"),
-		imageName="document-edit.svg",
 		func="customizeShow",
+		args={"imageName": "document-edit.svg"},
 	),
 	"preferences": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("_Preferences"),
-		imageName="preferences-system.svg",
 		func="prefShow",
+		args={"imageName": "preferences-system.svg"},
 	),
-	# ("addCustomEvent", dict(
-	# 	cls="ImageMenuItem",
+	# "addCustomEvent": dict(
+	# 	cls=ImageMenuItem,
 	# 	label=_("_Add Event"),
-	# 	imageName="list-add.svg",
 	# 	func="addCustomEvent",  # to call ui.addCustomEvent
-	# )),
+	# 	args={"imageName": "list-add.svg"},
+	# ),
 	"dayCalWin": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Day Calendar (Desktop Widget)"),
-		imageName="starcal.svg",
 		func="dayCalWinShow",
+		args={"imageName": "starcal.svg"},
 	),
 	"eventManager": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("_Event Manager"),
-		imageName="list-add.svg",
 		func="eventManShow",
+		args={"imageName": "list-add.svg"},
 	),
 	"timeLine": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Time Line"),
-		imageName="timeline.svg",
 		func="timeLineShow",
+		args={"imageName": "timeline.svg"},
 	),
 	"yearWheel": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Year Wheel"),
-		imageName="year-wheel.svg",
 		func="yearWheelShow",
+		args={"imageName": "year-wheel.svg"},
 	),  # icon? FIXME
 	# ("weekCal", dict(
-	# 	cls="ImageMenuItem",
+	# 	cls=ImageMenuItem,
 	# 	label=_("Week Calendar"),
-	# 	imageName="week-calendar.svg",
 	# 	func="weekCalShow",
+	# 	args={"imageName": "week-calendar.svg"},
 	# )),
 	"exportToHtml": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Export to {format}").format(format="HTML"),
-		imageName="export-to-html.svg",
 		func="onExportClick",
+		args={"imageName": "export-to-html.svg"},
 	),
 	"adjustTime": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("Ad_just System Time"),
-		imageName="preferences-system.svg",
 		func="adjustTime",
+		args={"imageName": "preferences-system.svg"},
 	),
 	"about": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("_About"),
-		imageName="dialog-information.svg",
 		func="aboutShow",
+		args={"imageName": "dialog-information.svg"},
 	),
 	"quit": dict(
-		cls="ImageMenuItem",
+		cls=ImageMenuItem,
 		label=_("_Quit"),
-		imageName="application-exit.svg",
 		func="quit",
+		args={"imageName": "application-exit.svg"},
 	),
 }
