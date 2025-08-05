@@ -19,6 +19,7 @@ from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk import pixcache, starcal
 from scal3.ui_gtk.event.export import MultiGroupExportDialog
 from scal3.ui_gtk.event.group.universityTerm import viewWeeklySchedule  # noqa: F401
+from scal3.ui_gtk.starcal_funcs import eventSearchShow, yearWheelShow
 from scal3.ui_gtk.starcal_import_all import doFullImport
 
 ui.init()
@@ -49,7 +50,7 @@ def tick() -> None:
 
 def openAllWindows() -> None:
 	mainWin.dayInfoShow()
-	while mainWin.dayInfoDialog.is_visible():
+	while mainWin.dayInfoDialog.w.is_visible():
 		tick()
 
 	mainWin.goToday()
@@ -59,7 +60,7 @@ def openAllWindows() -> None:
 		tick()
 
 	mainWin.timeLineShowSelectedDay()
-	while ui.timeLineWin.is_visible():
+	while ui.timeLineWin.w.is_visible():
 		tick()
 
 	mainWin.customizeShow()
@@ -71,18 +72,18 @@ def openAllWindows() -> None:
 		tick()
 
 	mainWin.eventManShow()
-	while ui.eventManDialog.is_visible():
+	while ui.eventManDialog.w.is_visible():
 		tick()
 
-	mainWin.eventSearchShow()
-	while ui.eventSearchWin.is_visible():
+	eventSearchShow()
+	while ui.eventSearchWin.w.is_visible():
 		tick()
 
 	dialog = MultiGroupExportDialog()
 	dialog.run()
 
-	mainWin.yearWheelShow()
-	while ui.yearWheelWin.is_visible():
+	yearWheelShow()
+	while ui.yearWheelWin.w.is_visible():
 		tick()
 
 	mainWin.onExportClick()
