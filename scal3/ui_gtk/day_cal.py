@@ -78,9 +78,7 @@ if TYPE_CHECKING:
 		PieGeoDict,
 	)
 	from scal3.ui_gtk.button_drawing import BaseButton
-	from scal3.ui_gtk.drawing import (
-		ImageContext,
-	)
+	from scal3.ui_gtk.drawing import ImageContext
 	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import StackPageType
 
