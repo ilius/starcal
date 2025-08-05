@@ -29,7 +29,6 @@ from scal3 import logger
 
 log = logger.get()
 
-
 import scal3.account.starcal  # noqa: F401
 
 try:
@@ -37,15 +36,12 @@ try:
 except Exception as e:
 	log.error(f"error loading google account module: {e}")
 
+
 from scal3 import core, ui
 from scal3.cell import init as initCell
 from scal3.event_lib import ev
 from scal3.ui import conf
-from scal3.ui_gtk import (
-	gtk,
-	listener,
-	pixcache,
-)
+from scal3.ui_gtk import gtk, listener, pixcache
 from scal3.ui_gtk import hijri as hijri_gtk
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.starcal_import_all import doFullImport
@@ -86,14 +82,13 @@ gtk.init_check(sys.argv)  # type: ignore[call-arg]
 # FIXME
 
 
-for plug in core.allPlugList.v:
-	if plug is None:
-		continue
-	if hasattr(plug, "onCurrentDateChange"):
-		listener.dateChange.add(plug)
-
-
 def main() -> None:
+	for plug in core.allPlugList.v:
+		if plug is None:
+			continue
+		if hasattr(plug, "onCurrentDateChange"):
+			listener.dateChange.add(plug)
+
 	statusIconMode = 2
 	action = ""
 	if conf.showMain.v:

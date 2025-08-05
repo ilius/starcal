@@ -118,7 +118,7 @@ class MainWin(CalObjWidget):
 		# if this application_id is already running, Gtk will crash
 		# with Segmentation fault
 		if ev.allReadOnly:
-			appId += "2"
+			appId += str(int(perf_counter() * 10**9))
 		self.app = gtk.Application(application_id=appId)
 		self.app.register(gio.Cancellable.new())
 		self.win = win = gtk.ApplicationWindow(application=self.app)
@@ -322,11 +322,6 @@ class MainWin(CalObjWidget):
 				footer,
 			],
 		)
-
-	# def mainWinStateEvent(self, obj, gevent):
-	# log.debug(dir(event))
-	# log.debug(gevent.new_window_state)
-	# self._event = event
 
 	def createWindowControllers(self) -> CustomizableCalObj:
 		from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj
