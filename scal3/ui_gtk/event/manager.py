@@ -20,6 +20,7 @@ from copy import copy
 
 from scal3 import logger
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.starcal_funcs import eventSearchShow
 
 log = logger.get()
 import typing
@@ -119,6 +120,10 @@ def loadConf() -> None:
 
 def saveConf() -> None:
 	saveSingleConfig(confPath, confOptions, {})
+
+
+def onMenuBarSearchClick(_menuItem: gtk.MenuItem) -> None:
+	eventSearchShow()
 
 
 class EventManagerToolbar(VerticalStaticToolBox):
@@ -226,7 +231,7 @@ class EventManagerDialog(CalObjWidget):
 		# --
 		# FIXME right place?
 		searchItem = MenuItem(_("_Search Events"))
-		searchItem.connect("activate", self.onMenuBarSearchClick)
+		searchItem.connect("activate", onMenuBarSearchClick)
 		fileMenu.append(searchItem)
 		# --
 		exportItem = MenuItem(_("_Export", ctx="menu"))
@@ -1494,7 +1499,7 @@ class EventManagerDialog(CalObjWidget):
 			ImageMenuItem(
 				_("Export", ctx="menu"),
 				# imageName="export-events.svg",  # FIXME
-				func=export,
+				onActivate=export,
 			),
 		)
 		# ---
@@ -1587,7 +1592,7 @@ class EventManagerDialog(CalObjWidget):
 				moveToMenu.add(
 					menuItemFromEventGroup(
 						new_group,
-						func=self.moveEventToPathFromMenu(path, new_groupPath),
+						onActivate=self.moveEventToPathFromMenu(path, new_groupPath),
 					),
 				)
 		moveToItem.set_submenu(moveToMenu)
@@ -1794,9 +1799,6 @@ class EventManagerDialog(CalObjWidget):
 
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self.dialog).present()
-
-	def onMenuBarSearchClick(self, _menuItem: gtk.MenuItem) -> None:
-		self.mainWin.eventSearchShow()
 
 	def _do_checkForOrphans(self) -> None:
 		newGroup = ev.groups.checkForOrphans()

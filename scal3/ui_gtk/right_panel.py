@@ -66,7 +66,7 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 			ImageMenuItem(
 				_("Swap with Plugins Text"),
 				imageName="switch-vertical.svg",
-				func=self.onSwapClick,
+				onActivate=self.onSwapClick,
 			),
 		)
 
@@ -108,7 +108,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 				ImageMenuItem(
 					_("Swap with Events Text"),
 					imageName="switch-vertical.svg",
-					func=self.onSwapClick,
+					onActivate=self.onSwapClick,
 				),
 			)
 

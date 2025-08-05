@@ -23,7 +23,7 @@ log = logger.get()
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.utils import (
 	imageFromFile,
@@ -34,7 +34,7 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from gi.repository import GdkPixbuf
 
-__all__ = ["CheckMenuItem", "ImageMenuItem", "ItemCallback"]
+__all__ = ["CheckMenuItem", "ImageMenuItem", "ItemCallback", "ResizeMenuItem"]
 
 """
 Documentation says:
@@ -50,15 +50,17 @@ Documentation says:
 
 type ItemCallback = Callable[[gtk.Widget], None]
 
+type ButtonPressCallable = Callable[[gtk.Widget, gdk.EventButton], bool]
+
 
 class ImageMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		func: ItemCallback | None = None,
+		onActivate: ItemCallback | None = None,  # "activate" signal callback
 		imageName: str | None = None,
 		pixbuf: GdkPixbuf.Pixbuf | None = None,
-		signalName: str = "activate",
+		onButtonPress: ButtonPressCallable | None = None,
 	) -> None:
 		gtk.MenuItem.__init__(self)
 		image = None
@@ -98,8 +100,10 @@ class ImageMenuItem(gtk.MenuItem):
 		)
 		self.add(hbox)
 		self._image = image
-		if func:
-			self.connect(signalName, func)
+		if onActivate:
+			self.connect("activate", onActivate)
+		if onButtonPress:
+			self.connect("button-press-event", onButtonPress)
 
 	def get_image(self) -> gtk.Image:
 		return self._image
@@ -109,14 +113,12 @@ class ResizeMenuItem(ImageMenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		func: ItemCallback | None = None,
+		onButtonPress: ButtonPressCallable | None = None,
 	) -> None:
 		super().__init__(
 			label=label,
 			imageName="resize.svg",
-			pixbuf=None,
-			func=func,
-			signalName="button-press-event",
+			onButtonPress=onButtonPress,
 		)
 
 
@@ -124,7 +126,7 @@ class CheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		func: ItemCallback | None = None,
+		onActivate: ItemCallback | None = None,
 		active: bool = False,
 	) -> None:
 		gtk.MenuItem.__init__(self)
@@ -145,7 +147,7 @@ class CheckMenuItem(gtk.MenuItem):
 		# ---
 		self.set_active(active)
 		# ---
-		self._func = func
+		self._func = onActivate
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:
@@ -165,7 +167,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
 		label: str = "",
-		func: ItemCallback | None = None,
+		onActivate: ItemCallback | None = None,
 		active: bool = False,
 	) -> None:
 		gtk.MenuItem.__init__(self)
@@ -193,7 +195,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		# ---
 		self.set_active(active)
 		# ---
-		self._func = func
+		self._func = onActivate
 		self.connect("activate", self._onActivate)
 
 	def _onActivate(self, menuItem: gtk.MenuItem) -> None:

@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.starcal_funcs import getStatusIconTooltip
 
 log = logger.get()
 
@@ -90,7 +91,7 @@ class IndicatorStatusIconWrapper:
 		# ^ just to prevent GC from removing custom objects for items
 		# ----
 		item: gtk.MenuItem
-		for line in self.mainWin.getStatusIconTooltip().split("\n"):
+		for line in getStatusIconTooltip().split("\n"):
 			item = CopyLabelMenuItem(line)
 			self.menuItems.append(item)
 			item.show()

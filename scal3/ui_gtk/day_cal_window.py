@@ -292,7 +292,7 @@ class DayCalWindowWidget(DayCal):
 			ImageMenuItem(
 				_("Customize This Window"),
 				imageName="document-edit.svg",
-				func=self.openCustomize,
+				onActivate=self.openCustomize,
 			),
 		)
 		if reverse:

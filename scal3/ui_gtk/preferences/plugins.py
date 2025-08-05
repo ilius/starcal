@@ -483,7 +483,7 @@ class PreferencesPlugins:
 		item = ImageMenuItem(
 			_("_About"),
 			imageName="dialog-information.svg",
-			func=self.onPlugAboutClick,
+			onActivate=self.onPlugAboutClick,
 		)
 		item.set_sensitive(bool(plug.about))
 		menu.add(item)
@@ -491,7 +491,7 @@ class PreferencesPlugins:
 		item = ImageMenuItem(
 			_("_Configure"),
 			imageName="preferences-system.svg",
-			func=self.onPlugConfClick,
+			onActivate=self.onPlugConfClick,
 		)
 		item.set_sensitive(plug.hasConfig)
 		menu.add(item)
@@ -504,7 +504,7 @@ class PreferencesPlugins:
 			ImageMenuItem(
 				_("Export to {format}").format(format="iCalendar"),
 				imageName="text-calendar-ics.png",
-				func=onPlugExportToIcsClick,
+				onActivate=onPlugExportToIcsClick,
 			),
 		)
 		# --

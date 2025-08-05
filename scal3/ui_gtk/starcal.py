@@ -34,19 +34,18 @@ log = logger.get()
 from gi.repository import Gio as gio
 
 import scal3.account.starcal  # noqa: F401
-from scal3.app_info import APP_DESC, homePage
-from scal3.event_lib import ev
 
 try:
 	import scal3.account.google  # noqa: F401
 except Exception as e:
 	log.error(f"error loading google account module: {e}")
 
-
 from scal3 import cal_types, core, event_lib, locale_man, ui
+from scal3.app_info import APP_DESC, homePage
 from scal3.cal_types import calTypes, convert
 from scal3.cell import init as initCell
 from scal3.color_utils import rgbToHtmlColor
+from scal3.event_lib import ev
 from scal3.locale_man import rtl  # import scal3.locale_man after core
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, sourceDir
@@ -68,20 +67,36 @@ from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
-from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.menuitems import (
+	CheckMenuItem,
+	ImageMenuItem,
+	ResizeMenuItem,
+)
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
+from scal3.ui_gtk.starcal_funcs import (
+	copyCurrentDate,
+	copyCurrentDateTime,
+	copyDateGetCallback,
+	createPluginsText,
+	getStatusIconTooltip,
+	liveConfChanged,
+	onStatusIconPress,
+	prefUpdateBgColor,
+	shouldUseAppIndicator,
+	yearWheelShow,
+)
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.utils import (
 	get_menu_height,
 	get_menu_width,
 	openWindow,
-	setClipboard,
 	showError,
+	trimMenuItemLabel,
 	widgetActionCallback,
+	x_large,
 )
 
 if TYPE_CHECKING:
-	from collections.abc import Callable
 	from types import FrameType
 	from typing import Any
 
@@ -91,7 +106,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
-	from scal3.ui_gtk.menuitems import CheckMenuItem
+	from scal3.ui_gtk.menuitems import ItemCallback
 	from scal3.ui_gtk.pytypes import CalObjType, CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
@@ -106,16 +121,6 @@ __all__ = ["MainWin", "checkEventsReadOnly", "listener", "main"]
 # _ = locale_man.loadTranslator()  # FIXME
 
 ui.uiName = "gtk"
-
-
-def liveConfChanged() -> None:
-	tm = perf_counter()
-	if tm - ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
-		timeout_add(
-			int(ui.saveLiveConfDelay * 1000),
-			ui.saveLiveConfLoop,
-		)
-		ui.lastLiveConfChangeTime = tm
 
 
 class MainWinVbox(CustomizableCalBox):
@@ -158,7 +163,7 @@ class MainWinVbox(CustomizableCalBox):
 		if "popup-main-menu" in signalNames:
 			item.s.connect("popup-main-menu", win.menuMainPopup, item)
 		if "pref-update-bg-color" in signalNames:
-			item.s.connect("pref-update-bg-color", win.prefUpdateBgColor)
+			item.s.connect("pref-update-bg-color", prefUpdateBgColor)
 		if "day-info" in signalNames:
 			item.s.connect("day-info", win.dayInfoShow)
 
@@ -319,25 +324,6 @@ class MainWin(CalObjWidget):
 		win.connect("configure-event", self.onConfigureEvent)
 		self.s.connect("toggle-right-panel", self.onToggleRightPanel)
 		# -------------------------------------------------------------
-		"""
-		#self.w.add_events(gdk.EventMask.VISIBILITY_NOTIFY_MASK)
-		#self.connect("frame-event", show_event)
-		# Compiz does not send configure-event(or any event) when MOVING
-		# window(sends in last point,
-		# when moving completed)
-		#self.connect("drag-motion", show_event)
-		ud.rootWindow.set_events(...
-		ud.rootWindow.add_filter(self.onRootWinEvent)
-		#self.realize()
-		#gdk.flush()
-		#self.onConfigureEvent(None, None)
-		#self.connect("drag-motion", show_event)
-		# ----------------------
-		# ????????????????????????????????????????????????
-		# when button is down(before button-release-event),
-		# motion-notify-event does not recived!
-		"""
-		# ------------------------------------------------------------------
 		self.focus = False
 		# self.focusOutTime = 0
 		# self.clockTr = None
@@ -349,7 +335,63 @@ class MainWin(CalObjWidget):
 		# ----
 		self.customizeWindow: CustomizeWindow | None = None
 		# ------------
-		layoutFooter = WinLayoutBox(
+		self.layout = self.makeLayout()
+		self.appendItem(self.layout)
+		self.vbox = self.layout.getWidget()
+		self.vbox.show()
+		win.add(self.vbox)
+		# --------------------
+		if conf.winMaximized.v:
+			win.maximize()
+		# --------------------
+		# ui.prefWindow = None
+		self.exportDialog: ExportDialog | None = None
+		self.selectDateDialog: SelectDateDialog | None = None
+		# ------------- Building About Dialog
+		self.aboutDialog: AboutDialog | None = None
+		# ---------------
+		self.menuMain: gtk.Menu | None = None
+		self.menuCell: gtk.Menu | None = None
+		# -----
+		win.set_keep_above(conf.winKeepAbove.v)
+		if conf.winSticky.v:
+			win.stick()
+		# ------------------------------------------------------------
+		self.statusIconInit()
+		listener.dateChange.add(self)
+		# ---------
+		self.w.connect("delete-event", self.onDeleteEvent)
+		# -----------------------------------------
+		for plug in core.allPlugList.v:
+			if plug is None:
+				continue
+			if plug.external and hasattr(plug, "set_dialog"):
+				plug.set_dialog(self)
+		# ---------------------------
+		self.onConfigChange()
+		self.menuItemsCallback: dict[str, ItemCallback] = {
+			"onTop": self.onKeepAboveClick,
+			"onAllDesktops": self.onStickyClick,
+			"today": self.goToday,
+			"selectDate": self.selectDateShow,
+			"dayInfo": self.dayInfoShowFromMenu,
+			"customize": self.customizeShow,
+			"preferences": self.prefShow,
+			# "addCustomEvent": self.addCustomEvent,
+			"dayCalWin": self.dayCalWinShow,
+			"eventManager": self.eventManShow,
+			"timeLine": self.timeLineShow,
+			"yearWheel": yearWheelShow,
+			# "weekCal": self.weekCalShow,
+			"exportToHtml": self.onExportClick,
+			"adjustTime": self.adjustTime,
+			"about": self.aboutShow,
+			"quit": self.quitFromMenu,
+		}
+		assert sorted(self.menuItemsCallback) == sorted(menuMainItemDefs)
+
+	def makeLayout(self) -> WinLayoutBox:
+		footer = WinLayoutBox(
 			name="footer",
 			desc="Footer",  # should not be seen in GUI
 			vertical=True,
@@ -376,7 +418,7 @@ class MainWin(CalObjWidget):
 					expand=False,
 					movable=True,
 					buttonBorder=0,
-					initializer=self.createPluginsText,
+					initializer=createPluginsText,
 				),
 				WinLayoutObj(
 					name="eventDayView",
@@ -390,12 +432,8 @@ class MainWin(CalObjWidget):
 				),
 			],
 		)
-		layoutFooter.setItemsOrder(conf.mainWinFooterItems)
-
-		def x_large(text: str) -> str:
-			return "<span size='x-large'>" + text + "</span>"
-
-		self.layout = WinLayoutBox(
+		footer.setItemsOrder(conf.mainWinFooterItems)
+		return WinLayoutBox(
 			name="layout",
 			desc=_("Main Window"),
 			vertical=True,
@@ -434,44 +472,9 @@ class MainWin(CalObjWidget):
 						),
 					],
 				),
-				layoutFooter,
+				footer,
 			],
 		)
-
-		self.appendItem(self.layout)
-		self.vbox = self.layout.getWidget()
-		self.vbox.show()
-		win.add(self.vbox)
-		# --------------------
-		if conf.winMaximized.v:
-			win.maximize()
-		# --------------------
-		# ui.prefWindow = None
-		self.exportDialog: ExportDialog | None = None
-		self.selectDateDialog: SelectDateDialog | None = None
-		# ------------- Building About Dialog
-		self.aboutDialog: AboutDialog | None = None
-		# ---------------
-		self.menuMain: gtk.Menu | None = None
-		self.menuCell: gtk.Menu | None = None
-		# -----
-		win.set_keep_above(conf.winKeepAbove.v)
-		if conf.winSticky.v:
-			win.stick()
-		# ------------------------------------------------------------
-		self.statusIconInit()
-		listener.dateChange.add(self)
-		# ---------
-		self.w.connect("delete-event", self.onDeleteEvent)
-		# -----------------------------------------
-		for plug in core.allPlugList.v:
-			if plug is None:
-				continue
-			if plug.external and hasattr(plug, "set_dialog"):
-				plug.set_dialog(self)
-		# ---------------------------
-		self.onConfigChange()
-		# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 
 	# def mainWinStateEvent(self, obj, gevent):
 	# log.debug(dir(event))
@@ -546,12 +549,6 @@ class MainWin(CalObjWidget):
 			return self.statusBar
 		self.statusBar = StatusBar(self.win)
 		return self.statusBar
-
-	@staticmethod
-	def createPluginsText() -> CustomizableCalObj:
-		from scal3.ui_gtk.pluginsText import PluginsTextBox
-
-		return PluginsTextBox(insideExpanderParam=conf.pluginsTextInsideExpander)
 
 	def createEventDayView(self) -> CustomizableCalObj:
 		from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
@@ -756,20 +753,15 @@ class MainWin(CalObjWidget):
 		self.changeDate(*cal_types.getSysDate(calTypes.primary))
 
 	def onDateChange(self) -> None:
+		super().onDateChange()
 		plugIndex = core.plugIndex.v
 		allPlugList = core.allPlugList.v
-		# log.debug("MainWin.onDateChange")
-		super().onDateChange()
 		for idx in plugIndex:
 			plug = allPlugList[idx]
 			if plug is None:
 				continue
 			if hasattr(plug, "date_change_after"):
 				plug.date_change_after(*ui.cells.current.date)
-		# log.debug(
-		# 	f"Occurrence Time: max={ui.Cell.ocTimeMax:e}, " +
-		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
-		# )
 
 	def _getEventAddToMenuItem(self, menu2: gtk.Menu, group: EventGroupType) -> None:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
@@ -794,16 +786,12 @@ class MainWin(CalObjWidget):
 				True,
 			)
 
-		@widgetActionCallback
-		def addToGroupFromMenu(eventType: str) -> None:
-			self.addToGroupFromMenu(group, eventType)
-
 		# --
 		if len(eventTypes) == 1:
 			menu2.add(
 				ImageMenuItem(
 					group.title,
-					func=addToGroupFromMenu(eventTypes[0]),
+					onActivate=self.addToGroupFromMenu(group, eventTypes[0]),
 					imageName=imageName,
 					pixbuf=pixbuf,
 				),
@@ -816,7 +804,7 @@ class MainWin(CalObjWidget):
 					ImageMenuItem(
 						eventClass.desc,
 						imageName=eventClass.getDefaultIcon(),
-						func=addToGroupFromMenu(eventType),
+						onActivate=self.addToGroupFromMenu(group, eventType),
 					),
 				)
 			menu3.show_all()
@@ -846,6 +834,7 @@ class MainWin(CalObjWidget):
 		addToItem.set_submenu(menu2)
 		return addToItem
 
+	@widgetActionCallback
 	def editEventFromMenu(self, groupId: int, eventId: int) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
@@ -860,12 +849,6 @@ class MainWin(CalObjWidget):
 		ui.eventUpdateQueue.put("e", eventNew, self)
 		self.onConfigChange()
 
-	@staticmethod
-	def trimMenuItemLabel(s: str, maxLen: int) -> str:
-		if len(s) > maxLen - 3:
-			s = s[: maxLen - 3].rstrip(" ") + "..."
-		return s
-
 	def addEditEventCellMenuItems(self, menu: gtk.Menu) -> None:
 		if ev.allReadOnly:
 			return
@@ -873,20 +856,14 @@ class MainWin(CalObjWidget):
 		if not eventsData:
 			return
 
-		@widgetActionCallback
-		def editEvent(groupId: int, eventId: int) -> None:
-			self.editEventFromMenu(groupId, eventId)
-
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
 				groupId, eventId = eData.ids
 				menu.add(
 					ImageMenuItem(
-						label=_("Edit")
-						+ ": "
-						+ self.trimMenuItemLabel(eData.text[0], 25),
+						label=_("Edit") + ": " + trimMenuItemLabel(eData.text[0], 25),
 						imageName=eData.icon,
-						func=editEvent(groupId, eventId),
+						onActivate=self.editEventFromMenu(groupId, eventId),
 					),
 				)
 			return
@@ -902,7 +879,7 @@ class MainWin(CalObjWidget):
 				ImageMenuItem(
 					eData.text[0],
 					imageName=eData.icon,
-					func=editEvent(groupId, eventId),
+					onActivate=self.editEventFromMenu(groupId, eventId),
 				),
 			)
 		subMenu.show_all()
@@ -929,14 +906,14 @@ class MainWin(CalObjWidget):
 						calType=_(calTypeDesc, ctx="calendar"),
 					),
 					imageName="edit-copy.svg",
-					func=self.copyDateGetCallback(calType),
+					onActivate=copyDateGetCallback(calType),
 				),
 			)
 		menu.add(
 			ImageMenuItem(
 				label=_("Day Info"),
 				imageName="info.svg",
-				func=self.dayInfoShowFromMenu,
+				onActivate=self.dayInfoShowFromMenu,
 			),
 		)
 		addToItem = self.getEventAddToMenuItem()
@@ -948,14 +925,14 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("Select _Today"),
 				imageName="go-home.svg",
-				func=self.goToday,
+				onActivate=self.goToday,
 			),
 		)
 		menu.add(
 			ImageMenuItem(
 				label=_("Select _Date..."),
 				imageName="select-date.svg",
-				func=self.selectDateShow,
+				onActivate=self.selectDateShow,
 			),
 		)
 		# if item.objName in {"weekCal", "monthCal"}:
@@ -965,14 +942,14 @@ class MainWin(CalObjWidget):
 		# 		ImageMenuItem(
 		# 			label=_("Switch to " + calDesc),
 		# 			imageName="" if isWeek else "week-calendar.svg",
-		# 			func=self.switchWcalMcal,
+		# 			onActivate=self.switchWcalMcal,
 		# 		),
 		# 	)
 		menu.add(
 			ImageMenuItem(
 				label=_("In Time Line"),
 				imageName="timeline.svg",
-				func=self.timeLineShowSelectedDay,
+				onActivate=self.timeLineShowSelectedDay,
 			),
 		)
 		if os.path.isfile("/usr/bin/evolution"):  # FIXME
@@ -980,7 +957,7 @@ class MainWin(CalObjWidget):
 				ImageMenuItem(
 					label=_("In E_volution"),
 					imageName="evolution.png",
-					func=ui.cells.current.dayOpenEvolution,
+					onActivate=ui.cells.current.dayOpenEvolution,
 				),
 			)
 		# ----
@@ -989,56 +966,56 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("_Customize"),
 				imageName="document-edit.svg",
-				func=self.customizeShow,
+				onActivate=self.customizeShow,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("_Preferences"),
 				imageName="preferences-system.svg",
-				func=self.prefShow,
+				onActivate=self.prefShow,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("_Event Manager"),
 				imageName="list-add.svg",
-				func=self.eventManShow,
+				onActivate=self.eventManShow,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("Year Wheel"),
 				imageName="year-wheel.svg",
-				func=self.yearWheelShow,
+				onActivate=yearWheelShow,
 			),
 		)  # icon? FIXME
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("Day Calendar (Desktop Widget)"),
 				imageName="starcal.svg",
-				func=self.dayCalWinShow,
+				onActivate=self.dayCalWinShow,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("Export to {format}").format(format="HTML"),
 				imageName="export-to-html.svg",
-				func=self.onExportClick,
+				onActivate=self.onExportClick,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("_About"),
 				imageName="dialog-information.svg",
-				func=self.aboutShow,
+				onActivate=self.aboutShow,
 			),
 		)
 		moreMenu.add(
 			ImageMenuItem(
 				label=_("_Quit"),
 				imageName="application-exit.svg",
-				func=self.onQuitClick,
+				onActivate=self.onQuitClick,
 			),
 		)
 		# --
@@ -1084,11 +1061,17 @@ class MainWin(CalObjWidget):
 			return self.menuMain
 		menu = gtk.Menu(reserve_toggle_size=False)
 		# ----
-		for itemDict in menuMainItemDefs.values():
+		menu.add(
+			ResizeMenuItem(
+				label=_("Resize"),
+				onButtonPress=self.onResizeFromMenu,
+			)
+		)
+		for name, itemDict in menuMainItemDefs.items():
 			menu.add(
 				itemDict["cls"](
 					label=itemDict["label"],
-					func=getattr(self, itemDict["func"]),
+					onActivate=self.menuItemsCallback[name],
 					**itemDict["args"],
 				)
 			)
@@ -1135,6 +1118,7 @@ class MainWin(CalObjWidget):
 		)
 		ui.updateFocusTime()
 
+	@widgetActionCallback
 	def addToGroupFromMenu(
 		self,
 		group: EventGroupType,
@@ -1159,20 +1143,15 @@ class MainWin(CalObjWidget):
 		ui.eventUpdateQueue.put("+", event, self)
 		self.onConfigChange()
 
-	@staticmethod
-	def prefUpdateBgColor(_sig: SignalHandlerType) -> None:
-		if ui.prefWindow:
-			ui.prefWindow.colorbBg.setRGBA(conf.bgColor.v)
-		# else:  # FIXME
-		ui.saveLiveConf()
-
-	def onKeepAboveClick(self, check: CheckMenuItem) -> None:
+	def onKeepAboveClick(self, check: gtk.Widget) -> None:
+		assert isinstance(check, CheckMenuItem)
 		act = check.get_active()
 		self.win.set_keep_above(act)
 		conf.winKeepAbove.v = act
 		ui.saveLiveConf()
 
-	def onStickyClick(self, check: CheckMenuItem) -> None:
+	def onStickyClick(self, check: gtk.Widget) -> None:
+		assert isinstance(check, CheckMenuItem)
 		if check.get_active():
 			self.win.stick()
 			conf.winSticky.v = True
@@ -1180,50 +1159,6 @@ class MainWin(CalObjWidget):
 			self.win.unstick()
 			conf.winSticky.v = False
 		ui.saveLiveConf()
-
-	@staticmethod
-	def copyDate(calType: int) -> None:
-		assert ud.dateFormatBin is not None
-		setClipboard(ui.cells.current.format(ud.dateFormatBin, calType=calType))
-
-	@staticmethod
-	def copyDateGetCallback(
-		calType: int,
-	) -> Callable[[gtk.Widget], None]:
-		def callback(
-			_w: gtk.Widget,
-		) -> None:
-			assert ud.dateFormatBin is not None
-			setClipboard(
-				ui.cells.current.format(
-					ud.dateFormatBin,
-					calType=calType,
-				),
-			)
-
-		return callback
-
-	@staticmethod
-	def copyCurrentDate(
-		_w: OptWidget = None,
-		_event: OptEvent = None,
-	) -> None:
-		assert ud.dateFormatBin is not None
-		setClipboard(ui.cells.today.format(ud.dateFormatBin))
-
-	@staticmethod
-	def copyCurrentDateTime(
-		_w: OptWidget = None,
-		_event: OptEvent = None,
-	) -> None:
-		assert ud.dateFormatBin is not None
-		assert ud.clockFormatBin is not None
-		dateStr = ui.cells.today.format(ud.dateFormatBin)
-		timeStr = ui.cells.today.format(
-			ud.clockFormatBin,
-			tm=localtime()[3:6],
-		)
-		setClipboard(f"{dateStr}, {timeStr}")
 
 	"""
 	def updateToolbarClock(self):
@@ -1262,23 +1197,13 @@ class MainWin(CalObjWidget):
 				self.clockTr = None
 	"""
 
-	@staticmethod
-	def useAppIndicator() -> bool:
-		if not conf.useAppIndicator.v:
-			return False
-		try:
-			import scal3.ui_gtk.starcal_appindicator  # noqa: F401
-		except (ImportError, ValueError):
-			return False
-		return True
-
 	def statusIconInit(self) -> None:
 		self.sicon: gtk.StatusIcon | IndicatorStatusIconWrapper | None
 		if self.statusIconMode != 2:
 			self.sicon = None
 			return
 
-		if self.useAppIndicator():
+		if shouldUseAppIndicator():
 			from scal3.ui_gtk.starcal_appindicator import (
 				IndicatorStatusIconWrapper,
 			)
@@ -1292,7 +1217,7 @@ class MainWin(CalObjWidget):
 		sicon.set_visible(True)  # is needed?
 		sicon.connect(
 			"button-press-event",
-			self.onStatusIconPress,
+			onStatusIconPress,
 		)
 		sicon.connect("activate", self.onStatusIconClick)
 		sicon.connect("popup-menu", self.statusIconPopup)
@@ -1307,63 +1232,63 @@ class MainWin(CalObjWidget):
 			ImageMenuItem(
 				label=_("Copy Date and _Time"),
 				imageName="edit-copy.svg",
-				func=self.copyCurrentDateTime,
+				onActivate=copyCurrentDateTime,
 			),
 			ImageMenuItem(
 				label=_("Copy _Date"),
 				imageName="edit-copy.svg",
-				func=self.copyCurrentDate,
+				onActivate=copyCurrentDate,
 			),
 			ImageMenuItem(
 				label=_("Ad_just System Time"),
 				imageName="preferences-system.svg",
-				func=self.adjustTime,
+				onActivate=self.adjustTime,
 			),
 			# ImageMenuItem(
 			# 	label=_("_Add Event"),
 			# 	imageName="list-add.svg",
-			# 	func=ui.addCustomEvent,
+			# 	onActivate=ui.addCustomEvent,
 			# ),  # FIXME
 			ImageMenuItem(
 				label=_("Export to {format}").format(format="HTML"),
 				imageName="export-to-html.svg",
-				func=self.onExportClickStatusIcon,
+				onActivate=self.onExportClickStatusIcon,
 			),
 			ImageMenuItem(
 				label=_("_Preferences"),
 				imageName="preferences-system.svg",
-				func=self.prefShow,
+				onActivate=self.prefShow,
 			),
 			ImageMenuItem(
 				label=_("_Customize"),
 				imageName="document-edit.svg",
-				func=self.customizeShow,
+				onActivate=self.customizeShow,
 			),
 			ImageMenuItem(
 				label=_("_Event Manager"),
 				imageName="list-add.svg",
-				func=self.eventManShow,
+				onActivate=self.eventManShow,
 			),
 			ImageMenuItem(
 				label=_("Time Line"),
 				imageName="timeline.svg",
-				func=self.timeLineShow,
+				onActivate=self.timeLineShow,
 			),
 			ImageMenuItem(
 				label=_("Year Wheel"),
 				imageName="year-wheel.svg",
-				func=self.yearWheelShow,
+				onActivate=yearWheelShow,
 			),
 			ImageMenuItem(
 				label=_("_About"),
 				imageName="dialog-information.svg",
-				func=self.aboutShow,
+				onActivate=self.aboutShow,
 			),
 			gtk.SeparatorMenuItem(),
 			ImageMenuItem(
 				label=_("_Quit"),
 				imageName="application-exit.svg",
-				func=self.onQuitClick,
+				onActivate=self.onQuitClick,
 			),
 		]
 
@@ -1406,31 +1331,6 @@ class MainWin(CalObjWidget):
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
 		self.statusIconUpdate(gdate=gdate)
-
-	@staticmethod
-	def getStatusIconTooltip() -> str:
-		# tt = core.weekDayName[core.getWeekDay(*ddate)]
-		tt = core.weekDayName[core.jwday(ui.cells.today.jd)]
-		# if conf.pluginsTextStatusIcon.v:--?????????
-		# 	sep = _(",")+" "
-		# else:
-		sep = "\n"
-		for calType in calTypes.active:
-			y, m, d = ui.cells.today.dates[calType]
-			tt += sep + _(d) + " " + locale_man.getMonthName(calType, m, y) + " " + _(y)
-		if conf.pluginsTextStatusIcon.v:
-			text = ui.cells.today.getPluginsText()
-			if text:
-				tt += "\n\n" + text  # .replace("\t", "\n") # FIXME
-		for item in ui.cells.today.getEventsData():
-			if not item.showInStatusIcon:
-				continue
-			itemS = ""
-			if item.time:
-				itemS += item.time + " - "
-			itemS += item.text[0]
-			tt += "\n\n" + itemS
-		return tt
 
 	def statusIconUpdateIcon(self, ddate: tuple[int, int, int]) -> None:  # FIXME
 		from scal3.utils import toBytes
@@ -1500,7 +1400,7 @@ class MainWin(CalObjWidget):
 		if sicon is None:
 			return
 		# assert isinstance(sicon, gtk.StatusIcon), f"{sicon=}"
-		sicon.set_tooltip_text(self.getStatusIconTooltip())
+		sicon.set_tooltip_text(getStatusIconTooltip())
 
 	def statusIconUpdate(
 		self,
@@ -1527,15 +1427,6 @@ class MainWin(CalObjWidget):
 		self.statusIconUpdateIcon(ddate)
 		# -------
 		self.statusIconUpdateTooltip()
-
-	def onStatusIconPress(
-		self, _obj: gtk.Widget, gevent: gdk.EventButton
-	) -> bool | None:
-		if gevent.button == 2:
-			# middle button press
-			self.copyDate(calTypes.primary)
-			return True
-		return None
 
 	def onStatusIconClick(self, _w: OptWidget = None) -> None:
 		if self.w.get_property("visible"):
@@ -1625,6 +1516,9 @@ class MainWin(CalObjWidget):
 		# ------
 		return gtk.main_quit()
 
+	def quitFromMenu(self, _w: gtk.Widget) -> None:
+		self.quit()
+
 	def adjustTime(
 		self,
 		_w: OptWidget = None,
@@ -1708,21 +1602,6 @@ class MainWin(CalObjWidget):
 		self.eventManCreate()
 		openWindow(ui.eventManDialog.w)
 
-	@staticmethod
-	def eventSearchCreate() -> None:
-		if ui.eventSearchWin is None:
-			from scal3.ui_gtk.event.search_events import EventSearchWindow
-
-			ui.eventSearchWin = EventSearchWindow()
-
-	def eventSearchShow(
-		self,
-		_w: OptWidget = None,
-		_ge: OptEvent = None,
-	) -> None:
-		self.eventSearchCreate()
-		openWindow(ui.eventSearchWin.w)
-
 	def addCustomEvent(self, _w: OptWidget = None) -> None:
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
@@ -1760,17 +1639,6 @@ class MainWin(CalObjWidget):
 			ui.timeLineWin = TimeLineWindow(self.win)
 		ui.timeLineWin.showDayInWeek(ui.cells.current.jd)
 		openWindow(ui.timeLineWin.w)
-
-	@staticmethod
-	def yearWheelShow(
-		_w: OptWidget = None,
-		_ge: OptEvent = None,
-	) -> None:
-		if not ui.yearWheelWin:
-			from scal3.ui_gtk.year_wheel import YearWheelWindow
-
-			ui.yearWheelWin = YearWheelWindow()
-		openWindow(ui.yearWheelWin.w)
 
 	def selectDateShow(self, _w: OptWidget = None) -> None:
 		if not self.selectDateDialog:

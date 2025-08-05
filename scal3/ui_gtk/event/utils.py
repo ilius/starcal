@@ -76,7 +76,7 @@ def eventWriteMenuItem(
 	item = ImageMenuItem(
 		label=label,
 		imageName=imageName,
-		func=func,
+		onActivate=func,
 	)
 	item.set_sensitive(sensitive and not ev.allReadOnly)
 	return item
@@ -90,7 +90,7 @@ def eventWriteImageMenuItem(
 	item = ImageMenuItem(
 		label=label,
 		imageName=imageName,
-		func=func,
+		onActivate=func,
 	)
 	item.set_sensitive(not ev.allReadOnly)
 	return item
@@ -98,11 +98,11 @@ def eventWriteImageMenuItem(
 
 def menuItemFromEventGroup(
 	group: EventGroupType,
-	func: ItemCallback | None = None,
+	onActivate: ItemCallback | None = None,
 ) -> gtk.MenuItem:
 	return ImageMenuItem(
 		label=group.title,
-		func=func,
+		onActivate=onActivate,
 		pixbuf=newColorCheckPixbuf(
 			group.color.rgb(),
 			conf.menuEventCheckIconSize.v,

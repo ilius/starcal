@@ -121,14 +121,14 @@ class PluginsTextView(CustomizableCalObj):
 			ImageMenuItem(
 				_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
 				imageName="edit-copy.svg",
-				func=copyText,
+				onActivate=copyText,
 			),
 		)
 		# ----
 		item = ImageMenuItem(
 			_("C_onfigure Plugin"),
 			imageName="preferences-system.svg",
-			func=configure,
+			onActivate=configure,
 		)
 		item.set_sensitive(plug.hasConfig)
 		menu.add(item)
@@ -136,7 +136,7 @@ class PluginsTextView(CustomizableCalObj):
 		item = ImageMenuItem(
 			_("_About Plugin"),
 			imageName="dialog-information.svg",
-			func=about,
+			onActivate=about,
 		)
 		item.set_sensitive(bool(plug.about))
 		menu.add(item)
@@ -216,14 +216,14 @@ class PluginsTextView(CustomizableCalObj):
 			ImageMenuItem(
 				_("Copy _All"),
 				imageName="edit-copy.svg",
-				func=self.copyAll,
+				onActivate=self.copyAll,
 			),
 		)
 		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
-			func=self.copy,
+			onActivate=self.copy,
 		)
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
@@ -238,7 +238,7 @@ class PluginsTextView(CustomizableCalObj):
 				ImageMenuItem(
 					_("Copy _URL"),
 					imageName="edit-copy.svg",
-					func=copyWord,
+					onActivate=copyWord,
 				),
 			)
 		# ----
