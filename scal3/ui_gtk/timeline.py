@@ -60,9 +60,7 @@ from scal3.ui_gtk.drawing import (
 	newTextLayout,
 	setColor,
 )
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.timeline_box import (
 	drawBoxBG,
 	drawBoxBorder,
@@ -80,9 +78,7 @@ if TYPE_CHECKING:
 	from scal3.timeline.box import Box
 	from scal3.timeline.funcs import TimeLineData
 	from scal3.timeline.tick import Tick
-	from scal3.ui_gtk.drawing import (
-		ImageContext,
-	)
+	from scal3.ui_gtk.drawing import ImageContext
 	from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
 __all__ = ["TimeLineWindow"]
