@@ -39,7 +39,8 @@ if TYPE_CHECKING:
 
 	from .pytypes import WeekCalType
 
-__all__ = ['MoonStatusColumn']
+__all__ = ["MoonStatusColumn"]
+
 
 class MoonStatusColumn(Column):
 	objName = "moonStatus"
