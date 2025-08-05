@@ -17,7 +17,7 @@ def doFullImport(win: MainWinType) -> None:
 	import scal3.ui_gtk.event.import_all  # noqa: F401
 	from scal3.ui_gtk.event.occurrence_view import LimitedHeightDayOccurrenceView
 
-	LimitedHeightDayOccurrenceView().getOptionsWidget()
+	LimitedHeightDayOccurrenceView(win).getOptionsWidget()
 
 	from scal3.ui_gtk.mainwin_items.dayCal import CalObj
 
