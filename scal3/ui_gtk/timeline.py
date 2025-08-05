@@ -557,7 +557,7 @@ class TimeLine(CustomizableCalObj):
 
 		return self._lastScrollDir
 
-	def onScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
+	def onScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
 		smallForce = False
 		if gevent.is_scroll_stop_event():  # or gevent.is_stop == 1
 			smallForce = True
@@ -566,7 +566,7 @@ class TimeLine(CustomizableCalObj):
 			# return
 		dirStr = getScrollValue(gevent, last=self.getLastScrollDir())
 		if not dirStr:
-			return None
+			return False
 		self._lastScrollDir = dirStr
 		self._lastScrollTime = datetime.now()
 		if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:

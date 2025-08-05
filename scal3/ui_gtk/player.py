@@ -92,7 +92,7 @@ class MPlayer:
 		# 	self.pbox.fcb.set_sensitive(False)
 
 	# Get the length of file, format it and place it in playtime
-	def getLength(self) -> bool | None:
+	def getLength(self) -> bool:
 		self.cmd("get_time_length")
 		sleep(0.1)
 
@@ -114,7 +114,7 @@ class MPlayer:
 		else:
 			self.playTime = f"{m:02d}:{s:02d}"
 		log.debug(f"playTime={self.playTime}")
-		return None
+		return True
 
 	# Toggle between play and pause
 	def pause(self) -> None:
@@ -131,12 +131,12 @@ class MPlayer:
 			self.paused = False
 
 	# Seek by the amount specified (in seconds)
-	def seek(self, amount: int, mode: int = 0) -> bool | None:
+	def seek(self, amount: int, mode: int = 0) -> bool:
 		if not self.mplayerIn:
 			return False
 		self.cmd(f"seek {amount} {mode}")
 		self.queryStatus()
-		return None
+		return True
 
 	# Set volume    using aumix
 	def setVolume(self, value: int) -> None:
@@ -327,7 +327,7 @@ class PlayerBox(gtk.Box):
 			scale.connect("key-press-event", self.divert)
 			pack(self, scale, False, False, 5)
 
-	def divert(self, _w: gtk.Widget, gevent: gdk.Event) -> bool | None:
+	def divert(self, _w: gtk.Widget, gevent: gdk.Event) -> bool:
 		key = gevent.hardware_keycode
 		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)

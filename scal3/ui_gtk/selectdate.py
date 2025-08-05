@@ -140,14 +140,14 @@ class SelectDateDialog(Dialog):
 		selection: gtk.SelectionData,
 		_target_id: int,
 		_etime: int,
-	) -> bool | None:
+	) -> bool:
 		text = selection.get_text()
 		if text is None:
-			return None
+			return False
 		date = parseDroppedDate(text)
 		if date is None:
 			log.info(f"selectDateDialog: dropped text {text!r}")
-			return None
+			return False
 		log.info(f"selectDateDialog: dropped date: {date!r}")
 		calType = self.calTypeCombo.getActive()
 		if calType is not None and calType != ui.dragGetCalType:

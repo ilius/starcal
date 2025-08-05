@@ -370,15 +370,15 @@ class IntLabel(BaseLabel):
 
 		return False
 
-	def menuScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
+	def menuScroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
-			return None
+			return False
 
 		if d == "down":
 			self.updateMenu(self.start + 1)
-			return None
+			return False
 
 		return False
 

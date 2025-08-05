@@ -176,9 +176,9 @@ def yearWheelShow(
 def onStatusIconPress(
 	_obj: gtk.Widget,
 	gevent: gdk.EventButton,
-) -> bool | None:
+) -> bool:
 	if gevent.button == 2:
 		# middle button press
 		copyDate(calTypes.primary)
 		return True
-	return None
+	return False
