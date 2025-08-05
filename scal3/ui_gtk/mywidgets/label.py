@@ -30,13 +30,13 @@ class SLabel(gtk.Label):
 		itemCopyAll = ImageMenuItem(
 			_("Copy _All"),
 			imageName="edit-copy.svg",
-			func=self.copyAll,
+			onActivate=self.copyAll,
 		)
 		# --
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
-			func=self.copy,
+			onActivate=self.copy,
 		)
 		itemCopy.set_sensitive(
 			self.get_property("cursor-position") > self.get_property("selection-bound"),

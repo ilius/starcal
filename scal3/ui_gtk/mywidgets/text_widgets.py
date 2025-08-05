@@ -87,14 +87,14 @@ class ReadOnlyTextView(gtk.TextView):
 			ImageMenuItem(
 				_("Copy _All"),
 				imageName="edit-copy.svg",
-				func=self.copyAll,
+				onActivate=self.copyAll,
 			),
 		)
 		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
-			func=self.copy,
+			onActivate=self.copy,
 		)
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
@@ -110,7 +110,7 @@ class ReadOnlyTextView(gtk.TextView):
 				ImageMenuItem(
 					_("Copy _URL"),
 					imageName="edit-copy.svg",
-					func=copyWord,
+					onActivate=copyWord,
 				),
 			)
 		# ----

@@ -693,7 +693,7 @@ class EventSearchWindow(CalObjWidget):
 				subMenu.add(
 					menuItemFromEventGroup(
 						new_group,
-						func=self.moveEventToGroupFromMenu(
+						onActivate=self.moveEventToGroupFromMenu(
 							path,
 							event,
 							group,
@@ -719,7 +719,7 @@ class EventSearchWindow(CalObjWidget):
 				subMenu.add(
 					menuItemFromEventGroup(
 						new_group,
-						func=self.copyEventToGroupFromMenu(event, new_group),
+						onActivate=self.copyEventToGroupFromMenu(event, new_group),
 					),
 				)
 		# --
@@ -773,7 +773,7 @@ class EventSearchWindow(CalObjWidget):
 			ImageMenuItem(
 				_("Move to {title}").format(title=ev.trash.title),
 				imageName=ev.trash.getIconRel(),
-				func=moveToTrash,
+				onActivate=moveToTrash,
 			),
 		)
 		# --

@@ -247,14 +247,14 @@ class DayOccurrenceView(CustomizableCalObj):
 			ImageMenuItem(
 				_("Copy _All"),
 				imageName="edit-copy.svg",
-				func=self.copyAll,
+				onActivate=self.copyAll,
 			),
 		)
 		# ----
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
 			imageName="edit-copy.svg",
-			func=self.copy,
+			onActivate=self.copy,
 		)
 		if not self.has_selection():
 			itemCopy.set_sensitive(False)
@@ -411,7 +411,7 @@ class DayOccurrenceView(CustomizableCalObj):
 			ImageMenuItem(
 				label,
 				imageName="document-edit.svg",
-				func=editEvent,
+				onActivate=editEvent,
 			),
 		)
 		# ---
@@ -482,7 +482,7 @@ class DayOccurrenceView(CustomizableCalObj):
 			ImageMenuItem(
 				_("Move to {title}").format(title=ev.trash.title),
 				imageName=ev.trash.getIconRel(),
-				func=moveToTrash,
+				onActivate=moveToTrash,
 			),
 		)
 
@@ -502,7 +502,7 @@ class DayOccurrenceView(CustomizableCalObj):
 			ImageMenuItem(
 				_("Copy Event Text"),
 				imageName="edit-copy.svg",
-				func=copyEventText,
+				onActivate=copyEventText,
 			),
 		)
 		# ----

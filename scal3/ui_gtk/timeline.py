@@ -317,7 +317,7 @@ class TimeLine(CustomizableCalObj):
 			menu.add(
 				ImageMenuItem(
 					title,
-					func=self.onZoomMenuItemClick(timeWidth),
+					onActivate=self.onZoomMenuItemClick(timeWidth),
 				),
 			)
 		menu.show_all()
@@ -647,22 +647,6 @@ class TimeLine(CustomizableCalObj):
 					self.w.queue_draw()
 					return True
 		elif gevent.button == 3:
-
-			@widgetActionCallback
-			def editEvent(event: EventType, gid: int) -> None:
-				self.onEditEventClick(winTitle, event, gid)
-
-			@widgetActionCallback
-			def editGroup(group: EventGroupType) -> None:
-				self.onEditGroupClick(winTitle, group)
-
-			@widgetActionCallback
-			def moveToTrash(
-				group: EventGroupType,
-				event: EventType,
-			) -> None:
-				self.moveEventToTrash(group, event)
-
 			for box in self.data.boxes:
 				if not box.ids:
 					continue
@@ -680,7 +664,7 @@ class TimeLine(CustomizableCalObj):
 						ImageMenuItem(
 							winTitle,
 							imageName="document-edit.svg",
-							func=editEvent(event, gid),
+							onActivate=self.onEditEventClick(winTitle, event, gid),
 						),
 					)
 				# --
@@ -689,7 +673,7 @@ class TimeLine(CustomizableCalObj):
 					ImageMenuItem(
 						winTitle,
 						imageName="document-edit.svg",
-						func=editGroup(group),
+						onActivate=self.onEditGroupClick(winTitle, group),
 					),
 				)
 				# --
@@ -699,7 +683,7 @@ class TimeLine(CustomizableCalObj):
 					ImageMenuItem(
 						_("Move to {title}").format(title=ev.trash.title),
 						imageName=ev.trash.getIconRel(),
-						func=moveToTrash(group, event),
+						onActivate=self.moveEventToTrash(group, event),
 					),
 				)
 				# --
@@ -752,6 +736,7 @@ class TimeLine(CustomizableCalObj):
 		super().onConfigChange()
 		self.w.queue_draw()
 
+	@widgetActionCallback
 	def onEditEventClick(
 		self,
 		winTitle: str,
@@ -773,6 +758,7 @@ class TimeLine(CustomizableCalObj):
 		ui.eventUpdateQueue.put("e", eventNew, self)
 		self.onConfigChange()
 
+	@widgetActionCallback
 	def onEditGroupClick(
 		self,
 		_winTitle: str,
@@ -795,6 +781,7 @@ class TimeLine(CustomizableCalObj):
 		self.onConfigChange()
 		self.w.queue_draw()
 
+	@widgetActionCallback
 	def moveEventToTrash(
 		self,
 		group: EventGroupType,

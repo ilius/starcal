@@ -51,7 +51,7 @@ class IconSelectButton(gtk.Button):
 		menu.add(
 			ImageMenuItem(
 				_("None"),
-				func=self.menuItemActivate(""),
+				onActivate=self.menuItemActivate(""),
 			),
 		)
 		for item in ui.eventTags:
@@ -62,7 +62,7 @@ class IconSelectButton(gtk.Button):
 				ImageMenuItem(
 					_(item.desc),
 					imageName=icon,
-					func=self.menuItemActivate(icon),
+					onActivate=self.menuItemActivate(icon),
 				),
 			)
 		menu.show_all()

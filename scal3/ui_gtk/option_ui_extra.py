@@ -840,7 +840,7 @@ class KeyBindingOptionUI(OptionUI):
 			ImageMenuItem(
 				label=_("Delete", ctx="menu"),
 				imageName="edit-delete.svg",
-				func=onDelete,
+				onActivate=onDelete,
 			),
 		)
 		menu.show_all()

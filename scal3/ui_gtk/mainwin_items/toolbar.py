@@ -7,6 +7,7 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import commonSignals
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
+from scal3.ui_gtk.starcal_funcs import eventSearchShow
 from scal3.ui_gtk.toolbox import CustomizableToolBox, ToolBoxItem
 
 if TYPE_CHECKING:
@@ -111,7 +112,7 @@ class CalObj(CustomizableToolBox):
 				name="search",
 				iconName="gtk-find",
 				imageName="system-search.svg",
-				onClick=win.eventSearchShow,
+				onClick=eventSearchShow,
 				desc="Search Events",
 				shortDesc="Search",
 				continuousClick=False,

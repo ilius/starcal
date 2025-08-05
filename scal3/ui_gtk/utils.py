@@ -82,8 +82,10 @@ __all__ = [
 	"showError",
 	"showInfo",
 	"showMsg",
+	"trimMenuItemLabel",
 	"widgetActionCallback",
 	"window_set_size_aspect",
+	"x_large",
 ]
 
 
@@ -691,3 +693,13 @@ def getGtkWindow(widget: gtk.Widget) -> gtk.Window | None:
 	if isinstance(top, gtk.Window):
 		return top
 	return None
+
+
+def x_large(text: str) -> str:
+	return "<span size='x-large'>" + text + "</span>"
+
+
+def trimMenuItemLabel(s: str, maxLen: int) -> str:
+	if len(s) > maxLen - 3:
+		s = s[: maxLen - 3].rstrip(" ") + "..."
+	return s

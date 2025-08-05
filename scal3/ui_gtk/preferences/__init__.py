@@ -52,6 +52,12 @@ if typing.TYPE_CHECKING:
 __all__ = ["PreferencesWindow"]
 
 
+def checkNeedRestart() -> bool:
+	if ui.mainWin is None:
+		return False
+	return ui.checkNeedRestart()
+
+
 class PreferencesWindow(gtk.Window):
 	mainGridStyleClass = "preferences-main-grid"
 
@@ -398,7 +404,7 @@ class PreferencesWindow(gtk.Window):
 		ud.saveConf()
 		# ----------------------- Updating GUI ---------------------------
 		ud.windowList.broadcastConfigChange()
-		if self.checkNeedRestart():
+		if checkNeedRestart():
 			d = Dialog(
 				title=_("Restart " + APP_DESC),
 				transient_for=self,
@@ -438,11 +444,6 @@ class PreferencesWindow(gtk.Window):
 				core.restart()
 			else:
 				d.destroy()
-
-	def checkNeedRestart(self) -> bool:
-		if ui.mainWin is None:
-			return False
-		return ui.checkNeedRestart()
 
 	def refreshAccounts(self) -> None:
 		self.accountsTab.refreshAccounts()
