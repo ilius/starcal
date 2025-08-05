@@ -792,14 +792,14 @@ class EventSearchWindow(CalObjWidget):
 		self,
 		_widget: gtk.Widget,
 		gevent: gdk.EventButton,
-	) -> bool | None:
+	) -> bool:
 		pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
-			return None
+			return False
 		path, _col, _xRel, _yRel = pos_t
 		# path, col = self.treev.get_cursor() # FIXME
 		if not path:
-			return None
+			return False
 		if gevent.button == 3:
 			self.openRightClickMenu(path.to_string(), gevent.time)
 		return False
@@ -808,7 +808,7 @@ class EventSearchWindow(CalObjWidget):
 		self,
 		treev: gtk.TreeView,
 		gevent: gdk.EventKey,
-	) -> bool | None:
+	) -> bool:
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
 		# gdk.CURRENT_TIME == 0
 		# gevent.time == gtk.get_current_event_time() # OK
@@ -822,7 +822,7 @@ class EventSearchWindow(CalObjWidget):
 			if path:
 				menu = self.genRightClickMenu(path.to_string())
 				if not menu:
-					return None
+					return False
 				rect = treev.get_cell_area(path, treev.get_column(1))
 				x = rect.x
 				if rtl:

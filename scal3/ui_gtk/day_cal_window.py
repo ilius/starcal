@@ -404,10 +404,10 @@ class DayCalWindow(CalObjWidget):
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
+	def configureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool:
 		win = self.win
 		if not win.get_property("visible"):
-			return None
+			return False
 		wx, wy = win.get_position()
 		ww, wh = win.get_size()
 		conf.dcalWinX.v, conf.dcalWinY.v = (wx, wy)

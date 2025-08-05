@@ -73,7 +73,7 @@ class GroupSortDialog(Dialog):
 		# ----
 		self.vbox.show_all()
 
-	def run2(self) -> bool | None:
+	def run2(self) -> bool:
 		if Dialog.run(self) == gtk.ResponseType.OK:
 			self._group.sort(
 				self.sortByNames[self.sortByCombo.get_active()],
@@ -82,7 +82,7 @@ class GroupSortDialog(Dialog):
 			self._group.save()
 			return True
 		self.destroy()
-		return None
+		return False
 
 
 class GroupConvertCalTypeDialog(Dialog):

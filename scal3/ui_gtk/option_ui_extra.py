@@ -857,11 +857,11 @@ class KeyBindingOptionUI(OptionUI):
 		self,
 		_widget: gtk.Widget,
 		gevent: gdk.EventButton,
-	) -> bool | None:
+	) -> bool:
 		b = gevent.button
 		curObj = self.treeview.get_cursor()[0]
 		if not curObj:
-			return None
+			return False
 		# curObj is gtk.TreePath
 		cur = curObj.get_indices()
 		rowIndex = cur[0]

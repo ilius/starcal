@@ -1067,14 +1067,14 @@ class DayCal(CalBase):
 			return False
 		return True
 
-	def scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool | None:
+	def scroll(self, _w: gtk.Widget, gevent: gdk.EventScroll) -> bool:
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)
-			return None
+			return False
 		if d == "down":
 			self.jdPlus(1)
-			return None
+			return False
 		return False
 
 	def getCellPos(self, *_args: Any) -> tuple[int, int]:

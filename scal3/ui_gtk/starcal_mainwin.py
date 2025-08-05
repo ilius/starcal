@@ -165,8 +165,8 @@ class MainWin(CalObjWidget):
 		win.set_default_size(conf.winWidth.v, 1)
 		win.move(conf.winX.v, conf.winY.v)
 		# -------------------------------------------------------------
-		win.connect("focus-in-event", self.focusIn, "Main")
-		win.connect("focus-out-event", self.focusOut, "Main")
+		win.connect("focus-in-event", self.onFocusIn)
+		win.connect("focus-out-event", self.onFocusOut)
 		win.connect("key-press-event", self.onKeyPress)
 		win.connect("configure-event", self.onConfigureEvent)
 		self.s.connect("toggle-right-panel", self.onToggleRightPanel)
@@ -426,30 +426,10 @@ class MainWin(CalObjWidget):
 			self.layout.onKeyPress(arg, gevent)
 		return True  # FIXME
 
-	def focusIn(
-		self,
-		_w: OptWidget = None,
-		_ge: OptEvent = None,
-		_data: Any = None,
-	) -> None:
-		# log.debug("focusIn")
+	def focusIn(self) -> None:
 		self.focus = True
 		if self.winCon and self.winCon.enable:
 			self.winCon.windowFocusIn()
-
-	def focusOut(
-		self,
-		_w: gtk.Widget,
-		_ge: gdk.EventFocus,
-		_data: Any = None,
-	) -> None:
-		# called 0.0004 sec (max) after focusIn
-		# (if switched between two windows)
-		dt = perf_counter() - ui.focusTime
-		# log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
-		if dt > 0.05:  # FIXME
-			self.focus = False
-			timeout_add(2, self.focusOutDo)
 
 	def focusOutDo(self) -> bool:
 		if not self.focus:  # and t-self.focusOutTime>0.002:
@@ -457,6 +437,19 @@ class MainWin(CalObjWidget):
 			if self.winCon and self.winCon.enable:
 				self.winCon.windowFocusOut()
 		return False
+
+	def onFocusIn(self, _w: gtk.Widget, _ge: gdk.EventFocus) -> None:
+		# log.debug("focusIn")
+		self.focusIn()
+
+	def onFocusOut(self, _w: gtk.Widget, _ge: gdk.EventFocus) -> None:
+		# called 0.0004 sec (max) after focusIn
+		# (if switched between two windows)
+		dt = perf_counter() - ui.focusTime
+		# log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
+		if dt > 0.05:  # FIXME
+			self.focus = False
+			timeout_add(2, self.focusOutDo)
 
 	def toggleMinimized(self, _ge: gdk.EventButton) -> None:
 		if conf.winTaskbar.v:
@@ -500,9 +493,9 @@ class MainWin(CalObjWidget):
 		if (winX, winY) != (conf.winX.v, conf.winY.v):
 			self.win.move(winX, winY)
 
-	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool | None:
+	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool:
 		if self.ignoreConfigureEvent:
-			return None
+			return False
 		wx, wy = self.win.get_position()
 		# maxPosDelta = max(
 		# 	abs(conf.winX.v - wx),
