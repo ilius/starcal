@@ -23,6 +23,7 @@ if sys.version_info[0] != 3:
 	sys.exit(1)
 
 import signal
+from time import perf_counter
 from time import time as now
 from time import localtime
 import os
@@ -230,7 +231,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# if this application_id is already running, Gtk will crash
 		# with Segmentation fault
 		if event_lib.allReadOnly:
-			appId += "2"
+			appId += str(int(perf_counter() * 10**9))
 		self.app = gtk.Application(application_id=appId)
 		self.app.register(gio.Cancellable.new())
 		gtk.ApplicationWindow.__init__(self, application=self.app)
