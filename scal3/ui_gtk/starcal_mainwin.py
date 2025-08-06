@@ -28,7 +28,7 @@ log = logger.get()
 
 from gi.repository import Gio as gio
 
-from scal3 import cal_types, core, event_lib, locale_man, ui
+from scal3 import cal_types, core, locale_man, ui
 from scal3.app_info import APP_DESC, homePage
 from scal3.cal_types import calTypes, convert
 from scal3.color_utils import rgbToHtmlColor
@@ -56,7 +56,7 @@ from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 	ResizeMenuItem,
 )
-from scal3.ui_gtk.starcal_classes import MainWinVbox, SignalHandler
+from scal3.ui_gtk.starcal_classes import MainWinEventMan, MainWinVbox, SignalHandler
 from scal3.ui_gtk.starcal_funcs import (
 	copyCurrentDate,
 	copyCurrentDateTime,
@@ -73,8 +73,6 @@ from scal3.ui_gtk.utils import (
 	get_menu_width,
 	openWindow,
 	showError,
-	trimMenuItemLabel,
-	widgetActionCallback,
 	x_large,
 )
 
@@ -82,7 +80,6 @@ if TYPE_CHECKING:
 	from types import FrameType
 	from typing import Any
 
-	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.ui_gtk.about import AboutDialog
 	from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
@@ -128,6 +125,8 @@ class MainWin(CalObjWidget):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.mainWin = self
+		# ------------------
+		self.eventManInternal = MainWinEventMan(self.win)
 		# ------------------
 		self.unmaxWinWidth = 0
 		self.ignoreConfigureEvent = False
@@ -598,129 +597,6 @@ class MainWin(CalObjWidget):
 			if hasattr(plug, "date_change_after"):
 				plug.date_change_after(*ui.cells.current.date)
 
-	def _getEventAddToMenuItem(self, menu2: gtk.Menu, group: EventGroupType) -> None:
-		from scal3.ui_gtk.drawing import newColorCheckPixbuf
-
-		if not group.enable:
-			return
-		if not group.showInCal():  # FIXME
-			return
-		eventTypes = group.acceptsEventTypes
-		if not eventTypes:
-			return
-
-		imageName: str | None = None
-		pixbuf: GdkPixbuf.Pixbuf | None = None
-
-		if group.icon:
-			imageName = group.icon
-		else:
-			pixbuf = newColorCheckPixbuf(
-				group.color.rgb(),
-				20,
-				True,
-			)
-
-		# --
-		if len(eventTypes) == 1:
-			menu2.add(
-				ImageMenuItem(
-					group.title,
-					onActivate=self.addToGroupFromMenu(group, eventTypes[0]),
-					imageName=imageName,
-					pixbuf=pixbuf,
-				),
-			)
-		else:
-			menu3 = Menu()
-			for eventType in eventTypes:
-				eventClass = event_lib.classes.event.byName[eventType]
-				menu3.add(
-					ImageMenuItem(
-						eventClass.desc,
-						imageName=eventClass.getDefaultIcon(),
-						onActivate=self.addToGroupFromMenu(group, eventType),
-					),
-				)
-			menu3.show_all()
-			item2 = ImageMenuItem(
-				group.title,
-				imageName=imageName,
-				pixbuf=pixbuf,
-			)
-			item2.set_submenu(menu3)
-			menu2.add(item2)
-
-	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
-		if ev.allReadOnly:
-			return None
-		menu2 = Menu()
-		# --
-		for group in ev.groups:
-			self._getEventAddToMenuItem(menu2, group)
-		# --
-		if not menu2.get_children():
-			return None
-		menu2.show_all()
-		addToItem = ImageMenuItem(
-			label=_("_Add Event to"),
-			imageName="list-add.svg",
-		)
-		addToItem.set_submenu(menu2)
-		return addToItem
-
-	@widgetActionCallback
-	def editEventFromMenu(self, groupId: int, eventId: int) -> None:
-		from scal3.ui_gtk.event.editor import EventEditorDialog
-
-		event = ui.getEvent(groupId, eventId)
-		eventNew = EventEditorDialog(
-			event,
-			title=_("Edit ") + event.desc,
-			transient_for=self.win,
-		).run2()
-		if eventNew is None:
-			return
-		ui.eventUpdateQueue.put("e", eventNew, self)
-		self.onConfigChange()
-
-	def addEditEventCellMenuItems(self, menu: gtk.Menu) -> None:
-		if ev.allReadOnly:
-			return
-		eventsData = ui.cells.current.getEventsData()
-		if not eventsData:
-			return
-
-		if len(eventsData) < 4:  # TODO: make it customizable
-			for eData in eventsData:
-				groupId, eventId = eData.ids
-				menu.add(
-					ImageMenuItem(
-						label=_("Edit") + ": " + trimMenuItemLabel(eData.text[0], 25),
-						imageName=eData.icon,
-						onActivate=self.editEventFromMenu(groupId, eventId),
-					),
-				)
-			return
-
-		subMenu = Menu()
-		subMenuItem = ImageMenuItem(
-			label=_("_Edit Event"),
-			imageName="list-add.svg",
-		)
-		for eData in eventsData:
-			groupId, eventId = eData.ids
-			subMenu.add(
-				ImageMenuItem(
-					eData.text[0],
-					imageName=eData.icon,
-					onActivate=self.editEventFromMenu(groupId, eventId),
-				),
-			)
-		subMenu.show_all()
-		subMenuItem.set_submenu(subMenu)
-		menu.add(subMenuItem)
-
 	def menuCellPopup(
 		self,
 		_sig: SignalHandlerType,
@@ -751,10 +627,10 @@ class MainWin(CalObjWidget):
 				onActivate=self.dayInfoShowFromMenu,
 			),
 		)
-		addToItem = self.getEventAddToMenuItem()
+		addToItem = self.eventManInternal.getEventAddToMenuItem()
 		if addToItem is not None:
 			menu.add(addToItem)
-		self.addEditEventCellMenuItems(menu)
+		self.eventManInternal.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			ImageMenuItem(
@@ -952,31 +828,6 @@ class MainWin(CalObjWidget):
 			etime,
 		)
 		ui.updateFocusTime()
-
-	@widgetActionCallback
-	def addToGroupFromMenu(
-		self,
-		group: EventGroupType,
-		eventType: str,
-	) -> None:
-		from scal3.ui_gtk.event.editor import addNewEvent
-
-		# log.debug("addToGroupFromMenu", group.title, eventType)
-		eventTypeDesc = event_lib.classes.event.byName[eventType].desc
-		title = _("Add {eventType}").format(eventType=eventTypeDesc)
-		event = addNewEvent(
-			group,
-			eventType,
-			useSelectedDate=True,
-			title=title,
-			transient_for=self.win,
-		)
-		if event is None:
-			return
-		if event.parent is None:
-			raise RuntimeError("event.parent is None")
-		ui.eventUpdateQueue.put("+", event, self)
-		self.onConfigChange()
 
 	def onKeepAboveClick(self, check: gtk.Widget) -> None:
 		assert isinstance(check, CheckMenuItem)
