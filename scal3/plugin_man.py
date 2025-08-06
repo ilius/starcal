@@ -516,8 +516,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			# sep = "\t"
 			with open(self.dataFile, encoding="utf-8") as fp:
 				lines = fp.read().split("\n")
-			for line in lines[1:]:
-				line = line.strip()  # noqa: PLW2901
+			for line_ in lines[1:]:
+				line = line_.strip()
 				if not line:
 					continue
 				if line[0] == "#":

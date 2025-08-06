@@ -46,12 +46,13 @@ def loadSingleConfig(
 		return
 	# ---
 	assert isinstance(options, dict), f"{options=}"
-	for optName, value in data.items():
+	for optName, value_ in data.items():
 		if optName not in options:
 			log.warning(f"Ignoring config option {optName}")
 			continue
+		value = value_
 		if decoders and optName in decoders:
-			value = decoders[optName](value)  # noqa: PLW2901
+			value = decoders[optName](value)
 		option = options[optName]
 		assert isinstance(option, Option), f"{option=}, {optName=}"
 		option.v = value

@@ -41,7 +41,7 @@ def getCommitListFromEst(
 	repo: Any = obj.repo  # type: ignore[attr-defined]
 	for occur in est.search(startEpoch, endEpoch):
 		if format_rev_id:
-			data.append((occur.start, format_rev_id(repo, occur.oid)))  # noqa: PLW2901
+			data.append((occur.start, format_rev_id(repo, occur.oid)))
 		else:
 			data.append((occur.start, occur.oid))
 	data.sort(reverse=True)

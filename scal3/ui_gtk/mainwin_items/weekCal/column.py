@@ -242,7 +242,8 @@ class Column(ColumnBase):
 				lineI = 0
 				if len(data[0]) < 2:
 					log.info(self.objName)
-				for line, color in data:
+				for line, color_ in data:
+					color = color_
 					layout = newTextLayout(
 						self.w,
 						text=line,
@@ -258,9 +259,9 @@ class Column(ColumnBase):
 					layoutY = i * rowH + (lineI + 0.5) * lineH - layoutH / 2
 					cr.move_to(layoutX, layoutY)
 					if self.colorizeHolidayText and status[i].holiday:
-						color = conf.holidayColor.v  # noqa: PLW2901
+						color = conf.holidayColor.v
 					if not color:
-						color = conf.textColor.v  # noqa: PLW2901
+						color = conf.textColor.v
 					setColor(cr, color)
 					show_layout(cr, layout)
 					lineI += 1

@@ -72,8 +72,8 @@ class FloatingMsg(gtk.DrawingArea):
 		if isinstance(bytes, str):
 			text = text.decode("utf8")
 		lines = []
-		for line in text.split("\n"):
-			line = line.strip()  # noqa: PLW2901
+		for line_ in text.split("\n"):
+			line = line_.strip()
 			if line:
 				lines.append(line)
 		self.linesNum = len(lines)
@@ -276,8 +276,8 @@ class NoFillFloatingMsgWindow(gtk.Window):
 			text = text.decode("utf8")
 		text = text.replace("\\n", "\n").replace("\\t", "\t")
 		lines = []
-		for line in text.split("\n"):
-			line = line.strip()  # noqa: PLW2901
+		for line_ in text.split("\n"):
+			line = line_.strip()
 			if line:
 				lines.append(line)
 		self.linesNum = len(lines)

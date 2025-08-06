@@ -310,8 +310,8 @@ except Exception as e:
 
 langFileList = []
 with open(join(langDir, "list"), encoding="utf-8") as fp:
-	for line in fp:
-		line = line.strip()  # noqa: PLW2901
+	for line_ in fp:
+		line = line_.strip()
 		if line.startswith("#"):
 			continue
 		langFileList.append(line)
@@ -549,20 +549,21 @@ def textNumEncode(
 			localeMode = langSh
 	dig = getLangDigits(localeMode)
 	res = ""
-	for c in toStr(st):
+	for c_ in toStr(st):
+		c = c_
 		try:
 			i = int(c)
 		except ValueError:  # noqa: PERF203
 			if enableNumLocale:
 				if c == ".":
 					if changeDot:
-						c = tr(c, ctx="number formatting")  # noqa: PLW2901
+						c = tr(c, ctx="number formatting")
 				elif c in {",", "_"}:
 					if changeSpecialChars:
-						c = tr(c)  # noqa: PLW2901
+						c = tr(c)
 				elif c == "%":  # noqa: SIM102
 					if changeSpecialChars:
-						c = tr(c, ctx="number formatting")  # noqa: PLW2901
+						c = tr(c, ctx="number formatting")
 			res += c
 		else:
 			res += dig[i]

@@ -39,8 +39,8 @@ def getGroupByTitle(title):
 		return group
 
 
-for line in open("wikipedia-fa.tab", encoding="utf-8"):  # noqa: SIM115
-	line = line.strip()  # noqa: PLW2901
+for line_ in open("wikipedia-fa.tab", encoding="utf-8"):  # noqa: SIM115
+	line = line_.strip()
 	if not line:
 		continue
 	parts = line.split("\t")

@@ -162,7 +162,7 @@ class ExDatesEventRule(EventRule):
 			else:
 				for date in datesConf:
 					if isinstance(date, str):
-						dates.append(dateDecode(date))  # noqa: PLW2901
+						dates.append(dateDecode(date))
 					elif isinstance(date, tuple | list):
 						y, m, d = date
 						checkDate((y, m, d))

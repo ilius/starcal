@@ -31,8 +31,8 @@ modules: list[CalTypeModule] = [gregorian]  # type: ignore[list-item]
 
 
 with open(join(modDir, "modules.list"), encoding="utf-8") as fp:
-	for name in fp.read().split("\n"):
-		name = name.strip()  # noqa: PLW2901
+	for name_ in fp.read().split("\n"):
+		name = name_.strip()
 		if not name:
 			continue
 		if name.startswith("#"):
