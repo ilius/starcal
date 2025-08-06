@@ -126,9 +126,10 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			)
 			log.exception("")
 			return
-		for epoch, commitId in commitsData:
+		for epoch_, commitId in commitsData:
+			epoch = epoch_
 			if not self.showSeconds:
-				epoch -= epoch % 60  # noqa: PLW2901
+				epoch -= epoch % 60
 			self.addOccur(epoch, epoch, commitId)
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
@@ -202,9 +203,10 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			log.exception("")
 			return
 		# self.updateOccurrenceLog(perf_counter() - stm0)
-		for epoch, tag in tagsData:
+		for epoch_, tag in tagsData:
+			epoch = epoch_
 			if not self.showSeconds:
-				epoch -= epoch % 60  # noqa: PLW2901
+				epoch -= epoch % 60
 			self.addOccur(epoch, epoch, tag)
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
