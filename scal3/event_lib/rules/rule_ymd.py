@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 from scal3.cal_types import (
@@ -25,10 +25,11 @@ from scal3.cal_types import (
 	jd_to,
 )
 from scal3.event_lib.register import classes
+from scal3.locale_man import textNumEncode
 from scal3.locale_man import tr as _
 from scal3.utils import numRangesEncode
 
-from .rule_allday import MultiValueAllDayEventRule
+from .rule_allday import AllDayEventRule, MultiValueAllDayEventRule
 
 if TYPE_CHECKING:
 	from collections.abc import Sequence
@@ -83,9 +84,8 @@ class YearEventRule(MultiValueAllDayEventRule):
 		return True
 
 
-# FIXME: directly inherit from AllDayEventRule
 @classes.rule.register
-class MonthEventRule(MultiValueAllDayEventRule):
+class MonthEventRule(AllDayEventRule):
 	name = "month"
 	desc = _("Month")
 	conflict: Sequence[str] = (
@@ -93,17 +93,31 @@ class MonthEventRule(MultiValueAllDayEventRule):
 		"weekMonth",
 	)
 	params = ["values"]
-
-	def getServerString(self) -> str:
-		# return numRangesEncode(self.values, " ")  # no comma
-		return " ".join(str(n) for n in self.values)
+	expand = True  # FIXME
 
 	def __init__(self, parent: RuleContainerType) -> None:
 		super().__init__(parent)
-		self.values: list[int] = [1]  # type: ignore[assignment]
+		self.values: list[int] = [1]
+
+	def getRuleValue(self) -> Any:
+		return self.values
+
+	def setRuleValue(self, data: Any) -> None:
+		if not isinstance(data, tuple | list):
+			data = [data]
+		self.values = data
+
+	def __str__(self) -> str:
+		return textNumEncode(", ".join(str(x) for x in self.values))
+
+	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
+		return False
+
+	def getServerString(self) -> str:
+		return " ".join(str(n) for n in self.values)
 
 	def jdMatches(self, jd: int) -> bool:
-		return self.hasValue(jd_to(jd, self.getCalType())[1])
+		return jd_to(jd, self.getCalType())[1] in self.values
 
 
 @classes.rule.register
