@@ -172,7 +172,7 @@ class EventEditorDialog(Dialog):
 		ev.lastIds.save()
 		ev.notif.checkEvent(group, event)
 
-		self.destroy()
+		# self.destroy() might cause crash! inconsistently!
 		# -----
 		if event.isSingleOccur:
 			occur = event.calcEventOccurrenceIn(
