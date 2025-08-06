@@ -23,16 +23,23 @@ from scal3 import logger
 
 log = logger.get()
 
+from scal3 import event_lib, ui
+from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import gtk
-from scal3.ui_gtk.cal_obj_base import commonSignals
+from scal3.ui_gtk import Menu, gtk
+from scal3.ui_gtk.cal_obj_base import CalObjWidget, commonSignals
 from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
 from scal3.ui_gtk.starcal_funcs import prefUpdateBgColor
+from scal3.ui_gtk.utils import trimMenuItemLabel, widgetActionCallback
 
 if TYPE_CHECKING:
+	from gi.repository import GdkPixbuf
+
+	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.pytypes import CalObjType
 	from scal3.ui_gtk.starcal_types import MainWinType, OptWidget
@@ -168,3 +175,156 @@ class SignalHandler(SignalHandlerBase):
 	signals = commonSignals + [
 		("toggle-right-panel", []),
 	]
+
+
+class MainWinEventMan(CalObjWidget):
+	def __init__(self, win: gtk.Window) -> None:
+		self.win = win
+
+	def _getEventAddToMenuItem(self, menu2: gtk.Menu, group: EventGroupType) -> None:
+		from scal3.ui_gtk.drawing import newColorCheckPixbuf
+
+		if not group.enable:
+			return
+		if not group.showInCal():  # FIXME
+			return
+		eventTypes = group.acceptsEventTypes
+		if not eventTypes:
+			return
+
+		imageName: str | None = None
+		pixbuf: GdkPixbuf.Pixbuf | None = None
+
+		if group.icon:
+			imageName = group.icon
+		else:
+			pixbuf = newColorCheckPixbuf(
+				group.color.rgb(),
+				20,
+				True,
+			)
+
+		# --
+		if len(eventTypes) == 1:
+			menu2.add(
+				ImageMenuItem(
+					group.title,
+					onActivate=self.addToGroupFromMenu(group, eventTypes[0]),
+					imageName=imageName,
+					pixbuf=pixbuf,
+				),
+			)
+		else:
+			menu3 = Menu()
+			for eventType in eventTypes:
+				eventClass = event_lib.classes.event.byName[eventType]
+				menu3.add(
+					ImageMenuItem(
+						eventClass.desc,
+						imageName=eventClass.getDefaultIcon(),
+						onActivate=self.addToGroupFromMenu(group, eventType),
+					),
+				)
+			menu3.show_all()
+			item2 = ImageMenuItem(
+				group.title,
+				imageName=imageName,
+				pixbuf=pixbuf,
+			)
+			item2.set_submenu(menu3)
+			menu2.add(item2)
+
+	def getEventAddToMenuItem(self) -> gtk.MenuItem | None:
+		if ev.allReadOnly:
+			return None
+		menu2 = Menu()
+		# --
+		for group in ev.groups:
+			self._getEventAddToMenuItem(menu2, group)
+		# --
+		if not menu2.get_children():
+			return None
+		menu2.show_all()
+		addToItem = ImageMenuItem(
+			label=_("_Add Event to"),
+			imageName="list-add.svg",
+		)
+		addToItem.set_submenu(menu2)
+		return addToItem
+
+	@widgetActionCallback
+	def editEventFromMenu(self, groupId: int, eventId: int) -> None:
+		from scal3.ui_gtk.event.editor import EventEditorDialog
+
+		event = ui.getEvent(groupId, eventId)
+		eventNew = EventEditorDialog(
+			event,
+			title=_("Edit ") + event.desc,
+			transient_for=self.win,
+		).run2()
+		if eventNew is None:
+			return
+		ui.eventUpdateQueue.put("e", eventNew, self)
+		self.onConfigChange()
+
+	def addEditEventCellMenuItems(self, menu: gtk.Menu) -> None:
+		if ev.allReadOnly:
+			return
+		eventsData = ui.cells.current.getEventsData()
+		if not eventsData:
+			return
+
+		if len(eventsData) < 4:  # TODO: make it customizable
+			for eData in eventsData:
+				groupId, eventId = eData.ids
+				menu.add(
+					ImageMenuItem(
+						label=_("Edit") + ": " + trimMenuItemLabel(eData.text[0], 25),
+						imageName=eData.icon,
+						onActivate=self.editEventFromMenu(groupId, eventId),
+					),
+				)
+			return
+
+		subMenu = Menu()
+		subMenuItem = ImageMenuItem(
+			label=_("_Edit Event"),
+			imageName="list-add.svg",
+		)
+		for eData in eventsData:
+			groupId, eventId = eData.ids
+			subMenu.add(
+				ImageMenuItem(
+					eData.text[0],
+					imageName=eData.icon,
+					onActivate=self.editEventFromMenu(groupId, eventId),
+				),
+			)
+		subMenu.show_all()
+		subMenuItem.set_submenu(subMenu)
+		menu.add(subMenuItem)
+
+	@widgetActionCallback
+	def addToGroupFromMenu(
+		self,
+		group: EventGroupType,
+		eventType: str,
+	) -> None:
+		from scal3.ui_gtk.event.editor import addNewEvent
+
+		# log.debug("addToGroupFromMenu", group.title, eventType)
+		eventTypeDesc = event_lib.classes.event.byName[eventType].desc
+		title = _("Add {eventType}").format(eventType=eventTypeDesc)
+		event = addNewEvent(
+			group,
+			eventType,
+			useSelectedDate=True,
+			title=title,
+			transient_for=self.win,
+		)
+		if event is None:
+			return
+		if event.parent is None:
+			raise RuntimeError("event.parent is None")
+		ui.eventUpdateQueue.put("+", event, self)
+		self.onConfigChange()
