@@ -330,14 +330,6 @@ class TextPlugin(BaseJsonPlugin):
 		self.method.v = self.backend.method.name
 		saveSingleConfig(self.confPath, self.confOptions, {})
 
-	# def date_change_after(self, widget, year, month, day):
-	# 	self.dialog.menuCell.add(self.menuitem)
-	# 	self.menu_unmap_id = self.dialog.menuCell.connect("unmap", self.menu_unmap)
-
-	# def menu_unmap(self, menu):
-	# 	menu.remove(self.menuitem)
-	# 	menu.disconnect(self.menu_unmap_id)
-
 	def get_times_jd(self, jd: int) -> list[tuple[str, int]]:
 		times = self.backend.getTimesByJd(
 			jd,

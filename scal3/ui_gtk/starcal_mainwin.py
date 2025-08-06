@@ -208,12 +208,6 @@ class MainWin(CalObjWidget):
 		# ---------
 		self.w.connect("delete-event", self.onDeleteEvent)
 		# -----------------------------------------
-		for plug in core.allPlugList.v:
-			if plug is None:
-				continue
-			if plug.external and hasattr(plug, "set_dialog"):
-				plug.set_dialog(self)
-		# ---------------------------
 		self.onConfigChange()
 		self.menuItemsCallback: dict[str, ItemCallback] = {
 			"onTop": self.onKeepAboveClick,
