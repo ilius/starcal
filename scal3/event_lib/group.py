@@ -71,6 +71,20 @@ __all__ = [
 groupsDir = join("event", "groups")
 
 
+def listToDict(value: Any) -> dict[Any, Any]:
+	if not isinstance(value, list):
+		assert isinstance(value, dict)
+		return value
+	valueDict = {}
+	for item in value:
+		if len(item) != 2:
+			continue
+		if not isinstance(item[0], tuple | list):
+			continue
+		valueDict[tuple(item[0])] = item[1]
+	return valueDict
+
+
 @classes.group.register
 @classes.group.setMain
 class EventGroup(EventContainer):
@@ -398,21 +412,10 @@ class EventGroup(EventContainer):
 
 		if isinstance(self.remoteIds, list):
 			self.remoteIds = tuple(self.remoteIds)
-		for attr in (
-			"remoteSyncData",
-			# "eventIdByRemoteIds",
-			"deletedRemoteEvents",
-		):
-			value = getattr(self, attr)
-			if isinstance(value, list):
-				valueDict = {}
-				for item in value:
-					if len(item) != 2:
-						continue
-					if not isinstance(item[0], tuple | list):
-						continue
-					valueDict[tuple(item[0])] = item[1]
-				setattr(self, attr, valueDict)
+		self.remoteSyncData = listToDict(self.remoteSyncData)
+		self.deletedRemoteEvents = listToDict(self.deletedRemoteEvents)
+		# self.eventIdByRemoteIds = listToDict(self.eventIdByRemoteIds)
+
 		if "id" in data:
 			self.setId(data["id"])
 		self.startJd = int(self.startJd)

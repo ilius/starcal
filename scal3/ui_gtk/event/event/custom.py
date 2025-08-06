@@ -160,11 +160,13 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateWidget(self)
 		self.addRuleModel.clear()
 		self.updateRulesWidget()
+		assert self.notificationBox is not None
 		self.notificationBox.updateWidget()
 
 	def updateVars(self) -> None:
 		common.WidgetClass.updateVars(self)
 		self.updateRules()
+		assert self.notificationBox is not None
 		self.notificationBox.updateVars()
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
