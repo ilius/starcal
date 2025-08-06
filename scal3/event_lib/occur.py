@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from scal3.interval_utils import intersectionOfTwoIntervalList
 
@@ -226,13 +226,18 @@ class TimeListOccurSet(OccurSet):
 			self.epochList = set(epochList)
 
 	@classmethod
-	def fromRange(cls, startEpoch: int, endEpoch: int, stepSeconds: int) -> Self:
+	def fromRange(
+		cls,
+		startEpoch: int,
+		endEpoch: int,
+		stepSeconds: int,
+	) -> TimeListOccurSet:
 		obj = cls()
 		obj.setRange(startEpoch, endEpoch, stepSeconds)
 		return obj
 
 	def __repr__(self) -> str:
-		return r"TimeListOccurSet({self.epochList!r})"
+		return f"TimeListOccurSet({self.epochList!r})"
 
 	# def __bool__(self) -> bool:
 	# 	return self.startEpoch == self.endEpoch

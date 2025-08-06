@@ -256,7 +256,7 @@ class SObjBinaryModel(SObj):
 	@classmethod
 	def s_load(
 		cls,
-		ident: int,  # noqa: ANN002
+		ident: int,
 		fs: FileSystem,
 	) -> Self:
 		file = cls.getFile(ident)

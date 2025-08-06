@@ -19,6 +19,14 @@ def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 	)
 
 
+def rgbToGdkColor(red: int, green: int, blue: int) -> gdk.Color:
+	return gdk.Color(  # type: ignore[call-arg]
+		int(red * 257),
+		int(green * 257),
+		int(blue * 257),
+	)
+
+
 def gdkColorToRgb(gc: gdk.RGBA) -> RGB:
 	assert isinstance(gc, gdk.RGBA), f"{gc=}"
 	return RGB(

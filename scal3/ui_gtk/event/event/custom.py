@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from scal3 import logger
+from scal3.ui_gtk.color_utils import rgbToGdkColor
 
 log = logger.get()
 
@@ -24,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from scal3 import event_lib
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import gdk, gtk, pack
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
@@ -51,7 +52,7 @@ class WidgetClass(common.WidgetClass):
 		self.warnLabel = gtk.Label()
 		self.warnLabel.modify_fg(
 			gtk.StateType.NORMAL,
-			gdk.Color(65535, 0, 0),  # type: ignore[call-arg]
+			rgbToGdkColor(255, 0, 0),
 		)
 		self.warnLabel.set_xalign(0)
 		# self.warnLabel.set_visible(False)-- FIXME
