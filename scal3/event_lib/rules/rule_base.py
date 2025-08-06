@@ -107,11 +107,11 @@ class EventRule(SObjBase):
 	@classmethod
 	def getFrom(cls, container: RuleContainerType) -> Self | None:
 		rule = container.rulesDict.get(cls.name)
-		assert isinstance(rule, cls)
+		assert isinstance(rule, cls | None), f"{rule=}, {cls=}"
 		return rule
 
 	@classmethod
 	def addOrGetFrom(cls, container: RuleContainerType) -> Self:
 		rule = container.getAddRule(cls.name)
-		assert isinstance(rule, cls)
+		assert isinstance(rule, cls), f"{rule=}, {cls=}"
 		return rule
