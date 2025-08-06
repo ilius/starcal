@@ -358,18 +358,6 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 	def onButtonRelease(self, _w: gtk.Widget, _ge: gdk.EventButton) -> None:
 		self._remain = False
 
-	"""-- ????????????????????????????????
-	def _arrow_enter_notify(self, gtkWin):
-		if gtkWin!=None:
-			log.info("_arrow_enter_notify")
-			gtkWin.set_background(gdk.Color(65535, 0, 0))
-			gtkWin.show()
-	def _arrow_leave_notify(self, gtkWin):
-		if gtkWin!=None:
-			log.info("_arrow_leave_notify")
-			gtkWin.set_background(gdk.Color(65535, 65535, 65535))
-	#"""
-
 
 class SingleSpinButton[F: Field[Any], V](MultiSpinButton[F, V]):
 	def __init__(

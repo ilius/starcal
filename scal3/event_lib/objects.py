@@ -48,7 +48,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 
 	def save(
 		self,
-		*args: Any,  # noqa: ANN002
+		*args: Any,
 	) -> tuple[int, str] | None:
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")

@@ -20,6 +20,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
+from scal3.ui_gtk.color_utils import rgbToGdkColor
 
 log = logger.get()
 from scal3 import core, locale_man, ui
@@ -99,7 +100,7 @@ class StarCalendarRegisterDialog(MyDialog):
 		label = gtk.Label()
 		label.set_xalign(0)
 		# make text color red
-		labelColor = gdk.Color(65535, 0, 0)  # type: ignore[call-arg]
+		labelColor = rgbToGdkColor(255, 0, 0)
 		label.modify_fg(gtk.StateType.NORMAL, labelColor)
 		pack(hbox, label, 0, 0)
 		pack(self.vbox, hbox, 0, 0, 10)

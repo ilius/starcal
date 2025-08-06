@@ -178,7 +178,7 @@ class TaskEvent(SingleStartEndEvent):
 	def setEnd(
 		self,
 		endType: str,
-		*values: Any,  # noqa: ANN002
+		*values: Any,
 	) -> None:
 		if endType == "date":
 			date, time = values
