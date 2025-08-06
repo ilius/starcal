@@ -531,7 +531,7 @@ class TimeListOccurSet(OccurSet):
 			raise ValueError
 
 	def __repr__(self) -> str:
-		return r"TimeListOccurSet({self.epochList!r})"
+		return f"TimeListOccurSet({self.epochList!r})"
 
 	# def __bool__(self) -> bool:
 	# 	return self.startEpoch == self.endEpoch
