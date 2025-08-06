@@ -373,7 +373,6 @@ class MyPluginType(Protocol):
 class TextPluginUI:
 	def __init__(self, plug: MyPluginType) -> None:
 		self.p = plug
-		self.dialog: gtk.Dialog | None = None
 
 	def makeWidget(self) -> None:
 		self.confDialog = Dialog()
@@ -530,7 +529,6 @@ class TextPluginUI:
 		self.menuitem.set_submenu(submenu)
 		self.menuitem.show_all()
 		"""
-		self.dialog = None
 
 	def updateAzanSensitiveWidgets(self, _widget: gtk.Widget | None = None) -> None:
 		cb = self.azanEnableCheck
@@ -603,9 +601,6 @@ class TextPluginUI:
 		self.confDialog.hide()
 		self.updateConfVars()
 		self.p.saveConfig()
-
-	def set_dialog(self, dialog: gtk.Dialog) -> None:
-		self.dialog = dialog
 
 	def open_configure(self) -> None:
 		self.confDialog.run()
