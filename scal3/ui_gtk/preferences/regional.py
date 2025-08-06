@@ -189,7 +189,7 @@ class PreferencesRegionalTab:
 						log.exception("")
 						continue
 				else:
-					option = getattr(mod, rawOpt[0])
+					option = mod.confOptions[rawOpt[0]]
 					optionUI = ModuleOptionUI(
 						option=option,
 						rawOption=rawOpt,

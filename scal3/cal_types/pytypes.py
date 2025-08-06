@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
+
+if TYPE_CHECKING:
+	from scal3.option import Option
 
 __all__ = ["CalTypeModule", "OptionTuple", "TranslateFunc"]
 
@@ -34,6 +37,7 @@ class CalTypeModule(Protocol):
 	minMonthLen: int
 	maxMonthLen: int
 	options: list[tuple[str, ...]]
+	confOptions: dict[str, Option[Any]]
 	avgYearLen: float
 
 	def getMonthName(self, m: int, y: int | None = None) -> str: ...

@@ -259,15 +259,12 @@ class LangData(SObjTextModel):
 	) -> None:
 		SObjTextModel.setDict(self, data)
 		# -----
-		for param in (
-			"code",
-			"name",
-			"nativeName",
-		):
-			if not getattr(self, param):
+		values: list[str] = [self.code, self.name, self.nativeName]
+		for value in values:
+			if not value:
 				raise ValueError(
-					f'missing or empty parameter "{param}"'
-					f' in language file "{self.file}"',
+					f"missing or empty parameter in language "
+					f'file "{self.file}", {values=}'
 				)
 		# -----
 		if not isabs(self.flag):

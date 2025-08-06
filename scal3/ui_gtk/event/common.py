@@ -150,6 +150,8 @@ class WidgetClass(gtk.Box):
 			"changed",
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
+		# -----------
+		self.notificationBox: NotificationBox | None = None
 
 	def focusSummary(self) -> None:
 		self.summaryEntry.select_region(0, -1)
@@ -171,10 +173,10 @@ class WidgetClass(gtk.Box):
 		self.descriptionInput.set_text(self._event.description)
 		self.iconSelect.set_filename(self._event.icon)
 		# -----
-		for attr in ("notificationBox", "filesBox"):
-			box = getattr(self, attr, None)
-			if box is not None:
-				box.updateWidget()
+		if self.notificationBox is not None:
+			self.notificationBox.updateWidget()
+		# if self.filesBox is not None:
+		# 	self.filesBox.updateWidget()
 		# -----
 		self.calTypeComboChanged()
 
