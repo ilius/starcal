@@ -313,6 +313,7 @@ class BaseToolBox(CustomizableCalObj):
 				item.w.connect("con-clicked", onClick)
 			else:
 				item.w.connect("clicked", onClick)
+			assert not item.onPress
 
 		if item.onPress:
 			if isinstance(item.onPress, str):
