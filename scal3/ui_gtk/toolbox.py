@@ -511,7 +511,6 @@ class CustomizableToolBox(StaticToolBox):
 				continue
 			item.enable = enable
 			item.setVertical(self.vertical)
-			self.setupItemSignals(item)
 			self.appendItem(item)
 		# ---
 		preferIconName = data.get("preferIconName")
