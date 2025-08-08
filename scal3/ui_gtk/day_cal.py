@@ -283,7 +283,7 @@ class DayCal(CalBase):
 
 		buttonsRaw = self.navButtonsRaw
 		geo = self.navButtonsGeo.v
-		if rtl and geo["auto_rtl"]:
+		if rtl and geo.get("autoDir", True):
 			buttonsRaw = self.navButtonsRTLRaw
 
 		opacity = self.navButtonsOpacity.v
