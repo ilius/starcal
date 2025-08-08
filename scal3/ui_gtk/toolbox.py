@@ -305,10 +305,7 @@ class BaseToolBox(CustomizableCalObj):
 
 	def setupItemSignals(self, item: BaseToolBoxItem) -> None:
 		if item.onClick:
-			if isinstance(item.onClick, str):
-				onClick = getattr(self.funcOwner, item.onClick)
-			else:
-				onClick = item.onClick
+			onClick = item.onClick
 			if self.continuousClick and item.continuousClick:
 				item.w.connect("con-clicked", onClick)
 			else:
@@ -316,10 +313,7 @@ class BaseToolBox(CustomizableCalObj):
 			assert not item.onPress
 
 		if item.onPress:
-			if isinstance(item.onPress, str):
-				onPress = getattr(self.funcOwner, item.onPress)
-			else:
-				onPress = item.onPress
+			onPress = item.onPress
 			item.w.connect("button-press-event", onPress)
 
 
