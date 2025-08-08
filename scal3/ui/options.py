@@ -1256,10 +1256,10 @@ confOptionsData: list[OptionData] = [
 		default=True,
 	),
 	OptionData(
-		# FIXME: where is the GUI?
+		# no GUI for it yet
 		name="dayCal.navButtons.geo",
 		v3Name="dcalNavButtonsGeo",
-		flags=CUSTOMIZE,
+		flags=0,
 		type="ButtonGeoDict",
 		where="MainWin: Customize: Day Calendar: Buttons",
 		desc="Navigation Buttons",
