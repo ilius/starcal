@@ -92,6 +92,16 @@ class ButtonGeoDict(TypedDict):
 	yalign: str
 
 
+class DayCalWidgetButtonDict(TypedDict):
+	onClick: str
+	pos: tuple[float, float]
+	xalign: str
+	yalign: str
+	autoDir: bool
+	imageName: NotRequired[str]
+	iconName: NotRequired[str]
+
+
 class PieGeoDict(TypedDict):
 	size: float
 	thickness: float

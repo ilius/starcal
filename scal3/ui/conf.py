@@ -16,6 +16,7 @@ if typing.TYPE_CHECKING:
 		CustomizableToolBoxDict,
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
+		DayCalWidgetButtonDict,
 		PieGeoDict,
 		WeekCalDayNumOptionsDict,
 	)
@@ -1180,7 +1181,7 @@ labelBoxIconSize: Final[Option[int]] = Option(20)
 
 stackIconSize: Final[Option[int]] = Option(22)
 
-dcalWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
+dcalWidgetButtons: Final[ListOption[DayCalWidgetButtonDict]] = ListOption(
 	[
 		{
 			"imageName": "transform-move.svg",
@@ -1201,7 +1202,7 @@ dcalWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
 	]
 )
 
-dcalWinWidgetButtons: Final[ListOption[dict[str, Any]]] = ListOption(
+dcalWinWidgetButtons: Final[ListOption[DayCalWidgetButtonDict]] = ListOption(
 	[
 		{
 			"imageName": "transform-move.svg",

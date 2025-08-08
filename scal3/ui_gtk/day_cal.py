@@ -75,6 +75,7 @@ if TYPE_CHECKING:
 		DayCalTypeBaseOptionsDict,
 		DayCalTypeDayOptionsDict,
 		DayCalTypeWMOptionsDict,
+		DayCalWidgetButtonDict,
 		PieGeoDict,
 	)
 	from scal3.ui_gtk.button_drawing import BaseButton
@@ -111,7 +112,7 @@ class DayCal(CalBase):
 	widgetButtonsEnable: Option[bool] | None = None
 	widgetButtonsSize: Option[int] | None = None
 	widgetButtonsOpacity: Option[float] | None = None
-	widgetButtons: ListOption[dict[str, Any]] | None = None
+	widgetButtons: ListOption[DayCalWidgetButtonDict] | None = None
 
 	navButtonsEnable: Option[bool] | None = None
 	navButtonsGeo: Option[ButtonGeoDict] | None = None
