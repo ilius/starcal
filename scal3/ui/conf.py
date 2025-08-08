@@ -1394,7 +1394,6 @@ confOptionsCustomize: dict[str, Option[Any]] = {
 	"dcalMonthParams": dcalMonthParams,
 	"dcalWeekdayParams": dcalWeekdayParams,
 	"dcalNavButtonsEnable": dcalNavButtonsEnable,
-	"dcalNavButtonsGeo": dcalNavButtonsGeo,
 	"dcalNavButtonsOpacity": dcalNavButtonsOpacity,
 	"dcalWeekdayLocalize": dcalWeekdayLocalize,
 	"dcalWeekdayAbbreviate": dcalWeekdayAbbreviate,
