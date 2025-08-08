@@ -3437,10 +3437,6 @@ msgid "_Customize"
 msgstr ""
 "_شخصی‌سازی"
 
-msgid "Customize This Window"
-msgstr ""
-"شخصی‌سازی این پنجره"
-
 msgid "Toolbar"
 msgstr ""
 "نوار ابزار"
