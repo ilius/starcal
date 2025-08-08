@@ -864,7 +864,7 @@ dcalNavButtonsEnable: Final[Option[bool]] = Option(True)
 MainWin: Customize: Day Calendar: Buttons"""
 dcalNavButtonsGeo: Final[Option[ButtonGeoDict]] = Option(
 	{
-		"auto_rtl": True,
+		"autoDir": True,
 		"size": 64,
 		"spacing": 10,
 		"pos": (0, 20),

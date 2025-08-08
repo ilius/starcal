@@ -1264,7 +1264,7 @@ confOptionsData: list[OptionData] = [
 		where="MainWin: Customize: Day Calendar: Buttons",
 		desc="Navigation Buttons",
 		default={
-			"auto_rtl": True,
+			"autoDir": True,
 			"size": 64,
 			"spacing": 10,
 			"pos": (0, 20),

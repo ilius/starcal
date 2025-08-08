@@ -84,7 +84,7 @@ class DayCalTypeWMOptionsDict(TypedDict):
 
 
 class ButtonGeoDict(TypedDict):
-	auto_rtl: bool
+	autoDir: bool
 	size: int
 	spacing: int
 	pos: tuple[float, float]
