@@ -290,7 +290,7 @@ class DayCalWindowWidget(DayCal):
 		items.insert(
 			5,
 			ImageMenuItem(
-				_("Customize This Window"),
+				_("Customize"),
 				imageName="document-edit.svg",
 				onActivate=self.openCustomize,
 			),
