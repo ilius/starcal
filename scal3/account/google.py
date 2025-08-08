@@ -267,10 +267,9 @@ class GoogleAccount(Account):
 
 	def setDict(self, data: dict[str, Any]) -> None:
 		Account.setDict(self, data)
-		for attr in ("email",):
-			if attr not in data:
-				continue
-			setattr(self, attr, data[attr])
+		email = data.get("email")
+		if email:
+			self.email = email
 
 	@staticmethod
 	def askVerificationCode() -> str:
