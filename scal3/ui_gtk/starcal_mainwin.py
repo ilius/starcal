@@ -940,11 +940,6 @@ class MainWin(CalObjWidget):
 				onActivate=self.prefShow,
 			),
 			ImageMenuItem(
-				label=_("_Customize"),
-				imageName="document-edit.svg",
-				onActivate=self.customizeShow,
-			),
-			ImageMenuItem(
 				label=_("_Event Manager"),
 				imageName="list-add.svg",
 				onActivate=self.eventManShow,
