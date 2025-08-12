@@ -10,7 +10,12 @@ find . -type d -exec chmod 755 {} +
 
 #find . -type f -exec chmod 644 '{}' \;
 
-chmod 755 scripts/*
+for F in scripts/* ; do
+	if [ "$F" = scripts/__init__.py ] ; then
+		continue
+	fi
+	chmod 755 "$F"
+done
 
 chmod 755 'starcal'
 
@@ -35,9 +40,6 @@ chmod 755 'update-perm'
 chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
 chmod 755 'locale.d/make-template'
-
-chmod 755 'scripts/version'
-chmod 755 'scripts/version.py'
 
 chmod 755 'scal3/ui_gtk/adjust_dtime.py'
 chmod 755 'scal3/ui_gtk/arch-enable-locale.py'
