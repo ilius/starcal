@@ -67,35 +67,11 @@ class SelectDateDialog(Dialog):
 		pack(hb0, combo)
 		pack(self.vbox, hb0)
 		# -----------------------
-		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		rb1 = gtk.RadioButton(label="")
-		# rb1.num = 1
-		pack(hbox, rb1)
-		self.ymdBox = YearMonthDayBox()
-		pack(hbox, self.ymdBox)
-		pack(self.vbox, hbox)
-		# --------
-		hb2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=4)
-		pack(hb2, gtk.Label(label="yyyy/mm/dd"))
-		dateInput = DateButtonOption(hist_size=16)
-		pack(hb2, dateInput)
-		rb2 = gtk.RadioButton(label="", group=rb1)
-		# rb2.num = 2
-		hb2i = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		pack(hb2i, rb2)
-		pack(hb2i, hb2)
-		pack(self.vbox, hb2i)
-		# --------
-		hb3 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
-		pack(hb3, gtk.Label(label=_("Julian Day Number")))
-		jdInput = IntSpinButton(0, 9999999)
-		pack(hb3, jdInput)
-		rb3 = gtk.RadioButton(label="", group=rb1)
-		# rb3.num = 3
-		hb3i = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
-		pack(hb3i, rb3)
-		pack(hb3i, hb3)
-		pack(self.vbox, hb3i)
+		self.addDateBox1()
+		self.addDateBox2()
+		self.addDaysPlusBox()
+		self.addJdBox()
+
 		# -------
 		dialog_add_button(
 			self,
@@ -113,23 +89,70 @@ class SelectDateDialog(Dialog):
 		)
 		# -------
 		self.calTypeCombo = combo
-		self.dateInput = dateInput
-		self.jdInput = jdInput
-		self.radio1 = rb1
-		self.radio2 = rb2
-		self.radio3 = rb3
-		self.hbox2 = hb2
-		self.hbox3 = hb3
 		# -------
 		combo.connect("changed", self.calTypeComboChanged)
-		rb1.connect_after("clicked", self.radioChanged)
-		rb2.connect_after("clicked", self.radioChanged)
-		dateInput.connect("activate", self.ok)
-		jdInput.connect("activate", self.ok)
+		self.dateRadio1.connect_after("clicked", self.radioChanged)
+		self.dateRadio2.connect_after("clicked", self.radioChanged)
+		self.plusRadio.connect_after("clicked", self.radioChanged)
+		self.jdRadio.connect_after("clicked", self.radioChanged)
+		self.dateInput2.connect("activate", self.ok)
+		self.plusDaysInput.connect("activate", self.ok)
+		self.jdInput.connect("activate", self.ok)
 		self.radioChanged()
 		# -------
 		self.vbox.show_all()
 		self.resize(1, 1)
+
+	def addDateBox1(self) -> None:
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
+		self.dateRadio1 = gtk.RadioButton(label=" ")
+		# rb1.num = 1
+		pack(hbox, self.dateRadio1)
+		self.dateInput1 = YearMonthDayBox()
+		pack(hbox, self.dateInput1)
+		pack(self.vbox, hbox)
+		self.dateBox1 = self.dateInput1
+
+	def addDateBox2(self) -> None:
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=4)
+		pack(hbox, gtk.Label(label="yyyy/mm/dd"))
+		self.dateInput2 = DateButtonOption(hist_size=16)
+		pack(hbox, self.dateInput2)
+		self.dateRadio2 = gtk.RadioButton(label=" ", group=self.dateRadio1)
+		# rb2.num = 2
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
+		pack(hbox2, self.dateRadio2)
+		pack(hbox2, hbox)
+		pack(self.vbox, hbox2)
+		self.dateBox2 = hbox
+
+	def addDaysPlusBox(self) -> None:
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
+		pack(hbox, gtk.Label(label=_("From selected day")))
+		self.plusDaysInput = IntSpinButton(-999999, 999999)
+		self.plusDaysInput.set_value(0)
+		pack(hbox, self.plusDaysInput)
+		pack(hbox, gtk.Label(label=_(" days")))
+		self.plusRadio = gtk.RadioButton(label=" ", group=self.dateRadio1)
+		# rb3.num = 4
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
+		pack(hbox2, self.plusRadio)
+		pack(hbox2, hbox)
+		pack(self.vbox, hbox2)
+		self.plusBox = hbox
+
+	def addJdBox(self) -> None:
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=10)
+		pack(hbox, gtk.Label(label=_("Julian Day Number")))
+		self.jdInput = IntSpinButton(0, 9999999)
+		pack(hbox, self.jdInput)
+		self.jdRadio = gtk.RadioButton(label=" ", group=self.dateRadio1)
+		# rb3.num = 3
+		hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=5)
+		pack(hbox2, self.jdRadio)
+		pack(hbox2, hbox)
+		pack(self.vbox, hbox2)
+		self.jdBox = hbox
 
 	def dragRec(
 		self,
@@ -158,8 +181,8 @@ class SelectDateDialog(Dialog):
 				ui.dragGetCalType,
 				calType,
 			)
-		self.dateInput.set_value(date)
-		self.dateInput.add_history()
+		self.dateInput2.set_value(date)
+		self.dateInput2.add_history()
 		return True
 
 	def show(self) -> None:
@@ -185,9 +208,9 @@ class SelectDateDialog(Dialog):
 		self.onResponse()
 
 	def set(self, y: int, m: int, d: int) -> None:
-		self.ymdBox.set_value((y, m, d))
-		self.dateInput.set_value((y, m, d))
-		self.dateInput.add_history()
+		self.dateInput1.set_value((y, m, d))
+		self.dateInput2.set_value((y, m, d))
+		self.dateInput2.add_history()
 
 	def setCalType(self, calType: int) -> None:
 		self.calType = calType
@@ -195,8 +218,8 @@ class SelectDateDialog(Dialog):
 		if module is None:
 			raise RuntimeError(f"cal type '{calType}' not found")
 		self.calTypeCombo.setActive(calType)
-		self.ymdBox.setCalType(calType)
-		self.dateInput.setMaxDay(module.maxMonthLen)
+		self.dateInput1.setCalType(calType)
+		self.dateInput2.setMaxDay(module.maxMonthLen)
 
 	def calTypeComboChanged(self, _w: gtk.Widget | None = None) -> None:
 		calType = self.calTypeCombo.getActive()
@@ -213,22 +236,26 @@ class SelectDateDialog(Dialog):
 		else:
 			y0, m0, d0 = prevDate
 			y, m, d = convert(y0, m0, d0, prevCalType, calType)
-		self.ymdBox.setCalType(calType)
-		self.dateInput.setMaxDay(module.maxMonthLen)
+		self.dateInput1.setCalType(calType)
+		self.dateInput2.setMaxDay(module.maxMonthLen)
 		self.set(y, m, d)
 		self.calType = calType
 
 	def get(self) -> tuple[int, int, int]:
 		calType = self.calTypeCombo.getActive()
 		assert calType is not None
-		if self.radio1.get_active():
-			y0, m0, d0 = self.ymdBox.get_value()
-		elif self.radio2.get_active():
-			y0, m0, d0 = self.dateInput.get_value()
-		elif self.radio3.get_active():
+		if self.dateRadio1.get_active():
+			return self.dateInput1.get_value()
+		if self.dateRadio2.get_active():
+			return self.dateInput2.get_value()
+		if self.jdRadio.get_active():
 			jd = self.jdInput.get_value()
-			y0, m0, d0 = jd_to(jd, calType)
-		return (y0, m0, d0)
+			return jd_to(jd, calType)
+		if self.plusRadio.get_active():
+			days = self.plusDaysInput.get_value()
+			jd = ui.cells.current.jd + days
+			return jd_to(jd, calType)
+		raise RuntimeError("None of radio buttons are active")
 
 	def ok(self, _w: gtk.Widget) -> None:
 		calType = self.calTypeCombo.getActive()
@@ -247,19 +274,15 @@ class SelectDateDialog(Dialog):
 		# 	return
 		self.emit("response-date", y, m, d)
 		self.onResponse()
-		self.dateInput.set_value((y0, m0, d0))
-		self.dateInput.add_history()
+		self.dateInput2.set_value((y0, m0, d0))
+		self.dateInput2.add_history()
 
 	def radioChanged(self, _w: gtk.Widget | None = None) -> None:
-		if self.radio1.get_active():
-			self.ymdBox.set_sensitive(True)
-			self.hbox2.set_sensitive(False)
-			self.hbox3.set_sensitive(False)
-		elif self.radio2.get_active():
-			self.ymdBox.set_sensitive(False)
-			self.hbox2.set_sensitive(True)
-			self.hbox3.set_sensitive(False)
-		elif self.radio3.get_active():
-			self.ymdBox.set_sensitive(False)
-			self.hbox2.set_sensitive(False)
-			self.hbox3.set_sensitive(True)
+		radiosAndBoxes: list[tuple[gtk.RadioButton, gtk.Box]] = [
+			(self.dateRadio1, self.dateBox1),
+			(self.dateRadio2, self.dateBox2),
+			(self.plusRadio, self.plusBox),
+			(self.jdRadio, self.jdBox),
+		]
+		for radio, box in radiosAndBoxes:
+			box.set_sensitive(radio.get_active())

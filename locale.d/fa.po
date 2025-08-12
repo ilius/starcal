@@ -2693,6 +2693,10 @@ msgid "Select Date..."
 msgstr ""
 "انتخاب تاریخ..."
 
+msgid "From selected day"
+msgstr ""
+"از روز انتخاب شده"
+
 
 msgid "Style"
 msgstr ""
