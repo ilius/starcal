@@ -600,6 +600,13 @@ class CalObj(CustomizableCalObj):
 				wm = max(w, wm)
 			label.w.set_property("width-request", wm)
 
+		assert self.ybox is not None
+		# TODO: get this widest year number from language properties
+		# 8888 works for English and Persian
+		lay.set_text(_(8888))
+		width = lay.get_pixel_size()[0]
+		self.ybox.label.w.set_property("width-request", width)
+
 	@staticmethod
 	def getFontPreviewText(calType: int) -> str:
 		date = ui.cells.current.dates[calType]
