@@ -44,19 +44,35 @@ __all__ = ["PreferencesRegionalTab"]
 
 
 class PreferencesRegionalTab:
-	def __init__(self, spacing: int) -> None:
-		self.optionUIs: list[OptionUI] = []
-		##
-		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		self.vbox = vbox
-		vbox.set_border_width(5)
+	@staticmethod
+	def getMainPage(vbox: gtk.Box) -> StackPage:
 		page = StackPage()
 		page.pageWidget = vbox
 		page.pageName = "regional"
 		page.pageTitle = _("Regional")
 		page.pageLabel = _("_Regional")
 		page.pageIcon = "preferences-desktop-locale.png"
-		self.prefPages = [page]
+		return page
+
+	@staticmethod
+	def getWeekPage(pageVBox: gtk.Box) -> StackPage:
+		page = StackPage()
+		page.pageParent = "regional"
+		page.pageWidget = pageVBox
+		page.pageName = "regional_week"
+		page.pageTitle = _("Week") + " - " + _("Regional")
+		page.pageLabel = _("Week-related Settings")
+		page.pageIcon = ""
+		page.pageExpand = False
+		return page
+
+	def __init__(self, spacing: int) -> None:
+		self.optionUIs: list[OptionUI] = []
+		##
+		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self.vbox = vbox
+		vbox.set_border_width(5)
+		self.prefPages = [self.getMainPage(vbox)]
 		# ------
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		item: OptionUI
@@ -146,17 +162,9 @@ class PreferencesRegionalTab:
 		frame.add(itemWidget)
 		pack(pageVBox, frame)
 		# ------------
-		page = StackPage()
-		page.pageParent = "regional"
-		page.pageWidget = pageVBox
-		page.pageName = "regional_week"
-		page.pageTitle = _("Week") + " - " + _("Regional")
-		page.pageLabel = _("Week-related Settings")
-		page.pageIcon = ""
-		page.pageExpand = False
-		self.prefPages.append(page)
-		# -----
-		self.subPages = [page]
+		weekPage = self.getWeekPage(pageVBox)
+		self.prefPages.append(weekPage)
+		self.subPages = [weekPage]
 		# --------------------------------------------------
 		options = []
 		for mod in calTypes:
