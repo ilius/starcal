@@ -199,7 +199,7 @@ class PreferencesRegionalTab:
 				pack(pageVBox, optionUI.getWidget())
 			# -----
 		# ---
-		self.moduleOptionUIs = options
+		self.optionUIs += options
 
 	def apply(self) -> None:
 		first = self.comboFirstWD.get_active()
