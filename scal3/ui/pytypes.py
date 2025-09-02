@@ -15,6 +15,7 @@ __all__ = [
 	"DayCalTypeBaseOptionsDict",
 	"DayCalTypeDayOptionsDict",
 	"DayCalTypeWMOptionsDict",
+	"DayCalWidgetButtonDict",
 	"DictWithFont",
 	"PieGeoDict",
 	"WeekCalDayNumOptionsDict",

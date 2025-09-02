@@ -6,6 +6,7 @@ from scal3.color_utils import RGB
 
 __all__ = [
 	"gdkColorToRgb",
+	"rgbToGdkColor",
 	"rgbaToGdkRGBA",
 ]
 
