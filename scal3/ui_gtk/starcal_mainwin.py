@@ -50,7 +50,6 @@ from scal3.ui_gtk import (
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
 from scal3.ui_gtk.menuitems import (
 	CheckMenuItem,
 	ImageMenuItem,
@@ -58,22 +57,26 @@ from scal3.ui_gtk.menuitems import (
 )
 from scal3.ui_gtk.starcal_classes import MainWinEventMan, MainWinVbox, SignalHandler
 from scal3.ui_gtk.starcal_funcs import (
+	childButtonPress,
 	copyCurrentDate,
 	copyCurrentDateTime,
 	copyDateGetCallback,
-	createPluginsText,
 	getStatusIconTooltip,
 	liveConfChanged,
+	menuMainPopup,
+	onMainButtonPress,
+	onResizeFromMenu,
+	onScreenSizeChange,
 	onStatusIconPress,
+	onToggleRightPanel,
 	shouldUseAppIndicator,
 	yearWheelShow,
 )
+from scal3.ui_gtk.starcal_layout import makeMainWinLayout
 from scal3.ui_gtk.utils import (
-	get_menu_height,
 	get_menu_width,
 	openWindow,
 	showError,
-	x_large,
 )
 
 if TYPE_CHECKING:
@@ -85,6 +88,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.customize_dialog import CustomizeWindow
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
+	from scal3.ui_gtk.layout import WinLayoutBox
 	from scal3.ui_gtk.menuitems import ItemCallback
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
@@ -231,89 +235,12 @@ class MainWin(CalObjWidget):
 		assert sorted(self.menuItemsCallback) == sorted(menuMainItemDefs)
 
 	def makeLayout(self) -> WinLayoutBox:
-		footer = WinLayoutBox(
-			name="footer",
-			desc="Footer",  # should not be seen in GUI
-			vertical=True,
-			expand=False,
-			itemsMovable=True,
-			itemsParam=conf.mainWinFooterItems,
-			buttonSpacing=2,
-			items=[
-				WinLayoutObj(
-					name="statusBar",
-					desc=_("Status Bar"),
-					enableParam=conf.statusBarEnable,
-					vertical=False,
-					expand=False,
-					movable=True,
-					buttonBorder=0,
-					initializer=self.createStatusBar,
-				),
-				WinLayoutObj(
-					name="pluginsText",
-					desc=_("Plugins Text"),
-					enableParam=conf.pluginsTextEnable,
-					vertical=False,
-					expand=False,
-					movable=True,
-					buttonBorder=0,
-					initializer=createPluginsText,
-				),
-				WinLayoutObj(
-					name="eventDayView",
-					desc=_("Events of Day"),
-					enableParam=conf.eventDayViewEnable,
-					vertical=False,
-					expand=False,
-					movable=True,
-					buttonBorder=0,
-					initializer=self.createEventDayView,
-				),
-			],
-		)
-		footer.setItemsOrder(conf.mainWinFooterItems)
-		return WinLayoutBox(
-			name="layout",
-			desc=_("Main Window"),
-			vertical=True,
-			expand=True,
-			items=[
-				WinLayoutObj(
-					name="layout_winContronller",
-					desc=_("Window Controller"),
-					enableParam=conf.winControllerEnable,
-					vertical=False,
-					expand=False,
-					initializer=self.createWindowControllers,
-				),
-				WinLayoutBox(
-					name="middleBox",
-					desc="Middle Box",  # should not be seen in GUI
-					vertical=False,
-					expand=True,
-					items=[
-						WinLayoutObj(
-							name="mainPanel",
-							desc=x_large(_("Main Panel")),
-							vertical=True,
-							expand=True,
-							initializer=self.createMainVBox,
-						),
-						WinLayoutObj(
-							name="rightPanel",
-							desc=_("Right Panel"),
-							enableParam=conf.mainWinRightPanelEnable,
-							vertical=True,
-							expand=False,
-							labelAngle=90 if rtl else -90,
-							initializer=self.createRightPanel,
-							buttonBorder=int(ui.getFont().size),
-						),
-					],
-				),
-				footer,
-			],
+		return makeMainWinLayout(
+			createEventDayView=self.createEventDayView,
+			createWindowControllers=self.createWindowControllers,
+			createStatusBar=self.createStatusBar,
+			createMainVBox=self.createMainVBox,
+			createRightPanel=self.createRightPanel,
 		)
 
 	def createWindowControllers(self) -> CustomizableCalObj:
@@ -343,35 +270,12 @@ class MainWin(CalObjWidget):
 		self.rightPanel.onConfigChange()
 		return self.rightPanel
 
-	def _onToggleRightPanel(self) -> None:
-		assert self.rightPanel is not None
-		enable = not conf.mainWinRightPanelEnable.v
-		conf.mainWinRightPanelEnable.v = enable
-		self.rightPanel.enable = enable
-		self.rightPanel.showHide()
-		self.rightPanel.broadcastDateChange()
-
-		# update Enable checkbutton in Customize dialog
-		self.rightPanel.onToggleFromMainWin()
-
-		if conf.mainWinRightPanelResizeOnToggle.v:
-			ww, wh = self.win.get_size()
-			mw = conf.mainWinRightPanelWidth.v
-			if enable:
-				ww += mw
-			else:
-				ww -= mw
-			if rtl:
-				wx, wy = self.win.get_position()
-				wx += mw * (-1 if enable else 1)
-				self.win.move(wx, wy)
-			self.win.resize(ww, wh)
-
 	def onToggleRightPanel(self, _sig: SignalHandlerType) -> None:
+		assert self.rightPanel is not None
 		self.ignoreConfigureEvent = True
 		ui.disableRedraw = True
 		try:
-			self._onToggleRightPanel()
+			onToggleRightPanel(self.rightPanel, self.win)
 		finally:
 			self.ignoreConfigureEvent = False
 			ui.disableRedraw = False
@@ -473,18 +377,7 @@ class MainWin(CalObjWidget):
 		self.win.resize(ww, conf.winHeight.v)
 
 	def screenSizeChanged(self, rect: gdk.Rectangle) -> None:
-		if conf.winMaximized.v:
-			return
-		winWidth = min(conf.winWidth.v, rect.width)
-		winHeight = min(conf.winHeight.v, rect.height)
-		winX = min(conf.winX.v, rect.width - conf.winWidth.v)
-		winY = min(conf.winY.v, rect.height - conf.winHeight.v)
-
-		if (winWidth, winHeight) != (conf.winWidth.v, conf.winHeight.v):
-			self.win.resize(winWidth, winHeight)
-
-		if (winX, winY) != (conf.winX.v, conf.winY.v):
-			self.win.move(winX, winY)
+		onScreenSizeChange(self.win, rect)
 
 	def onConfigureEvent(self, _w: gtk.Widget, _ge: gdk.EventConfigure) -> bool:
 		if self.ignoreConfigureEvent:
@@ -510,68 +403,17 @@ class MainWin(CalObjWidget):
 			self.rightPanel.onWindowSizeChange()
 
 	def onMainButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		# only for mainVBox for now, not rightPanel
-		# does not work for statusBar, don't know why
-		# log.debug(f"MainWin: onMainButtonPress, {gevent.button=}")
-		b = gevent.button
-		if b == 3:
-			menuMain = self.menuMainCreate()
-			menuMain.popup(None, None, None, None, 3, gevent.time)
-		elif b == 1:
-			# FIXME: used to cause problems with `ConButton`
-			# when using 'pressed' and 'released' signals
-			self.win.begin_move_drag(
-				gevent.button,
-				int(gevent.x_root),
-				int(gevent.y_root),
-				gevent.time,
-			)
-		ui.updateFocusTime()
-		return False
+		return onMainButtonPress(self.win, self.menuMainCreate, gevent)
 
 	def childButtonPress(
 		self,
 		widget: gtk.Widget,  # noqa: ARG002
 		gevent: gdk.EventButton,
 	) -> bool:
-		b = gevent.button
-		# log.debug(dir(gevent))
-		# foo, x, y, mask = gevent.get_window().get_pointer()
-		# x, y = self.w.get_pointer()
-		x, y = int(gevent.x_root), int(gevent.y_root)
-		result = False
-		if b == 1:
-			self.win.begin_move_drag(gevent.button, x, y, gevent.time)
-			result = True
-		elif b == 3:
-			menuMain = self.menuMainCreate()
-			if rtl:
-				x -= get_menu_width(menuMain)
-			menuMain.popup(
-				None,
-				None,
-				lambda *_args: (x, y, True),
-				None,
-				3,
-				gevent.time,
-			)
-			result = True
-		ui.updateFocusTime()
-		return result
+		return childButtonPress(self.win, self.menuMainCreate, gevent)
 
 	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		if self.menuMain:
-			self.menuMain.hide()
-		conf.winMaximized.v = False
-		ui.updateFocusTime()
-		self.win.begin_resize_drag(
-			gdk.WindowEdge.SOUTH_EAST,
-			gevent.button,
-			int(gevent.x_root),
-			int(gevent.y_root),
-			gevent.time,
-		)
-		return True
+		return onResizeFromMenu(self.menuMain, self.win, gevent)
 
 	def changeDate(self, year: int, month: int, day: int) -> None:
 		ui.cells.changeDate(year, month, day)
@@ -793,35 +635,7 @@ class MainWin(CalObjWidget):
 		y: int,
 		item: CustomizableCalObjType,
 	) -> None:
-		widget = item.w
-		menu = self.menuMainCreate()
-		dcoord = widget.translate_coordinates(self.w, x, y)
-		assert dcoord is not None
-		dx, dy = dcoord
-		win = self.w.get_window()
-		assert win is not None
-		_foo, wx, wy = win.get_origin()
-		x = wx + dx
-		y = wy + dy
-		if rtl:
-			x -= get_menu_width(menu)
-		menuH = get_menu_height(menu)
-		if menuH > 0 and y + menuH > ud.screenH:
-			if y - menuH >= 0:
-				y -= menuH
-			else:
-				y -= menuH // 2
-		etime = gtk.get_current_event_time()
-		# log.debug("menuMainPopup", x, y, etime)
-		menu.popup(
-			None,
-			None,
-			lambda *_args: (x, y, True),
-			None,
-			3,
-			etime,
-		)
-		ui.updateFocusTime()
+		menuMainPopup(self.w, self.menuMainCreate, x, y, item)
 
 	def onKeepAboveClick(self, check: gtk.Widget) -> None:
 		assert isinstance(check, CheckMenuItem)

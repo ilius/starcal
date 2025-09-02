@@ -20,23 +20,30 @@ from typing import TYPE_CHECKING
 
 from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
+from scal3.locale_man import rtl  # import scal3.locale_man after core
 from scal3.locale_man import tr as _
 from scal3.ui import conf
+from scal3.ui_gtk import gdk, gtk, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk import timeout_add
 from scal3.ui_gtk.utils import (
+	get_menu_height,
+	get_menu_width,
 	openWindow,
 	setClipboard,
 	widgetActionCallback,
 )
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk import gdk, gtk
+	from collections.abc import Callable
+
 	from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
+	from scal3.ui_gtk.pytypes import CustomizableCalObjType
+	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.signals import SignalHandlerType
 	from scal3.ui_gtk.starcal_types import OptEvent, OptWidget
 
 __all__ = [
+	"childButtonPress",
 	"copyCurrentDate",
 	"copyCurrentDateTime",
 	"copyDateGetCallback",
@@ -44,7 +51,12 @@ __all__ = [
 	"eventSearchShow",
 	"getStatusIconTooltip",
 	"liveConfChanged",
+	"menuMainPopup",
+	"onMainButtonPress",
+	"onResizeFromMenu",
+	"onScreenSizeChange",
 	"onStatusIconPress",
+	"onToggleRightPanel",
 	"prefUpdateBgColor",
 	"shouldUseAppIndicator",
 	"yearWheelShow",
@@ -182,3 +194,158 @@ def onStatusIconPress(
 		copyDate(calTypes.primary)
 		return True
 	return False
+
+
+def onToggleRightPanel(
+	rightPanel: MainWinRightPanel,
+	win: gtk.Window,
+) -> None:
+	enable = not conf.mainWinRightPanelEnable.v
+	conf.mainWinRightPanelEnable.v = enable
+	rightPanel.enable = enable
+	rightPanel.showHide()
+	rightPanel.broadcastDateChange()
+
+	# update Enable checkbutton in Customize dialog
+	rightPanel.onToggleFromMainWin()
+
+	if conf.mainWinRightPanelResizeOnToggle.v:
+		ww, wh = win.get_size()
+		mw = conf.mainWinRightPanelWidth.v
+		if enable:
+			ww += mw
+		else:
+			ww -= mw
+		if rtl:
+			wx, wy = win.get_position()
+			wx += mw * (-1 if enable else 1)
+			win.move(wx, wy)
+		win.resize(ww, wh)
+
+
+def onScreenSizeChange(win: gtk.Window, rect: gdk.Rectangle) -> None:
+	if conf.winMaximized.v:
+		return
+	winWidth = min(conf.winWidth.v, rect.width)
+	winHeight = min(conf.winHeight.v, rect.height)
+	winX = min(conf.winX.v, rect.width - conf.winWidth.v)
+	winY = min(conf.winY.v, rect.height - conf.winHeight.v)
+
+	if (winWidth, winHeight) != (conf.winWidth.v, conf.winHeight.v):
+		win.resize(winWidth, winHeight)
+
+	if (winX, winY) != (conf.winX.v, conf.winY.v):
+		win.move(winX, winY)
+
+
+def childButtonPress(
+	win: gtk.Window,
+	menuMainCreate: Callable[[], gtk.Menu],
+	gevent: gdk.EventButton,
+) -> bool:
+	b = gevent.button
+	# log.debug(dir(gevent))
+	# foo, x, y, mask = gevent.get_window().get_pointer()
+	# x, y = self.w.get_pointer()
+	x, y = int(gevent.x_root), int(gevent.y_root)
+	result = False
+	if b == 1:
+		win.begin_move_drag(gevent.button, x, y, gevent.time)
+		result = True
+	elif b == 3:
+		menuMain = menuMainCreate()
+		if rtl:
+			x -= get_menu_width(menuMain)
+		menuMain.popup(
+			None,
+			None,
+			lambda *_args: (x, y, True),
+			None,
+			3,
+			gevent.time,
+		)
+		result = True
+	ui.updateFocusTime()
+	return result
+
+
+def onResizeFromMenu(
+	menuMain: gtk.Menu | None,
+	win: gtk.Window,
+	gevent: gdk.EventButton,
+) -> bool:
+	if menuMain:
+		menuMain.hide()
+	conf.winMaximized.v = False
+	ui.updateFocusTime()
+	win.begin_resize_drag(
+		gdk.WindowEdge.SOUTH_EAST,
+		gevent.button,
+		int(gevent.x_root),
+		int(gevent.y_root),
+		gevent.time,
+	)
+	return True
+
+
+def onMainButtonPress(
+	win: gtk.Window,
+	menuMainCreate: Callable[[], gtk.Menu],
+	gevent: gdk.EventButton,
+) -> bool:
+	# only for mainVBox for now, not rightPanel
+	# does not work for statusBar, don't know why
+	# log.debug(f"MainWin: onMainButtonPress, {gevent.button=}")
+	b = gevent.button
+	if b == 3:
+		menuMain = menuMainCreate()
+		menuMain.popup(None, None, None, None, 3, gevent.time)
+	elif b == 1:
+		# FIXME: used to cause problems with `ConButton`
+		# when using 'pressed' and 'released' signals
+		win.begin_move_drag(
+			gevent.button,
+			int(gevent.x_root),
+			int(gevent.y_root),
+			gevent.time,
+		)
+	ui.updateFocusTime()
+	return False
+
+
+def menuMainPopup(
+	w: gtk.Widget,
+	menuMainCreate: Callable[[], gtk.Menu],
+	x: int,
+	y: int,
+	item: CustomizableCalObjType,
+) -> None:
+	widget = item.w
+	menu = menuMainCreate()
+	dcoord = widget.translate_coordinates(w, x, y)
+	assert dcoord is not None
+	dx, dy = dcoord
+	win = w.get_window()
+	assert win is not None
+	_foo, wx, wy = win.get_origin()
+	x = wx + dx
+	y = wy + dy
+	if rtl:
+		x -= get_menu_width(menu)
+	menuH = get_menu_height(menu)
+	if menuH > 0 and y + menuH > ud.screenH:
+		if y - menuH >= 0:
+			y -= menuH
+		else:
+			y -= menuH // 2
+	etime = gtk.get_current_event_time()
+	# log.debug("menuMainPopup", x, y, etime)
+	menu.popup(
+		None,
+		None,
+		lambda *_args: (x, y, True),
+		None,
+		3,
+		etime,
+	)
+	ui.updateFocusTime()
