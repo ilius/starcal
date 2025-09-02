@@ -37,7 +37,7 @@ class LangOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
-	def __init__(self, option: Option) -> None:
+	def __init__(self, option: Option[str]) -> None:
 		self.option = option
 		# ---
 		listStore = self.listStore = gtk.ListStore(str)
