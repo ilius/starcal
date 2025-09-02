@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.pytypes import CalObjType
 	from scal3.ui_gtk.starcal_types import MainWinType, OptWidget
 
-__all__ = ["MainWinVbox", "SignalHandler"]
+__all__ = ["MainWinEventMan", "MainWinVbox", "SignalHandler"]
 
 
 class MainWinVbox(CustomizableCalBox):
