@@ -300,7 +300,7 @@ class PreferencesWindow(gtk.Window):
 		grid.set_row_homogeneous(True)
 		grid.set_column_homogeneous(True)
 		# grid.set_row_spacing(self.spacing)
-		for index, page in enumerate(tab.prefPages):
+		for index, page in enumerate(tab.subPages):
 			button = newWideButton(self, page)
 			button.set_border_width(int(self.spacing * 0.7))
 			grid.attach(button, 0, index, 1, 1)
