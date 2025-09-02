@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from scal3.locale_man import langSh
+from scal3.locale_man import lang, langSh
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.option_ui_extra import (
@@ -48,7 +48,7 @@ class PreferencesLanguageCalTypes:
 		# --------------------------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=int(spacing / 2))
 		pack(hbox, gtk.Label(label=_("Language")))
-		langOption = LangOptionUI()
+		langOption = LangOptionUI(lang)
 		self.langOption = langOption
 		# ---
 		pack(hbox, langOption.getWidget())

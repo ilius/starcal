@@ -23,7 +23,7 @@ log = logger.get()
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any
 
-from scal3 import core, locale_man, startup
+from scal3 import core, startup
 from scal3.cal_types import calTypes
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
@@ -267,13 +267,12 @@ class CalTypeOptionUI(OptionUI):
 			self._onChangeFunc()
 
 
-# FIXME: switch to: option: Option,
 class LangOptionUI(OptionUI):
 	def getWidget(self) -> gtk.Widget:
 		return self._widget
 
-	def __init__(self) -> None:
-		self.option = locale_man.lang
+	def __init__(self, option: Option) -> None:
+		self.option = option
 		# ---
 		listStore = self.listStore = gtk.ListStore(str)
 		combo = gtk.ComboBox()
@@ -287,8 +286,17 @@ class LangOptionUI(OptionUI):
 		self.ls = listStore
 		self.ls.append([_("System Setting")])
 		for langObj in langDict.values():
-			# isinstance(langObj, locale_man.LangData)
-			self.ls.append([langObj.name])
+			# assert isinstance(langObj, locale_man.LangData)
+			desc = " - ".join(
+				list(
+					{
+						_(langObj.name),
+						langObj.name,
+						langObj.nativeName,
+					}
+				)
+			)
+			self.ls.append([desc])
 
 	def get(self) -> str:
 		i = self._widget.get_active()

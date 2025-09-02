@@ -18,6 +18,10 @@ msgid "_About"
 msgstr ""
 "_درباره"
 
+msgid "English"
+msgstr ""
+"انگلیسی"
+
 msgctxt "window action"
 msgid "_Apply"
 msgstr ""
