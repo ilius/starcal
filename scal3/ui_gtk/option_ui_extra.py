@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any
 
 from scal3 import core, startup
 from scal3.cal_types import calTypes
-from scal3.locale_man import langDict, rtl
+from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.menuitems import ImageMenuItem
@@ -45,7 +45,6 @@ __all__ = [
 	"CheckStartupOptionUI",
 	"FixedSizeOrRatioOptionUI",
 	"KeyBindingOptionUI",
-	"LangOptionUI",
 	"WeekDayCheckListOptionUI",
 ]
 
@@ -265,59 +264,6 @@ class CalTypeOptionUI(OptionUI):
 		self.updateVar()
 		if self._onChangeFunc:
 			self._onChangeFunc()
-
-
-class LangOptionUI(OptionUI):
-	def getWidget(self) -> gtk.Widget:
-		return self._widget
-
-	def __init__(self, option: Option) -> None:
-		self.option = option
-		# ---
-		listStore = self.listStore = gtk.ListStore(str)
-		combo = gtk.ComboBox()
-		combo.set_model(listStore)
-		# ---
-		cell = gtk.CellRendererText()
-		combo.pack_start(cell, expand=True)
-		combo.add_attribute(cell, "text", 0)
-		# ---
-		self._widget = combo
-		self.ls = listStore
-		self.ls.append([_("System Setting")])
-		for langObj in langDict.values():
-			# assert isinstance(langObj, locale_man.LangData)
-			desc = " - ".join(
-				list(
-					{
-						_(langObj.name),
-						langObj.name,
-						langObj.nativeName,
-					}
-				)
-			)
-			self.ls.append([desc])
-
-	def get(self) -> str:
-		i = self._widget.get_active()
-		if i == 0:
-			return ""
-		return list(langDict)[i - 1]
-
-	def set(self, value: str) -> None:
-		if not value:
-			self._widget.set_active(0)
-		else:
-			try:
-				i = list(langDict).index(value)
-			except ValueError:
-				log.info(f"language {value!r} in not in list!")
-				self._widget.set_active(0)
-			else:
-				self._widget.set_active(i + 1)
-
-	# def updateVar(self):
-	# 	lang =
 
 
 class CheckStartupOptionUI(OptionUI):  # FIXME
