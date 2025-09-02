@@ -24,10 +24,8 @@ log = logger.get()
 from scal3.locale_man import lang, langSh
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.option_ui_extra import (
-	ActiveInactiveCalsOptionUI,
-	LangOptionUI,
-)
+from scal3.ui_gtk.option_ui.language import LangOptionUI
+from scal3.ui_gtk.option_ui_extra import ActiveInactiveCalsOptionUI
 from scal3.ui_gtk.stack import StackPage
 
 __all__ = ["PreferencesLanguageCalTypes"]
