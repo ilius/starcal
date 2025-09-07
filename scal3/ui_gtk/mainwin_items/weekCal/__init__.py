@@ -64,7 +64,7 @@ class CalObj(CalBase):
 	desc = _("Week Calendar")
 	vertical = False
 	expand = True
-	optionsPageSpacing = 10
+	optionsPageSpacing = 7
 	itemListSeparatePage = True
 	itemsPageTitle = _("Columns")
 	itemsPageButtonBorder = 15
@@ -164,36 +164,6 @@ class CalObj(CalBase):
 			spacing=self.optionsPageSpacing,
 		)
 		option: OptionUI
-		# -----
-		option = FloatSpinOptionUI(
-			option=conf.wcalTextSizeScale,
-			bounds=(0.01, 1),
-			digits=3,
-			step=0.1,
-			label=_("Text Size Scale"),
-			live=True,
-			onChangeFunc=self.w.queue_draw,
-		)
-		pack(optionsWidget, option.getWidget())
-		# ---
-		option = CheckColorOptionUI(
-			CheckOptionUI(option=conf.wcalGrid, label=_("Grid")),
-			ColorOptionUI(option=conf.wcalGridColor, useAlpha=True),
-			live=True,
-			onChangeFunc=self.w.queue_draw,
-		)
-		pack(optionsWidget, option.getWidget())
-		# ---
-		option = CheckColorOptionUI(
-			CheckOptionUI(
-				option=conf.wcalUpperGradientEnable,
-				label=_("Row's Upper Gradient"),
-			),
-			ColorOptionUI(option=conf.wcalUpperGradientColor, useAlpha=True),
-			live=True,
-			onChangeFunc=self.w.queue_draw,
-		)
-		pack(optionsWidget, option.getWidget())
 		# ------------
 		pageVBox = gtk.Box(orientation=gtk.Orientation.VERTICAL, spacing=20)
 		pageVBox.set_border_width(10)
@@ -235,6 +205,36 @@ class CalObj(CalBase):
 		# ---
 		button = newSubPageButton(self.s, page, borderWidth=10)
 		pack(optionsWidget, button, padding=10)
+		# ---------
+		option = FloatSpinOptionUI(
+			option=conf.wcalTextSizeScale,
+			bounds=(0.01, 1),
+			digits=3,
+			step=0.1,
+			label=_("Text Size Scale"),
+			live=True,
+			onChangeFunc=self.w.queue_draw,
+		)
+		pack(optionsWidget, option.getWidget())
+		# ---
+		option = CheckColorOptionUI(
+			CheckOptionUI(option=conf.wcalGrid, label=_("Grid")),
+			ColorOptionUI(option=conf.wcalGridColor, useAlpha=True),
+			live=True,
+			onChangeFunc=self.w.queue_draw,
+		)
+		pack(optionsWidget, option.getWidget())
+		# ---
+		option = CheckColorOptionUI(
+			CheckOptionUI(
+				option=conf.wcalUpperGradientEnable,
+				label=_("Row's Upper Gradient"),
+			),
+			ColorOptionUI(option=conf.wcalUpperGradientColor, useAlpha=True),
+			live=True,
+			onChangeFunc=self.w.queue_draw,
+		)
+		pack(optionsWidget, option.getWidget())
 		# ---------
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
