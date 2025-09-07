@@ -29,6 +29,7 @@ from typing import Any
 
 from scal3 import core, event_lib, locale_man
 from scal3.cal_types import calTypes
+from scal3.color_utils import RGBA
 from scal3.config_utils import (
 	loadSingleConfig,
 	saveSingleConfig,
@@ -118,10 +119,11 @@ confPathLive = join(confDir, "ui-live.json")
 fontOptions = ["fontDefault"] + [
 	p.v3Name for p in confOptionsData if p.type.startswith("Font")
 ]
+colorOptions = [p.v3Name for p in confOptionsData if p.type.startswith("ColorType")]
 
 confDecoders: dict[str, Callable[[Any], Any]] = dict.fromkeys(
 	fontOptions, Font.fromList
-)
+) | dict.fromkeys(colorOptions, RGBA.fromList)
 confEncoders: dict[str, Callable[[Any], Any]] = {
 	# param: Font.to_json for param in fontOptions
 }
