@@ -186,6 +186,7 @@ __all__ = [
 	"wcalTypeParams",
 	"wcalUpperGradientColor",
 	"wcalUpperGradientEnable",
+	"wcalUpperGradientSize",
 	"wcal_daysOfMonth_dir",
 	"wcal_daysOfMonth_expand",
 	"wcal_daysOfMonth_width",
@@ -648,11 +649,15 @@ wcalGridColor: Final[Option[ColorType]] = Option(
 MainWin: Customize: Week Calendar"""
 wcalUpperGradientEnable: Final[Option[bool]] = Option(False)
 
-"""Row's Upper Gradient
+"""Row's Upper Gradient: Color
 MainWin: Customize: Week Calendar"""
 wcalUpperGradientColor: Final[Option[ColorType]] = Option(
 	RGBA(red=255, green=255, blue=255, alpha=60)
 )
+
+"""Row's Upper Gradient: Size
+MainWin: Customize: Week Calendar"""
+wcalUpperGradientSize: Final[Option[float]] = Option(0.5)
 
 """Past Event Color
 MainWin: Customize: Week Calendar: Columns: Events Text"""
@@ -1364,6 +1369,7 @@ confOptionsCustomize: dict[str, Option[Any]] = {
 	"wcalGridColor": wcalGridColor,
 	"wcalUpperGradientEnable": wcalUpperGradientEnable,
 	"wcalUpperGradientColor": wcalUpperGradientColor,
+	"wcalUpperGradientSize": wcalUpperGradientSize,
 	"wcal_eventsText_pastColorEnable": wcal_eventsText_pastColorEnable,
 	"wcal_eventsText_pastColor": wcal_eventsText_pastColor,
 	"wcal_eventsText_ongoingColorEnable": wcal_eventsText_ongoingColorEnable,
