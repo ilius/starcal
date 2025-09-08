@@ -134,7 +134,8 @@ class Column(ColumnBase):
 		if conf.wcalUpperGradientEnable.v:
 			for rowI in range(7):
 				y0 = rowI * rowH
-				y1 = y0 + rowH / 2
+				height = rowH * conf.wcalUpperGradientSize.v
+				y1 = y0 + height
 				gradient = cairo.LinearGradient(0, y0, 0, y1)
 				gc = conf.wcalUpperGradientColor.v
 				gradient.add_color_stop_rgba(
@@ -145,13 +146,13 @@ class Column(ColumnBase):
 					gc.alpha / 255,
 				)
 				gradient.add_color_stop_rgba(
-					rowH,  # offset
+					height,  # offset
 					0,
 					0,
 					0,
 					0,
 				)
-				cr.rectangle(0, y0, w, rowH)
+				cr.rectangle(0, y0, w, height)
 				cr.set_source(gradient)
 				cr.fill()
 

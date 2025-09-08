@@ -901,8 +901,17 @@ confOptionsData: list[OptionData] = [
 		flags=CUSTOMIZE,
 		type="ColorType",
 		where="MainWin: Customize: Week Calendar",
-		desc="Row's Upper Gradient",
+		desc="Row's Upper Gradient: Color",
 		default=RGBA(255, 255, 255, 60),
+	),
+	OptionData(
+		name="weekCal.upperGradientSize",
+		v3Name="wcalUpperGradientSize",
+		flags=CUSTOMIZE,
+		type="float",
+		where="MainWin: Customize: Week Calendar",
+		desc="Row's Upper Gradient: Size",
+		default=0.5,
 	),
 	OptionData(
 		name="weekCal.eventsText.pastColorEnable",

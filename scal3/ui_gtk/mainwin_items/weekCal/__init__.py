@@ -225,16 +225,31 @@ class CalObj(CalBase):
 		)
 		pack(optionsWidget, option.getWidget())
 		# ---
+		frame = gtk.Frame(label=_("Row's Upper Gradient"))
+		frameBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		frameBox.set_border_width(5)
+		frame.add(frameBox)
 		option = CheckColorOptionUI(
 			CheckOptionUI(
 				option=conf.wcalUpperGradientEnable,
-				label=_("Row's Upper Gradient"),
+				label=_("Color"),
 			),
 			ColorOptionUI(option=conf.wcalUpperGradientColor, useAlpha=True),
 			live=True,
 			onChangeFunc=self.w.queue_draw,
 		)
-		pack(optionsWidget, option.getWidget())
+		pack(frameBox, option.getWidget())
+		option = FloatSpinOptionUI(
+			option=conf.wcalUpperGradientSize,
+			bounds=(0, 5),
+			digits=2,
+			step=0.1,
+			label=_("Size"),
+			live=True,
+			onChangeFunc=self.w.queue_draw,
+		)
+		pack(frameBox, option.getWidget())
+		pack(optionsWidget, frame)
 		# ---------
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget

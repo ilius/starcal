@@ -175,6 +175,10 @@ msgid "Show Right Panel"
 msgstr ""
 "نمایش پنل سمت چپ"
 
+msgid "Size"
+msgstr ""
+"اندازه"
+
 msgid "Sizes"
 msgstr ""
 "اندازه‌ها"
