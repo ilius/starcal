@@ -285,6 +285,8 @@ exclude = [
 	"scal3/ui/conf.py"
 ]
 exclude_toplevel_module = [
+	"apiclient",
+	"bson",
 	"cachetools",
 	"cairo",
 	"dateutil",
@@ -292,14 +294,16 @@ exclude_toplevel_module = [
 	"gnomevfs",
 	"httplib2",
 	"igraph",
+	"lxml",
+	"mercurial",
 	"numpy",
 	"oauth2client",
 	"packaging",
 	"psutil",
 	"pygit2",
 	"pytz",
+	"requests",
 	"win32api",
 	"win32com",
-	"bson",
 ]
 
