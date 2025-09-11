@@ -271,13 +271,6 @@ ignore_names = [
 	"test*",
 ]
 
-[tool.fixit]
-disable = ["fixit.rules.no_namedtuple"]
-
-[[tool.fixit.overrides]]
-path = "libs/bson/"
-disable = ["fixit.rules"]
-
 [tool.import-analyzer]
 exclude = [
 	"libs/",

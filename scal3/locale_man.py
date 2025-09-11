@@ -263,7 +263,7 @@ class LangData(SObjTextModel):
 		for value in values:
 			if not value:
 				raise ValueError(
-					f"missing or empty parameter in language "
+					"missing or empty parameter in language "
 					f'file "{self.file}", {values=}'
 				)
 		# -----
