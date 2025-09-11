@@ -26,7 +26,6 @@ mport install \
 	"$PYV-gobject3" \
 	"$PYV-cairo" \
 	"$PYV-httplib2" \
-	"$PYV-dateutil" \
 	"$PYV-psutil" \
 	"$PYV-cachetools" \
 	"$PYV-requests" \

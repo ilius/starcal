@@ -5,7 +5,6 @@ nix-shell -p \
 	python3Packages.pycairo \
 	python3Packages.pexpect \
 	python3Packages.httplib2 \
-	python3Packages.dateutil \
 	python3Packages.psutil \
 	python3Packages.cachetools \
 	python3Packages.requests \

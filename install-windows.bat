@@ -8,7 +8,6 @@ REM and I just tried simple stuff. I dont think I will return to this project. S
 
 
 REM Install other dependencies:
-pip3 install python-dateutil
 pip3 install pycairo
 pip3 install psutil
 pip3 install cachetools

@@ -14,11 +14,8 @@ import os
 from os.path import isfile, islink
 from typing import TYPE_CHECKING
 
-import dateutil.tz
-
-if TYPE_CHECKING:
-	from dateutil.tz.tz import tzfile
-
+from dateutil.tz import gettz as base_gettz
+from dateutil.tz import tzfile
 
 __all__ = ["UTC", "defaultTZ", "gettz"]
 
@@ -36,7 +33,7 @@ class TimeZone(datetime.tzinfo):
 			self._name = "/".join(parts[-2:])
 
 	def __str__(self) -> str:
-		# This is the only function that we needed to override on dateutil.tz.tzfile
+		# This is the only function that we needed to override on tzfile
 		return self._name
 
 	def utcoffset(self, dt: datetime.datetime | None) -> datetime.timedelta | None:
@@ -56,9 +53,9 @@ def readEtcLocaltime() -> datetime.tzinfo | None:
 		if isfile("/var/db/zoneinfo"):
 			with open("/var/db/zoneinfo", encoding="utf-8") as _file:
 				tzname = _file.read().strip()
-				return dateutil.tz.gettz(tzname)
+				return base_gettz(tzname)
 		# 'zdump /etc/localtime' does not show timezone's name
-		return dateutil.tz.tzfile("/etc/localtime")
+		return tzfile("/etc/localtime")
 	fpath = os.readlink("/etc/localtime")
 	parts = fpath.split("/")
 	try:
@@ -67,14 +64,14 @@ def readEtcLocaltime() -> datetime.tzinfo | None:
 		log.error(f"Unexpected timezone file: {fpath}")
 		return
 	tzname = "/".join(parts[index + 1 :])
-	return dateutil.tz.gettz(tzname)
+	return base_gettz(tzname)
 
 
 def gettz(*args, **kwargs) -> TimeZone | None:
 	global tzErrCount
 	if args and args[0].lstrip("/") == "etc/localtime":
 		return readEtcLocaltime()
-	tz = dateutil.tz.gettz(*args, **kwargs)
+	tz = base_gettz(*args, **kwargs)
 	"""
 	FileNotFoundError: [Errno 2] No such file or directory:
 	'/usr/lib/python3/dist-packages/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz'

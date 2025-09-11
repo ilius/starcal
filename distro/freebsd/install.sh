@@ -42,16 +42,11 @@ pkg install \
 	"$PYV-pip"
 
 
-pkg install "$PYV-dateutil" || \
-	python3 -m pip install dateutil || \
-	python3 -m pip install git+https://github.com/dateutil/dateutil
-
 pkg install "$PYV-igraph" || \
 	python3 -m pip install igraph || \
 	echo "Failed to install igraph"
 
 #pkg: No packages available to install matching 'packaging' have been found in the repositories
-#pkg: No packages available to install matching 'py311-dateutil' have been found in the repositories
 #pkg: No packages available to install matching 'py311-python-igraph' have been found in the repositories
 
 
@@ -61,7 +56,6 @@ pkg install "$PYV-igraph" || \
 # pygobject			https://www.freshports.org/devel/py-gobject/
 # pycairo			https://www.freshports.org/graphics/py-cairo/
 # httplib2			https://www.freshports.org/www/py-httplib2/
-# python-dateutil	https://www.freshports.org/devel/py-dateutil/
 # psutil			https://www.freshports.org/sysutils/py-psutil
 # cachetools		https://freebsd.pkgs.org/12/freebsd-aarch64/py38-cachetools-4.2.2.txz.html
 # requests			https://www.freshports.org/www/py-requests

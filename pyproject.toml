@@ -289,7 +289,6 @@ exclude_toplevel_module = [
 	"bson",
 	"cachetools",
 	"cairo",
-	"dateutil",
 	"gi",
 	"gnomevfs",
 	"httplib2",

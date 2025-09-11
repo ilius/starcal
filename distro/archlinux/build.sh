@@ -41,7 +41,6 @@ depends+=('python-gobject>=3.24') ## The new gobject introspection
 depends+=('gtksourceview4')
 depends+=('python-cairo')
 depends+=('python-httplib2')
-depends+=('python-dateutil')
 depends+=('python-psutil')
 depends+=('python-cachetools')
 depends+=('python-requests')

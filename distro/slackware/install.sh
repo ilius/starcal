@@ -9,7 +9,7 @@ fi
 SLACKPKG=slackpkg-2.83.0-noarch-4.txz
 
 if which slackpkg ; then
-	slackpkg install pygobject3 pycairo python-dateutil
+	echo
 	# TODO: gtksource-4 / gtksourceview4
 else
 	curl -o $SLACKPKG "https://slackpkg.org/stable/$SLACKPKG"

@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m pip install mypy pygobject-stubs \
             --no-cache-dir --config-settings=config=Gtk3,Gdk3,Soup2
-          python -m pip install types-requests types-python-dateutil types-pytz types-cachetools types-psutil
+          python -m pip install types-requests types-pytz types-cachetools types-psutil
           mypy --install-types
       - name: Run mypy --strict
         run: |

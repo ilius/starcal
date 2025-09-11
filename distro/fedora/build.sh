@@ -43,7 +43,6 @@ requires+=('python3-gobject >= 3.24') ## The new gobject introspection
 requires+=('python3-cairo')
 requires+=('libappindicator-gtk3')
 requires+=('python3-httplib2')
-requires+=('python3-dateutil')
 requires+=('python3-psutil')
 requires+=('python3-cachetools')
 requires+=('python3-requests')
