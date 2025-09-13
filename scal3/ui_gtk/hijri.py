@@ -183,7 +183,7 @@ class EditDbDialog(Dialog):
 			(
 				ym,
 				_(year),
-				_(hijri.monthName[month0]),
+				_(hijri.getMonthName(month0)),
 				mLen,
 				"",
 			),
@@ -241,7 +241,7 @@ class EditDbDialog(Dialog):
 				[
 					ym,
 					_(year),
-					_(hijri.monthName[month0]),
+					_(hijri.getMonthName(month0)),
 					mLen,
 					"",
 				],
@@ -328,7 +328,7 @@ class EditDbDialog(Dialog):
 
 
 def tuneHijriMonthes(_widget: gtk.Widget | None = None) -> None:
-	dialog = EditDbDialog(transient_for=ui.prefWindow.w)
+	dialog = EditDbDialog(transient_for=ui.prefWindow)
 	dialog.resize(400, 400)
 	dialog.run2()
 
