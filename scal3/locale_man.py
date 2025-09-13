@@ -443,7 +443,11 @@ def getMonthName(
 		raise RuntimeError(f"cal type '{calType}' not found")
 	if abbreviate:
 		return module.getMonthNameAb(tr, month, year)
-	return tr(module.getMonthName(month, year))
+	s = module.getMonthName(month, year)
+	st = tr(s, ctx="month-name")
+	if st != s:
+		return st
+	return tr(s)
 
 
 def getNumSep() -> str:

@@ -431,15 +431,58 @@ msgid "Saturday"
 msgstr "ش"
 
 
+msgctxt "month-name"
 msgid "January"
 msgstr "ژانویه"
+
+msgctxt "month-name"
+msgid "February"
+msgstr "فوریه" # or "فبریه"
+
+msgctxt "month-name"
+msgid "March"
+msgstr "مارس"
+
+msgctxt "month-name"
+msgid "April"
+msgstr "آوریل" # or "آپریل"
+
+msgctxt "month-name"
+msgid "May"
+msgstr "می" # or "مه"
+
+msgctxt "month-name"
+msgid "June"
+msgstr "ژوئن" # or "جوئن"
+
+msgctxt "month-name"
+msgid "July"
+msgstr "جولای" # or "ژوئیه"
+
+msgctxt "month-name"
+msgid "August"
+msgstr "آگوست" # or "اوت"
+
+msgctxt "month-name"
+msgid "September"
+msgstr "سپتامبر"
+
+msgctxt "month-name"
+msgid "October"
+msgstr "اکتبر"
+
+msgctxt "month-name"
+msgid "November"
+msgstr "نوامبر"
+
+msgctxt "month-name"
+msgid "December"
+msgstr "دسامبر"
+
 
 msgctxt "abbreviation"
 msgid "January"
 msgstr "ژان‍"
-
-msgid "February"
-msgstr "فوریه" # or "فبریه"
 
 msgctxt "abbreviation"
 msgid "February"
@@ -449,350 +492,380 @@ msgctxt "abbreviation"
 msgid "March"
 msgstr "مار"
 
-msgid "March"
-msgstr "مارس"
-
-msgid "April"
-msgstr "آوریل" # or "آپریل"
-
 msgctxt "abbreviation"
 msgid "April"
 msgstr "آور" # or "آپر"
 
-msgid "May"
-msgstr "می" # or "مه"
-
 msgctxt "abbreviation"
 msgid "May"
 msgstr "می" # or "مه"
-
-msgid "June"
-msgstr "ژوئن" # or "جوئن"
 
 msgctxt "abbreviation"
 msgid "June"
 msgstr "ژوئ‍" # or "جوئن"
 
-msgid "July"
-msgstr "جولای" # or "ژوئیه"
-
 msgctxt "abbreviation"
 msgid "July"
 msgstr "جول‍" # or "ژوئیه"
-
-msgid "August"
-msgstr "آگوست" # or "اوت"
 
 msgctxt "abbreviation"
 msgid "August"
 msgstr "آگ‍" # or "اوت"
 
-msgid "September"
-msgstr "سپتامبر"
-
 msgctxt "abbreviation"
 msgid "September"
 msgstr "سِپت‍"
-
-msgid "October"
-msgstr "اکتبر"
 
 msgctxt "abbreviation"
 msgid "October"
 msgstr "اُکت‍"
 
-msgid "November"
-msgstr "نوامبر"
-
 msgctxt "abbreviation"
 msgid "November"
 msgstr "نُوا"
-
-msgid "December"
-msgstr "دسامبر"
 
 msgctxt "abbreviation"
 msgid "December"
 msgstr "دِسا"
 
+msgctxt "month-name"
 msgid "Farvardin"
 msgstr "فروردین"
+
+msgctxt "month-name"
+msgid "Ordibehesht"
+msgstr "اردیبهشت"
+
+msgctxt "month-name"
+msgid "Khordad"
+msgstr "خرداد"
+
+msgctxt "month-name"
+msgid "Teer"
+msgstr "تیر"
+
+msgctxt "month-name"
+msgid "Mordad"
+msgstr "مرداد"
+
+msgctxt "month-name"
+msgid "Shahrivar"
+msgstr "شهریور"
+
+msgctxt "month-name"
+msgid "Mehr"
+msgstr "مهر"
+
+msgctxt "month-name"
+msgid "Aban"
+msgstr "آبان"
+
+msgctxt "month-name"
+msgid "Azar"
+msgstr "آذر"
+
+msgctxt "month-name"
+msgid "Dey"
+msgstr "دی"
+
+msgctxt "month-name"
+msgid "Bahman"
+msgstr "بهمن"
+
+msgctxt "month-name"
+msgid "Esfand"
+msgstr "اسفند"
+
 
 msgctxt "abbreviation"
 msgid "Farvardin"
 msgstr "فَرو"
 
-msgid "Ordibehesht"
-msgstr "اردیبهشت"
-
 msgctxt "abbreviation"
 msgid "Ordibehesht"
 msgstr "اُرد"
-
-msgid "Khordad"
-msgstr "خرداد"
 
 msgctxt "abbreviation"
 msgid "Khordad"
 msgstr "خُرد"
 
-msgid "Teer"
-msgstr "تیر"
-
 msgctxt "abbreviation"
 msgid "Teer"
 msgstr "تیر"
-
-msgid "Mordad"
-msgstr "مرداد"
 
 msgctxt "abbreviation"
 msgid "Mordad"
 msgstr "مرد"
 
-msgid "Shahrivar"
-msgstr "شهریور"
-
 msgctxt "abbreviation"
 msgid "Shahrivar"
 msgstr "شهر"
 
-msgid "Mehr"
-msgstr "مهر"
-
 msgctxt "abbreviation"
 msgid "Mehr"
 msgstr "مهر"
-
-msgid "Aban"
-msgstr "آبان"
 
 msgctxt "abbreviation"
 msgid "Aban"
 msgstr "آبان"
 
-msgid "Azar"
-msgstr "آذر"
-
 msgctxt "abbreviation"
 msgid "Azar"
 msgstr "آذر"
 
-msgid "Dey"
-msgstr "دی"
-
 msgctxt "abbreviation"
 msgid "Dey"
 msgstr "دی"
-
-msgid "Bahman"
-msgstr "بهمن"
 
 msgctxt "abbreviation"
 msgid "Bahman"
 msgstr "بَهم‍"
 
-msgid "Esfand"
-msgstr "اسفند"
 
 msgctxt "abbreviation"
 msgid "Esfand"
 msgstr "اِسف‍"
 
 
+msgctxt "month-name"
 msgid "Xakelêwe"
 msgstr "خاکەلێوە"
 
+msgctxt "month-name"
 msgid "Gullan"
 msgstr "گوڵان"
 
+msgctxt "month-name"
 msgid "Cozerdan"
 msgstr "جۆزەردان"
 
+msgctxt "month-name"
 msgid "Pûşper"
 msgstr "پووشپەڕ"
 
+msgctxt "month-name"
 msgid "Gelawêj"
 msgstr "گەلاوێژ"
 
+msgctxt "month-name"
 msgid "Xermanan"
 msgstr "خەرمانان"
 
+msgctxt "month-name"
 msgid "Rezber"
 msgstr "ڕەزبەر"
 
+msgctxt "month-name"
 msgid "Gelarêzan"
 msgstr "گەڵاڕێزان"
 
+msgctxt "month-name"
 msgid "Sermawez"
 msgstr "سەرماوەز"
 
+msgctxt "month-name"
 msgid "Befranbar"
 msgstr "بەفرانبار"
 
+msgctxt "month-name"
 msgid "Rêbendan"
 msgstr "ڕێبەندان"
 
+msgctxt "month-name"
 msgid "Reşeme"
 msgstr "ڕەشەمە"
 
 
-
+msgctxt "month-name"
 msgid "Hamal"
 msgstr "حمل"
 
+msgctxt "month-name"
 msgid "Sawr"
 msgstr "ثور"
 
+msgctxt "month-name"
 msgid "Jawzā"
 msgstr "جوزا"
 
+msgctxt "month-name"
 msgid "Saratān"
 msgstr "سرطان"
 
+msgctxt "month-name"
 msgid "Asad"
 msgstr "اسد"
 
+msgctxt "month-name"
 msgid "Sonbola"
 msgstr "سنبله"
 
+msgctxt "month-name"
 msgid "Mizān"
 msgstr "میزان"
 
+msgctxt "month-name"
 msgid "Aqrab"
 msgstr "عقرب"
 
+msgctxt "month-name"
 msgid "Qaws"
 msgstr "قوس"
 
+msgctxt "month-name"
 msgid "Jadi"
 msgstr "جدی"
 
+msgctxt "month-name"
 msgid "Dalvæ"
 msgstr "دلو"
 
+msgctxt "month-name"
 msgid "Hūt"
 msgstr "حوت"
 
 
 
+msgctxt "month-name"
 msgid "Wray"
 msgstr "وری"
 
+msgctxt "month-name"
 msgid "Ǧwayay"
 msgstr "غويی"
 
+msgctxt "month-name"
 msgid "Ǧbargolay"
 msgstr "غبرګولی"
 
+msgctxt "month-name"
 msgid "Čungāx̌"
 msgstr "چنګاښ"
 
+msgctxt "month-name"
 msgid "Zmaray"
 msgstr "زمری"
 
+msgctxt "month-name"
 msgid "Waǵay"
 msgstr "وږی"
 
+msgctxt "month-name"
 msgid "Təla"
 msgstr "تله"
 
+msgctxt "month-name"
 msgid "Laṛam"
 msgstr "لړم"
 
+msgctxt "month-name"
 msgid "Līndəi"
 msgstr "ليندۍ"
 
+msgctxt "month-name"
 msgid "Marǧūmay"
 msgstr "مرغومی"
 
+msgctxt "month-name"
 msgid "Salwāǧa"
 msgstr "سلواغه"
 
+msgctxt "month-name"
 msgid "Kab"
 msgstr "كب"
 
 
-
+msgctxt "month-name"
 msgid "Muharram"
 msgstr "محرم"
+
+msgctxt "month-name"
+msgid "Safar"
+msgstr "صفر"
+
+msgctxt "month-name"
+msgid "Rabīʽ 1"
+msgstr "ربیع‌الاول"
+
+msgctxt "month-name"
+msgid "Rabīʽ 2"
+msgstr "ربیع‌الثانی"
+
+msgctxt "month-name"
+msgid "Jumadā 1"
+msgstr "جمادی‌الاول"
+
+msgctxt "month-name"
+msgid "Jumadā 2"
+msgstr "جمادی‌الثانی"
+
+msgctxt "month-name"
+msgid "Rajab"
+msgstr "رجب"
+
+msgctxt "month-name"
+msgid "Shaʿbān"
+msgstr "شعبان"
+
+msgctxt "month-name"
+msgid "Ramaḍān"
+msgstr "رمضان"
+
+msgctxt "month-name"
+msgid "Shawwāl"
+msgstr "شوّال"
+
+msgctxt "month-name"
+msgid "Ḏū'l-Qaʿdah"
+msgstr "ذو‌القعده"
+
+msgctxt "month-name"
+msgid "Ḏū'l-Ḥijjah"
+msgstr "ذو‌الحجه"
 
 msgctxt "abbreviation"
 msgid "Muharram"
 msgstr "مُحرّ"
 
-msgid "Safar"
-msgstr "صفر"
-
 msgctxt "abbreviation"
 msgid "Safar"
 msgstr "صفر"
-
-msgid "Rabīʽ 1"
-msgstr "ربیع‌الاول"
 
 msgctxt "abbreviation"
 msgid "Rabīʽ 1"
 msgstr "رب‍.۱"
 
-msgid "Rabīʽ 2"
-msgstr "ربیع‌الثانی"
-
 msgctxt "abbreviation"
 msgid "Rabīʽ 2"
 msgstr "رب‍.۲"
-
-msgid "Jumadā 1"
-msgstr "جمادی‌الاول"
 
 msgctxt "abbreviation"
 msgid "Jumadā 1"
 msgstr "جم‍.۱"
 
-msgid "Jumadā 2"
-msgstr "جمادی‌الثانی"
-
 msgctxt "abbreviation"
 msgid "Jumadā 2"
 msgstr "جم‍.۲"
 
-msgid "Rajab"
-msgstr "رجب"
-
 msgctxt "abbreviation"
 msgid "Rajab"
 msgstr "رجب"
-
-msgid "Shaʿbān"
-msgstr "شعبان"
 
 msgctxt "abbreviation"
 msgid "Shaʿbān"
 msgstr "شَعب‍"
 
-msgid "Ramaḍān"
-msgstr "رمضان"
-
 msgctxt "abbreviation"
 msgid "Ramaḍān"
 msgstr "رمض‍"
-
-msgid "Shawwāl"
-msgstr "شوّال"
 
 msgctxt "abbreviation"
 msgid "Shawwāl"
 msgstr "شَوّا"
 
-msgid "Ḏū'l-Qaʿdah"
-msgstr "ذو‌القعده"
-
 msgctxt "abbreviation"
 msgid "Ḏū'l-Qaʿdah"
 msgstr "ذو‌.ق"
-
-msgid "Ḏū'l-Ḥijjah"
-msgstr "ذو‌الحجه"
 
 msgctxt "abbreviation"
 msgid "Ḏū'l-Ḥijjah"
