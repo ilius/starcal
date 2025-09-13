@@ -22,6 +22,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from scal3.option import Option
+
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
@@ -61,6 +63,7 @@ monthNameAb = (
 	"Nov",
 	"Dec",
 )
+monthNameContext: Option[str] = Option("month-name")
 
 
 def getMonthName(

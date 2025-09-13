@@ -36,6 +36,7 @@ class CalTypeModule(Protocol):
 	origLang: str
 	minMonthLen: int
 	maxMonthLen: int
+	monthNameContext: Option[str]
 	options: list[tuple[str, ...]]
 	confOptions: dict[str, Option[Any]]
 	avgYearLen: float

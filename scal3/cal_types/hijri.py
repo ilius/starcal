@@ -76,6 +76,7 @@ monthNameAb = (
 	"DhQ",
 	"DhH",
 )
+monthNameContext: Option[str] = Option("month-name")
 
 
 def getMonthName(
