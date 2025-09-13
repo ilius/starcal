@@ -420,7 +420,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		model = self.listStore
 		row: gtk.TreeModelRow
 		for i, row in enumerate(model):  # type: ignore[arg-type]
-			if row[0] == value:  # type: ignore[index]
+			if row[0] == value:
 				self.set_active(i)
 				return
 		model.append(
