@@ -25,6 +25,8 @@ from scal3 import logger
 from scal3.option import Option
 
 if TYPE_CHECKING:
+	from typing import Final
+
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 __all__ = [
@@ -75,7 +77,7 @@ monthNameAb = (
 	"DhQ",
 	"DhH",
 )
-monthNameContext: Option[str] = Option("month-name")
+monthNameContext: Final[Option[str]] = Option("month-name")
 
 
 def getMonthName(

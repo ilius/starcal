@@ -20,7 +20,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from scal3.option import Option
 
@@ -63,7 +63,7 @@ monthNameAb = (
 	"Nov",
 	"Dec",
 )
-monthNameContext: Option[str] = Option("month-name")
+monthNameContext: Final[Option[str]] = Option("month-name")
 
 
 def getMonthName(
