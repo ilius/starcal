@@ -108,7 +108,7 @@ hijriUseDB: Final[Option[bool]] = Option(True)
 options: list[OptionTuple] = [
 	(
 		hijriUseDB,
-		bool,
+		"bool",
 		"Use Hijri month length data (Iranian official calendar)",
 	),
 ]

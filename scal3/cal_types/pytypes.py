@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 if TYPE_CHECKING:
 	from scal3.option import Option
@@ -24,8 +24,9 @@ class TranslateFunc(Protocol):
 
 
 type OptionTuple = (
-	tuple[Option[bool], type[bool], str]
-	| tuple[Option[int], type[list[Any]], str, Sequence[str]]
+	tuple[Option[bool], Literal["bool"], str]
+	| tuple[Option[int], Literal["list"], str, Sequence[str]]
+	| tuple[Option[str], Literal["dict"], str, dict[str, str]]
 )
 
 

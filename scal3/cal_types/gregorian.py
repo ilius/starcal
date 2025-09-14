@@ -1,6 +1,5 @@
 #
 # Copyright © 2008-2019 Saeed Rasooli <saeed.gnu@gmail.com>
-# Copyright © 2007 Mehdi Bayazee <Bayazee@Gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -25,9 +24,16 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from scal3 import logger
-from scal3.option import Option
+from scal3.config_utils import (
+	loadSingleConfig,
+	saveSingleConfig,
+)
+from scal3.option import Option, StringMappingProxyOption
+from scal3.path import confDir, sysConfDir
 
 if TYPE_CHECKING:
+	from typing import Any, Final
+
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
 
 
@@ -69,7 +75,7 @@ monthNameAb = (
 	"Nov",
 	"Dec",
 )
-monthNameContext: Option[str] = Option("month-name")
+monthNameContext: Final[Option[str]] = Option("month-name-en")
 
 
 def getMonthName(m: int, y: int | None = None) -> str:  # noqa: ARG001
@@ -93,12 +99,34 @@ minMonthLen = 29
 maxMonthLen = 31
 avgYearLen = 365.2425  # FIXME
 
-options: list[OptionTuple] = []
+monthNameMode: Final[StringMappingProxyOption] = StringMappingProxyOption(
+	"en",
+	monthNameContext,
+	{"en": "month-name-en", "fr": "month-name-fr"},
+)
+
+options: list[OptionTuple] = [
+	(monthNameMode, "dict", "Month Names", {"en": "English", "fr": "French"}),
+]
 optionButtons: list[tuple[str, str, str]] = []
+confOptions: Final[dict[str, Option[Any]]] = {
+	"monthNameMode": monthNameMode,
+}
+
+# Here load user options from file
+sysConfPath = f"{sysConfDir}/{name}.json"
+loadSingleConfig(sysConfPath, confOptions)
+
+confPath = f"{confDir}/{name}.json"
+loadSingleConfig(confPath, confOptions)
 
 
 def save() -> None:
-	pass
+	"""Save user options to file."""
+	saveSingleConfig(
+		confPath,
+		confOptions,
+	)
 
 
 def isLeap(y: int) -> bool:
