@@ -189,18 +189,18 @@ class PreferencesRegionalTab:
 			# -----
 			self.subPages.append(page)
 			optionUI: Any
-			for rawOpt in mod.options:
-				if rawOpt[0] == "button":
+			for rawOption in mod.options:
+				if rawOption[0] == "button":
 					try:
-						optionUI = ModuleOptionButton(rawOpt[1:])
+						optionUI = ModuleOptionButton(rawOption[1:])
 					except Exception:
 						log.exception("")
 						continue
 				else:
-					option = mod.confOptions[rawOpt[0]]
+					option = mod.confOptions[rawOption[0]]
 					optionUI = ModuleOptionUI(
 						option=option,
-						rawOption=rawOpt,
+						rawOption=rawOption,
 						spacing=spacing,
 					)
 				options.append(optionUI)
