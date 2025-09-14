@@ -72,6 +72,7 @@ maxMonthLen = 36
 avgYearLen = 365.25
 
 options: list[OptionTuple] = []
+optionButtons: list[tuple[str, str, str]] = []
 
 
 def save() -> None:

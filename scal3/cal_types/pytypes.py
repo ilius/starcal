@@ -24,9 +24,8 @@ class TranslateFunc(Protocol):
 
 
 type OptionTuple = (
-	tuple[str, type[bool], str]
-	| tuple[str, type[list[Any]], str, Sequence[str]]
-	| tuple[str, str, str, str]
+	tuple[Option[bool], type[bool], str]
+	| tuple[Option[int], type[list[Any]], str, Sequence[str]]
 )
 
 
@@ -40,6 +39,7 @@ class CalTypeModule(Protocol):
 	options: list[tuple[str, ...]]
 	confOptions: dict[str, Option[Any]]
 	avgYearLen: float
+	optionButtons: list[tuple[str, str, str]]
 
 	def getMonthName(self, m: int, y: int | None = None) -> str: ...
 
