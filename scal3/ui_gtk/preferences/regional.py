@@ -23,7 +23,6 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import Any
 
 from scal3 import core, locale_man
 from scal3.cal_types import calTypes
@@ -188,23 +187,24 @@ class PreferencesRegionalTab:
 			self.prefPages.append(page)
 			# -----
 			self.subPages.append(page)
-			optionUI: Any
+
 			for rawOption in mod.options:
-				if rawOption[0] == "button":
-					try:
-						optionUI = ModuleOptionButton(rawOption[1:])
-					except Exception:
-						log.exception("")
-						continue
-				else:
-					option = mod.confOptions[rawOption[0]]
-					optionUI = ModuleOptionUI(
-						option=option,
-						rawOption=rawOption,
-						spacing=spacing,
-					)
+				optionUI = ModuleOptionUI(
+					rawOption=rawOption,
+					spacing=spacing,
+				)
 				options.append(optionUI)
 				pack(pageVBox, optionUI.getWidget())
+
+			for buttonTuple in mod.optionButtons:
+				try:
+					optionButton = ModuleOptionButton(buttonTuple)
+				except Exception:
+					log.exception("")
+					continue
+				options.append(optionButton)
+				pack(pageVBox, optionButton.getWidget())
+
 			# -----
 		# ---
 		self.optionUIs += options

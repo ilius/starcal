@@ -91,6 +91,7 @@ maxMonthLen = 32
 avgYearLen = 365.25
 
 options: list[OptionTuple] = []
+optionButtons: list[tuple[str, str, str]] = []
 
 monthLenSum = (
 	0,

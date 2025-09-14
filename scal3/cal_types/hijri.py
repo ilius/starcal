@@ -1,6 +1,5 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
-# Copyright (C) 2007 Mehdi Bayazee <Bayazee@Gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -108,12 +107,13 @@ hijriUseDB: Final[Option[bool]] = Option(True)
 
 options: list[OptionTuple] = [
 	(
-		"hijriUseDB",
+		hijriUseDB,
 		bool,
 		"Use Hijri month length data (Iranian official calendar)",
 	),
+]
+optionButtons = [
 	(
-		"button",
 		"Tune Hijri Monthes",
 		"hijri",
 		"tuneHijriMonthes",

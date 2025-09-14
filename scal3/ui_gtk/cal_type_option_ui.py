@@ -22,10 +22,11 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import Any, Protocol
+from typing import Any
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk.option_ui.base import OptionUI
 
 if typing.TYPE_CHECKING:
 	from collections.abc import Sequence
@@ -39,20 +40,16 @@ __all__ = [
 ]
 
 
-class ModuleOptionUIType(Protocol):
-	pass
-
-
 # rawOption tuple (old legacy design)
-# (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 # CheckButton
-# (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
-# (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
-# (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
+# (option: Option, bool,     CHECKBUTTON_TEXT)                 # CheckButton
+# (option: Option, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
+# (option: Option, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
+# (option: Option, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
 def ModuleOptionUI(
-	option: Option,
 	rawOption: tuple,
 	spacing: int = 0,
-) -> ModuleOptionUIType:
+) -> OptionUI:
+	option = rawOption[0]
 	t = rawOption[1]
 	if t is bool:
 		return CheckModuleOptionUI(
@@ -120,7 +117,7 @@ class CheckModuleOptionUI:
 # 		maxim: int,
 # 		spacing: int = 0,
 # 	) -> None:
-#		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+# from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 # 		self.option = option
 # 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 # 		pack(hbox, gtk.Label(label=_(label)))
@@ -149,7 +146,7 @@ class CheckModuleOptionUI:
 # 		maxim: float,
 # 		spacing: int = 0,
 # 	) -> None:
-#		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+# from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 # 		self.option = option
 # 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
 # 		pack(hbox, gtk.Label(label=_(label)))
@@ -199,7 +196,7 @@ class BasicComboModuleOptionUI:
 
 
 # ("button", LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
-class ModuleOptionButton:
+class ModuleOptionButton(OptionUI):
 	def __init__(self, opt: tuple) -> None:
 		funcName = opt[2]
 		clickedFunc = getattr(

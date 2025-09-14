@@ -1,6 +1,5 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
-# Copyright (C) 2007 Mehdi Bayazee <Bayazee@Gmail.com>
 # Copyright (C) 2001 Roozbeh Pournader <roozbeh@sharif.edu>
 # Copyright (C) 2001 Mohammad Toossi <mohammad@bamdad.org>
 #
@@ -44,12 +43,14 @@ monthNameContext: Option[str] = Option("month-name")
 monthNameMode: Final[Option[int]] = Option(0)
 options: list[OptionTuple] = [
 	(
-		"monthNameMode",
+		monthNameMode,
 		list,
 		"Month Names",
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 ]
+optionButtons: list[tuple[str, str, str]] = []
+
 confOptions: Final[dict[str, Option[Any]]] = {
 	"monthNameMode": monthNameMode,
 }

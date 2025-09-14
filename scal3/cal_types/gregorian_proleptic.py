@@ -38,6 +38,7 @@ maxMonthLen = 31
 avgYearLen = 365.2425  # FIXME
 
 options: list[OptionTuple] = []
+optionButtons: list[tuple[str, str, str]] = []
 
 monthName = (
 	"January",
