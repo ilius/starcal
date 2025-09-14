@@ -38,7 +38,7 @@ name = "jalali"
 desc = "Persian"
 origLang = "fa"
 
-monthNameContext: Option[str] = Option("month-name")
+monthNameContext: Final[Option[str]] = Option("month-name")
 
 monthNameMode: Final[Option[int]] = Option(0)
 options: list[OptionTuple] = [
