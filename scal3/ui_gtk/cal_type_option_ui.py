@@ -22,14 +22,14 @@ from scal3 import logger
 log = logger.get()
 
 import typing
-from typing import Any
+from typing import Any, Protocol
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 if typing.TYPE_CHECKING:
+	from collections.abc import Sequence
+
 	from scal3.option import Option
 
 
@@ -39,47 +39,154 @@ __all__ = [
 ]
 
 
+class ModuleOptionUIType(Protocol):
+	pass
+
+
+# rawOption tuple (old legacy design)
 # (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 # CheckButton
 # (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  # ComboBox
 # (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             # SpinButton
 # (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     # SpinButton
-class ModuleOptionUI:
+def ModuleOptionUI(
+	option: Option,
+	rawOption: tuple,
+	spacing: int = 0,
+) -> ModuleOptionUIType:
+	t = rawOption[1]
+	if t is bool:
+		return CheckModuleOptionUI(
+			option=option,
+			label=rawOption[2],
+			spacing=spacing,
+		)
+	if t is list:
+		return BasicComboModuleOptionUI(
+			option=option,
+			label=rawOption[2],
+			values=rawOption[3],
+			spacing=spacing,
+		)
+	# if t is int:
+	# 	return IntSpinModuleOptionUI(
+	# 		option=option,
+	# 		label=rawOption[2],
+	# 		minim=rawOption[3],
+	# 		maxim=rawOption[4],
+	# 		spacing=spacing,
+	# 	)
+	# if t is float:
+	# 	return FloatSpinModuleOptionUI(
+	# 		option=option,
+	# 		label=rawOption[2],
+	# 		minim=rawOption[3],
+	# 		maxim=rawOption[4],
+	# 		spacing=spacing,
+	# 	)
+	raise RuntimeError(f"bad option type {t!r}")
+
+
+class CheckModuleOptionUI:
 	def __init__(
 		self,
 		option: Option,
-		rawOption: tuple,
+		label: str,
 		spacing: int = 0,
 	) -> None:
 		self.option = option
-		t = rawOption[1]
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
-		w: gtk.Widget
-		if t is bool:
-			w = gtk.CheckButton(label=_(rawOption[2]))
-			self.get = w.get_active
-			self.set = w.set_active
-		elif t is list:
-			pack(hbox, gtk.Label(label=_(rawOption[2])))
-			w = gtk.ComboBoxText()  # or RadioButton
-			for s in rawOption[3]:
-				w.append_text(_(s))
-			self.get = w.get_active
-			self.set = w.set_active
-		elif t is int:
-			pack(hbox, gtk.Label(label=_(rawOption[2])))
-			w = IntSpinButton(rawOption[3], rawOption[4])
-			self.get = w.get_value
-			self.set = w.set_value
-		elif t is float:
-			pack(hbox, gtk.Label(label=_(rawOption[2])))
-			w = FloatSpinButton(rawOption[3], rawOption[4], rawOption[5])
-			self.get = w.get_value
-			self.set = w.set_value
-		else:
-			raise RuntimeError(f"bad option type {t!r}")
+		w = gtk.CheckButton(label=_(label))
+		self.get = w.get_active
+		self.set = w.set_active
 		pack(hbox, w)
 		self._widget = hbox
-		# ----
+
+	def updateVar(self) -> None:
+		self.option.v = self.get()
+
+	def updateWidget(self) -> None:
+		self.set(self.option.v)
+
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
+
+# class IntSpinModuleOptionUI:
+# 	def __init__(
+# 		self,
+# 		option: Option,
+# 		label: str,
+# 		minim: int,
+# 		maxim: int,
+# 		spacing: int = 0,
+# 	) -> None:
+#		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+# 		self.option = option
+# 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
+# 		pack(hbox, gtk.Label(label=_(label)))
+# 		w = IntSpinButton(minim, maxim)
+# 		self.get = w.get_active
+# 		self.set = w.set_active
+# 		pack(hbox, w)
+# 		self._widget = hbox
+
+# 	def updateVar(self) -> None:
+# 		self.option.v = self.get()
+
+# 	def updateWidget(self) -> None:
+# 		self.set(self.option.v)
+
+# 	def getWidget(self) -> gtk.Widget:
+# 		return self._widget
+
+
+# class FloatSpinModuleOptionUI:
+# 	def __init__(
+# 		self,
+# 		option: Option,
+# 		label: str,
+# 		minim: float,
+# 		maxim: float,
+# 		spacing: int = 0,
+# 	) -> None:
+#		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+# 		self.option = option
+# 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
+# 		pack(hbox, gtk.Label(label=_(label)))
+# 		w = FloatSpinButton(minim, maxim)
+# 		self.get = w.get_active
+# 		self.set = w.set_active
+# 		pack(hbox, w)
+# 		self._widget = hbox
+
+# 	def updateVar(self) -> None:
+# 		self.option.v = self.get()
+
+# 	def updateWidget(self) -> None:
+# 		self.set(self.option.v)
+
+# 	def getWidget(self) -> gtk.Widget:
+# 		return self._widget
+
+
+class BasicComboModuleOptionUI:
+	def __init__(
+		self,
+		option: Option,
+		label: str,
+		values: Sequence[str],
+		spacing: int = 0,
+	) -> None:
+		self.option = option
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
+		pack(hbox, gtk.Label(label=_(label)))
+		w = gtk.ComboBoxText()  # or RadioButton
+		for s in values:
+			w.append_text(_(s))
+		self.get = w.get_active
+		self.set = w.set_active
+		pack(hbox, w)
+		self._widget = hbox
 
 	def updateVar(self) -> None:
 		self.option.v = self.get()
