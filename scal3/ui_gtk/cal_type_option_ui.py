@@ -51,20 +51,27 @@ def ModuleOptionUI(
 ) -> OptionUI:
 	option = rawOption[0]
 	t = rawOption[1]
-	if t is bool:
+	if t == "bool":
 		return CheckModuleOptionUI(
 			option=option,
 			label=rawOption[2],
 			spacing=spacing,
 		)
-	if t is list:
+	if t == "list":
 		return BasicComboModuleOptionUI(
 			option=option,
 			label=rawOption[2],
 			values=rawOption[3],
 			spacing=spacing,
 		)
-	# if t is int:
+	if t == "dict":
+		return AdvancedComboModuleOptionUI(
+			option=option,
+			label=rawOption[2],
+			values=rawOption[3],
+			spacing=spacing,
+		)
+	# if t is "int":
 	# 	return IntSpinModuleOptionUI(
 	# 		option=option,
 	# 		label=rawOption[2],
@@ -72,7 +79,7 @@ def ModuleOptionUI(
 	# 		maxim=rawOption[4],
 	# 		spacing=spacing,
 	# 	)
-	# if t is float:
+	# if t is "float":
 	# 	return FloatSpinModuleOptionUI(
 	# 		option=option,
 	# 		label=rawOption[2],
@@ -184,6 +191,43 @@ class BasicComboModuleOptionUI:
 		self.set = w.set_active
 		pack(hbox, w)
 		self._widget = hbox
+
+	def updateVar(self) -> None:
+		self.option.v = self.get()
+
+	def updateWidget(self) -> None:
+		self.set(self.option.v)
+
+	def getWidget(self) -> gtk.Widget:
+		return self._widget
+
+
+class AdvancedComboModuleOptionUI:
+	def __init__(
+		self,
+		option: Option,
+		label: str,
+		values: dict[str, str],
+		spacing: int = 0,
+	) -> None:
+		self.option = option
+		self.keys = list(values)
+		descs = list(values.values())
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=spacing)
+		pack(hbox, gtk.Label(label=_(label)))
+		w = gtk.ComboBoxText()
+		self.combo = w
+		for s in descs:
+			w.append_text(_(s))
+		pack(hbox, w)
+		self._widget = hbox
+
+	def get(self) -> str:
+		return self.keys[self.combo.get_active()]
+
+	def set(self, key: str) -> None:
+		index = self.keys.index(key)
+		self.combo.set_active(index)
 
 	def updateVar(self) -> None:
 		self.option.v = self.get()

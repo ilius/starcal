@@ -44,7 +44,7 @@ monthNameMode: Final[Option[int]] = Option(0)
 options: list[OptionTuple] = [
 	(
 		monthNameMode,
-		list,
+		"list",
 		"Month Names",
 		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),

@@ -76,3 +76,25 @@ class ItemOption[T](Option[T]):
 	@property
 	def default(self) -> T:
 		return self._parent.default[self._index]
+
+
+class StringMappingProxyOption(Option[str]):
+	def __init__(
+		self,
+		default: str,
+		option: Option[str],
+		mapping: dict[str, str],
+	) -> None:
+		super().__init__(default)
+		self.mapping = mapping
+		self.option = option
+		option.v = mapping[default]
+
+	@property
+	def v(self) -> str:
+		return self._v
+
+	@v.setter
+	def v(self, value: str) -> None:
+		self._v = value
+		self.option.v = self.mapping[value]

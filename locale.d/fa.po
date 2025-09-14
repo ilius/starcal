@@ -22,6 +22,10 @@ msgid "English"
 msgstr ""
 "انگلیسی"
 
+msgid "French"
+msgstr ""
+"فرانسوی"
+
 msgctxt "window action"
 msgid "_Apply"
 msgstr ""
@@ -431,54 +435,101 @@ msgid "Saturday"
 msgstr "ش"
 
 
-msgctxt "month-name"
+msgctxt "month-name-en"
 msgid "January"
 msgstr "ژانویه"
 
-msgctxt "month-name"
-msgid "February"
-msgstr "فوریه" # or "فبریه"
+msgctxt "month-name-fr"
+msgid "January"
+msgstr "ژانویه"
 
-msgctxt "month-name"
+msgctxt "month-name-en"
+msgid "February"
+msgstr "فبریه"
+
+msgctxt "month-name-fr"
+msgid "February"
+msgstr "فوریه"
+
+msgctxt "month-name-en"
 msgid "March"
 msgstr "مارس"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "March"
+msgstr "مارس"
+
+msgctxt "month-name-en"
 msgid "April"
-msgstr "آوریل" # or "آپریل"
+msgstr "آپریل"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "April"
+msgstr "آوریل"
+
+msgctxt "month-name-en"
 msgid "May"
-msgstr "می" # or "مه"
+msgstr "می"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "May"
+msgstr "مه"
+
+msgctxt "month-name-en"
 msgid "June"
-msgstr "ژوئن" # or "جوئن"
+msgstr "جوئن"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "June"
+msgstr "ژوئن"
+
+msgctxt "month-name-en"
 msgid "July"
-msgstr "جولای" # or "ژوئیه"
+msgstr "جولای"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "July"
+msgstr "ژوئیه"
+
+msgctxt "month-name-en"
 msgid "August"
-msgstr "آگوست" # or "اوت"
+msgstr "آگوست"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "August"
+msgstr "اوت"
+
+msgctxt "month-name-en"
 msgid "September"
 msgstr "سپتامبر"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "September"
+msgstr "سپتامبر"
+
+msgctxt "month-name-en"
 msgid "October"
 msgstr "اکتبر"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "October"
+msgstr "اکتبر"
+
+msgctxt "month-name-en"
 msgid "November"
 msgstr "نوامبر"
 
-msgctxt "month-name"
+msgctxt "month-name-fr"
+msgid "November"
+msgstr "نوامبر"
+
+msgctxt "month-name-en"
 msgid "December"
 msgstr "دسامبر"
 
+msgctxt "month-name-fr"
+msgid "December"
+msgstr "دسامبر"
 
 msgctxt "abbreviation"
 msgid "January"
