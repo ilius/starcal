@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Final
 
 from scal3 import logger
-from scal3.option import Option
+from scal3.option import Option, StringMappingProxyOption
 
 if TYPE_CHECKING:
 	from scal3.cal_types.pytypes import OptionTuple, TranslateFunc
@@ -40,106 +40,64 @@ origLang = "fa"
 
 monthNameContext: Final[Option[str]] = Option("month-name")
 
-monthNameMode: Final[Option[int]] = Option(0)
+monthNameMode: Final[StringMappingProxyOption] = StringMappingProxyOption(
+	"iran",
+	monthNameContext,
+	{
+		"iran": "month-name",
+		"kurdish": "month-name-ku",
+		"afghan": "month-name-af",
+		"pashto": "month-name-ps",
+	},
+)
+
 options: list[OptionTuple] = [
 	(
 		monthNameMode,
-		"list",
+		"dict",
 		"Month Names",
-		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
+		{
+			"iran": "Iranian",
+			"kurdish": "Kurdish/Maadi",
+			"afghan": "Afghan/Dari",
+			"pashto": "Pashto",
+		},
 	),
 ]
 optionButtons: list[tuple[str, str, str]] = []
 
 confOptions: Final[dict[str, Option[Any]]] = {
-	"monthNameMode": monthNameMode,
+	"monthNameModeNew": monthNameMode,
 }
 
+monthName = (
+	"Farvardin",
+	"Ordibehesht",
+	"Khordad",
+	"Teer",
+	"Mordad",
+	"Shahrivar",
+	"Mehr",
+	"Aban",
+	"Azar",
+	"Dey",
+	"Bahman",
+	"Esfand",
+)
 
-monthNameVars = (
-	(
-		(
-			# Iranian
-			"Farvardin",
-			"Ordibehesht",
-			"Khordad",
-			"Teer",
-			"Mordad",
-			"Shahrivar",
-			"Mehr",
-			"Aban",
-			"Azar",
-			"Dey",
-			"Bahman",
-			"Esfand",
-		),
-		(
-			# Iranian - abbreviated
-			"Far",
-			"Ord",
-			"Khr",
-			"Tir",
-			"Mor",
-			"Shr",
-			"Meh",
-			"Abn",
-			"Azr",
-			"Dey",
-			"Bah",
-			"Esf",
-		),
-	),
-	(
-		(
-			# Kurdish/Maadi
-			"Xakelêwe",
-			"Gullan",
-			"Cozerdan",
-			"Pûşper",
-			"Gelawêj",
-			"Xermanan",
-			"Rezber",
-			"Gelarêzan",
-			"Sermawez",
-			"Befranbar",
-			"Rêbendan",
-			"Reşeme",
-		),
-	),
-	(
-		(
-			# Afghan/Dari
-			"Hamal",
-			"Sawr",
-			"Jawzā",
-			"Saratān",
-			"Asad",
-			"Sonbola",
-			"Mizān",
-			"Aqrab",
-			"Qaws",
-			"Jadi",
-			"Dalvæ",
-			"Hūt",
-		),
-	),
-	(
-		(
-			# Pashto
-			"Wray",
-			"Ǧwayay",
-			"Ǧbargolay",
-			"Čungāx̌",
-			"Zmaray",
-			"Waǵay",
-			"Təla",
-			"Laṛam",
-			"Līndəi",
-			"Marǧūmay",
-			"Salwāǧa",
-			"Kab",
-		),
-	),
+monthNameAb = (
+	"Far",
+	"Ord",
+	"Khr",
+	"Tir",
+	"Mor",
+	"Shr",
+	"Meh",
+	"Abn",
+	"Azr",
+	"Dey",
+	"Bah",
+	"Esf",
 )
 
 
@@ -147,7 +105,7 @@ def getMonthName(
 	m: int,
 	y: int | None = None,  # noqa: ARG001
 ) -> str:
-	return monthNameVars[monthNameMode.v][0][m - 1]
+	return monthName[m - 1]
 
 
 def getMonthNameAb(
@@ -155,14 +113,11 @@ def getMonthNameAb(
 	m: int,
 	y: int | None = None,  # noqa: ARG001
 ) -> str:
-	names = monthNameVars[monthNameMode.v]
-	fullEn = names[0][m - 1]
-	abbr = tr(fullEn, ctx="abbreviation")
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx=monthNameContext.v + "-abbr")
 	if abbr != fullEn:
 		return abbr
-	if len(names) == 2:
-		return tr(names[1][m - 1])
-	return tr(fullEn)
+	return monthNameAb[m - 1]
 
 
 epoch = 1948321
