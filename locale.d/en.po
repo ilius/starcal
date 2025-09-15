@@ -1,0 +1,156 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 3.2.4\n"
+"Report-msgstr-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-15 00:00+0330\n"
+"PO-Revision-Date: 2025-09-15 00:00+0330\n"
+"Last-Translator: Saeed Rasooli <saeed.gnu@gmail.com>\n"
+"Language-Team: Saeed Rasooli <saeed.gnu@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "month-name-ku"
+msgid "Farvardin"
+msgstr "Xakelêwe"
+
+msgctxt "month-name-ku"
+msgid "Ordibehesht"
+msgstr "Gullan"
+
+msgctxt "month-name-ku"
+msgid "Khordad"
+msgstr "Cozerdan"
+
+msgctxt "month-name-ku"
+msgid "Teer"
+msgstr "Pûşper"
+
+msgctxt "month-name-ku"
+msgid "Mordad"
+msgstr "Gelawêj"
+
+msgctxt "month-name-ku"
+msgid "Shahrivar"
+msgstr "Xermanan"
+
+msgctxt "month-name-ku"
+msgid "Mehr"
+msgstr "Rezber"
+
+msgctxt "month-name-ku"
+msgid "Aban"
+msgstr "Gelarêzan"
+
+msgctxt "month-name-ku"
+msgid "Azar"
+msgstr "Sermawez"
+
+msgctxt "month-name-ku"
+msgid "Dey"
+msgstr "Befranbar"
+
+msgctxt "month-name-ku"
+msgid "Bahman"
+msgstr "Rêbendan"
+
+msgctxt "month-name-ku"
+msgid "Esfand"
+msgstr "Reşeme"
+
+msgctxt "month-name-af"
+msgid "Farvardin"
+msgstr "Hamal"
+
+msgctxt "month-name-af"
+msgid "Ordibehesht"
+msgstr "Sawr"
+
+msgctxt "month-name-af"
+msgid "Khordad"
+msgstr "Jawzā"
+
+msgctxt "month-name-af"
+msgid "Teer"
+msgstr "Saratān"
+
+msgctxt "month-name-af"
+msgid "Mordad"
+msgstr "Asad"
+
+msgctxt "month-name-af"
+msgid "Shahrivar"
+msgstr "Sonbola"
+
+msgctxt "month-name-af"
+msgid "Mehr"
+msgstr "Mizān"
+
+msgctxt "month-name-af"
+msgid "Aban"
+msgstr "Aqrab"
+
+msgctxt "month-name-af"
+msgid "Azar"
+msgstr "Qaws"
+
+msgctxt "month-name-af"
+msgid "Dey"
+msgstr "Jadi"
+
+msgctxt "month-name-af"
+msgid "Bahman"
+msgstr "Dalvæ"
+
+msgctxt "month-name-af"
+msgid "Esfand"
+msgstr "Hūt"
+
+
+msgctxt "month-name-ps"
+msgid "Farvardin"
+msgstr "Wray"
+
+msgctxt "month-name-ps"
+msgid "Ordibehesht"
+msgstr "Ǧwayay"
+
+msgctxt "month-name-ps"
+msgid "Khordad"
+msgstr "Ǧbargolay"
+
+msgctxt "month-name-ps"
+msgid "Teer"
+msgstr "Čungāx̌"
+
+msgctxt "month-name-ps"
+msgid "Mordad"
+msgstr "Zmaray"
+
+msgctxt "month-name-ps"
+msgid "Shahrivar"
+msgstr "Waǵay"
+
+msgctxt "month-name-ps"
+msgid "Mehr"
+msgstr "Təla"
+
+msgctxt "month-name-ps"
+msgid "Aban"
+msgstr "Laṛam"
+
+msgctxt "month-name-ps"
+msgid "Azar"
+msgstr "Līndəi"
+
+msgctxt "month-name-ps"
+msgid "Dey"
+msgstr "Marǧūmay"
+
+msgctxt "month-name-ps"
+msgid "Bahman"
+msgstr "Salwāǧa"
+
+msgctxt "month-name-ps"
+msgid "Esfand"
+msgstr "Kab"
