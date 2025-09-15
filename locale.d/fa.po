@@ -531,51 +531,51 @@ msgctxt "month-name-fr"
 msgid "December"
 msgstr "دسامبر"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "January"
 msgstr "ژان‍"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "February"
 msgstr "فور" # or "فِبر"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "March"
 msgstr "مار"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "April"
 msgstr "آور" # or "آپر"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "May"
 msgstr "می" # or "مه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "June"
 msgstr "ژوئ‍" # or "جوئن"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "July"
 msgstr "جول‍" # or "ژوئیه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "August"
 msgstr "آگ‍" # or "اوت"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "September"
 msgstr "سِپت‍"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "October"
 msgstr "اُکت‍"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "November"
 msgstr "نُوا"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "December"
 msgstr "دِسا"
 
@@ -872,51 +872,51 @@ msgctxt "month-name"
 msgid "Ḏū'l-Ḥijjah"
 msgstr "ذو‌الحجه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Muharram"
 msgstr "مُحرّ"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Safar"
 msgstr "صفر"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Rabīʽ 1"
 msgstr "رب‍.۱"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Rabīʽ 2"
 msgstr "رب‍.۲"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Jumadā 1"
 msgstr "جم‍.۱"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Jumadā 2"
 msgstr "جم‍.۲"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Rajab"
 msgstr "رجب"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Shaʿbān"
 msgstr "شَعب‍"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Ramaḍān"
 msgstr "رمض‍"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Shawwāl"
 msgstr "شَوّا"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Ḏū'l-Qaʿdah"
 msgstr "ذو‌.ق"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Ḏū'l-Ḥijjah"
 msgstr "ذو‌.ح"
 
@@ -1004,84 +1004,84 @@ msgstr "ایلول"
 msgid "Chaitra"
 msgstr "چَیتره"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Chaitra"
 msgstr "چیت‍"
 
 msgid "Vaisākha"
 msgstr "ویشاکهه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Vaisākha"
 msgstr "ویش‍"
 
 msgid "Jyēshtha"
 msgstr "جییشته"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Jyēshtha"
 msgstr "جی‍"
 
 msgid "Āshādha"
 msgstr "آشادهه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Āshādha"
 msgstr "آشا"
 
 msgid "Shrāvana"
 msgstr "شِراوَنَه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Shrāvana"
 msgstr "شِرا"
 
 msgid "Bhādra"
 msgstr "بِهادْرَه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Bhādra"
 msgstr "بِها"
 
 msgid "Āshwin"
 msgstr "آشوین"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Āshwin"
 msgstr "آشو"
 
 msgid "Kārtika"
 msgstr "کارتیکه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Kārtika"
 msgstr "کار"
 
 msgid "Agrahayana"
 msgstr "اَگرَهَیَنَه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Agrahayana"
 msgstr "اَگر"
 
 msgid "Pausha"
 msgstr "پاوشه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Pausha"
 msgstr "پاو"
 
 msgid "Māgha"
 msgstr "ماگهه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Māgha"
 msgstr "ماگ‍"
 
 msgid "Phālguna"
 msgstr "پهالگونه"
 
-msgctxt "abbreviation"
+msgctxt "month-name-abbr"
 msgid "Phālguna"
 msgstr "پَها"
 
