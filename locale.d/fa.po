@@ -921,6 +921,7 @@ msgid "Ḏū'l-Ḥijjah"
 msgstr "ذو‌.ح"
 
 
+# Ethiopian calendar:
 msgid "Meskerem"
 msgstr "مسکرم"
 
@@ -956,134 +957,7 @@ msgstr "حمله"
 
 msgid "Nahse"
 msgstr "نحسه"
-
-msgid "Pagume"
-msgstr "پاگومه"
-
-
-msgid "Tishri"
-msgstr "تیشری"
-
-msgid "Cheshvan"
-msgstr "حشوان"
-
-msgid "Kislev"
-msgstr "كیسلو"
-
-msgid "Tevet"
-msgstr "طوت"
-
-msgid "Shevat"
-msgstr "شواط"
-
-msgid "Adar"
-msgstr "آذار"
-
-msgid "Adar II"
-msgstr "آذار ۲"
-
-msgid "Nisan"
-msgstr "نیسان"
-
-msgid "Iyyar"
-msgstr "ایار"
-
-msgid "Siwan"
-msgstr "سیوان"
-
-msgid "Tamuz"
-msgstr "تموز"
-
-msgid "Av"
-msgstr "آو"
-
-msgid "Elul"
-msgstr "ایلول"
-
-
-msgid "Chaitra"
-msgstr "چَیتره"
-
-msgctxt "month-name-abbr"
-msgid "Chaitra"
-msgstr "چیت‍"
-
-msgid "Vaisākha"
-msgstr "ویشاکهه"
-
-msgctxt "month-name-abbr"
-msgid "Vaisākha"
-msgstr "ویش‍"
-
-msgid "Jyēshtha"
-msgstr "جییشته"
-
-msgctxt "month-name-abbr"
-msgid "Jyēshtha"
-msgstr "جی‍"
-
-msgid "Āshādha"
-msgstr "آشادهه"
-
-msgctxt "month-name-abbr"
-msgid "Āshādha"
-msgstr "آشا"
-
-msgid "Shrāvana"
-msgstr "شِراوَنَه"
-
-msgctxt "month-name-abbr"
-msgid "Shrāvana"
-msgstr "شِرا"
-
-msgid "Bhādra"
-msgstr "بِهادْرَه"
-
-msgctxt "month-name-abbr"
-msgid "Bhādra"
-msgstr "بِها"
-
-msgid "Āshwin"
-msgstr "آشوین"
-
-msgctxt "month-name-abbr"
-msgid "Āshwin"
-msgstr "آشو"
-
-msgid "Kārtika"
-msgstr "کارتیکه"
-
-msgctxt "month-name-abbr"
-msgid "Kārtika"
-msgstr "کار"
-
-msgid "Agrahayana"
-msgstr "اَگرَهَیَنَه"
-
-msgctxt "month-name-abbr"
-msgid "Agrahayana"
-msgstr "اَگر"
-
-msgid "Pausha"
-msgstr "پاوشه"
-
-msgctxt "month-name-abbr"
-msgid "Pausha"
-msgstr "پاو"
-
-msgid "Māgha"
-msgstr "ماگهه"
-
-msgctxt "month-name-abbr"
-msgid "Māgha"
-msgstr "ماگ‍"
-
-msgid "Phālguna"
-msgstr "پهالگونه"
-
-msgctxt "month-name-abbr"
-msgid "Phālguna"
-msgstr "پَها"
+# End of Ethiopian calendar
 
 
 msgid "Previous Year"
