@@ -62,7 +62,7 @@ def getMonthName(m: int, y: int | None = None) -> str:  # noqa: ARG001
 
 def getMonthNameAb(tr: TranslateFunc, m: int, y: int | None = None) -> str:  # noqa: ARG001
 	fullEn = monthName[m - 1]
-	abbr = tr(fullEn, ctx="abbreviation")
+	abbr = tr(fullEn, ctx="month-name-abbr")
 	if abbr != fullEn:
 		return abbr
 	return monthNameAb[m - 1]

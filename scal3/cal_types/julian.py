@@ -79,7 +79,7 @@ def getMonthNameAb(
 	y: int | None = None,  # noqa: ARG001
 ) -> str:
 	fullEn = monthName[m - 1]
-	abbr = tr(fullEn, ctx="abbreviation")
+	abbr = tr(fullEn, ctx="month-name-abbr")
 	if abbr != fullEn:
 		return abbr
 	return monthNameAb[m - 1]
