@@ -445,7 +445,7 @@ def getMonthName(
 		return module.getMonthNameAb(tr, month, year)
 	s = module.getMonthName(month, year)
 	st = tr(s, ctx=module.monthNameContext.v)
-	if st != s:
+	if st and st != s:
 		return st
 	return tr(s)
 
