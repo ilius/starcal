@@ -5,7 +5,6 @@ from scal3 import logger
 log = logger.get()
 
 import os
-import os.path
 from os.path import isabs, isfile, join
 from typing import TYPE_CHECKING
 
