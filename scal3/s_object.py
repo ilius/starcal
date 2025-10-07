@@ -7,7 +7,6 @@ log = logger.get()
 
 import json
 import os
-import os.path
 import sys
 from hashlib import sha1
 from os.path import join
