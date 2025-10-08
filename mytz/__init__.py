@@ -70,11 +70,11 @@ def readEtcLocaltime() -> datetime.tzinfo | None:
 	return dateutil.tz.gettz(tzname)
 
 
-def gettz(*args, **kwargs) -> TimeZone | None:
+def gettz(name: str = "") -> TimeZone | None:
 	global tzErrCount
-	if args and args[0].lstrip("/") == "etc/localtime":
+	if name and name.lstrip("/") == "etc/localtime":
 		return readEtcLocaltime()
-	tz = dateutil.tz.gettz(*args, **kwargs)
+	tz = dateutil.tz.gettz(name=name)
 	"""
 	FileNotFoundError: [Errno 2] No such file or directory:
 	'/usr/lib/python3/dist-packages/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz'
@@ -86,7 +86,7 @@ def gettz(*args, **kwargs) -> TimeZone | None:
 	"""
 	if tz is None:
 		if tzErrCount < 5:
-			log.error(f"failed to detect timezone: {args} {kwargs}")
+			log.error(f"failed to detect timezone: {name=}")
 		tzErrCount += 1
 		return defaultTZ
 	if tz._filename.lstrip("/") == "etc/localtime":  # noqa: SLF001

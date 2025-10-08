@@ -218,7 +218,7 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 			b"</body></html>",
 		)
 
-	def log_message(self, msgFormat: str, *args) -> None:
+	def log_message(self, msgFormat: str, *args: Any) -> None:
 		"""Do not log messages to stdout while running as command line program."""
 
 
@@ -487,7 +487,7 @@ class GoogleAccount(Account):
 		# plog.info(gevents)
 		diff: dict[str, list[Any]] = {}
 
-		def addToDiff(key: str, here: Any, status: str, *args) -> None:
+		def addToDiff(key: str, here: Any, status: str, *args: Any) -> None:
 			value = (status, here) + args
 			toAppend = diff.get(key)
 			if toAppend is None:
