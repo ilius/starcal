@@ -63,8 +63,6 @@ lint.select = [
 ]
 
 lint.ignore = [
-	"ANN003",  # Missing type annotation for `**kwargs`
-	"ANN002",  # Missing type annotation for `*_args`
 	"ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
 
 	"PGH003", # Use specific rule codes when ignoring type issues
@@ -186,6 +184,8 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"ANN",     # annotations
 ]
 "*_test.py" = [
+	"ANN002",  # Missing type annotation for `*_args`
+	"ANN003",  # Missing type annotation for `**kwargs`
 	"T201",    # `print` found
 	"T203",    # `pprint` found
 	"S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes

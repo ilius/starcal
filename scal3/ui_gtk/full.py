@@ -95,7 +95,7 @@ def openAllWindows() -> None:
 		tick()
 
 
-def onSigInt(*args) -> None:
+def onSigInt(*args) -> None:  # noqa: ANN002
 	# args: (status: int, frame)
 	print(f"SIGINT recieved: {args}")
 	sys.exit(1)
