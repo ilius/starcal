@@ -88,6 +88,9 @@ class CalTypesHolder:
 		return modules[self.primary]
 
 	def update(self) -> None:
+		if not self.activeNames:
+			log.error("no active cal types, using gregorian")
+			self.activeNames = ["gregorian"]
 		self.active = []
 		self.inactive = []
 		remainingNames = self.names.copy()
