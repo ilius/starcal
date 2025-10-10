@@ -51,7 +51,7 @@ def loadSingleConfig(
 			log.warning(f"Ignoring config option {optName}")
 			continue
 		value = value_
-		if decoders and optName in decoders:
+		if decoders and optName in decoders and value is not None:
 			value = decoders[optName](value)
 		option = options[optName]
 		assert isinstance(option, Option), f"{option=}, {optName=}"
