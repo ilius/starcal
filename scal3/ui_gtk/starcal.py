@@ -20,14 +20,29 @@ from __future__ import annotations
 import os
 import signal
 import sys
-from os.path import dirname
+from os.path import dirname, isdir, isfile, join
 from typing import TYPE_CHECKING
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3 import logger
+from scal3.path import confDir
 
 log = logger.get()
+
+if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
+	from scal3.utils import restartLow
+
+	try:
+		__import__("scal3.ui_gtk.first_run_config")
+	except Exception as e:
+		log.exception("")
+		log.error(str(e))  # TODO: log the full traceback
+		if not isdir(confDir):
+			os.mkdir(confDir, 0o755)
+	else:
+		if isfile(join(confDir, "core.json")):
+			restartLow()
 
 import scal3.account.starcal  # noqa: F401
 
