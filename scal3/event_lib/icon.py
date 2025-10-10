@@ -37,6 +37,8 @@ class WithIcon(abc.ABC):
 
 def iconAbsToRelativelnData(data: dict[str, Any]) -> None:
 	icon = data["icon"]
+	if icon is None:
+		return
 	iconDir, iconName = split(icon)
 	if iconName == "obituary.png":
 		iconName = "green_clover.svg"
