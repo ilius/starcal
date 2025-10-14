@@ -104,6 +104,11 @@ def main() -> None:
 		if hasattr(plug, "onCurrentDateChange"):
 			listener.dateChange.add(plug)
 
+	desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
+	if desktop.startswith("gnome") and not conf.showDesktopWidget.v:
+		log.warning("Can not use tray icon on Gnome, using desktop widget")
+		conf.showDesktopWidget.v = True
+
 	statusIconMode = 2
 	action = ""
 	if conf.showMain.v:
