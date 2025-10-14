@@ -904,7 +904,7 @@ dcalEventTotalSizeRatio: Final[Option[float]] = Option(0.3)
 
 """Open desktop widget on start
 Preferences: General"""
-showDesktopWidget: Final[Option[bool]] = Option(False)
+showDesktopWidget: Final[Option[bool]] = Option(True)
 
 """Geometry: X
 DayCalWin: Move"""
