@@ -753,12 +753,12 @@ class KeyBindingOptionUI(OptionUI):
 	def onMenuModifyKeyClick(self, _w: gtk.Widget, rowIndex: int) -> None:
 		trees = self.listStore
 		row = trees[rowIndex]
-		print(f"Modify Key: {row=}")  # noqa: T201
+		log.info(f"Modify Key: {row=}")  # noqa: T201
 
 	# def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
 	# 	trees = self.listStore
 	# 	row = trees[rowI]
-	# 	print(f"Default Key: {row=}")
+	# 	log.info(f"Default Key: {row=}")
 
 	def onMenuDeleteClick(self, _w: gtk.Widget, rowI: int) -> None:
 		trees = self.listStore

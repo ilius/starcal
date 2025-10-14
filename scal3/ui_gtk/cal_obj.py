@@ -146,7 +146,7 @@ class CalBase(CustomizableCalObj):
 	# 	context: gdk.DragContext,
 	# 	etime: int,
 	# ) -> bool:
-	# 	print(f"{context = }")
+	# 	log.debug(f"{context = }")
 	# 	context.drop_reply(False, etime)
 	# 	return True
 
@@ -177,7 +177,7 @@ class CalBase(CustomizableCalObj):
 		# if dtype == "application/x-color":
 		# 	# selection.get_text() is None
 		# 	sdata = selection.data  # type: ignore[attr-defined]
-		# 	print(f"{sdata = }")
+		# 	log.debug(f"{sdata = }")
 		# 	conf.bgColor.v = RGBA(
 		# 		ord(sdata[1]),
 		# 		ord(sdata[3]),

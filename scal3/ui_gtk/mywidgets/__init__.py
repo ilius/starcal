@@ -72,7 +72,6 @@ class MyFontButton(gtk.FontButton):
 		_info: int,  # or _target_id?
 		_etime: int,
 	) -> bool:
-		# print(f"fontButtonDragDataGet: {fontb=}, {fontb.getFont()=}")
 		valueStr = gfontEncode(fontb.getFont())
 		valueBytes = valueStr.encode("utf-8")
 		selection.set_text(valueStr, len(valueBytes))

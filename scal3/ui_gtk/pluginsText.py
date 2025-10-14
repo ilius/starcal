@@ -105,8 +105,7 @@ class PluginsTextView(CustomizableCalObj):
 		occurData: tuple[PluginType, str],
 	) -> None:
 		plug, text = occurData
-		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
-		# ----
+		# log.debug(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
 
 		def copyText(_w: gtk.Widget) -> None:
 			setClipboard(text)

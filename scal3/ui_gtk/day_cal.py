@@ -321,7 +321,7 @@ class DayCal(CalBase):
 		return self.getWidgetButtons() + self.getNavButtons()
 
 	def startMove(self, gevent: gdk.EventButton, button: int = 1) -> None:
-		print(gevent)
+		log.debug(f"DayCal.startMove: {gevent=}")
 		win = self.getWindow()
 		if not win:
 			return

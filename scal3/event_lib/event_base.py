@@ -504,7 +504,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 					log.exception("")
 
 		for notifier in self.notifiers:
-			print(f"notifier.notify: {notifier=}")
+			log.info(f"notifier.notify: {notifier=}")
 			notifier.notify(notifierFinishFunc)
 
 	def getIcsData(  # noqa: PLR6301

@@ -44,7 +44,7 @@ def processDroppedDate(text: str, dtype: str) -> tuple[int, int, int, int] | Non
 			# return True
 	elif dtype == "text/uri-list":
 		path = urlToPath(text)
-		# print(f"{text = }, {path = }")
+		# log.debug(f"{text = }, {path = }")
 		try:
 			t = os.stat(path).st_mtime  # modification time
 		except OSError:
