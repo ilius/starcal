@@ -285,7 +285,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			newEvent.save()
 			newGroup.append(newEvent)
 
-		# print(newEventHashList)
+		# log.debug(newEventHashList)
 
 		if newGroup.idList:
 			newGroup.save()

@@ -281,11 +281,11 @@ def hasLightTheme(widget: gtk.Widget) -> bool:
 	bg = styleCtx.get_property("background-color", gtk.StateFlags.NORMAL)
 	# from scal3.ui_gtk.color_utils import gdkColorToRgb
 	# from scal3.color_utils import rgbToHsl
-	# print("fg_rgb:", gdkColorToRgb(fg))
-	# print("bg_rgb:", gdkColorToRgb(bg))
-	# print("fg_hsl:", rgbToHsl(*gdkColorToRgb(fg)))
-	# print("bg_hsl:", rgbToHsl(*gdkColorToRgb(bg)))
-	# print(
+	# log.debug("fg_rgb:", gdkColorToRgb(fg))
+	# log.debug("bg_rgb:", gdkColorToRgb(bg))
+	# log.debug("fg_hsl:", rgbToHsl(*gdkColorToRgb(fg)))
+	# log.debug("bg_hsl:", rgbToHsl(*gdkColorToRgb(bg)))
+	# log.debug(
 	# 	f"fg lightness: {_getLightness(fg):.2f}, "
 	# 	f"bg lightness: {_getLightness(bg):.2f}"
 	# )
@@ -552,7 +552,7 @@ else:
 	workAreaW, workAreaH = _workAreaSize
 
 
-# print(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
+# log.debug(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
 # for normal windows, we should use workAreaW and workAreaH
 # for menus, we should use screenW and screenH, because they can go over panels
 

@@ -691,7 +691,7 @@ class TimeLine(CustomizableCalObj):
 		if not self.boxEditing:
 			return
 		editType, event, box, x0, t0 = self.boxEditing
-		# print(f"motionNotify: {self.event=}")
+		# log.debug(f"motionNotify: {self.event=}")
 		assert isinstance(event, TaskEvent | LifetimeEvent), f"{event=}"
 		t1 = int(t0 + (gevent.x - x0) / self.pixelPerSec)
 		if editType == 0:

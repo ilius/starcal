@@ -77,7 +77,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 	# 		return
 	# 	path = model.get_path(itr)
 	# 	if path[0] == 0:  # type: ignore[index]
-	# 		print(model.get(itr, 0)[0])
+	# 		log.info(model.get(itr, 0)[0])
 	# 		self.set_text(model.get(itr, 0)[0])
 	# 		return
 

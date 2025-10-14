@@ -5,6 +5,7 @@ from os.path import join
 from typing import TYPE_CHECKING, Protocol
 
 from scal3 import ui
+from scal3.core import log
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
@@ -384,13 +385,13 @@ class CalObj(CustomizableCalBox):
 		fileSet = set(os.listdir(dirPath))
 		if fileSet == themeFileSet:
 			return
-		print(fileSet)
+		log.info(f"updateTheme: {fileSet=}")
 		missingFiles = themeFileSet - fileSet
 		extraFiles = fileSet - themeFileSet
 		if missingFiles:
-			print(f"Missing svg files: {missingFiles}")
+			log.info(f"Missing svg files: {missingFiles}")
 		if extraFiles:
-			print(f"Extra svg files: {extraFiles}")
+			log.info(f"Extra svg files: {extraFiles}")
 
 	def updateButtons(self) -> None:
 		for item in self.buttons:
