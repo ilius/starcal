@@ -349,6 +349,9 @@ class DayCalWindow(CalObjWidget):
 		self._widget.show()
 		self.appendItem(self._widget)
 
+	def is_visible(self) -> bool:
+		return self.win.is_visible()
+
 	def menuCellPopup(self, widget: gtk.Widget, etime: int, x: int, y: int) -> None:
 		reverse = False
 		menu = self._widget.getMenu(reverse)
