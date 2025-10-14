@@ -1344,7 +1344,7 @@ confOptionsData: list[OptionData] = [
 		type="bool",
 		where="Preferences: General",
 		desc="Open desktop widget on start",
-		default=False,
+		default=True,
 	),
 	OptionData(
 		name="dayCalWin.geo.x",
