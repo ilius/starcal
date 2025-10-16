@@ -32,11 +32,11 @@ if TYPE_CHECKING:
 __all__ = [
 	"desc",
 	"getMonthLen",
+	"getMonthName",
 	"hijriUseDB",
 	"jd_to",
 	"monthDb",
 	"monthDbExpiredIgnoreFile",
-	"monthName",
 	"name",
 	"to_jd",
 	"to_jd_c",
