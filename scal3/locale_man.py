@@ -66,6 +66,7 @@ __all__ = [
 	"getNeedRestartOptions",
 	"getNumSep",
 	"lang",
+	"langDefault",
 	"langDict",
 	"langHasUppercase",
 	"langSh",
