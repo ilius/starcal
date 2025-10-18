@@ -33,7 +33,7 @@ from .group import EventGroup
 if TYPE_CHECKING:
 	from collections.abc import Sequence
 
-	from scal3.event_lib.pytypes import OccurSetType
+	from scal3.event_lib.pytypes import EventType, OccurSetType
 	from scal3.filesystem import FileSystem
 
 	from .pytypes import EventGroupType
@@ -43,7 +43,7 @@ __all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
 
 class VcsBaseEventGroup(EventGroup):
 	acceptsEventTypes: Sequence[str] = ()
-	myOptions: list[str] = [
+	myParams: list[str] = [
 		"vcsType",
 		"vcsDir",
 		"vcsBranch",
@@ -77,6 +77,9 @@ class VcsBaseEventGroup(EventGroup):
 				),
 			),
 		)  # FIXME
+
+	def __getitem__(self, key: str) -> EventType:  # type: ignore
+		return self.getEvent(key)  # type: ignore
 
 	# FIXME: remove
 	# def __getitem__(self, key: str) -> EventType:
@@ -118,7 +121,7 @@ class VcsBaseEventGroup(EventGroup):
 
 
 class VcsEpochBaseEventGroup(VcsBaseEventGroup):
-	myOptions = VcsBaseEventGroup.myOptions + ["showSeconds"]
+	myParams = VcsBaseEventGroup.myParams + ["showSeconds"]
 	canConvertTo: list[str] = VcsBaseEventGroup.canConvertTo + ["taskList"]
 
 	def __init__(self, ident: int | None = None) -> None:

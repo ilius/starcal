@@ -89,13 +89,13 @@ class VcsTagEvent(VcsEpochBaseEvent):
 class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	name = "vcs"
 	desc = _("VCS Repository (Commits)")
-	_myOptions = [
+	_myParams = VcsEpochBaseEventGroup.myParams + [
 		"showAuthor",
 		"showShortHash",
 		"showStat",
 	]
-	params = VcsEpochBaseEventGroup.params + _myOptions
-	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myOptions
+	params = VcsEpochBaseEventGroup.params + _myParams
+	paramsOrder = VcsEpochBaseEventGroup.paramsOrder + _myParams
 
 	def __init__(self, ident: str | None = None) -> None:
 		super().__init__(ident)  # type: ignore[arg-type]
@@ -284,7 +284,7 @@ class VcsDailyStatEvent(Event):
 		return JdOccurSet()
 
 
-@classes.group.register
+@classes.group.register  # type: ignore[arg-type]
 class VcsDailyStatEventGroup(VcsBaseEventGroup):
 	name = "vcsDailyStat"
 	desc = _("VCS Repository (Daily Stat)")
