@@ -55,14 +55,14 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 	name = "largeScale"
 	desc = _("Large Scale Event")
 	isSingleOccur = True
-	_myOptions = [
+	_myParams = [
 		"scale",
 		"start",
 		"end",
 		"endRel",
 	]
-	params = Event.params + _myOptions
-	paramsOrder = Event.paramsOrder + _myOptions
+	params = Event.params + _myParams
+	paramsOrder = Event.paramsOrder + _myParams
 
 	def __bool__(self) -> bool:
 		return True
