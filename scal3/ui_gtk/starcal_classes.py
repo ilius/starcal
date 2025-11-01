@@ -106,13 +106,11 @@ class MainWinVbox(CustomizableCalBox):
 				)
 				continue
 
+			from scal3.ui_gtk.mainwin_items import mainWinItemLoaderByName
+
 			try:
-				module = __import__(
-					f"{itemsPkg}.{name}",
-					fromlist=["CalObj"],
-				)
-				CalObj = module.CalObj
-			except RuntimeError:
+				CalObj = mainWinItemLoaderByName[f"{itemsPkg}.{name}"]()
+			except KeyError:
 				raise
 			except Exception as e:
 				log.error(f"error importing mainWinItem {name}")
@@ -121,7 +119,7 @@ class MainWinVbox(CustomizableCalBox):
 					raise e from None
 				continue
 			# try:
-			item = CalObj(win)
+			item = CalObj(win)  # type: ignore[call-arg]
 			# except Exception as e:
 			# 	log.error(f"creating {CalObj} instance at {module}: {e}")
 			# 	raise

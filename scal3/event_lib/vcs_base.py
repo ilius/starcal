@@ -31,7 +31,7 @@ from .event_base import Event
 from .group import EventGroup
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
+	from collections.abc import Callable, Sequence
 
 	from scal3.event_lib.pytypes import EventType, OccurSetType
 	from scal3.filesystem import FileSystem
@@ -39,6 +39,31 @@ if TYPE_CHECKING:
 	from .pytypes import EventGroupType
 
 __all__ = ["VcsBaseEventGroup", "VcsEpochBaseEvent", "VcsEpochBaseEventGroup"]
+
+
+def _load_module_git() -> Any:
+	try:
+		from scal3.vcs_modules import git
+	except ImportError:
+		log.exception("")
+		return None
+	return git
+
+
+def _load_module_hg() -> Any:
+	try:
+		from scal3.vcs_modules import hg
+	except ImportError:
+		log.exception("")
+		return
+
+	return hg
+
+
+_vcsModuleByName: dict[str, Callable[[], Any]] = {
+	"git": _load_module_git,
+	"hg": _load_module_hg,
+}
 
 
 class VcsBaseEventGroup(EventGroup):
@@ -93,11 +118,13 @@ class VcsBaseEventGroup(EventGroup):
 		# if not isinstance(name, str):
 		# 	raise TypeError(f"getVcsModule({name!r}): bad type {type(name)}")
 		try:
-			mod = __import__("scal3.vcs_modules", fromlist=[name])
-		except ImportError:
+			mod = _vcsModuleByName[name]()
+		except KeyError:
 			log.exception("")
-			return
-		return getattr(mod, name)
+			return None
+		if mod is None:
+			return None
+		return mod
 
 	def updateVcsModuleObj(self) -> None:
 		mod = self.getVcsModule()

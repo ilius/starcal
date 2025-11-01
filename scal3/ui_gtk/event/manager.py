@@ -2652,7 +2652,7 @@ class EventManagerDialog(CalObjWidget):
 			actionFunc = getattr(group, actionFuncName)
 
 		def newActionFunc() -> None:
-			actionFunc(parentWin=self)
+			actionFunc(parentWin=self.dialog)
 
 		self.dialog.waitingDo(newActionFunc)
 

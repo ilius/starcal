@@ -65,15 +65,13 @@ class DummyCalObj(CalObjWidget):
 		self.items: list[CustomizableCalObjType] = []
 
 	def getLoadedObj(self) -> CustomizableCalObjType:
-		module = __import__(
-			self.moduleName,
-			fromlist=["CalObj"],
-		)
-		CalObj = module.CalObj
-		obj = CalObj(ui.mainWin)
+		from scal3.ui_gtk.mainwin_items import mainWinItemLoaderByName
+
+		CalObj = mainWinItemLoaderByName[self.moduleName]()
+		obj = CalObj(ui.mainWin)  # type: ignore[call-arg]
 		obj.enable = self.enable
 		# assert isinstance(obj, CustomizableCalObjType), f"{obj=}"
-		return obj  # type: ignore[no-any-return]
+		return obj
 
 	def updateVars(self) -> None:
 		pass

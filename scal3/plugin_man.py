@@ -329,7 +329,7 @@ def loadExternalPlugin(
 
 	# sys.path.insert(0, direc)
 	# try:
-	# 	mod = __import__(name)
+	# 	mod = ...
 	# except:
 	# 	log.exception("")
 	# 	return None
