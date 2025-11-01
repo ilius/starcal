@@ -4,15 +4,13 @@ from scal3 import logger
 
 log = logger.get()
 
-from os.path import join
 from time import localtime
 from typing import TYPE_CHECKING
 
 from scal3.cal_types import gregorian
-from scal3.path import modDir
 
 if TYPE_CHECKING:
-	from collections.abc import Iterator
+	from collections.abc import Callable, Iterator
 
 	from scal3.cal_types.pytypes import CalTypeModule
 
@@ -27,44 +25,75 @@ __all__ = [
 	"to_jd",
 ]
 GREGORIAN = 0  # Gregorian (common calendar)
-modules: list[CalTypeModule] = [gregorian]  # type: ignore[list-item]
 
 
-with open(join(modDir, "modules.list"), encoding="utf-8") as fp:
-	for name_ in fp.read().split("\n"):
-		name = name_.strip()
-		if not name:
-			continue
-		if name.startswith("#"):
-			continue
-		# try:
-		mod = __import__(f"scal3.cal_types.{name}", fromlist=[name])
-		# mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
-		# except:
-		# 	log.exception("")
-		# 	log.info(f"Could not load calendar modules {name!r}")
-		# 	continue
-		for attr in (
-			"name",
-			"desc",
-			"origLang",
-			"getMonthName",
-			"getMonthNameAb",
-			"minMonthLen",
-			"maxMonthLen",
-			"getMonthLen",
-			"to_jd",
-			"jd_to",
-			"options",
-			"save",
-		):
-			if not hasattr(mod, attr):
-				log.error(
-					"Invalid calendar module: "
-					f"module {name!r} has no attribute {attr!r}\n",
-				)
-		# TODO: check argument names and count for funcs
-		modules.append(mod)
+def _get_ethiopian() -> CalTypeModule:
+	from scal3.cal_types import ethiopian
+
+	return ethiopian  # type: ignore[return-value]
+
+
+def _get_gregorian_proleptic() -> CalTypeModule:
+	from scal3.cal_types import gregorian_proleptic
+
+	return gregorian_proleptic  # type: ignore[return-value]
+
+
+def _get_gregorian() -> CalTypeModule:
+	return gregorian  # type: ignore[return-value]
+
+
+def _get_hijri() -> CalTypeModule:
+	from scal3.cal_types import hijri
+
+	return hijri  # type: ignore[return-value]
+
+
+def _get_jalali() -> CalTypeModule:
+	from scal3.cal_types import jalali
+
+	return jalali  # type: ignore[return-value]
+
+
+def _get_julian() -> CalTypeModule:
+	from scal3.cal_types import julian
+
+	return julian  # type: ignore[return-value]
+
+
+moduleLoaderByName: dict[str, Callable[[], CalTypeModule]] = {
+	"gregorian": _get_gregorian,  # must be first
+	"jalali": _get_jalali,
+	"hijri": _get_hijri,
+	"julian": _get_julian,
+	"gregorian_proleptic": _get_gregorian_proleptic,
+	"ethiopian": _get_ethiopian,
+}
+
+modules: list[CalTypeModule] = [
+	modLoader() for modLoader in moduleLoaderByName.values()
+]
+
+for mod in modules:
+	for attr in (
+		"name",
+		"desc",
+		"origLang",
+		"getMonthName",
+		"getMonthNameAb",
+		"minMonthLen",
+		"maxMonthLen",
+		"getMonthLen",
+		"to_jd",
+		"jd_to",
+		"options",
+		"save",
+	):
+		if not hasattr(mod, attr):
+			log.error(
+				f"Invalid calendar module: module {mod!r} has no attribute {attr!r}\n",
+			)
+	# TODO: check argument names and count for funcs
 
 
 class CalTypesHolder:
