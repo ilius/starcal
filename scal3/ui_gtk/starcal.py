@@ -34,7 +34,7 @@ if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
 	from scal3.utils import restartLow
 
 	try:
-		__import__("scal3.ui_gtk.first_run_config")
+		import scal3.ui_gtk.first_run_config
 	except Exception as e:
 		log.exception("")
 		log.error(str(e))  # TODO: log the full traceback

@@ -41,8 +41,6 @@ def getAttr(
 ) -> Any:
 	if not absolute:
 		moduleName = "scal3." + moduleName
-	# module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
-	# log.debug(sorted(sys.modules))
 	module = sys.modules[moduleName]
 	allowed = getattr(module, "__plugin_api_get__", [])
 	if attr not in allowed:
@@ -61,7 +59,6 @@ def setAttr(
 ) -> None:
 	if not absolute:
 		moduleName = "scal3." + moduleName
-	# module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])
 	module = sys.modules[moduleName]
 	allowed = getattr(module, "__plugin_api_set__", [])
 	if attr not in allowed:
@@ -72,5 +69,5 @@ def setAttr(
 
 
 # def add(moduleName, attr, value):  # FIXME
-# 	module = __import__(moduleName)
+# 	module = ...
 # 	if not module.get("__plugin_api_add__", False)

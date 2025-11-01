@@ -29,7 +29,7 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.option_ui.base import OptionUI
 
 if typing.TYPE_CHECKING:
-	from collections.abc import Sequence
+	from collections.abc import Callable, Sequence
 
 	from scal3.option import Option
 
@@ -38,6 +38,18 @@ __all__ = [
 	"ModuleOptionButton",
 	"ModuleOptionUI",
 ]
+
+
+def _load_gtk_hijri() -> Any:
+	from scal3.ui_gtk import hijri
+
+	return hijri
+
+
+# any cal type module with `optionButtons` must be added here
+calTypeGtkModulesLoaderByName: dict[str, Callable[[], Any]] = {
+	"hijri": _load_gtk_hijri,
+}
 
 
 # rawOption tuple (old legacy design)
@@ -243,13 +255,9 @@ class AdvancedComboModuleOptionUI:
 class ModuleOptionButton(OptionUI):
 	def __init__(self, opt: tuple) -> None:
 		funcName = opt[2]
-		clickedFunc = getattr(
-			__import__(
-				f"scal3.ui_gtk.{opt[1]}",
-				fromlist=[funcName],
-			),
-			funcName,
-		)
+		modName = opt[1]
+		mod = calTypeGtkModulesLoaderByName[modName]()
+		clickedFunc = getattr(mod, funcName)
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		button = gtk.Button(label=_(opt[0]))
 		button.connect("clicked", clickedFunc)

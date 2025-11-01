@@ -26,6 +26,7 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
 	from typing import Any
 
 
@@ -38,6 +39,20 @@ from .holders import ObjectsHolderTextModel
 from .register import classes
 
 __all__ = ["EventAccountsHolder"]
+
+
+def _load_account_starcal() -> None:
+	import scal3.account.starcal  # noqa: F401
+
+
+def _load_account_google() -> None:
+	import scal3.account.google  # noqa: F401
+
+
+_accountLoaderByName: dict[str, Callable[[], None]] = {
+	"starcal": _load_account_starcal,
+	"google": _load_account_google,
+}
 
 
 class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
@@ -59,7 +74,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		if cls is not None:
 			return cls
 		try:
-			__import__(f"scal3.account.{name}")
+			_accountLoaderByName[name]()
 		except ImportError:
 			log.exception("")
 		else:
