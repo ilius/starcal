@@ -73,6 +73,8 @@ class VcsBaseEventGroup(EventGroup):
 		"vcsDir",
 		"vcsBranch",
 	]
+	params = EventGroup.params + myParams
+	paramsOrder = EventGroup.paramsOrder + myParams
 
 	def __init__(self, ident: int | None = None) -> None:
 		self.vcsType = "git"
