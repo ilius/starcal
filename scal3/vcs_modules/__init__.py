@@ -20,9 +20,9 @@ def encodeShortStat(files_changed: int, insertions: int, deletions: int) -> str:
 	else:
 		parts.append(f"{files_changed:d} files changed")
 	if insertions > 0:
-		parts.append(f"{insertions:d} insertions(+)")
+		parts.append(f"{insertions:d} insertions")
 	if deletions > 0:
-		parts.append(f"{deletions:d} deletions(-)")
+		parts.append(f"{deletions:d} deletions")
 	return ", ".join(parts)
 
 
