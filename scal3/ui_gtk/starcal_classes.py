@@ -275,6 +275,8 @@ class MainWinEventMan(CalObjWidget):
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
 				groupId, eventId = eData.ids
+				if ui.getEvent(groupId, eventId).readOnly:
+					continue
 				menu.add(
 					ImageMenuItem(
 						label=_("Edit") + ": " + trimMenuItemLabel(eData.text[0], 25),
