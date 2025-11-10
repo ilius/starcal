@@ -38,7 +38,9 @@ infoDirL = list(os.path.split(infoDir))
 
 
 def _addZoneNode(
-	parentDict: dict[str, Any], zone: list[str], zoneNamesLevel: list[list[str]]
+	parentDict: dict[str, Any],
+	zone: list[str],
+	zoneNamesLevel: list[list[str]],
 ) -> None:
 	path = os.path.join(*infoDirL + zone)
 	name = zone[-1]
@@ -54,7 +56,7 @@ def _addZoneNode(
 				zoneNamesLevel,
 			)
 	else:
-		log.error(f"invalid {path=}")
+		log.error(f"addZoneNode: invalid {path=}")
 
 
 def getZoneInfoTree() -> dict[str, Any]:
@@ -69,14 +71,9 @@ def getZoneInfoTree() -> dict[str, Any]:
 		"Asia",
 		"Atlantic",
 		"Australia",
-		"Brazil",
-		"Canada",
-		"Chile",
 		"Europe",
 		"Indian",
-		"Mexico",
 		"Pacific",
-		"US",
 	):
 		_addZoneNode(
 			zoneTree,
