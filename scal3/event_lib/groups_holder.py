@@ -273,10 +273,10 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 
 		# newEventHashList = []
 		eventTypeSet = set(classes.event.names)
-		for _hash, _fpath in iterObjectFiles(fs):
-			if _hash in eventHashSet:
+		for hash_, _fpath in iterObjectFiles(fs):
+			if hash_ in eventHashSet:
 				continue
-			data = SObjBinaryModel.loadBinaryDict(_hash, fs)
+			data = SObjBinaryModel.loadBinaryDict(hash_, fs)
 			if data.get("type") not in eventTypeSet:
 				continue
 			# newEventHashList.append(_hash)

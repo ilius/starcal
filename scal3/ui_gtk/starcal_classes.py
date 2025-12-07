@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType
 	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.pytypes import CalObjType
-	from scal3.ui_gtk.starcal_types import MainWinType, OptWidget
+	from scal3.ui_gtk.starcal_types import MainWinType
 
 __all__ = ["MainWinEventMan", "MainWinVbox", "SignalHandler"]
 
@@ -159,7 +159,7 @@ class MainWinVbox(CustomizableCalBox):
 	# 	self.showHide()
 	# 	self.broadcastDateChange()
 
-	def getOptionsWidget(self) -> OptWidget:
+	def getOptionsWidget(self) -> gtk.Widget | None:
 		if self.optionsWidget is not None:
 			return self.optionsWidget
 		self.optionsWidget = gtk.Box(

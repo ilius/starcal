@@ -20,12 +20,17 @@ from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
 from scal3.event_lib import ev
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pack
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import confirm, showError
+
+if TYPE_CHECKING:
+	from gi.repository import GObject
 
 __all__ = ["PreferencesAccounts"]
 
@@ -171,20 +176,20 @@ class PreferencesAccounts:
 		ev.accounts.save()
 		self.accountsTreeModel[index][2] = accountNew.title
 
-	def onAccountsEditClick(self, _w: gtk.Widget) -> None:
+	def onAccountsEditClick(self, _obj: GObject.Object) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur.get_indices()[0]
 		self.editAccount(index)
 
-	def onAccountsRegisterClick(self, _w: gtk.Widget) -> None:
+	def onAccountsRegisterClick(self, _obj: GObject.Object) -> None:
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 
 		win = StarCalendarRegisterDialog(transient_for=self.win)
 		win.run()  # type: ignore[no-untyped-call]
 
-	def onAccountsAddClick(self, _w: gtk.Widget) -> None:
+	def onAccountsAddClick(self, _obj: GObject.Object) -> None:
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
 
 		account = AccountEditorDialog(transient_for=self.win).run2()
@@ -210,7 +215,7 @@ class PreferencesAccounts:
 			return
 		account.save()
 
-	def onAccountsDeleteClick(self, _w: gtk.Widget) -> None:
+	def onAccountsDeleteClick(self, _obj: GObject.Object) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -231,7 +236,7 @@ class PreferencesAccounts:
 	def accountSetCursor(self, index: int) -> None:
 		self.accountsTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
 
-	def onAccountsUpClick(self, _w: gtk.Widget) -> None:
+	def onAccountsUpClick(self, _obj: GObject.Object) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -248,7 +253,7 @@ class PreferencesAccounts:
 		)
 		self.accountSetCursor(index - 1)
 
-	def onAccountsDownClick(self, _w: gtk.Widget) -> None:
+	def onAccountsDownClick(self, _obj: GObject.Object) -> None:
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return

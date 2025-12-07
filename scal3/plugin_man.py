@@ -238,8 +238,8 @@ class BasePlugin(SObjTextModel):
 					+ "\n"
 				)
 		icsText += "END:VCALENDAR\n"
-		with open(fileName, "w", encoding="utf-8") as _file:
-			_file.write(icsText)
+		with open(fileName, "w", encoding="utf-8") as file:
+			file.write(icsText)
 
 
 class BaseJsonPlugin(BasePlugin, SObjTextModel):
@@ -464,8 +464,8 @@ class HolidayPlugin(BaseJsonPlugin):
 					+ "\n"
 				)
 		icsText += "END:VCALENDAR\n"
-		with open(fileName, "w", encoding="utf-8") as _file:
-			_file.write(icsText)
+		with open(fileName, "w", encoding="utf-8") as file:
+			file.write(icsText)
 
 	# def getJdList(self, startJd, endJd):
 

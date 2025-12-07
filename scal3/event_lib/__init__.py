@@ -122,8 +122,8 @@ def removeUnusedObjects(fs: FileSystem) -> None:
 
 		log.info(f"Found {len(hashSet)} used objects")
 		removedCount = 0
-		for _hash, fpath in iterObjectFiles(fs):
-			if _hash not in hashSet:
+		for hash_, fpath in iterObjectFiles(fs):
+			if hash_ not in hashSet:
 				log.debug(f"Removing file: {fpath}")
 				removedCount += 1
 				fs.removeFile(fpath)

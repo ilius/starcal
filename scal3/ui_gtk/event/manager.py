@@ -78,6 +78,8 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from collections.abc import Callable, Iterable
 
+	from gi.repository import GObject
+
 	from scal3.event_lib.event_container import EventContainer
 	from scal3.event_lib.pytypes import (
 		AccountType,
@@ -2183,7 +2185,7 @@ class EventManagerDialog(CalObjWidget):
 	) -> None:
 		self.duplicateGroupWithEvents(path)
 
-	def duplicateSelectedObj(self, _w: W | None = None) -> None:
+	def duplicateSelectedObj(self, _obj: GObject.Object) -> None:
 		path = self.getSelectedPath()
 		if not path:
 			return
@@ -2542,13 +2544,13 @@ class EventManagerDialog(CalObjWidget):
 	# def moveDownFromMenu(self, path: list[int]) -> None:
 	# 	self.moveDown(path)
 
-	def moveUpByButton(self, _tb: gtk.Button) -> None:
+	def moveUpByButton(self, _obj: GObject.Object) -> None:
 		path = self.getSelectedPath()
 		if not path:
 			return
 		self.moveUp(path)
 
-	def moveDownByButton(self, _tb: gtk.Button) -> None:
+	def moveDownByButton(self, _obj: GObject.Object) -> None:
 		path = self.getSelectedPath()
 		if not path:
 			return

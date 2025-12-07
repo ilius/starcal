@@ -3,16 +3,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 from gi.repository import Gdk as gdk
-from gi.repository import Gtk as gtk
+from gi.repository import GObject
 
 if TYPE_CHECKING:
+	from gi.repository import Gtk as gtk
+
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.signals import SignalHandlerType
 
 __all__ = ["MainWinType", "OptEvent", "OptWidget"]
 
 
-type OptWidget = gtk.Widget | None
+type OptWidget = GObject.Object | None
 type OptEvent = gdk.Event | None
 
 

@@ -1,1 +1,1 @@
-pip install pygobject-stubs --no-cache-dir --config-settings=config=Gtk3,Gdk3,Soup2
+pip install -U pygobject-stubs --no-cache-dir --config-settings=config=Gtk3,Gdk3,Soup2

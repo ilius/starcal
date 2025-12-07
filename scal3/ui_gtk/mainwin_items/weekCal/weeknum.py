@@ -20,11 +20,16 @@ from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk
 from scal3.ui_gtk.toolbox import LabelToolBoxItem
+
+if TYPE_CHECKING:
+	from gi.repository import GObject
 
 __all__ = ["WeekNumToolBoxItem"]
 
@@ -51,7 +56,7 @@ class WeekNumToolBoxItem(LabelToolBoxItem):
 		super().onDateChange()
 		self.updateLabel()
 
-	def onClick(self, _w: gtk.Widget) -> None:
+	def onClick(self, _obj: GObject.Object) -> None:
 		conf.wcal_toolbar_weekNum_negative.v = not conf.wcal_toolbar_weekNum_negative.v
 		self.updateLabel()
 		ui.saveLiveConf()

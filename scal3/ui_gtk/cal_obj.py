@@ -28,7 +28,7 @@ from scal3.ui_gtk.cal_obj_base import CustomizableCalObj, commonSignals
 from scal3.ui_gtk.drawing import newDndDatePixbuf
 
 if TYPE_CHECKING:
-	from gi.overrides import GObject
+	from gi.repository import GObject
 
 	from scal3.ui_gtk.pytypes import StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType

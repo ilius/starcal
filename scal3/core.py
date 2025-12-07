@@ -194,8 +194,8 @@ def getVersion() -> str:
 	from packaging.version import parse as parse_version
 
 	if isfile(join(sourceDir, "VERSION")):
-		with open(join(sourceDir, "VERSION"), encoding="utf-8") as _file:
-			return _file.read().strip()
+		with open(join(sourceDir, "VERSION"), encoding="utf-8") as file:
+			return file.read().strip()
 
 	gitDir = os.path.join(sourceDir, ".git")
 	if not os.path.isdir(gitDir):

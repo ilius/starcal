@@ -253,16 +253,16 @@ def main() -> int | None:
 	# print(f"runDirStr: {runDirStr}")
 
 	executablePath = join(targetPrefix, "bin", pkgName)
-	with open(executablePath, mode="w", encoding="utf-8") as _file:
-		_file.write(
+	with open(executablePath, mode="w", encoding="utf-8") as file:
+		file.write(
 			"#!/usr/bin/env sh\n"
 			f'{pyCmd} {runDirStr}/scal3/ui_gtk/starcal-main.py "$@"\n',
 		)
 	os.chmod(executablePath, 0o755)
 	print(f"Executable: {executablePath}")
 
-	with open(join(targetCodeDir, "VERSION"), mode="w", encoding="utf-8") as _file:
-		_file.write(f"{version}\n")
+	with open(join(targetCodeDir, "VERSION"), mode="w", encoding="utf-8") as file:
+		file.write(f"{version}\n")
 
 	if installType == "system":
 		shutil.move(
@@ -280,8 +280,8 @@ def main() -> int | None:
 		),
 		mode="w",
 		encoding="utf-8",
-	) as _file:
-		_file.write(
+	) as file:
+		file.write(
 			"[Desktop Entry]\n"
 			"Encoding=UTF-8\n"
 			f"Name=StarCalendar {version}\n"

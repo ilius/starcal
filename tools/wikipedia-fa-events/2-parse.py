@@ -100,8 +100,8 @@ def writeToTabfile(data, fpath) -> None:
 				],
 			),
 		)
-	with open(fpath, "w", encoding="utf-8") as _file:
-		_file.write("\n".join(lines))
+	with open(fpath, "w", encoding="utf-8") as file:
+		file.write("\n".join(lines))
 
 
 if __name__ == "__main__":

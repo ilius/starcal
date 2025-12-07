@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gi.overrides import GObject
+from gi.repository import GObject
 
 from scal3 import logger
 from scal3.option import Option

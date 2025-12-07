@@ -46,8 +46,8 @@ Exec={COMMAND}"""
 		# does it work with single quotes too??
 		makeDir(comDeskDir)
 		try:
-			with open(comDesk, "w", encoding="utf-8") as _file:
-				_file.write(text)
+			with open(comDesk, "w", encoding="utf-8") as file:
+				file.write(text)
 		except Exception:
 			log.exception("")
 			return False

@@ -36,6 +36,8 @@ from scal3.ui_gtk.utils import set_tooltip
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from gi.repository import GObject
+
 	from scal3.option import ListOption, Option, StrDictOption
 	from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI, IntSpinOptionUI
 
@@ -548,7 +550,7 @@ class ActiveInactiveCalsOptionUI(OptionUI):
 		self.toolbar.setLeftRight(False)
 		self.activeTreev.get_selection().unselect_all()
 
-	def onLeftRightClick(self, _obj: gtk.Button | None = None) -> None:
+	def onLeftRightClick(self, _obj: GObject.Object) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
 			selection = self.inactiveTreev.get_selection()
@@ -578,7 +580,7 @@ class ActiveInactiveCalsOptionUI(OptionUI):
 			return self.inactiveTrees
 		return None
 
-	def onUpClick(self, _obj: gtk.Button | None = None) -> None:
+	def onUpClick(self, _obj: GObject.Object) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
@@ -597,7 +599,7 @@ class ActiveInactiveCalsOptionUI(OptionUI):
 		)
 		selection.select_path(gtk.TreePath.new_from_indices((i - 1,)))
 
-	def onDownClick(self, _obj: gtk.Button | None = None) -> None:
+	def onDownClick(self, _obj: GObject.Object) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
