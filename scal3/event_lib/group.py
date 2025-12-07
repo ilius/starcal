@@ -270,6 +270,7 @@ class EventGroup(EventContainer):
 			self.defaultEventType = "custom"
 		# ---
 		self.eventCacheSize = 100
+		self.eventCache: LRUCache[int | None, EventType] | None
 		self.resetCache()
 		# eventCache: key is eid, value is Event object
 		# ---

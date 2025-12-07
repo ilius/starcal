@@ -37,18 +37,20 @@ from scal3.ui_gtk.utils import (
 )
 
 if typing.TYPE_CHECKING:
+	from gi.repository import GObject
+
 	from scal3.pytypes import PluginType
 
 __all__ = ["PreferencesPlugins"]
 
 
 class PreferencesWindowType(Protocol):
-	def plugTreeviewTop(self, _w: gtk.Widget) -> None: ...
-	def plugTreeviewUp(self, _w: gtk.Widget) -> None: ...
-	def plugTreeviewDown(self, _w: gtk.Widget) -> None: ...
-	def plugTreeviewBottom(self, _w: gtk.Widget) -> None: ...
-	def onPlugAddClick(self, _w: gtk.Widget) -> None: ...
-	def onPlugDeleteClick(self, _w: gtk.Widget) -> None: ...
+	def plugTreeviewTop(self, _obj: GObject.Object) -> None: ...
+	def plugTreeviewUp(self, _obj: GObject.Object) -> None: ...
+	def plugTreeviewDown(self, _obj: GObject.Object) -> None: ...
+	def plugTreeviewBottom(self, _obj: GObject.Object) -> None: ...
+	def onPlugAddClick(self, _obj: GObject.Object) -> None: ...
+	def onPlugDeleteClick(self, _obj: GObject.Object) -> None: ...
 
 
 class PreferencesPluginsToolbar(VerticalStaticToolBox):
@@ -156,7 +158,7 @@ class PreferencesPlugins:
 			gdk.DragAction.MOVE,
 		)
 		treev.connect("drag_data_received", self.plugTreevDragReceived)
-		treev.get_selection().connect("changed", self.plugTreevCursorChanged)
+		treev.get_selection().connect("changed", self.onPlugTreevCursorChange)
 		treev.connect("row-activated", self.plugTreevRActivate)
 		treev.connect("button-press-event", self.plugTreevButtonPress)
 		# ---
@@ -311,7 +313,7 @@ class PreferencesPlugins:
 			res=gtk.ResponseType.OK,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			onClick=self.plugAddDialogOK,
+			onClick=self.onPlugAddDialogOK,
 		)
 		# ---
 		treev = gtk.TreeView()
@@ -399,10 +401,13 @@ class PreferencesPlugins:
 	# 		self.plugTitleCol.get_width() + 2
 	# 	)
 
-	def plugTreevCursorChanged(
+	def onPlugTreevCursorChange(
 		self,
-		_selection: gtk.SelectionData | None = None,
+		_selection: gtk.SelectionData,
 	) -> None:
+		self.checkPlugTreevCursorChange()
+
+	def checkPlugTreevCursorChange(self) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -413,7 +418,7 @@ class PreferencesPlugins:
 		self.plugButtonAbout.set_sensitive(bool(plug.about))
 		self.plugButtonConf.set_sensitive(plug.hasConfig)
 
-	def onPlugAboutClick(self, _w: gtk.Widget | None = None) -> None:
+	def openPluginAbout(self) -> None:
 		from scal3.ui_gtk.about import AboutDialog
 
 		cur: gtk.TreePath = self.plugTreeview.get_cursor()[0]
@@ -441,7 +446,10 @@ class PreferencesPlugins:
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
 
-	def onPlugConfClick(self, _w: gtk.Widget | None = None) -> None:
+	def onPlugAboutClick(self, _obj: GObject.Object) -> None:
+		self.openPluginAbout()
+
+	def onPlugConfClick(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -454,7 +462,7 @@ class PreferencesPlugins:
 		plug.open_configure()
 
 	@staticmethod
-	def onPlugExportToIcsClick(_w: gtk.Widget, plug: PluginType) -> None:
+	def onPlugExportToIcsClick(_obj: GObject.Object, plug: PluginType) -> None:
 		from scal3.ui_gtk.export import ExportToIcsDialog
 
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()  # type: ignore[no-untyped-call]
@@ -466,9 +474,13 @@ class PreferencesPlugins:
 		col: gtk.TreeViewColumn,
 	) -> None:
 		if col.get_title() == _("Title"):  # FIXME
-			self.onPlugAboutClick()
+			self.openPluginAbout()
 
-	def plugTreevButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
+	def plugTreevButtonPress(
+		self,
+		_obj: GObject.Object,
+		gevent: gdk.EventButton,
+	) -> bool:
 		b = gevent.button
 		if b != 3:
 			return False
@@ -512,7 +524,7 @@ class PreferencesPlugins:
 		menu.popup(None, None, None, None, 3, gevent.time)
 		return True
 
-	def onPlugAddClick(self, _w: gtk.Widget) -> None:
+	def onPlugAddClick(self, _obj: GObject.Object) -> None:
 		# FIXME
 		# Reize window to show all texts
 		# self.plugAddTreeview.columns_autosize()  # FIXME
@@ -556,7 +568,7 @@ class PreferencesPlugins:
 			plug = core.allPlugList.v[plugI]
 			if not plug.loaded:
 				plug = self.loadPlugin(plug, plugI)
-			self.plugTreevCursorChanged()
+			self.checkPlugTreevCursorChange()
 
 	def plugTreeviewCellToggled2(
 		self,
@@ -571,7 +583,7 @@ class PreferencesPlugins:
 	def plugSetCursor(self, index: int) -> None:
 		self.plugTreeview.set_cursor(gtk.TreePath.new_from_indices([index]))
 
-	def plugTreeviewTop(self, _w: gtk.Widget) -> None:
+	def plugTreeviewTop(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -584,7 +596,7 @@ class PreferencesPlugins:
 		listStore.remove(listStore.get_iter(str(index + 1)))
 		self.plugSetCursor(0)
 
-	def plugTreeviewBottom(self, _w: gtk.Widget) -> None:
+	def plugTreeviewBottom(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -597,7 +609,7 @@ class PreferencesPlugins:
 		listStore.remove(listStore.get_iter(str(index)))
 		self.plugSetCursor(len(listStore) - 1)
 
-	def plugTreeviewUp(self, _w: gtk.Widget) -> None:
+	def plugTreeviewUp(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -612,7 +624,7 @@ class PreferencesPlugins:
 		)
 		self.plugSetCursor(index - 1)
 
-	def plugTreeviewDown(self, _w: gtk.Widget) -> None:
+	def plugTreeviewDown(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -662,7 +674,7 @@ class PreferencesPlugins:
 				t.get_iter(str(dest[0].get_indices()[0])),
 			)
 
-	def onPlugDeleteClick(self, _w: gtk.Widget) -> None:
+	def onPlugDeleteClick(self, _obj: GObject.Object) -> None:
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -683,7 +695,7 @@ class PreferencesPlugins:
 		if n > 1:
 			self.plugSetCursor(min(n - 2, index))
 
-	def plugAddDialogOK(self, _w: gtk.Widget | None) -> None:
+	def plugAddDialogOK(self) -> None:
 		cur = self.plugAddTreeview.get_cursor()[0]
 		if cur is None:
 			gdk.beep()
@@ -713,10 +725,13 @@ class PreferencesPlugins:
 		self.plugAddDialog.hide()
 		self.plugSetCursor(pos)  # pos == -1 # FIXME
 
+	def onPlugAddDialogOK(self, _obj: GObject.Object) -> None:
+		self.plugAddDialogOK()
+
 	def plugAddTreevRActivate(
 		self,
 		_treev: gtk.TreeView,
 		_path: gtk.TreePath,
 		_col: gtk.TreeViewColumn,
 	) -> None:
-		self.plugAddDialogOK(None)  # FIXME
+		self.plugAddDialogOK()

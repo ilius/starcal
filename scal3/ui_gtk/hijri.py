@@ -36,6 +36,8 @@ from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button
 
 if TYPE_CHECKING:
+	from gi.repository import GObject
+
 	from scal3.ui_gtk import gdk
 
 __all__ = ["HijriMonthsExpirationListener", "checkHijriMonthsExpiration"]
@@ -169,7 +171,7 @@ class EditDbDialog(Dialog):
 		self.updateWidget()
 		return True
 
-	def onAddClick(self, _w: gtk.Widget | None = None) -> None:
+	def onAddClick(self, _obj: GObject.Object) -> None:
 		last = self.treeModel[-1]
 		# 0 ym
 		# 1 yearLocale
@@ -202,7 +204,7 @@ class EditDbDialog(Dialog):
 		)
 		self.treev.set_cursor(lastPath)
 
-	def onDeleteClick(self, _w: gtk.Widget | None = None) -> None:
+	def onDeleteClick(self, _obj: GObject.Object) -> None:
 		if len(self.treeModel) > 1:
 			del self.treeModel[-1]
 		self.selectLastRow()
@@ -374,8 +376,8 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 
 	def onResponse(self, _dialog: gtk.Widget, _response_id: gtk.ResponseType) -> bool:
 		if self.noShowCheckb.get_active():
-			with open(hijri.monthDbExpiredIgnoreFile, "w", encoding="utf-8") as _file:
-				_file.write("")
+			with open(hijri.monthDbExpiredIgnoreFile, "w", encoding="utf-8") as file:
+				file.write("")
 		self.destroy()
 		return True
 

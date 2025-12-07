@@ -104,14 +104,14 @@ class SingleGroupExportDialog(MyDialog):
 			text = dataToCompactJson(
 				ev.groups.exportData([self._group.id]),
 			)
-			with open(fpath, "w", encoding="utf-8") as _file:
-				_file.write(text)
+			with open(fpath, "w", encoding="utf-8") as file:
+				file.write(text)
 		elif self.radioJsonPretty.get_active():
 			text = dataToPrettyJson(
 				ev.groups.exportData([self._group.id]),
 			)
-			with open(fpath, "w", encoding="utf-8") as _file:
-				_file.write(text)
+			with open(fpath, "w", encoding="utf-8") as file:
+				file.write(text)
 		elif self.radioIcs.get_active():
 			ev.groups.exportToIcs(
 				fpath,
@@ -248,8 +248,8 @@ class MultiGroupExportDialog(MyDialog):
 				text = dataToPrettyJson(data)
 			else:
 				raise RuntimeError
-			with open(fpath, "w", encoding="utf-8") as _file:
-				_file.write(text)
+			with open(fpath, "w", encoding="utf-8") as file:
+				file.write(text)
 
 	def run(self) -> gtk.ResponseType:
 		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
@@ -360,8 +360,8 @@ class EventListExportDialog(MyDialog):
 		else:
 			raise RuntimeError("no format is selected")
 
-		with open(fpath, "w", encoding="utf-8") as _file:
-			_file.write(text)
+		with open(fpath, "w", encoding="utf-8") as file:
+			file.write(text)
 
 	def run(self) -> gtk.ResponseType:
 		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]

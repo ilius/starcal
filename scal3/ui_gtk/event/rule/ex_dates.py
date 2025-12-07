@@ -31,6 +31,8 @@ from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 from scal3.ui_gtk.utils import dialog_add_button, labelImageButton
 
 if TYPE_CHECKING:
+	from gi.repository import GObject
+
 	from scal3.event_lib.rules import ExDatesEventRule
 
 __all__ = ["WidgetClass"]
@@ -171,7 +173,7 @@ class WidgetClass(gtk.Box):
 			return None
 		return path[0]
 
-	def onAddClick(self, _b: gtk.Widget) -> None:
+	def onAddClick(self, _obj: GObject.Object) -> None:
 		index = self.getSelectedIndex()
 		calType = self.rule.getCalType()  # FIXME
 		row = [encode(cal_types.getSysDate(calType))]
@@ -184,13 +186,13 @@ class WidgetClass(gtk.Box):
 		# cell = col.get_cell_renderers()[0]
 		# cell.start_editing(...) # FIXME
 
-	def onDeleteClick(self, _b: gtk.Widget) -> None:
+	def onDeleteClick(self, _obj: GObject.Object) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.listStore[index]
 
-	def onMoveUpClick(self, _b: gtk.Widget) -> None:
+	def onMoveUpClick(self, _obj: GObject.Object) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -204,7 +206,7 @@ class WidgetClass(gtk.Box):
 		)
 		self.treev.set_cursor(index - 1)  # type: ignore[arg-type]
 
-	def onMoveDownClick(self, _b: gtk.Widget) -> None:
+	def onMoveDownClick(self, _obj: GObject.Object) -> None:
 		index = self.getSelectedIndex()
 		if index is None:
 			return

@@ -495,13 +495,13 @@ class EventSearchWindow(CalObjWidget):
 
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
 		groupTitle = f"Search Results ({y:04d}-{m:02d}-{d:02d})"
-		with open(fpath, mode="w", encoding="utf-8") as _file:
-			_file.write(
+		with open(fpath, mode="w", encoding="utf-8") as file:
+			file.write(
 				f'{{"info":{{"appName":{dumps(core.APP_NAME)},'
 				f'"version":{dumps(core.VERSION)}}},'
 				f'"groups":[{{"type":"group","title":{dumps(groupTitle)},"events":[',
 			)
-			_file.flush()
+			file.flush()
 			eventCount = 0
 			for gid in groupIds:
 				group = ev.groups[gid]
@@ -515,10 +515,10 @@ class EventSearchWindow(CalObjWidget):
 						del eventData["notifiers"]
 						del eventData["notifyBefore"]
 					if eventCount > 0:
-						_file.write(",")
-					_file.write(dumps(eventData))
+						file.write(",")
+					file.write(dumps(eventData))
 					eventCount += 1
-			_file.write("]}]}")
+			file.write("]}]}")
 
 	def onSearchClick(self, _w: gtk.Widget | None = None) -> None:
 		self.w.waitingDo(self._do_search)
