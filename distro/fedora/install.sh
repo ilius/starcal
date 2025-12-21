@@ -18,7 +18,7 @@ if ! git --version ; then
 		exit 1
 	fi
 fi
-if ! which msgfmt ; then
+if ! command -v msgfmt ; then
 	dnf install gettext
 fi
 
@@ -41,10 +41,10 @@ DTIME=$(/bin/date +%F-%H%M%S)
 outDir="$HOME/.${pkgName}/pkgs/$distro/$DTIME"
 mkdir -p "$outDir"
 
-if ! which rpmbuild ; then
-	if which dnf ; then
+if ! command -v rpmbuild ; then
+	if command -v dnf ; then
 		dnf install rpm-build
-	elif which yum ; then
+	elif command -v yum ; then
 		yum install rpm-build
 	else
 		echo "No 'dnf' nor 'yum' commands were found" >&2

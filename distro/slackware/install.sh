@@ -8,7 +8,7 @@ fi
 
 SLACKPKG=slackpkg-2.83.0-noarch-4.txz
 
-if which slackpkg ; then
+if command -v slackpkg ; then
 	slackpkg install pygobject3 pycairo python-dateutil
 	# TODO: gtksource-4 / gtksourceview4
 else
@@ -18,7 +18,7 @@ else
 	# slackpkg update
 fi
 
-if ! which pip3 ; then
+if ! command -v pip3 ; then
 	slackpkg install python-pip
 fi
 
