@@ -100,13 +100,13 @@ if [ "$installType" != "for-pkg" ]; then
 fi
 
 if [ -z "$pyCmd" ]; then
-	if ! pyCmd=$(which "python3"); then
+	if ! pyCmd=$(command -v "python3"); then
 		echo "Python executable file not found." >&2
 		echo "Make sure 'python3' is in one of \$PATH directories." >&2
 		exit 1
 	fi
 fi
-if which "$pyCmd" &&
+if command -v "$pyCmd" &&
 	"$pyCmd" -c 'import sys;exit((3, 12) <= sys.version_info < (3, 14))'; then
 	pyVer=$("$pyCmd" --version)
 	printf "\e[31mWarning: %s is not officially supported.\e[m\n" "$pyVer" >&2

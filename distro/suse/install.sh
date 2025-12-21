@@ -27,7 +27,7 @@ if ! git --version ; then
 		exit 1
 	fi
 fi
-if ! which msgfmt ; then
+if ! command -v msgfmt ; then
 	zypper install gettext
 fi
 

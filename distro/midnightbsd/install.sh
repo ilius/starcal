@@ -7,13 +7,13 @@ if [ "$(id -u)" != "0" ] ; then
 	exit 1
 fi
 
-if ! which git ; then
+if ! command -v git ; then
 	mport install --yes git
 fi
 
 # it works without bash now
 
-if ! which python3 ; then
+if ! command -v python3 ; then
 	mport install --yes python3
 fi
 

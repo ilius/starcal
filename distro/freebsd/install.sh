@@ -10,13 +10,13 @@ if [ "$(id -u)" != "0" ] ; then
 	exit 1
 fi
 
-if ! which git ; then
+if ! command -v git ; then
 	pkg install --yes git
 fi
 
 # it works without bash now
 
-if ! which python3 ; then
+if ! command -v python3 ; then
 	pkg install --yes python3
 fi
 

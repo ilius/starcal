@@ -5,7 +5,7 @@ if [ "$UID" != "0" ] ; then
 	exit 1
 fi
 
-if ! which python3 ; then
+if ! command -v python3 ; then
 	cards install python
 fi
 
