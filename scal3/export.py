@@ -186,8 +186,10 @@ def exportToHtml(
 		text += "\t</P>\n"
 		text += "\n".join(
 			[
-				f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
-				f'BORDER={gridSize} BORDERCOLOR="#000000"',
+				(
+					f'\t<TABLE WIDTH="100%" BGCOLOR="{bgColor}" '
+					f'BORDER={gridSize} BORDERCOLOR="#000000"'
+				),
 				"\t\tCELLPADDING=4 CELLSPACING=0>",
 				"\t\t<TR VALIGN=TOP>\n",
 			],

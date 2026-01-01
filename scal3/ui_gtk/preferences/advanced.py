@@ -113,8 +113,10 @@ class PreferencesAdvanced:
 				"<b>%X</b>",
 				"%H:%M",
 				"<b>%H:%M</b>",
-				'<span size="smaller">%OY/%Om/%Od</span>,%X'
-				'%OY/%Om/%Od,<span color="#ff0000">%X</span>',
+				(
+					'<span size="smaller">%OY/%Om/%Od</span>,%X'
+					'%OY/%Om/%Od,<span color="#ff0000">%X</span>'
+				),
 				'<span font="bold">%X</span>',
 				"%OH:%OM",
 				"<b>%OH:%OM</b>",
