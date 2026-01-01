@@ -196,7 +196,9 @@ class DayCalWindowWidget(DayCal):
 		DayCal.__init__(self, win)
 		self.mainWin = mainWin
 		self.w.set_size_request(50, 50)
-		self.menu: gtk.Menu | None = None
+		self.menuHeight = 0
+		self.menuNormal: gtk.Menu | None = None
+		self.menuReversed: gtk.Menu | None = None
 		self.customizeWindow: DayCalWindowCustomizeWindow | None = None
 
 	@classmethod
@@ -249,8 +251,8 @@ class DayCalWindowWidget(DayCal):
 			self.startMove(gevent, button=b)
 		return True
 
-	@staticmethod
 	def getMenuPosFunc(
+		self,
 		menu: gtk.Menu,
 		gevent: gdk.EventButton,
 		above: bool,
@@ -262,21 +264,27 @@ class DayCalWindowWidget(DayCal):
 		if os.getenv("XDG_SESSION_TYPE") == "wayland":
 			return None
 
-		mw = get_menu_width(menu)
-		mh = get_menu_height(menu)
-		mx = int(max(0, gevent.x_root - mw) if rtl else gevent.x_root)
-		my = int(max(0, gevent.y_root - mh) if above else gevent.y_root)
+		menuWidth = get_menu_width(menu)
+		menuHeight = self.menuHeight
+		if not menuHeight:
+			menuHeight = get_menu_height(menu)
+		xpos = int(max(0, gevent.x_root - menuWidth) if rtl else gevent.x_root)
+		ypos = int(max(0, gevent.y_root - menuHeight) if above else gevent.y_root)
 
-		if mx == my == 0:
+		if xpos == ypos == 0:
 			log.info(
-				f"{mx=}, {my=}, {mw=}, {mh=}, {gevent.x_root=}, {gevent.y_root=}",
+				f"{xpos=}, {ypos=}, {menuWidth=}, {menuHeight=}, "
+				f"{gevent.x_root=}, {gevent.y_root=}",
 			)
 			return None
 
-		return lambda *_args: (mx, my, False)
+		return lambda *_args: (xpos, ypos, False)
 
 	def getMenu(self, reverse: bool) -> gtk.Menu:
-		menu = self.menu
+		if reverse:
+			menu = self.menuReversed
+		else:
+			menu = self.menuNormal
 		if menu is not None:
 			menu.show_all()
 			return menu
@@ -299,12 +307,18 @@ class DayCalWindowWidget(DayCal):
 			items.reverse()
 		for item in items:
 			menu.add(item)
-		self.menu = menu
+		if reverse:
+			self.menuReversed = menu
+		else:
+			self.menuNormal = menu
 		menu.show_all()
 		return menu
 
 	def popupMenuOnButtonPress(self, _obj: gtk.Widget, gevent: gdk.EventButton) -> None:
-		reverse = gevent.y_root > ud.screenH / 2.0
+		menuHeight = self.menuHeight
+		if not menuHeight:
+			menuHeight = self.menuHeight = get_menu_height(self.getMenu(False))
+		reverse = gevent.y_root + menuHeight > ud.screenH
 		menu = self.getMenu(reverse)
 		menu.popup(
 			None,
