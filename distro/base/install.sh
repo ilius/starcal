@@ -254,7 +254,7 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ]; then
 	rm -Rf "$DIR/google-api-python-client/.hg"* 2>/dev/null
 	rm -Rf "$DIR/screenshots/" 2>/dev/null
 	rm -Rf "$DIR/.ruff_cache/" 2>/dev/null
-	rm -Rf "$DIR/.mypy_cache/" 2>/dev/null
+	find "$DIR" -name ".mypy_cache" -exec rm -Rf '{}' \; || true
 	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.deb' '*.rpm' '*.pkg' '*.pkg.*' '*.spec'; do
 		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
 	done 2>/dev/null
