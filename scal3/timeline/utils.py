@@ -21,7 +21,6 @@ __all__ = [
 	"dayLen",
 	"fontFamily",
 	"minYearLenSec",
-	"minYearLenSec",
 	"unitSteps",
 ]
 
