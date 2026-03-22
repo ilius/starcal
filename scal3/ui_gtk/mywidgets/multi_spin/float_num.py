@@ -12,11 +12,11 @@ class FloatSpinButton(SingleSpinButton[FloatField, float]):
 		minim: float,
 		maxim: float,
 		digits: int,
-		step: float = 0.0,
+		step: float = 0,
 	) -> None:
 		if digits < 1:
 			raise ValueError(f"FloatSpinButton: invalid {digits=}")
-		if step == 0.0:
+		if step == 0:
 			step = 10 ** (1 - digits)
 		SingleSpinButton.__init__(
 			self,
