@@ -146,7 +146,7 @@ class MoonStatusColumn(Column):
 			)
 			draw_arc(
 				imgCenterY,
-				None if phase == 0.5 else abs(cos(phase * pi)),
+				None if abs(phase - 0.5) < 0.0001 else abs(cos(phase * pi)),
 				True,
 				phase > 0.5,
 			)
