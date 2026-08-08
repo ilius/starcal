@@ -45,4 +45,4 @@ for res in root.getchildren():
 	print(f"{path}\t	{source}")
 
 
-# --- no source for: pixmaps/screenruler-redline.png
+# --- no source for: images/screenruler-redline.png

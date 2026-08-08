@@ -203,7 +203,7 @@ for SZ in 16 22 24 32 48; do
 done
 rm -R "$targetCodeDir/icons"
 
-cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$iconName"
+cp -f "$sourceDir/images/starcal.png" "${shareDir}/pixmaps/$iconName"
 
 if [ "$installType" = "for-pkg" ]; then
 	runDirStr="$prefix/share/$pkgName"
