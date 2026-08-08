@@ -24,94 +24,94 @@
 		<license>Public Domain</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/empty.png">
+	<resource path="images/empty.png">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/event/alarm.png">
+	<resource path="images/event/alarm.png">
 		<comment>See file "svg/event/alarm.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/birthday.png">
+	<resource path="images/event/birthday.png">
 		<comment>See file "svg/event/birthday.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/birthday2.png">
+	<resource path="images/event/birthday2.png">
 		<comment>See file "svg/event/birthday2.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/business.png">
+	<resource path="images/event/business.png">
 		<comment>See file "svg/event/business.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/education.png">
+	<resource path="images/event/education.png">
 		<comment>See file "svg/event/education.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/favorite.png">
+	<resource path="images/event/favorite.png">
 		<comment>See file "svg/event/favorite.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/green_clover.png">
+	<resource path="images/event/green_clover.png">
 		<comment>See file "svg/event/green_clover.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/holiday.png">
+	<resource path="images/event/holiday.png">
 		<comment>See file "svg/event/holiday.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/important.png">
+	<resource path="images/event/important.png">
 		<comment>See file "svg/event/important.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/marriage.png">
+	<resource path="images/event/marriage.png">
 		<comment>See file "svg/event/marriage.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/note.png">
+	<resource path="images/event/note.png">
 		<comment>See file "svg/event/note.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/obituary.png">
+	<resource path="images/event/obituary.png">
 		<comment>See file "svg/event/green_clover.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/phone_call.png">
+	<resource path="images/event/phone_call.png">
 		<comment>See file "svg/event/phone_call.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/shopping_cart.png">
+	<resource path="images/event/shopping_cart.png">
 		<comment>See file "svg/event/shopping_cart.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/task.png">
+	<resource path="images/event/task.png">
 		<comment>See file "svg/event/task.svg"</comment>
 	</resource>
-	<resource path="pixmaps/event/university.png">
+	<resource path="images/event/university.png">
 		<comment>See file "svg/event/university.svg"</comment>
 	</resource>
-	<resource path="pixmaps/full_moon_128px.png">
+	<resource path="images/full_moon_128px.png">
 		<author>Nevit Dilmen</author>
 		<source>https://commons.wikimedia.org/wiki/File:Moon_0063_Nevit.svg</source>
 		<license>Creative Commons Attribution-Share Alike 3.0 Unported</license>
 		<license>GNU Free Documentation License, Version 1.2 or any later version</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/screenruler.png">
+	<resource path="images/screenruler.png">
 		<author>Faenza Icon Theme</author>
 		<source></source>
 		<license>GPLv3</license>
 		<comment>See file "svg/screenruler.svg"</comment>
 	</resource>
-	<resource path="pixmaps/screenruler-redline.png">
+	<resource path="images/screenruler-redline.png">
 		<author>Faenza Icon Theme</author>
 		<source></source>
 		<license>GPLv3</license>
 		<comment>by modifying screenruler.png by Saeed Rasooli</comment>
 	</resource>
-	<resource path="pixmaps/starcal.png">
+	<resource path="images/starcal.png">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/starcal-24.png">
+	<resource path="images/starcal-24.png">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/starcal-inactive.png">
+	<resource path="images/starcal-inactive.png">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/zoom-in.png">
+	<resource path="images/zoom-in.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/48x48/zoom-in.svgz</source>
@@ -286,7 +286,7 @@
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/16x16/application-exit.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="pixmaps/applications-development-web.png">
+	<resource path="images/applications-development-web.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/categories/applications-development-web.svgz</source>
@@ -320,7 +320,7 @@
 		<license>Public Domain</license>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="pixmaps/configure-toolbars.png">
+	<resource path="images/configure-toolbars.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/configure-toolbars.svgz</source>
@@ -405,7 +405,7 @@
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-delete.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="pixmaps/edit-find.png">
+	<resource path="images/edit-find.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-find.svgz</source>
@@ -485,7 +485,7 @@
 		<comment>
 			Modified by Saeed Rasooli
 			Minified by https://vecta.io/nano
-			Replaces pixmaps/event/obituary.png
+			Replaces images/event/obituary.png
 		</comment>
 	</resource>
 	<resource path="svg/event/holiday.svg">
@@ -547,7 +547,7 @@
 		<license>Public Domain</license>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="pixmaps/evolution.png">
+	<resource path="images/evolution.png">
 		<author>Jakub Steiner</author>
 		<license>Creative Commons Attribution-ShareAlike 2.5</license>
 		<source>https://commons.wikimedia.org/wiki/File:GNOME_Evolution_logo_(official).svg</source>
@@ -666,19 +666,19 @@
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-color.svgz</source>
 		<comment>Minified by https://vecta.io/nano and https://jakearchibald.github.io/svgomg/</comment>
 	</resource>
-	<resource path="pixmaps/preferences-desktop-locale.png">
+	<resource path="images/preferences-desktop-locale.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-locale.svgz</source>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/preferences-desktop-theme.png">
+	<resource path="images/preferences-desktop-theme.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-theme.svgz</source>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/preferences-system-time.png">
+	<resource path="images/preferences-system-time.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-system-time.svgz</source>
@@ -761,7 +761,7 @@
 		<source>https://github.com/gnome-colors/gnome-colors/blob/master/gnome-colors/gnome-colors-common/scalable/actions/system-search.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="pixmaps/text-calendar-ics.png">
+	<resource path="images/text-calendar-ics.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/mimetypes/text-calendar.svgz</source>

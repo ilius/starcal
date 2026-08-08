@@ -57,7 +57,7 @@ elif os.sep == "\\":  # noqa: SIM102
 plugDirName = "plugins"
 
 sourceDir = abspath(dirname(scalDir))
-pixDir = join(sourceDir, "pixmaps")
+pixDir = join(sourceDir, "images")
 svgDir = join(sourceDir, "svg")
 plugDir = join(sourceDir, plugDirName)
 

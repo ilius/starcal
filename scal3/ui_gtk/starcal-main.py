@@ -32,7 +32,7 @@ _ = str
 
 scalDir = dirname(dirname(__file__))
 sourceDir = abspath(dirname(scalDir))
-pixDir = join(sourceDir, "pixmaps")
+pixDir = join(sourceDir, "images")
 svgDir = join(sourceDir, "svg")
 
 

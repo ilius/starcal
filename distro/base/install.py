@@ -238,7 +238,7 @@ def main() -> int | None:
 	rmtree(join(targetCodeDir, "icons"))
 
 	shutil.copy(
-		join(sourceDir, "pixmaps", "starcal.png"),
+		join(sourceDir, "images", "starcal.png"),
 		join(shareDir, "pixmaps", iconName),
 	)
 
