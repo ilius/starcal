@@ -26,7 +26,7 @@ from scal3.event_lib import ev
 from scal3.event_lib.event_base import SingleStartEndEvent
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import Menu, gtk, pack
+from scal3.ui_gtk import Menu, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.font_utils import gfontEncode
@@ -43,7 +43,6 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.font import Font
 	from scal3.option import Option
-	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.starcal_types import MainWinType
 
@@ -304,13 +303,17 @@ class DayOccurrenceView(CustomizableCalObj):
 
 			Update all callers.
 		"""
+		# insert_texture was also removed in GTK 4.10, so insert the icon
+		# as an inline child widget anchored in the text buffer instead.
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
 			icon,
 			size=conf.rightPanelEventIconSize.v,
 		)
 		assert pixbuf is not None
-		self.textbuff.insert_pixbuf(endIter, pixbuf)
+		anchor = self.textbuff.create_child_anchor(endIter)
+		image = gtk.Image.new_from_pixbuf(pixbuf)
+		self.t.add_child_at_anchor(image, anchor)
 
 	def addTime(self, timeStr: str) -> None:
 		endIter = self.textbuff.get_bounds()[1]
