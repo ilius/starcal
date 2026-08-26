@@ -223,12 +223,11 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		return res
 
 	def exportToIcs(self, fpath: str, gidList: list[int]) -> None:
-		fp = self.fs.open(fpath, "w")
-		fp.write(ics.icsHeader)
-		for gid in gidList:
-			self[gid].exportToIcsFp(fp)
-		fp.write("END:VCALENDAR\n")
-		fp.close()
+		with self.fs.open(fpath, "w") as fp:
+			fp.write(ics.icsHeader)
+			for gid in gidList:
+				self[gid].exportToIcsFp(fp)
+			fp.write("END:VCALENDAR\n")
 
 	def checkForOrphans(self) -> EventGroup | None:
 		fs = self.fs
