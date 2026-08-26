@@ -316,7 +316,7 @@ class WinLayoutBox(WinLayoutBase):
 				# ---
 				moveButton.connect("clicked", self.onItemMoveClick, listBox, item)
 				item.moveButton = moveButton
-				pack(optionsButtonBox, listBox, True, True)
+			pack(optionsButtonBox, listBox, True, True)
 		else:
 			for item in self.items:
 				assert isinstance(item, WinLayoutBase), f"{item=}"

@@ -32,7 +32,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import confDir
 from scal3.ui import conf
-from scal3.ui_gtk import Dialog, Menu, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, Menu, gtk, pack, popup_menu_at, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.day_cal import DayCal
@@ -47,11 +47,10 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
-	from gi.repository import Gdk as gdk
-
 	from scal3.color_utils import ColorType
 	from scal3.option import Option
 	from scal3.pytypes import CellType
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.cal_obj import CalBase
 	from scal3.ui_gtk.day_cal import ParentWindowType
 	from scal3.ui_gtk.signals import SignalHandlerType
@@ -320,13 +319,15 @@ class DayCalWindowWidget(DayCal):
 			menuHeight = self.menuHeight = get_menu_height(self.getMenu(False))
 		reverse = gevent.y_root + menuHeight > ud.screenH
 		menu = self.getMenu(reverse)
-		menu.popup(
-			None,
-			None,
-			self.getMenuPosFunc(menu, gevent, reverse),
-			self,
-			gevent.button,
-			gevent.time,
+		popup_menu_at(
+			menu,
+			self.w,
+			gevent.x,
+			gevent.y,
+			button=gevent.button,
+			timestamp=gevent.time,
+			position_func=self.getMenuPosFunc(menu, gevent, reverse),
+			position_data=self,
 		)
 		ui.updateFocusTime()
 
@@ -346,6 +347,7 @@ class DayCalWindow(CalObjWidget):
 		win.resize(conf.dcalWinWidth.v, conf.dcalWinHeight.v)
 		win.move(conf.dcalWinX.v, conf.dcalWinY.v)
 		win.set_skip_taskbar_hint(True)
+		win.set_role("starcal-desktop-widget")
 		win.set_decorated(False)
 		win.set_keep_below(True)
 		win.stick()

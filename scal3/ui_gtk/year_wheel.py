@@ -33,7 +33,14 @@ from scal3.cal_types import calTypes, jd_to, to_jd
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.season import getSpringJdAfter
-from scal3.ui_gtk import gdk, getScrollValue, gtk
+from scal3.ui_gtk import (
+	WindowEdge,
+	begin_resize_drag,
+	connect_draw,
+	gdk,
+	getScrollValue,
+	gtk,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
@@ -96,7 +103,7 @@ class YearWheel(CustomizableCalObj):
 		self.angleOffset = 0.0
 		# ---
 		# self.closeFunc = closeFunc
-		self.w.connect("draw", self.onDraw)
+		connect_draw(self.w, self.onDraw)
 		self.w.connect("scroll-event", self.onScroll)
 		self.w.connect("button-press-event", self.onButtonPress)
 		# self.w.connect("motion-notify-event", self.onMotionNotify)
@@ -150,8 +157,9 @@ class YearWheel(CustomizableCalObj):
 		if win is None:
 			return
 		assert isinstance(win, gtk.Window), f"{win=}"
-		win.begin_resize_drag(
-			gdk.WindowEdge.SOUTH_EAST,
+		begin_resize_drag(
+			win,
+			WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
 			int(gevent.y_root),
@@ -160,23 +168,10 @@ class YearWheel(CustomizableCalObj):
 
 	def onDraw(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: gtk.Widget,
+		cr: ImageContext,
 	) -> None:
-		win = self.w.get_window()
-		if win is None:
-			return
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr)
-		finally:
-			win.end_draw_frame(dctx)
+		self.drawWithContext(cr)
 
 	def drawWithContext(self, cr: ImageContext) -> None:
 		alloc = self.w.get_allocation()

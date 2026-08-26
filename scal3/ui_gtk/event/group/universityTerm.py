@@ -27,7 +27,7 @@ from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.time_utils import hmDecode, hmEncode
 from scal3.ui import conf
-from scal3.ui_gtk import Dialog, gdk, gtk, pack
+from scal3.ui_gtk import Dialog, connect_draw, gdk, gtk, pack
 from scal3.ui_gtk.drawing import (
 	fillColor,
 	newTextLayout,
@@ -379,26 +379,14 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.data: list[list[list[WeeklyScheduleItem]]] = []
 		# ----
 		gtk.DrawingArea.__init__(self)
-		self.connect("draw", self.onExposeEvent)
+		connect_draw(self, self.onExposeEvent)
 
 	def onExposeEvent(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: Any = None,
+		_widget: gtk.Widget,
+		cr: cairo.Context[ImageSurface] | cairo.Context[SVGSurface],
 	) -> None:
-		win = self.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawCairo(cr)
-		finally:
-			win.end_draw_frame(dctx)
+		self.drawCairo(cr)
 
 	def drawCairo(
 		self,

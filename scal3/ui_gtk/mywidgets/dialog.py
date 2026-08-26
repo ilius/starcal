@@ -7,19 +7,26 @@ from scal3 import logger
 
 log = logger.get()
 
-from scal3.ui_gtk import gdk, gtk
-from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk import (
+	CursorType,
+	Dialog,
+	events_pending,
+	gtk,
+	main_iteration_do,
+	new_cursor,
+	set_widget_cursor,
+)
 
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.ui_gtk import gdk
+
 __all__ = ["MyDialog", "MyWindow"]
 
 
-def newCursor(cursor_type: gdk.CursorType) -> gdk.Cursor:
-	cur = gdk.Cursor.new_for_display(ud.display, cursor_type)
-	assert cur is not None
-	return cur
+def newCursor(cursor_type: CursorType) -> gdk.Cursor:
+	return new_cursor(cursor_type)
 
 
 class MyWindow(gtk.Window):
@@ -28,16 +35,12 @@ class MyWindow(gtk.Window):
 	def startWaiting(self) -> None:
 		self.queue_draw()
 		self.vbox.set_sensitive(False)
-		win = self.get_window()
-		assert win is not None
-		win.set_cursor(newCursor(gdk.CursorType.WATCH))
-		while gtk.events_pending():
-			gtk.main_iteration_do(False)
+		set_widget_cursor(self, newCursor(CursorType.WATCH))
+		while events_pending():
+			main_iteration_do(False)
 
 	def endWaiting(self) -> None:
-		gdkWin = self.get_window()
-		if gdkWin:
-			gdkWin.set_cursor(newCursor(gdk.CursorType.LEFT_PTR))
+		set_widget_cursor(self, newCursor(CursorType.LEFT_PTR))
 		if self.vbox:
 			self.vbox.set_sensitive(True)
 
@@ -61,5 +64,5 @@ class MyWindow(gtk.Window):
 		return result
 
 
-class MyDialog(gtk.Dialog, MyWindow):  # type: ignore[misc]
+class MyDialog(Dialog, MyWindow):  # type: ignore[misc]
 	vbox: gtk.Box  # type: ignore[assignment]

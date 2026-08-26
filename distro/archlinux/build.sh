@@ -28,6 +28,7 @@ pkgName=starcal3
 myDir=$(dirname "$myPath")
 pkgDir=$(dirname "$myDir")
 sourceDir=$(dirname "$pkgDir")
+source "$sourceDir/distro/base/gtk-profile.sh"
 #"$sourceDir/scripts/assert_python3"
 
 version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
@@ -37,8 +38,9 @@ version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 #echo version=$version
 
 depends=('python>=3.9')
+depends+=("${archlinux_gtk_dependencies[@]}")
 depends+=('python-gobject>=3.24') ## The new gobject introspection
-depends+=('gtksourceview4')
+depends+=("${archlinux_gtksource_dependencies[@]}")
 depends+=('python-cairo')
 depends+=('python-httplib2')
 depends+=('python-dateutil')
@@ -51,7 +53,7 @@ depends+=('python-six')
 
 
 optdepends=()
-optdepends+=('libappindicator-gtk3')
+optdepends+=("${archlinux_appindicator_dependencies[@]}")
 optdepends+=('python-igraph' 'igraph' 'icu')
 #optdepends+=('python-gnomevfs')
 optdepends+=('lxqt-openssh-askpass')

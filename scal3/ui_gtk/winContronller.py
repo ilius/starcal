@@ -10,7 +10,7 @@ from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import svgDir
 from scal3.ui import conf
-from scal3.ui_gtk import gdk, gtk, pack
+from scal3.ui_gtk import connect_window_drag_source, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 from scal3.ui_gtk.customize import CustomizableCalBox
@@ -20,6 +20,7 @@ from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 if TYPE_CHECKING:
 	from collections.abc import Iterator
 
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.signals import SignalHandlerType
 
@@ -104,7 +105,7 @@ class WinConButton(CustomizableCalObj):
 		# ---
 		win = controller.parentWin
 		if win:
-			self.w.connect("button-press-event", win.childButtonPress)
+			connect_window_drag_source(self.w, win.childButtonPress)
 		# ---
 		self.w.show_all()
 
@@ -214,7 +215,7 @@ class WinConButtonClose(WinConButton):
 	imageNamePress = "close-press"
 
 	def onClick(self, win: MainWinType, _ge: gdk.EventButton) -> None:  # noqa: PLR6301
-		win.win.emit("delete-event", gdk.Event())
+		win.win.close()
 
 
 class WinConButtonRightPanel(WinConButton):

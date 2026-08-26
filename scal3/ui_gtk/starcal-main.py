@@ -5,7 +5,11 @@ from os.path import abspath, dirname, isabs, join
 
 import gi
 
-gi.require_version("Gtk", "3.0")
+sys.path.insert(0, dirname(dirname(dirname(__file__))))
+
+from scal3.ui_gtk.gtk_version import GTK_VERSION
+
+gi.require_version("Gtk", GTK_VERSION)
 from gi.repository import Gtk as gtk
 
 gi.require_version("GdkPixbuf", "2.0")
@@ -13,8 +17,6 @@ from gi.repository import GdkPixbuf
 
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango as pango
-
-sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3 import logger
 

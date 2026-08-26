@@ -29,6 +29,7 @@ iconName=starcal32.png
 myDir=$(dirname "$myPath")
 pkgDir=$(dirname "$myDir")
 sourceDir=$(dirname "$pkgDir")
+source "$sourceDir/distro/base/gtk-profile.sh"
 #"$sourceDir/scripts/assert_python3"
 
 version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
@@ -39,9 +40,10 @@ version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 
 
 requires=("$pyCmd")
+requires+=("${almalinux_gtk_dependencies[@]}")
 requires+=('python3-gobject >= 3.24') ## The new gobject introspection
 requires+=('python3-cairo')
-requires+=('libappindicator-gtk3')
+requires+=("${almalinux_appindicator_dependencies[@]}")
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
 requires+=('python3-psutil')
@@ -52,7 +54,7 @@ requires+=('python3-setuptools')
 
 
 recommends=()
-recommends+=('gtksourceview4')
+recommends+=("${almalinux_gtksource_dependencies[@]}")
 recommends+=('python3-igraph')
 #recommends+=('python3-gnomevfs')
 
@@ -85,7 +87,7 @@ BuildRequires:  python3 desktop-file-utils gettext git-core
 
 %description
 StarCalendar is a full-featured international calendar written in Python,
-using Gtk3-based interface, that supports Persian(Iranian) and Hijri(Islamic)
+using $gtk_name-based interface, that supports Persian(Iranian) and Hijri(Islamic)
 calendars as well as common Gregorian calendar
 
 # Turn off the brp-python-bytecompile automagic

@@ -32,6 +32,7 @@ from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
+	connect_draw,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -95,7 +96,7 @@ class CalObj(CalBase):
 		# ----------------------
 		# self.kTime = 0
 		# ----------------------
-		self.w.connect("draw", self.drawAll)
+		connect_draw(self.w, self.drawAll)
 		self.w.connect("button-press-event", self.onButtonPress)
 		# self.w.connect("screen-changed", self.screenChanged)
 		self.w.connect("scroll-event", self.scroll)
@@ -295,20 +296,16 @@ class CalObj(CalBase):
 		assert self.subPages is not None
 		return self.subPages
 
-	def drawAll(self, _w: gtk.Widget | None = None, cursor: bool = True) -> None:
-		win = self.w.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr, cursor)
-		finally:
-			win.end_draw_frame(dctx)
+	def drawAll(
+		self,
+		_w: gtk.Widget | None = None,
+		cr: ImageContext | None = None,
+		cursor: bool = True,
+	) -> None:
+		if cr is None:
+			self.w.queue_draw()
+			return
+		self.drawWithContext(cr, cursor)
 
 	def _drawBorder(
 		self,

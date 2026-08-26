@@ -26,11 +26,10 @@ from gi.repository.PangoCairo import show_layout
 
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui import conf
-from scal3.ui_gtk import Dialog, gtk, pack, timeout_add
+from scal3.ui_gtk import Dialog, connect_draw, gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import fillColor, setColor
 
 if TYPE_CHECKING:
-	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.drawing import ImageContext
 
 
@@ -127,7 +126,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 		self.format = clockFormat
 		self.text = ""
 		self.running = False
-		self.connect("draw", self.onDraw)
+		connect_draw(self, self.onDraw)
 		self.start()  # ???
 
 	def start(self) -> None:
@@ -148,22 +147,10 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 
 	def onDraw(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: gtk.Widget,
+		cr: ImageContext,
 	) -> None:
-		win = self.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr)
-		finally:
-			win.end_draw_frame(dctx)
+		self.drawWithContext(cr)
 
 	def drawWithContext(self, cr: ImageContext) -> None:
 		text = self.text

@@ -29,6 +29,7 @@ iconName=starcal32.png
 myDir=$(dirname "$myPath")
 pkgDir=$(dirname "$myDir")
 sourceDir=$(dirname "$pkgDir")
+source "$sourceDir/distro/base/gtk-profile.sh"
 #"$sourceDir/scripts/assert_python3"
 
 version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
@@ -40,10 +41,10 @@ version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 
 requires=("$pyCmd")
 
-# Confirmed: all following 5 packages are required!
-requires+=('typelib(Gtk) = 3.0' 'typelib(Gdk) = 3.0')
+# Confirmed: all following packages are required!
+requires+=("${suse_gtk_dependencies[@]}")
 requires+=('typelib(GdkPixbuf) = 2.0')
-requires+=('typelib-1_0-GtkSource-4')
+requires+=("${suse_gtksource_dependencies[@]}")
 requires+=('python3-gobject >= 3.24') ## The new gobject introspection
 requires+=('python3-gobject-Gdk')
 requires+=('python3-gobject-cairo')
@@ -64,7 +65,7 @@ requires+=('python3-six')
 ## [ ] Dependencies -> Install Recommended Packages
 
 recommends=()
-recommends+=('typelib(AppIndicator3)')
+recommends+=("${suse_appindicator_dependencies[@]}")
 #recommends+=('python3-igraph')
 recommends+=('openssh-askpass-gnome')
 recommends+=('python3-pygit2')
@@ -99,7 +100,7 @@ BuildRequires:  gettext
 
 %description
 StarCalendar is a full-featured international calendar written in Python,
-using Gtk3-based interface, that supports Persian(Iranian) and Hijri(Islamic)
+using $gtk_name-based interface, that supports Persian(Iranian) and Hijri(Islamic)
 calendars as well as common Gregorian calendar
 
 %install
@@ -126,5 +127,3 @@ rpmbuild -bb $pkgName.spec
 
 pkgPath="/usr/src/packages/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 cp "$pkgPath" "$outDir/"
-
-

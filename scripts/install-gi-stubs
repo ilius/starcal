@@ -1,1 +1,15 @@
-pip install -U pygobject-stubs --no-cache-dir --config-settings=config=Gtk3,Gdk3,Soup2
+#!/bin/bash
+set -e
+
+script_path=$(realpath "$0")
+source_dir=$(dirname "$(dirname "$script_path")")
+source "$source_dir/distro/base/gtk-profile.sh"
+
+stub_version=${1:-}
+stub_package=pygobject-stubs
+if [ -n "$stub_version" ]; then
+	stub_package+="==$stub_version"
+fi
+
+python -m pip install -U "$stub_package" --no-deps --no-cache-dir \
+	--no-binary=pygobject-stubs --config-settings="config=$gi_stub_profile"

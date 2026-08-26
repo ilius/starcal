@@ -6,12 +6,14 @@ log = logger.get()
 
 import gi
 
+from scal3.ui_gtk.gtk_version import GTK_VERSION
+
 # Gtk must be imported before Gdk and other
 # in other to prevent ruff from re-ordering the following imports
 # we call require_version right before importing each one
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", GTK_VERSION)
+gi.require_version("Gdk", GTK_VERSION)
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
@@ -44,20 +46,75 @@ try:
 except ImportError:
 	from gi.repository.GObject import Error as GLibError  # type: ignore[assignment]
 
+from scal3.ui_gtk.gtk_backend import (
+	CursorType,
+	Dialog,
+	Menu,
+	MenuItem,
+	WindowEdge,
+	add_style_provider,
+	begin_resize_drag,
+	connect_dialog_response,
+	connect_draw,
+	connect_monitor_changes,
+	connect_window_drag_source,
+	event_hits_interactive_child,
+	events_pending,
+	get_monitor,
+	get_monitor_for_window,
+	get_root_window_size,
+	getScrollValue,
+	initialize_gtk,
+	install_backend,
+	install_default_icon,
+	main_iteration_do,
+	new_cursor,
+	pack,
+	popup_menu_at,
+	quit_application,
+	run_application,
+	set_widget_cursor,
+	should_present_main_window,
+)
+
+install_backend()
+
 
 __all__ = [
+	"CursorType",
 	"Dialog",
 	"GLibError",
 	"GdkPixbuf",
 	"Menu",
 	"MenuItem",
+	"WindowEdge",
+	"add_style_provider",
+	"begin_resize_drag",
+	"connect_dialog_response",
+	"connect_draw",
+	"connect_monitor_changes",
+	"connect_window_drag_source",
+	"event_hits_interactive_child",
+	"events_pending",
 	"gdk",
 	"getOrientation",
 	"getScrollValue",
+	"get_monitor",
+	"get_monitor_for_window",
+	"get_root_window_size",
 	"gtk",
+	"initialize_gtk",
+	"install_default_icon",
 	"main_context_default",
+	"main_iteration_do",
+	"new_cursor",
 	"pack",
 	"pango",
+	"popup_menu_at",
+	"quit_application",
+	"run_application",
+	"set_widget_cursor",
+	"should_present_main_window",
 	"source_remove",
 	"timeout_add",
 	"timeout_add_seconds",
@@ -65,71 +122,7 @@ __all__ = [
 ]
 
 
-def pack(
-	box: gtk.Box,
-	child: gtk.Widget,
-	expand: bool | int = False,
-	fill: bool | int = False,
-	padding: int = 0,
-) -> None:
-	if isinstance(box, gtk.Box):
-		box.pack_start(child, expand=bool(expand), fill=bool(fill), padding=padding)
-	elif isinstance(box, gtk.CellLayout):
-		raise TypeError("pack: use gtk.CellLayout.pack_start instead")
-	else:
-		raise TypeError(f"pack: unkown type {type(box)}")
-
-
-class Menu(gtk.Menu):
-	def __init__(self) -> None:
-		gtk.Menu.__init__(self)
-		self.set_reserve_toggle_size(False)
-		# self.imageSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-
-	# def add(self, item):
-	# 	gtk.Menu.add(self, item)
-	# 	self.imageSizeGroup.add_widget(item.get_image())
-
-
-def getScrollValue(gevent: gdk.EventScroll, last: str = "") -> str:
-	"""Return value is either "up" or "down"."""
-	value = gevent.direction.value_nick
-	# gevent.delta_x is always 0
-	# gevent.get_keycode() is always (False, keycode=0)
-	# gevent.get_scroll_deltas() is (True, delta_x={delta_x}, delta_y={delta_y})
-	# gevent.is_scroll_stop_event() == (gevent.is_stop == 1)
-	# is_scroll_stop_event is new in version 3.20.
-	if value == "smooth":  # happens *sometimes* in PyGI (Gtk3)
-		# log.debug(
-		# 	f"Scroll: {value=}, {gevent.delta_y=}, " +
-		# 	f"{gevent.is_stop=}={gevent.is_scroll_stop_event()}"
-		# )
-		if gevent.delta_y < 0:  # -1.0 (up)
-			value = "up"
-		elif gevent.delta_y == 0 and last:
-			return last
-		else:
-			# most of the time delta_y=1.0, but sometimes 0.0, why?!
-			# both mean "down" though
-			value = "down"
-	return value
-
-
 def getOrientation(vertical: bool) -> gtk.Orientation:
 	if vertical:
 		return gtk.Orientation.VERTICAL
 	return gtk.Orientation.HORIZONTAL
-
-
-class MenuItem(gtk.MenuItem):
-	def __init__(self, label: str = "") -> None:
-		self.text = label
-		gtk.MenuItem.__init__(self, label=label)
-		self.set_use_underline(True)
-
-
-class Dialog(gtk.Dialog):
-	vbox: gtk.Box  # type: ignore[assignment]
-
-	def run(self) -> gtk.ResponseType:
-		return gtk.Dialog.run(self)  # type: ignore[no-any-return, no-untyped-call]

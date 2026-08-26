@@ -35,7 +35,6 @@ from scal3.ui_gtk.mainwin_items.weekCal.moon import MoonStatusColumn
 from scal3.ui_gtk.option_ui.spin import FloatSpinOptionUI
 from scal3.ui_gtk.stack import StackPage
 
-from .base import ColumnBase
 from .events import (
 	EventsBoxColumn,
 	EventsCountColumn,
@@ -45,6 +44,7 @@ from .events import (
 from .mainmenu import MainMenuToolBoxItem
 from .plugins import PluginsTextColumn
 from .toolbar import ToolbarColumn
+from .weekcal_backend import find_column_at
 from .weekdays import WeekDaysColumn
 
 if TYPE_CHECKING:
@@ -54,6 +54,8 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.option_ui.base import OptionUI
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType, StackPageType
 	from scal3.ui_gtk.starcal_types import MainWinType
+
+	from .base import ColumnBase
 
 
 __all__ = ["CalObj"]
@@ -298,51 +300,23 @@ class CalObj(CalBase):
 	def goForward4(self, _obj: GObject.Object) -> None:
 		self.jdPlus(28)
 
-	def itemContainsGdkWindow(self, item: gtk.Widget, col_win: gdk.Window) -> bool:
-		if col_win == item.get_window():
-			return True
-		if isinstance(item, gtk.Container):
-			for child in item.get_children():
-				if self.itemContainsGdkWindow(child, col_win):
-					return True
-		return False
-
-	def findColumnWidgetByGdkWindow(self, col_win: gdk.Window) -> ColumnBase | None:
-		for item in self.items:
-			if isinstance(item, gtk.Box):
-				# right now only DaysOfMonthColumnGroup
-				for child in item.get_children():
-					if self.itemContainsGdkWindow(child, col_win):
-						return child
-			elif self.itemContainsGdkWindow(item.w, col_win):
-				assert isinstance(item, ColumnBase), f"{item=}"
-				return item
-		return None
-
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		assert self.status is not None
-		col = self.findColumnWidgetByGdkWindow(gevent.get_window())
-		if not col:
+		hit = find_column_at(self.w, self.items, gevent)
+		if hit is None:
 			return False
+		col, x, y = hit
 		if not col.autoButtonPressHandler:
 			return False
-		# ---
-		# stub for gevent.get_coords() is wrong!
-		x_col = int(gevent.x)
-		y_col = int(gevent.y)
-		# x_col is relative to the column, not to the weekCal
-		# y_col is relative to the column, but also to the weekCal,
-		# 		because we have nothing above columns
-		# ---
-		i = int(y_col * 7.0 / self.w.get_allocation().height)
+		height = self.w.get_allocation().height
+		if height <= 0:
+			return False
+		i = min(6, max(0, int(y * 7.0 / height)))
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
 		if gevent.type == gdk.EventType.DOUBLE_BUTTON_PRESS:
 			self.s.emit("double-button-press")
 		if gevent.button == 3:
-			coords = col.w.translate_coordinates(self.w, x_col, y_col)
-			assert coords is not None
-			x, y = coords
 			self.s.emit("popup-cell-menu", x, y)
 		return True
 

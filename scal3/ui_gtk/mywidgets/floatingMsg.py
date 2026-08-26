@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 from gi.repository.PangoCairo import show_layout
 
 from scal3.color_utils import black, yellow
-from scal3.ui_gtk import gdk, gtk, timeout_add
+from scal3.ui_gtk import connect_draw, get_root_window_size, gtk, timeout_add
 from scal3.ui_gtk.drawing import newTextLayout, setColor
 
 if TYPE_CHECKING:
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 	from gi.repository import Pango as pango
 
 	from scal3.color_utils import ColorType
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.drawing import ImageContext
 
 __all__ = [
@@ -38,8 +39,7 @@ __all__ = [
 	"NoFillFloatingMsgWindow",
 ]
 
-rootWin = gdk.get_default_root_window()
-screenWidth = rootWin.get_width()
+screenWidth = get_root_window_size()[0]
 # FIXME: use ud.workAreaW from gtk_ud.py
 
 
@@ -84,7 +84,7 @@ class FloatingMsg(gtk.DrawingArea):
 		self.index = 0
 		self.height = 30
 		# --------
-		self.connect("draw", self.onExposeEvent)
+		connect_draw(self, self.onExposeEvent)
 		self.connect("realize", self.on_realize)
 		# --------
 		self.myWin: gtk.Window | None = None
@@ -93,7 +93,7 @@ class FloatingMsg(gtk.DrawingArea):
 			# ^ gtk.WindowType.POPUP ?
 			self.myWin.add(self)
 			self.myWin.set_decorated(False)
-			self.myWin.set_property("skip-taskbar-hint", True)
+			self.myWin.set_skip_taskbar_hint(True)
 			self.myWin.set_keep_above(True)
 
 	@staticmethod
@@ -135,21 +135,8 @@ class FloatingMsg(gtk.DrawingArea):
 		if self.finishFunc:
 			self.finishFunc()
 
-	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
-		win = self.get_window()
-		if win is None:
-			return
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr)
-		finally:
-			win.end_draw_frame(dctx)
+	def onExposeEvent(self, _w: gtk.Widget, cr: ImageContext) -> None:
+		self.drawWithContext(cr)
 
 	def drawWithContext(self, cr: ImageContext) -> None:
 		if self.layout is None:
@@ -193,7 +180,7 @@ class MyLabel(gtk.DrawingArea):
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
 		self.textColor = textColor
-		self.connect("draw", self.onExposeEvent)
+		connect_draw(self, self.onExposeEvent)
 
 	def set_label(self, text: str) -> None:
 		self.text = text
@@ -207,21 +194,8 @@ class MyLabel(gtk.DrawingArea):
 		self.rtl = self.isRtl()
 		self.rtlSign = 1 if self.rtl else -1
 
-	def onExposeEvent(self, _w: gtk.Widget, _ge: gdk.Event) -> None:
-		win = self.get_window()
-		if win is None:
-			return
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr)
-		finally:
-			win.end_draw_frame(dctx)
+	def onExposeEvent(self, _w: gtk.Widget, cr: ImageContext) -> None:
+		self.drawWithContext(cr)
 
 	def drawWithContext(self, cr: ImageContext) -> None:
 		if self.layout is None:
@@ -259,7 +233,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		# self.set_type_hint(gdk.WindowTypeHint.)
 		# https://docs.gtk.org/gdk3/enum.WindowTypeHint.html
 		self.set_decorated(False)
-		self.set_property("skip-taskbar-hint", True)
+		self.set_skip_taskbar_hint(True)
 		self.set_keep_above(True)
 		self.label = MyLabel(bgColor, textColor)
 		self.add(self.label)

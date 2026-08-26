@@ -41,10 +41,13 @@ from scal3.ui.mainmenuitems import menuMainItemDefs
 from scal3.ui_gtk import (
 	GdkPixbuf,
 	Menu,
+	connect_dialog_response,
 	gdk,
 	gtk,
 	listener,
 	pixcache,
+	popup_menu_at,
+	quit_application,
 	timeout_add,
 )
 from scal3.ui_gtk import gtk_ud as ud
@@ -67,17 +70,12 @@ from scal3.ui_gtk.starcal_funcs import (
 	onMainButtonPress,
 	onResizeFromMenu,
 	onScreenSizeChange,
-	onStatusIconPress,
 	onToggleRightPanel,
-	shouldUseAppIndicator,
 	yearWheelShow,
 )
 from scal3.ui_gtk.starcal_layout import makeMainWinLayout
-from scal3.ui_gtk.utils import (
-	get_menu_width,
-	openWindow,
-	showError,
-)
+from scal3.ui_gtk.status_icon_backend import create_status_icon
+from scal3.ui_gtk.utils import openWindow, showError
 
 if TYPE_CHECKING:
 	from types import FrameType
@@ -159,8 +157,7 @@ class MainWin(CalObjWidget):
 		# self.connect("main-show", lambda arg: self.present())
 		# self.connect("main-hide", lambda arg: self.hide())
 		win.set_decorated(False)
-		win.set_property("skip-taskbar-hint", not conf.winTaskbar.v)
-		# self.w.set_skip_taskbar_hint  # FIXME
+		win.set_skip_taskbar_hint(not conf.winTaskbar.v)
 		win.set_role("starcal")
 		# self.w.set_focus_on_map(True)#????????
 		# self.w.set_type_hint(gdk.WindowTypeHint.NORMAL)
@@ -352,7 +349,7 @@ class MainWin(CalObjWidget):
 		if conf.winTaskbar.v:
 			self.win.iconify()
 			return
-		self.w.emit("delete-event", gdk.Event.new(gdk.EventType.DELETE))
+		self.win.close()
 
 	def toggleMaximized(self, _ge: gdk.EventButton) -> None:
 		if conf.winMaximized.v:
@@ -403,14 +400,14 @@ class MainWin(CalObjWidget):
 			self.rightPanel.onWindowSizeChange()
 
 	def onMainButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		return onMainButtonPress(self.win, self.menuMainCreate, gevent)
+		return onMainButtonPress(self.win, self.menuMainCreate, _w, gevent)
 
 	def childButtonPress(
 		self,
 		widget: gtk.Widget,  # noqa: ARG002
 		gevent: gdk.EventButton,
 	) -> bool:
-		return childButtonPress(self.win, self.menuMainCreate, gevent)
+		return childButtonPress(self.win, self.menuMainCreate, widget, gevent)
 
 	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
 		return onResizeFromMenu(self.menuMain, self.win, gevent)
@@ -573,33 +570,8 @@ class MainWin(CalObjWidget):
 		menu.add(moreItem)
 		# ----
 		menu.show_all()
-		coord = widget.translate_coordinates(self.w, x, y)
-		if coord is None:
-			raise RuntimeError(
-				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
-			)
-		dx, dy = coord
-		win = self.w.get_window()
-		assert win is not None
-		_foo, wx, wy = win.get_origin()
-		x = wx + dx
-		y = wy + dy
-		if rtl:
-			x -= get_menu_width(menu)
-		# ----
-		etime = gtk.get_current_event_time()
-		# log.debug("menuCellPopup", x, y, etime)
 		self.menuCell = menu
-		# without the above line, the menu is not showing up
-		# some GC-related pygi bug probably
-		menu.popup(
-			None,
-			None,
-			lambda *_args: (x, y, True),
-			None,
-			3,
-			etime,
-		)
+		popup_menu_at(menu, widget, x, y, root=self.w, rtl=rtl)
 		ui.updateFocusTime()
 
 	# TODO: customize list of main menu items (disable/enable/re-order)
@@ -692,29 +664,7 @@ class MainWin(CalObjWidget):
 	"""
 
 	def statusIconInit(self) -> None:
-		self.sicon: gtk.StatusIcon | IndicatorStatusIconWrapper | None
-		if self.statusIconMode != 2:
-			self.sicon = None
-			return
-
-		if shouldUseAppIndicator():
-			from scal3.ui_gtk.starcal_appindicator import (
-				IndicatorStatusIconWrapper,
-			)
-
-			self.sicon = IndicatorStatusIconWrapper(self)
-			return
-
-		sicon = gtk.StatusIcon()
-		self.sicon = sicon
-		sicon.set_title(APP_DESC)
-		sicon.set_visible(True)  # is needed?
-		sicon.connect(
-			"button-press-event",
-			onStatusIconPress,
-		)
-		sicon.connect("activate", self.onStatusIconClick)
-		sicon.connect("popup-menu", self.statusIconPopup)
+		self.sicon = create_status_icon(self, self.statusIconMode)
 
 	def getMainWinMenuItem(self) -> gtk.MenuItem:
 		item = gtk.MenuItem(label=_("Main Window"))
@@ -819,6 +769,7 @@ class MainWin(CalObjWidget):
 		ui.updateFocusTime()
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
+		self.broadcastDateChange()
 		self.statusIconUpdate(gdate=gdate)
 
 	def statusIconUpdateIcon(self, ddate: tuple[int, int, int]) -> None:  # FIXME
@@ -896,6 +847,8 @@ class MainWin(CalObjWidget):
 		gdate: tuple[int, int, int] | None = None,
 		checkStatusIconMode: bool = True,
 	) -> None:
+		if self.sicon is None:
+			return
 		if checkStatusIconMode and self.statusIconMode < 1:
 			return
 		if gdate is None:
@@ -946,7 +899,9 @@ class MainWin(CalObjWidget):
 		# FIXME: ^ gives bad position sometimes
 		# liveConfChanged()
 		# log.debug(conf.winX.v, conf.winY.v)
-		if self.statusIconMode == 0 or not self.sicon:
+		if ui.dayCalWin and ui.dayCalWin.is_visible():
+			self.hide()
+		elif self.statusIconMode == 0 or not self.sicon:
 			self.quit()
 		elif self.statusIconMode > 1:
 			if self.sicon.is_embedded() or (ui.dayCalWin and ui.dayCalWin.is_visible()):
@@ -1003,7 +958,7 @@ class MainWin(CalObjWidget):
 		except Exception:
 			log.exception("error in destroy")
 		# ------
-		return gtk.main_quit()
+		quit_application(self.app)
 
 	def quitFromMenu(self, _w: gtk.Widget) -> None:
 		self.quit()
@@ -1051,7 +1006,7 @@ class MainWin(CalObjWidget):
 			)
 			# add Donate button, FIXME
 			dialog.connect("delete-event", self.aboutHide)
-			dialog.connect("response", self.aboutHide)
+			connect_dialog_response(dialog, self.aboutHide)
 			# dialog.set_skip_taskbar_hint(True)
 			self.aboutDialog = dialog
 		openWindow(self.aboutDialog)

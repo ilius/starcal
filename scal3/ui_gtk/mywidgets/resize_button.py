@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from scal3.ui_gtk import gdk, gtk
+from typing import TYPE_CHECKING
+
+from scal3.ui_gtk import WindowEdge, begin_resize_drag, gtk
 from scal3.ui_gtk.utils import imageFromFile
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 
 __all__ = ["ResizeButton"]
 
@@ -11,7 +16,7 @@ class ResizeButton(gtk.EventBox):
 		self,
 		win: gtk.Window,
 		size: int = 20,
-		edge: gdk.WindowEdge = gdk.WindowEdge.SOUTH_EAST,
+		edge: WindowEdge = WindowEdge.SOUTH_EAST,
 	) -> None:
 		gtk.EventBox.__init__(self)
 		self.parentWin = win
@@ -22,7 +27,8 @@ class ResizeButton(gtk.EventBox):
 		self.connect("button-press-event", self.onButtonPress)
 
 	def onButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		self.parentWin.begin_resize_drag(
+		begin_resize_drag(
+			self.parentWin,
 			self.edge,
 			gevent.button,
 			int(gevent.x_root),
