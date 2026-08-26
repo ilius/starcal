@@ -268,9 +268,14 @@ class TimeListOccurSet(OccurSet):
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		if isinstance(occur, JdOccurSet | IntervalOccurSet):
+			otherRanges = sorted(occur.getTimeRangeList())
+			if not otherRanges:
+				return TimeListOccurSet()
 			epochBetween = []
-			for epoch in self.epochList:
-				for startEpoch, endEpoch in occur.getTimeRangeList():
+			for epoch in sorted(self.epochList):
+				for startEpoch, endEpoch in otherRanges:
+					if epoch < startEpoch:
+						break
 					if startEpoch <= epoch < endEpoch:
 						epochBetween.append(epoch)
 						break
