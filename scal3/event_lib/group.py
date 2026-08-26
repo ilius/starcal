@@ -373,11 +373,12 @@ class EventGroup(EventContainer):
 
 	def setId(self, ident: int | None = None) -> None:
 		assert state.lastIds is not None
-		if ident is None or ident < 0:
-			ident = state.lastIds.group + 1  # FIXME
-			state.lastIds.group = ident
-		elif ident > state.lastIds.group:
-			state.lastIds.group = ident
+		with state.lock:
+			if ident is None or ident < 0:
+				ident = state.lastIds.group + 1  # FIXME
+				state.lastIds.group = ident
+			elif ident > state.lastIds.group:
+				state.lastIds.group = ident
 		self.id = ident
 		self.file = self.getFile(self.id)
 

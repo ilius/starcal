@@ -129,13 +129,15 @@ def removeUnusedObjects(fs: FileSystem) -> None:
 				fs.removeFile(fpath)
 		log.info(f"Removed {removedCount} objects")
 
-	state.allReadOnly = True
+	with state.lock:
+		state.allReadOnly = True
 	try:
 		tm0 = perf_counter()
 		do_removeUnusedObjects()
 		log.info(f"removeUnusedObjects: took {perf_counter() - tm0}")
 	finally:
-		state.allReadOnly = False
+		with state.lock:
+			state.allReadOnly = False
 
 
 # ---------------------------------------------------------------------------

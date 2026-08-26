@@ -334,11 +334,12 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	def setId(self, ident: int | None = None) -> None:
 		assert state.lastIds is not None
-		if ident is None or ident < 0:
-			ident = state.lastIds.event + 1  # FIXME
-			state.lastIds.event = ident
-		elif ident > state.lastIds.event:
-			state.lastIds.event = ident
+		with state.lock:
+			if ident is None or ident < 0:
+				ident = state.lastIds.event + 1  # FIXME
+				state.lastIds.event = ident
+			elif ident > state.lastIds.event:
+				state.lastIds.event = ident
 		self.id = ident
 		self.file = self.getFile(self.id)
 		# self.filesDir = join(self.dir, "files")

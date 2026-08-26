@@ -21,6 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 from os.path import join, splitext
+from threading import Lock
 from time import perf_counter
 from time import time as now
 
@@ -28,9 +29,16 @@ from scal3.app_info import VERSION_TAG as VERSION
 
 from .object_base import EventObjTextModel
 
-__all__ = ["InfoWrapper", "LastIdsWrapper", "allReadOnly", "info", "lastIds"]
+__all__ = [
+	"InfoWrapper",
+	"LastIdsWrapper",
+	"allReadOnly",
+	"info",
+	"lastIds",
+	"lock",
+]
 
-
+lock = Lock()
 allReadOnly = False
 
 
@@ -99,10 +107,11 @@ class LastIdsWrapper(EventObjTextModel):
 
 	def scan(self) -> None:
 		t0 = perf_counter()
-		self.event = self.scanDir("event/events")
-		self.group = self.scanDir("event/groups")
-		self.account = self.scanDir("event/accounts")
-		self.save()
+		with lock:
+			self.event = self.scanDir("event/events")
+			self.group = self.scanDir("event/groups")
+			self.account = self.scanDir("event/accounts")
+			self.save()
 		log.info(
 			f"Scanning last_ids took {int((perf_counter() - t0) * 1000)} ms, {self}",
 		)
