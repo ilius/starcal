@@ -232,8 +232,10 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		for eid in self.idList:
 			try:
 				event = self.getEvent(eid)
-			except Exception:  # noqa: PERF203
-				log.exception("")
+			except FileNotFoundError:
+				log.warning(f"event file not found: eid={eid}, container={self!r}")
+			except (json.JSONDecodeError, KeyError):
+				log.exception(f"corrupt event file: eid={eid}")
 			else:
 				yield event
 
