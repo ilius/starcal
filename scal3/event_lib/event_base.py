@@ -150,6 +150,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return f"{self.__class__.__name__}(id={self.id!r}, summary={self.summary!r})"
 
 	def icsUID(self) -> str:
+		if self.uuid is not None:
+			return self.uuid + "@starcal"
 		import socket
 
 		event_st = compressLongInt(hash(str(self.getDict())))
