@@ -107,57 +107,57 @@ SObj (s_object)
 
 ## 2. File-by-File Summary
 
-| File | Lines | Purpose |
+| File | Purpose |
 |---|---|---|
-| `__init__.py` | 188 | Package init, global `ev` Handler, `init()`, `removeUnusedObjects()` |
-| `event_base.py` | 703 | Core `Event` and `SingleStartEndEvent` classes |
-| `group.py` | 791 | `EventGroup` — main event container with caching, search, import/export |
-| `university.py` | 582 | University term scheduling (classes, exams, weekly schedule) |
-| `task.py` | 432 | Task events and all-day tasks |
-| `event_container.py` | 392 | Base container for events (holds event ID lists) |
-| `vcs.py` | 378 | VCS commit/tag/daily-stat event groups |
-| `pytypes.py` | 340 | Protocol definitions for all major types |
-| `rules/rule_week.py` | 303 | Week-based rules (weekday, week-month, week number) |
-| `yearly.py` | 292 | Yearly recurring events (birthdays, anniversaries) |
-| `occur.py` | 291 | Occurrence set types (JD, interval, time-list) |
-| `groups_holder.py` | 295 | Manages list of all event groups |
-| `rule_container.py` | 262 | Mixin for objects containing rules |
-| `vcs_base.py` | 238 | Base classes for VCS event groups |
-| `large_scale.py` | 238 | Large-scale (millennia/centuries) events |
-| `rules/rule_cycle.py` | 228 | Cycle-based recurrence rules |
-| `accounts.py` | 179 | Account base class |
-| `holders.py` | 180 | Generic container for ordered collections |
-| `rules/rule_date.py` | 178 | Date rules and exclusion dates |
-| `rules/rule_daytime.py` | 173 | Time-within-day rules |
-| `rules/rule_datetime.py` | 171 | Date+time rules |
-| `rules/rule_ymd.py` | 169 | Year/month/day matching rules |
-| `lifetime.py` | 148 | Lifetime (birth-death) events |
-| `occur_data.py` | 142 | Day/week/month occurrence data computation |
-| `rules/rule_duration.py` | 143 | Duration-based rule |
-| `accounts_holder.py` | 129 | Account loading/storing |
-| `note.py` | 129 | Daily notes (notebook) |
-| `notifiers.py` | 122 | Concrete notifier implementations |
-| `rules/rule_allday.py` | 102 | All-day event matching rules |
-| `monthly.py` | 112 | Monthly recurring events |
-| `state.py` | 112 | Global mutable state (`allReadOnly`, `info`, `lastIds`) |
-| `rules/rule_base.py` | 117 | Base `EventRule` class |
-| `event_ics.py` | 108 | ICS format export |
-| `typing_test.py` | 101 | Ad-hoc type checking (not a real test suite) |
-| `trash.py` | 94 | Trash container for deleted events |
-| `common.py` | 92 | Shared utilities (week days, JD, compression) |
-| `weekly.py` | 91 | Weekly recurring events |
-| `events.py` | 58 | Registers `CustomEvent` type |
-| `handler.py` | 77 | Facade wrapping accounts, groups, trash |
-| `register.py` | 70 | Class registry system |
-| `patch.py` | 67 | Patch list creation for sync |
-| `groups_import.py` | 52 | Import mode constants |
-| `icon.py` | 51 | Icon path handling |
-| `rules/__init__.py` | 50 | Re-exports all rule classes |
-| `objects.py` | 84 | Binary model for history-tracked objects |
-| `notifier_base.py` | 56 | Base notifier class |
-| `object_base.py` | 38 | Read-only respecting text model |
-| `errors.py` | 5 | `AccountError` exception |
-| `exceptions.py` | 5 | `BadEventFile` exception |
+| `__init__.py` | Package init, global `ev` Handler, `init()`, `removeUnusedObjects()` |
+| `event_base.py` | Core `Event` and `SingleStartEndEvent` classes |
+| `group.py` | `EventGroup` — main event container with caching, search, import/export |
+| `university.py` | University term scheduling (classes, exams, weekly schedule) |
+| `task.py` | Task events and all-day tasks |
+| `event_container.py` | Base container for events (holds event ID lists) |
+| `vcs.py` | VCS commit/tag/daily-stat event groups |
+| `pytypes.py` | Protocol definitions for all major types |
+| `rules/rule_week.py` | Week-based rules (weekday, week-month, week number) |
+| `yearly.py` | Yearly recurring events (birthdays, anniversaries) |
+| `occur.py` | Occurrence set types (JD, interval, time-list) |
+| `groups_holder.py` | Manages list of all event groups |
+| `rule_container.py` | Mixin for objects containing rules |
+| `vcs_base.py` | Base classes for VCS event groups |
+| `large_scale.py` | Large-scale (millennia/centuries) events |
+| `rules/rule_cycle.py` | Cycle-based recurrence rules |
+| `accounts.py` | Account base class |
+| `holders.py` | Generic container for ordered collections |
+| `rules/rule_date.py` | Date rules and exclusion dates |
+| `rules/rule_daytime.py` | Time-within-day rules |
+| `rules/rule_datetime.py` | Date+time rules |
+| `rules/rule_ymd.py` | Year/month/day matching rules |
+| `lifetime.py` | Lifetime (birth-death) events |
+| `occur_data.py` | Day/week/month occurrence data computation |
+| `rules/rule_duration.py` | Duration-based rule |
+| `accounts_holder.py` | Account loading/storing |
+| `note.py` | Daily notes (notebook) |
+| `notifiers.py` | Concrete notifier implementations |
+| `rules/rule_allday.py` | All-day event matching rules |
+| `monthly.py` | Monthly recurring events |
+| `state.py` | Global mutable state (`allReadOnly`, `info`, `lastIds`) |
+| `rules/rule_base.py` | Base `EventRule` class |
+| `event_ics.py` | ICS format export |
+| `typing_test.py` | Ad-hoc type checking (not a real test suite) |
+| `trash.py` | Trash container for deleted events |
+| `common.py` | Shared utilities (week days, JD, compression) |
+| `weekly.py` | Weekly recurring events |
+| `events.py` | Registers `CustomEvent` type |
+| `handler.py` | Facade wrapping accounts, groups, trash |
+| `register.py` | Class registry system |
+| `patch.py` | Patch list creation for sync |
+| `groups_import.py` | Import mode constants |
+| `icon.py` | Icon path handling |
+| `rules/__init__.py` | Re-exports all rule classes |
+| `objects.py` | Binary model for history-tracked objects |
+| `notifier_base.py` | Base notifier class |
+| `object_base.py` | Read-only respecting text model |
+| `errors.py` | `AccountError` exception |
+| `exceptions.py` | `BadEventFile` exception |
 
 ---
 
