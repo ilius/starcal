@@ -191,7 +191,7 @@ class WeekMonthEventRule(EventRule):
 		"month",
 		"ex_month",
 		"weekNumMode",
-		"weekday",
+		"weekDay",
 		"cycleDays",
 		"cycleWeeks",
 		"cycleLen",
