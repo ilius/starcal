@@ -40,7 +40,7 @@ __all__ = ["CycleLenEventRule", "CycleWeeksEventRule"]
 
 log = logger.get()
 
-dayLen = 86400
+from scal3.event_lib.common import dayLen
 
 
 def cycleDaysCalcOccurrence(

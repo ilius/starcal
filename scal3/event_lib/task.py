@@ -54,7 +54,7 @@ if TYPE_CHECKING:
 
 __all__ = ["AllDayTaskEvent", "TaskEvent", "TaskList"]
 
-dayLen = 86400
+from .common import dayLen
 
 
 @classes.group.register

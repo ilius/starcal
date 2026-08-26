@@ -37,9 +37,10 @@ if TYPE_CHECKING:
 
 	from .pytypes import EventGroupType
 
+from .common import dayLen
+
 __all__ = ["DayOccurData", "getDayOccurrenceData"]
 
-dayLen = 86400
 hms_zero = HMS()
 hms_24 = HMS(24)
 keyFuncIndex0 = operator.itemgetter(0)
