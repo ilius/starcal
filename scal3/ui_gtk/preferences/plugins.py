@@ -465,7 +465,7 @@ class PreferencesPlugins:
 	def onPlugExportToIcsClick(_obj: GObject.Object, plug: PluginType) -> None:
 		from scal3.ui_gtk.export import ExportToIcsDialog
 
-		ExportToIcsDialog(plug.exportToIcs, plug.title).run()  # type: ignore[no-untyped-call]
+		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
 
 	def plugTreevRActivate(
 		self,
