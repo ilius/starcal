@@ -143,7 +143,7 @@ class WeekDayEventRule(AllDayEventRule):
 
 	def __init__(self, parent: RuleContainerType) -> None:
 		super().__init__(parent)
-		self.weekDayList = list(range(7))  # or [] FIXME
+		self.weekDayList = list(range(7))  # select all days by default
 
 	def getRuleValue(self) -> Any:
 		return self.weekDayList

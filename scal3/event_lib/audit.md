@@ -240,50 +240,9 @@ String concatenation for ICS is fragile. No escaping of special characters beyon
 
 **Recommended fix:** Use a single `except (FileNotFoundError, OSError) as e:` with a descriptive log message.
 
-#### 12. `vcs.py` events not registered with decorator
-**File:** `vcs.py`
-`VcsCommitEvent` and `VcsTagEvent` are "virtual" events not registered via `@classes.event.register`. This is by design but undocumented.
-
-**Recommended fix:** Add a comment explaining why they are not registered, or add a `virtual = True` class attribute.
-
-#### 13. `WeekDayEventRule.__init__` defaults to all 7 days
-**File:** `rules/rule_week.py:146`
-`self.weekDayList = list(range(7))` with comment `# or [] FIXME` — ambiguous default behavior.
-
-**Recommended fix:** Decide on the intended default (likely `[]` for "no days selected" or `list(range(7))` for "every day") and remove the FIXME comment.
-
 ---
 
-## 4. Quality Metrics
-
-| Aspect | Rating | Notes |
-|---|---|---|
-| **Type hints** | Good | Modern Python 3.12+ syntax, Protocol types, generics throughout |
-| **Architecture** | Fair | Elegant rule composition system; complex MRO with deep inheritance |
-| **Error handling** | Poor | Bare `except Exception`, `assert` for control flow, inconsistent exception types |
-| **Documentation** | Poor | Almost no docstrings; 15+ unresolved `# FIXME` comments |
-| **Testing** | Very Poor | No test suite; `typing_test.py` is not a real test |
-| **Performance** | Concerning | O(n) disk reads in hot paths; O(n*m) intersection; no caching |
-| **Dead code** | Moderate | Commented-out blocks, unused classes, stub methods |
-| **Security** | Low risk | `CommandNotifier` (if enabled) could execute arbitrary commands |
-| **Maintainability** | Fair | Consistent style but deeply nested inheritance; duplicated constants |
-
----
-
-## 5. Fixed Issues
-
-| Issue | Fix |
-|---|---|
-| `WeekMonthEventRule.conflict` had `"weekday"` (lowercase) | Changed to `"weekDay"` in `rules/rule_week.py:194` |
-| VCS group `__init__` had `ident: str \| None` | Changed to `ident: int \| None` in `vcs.py` (3 classes) |
-| `WeeklyEvent.setDefaults` set end to `jd + 8` | Changed to `jd + 7` in `weekly.py:91` |
-| `DummyAccount.load()` returns `None` | By design — all `load()` methods return `T \| None`, callers must check |
-| `LastIdsWrapper.scanDir` error message omitted filename | Changed to include `{fname} in {dpath}` in `state.py:95` |
-| `Event.icsUID()` used non-deterministic `hash(getDict())` | Uses `self.uuid` when available, falling back to old method for legacy events |
-
----
-
-## 6. Recommendations (Priority Order)
+## 4. Recommendations (Priority Order)
 
 1. **Add a proper test suite** (#1) — convert `typing_test.py` and add pytest-based tests
 2. **Remove dead code** (#2, #4) — `WeekOccurData`, `MonthOccurData`, commented-out blocks

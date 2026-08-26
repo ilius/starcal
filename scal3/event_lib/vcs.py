@@ -52,6 +52,13 @@ __all__ = ["VcsCommitEventGroup", "VcsTagEventGroup"]
 
 # @classes.event.register  # FIXME
 class VcsCommitEvent(VcsEpochBaseEvent):
+	"""
+	Virtual event representing a VCS commit.
+
+	Not registered with @classes.event.register because these events are
+	created dynamically by VCS event groups, not by users via the GUI.
+	"""
+
 	name = "vcs"
 	desc = _("VCS Commit")
 	params = VcsEpochBaseEvent.params + [
@@ -73,6 +80,13 @@ class VcsCommitEvent(VcsEpochBaseEvent):
 
 
 class VcsTagEvent(VcsEpochBaseEvent):
+	"""
+	Virtual event representing a VCS tag.
+
+	Not registered with @classes.event.register because these events are
+	created dynamically by VCS event groups, not by users via the GUI.
+	"""
+
 	name = "vcsTag"
 	desc = _("VCS Tag")
 	# params = VcsEpochBaseEvent.params +
