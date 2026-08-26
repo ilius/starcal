@@ -93,10 +93,11 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		super().__init__(ident, parent)
 
 	def setDict(self, data: dict[str, Any]) -> None:
-		super().setDict(data)
-		if "duration" in data:
-			data["end"] = data["duration"]
-			data["endRel"] = True
+		newData = dict(data)
+		if "duration" in newData:
+			newData["end"] = newData["duration"]
+			newData["endRel"] = True
+		super().setDict(newData)
 
 	def getRulesHash(self) -> int:
 		return hash(
