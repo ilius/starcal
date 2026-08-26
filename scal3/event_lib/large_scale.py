@@ -51,7 +51,9 @@ __all__ = ["LargeScaleEvent", "LargeScaleGroup"]
 
 
 @classes.event.register
-class LargeScaleEvent(Event):  # or MegaEvent? FIXME
+class LargeScaleEvent(Event):
+	"""Event spanning a large time scale (years, centuries, or millennia)."""
+
 	name = "largeScale"
 	desc = _("Large Scale Event")
 	isSingleOccur = True
@@ -70,6 +72,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 	isAllDay = True
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		data.update(
 			{
@@ -93,6 +96,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		super().__init__(ident, parent)
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Load event properties from a dictionary."""
 		newData = dict(data)
 		if "duration" in newData:
 			newData["end"] = newData["duration"]
@@ -100,6 +104,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		super().setDict(newData)
 
 	def getRulesHash(self) -> int:
+		"""Return a hash of the event's recurrence rules."""
 		return hash(
 			str(
 				(
@@ -115,9 +120,11 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		# hash(str(tupleObj)) is probably safer than hash(tupleObj)
 
 	def getEnd(self) -> int:
+		"""Return the absolute end value."""
 		return self.start + self.end if self.endRel else self.end
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default values, optionally inheriting from a group."""
 		super().setDefaults(group=group)
 		if group and group.name == "largeScale":
 			if TYPE_CHECKING:
@@ -126,6 +133,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 			self.start = group.getStartValue()
 
 	def getJd(self) -> int:
+		"""Return the Julian Day for the event's start value."""
 		return to_jd(
 			self.start * self.scale,
 			1,
@@ -134,9 +142,11 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 		)
 
 	def setJd(self, jd: int) -> None:
+		"""Set the event's start value from a Julian Day."""
 		self.start = jd_to(jd, self.calType)[0] // self.scale
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Calculate occurrence intervals within the given Julian Day range."""
 		myStartJd = iceil(
 			to_jd(
 				int(self.scale * self.start),
@@ -170,6 +180,8 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 
 @classes.group.register
 class LargeScaleGroup(EventGroup):
+	"""Group for organizing large-scale events."""
+
 	name = "largeScale"
 	desc = _("Large Scale Events Group")
 	acceptsEventTypes: Sequence[str] = ("largeScale",)
@@ -181,6 +193,7 @@ class LargeScaleGroup(EventGroup):
 	sortByDefault = "start"
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for the given attribute."""
 		if event.name == "largeScale":
 			assert isinstance(event, LargeScaleEvent), f"{event=}"
 			if attr == "start":
@@ -194,6 +207,7 @@ class LargeScaleGroup(EventGroup):
 		super().__init__(ident)
 
 	def setDefaults(self) -> None:
+		"""Set default group properties."""
 		self.startJd = 0
 		self.endJd = self.startJd + self.scale * 9999
 		# only show in time line
@@ -203,22 +217,27 @@ class LargeScaleGroup(EventGroup):
 		self.showInStatusIcon = False
 
 	def getDict(self) -> dict[str, Any]:
+		"""Return a dictionary representation of the group."""
 		data = EventGroup.getDict(self)
 		data["scale"] = self.scale
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Load group properties from a dictionary."""
 		super().setDict(data)
 		with suppress(KeyError):
 			self.scale = data["scale"]
 
 	def getStartValue(self) -> int:
+		"""Return the start value in scaled units."""
 		return int(jd_to(self.startJd, self.calType)[0] // self.scale)
 
 	def getEndValue(self) -> int:
+		"""Return the end value in scaled units."""
 		return int(jd_to(self.endJd, self.calType)[0] // self.scale)
 
 	def setStartValue(self, start: float) -> None:
+		"""Set the start value from scaled units."""
 		self.startJd = int(
 			to_jd(
 				int(start * self.scale),
@@ -229,6 +248,7 @@ class LargeScaleGroup(EventGroup):
 		)
 
 	def setEndValue(self, end: float) -> None:
+		"""Set the end value from scaled units."""
 		self.endJd = int(
 			to_jd(
 				int(end * self.scale),

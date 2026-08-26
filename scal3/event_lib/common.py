@@ -25,6 +25,7 @@ tr: Callable[[str], str] = str
 
 
 def setTranslator(translator: Callable[[str], str]) -> None:
+	"""Set the translation function used for weekday names and other strings."""
 	global tr, weekDayName
 	tr = translator
 	weekDayName = (
@@ -60,6 +61,7 @@ firstWeekDay: Final[Option[int]] = Option(0)
 
 
 def getCurrentJd() -> int:
+	"""Return the Julian day number for the current date."""
 	return datetime.now().toordinal() + 1721425
 
 
@@ -78,6 +80,7 @@ def compressLongInt(num: int) -> str:
 
 
 def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
+	"""Return a short encoded string representing the current time."""
 	return compressLongInt(
 		int(
 			now() % (maxDays * 86400) / minSec,
@@ -91,4 +94,5 @@ def getWeekDateFromJd(jd: int) -> tuple[int, int]:
 
 
 def getAbsWeekNumberFromJd(jd: int) -> int:
+	"""Return the absolute week number for a given Julian day."""
 	return getWeekDateFromJd(jd)[0]

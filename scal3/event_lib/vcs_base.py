@@ -67,6 +67,8 @@ _vcsModuleByName: dict[str, Callable[[], Any]] = {
 
 
 class VcsBaseEventGroup(EventGroup):
+	"""Base group for events sourced from a version control system."""
+
 	acceptsEventTypes: Sequence[str] = ()
 	myParams: list[str] = [
 		"vcsType",
@@ -90,10 +92,12 @@ class VcsBaseEventGroup(EventGroup):
 		)
 
 	def setDefaults(self) -> None:
+		"""Set default group properties."""
 		self.eventTextSep = "\n"
 		self.showInTimeLine = False
 
 	def getRulesHash(self) -> int:
+		"""Return a hash of the group's configuration rules."""
 		return hash(
 			str(
 				(
@@ -116,6 +120,7 @@ class VcsBaseEventGroup(EventGroup):
 	# 	return self.getEvent(key)
 
 	def getVcsModule(self) -> Any:
+		"""Return the VCS module (git or hg) for this group."""
 		name = toStr(self.vcsType)
 		# if not isinstance(name, str):
 		# 	raise TypeError(f"getVcsModule({name!r}): bad type {type(name)}")
@@ -129,6 +134,7 @@ class VcsBaseEventGroup(EventGroup):
 		return mod
 
 	def updateVcsModuleObj(self) -> None:
+		"""Initialize or clear the VCS module object for this group."""
 		mod = self.getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
@@ -150,6 +156,8 @@ class VcsBaseEventGroup(EventGroup):
 
 
 class VcsEpochBaseEventGroup(VcsBaseEventGroup):
+	"""Base group for VCS events identified by epoch timestamps."""
+
 	myParams = VcsBaseEventGroup.myParams + ["showSeconds"]
 	canConvertTo: list[str] = VcsBaseEventGroup.canConvertTo + ["taskList"]
 
@@ -159,10 +167,12 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		super().__init__(ident)
 
 	def clear(self) -> None:
+		"""Clear all occurrences and VCS IDs."""
 		super().clear()
 		self.vcsIds = []
 
 	def addOccur(self, t0: float, t1: float, eid: int) -> None:
+		"""Add an occurrence and track its VCS ID."""
 		super().addOccur(t0, t1, eid)
 		self.vcsIds.append(eid)
 
@@ -180,6 +190,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		)
 
 	def deepConvertTo(self, newGroupType: str) -> EventGroupType:
+		"""Convert this group to another type, creating events from VCS data."""
 		newGroup = self.copyAs(newGroupType)
 		if newGroupType == "taskList":
 			newGroup.enable = False  # to prevent per-event node update
@@ -200,6 +211,8 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 
 
 class VcsEpochBaseEvent(Event):
+	"""Base event for VCS commits/tags identified by an epoch timestamp."""
+
 	readOnly = True
 	params = Event.params + ["epoch"]
 	epoch: int | None = None

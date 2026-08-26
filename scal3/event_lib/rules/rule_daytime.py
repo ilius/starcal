@@ -48,6 +48,8 @@ from scal3.event_lib.common import dayLen
 
 @classes.rule.register
 class DayTimeEventRule(EventRule):  # Moment Event
+	"""Rule that specifies a single time of day, recurring daily at that moment."""
+
 	name = "dayTime"
 	desc = _("Time in Day")
 	provide: Sequence[str] = ("time",)
@@ -97,6 +99,8 @@ class DayTimeEventRule(EventRule):  # Moment Event
 
 @classes.rule.register
 class DayTimeRangeEventRule(EventRule):
+	"""Rule that specifies a time range within each day (e.g. 09:00 to 17:00)."""
+
 	name = "dayTimeRange"
 	desc = _("Day Time Range")
 	conflict: Sequence[str] = (
@@ -128,16 +132,19 @@ class DayTimeRangeEventRule(EventRule):
 		start: tuple[int, int, int],
 		end: tuple[int, int, int],
 	) -> None:
+		"""Set the start and end time of the daily range."""
 		self.dayTimeStart = start
 		self.dayTimeEnd = end
 
 	def getHourRange(self) -> tuple[float, float]:
+		"""Return the start and end times as fractional hours."""
 		return (
 			timeToFloatHour(*self.dayTimeStart),
 			timeToFloatHour(*self.dayTimeEnd),
 		)
 
 	def getSecondsRange(self) -> tuple[int, int]:
+		"""Return the start and end times as seconds since midnight."""
 		return (
 			getSecondsFromHms(*self.dayTimeStart),
 			getSecondsFromHms(*self.dayTimeEnd),

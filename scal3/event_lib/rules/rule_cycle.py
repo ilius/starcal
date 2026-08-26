@@ -49,6 +49,7 @@ def cycleDaysCalcOccurrence(
 	endJd: int,
 	event: EventType,
 ) -> OccurSetType:
+	"""Calculate occurrences repeating every N days, aligned to the event start date."""
 	eStartJd = event.getStartJd()
 	if startJd <= eStartJd:
 		startJd = eStartJd
@@ -67,6 +68,8 @@ def cycleDaysCalcOccurrence(
 
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
+	"""Rule for events that repeat every N days."""
+
 	name = "cycleDays"
 	desc = _("Cycle (Days)")
 	need: Sequence[str] = ("start",)
@@ -108,6 +111,8 @@ class CycleDaysEventRule(EventRule):
 
 @classes.rule.register
 class CycleWeeksEventRule(EventRule):
+	"""Rule for events that repeat every N weeks."""
+
 	name = "cycleWeeks"
 	desc = _("Cycle (Weeks)")
 	need: Sequence[str] = ("start",)
@@ -154,6 +159,8 @@ class CycleWeeksEventRule(EventRule):
 
 @classes.rule.register
 class CycleLenEventRule(EventRule):
+	"""Rule for events that repeat every N days plus extra time."""
+
 	name = "cycleLen"  # or "cycle" FIXME
 	desc = _("Cycle (Days & Time)")
 	provide: Sequence[str] = ("time",)

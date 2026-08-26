@@ -39,6 +39,8 @@ __all__ = ["HistoryEventObjBinaryModel", "iterObjectFiles"]
 
 
 class HistoryEventObjBinaryModel(SObjBinaryModel):
+	"""Binary model base class that supports UUID generation and read-only mode."""
+
 	uuid: str | None
 
 	def set_uuid(self) -> None:
@@ -50,6 +52,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 		self,
 		*args: Any,
 	) -> tuple[int, str] | None:
+		"""Save this object, auto-generating a UUID if needed."""
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return None
@@ -59,6 +62,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 
 
 def iterObjectFiles(fs: FileSystem) -> Iterable[tuple[str, str]]:
+	"""Iterate over (hash, filepath) pairs for all valid object files in the store."""
 	for dname in fs.listdir(objectDirName):
 		dpath = join(objectDirName, dname)
 		if not fs.isdir(dpath):

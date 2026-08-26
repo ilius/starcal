@@ -47,6 +47,8 @@ keyFuncIndex0 = operator.itemgetter(0)
 
 
 class DayOccurData(NamedTuple):
+	"""A single event occurrence within a day calendar view."""
+
 	time: str  # time descriptive string
 	time_epoch: tuple[int, int]
 	is_allday: bool
@@ -59,6 +61,8 @@ class DayOccurData(NamedTuple):
 
 
 class WeekOccurData(NamedTuple):
+	"""A single event occurrence within a week calendar view."""
+
 	weekDay: int
 	time: str
 	text: str
@@ -67,6 +71,8 @@ class WeekOccurData(NamedTuple):
 
 
 class MonthOccurData(NamedTuple):
+	"""A single event occurrence within a month calendar view."""
+
 	day: int
 	time: str
 	text: str
@@ -79,6 +85,7 @@ def getDayOccurrenceData(
 	groups: Iterable[EventGroupType],
 	tfmt: str = "HM$",
 ) -> list[DayOccurData]:
+	"""Collect and sort all event occurrences for a given Julian day."""
 	data = []
 	for groupIndex, group in enumerate(groups):
 		if not group.enable:

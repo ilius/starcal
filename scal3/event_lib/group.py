@@ -87,6 +87,8 @@ def listToDict(value: Any) -> dict[Any, Any]:
 @classes.group.register
 @classes.group.setMain
 class EventGroup(EventContainer):
+	"""Container for a collection of events with occurrence tracking and caching."""
+
 	name = "group"
 	nameAlias = ""
 	tname = ""
@@ -298,6 +300,7 @@ class EventGroup(EventContainer):
 		self.clearRemoteAttrs()
 
 	def resetCache(self) -> None:
+		"""Recreate the event LRU cache with the current cache size setting."""
 		if self.eventCacheSize < 1:
 			self.eventCache = None
 			return
@@ -308,6 +311,7 @@ class EventGroup(EventContainer):
 			self.eventCache.clear()
 
 	def setRandomColor(self) -> None:
+		"""Assign a random HSL-based RGB color to this group."""
 		import random
 
 		from scal3.color_utils import hslToRgb
@@ -316,6 +320,7 @@ class EventGroup(EventContainer):
 		self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)  # noqa: S311
 
 	def clearRemoteAttrs(self) -> None:
+		"""Reset all remote synchronization attributes to their defaults."""
 		# self.remoteIds is (accountId: int, remoteGroupId: str) or None
 		self.remoteIds: tuple[int, str] | None = None
 		# remote groupId can be an integer or string,
@@ -335,6 +340,7 @@ class EventGroup(EventContainer):
 		return state.allReadOnly or self.__readOnly
 
 	def save(self) -> None:
+		"""Save the group to disk, raising RuntimeError if read-only."""
 		if self.__readOnly:
 			raise RuntimeError("event group is read-only right now")
 		if self.id is None:
@@ -347,6 +353,7 @@ class EventGroup(EventContainer):
 		return value * unit
 
 	def afterSync(self, startEpoch: float | None = None) -> None:
+		"""Record the sync completion time range for the remote group."""
 		assert self.remoteIds is not None
 		endEpoch = now()
 		if startEpoch is None:
@@ -448,6 +455,7 @@ class EventGroup(EventContainer):
 		self.eventCache[event.id] = event
 
 	def getEvent(self, ident: int) -> EventType:
+		"""Retrieve an event by ID, using the cache when available."""
 		if ident not in self.idList:
 			raise ValueError(f"{self} does not contain {ident!r}")
 		if self.eventCache:
@@ -461,6 +469,7 @@ class EventGroup(EventContainer):
 		return event
 
 	def create(self, eventType: str) -> EventType:
+		"""Create a new event of the given type in this group."""
 		# if not eventType in self.acceptsEventTypes: # FIXME
 		# 	raise ValueError(
 		# 		f"Event type '{eventType}' not supported "
@@ -474,6 +483,7 @@ class EventGroup(EventContainer):
 
 	# call when moving to trash
 	def remove(self, event: EventType) -> int:
+		"""Remove an event from the group and update occurrence data."""
 		assert event.id is not None
 		index = EventContainer.remove(self, event)
 		self.removeFromCache(event.id)
@@ -495,6 +505,7 @@ class EventGroup(EventContainer):
 
 	# clearEvents or excludeAll or removeAll?
 	def removeAll(self) -> None:
+		"""Remove all events from the group and clear occurrence data."""
 		if self.eventCache:
 			for event in self.eventCache.values():
 				event.parent = None  # needed? FIXME
@@ -506,6 +517,7 @@ class EventGroup(EventContainer):
 		self.occurCount = 0
 
 	def postAdd(self, event: EventType) -> None:
+		"""Finalize adding an event by caching it and updating occurrences."""
 		super().postAdd(event)
 		self.setToCache(event)
 		# if event.remoteIds:
@@ -517,6 +529,7 @@ class EventGroup(EventContainer):
 			self.updateOccurrenceEvent(event)
 
 	def updateCache(self, event: EventType) -> None:
+		"""Update the cached event entry and notify of modification."""
 		if self.eventCache and self.eventCache.get(event.id) is not None:
 			self.setToCache(event)
 		event.afterModify()
@@ -529,6 +542,7 @@ class EventGroup(EventContainer):
 		return newGroup
 
 	def copyAs(self, newGroupType: str) -> EventGroupType:
+		"""Create an empty group of the given type, copying params."""
 		newGroup: EventGroupType = classes.group.byName[newGroupType]()
 		newGroup.fs = self.fs
 		copyParams(newGroup, self)
@@ -536,6 +550,7 @@ class EventGroup(EventContainer):
 		return newGroup
 
 	def deepCopy(self) -> EventGroupType:
+		"""Create a full copy of this group including all its events."""
 		newGroup = copy(self)
 		for event in self:
 			newEvent = copy(event)
@@ -544,6 +559,7 @@ class EventGroup(EventContainer):
 		return newGroup
 
 	def deepConvertTo(self, newGroupType: str) -> EventGroupType:
+		"""Convert this group to a different type, migrating all events."""
 		newGroup = self.copyAs(newGroupType)
 		newEventType = newGroup.acceptsEventTypes[0]
 		newGroup.enable = False  # to prevent per-event node update
@@ -560,6 +576,7 @@ class EventGroup(EventContainer):
 		return newGroup
 
 	def calcGroupOccurrences(self) -> Iterator[tuple[EventType, OccurSetType]]:
+		"""Yield each event with its occurrences within the group's time range."""
 		startJd = self.startJd
 		endJd = self.endJd
 		for event in self:
@@ -577,6 +594,7 @@ class EventGroup(EventContainer):
 			self.clearCache()
 
 	def updateOccurrenceEvent(self, event: EventType) -> None:
+		"""Update the occurrence tree entries for a single event."""
 		log.debug(
 			f"updateOccurrenceEvent: id={self.id} title={self.title} eid={event.id}",
 		)
@@ -626,6 +644,7 @@ class EventGroup(EventContainer):
 		)
 
 	def updateOccurrence(self) -> None:
+		"""Rebuild the entire occurrence search tree for all events in this group."""
 		stm0 = perf_counter()
 		self.clear()
 
@@ -653,11 +672,13 @@ class EventGroup(EventContainer):
 		# )
 
 	def exportToIcsFp(self, fp: IO[str]) -> None:
+		"""Write all events in this group to an ICS file object."""
 		currentTimeStamp = ics.getIcsTimeByEpoch(now())
 		for event in self:
 			exportEventToIcsFileObj(fp, event, currentTimeStamp)
 
 	def exportData(self) -> dict[str, Any]:
+		"""Export the group and all its events as a serializable dictionary."""
 		data = self.getDict()
 		for attr in self.importExportExclude:
 			del data[attr]
@@ -681,6 +702,7 @@ class EventGroup(EventContainer):
 		return data
 
 	def loadEventIdByUuid(self) -> dict[str, int]:
+		"""Build and return a mapping from event UUIDs to event IDs."""
 		existingIds = set(self.idByUuid.values())
 		for eid in self.idList:
 			if eid in existingIds:
@@ -692,6 +714,7 @@ class EventGroup(EventContainer):
 		return self.idByUuid
 
 	def appendByData(self, eventData: dict[str, Any]) -> EventType:
+		"""Create, configure, and append a new event from its dictionary data."""
 		event = self.create(eventData["type"])
 		event.setDict(eventData)
 		event.save()
@@ -773,6 +796,7 @@ class EventGroup(EventContainer):
 			yield item.eid
 
 	def search(self, conds: EventSearchConditionDict) -> Iterator[EventType]:
+		"""Yield events matching the given search conditions."""
 		conds = conds.copy()  # because we may modify it
 
 		for eid in self._searchTimeFilter(conds):

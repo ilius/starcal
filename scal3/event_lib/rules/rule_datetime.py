@@ -43,6 +43,8 @@ __all__ = ["DateAndTimeEventRule", "EndEventRule", "StartEventRule"]
 
 
 class DateAndTimeEventRule(DateEventRule):
+	"""Rule that specifies both a date and a time of day for an event."""
+
 	sgroup = 1
 	params = [
 		"date",
@@ -67,6 +69,7 @@ class DateAndTimeEventRule(DateEventRule):
 		)
 
 	def setEpoch(self, epoch: int) -> None:
+		"""Set the date and time from an epoch timestamp."""
 		jd, hms = self.parent.getJhmsFromEpoch(epoch)
 		self.setJd(jd)
 		self.time = hms.tuple()
@@ -130,6 +133,8 @@ class DateAndTimeEventRule(DateEventRule):
 
 @classes.rule.register
 class StartEventRule(DateAndTimeEventRule):
+	"""Rule that marks the start date and time of an event."""
+
 	name = "start"
 	desc = _("Start")
 	conflict: Sequence[str] = ("date",)
@@ -150,6 +155,8 @@ class StartEventRule(DateAndTimeEventRule):
 
 @classes.rule.register
 class EndEventRule(DateAndTimeEventRule):
+	"""Rule that marks the end date and time of an event."""
+
 	name = "end"
 	desc = _("End")
 	conflict: Sequence[str] = (

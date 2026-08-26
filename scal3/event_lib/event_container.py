@@ -57,6 +57,8 @@ class DummyEventGroupsHolder(Protocol):
 
 
 class DummyEventContainer:
+	"""Virtual container that provides access to events across multiple groups."""
+
 	def __init__(
 		self,
 		groups: DummyEventGroupsHolder,
@@ -93,6 +95,8 @@ smallest = Smallest()
 
 
 class EventContainer(HistoryEventObjBinaryModel, WithIcon):
+	"""Base class for groups and trash that hold a list of events."""
+
 	WidgetClass: Any
 	name = ""
 	tname = ""
@@ -145,11 +149,13 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		)
 
 	def getTimeZoneStr(self) -> str:
+		"""Return the time zone string if enabled and set, else empty string."""
 		if self.timeZoneEnable and self.timeZone:
 			return self.timeZone
 		return ""
 
 	def byIndex(self, index: int) -> EventType:
+		"""Return the event at the given positional index in idList."""
 		return self.getEvent(self.idList[index])
 
 	def __str__(self) -> str:
@@ -198,6 +204,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		self.modified = now()
 
 	def getEvent(self, ident: int) -> EventType:
+		"""Return the event with the given ID, raising ValueError if not found."""
 		if ident not in self.idList:
 			raise ValueError(f"{self} does not contain {ident!r}")
 		return self._getEvent(ident)
@@ -243,6 +250,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return len(self.idList)
 
 	def preAdd(self, event: EventType) -> None:
+		"""Validate that the event can be added to this container."""
 		if event.id in self.idList:
 			raise ValueError(f"{self} already contains {event}")
 		if event.parent not in {None, self}:
@@ -254,18 +262,21 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		event.parent = self  # needed? FIXME
 
 	def insert(self, index: int, event: EventType) -> None:
+		"""Insert an event at the given position in the id list."""
 		assert event.id is not None
 		self.preAdd(event)
 		self.idList.insert(index, event.id)
 		self.postAdd(event)
 
 	def append(self, event: EventType) -> None:
+		"""Append an event to the end of the id list."""
 		assert event.id is not None
 		self.preAdd(event)
 		self.idList.append(event.id)
 		self.postAdd(event)
 
 	def add(self, event: EventType) -> None:
+		"""Add an event, prepending or appending based on addEventsToBeginning."""
 		if self.addEventsToBeginning:
 			self.insert(0, event)
 		else:
@@ -283,9 +294,11 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return self.idList.index(ident)
 
 	def moveUp(self, index: int) -> None:
+		"""Move the event at the given index one position earlier in the list."""
 		self.idList.insert(index - 1, self.idList.pop(index))
 
 	def moveDown(self, index: int) -> None:
+		"""Move the event at the given index one position later in the list."""
 		self.idList.insert(index + 1, self.idList.pop(index))
 
 	def remove(self, event: EventType) -> int:  # call when moving to trash
@@ -301,12 +314,14 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return index
 
 	def getDict(self) -> dict[str, Any]:
+		"""Serialize this container to a dictionary for JSON storage."""
 		data = HistoryEventObjBinaryModel.getDict(self)
 		data["calType"] = calTypes.names[self.calType]
 		iconAbsToRelativelnData(data)
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate from a dictionary, resolving calType name to integer."""
 		super().setDict(data)
 		if "calType" in data:
 			calType = data["calType"]
@@ -337,6 +352,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		raise NotImplementedError
 
 	def getSortBys(self) -> tuple[str, list[tuple[str, str, bool]]]:
+		"""Return the default sort attribute and available sort options."""
 		if not self.enable:
 			return self.sortByDefault, self.sortBys
 
@@ -369,6 +385,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		attr: str = "summary",
 		reverse: bool = False,
 	) -> None:
+		"""Sort the id list by the given attribute."""
 		isTypeDep = True
 		for name, _desc, dep in self.getSortBys()[1]:
 			if name == attr:

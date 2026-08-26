@@ -45,6 +45,8 @@ from scal3.event_lib.common import dayLen
 
 @classes.rule.register
 class DurationEventRule(EventRule):
+	"""Rule that specifies an event's duration relative to its start time."""
+
 	name = "duration"
 	desc = _("Duration")
 	need: Sequence[str] = ("start",)
@@ -98,9 +100,11 @@ class DurationEventRule(EventRule):
 		self.unit: int = 1  # seconds
 
 	def getSeconds(self) -> int:
+		"""Return the total duration in seconds."""
 		return int(self.value * self.unit)
 
 	def setSeconds(self, s: int) -> None:
+		"""Set duration from seconds, choosing the largest fitting unit."""
 		assert isinstance(s, int), f"{s=}"
 		for unit in reversed(self.units):
 			if s % unit == 0:

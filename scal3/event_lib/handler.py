@@ -18,6 +18,8 @@ __all__ = ["Handler"]
 
 
 class Handler:
+	"""Facade providing access to all event subsystems."""
+
 	def __init__(self) -> None:
 		self._fs: FileSystem | None = None
 		self._accounts: EventAccountsHolder | None = None
@@ -26,6 +28,7 @@ class Handler:
 		self._notif: EventNotificationManager | None = None
 
 	def init(self, fs: FileSystem) -> None:
+		"""Initialize all subsystems from the given filesystem backend."""
 		self._fs = fs
 		self._accounts = EventAccountsHolder.load(0, fs=fs)
 		self._groups = EventGroupsHolder.load(0, fs=fs)

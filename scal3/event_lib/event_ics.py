@@ -41,6 +41,7 @@ def exportEventToIcsFileObj(
 	event: EventType,
 	currentTimeStamp: str,
 ) -> None:
+	"""Write a single event as VEVENT entries to the given file object."""
 	# log.debug("exportToIcsFp", event.id)
 
 	commonText = (

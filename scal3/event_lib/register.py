@@ -21,6 +21,8 @@ __all__ = ["classes"]
 
 
 class ClassGroup[T: BaseClassType]:
+	"""Registry that tracks all registered subclasses of a given base type."""
+
 	def __init__(self, tname: str) -> None:
 		self.lst: list[type[T]] = []
 		self.tname = tname
@@ -42,6 +44,7 @@ class ClassGroup[T: BaseClassType]:
 		self,
 		cls: type[T],
 	) -> type[T]:
+		"""Register a class and return it, usable as a decorator."""
 		assert cls.name
 		cls.tname = self.tname
 		self.lst.append(cls)
@@ -57,11 +60,14 @@ class ClassGroup[T: BaseClassType]:
 		self,
 		cls: type[T],
 	) -> type[T]:
+		"""Designate the default implementation class."""
 		self.main = cls
 		return cls
 
 
 class classes:
+	"""Central registry holding all ClassGroup instances for event-related types."""
+
 	# TODO: EventRuleType, EventNotifierType, EventType, EventGroupType, AccountType
 	rule: ClassGroup[EventRuleType] = ClassGroup("rule")
 	notifier: ClassGroup[EventNotifierType] = ClassGroup("notifier")
