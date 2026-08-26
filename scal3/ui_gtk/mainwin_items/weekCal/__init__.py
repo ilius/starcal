@@ -304,10 +304,14 @@ class CalObj(CalBase):
 		assert self.status is not None
 		hit = find_column_at(self.w, self.items, gevent)
 		if hit is None:
-			return False
-		col, x, y = hit
-		if not col.autoButtonPressHandler:
-			return False
+			# Gaps between columns are still part of the calendar row. Consume
+			# them so the press does not bubble up into the window-move handler.
+			x = int(gevent.x)
+			y = int(gevent.y)
+		else:
+			col, x, y = hit
+			if not col.autoButtonPressHandler:
+				return False
 		height = self.w.get_allocation().height
 		if height <= 0:
 			return False

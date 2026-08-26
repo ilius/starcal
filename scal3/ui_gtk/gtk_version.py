@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-GTK_MAJOR = 3
-GTK_VERSION = "3.0"
-GTK_SOURCE_VERSION = "4"
+GTK_MAJOR = 4
+GTK_VERSION = "4.0"
+GTK_SOURCE_VERSION = "5"

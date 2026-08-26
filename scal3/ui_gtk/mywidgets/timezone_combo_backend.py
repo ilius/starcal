@@ -1,11 +1,8 @@
-"""GTK 3 timezone selector implementation."""
+"""GTK 4 timezone selector implementation."""
 
 from __future__ import annotations
 
-from typing import Any
-
 from scal3 import locale_man
-from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
 
@@ -14,37 +11,38 @@ class TimeZoneComboBoxEntry(gtk.Box):
 	def __init__(self) -> None:
 		from mytz.tree import getZoneInfoTree
 
-		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
-		model = gtk.TreeStore(str, bool)
-		self._listStore = model
-		self.c = gtk.ComboBoxText.new_with_entry()
-		pack(self, self.c, 1, 1)
-		self.c.set_model(model)
-		self.c.set_entry_text_column(0)
+		super().__init__(orientation=gtk.Orientation.HORIZONTAL)
+		entry = gtk.Entry()
+		entry.set_text(str(locale_man.localTz))
+		pack(self, entry, 1, 1)
+		self.get_text = entry.get_text
+		self.set_text = entry.set_text
 
-		first_cell = self.c.get_cells()[0]
-		self.c.add_attribute(first_cell, "sensitive", 1)
+		def flatten(data: dict[str, object], prefix: str = "") -> list[str]:
+			result: list[str] = []
+			for key, value in data.items():
+				name = f"{prefix}/{key}" if prefix else key
+				if isinstance(value, dict):
+					result.extend(flatten(value, name))
+				else:
+					result.append(name)
+			return result
 
-		child = self.c.get_child()
-		assert isinstance(child, gtk.Entry), f"{child=}"
-		child.set_text(str(locale_man.localTz))
-		self.get_text = child.get_text
-		self.set_text = child.set_text
+		zone_names = list(
+			dict.fromkeys(
+				[
+					*conf.localTzHist.v,
+					*flatten(getZoneInfoTree()),
+				]
+			),
+		)
+		dropdown = gtk.DropDown.new_from_strings(zone_names)
+		dropdown.set_selected(gtk.INVALID_LIST_POSITION)
 
-		recent_iter = model.append(None, [_("Recent..."), False])
-		for tz_name in conf.localTzHist.v:
-			model.append(recent_iter, [tz_name, True])
-		self.appendOrderedDict(None, getZoneInfoTree())
+		def on_selected(combo: gtk.DropDown, _pspec: object) -> None:
+			selected = combo.get_selected()
+			if selected != gtk.INVALID_LIST_POSITION:
+				entry.set_text(zone_names[selected])
 
-	def appendOrderedDict(
-		self,
-		parent_iter: gtk.TreeIter | None,
-		data: dict[str, Any],
-	) -> None:
-		model = self._listStore
-		for key, value in data.items():
-			if isinstance(value, dict):
-				itr = model.append(parent_iter, [key, False])
-				self.appendOrderedDict(itr, value)
-			else:
-				model.append(parent_iter, [key, True])
+		dropdown.connect("notify::selected", on_selected)
+		pack(self, dropdown)

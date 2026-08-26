@@ -1,4 +1,4 @@
-"""GTK 3 colour conversions."""
+"""GTK 4 colour conversions."""
 
 from __future__ import annotations
 
@@ -15,13 +15,13 @@ def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 	)
 
 
-def rgbToGdkColor(red: int, green: int, blue: int) -> gdk.Color:
-	return gdk.Color(red * 257, green * 257, blue * 257)  # type: ignore[call-arg]
+def rgbToGdkColor(red: int, green: int, blue: int) -> gdk.RGBA:
+	return rgbaToGdkRGBA(red, green, blue)
 
 
 def gdkColorToRgb(color: gdk.RGBA) -> RGB:
 	return RGB(
-		int(color.red * 257),
-		int(color.green * 257),
-		int(color.blue * 257),
+		int(color.red * 255),
+		int(color.green * 255),
+		int(color.blue * 255),
 	)
