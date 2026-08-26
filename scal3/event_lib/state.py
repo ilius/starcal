@@ -92,7 +92,7 @@ class LastIdsWrapper(EventObjTextModel):
 			try:
 				ident = int(idStr)
 			except ValueError:
-				log.error(f"invalid file name: {dpath}")
+				log.error(f"invalid file name: {fname} in {dpath}")
 				continue
 			lastId = max(ident, lastId)
 		return lastId
