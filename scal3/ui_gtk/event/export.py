@@ -119,7 +119,7 @@ class SingleGroupExportDialog(MyDialog):
 			)
 
 	def run(self) -> gtk.ResponseType:
-		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		res: gtk.ResponseType = super().run()
 		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
@@ -252,7 +252,7 @@ class MultiGroupExportDialog(MyDialog):
 				file.write(text)
 
 	def run(self) -> gtk.ResponseType:
-		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		res: gtk.ResponseType = super().run()
 		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()
@@ -364,7 +364,7 @@ class EventListExportDialog(MyDialog):
 			file.write(text)
 
 	def run(self) -> gtk.ResponseType:
-		res: gtk.ResponseType = super().run()  # type: ignore[no-untyped-call]
+		res: gtk.ResponseType = super().run()
 		if res == gtk.ResponseType.OK:
 			self.waitingDo(self.save)
 		self.destroy()

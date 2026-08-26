@@ -187,7 +187,7 @@ class PreferencesAccounts:
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 
 		win = StarCalendarRegisterDialog(transient_for=self.win)
-		win.run()  # type: ignore[no-untyped-call]
+		win.run()
 
 	def onAccountsAddClick(self, _obj: GObject.Object) -> None:
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
