@@ -28,7 +28,7 @@ from gi.repository.PangoCairo import show_layout
 from scal3 import ui
 from scal3.font import Font
 from scal3.ui import conf
-from scal3.ui_gtk import gdk
+from scal3.ui_gtk import connect_draw, gdk
 from scal3.ui_gtk.drawing import (
 	drawOutlineRoundedRect,
 	drawRoundedRect,
@@ -60,7 +60,7 @@ class Column(ColumnBase):
 		self.w: gtk.Widget = self.dr
 		self.w.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
-		self.w.connect("draw", self.onExposeEvent)
+		connect_draw(self.w, self.onExposeEvent)
 		# self.w.connect("button-press-event", self.onButtonPress)
 		# self.w.connect("event", show_event)
 		self.wcal = wcal
@@ -79,28 +79,17 @@ class Column(ColumnBase):
 
 	def onExposeEvent(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: gtk.Widget,
+		cr: ImageContext,
 	) -> None:
 		if ui.disableRedraw:
 			return
 		if self.wcal.status is None:
 			self.wcal.updateStatus()
-		win = self.w.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
 		try:
 			self.drawColumn(cr)
 		except Exception:
 			log.exception("error in drawColumn:")
-		finally:
-			win.end_draw_frame(dctx)
 
 	def drawBg(self, cr: ImageContext) -> None:
 		status = self.wcal.status

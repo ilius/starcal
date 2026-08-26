@@ -47,6 +47,9 @@ from scal3.season import getSeasonNamePercentFromJd
 from scal3.ui.font import getOptionsFont
 from scal3.ui_gtk import (
 	GLibError,
+	WindowEdge,
+	begin_resize_drag,
+	connect_draw,
 	gdk,
 	getScrollValue,
 	gtk,
@@ -155,7 +158,7 @@ class DayCal(CalBase):
 		# ----------------------
 		# self.kTime = 0
 		# ----------------------
-		self.w.connect("draw", self.drawAll)
+		connect_draw(self.w, self.drawAll)
 		self.w.connect("button-press-event", self.onButtonPress)
 		# self.connect("screen-changed", self.screenChanged)
 		self.w.connect("scroll-event", self.scroll)
@@ -336,8 +339,9 @@ class DayCal(CalBase):
 		win = self.getWindow()
 		if not win:
 			return
-		win.begin_resize_drag(
-			gdk.WindowEdge.SOUTH_EAST,
+		begin_resize_drag(
+			win,
+			WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
 			int(gevent.y_root),
@@ -747,20 +751,10 @@ class DayCal(CalBase):
 		cr: ImageContext | None = None,
 		cursor: bool = True,
 	) -> None:
-		win = self.w.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
 		if cr is None:
-			cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr, cursor)
-		finally:
-			win.end_draw_frame(dctx)
+			self.w.queue_draw()
+			return
+		self.drawWithContext(cr, cursor)
 
 	def drawEventIcons(
 		self,

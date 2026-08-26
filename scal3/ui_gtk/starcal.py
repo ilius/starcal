@@ -56,8 +56,14 @@ from scal3 import core, ui
 from scal3.cell import init as initCell
 from scal3.event_lib import ev
 from scal3.ui import conf
-from scal3.ui_gtk import gtk, listener, pixcache
 from scal3.ui_gtk import hijri as hijri_gtk
+from scal3.ui_gtk import (
+	initialize_gtk,
+	listener,
+	pixcache,
+	run_application,
+	should_present_main_window,
+)
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.starcal_import_all import doFullImport
 from scal3.ui_gtk.starcal_mainwin import MainWin
@@ -79,7 +85,7 @@ ui.uiName = "gtk"
 # app_info.COMMAND = sys.argv[0] # OR __file__ # ????????
 
 
-gtk.init_check(sys.argv)  # type: ignore[call-arg]
+initialize_gtk(sys.argv)
 
 # from scal3.os_utils import openUrl
 # clickWebsite = lambda widget, url: openUrl(url)
@@ -152,15 +158,16 @@ def main() -> None:
 	# elif action == "svg":
 	# 	mainWin.export.exportSvg(f"{core.deskDir}/2010-01.svg", [(2010, 1)])
 	# 	sys.exit(0)
-	if action == "show" or not mainWin.sicon:
+	if should_present_main_window(
+		action,
+		mainWin.sicon is not None,
+		conf.showDesktopWidget.v,
+	):
 		mainWin.win.present()
 	if conf.showDesktopWidget.v:
 		mainWin.dayCalWinShow()
-	# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
-	# FIXME: ^
-	# mainWin.app.run(None)
 	signal.signal(signal.SIGINT, mainWin.quitOnSignal)
-	gtk.main()
+	run_application(mainWin.app)
 
 
 if __name__ == "__main__":

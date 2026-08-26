@@ -38,7 +38,16 @@ from scal3.locale_man import tr as _
 from scal3.option import Option
 from scal3.path import confDir, sourceDir, sysConfDir
 from scal3.ui import conf
-from scal3.ui_gtk import gdk, gtk
+from scal3.ui_gtk import (
+	add_style_provider,
+	connect_monitor_changes,
+	gdk,
+	get_monitor,
+	get_monitor_for_window,
+	get_root_window_size,
+	gtk,
+	install_default_icon,
+)
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
@@ -117,13 +126,7 @@ class IntegatedWindowList(CalObjBase):
 		ui.eventUpdateQueue.registerConsumer(self)
 		# ---
 		self.styleProvider = gtk.CssProvider()
-		screen = gdk.Screen.get_default()
-		assert screen is not None
-		gtk.StyleContext.add_provider_for_screen(
-			screen,
-			self.styleProvider,
-			gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-		)
+		add_style_provider(self.styleProvider)
 		# ---
 		self.cssFuncList: list[Callable[[], str]] = []
 		# ---
@@ -295,9 +298,6 @@ def hasLightTheme(widget: gtk.Widget) -> bool:
 def getSettings() -> gtk.Settings:
 	settings = gtk.Settings.get_default()
 	if settings is None:
-		# if gdk.Screen.get_default() is None:
-		# 	raise RuntimeError("There is not default screen")
-		# raise RuntimeError("settings is None")
 		settings = gtk.Settings.get_for_screen(gdk.Screen())
 		assert settings is not None
 	return settings
@@ -329,9 +329,9 @@ if sys.getdefaultencoding() != "utf-8":
 if rtl:
 	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
 
-gtk.Window.set_default_icon_from_file(ui.appIcon)
-
 display = getDisplay()
+
+install_default_icon(ui.appIcon, sourceDir)
 
 settings = getSettings()
 
@@ -497,26 +497,8 @@ loadConf()
 # ------------------------------------------------------------
 
 
-def getMonitor() -> gdk.Monitor:
-	display = gdk.Display.get_default()
-	assert display is not None
-
-	monitor = display.get_monitor_at_point(1, 1)
-	if monitor is not None:
-		log.debug("getMonitor: using get_monitor_at_point")
-		return monitor
-
-	monitor = display.get_primary_monitor()
-	if monitor is not None:
-		log.debug("getMonitor: using get_primary_monitor")
-		return monitor
-
-	monitor = display.get_monitor_at_window(gdk.get_default_root_window())
-	if monitor is not None:
-		log.debug("getMonitor: using get_monitor_at_window")
-		return monitor
-
-	return None
+def getMonitor() -> gdk.Monitor | None:
+	return get_monitor()
 
 
 def getScreenSize() -> tuple[int, int] | None:
@@ -538,12 +520,10 @@ def getWorkAreaSize() -> tuple[int, int] | None:
 
 # ------------------------------
 
-rootWindow = gdk.get_default_root_window()
-
 _screenSize = getScreenSize()
 _workAreaSize = getWorkAreaSize()
 if _screenSize is None:
-	screenW, screenH = rootWindow.get_width(), rootWindow.get_height()
+	screenW, screenH = get_root_window_size()
 else:
 	screenW, screenH = _screenSize
 if _workAreaSize is None:
@@ -567,15 +547,13 @@ else:
 # rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
 
 
-def screenSizeChanged(_screen: gdk.Screen) -> None:
+def screenSizeChanged(*_args: object) -> None:
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return
-	display = gdk.Display.get_default()
-	assert display is not None
-	win = ui.mainWin.w.get_window()
-	assert win is not None
-	monitor = display.get_monitor_at_window(win)
+	monitor = get_monitor_for_window(ui.mainWin.win)
+	if monitor is None:
+		return
 	screenSize = monitor.get_geometry()
 	workAreaSize = monitor.get_workarea()
 	screenW, screenH = screenSize.width, screenSize.height
@@ -584,6 +562,4 @@ def screenSizeChanged(_screen: gdk.Screen) -> None:
 	ui.mainWin.screenSizeChanged(screenSize)
 
 
-screen = gdk.Screen.get_default()
-assert screen is not None
-screen.connect("size-changed", screenSizeChanged)
+connect_monitor_changes(screenSizeChanged)

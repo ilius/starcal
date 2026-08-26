@@ -44,11 +44,17 @@ from scal3.timeline import conf
 from scal3.timeline.funcs import calcTimeLineData
 from scal3.timeline.utils import dayLen, fontFamily
 from scal3.ui_gtk import (
+	CursorType,
 	Menu,
+	WindowEdge,
+	begin_resize_drag,
+	connect_draw,
 	gdk,
 	getScrollValue,
 	gtk,
 	main_context_default,
+	new_cursor,
+	set_widget_cursor,
 	source_remove,
 	timeout_add,
 )
@@ -107,7 +113,7 @@ class TimeLine(CustomizableCalObj):
 			"zoomOut": self.onKeyZoomOut,
 		}
 		# ---
-		self.w.connect("draw", self.onExposeEvent)
+		connect_draw(self.w, self.onExposeEvent)
 		self.w.connect("scroll-event", self.onScroll)
 		self.w.connect("button-press-event", self.onButtonPress)
 		self.w.connect("motion-notify-event", self.motionNotify)
@@ -517,22 +523,10 @@ class TimeLine(CustomizableCalObj):
 
 	def onExposeEvent(
 		self,
-		_widget: gtk.Widget | None = None,
-		_event: gdk.Event | None = None,
+		_widget: gtk.Widget,
+		cr: ImageContext,
 	) -> None:
-		win = self.w.get_window()
-		assert win is not None
-		region = win.get_visible_region()
-		# FIXME: This must be freed with cairo_region_destroy() when you are done.
-		# where is cairo_region_destroy? No region.destroy() method
-		dctx = win.begin_draw_frame(region)
-		if dctx is None:
-			raise RuntimeError("begin_draw_frame returned None")
-		cr = dctx.get_cairo_context()
-		try:
-			self.drawWithContext(cr)
-		finally:
-			win.end_draw_frame(dctx)
+		self.drawWithContext(cr)
 
 	def drawWithContext(self, cr: ImageContext) -> None:
 		# t0 = perf_counter()
@@ -591,8 +585,6 @@ class TimeLine(CustomizableCalObj):
 			assert button.onRelease is not None
 			button.onRelease(gevent)
 			self.pressingButton = None
-		win = self.w.get_window()
-		assert win is not None
 		x = gevent.x
 		y = gevent.y
 		alloc = self.w.get_allocation()
@@ -625,19 +617,15 @@ class TimeLine(CustomizableCalObj):
 				if top == minA:
 					editType = 0
 					t0 = event.getStartEpoch()
-					win.set_cursor(gdk.Cursor.new(gdk.CursorType.FLEUR))
+					set_widget_cursor(self.w, new_cursor(CursorType.FLEUR))
 				elif right == minA:
 					editType = 1
 					t0 = event.getEndEpoch()
-					win.set_cursor(
-						gdk.Cursor.new(gdk.CursorType.RIGHT_SIDE),
-					)
+					set_widget_cursor(self.w, new_cursor(CursorType.RIGHT_SIDE))
 				elif left == minA:
 					editType = -1
 					t0 = event.getStartEpoch()
-					win.set_cursor(
-						gdk.Cursor.new(gdk.CursorType.LEFT_SIDE),
-					)
+					set_widget_cursor(self.w, new_cursor(CursorType.LEFT_SIDE))
 				if editType is not None:
 					self.boxEditing = (editType, event, box, x, t0)
 					self.w.queue_draw()
@@ -723,9 +711,7 @@ class TimeLine(CustomizableCalObj):
 			assert button.onRelease is not None
 			button.onRelease(gevent)
 			self.pressingButton = None
-		win = self.w.get_window()
-		assert win is not None
-		win.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
+		set_widget_cursor(self.w, new_cursor(CursorType.LEFT_PTR))
 		self.w.queue_draw()
 
 	def onConfigChange(self) -> None:
@@ -793,8 +779,9 @@ class TimeLine(CustomizableCalObj):
 	def startResize(self, gevent: gdk.EventButton) -> None:
 		win = self.w.get_parent()
 		assert isinstance(win, gtk.Window), f"{win=}"
-		win.begin_resize_drag(
-			gdk.WindowEdge.SOUTH_EAST,
+		begin_resize_drag(
+			win,
+			WindowEdge.SOUTH_EAST,
 			gevent.button,
 			int(gevent.x_root),
 			int(gevent.y_root),

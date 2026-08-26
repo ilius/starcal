@@ -3,9 +3,10 @@ from __future__ import annotations
 import gi
 
 from scal3.ui_gtk import gdk, gtk
+from scal3.ui_gtk.gtk_version import GTK_SOURCE_VERSION
 from scal3.ui_gtk.utils import buffer_get_text
 
-gi.require_version("GtkSource", "4")
+gi.require_version("GtkSource", GTK_SOURCE_VERSION)
 from typing import TYPE_CHECKING
 
 from gi.repository import GtkSource

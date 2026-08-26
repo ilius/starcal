@@ -6,8 +6,9 @@ import sys
 import gi
 
 from scal3.ui import conf
+from scal3.ui_gtk.gtk_version import GTK_VERSION
 
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gtk", GTK_VERSION)
 
 from gi.repository import Gtk as gtk
 from gi.repository.GLib import idle_add

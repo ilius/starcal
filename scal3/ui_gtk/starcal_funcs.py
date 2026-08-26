@@ -23,7 +23,13 @@ from scal3.cal_types import calTypes
 from scal3.locale_man import rtl  # import scal3.locale_man after core
 from scal3.locale_man import tr as _
 from scal3.ui import conf
-from scal3.ui_gtk import gdk, gtk, timeout_add
+from scal3.ui_gtk import (
+	WindowEdge,
+	begin_resize_drag,
+	event_hits_interactive_child,
+	gtk,
+	timeout_add,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.utils import (
 	get_menu_height,
@@ -36,6 +42,7 @@ from scal3.ui_gtk.utils import (
 if TYPE_CHECKING:
 	from collections.abc import Callable
 
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.cal_obj_base import CustomizableCalObj
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
@@ -241,6 +248,7 @@ def onScreenSizeChange(win: gtk.Window, rect: gdk.Rectangle) -> None:
 def childButtonPress(
 	win: gtk.Window,
 	menuMainCreate: Callable[[], gtk.Menu],
+	widget: gtk.Widget,
 	gevent: gdk.EventButton,
 ) -> bool:
 	b = gevent.button
@@ -249,7 +257,7 @@ def childButtonPress(
 	# x, y = self.w.get_pointer()
 	x, y = int(gevent.x_root), int(gevent.y_root)
 	result = False
-	if b == 1:
+	if b == 1 and not event_hits_interactive_child(widget, gevent):
 		win.begin_move_drag(gevent.button, x, y, gevent.time)
 		result = True
 	elif b == 3:
@@ -278,8 +286,9 @@ def onResizeFromMenu(
 		menuMain.hide()
 	conf.winMaximized.v = False
 	ui.updateFocusTime()
-	win.begin_resize_drag(
-		gdk.WindowEdge.SOUTH_EAST,
+	begin_resize_drag(
+		win,
+		WindowEdge.SOUTH_EAST,
 		gevent.button,
 		int(gevent.x_root),
 		int(gevent.y_root),
@@ -291,6 +300,7 @@ def onResizeFromMenu(
 def onMainButtonPress(
 	win: gtk.Window,
 	menuMainCreate: Callable[[], gtk.Menu],
+	widget: gtk.Widget,
 	gevent: gdk.EventButton,
 ) -> bool:
 	# only for mainVBox for now, not rightPanel
@@ -300,9 +310,7 @@ def onMainButtonPress(
 	if b == 3:
 		menuMain = menuMainCreate()
 		menuMain.popup(None, None, None, None, 3, gevent.time)
-	elif b == 1:
-		# FIXME: used to cause problems with `ConButton`
-		# when using 'pressed' and 'released' signals
+	elif b == 1 and not event_hits_interactive_child(widget, gevent):
 		win.begin_move_drag(
 			gevent.button,
 			int(gevent.x_root),
