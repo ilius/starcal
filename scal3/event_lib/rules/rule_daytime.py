@@ -43,7 +43,7 @@ log = logger.get()
 
 __all__ = ["DayTimeEventRule", "DayTimeRangeEventRule"]
 
-dayLen = 86400
+from scal3.event_lib.common import dayLen
 
 
 @classes.rule.register

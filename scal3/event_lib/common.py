@@ -54,6 +54,8 @@ weekDayNameEnglish: Final[StrTuple7] = (
 )
 weekDayName: StrTuple7 = weekDayNameEnglish
 
+dayLen = 86400
+
 firstWeekDay: Final[Option[int]] = Option(0)
 
 
