@@ -4,7 +4,7 @@
 
 `event_lib` is the core event management library for StarCal. It is used by **82+ files** across the codebase including UI controllers, account sync modules, VCS integrations, and CLI tools.
 
----
+______________________________________________________________________
 
 ## Quick Start
 
@@ -13,20 +13,20 @@ from scal3 import event_lib
 from scal3.filesystem import FileSystem
 
 # Initialize (must be called once at startup)
-event_lib.init(fs)           # fs: FileSystem
+event_lib.init(fs)  # fs: FileSystem
 
 # Access the global handler
 ev = event_lib.ev  # Handler instance
 
 # Access the class registry
-event_lib.classes.event       # Event class registry
-event_lib.classes.group       # Group class registry
-event_lib.classes.rule        # Rule class registry
-event_lib.classes.notifier    # Notifier class registry
-event_lib.classes.account     # Account class registry
+event_lib.classes.event  # Event class registry
+event_lib.classes.group  # Group class registry
+event_lib.classes.rule  # Rule class registry
+event_lib.classes.notifier  # Notifier class registry
+event_lib.classes.account  # Account class registry
 ```
 
----
+______________________________________________________________________
 
 ## Common Import Patterns
 
@@ -38,8 +38,10 @@ Called once at application startup (typically in `scal3/ui/__init__.py`):
 from scal3 import event_lib
 from scal3.filesystem import FileSystem
 
-event_lib.init(fs)           # fs: FileSystem — Creates directories, loads state, scans IDs
-event_lib.ev.init(fs)        # fs: FileSystem — Initializes the handler (loads accounts, groups)
+event_lib.init(fs)  # fs: FileSystem — Creates directories, loads state, scans IDs
+event_lib.ev.init(
+	fs
+)  # fs: FileSystem — Initializes the handler (loads accounts, groups)
 ```
 
 ### 2. Event Types and Class Registry
@@ -50,8 +52,10 @@ Lookup event types by name for UI combo boxes and event creation:
 from scal3 import event_lib
 
 # Iterate all registered event types
-for eventType in event_lib.classes.event.names:  # eventType: str, e.g. "custom", "note", "task"
-    ...
+for (
+	eventType
+) in event_lib.classes.event.names:  # eventType: str, e.g. "custom", "note", "task"
+	...
 
 # Look up event class by name
 event_cls = event_lib.classes.event.byName[eventType]  # -> type[Event]
@@ -69,8 +73,10 @@ from scal3.event_lib.group import EventGroup
 from scal3 import event_lib
 
 # Iterate all registered group types
-for groupType in event_lib.classes.group.names:  # groupType: str, e.g. "group", "noteBook", "taskList"
-    ...
+for groupType in (
+	event_lib.classes.group.names
+):  # groupType: str, e.g. "group", "noteBook", "taskList"
+	...
 
 # Look up group class by name
 group_cls = event_lib.classes.group.byName[groupType]  # -> type[EventGroup]
@@ -104,21 +110,22 @@ Import specific rule classes for UI editors and event construction:
 
 ```python
 from scal3.event_lib.rules import (
-    EventRule,                    # Base rule class
-    StartEventRule, EndEventRule, # Date+time boundaries
-    DateEventRule,                # Date-based
-    DateAndTimeEventRule,         # Date+time based
-    DayTimeEventRule,             # Time within day
-    DayTimeRangeEventRule,        # Time range within day
-    DurationEventRule,            # Duration-based
-    CycleLenEventRule,            # Cycle-based recurrence
-    WeekDayEventRule,             # Day of week
-    WeekMonthEventRule,           # Week within month
-    WeekNumberModeEventRule,      # Week numbering mode
-    MonthEventRule,               # Month matching
-    YearEventRule,                # Year matching
-    DayOfMonthEventRule,          # Day of month
-    ExDatesEventRule,             # Exclusion dates
+	EventRule,  # Base rule class
+	StartEventRule,
+	EndEventRule,  # Date+time boundaries
+	DateEventRule,  # Date-based
+	DateAndTimeEventRule,  # Date+time based
+	DayTimeEventRule,  # Time within day
+	DayTimeRangeEventRule,  # Time range within day
+	DurationEventRule,  # Duration-based
+	CycleLenEventRule,  # Cycle-based recurrence
+	WeekDayEventRule,  # Day of week
+	WeekMonthEventRule,  # Week within month
+	WeekNumberModeEventRule,  # Week numbering mode
+	MonthEventRule,  # Month matching
+	YearEventRule,  # Year matching
+	DayOfMonthEventRule,  # Day of month
+	ExDatesEventRule,  # Exclusion dates
 )
 ```
 
@@ -131,7 +138,9 @@ from scal3.event_lib.occur_data import DayOccurData, getDayOccurrenceData
 from scal3.event_lib.occur import JdOccurSet, IntervalOccurSet, TimeListOccurSet
 
 # Get occurrence data for a day across all groups
-dayData = getDayOccurrenceData(jd, groups)  # jd: int, groups: Iterable[EventGroupType] -> list[DayOccurData]
+dayData = getDayOccurrenceData(
+	jd, groups
+)  # jd: int, groups: Iterable[EventGroupType] -> list[DayOccurData]
 
 # Work with occurrence sets
 occur_set = JdOccurSet({jd1, jd2, jd3})  # set of Julian Day ints
@@ -161,10 +170,11 @@ trash.append(eventId)  # eventId: int
 from scal3.event_lib import Account, classes
 from scal3.event_lib.errors import AccountError
 
+
 # Register a new account type (via decorator)
 @classes.account.register
-class MyAccount(Account):
-    ...
+class MyAccount(Account): ...
+
 
 # Raise account-specific errors
 raise AccountError("sync failed")
@@ -175,15 +185,15 @@ raise AccountError("sync failed")
 ```python
 from scal3.event_lib.vcs_base import VcsBaseEventGroup, VcsEpochBaseEventGroup
 from scal3.event_lib.vcs import (
-    VcsCommitEventGroup,
-    VcsTagEventGroup,
-    VcsDailyStatEventGroup,
+	VcsCommitEventGroup,
+	VcsTagEventGroup,
+	VcsDailyStatEventGroup,
 )
+
 
 # Subclass for new VCS backends
 @classes.group.register
-class MyVcsGroup(VcsBaseEventGroup):
-    ...
+class MyVcsGroup(VcsBaseEventGroup): ...
 ```
 
 ### 10. Notifiers
@@ -191,15 +201,15 @@ class MyVcsGroup(VcsBaseEventGroup):
 ```python
 from scal3.event_lib.notifier_base import EventNotifier
 from scal3.event_lib.notifiers import (
-    AlarmNotifier,
-    FloatingMsgNotifier,
-    WindowMsgNotifier,
-    CommandNotifier,
+	AlarmNotifier,
+	FloatingMsgNotifier,
+	WindowMsgNotifier,
+	CommandNotifier,
 )
 
+
 @classes.notifier.register
-class MyNotifier(EventNotifier):
-    ...
+class MyNotifier(EventNotifier): ...
 ```
 
 ### 11. Specialized Event Types
@@ -213,10 +223,10 @@ from scal3.event_lib.monthly import MonthlyEvent
 from scal3.event_lib.large_scale import LargeScaleGroup, LargeScaleEvent
 from scal3.event_lib.lifetime import LifetimeGroup, LifetimeEvent
 from scal3.event_lib.university import (
-    UniversityTerm,
-    UniversityClassEvent,
-    UniversityExamEvent,
-    WeeklyScheduleItem,
+	UniversityTerm,
+	UniversityClassEvent,
+	UniversityExamEvent,
+	WeeklyScheduleItem,
 )
 ```
 
@@ -224,17 +234,17 @@ from scal3.event_lib.university import (
 
 ```python
 from scal3.event_lib.pytypes import (
-    BaseClassType,
-    EventType,
-    EventGroupType,
-    EventContainerType,
-    EventRuleType,
-    EventNotifierType,
-    AccountType,
-    OccurSetType,
-    RuleContainerType,
-    EventGroupType,
-    EventSearchConditionDict,
+	BaseClassType,
+	EventType,
+	EventGroupType,
+	EventContainerType,
+	EventRuleType,
+	EventNotifierType,
+	AccountType,
+	OccurSetType,
+	RuleContainerType,
+	EventGroupType,
+	EventSearchConditionDict,
 )
 ```
 
@@ -249,14 +259,20 @@ EventRule = api.get("event_lib", "EventRule")
 ```
 
 The available API symbols are defined in `__init__.py:152-160`:
+
 ```python
 __plugin_api_get__ = [
-    "classes", "defaultGroupTypeIndex", "EventRule",
-    "EventNotifier", "Event", "EventGroup", "Account",
+	"classes",
+	"defaultGroupTypeIndex",
+	"EventRule",
+	"EventNotifier",
+	"Event",
+	"EventGroup",
+	"Account",
 ]
 ```
 
----
+______________________________________________________________________
 
 ## Side-Effect Imports
 
@@ -268,21 +284,21 @@ import scal3.event_lib_import_all  # noqa: F401
 
 # The following modules self-register via @decorators at import time:
 from . import (
-    events,        # Registers CustomEvent
-    large_scale,   # Registers LargeScaleEvent/Group
-    lifetime,      # Registers LifetimeEvent/Group
-    monthly,       # Registers MonthlyEvent
-    note,          # Registers NoteBook, DailyNoteEvent
-    notifiers,     # Registers AlarmNotifier, etc.
-    task,          # Registers TaskList, TaskEvent, AllDayTaskEvent
-    university,    # Registers UniversityTerm, UniversityClassEvent, etc.
-    vcs,           # Registers VCS event groups
-    weekly,        # Registers WeeklyEvent
-    yearly,        # Registers YearlyGroup, YearlyEvent
+	events,  # Registers CustomEvent
+	large_scale,  # Registers LargeScaleEvent/Group
+	lifetime,  # Registers LifetimeEvent/Group
+	monthly,  # Registers MonthlyEvent
+	note,  # Registers NoteBook, DailyNoteEvent
+	notifiers,  # Registers AlarmNotifier, etc.
+	task,  # Registers TaskList, TaskEvent, AllDayTaskEvent
+	university,  # Registers UniversityTerm, UniversityClassEvent, etc.
+	vcs,  # Registers VCS event groups
+	weekly,  # Registers WeeklyEvent
+	yearly,  # Registers YearlyGroup, YearlyEvent
 )
 ```
 
----
+______________________________________________________________________
 
 ## Consumer Files by Category
 
@@ -299,7 +315,7 @@ from . import (
 | **Tools** | 2 | `tools/wikipedia-fa-events/`, `tools/kalzium-elements-discovery.py` |
 | **Plugins** | 1 | `plugins/pray_times_files/pray_times.py` |
 
----
+______________________________________________________________________
 
 ## Module Map
 
