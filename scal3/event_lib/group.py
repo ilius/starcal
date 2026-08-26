@@ -41,9 +41,8 @@ from scal3.time_utils import getEpochFromJd
 from . import state
 from .event_container import EventContainer
 from .groups_import import (
-	IMPORT_MODE_APPEND,
-	IMPORT_MODE_OVERRIDE_MODIFIED,
 	EventGroupsImportResult,
+	ImportMode,
 )
 from .register import classes
 
@@ -705,14 +704,14 @@ class EventGroup(EventContainer):
 		importMode: int,
 	) -> EventGroupsImportResult:
 		"""The caller must call group.save() after this."""
-		if not self.dataIsSet or importMode == IMPORT_MODE_OVERRIDE_MODIFIED:
+		if not self.dataIsSet or importMode == ImportMode.OVERRIDE_MODIFIED:
 			self.setDict(data)
 
 		res = EventGroupsImportResult()
 		gid = self.id
 		assert gid is not None
 
-		if importMode == IMPORT_MODE_APPEND:
+		if importMode == ImportMode.APPEND:
 			for eventData in data["events"]:
 				event = self.appendByData(eventData)
 				assert event.id is not None
@@ -738,8 +737,8 @@ class EventGroup(EventContainer):
 				res.newEventIds.add((gid, event.id))
 				continue
 
-			if importMode != IMPORT_MODE_OVERRIDE_MODIFIED:
-				# assumed IMPORT_MODE_SKIP_MODIFIED
+			if importMode != ImportMode.OVERRIDE_MODIFIED:
+				# assumed ImportMode.SKIP_MODIFIED
 				log.debug(f"skipping to override existing uuid={uuid!r}, eid={eid!r}")
 				continue
 

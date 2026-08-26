@@ -21,18 +21,18 @@ from scal3 import logger
 log = logger.get()
 
 __all__ = [
-	"IMPORT_MODE_APPEND",
-	"IMPORT_MODE_OVERRIDE_MODIFIED",
-	"IMPORT_MODE_SKIP_MODIFIED",
 	"EventGroupsImportResult",
+	"ImportMode",
 ]
 
 
-(
-	IMPORT_MODE_APPEND,
-	IMPORT_MODE_SKIP_MODIFIED,
-	IMPORT_MODE_OVERRIDE_MODIFIED,
-) = range(3)
+from enum import IntEnum
+
+
+class ImportMode(IntEnum):
+	APPEND = 0
+	SKIP_MODIFIED = 1
+	OVERRIDE_MODIFIED = 2
 
 
 class EventGroupsImportResult:

@@ -36,8 +36,8 @@ from scal3.s_object import SObjBinaryModel
 from .event_base import eventsDir
 from .group import EventGroup, groupsDir
 from .groups_import import (
-	IMPORT_MODE_SKIP_MODIFIED,
 	EventGroupsImportResult,
+	ImportMode,
 )
 from .holders import ObjectsHolderTextModel
 from .objects import iterObjectFiles
@@ -207,14 +207,14 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 					group = self[gid]
 					res += group.importData(
 						gdata,
-						importMode=IMPORT_MODE_SKIP_MODIFIED,
+						importMode=ImportMode.SKIP_MODIFIED,
 					)
 					continue
 			group = classes.group.byName[gdata["type"]]()
 			group.fs = self.fs
 			group.setId()
 			assert group.id is not None
-			group.importData(gdata, importMode=IMPORT_MODE_SKIP_MODIFIED)
+			group.importData(gdata, importMode=ImportMode.SKIP_MODIFIED)
 			group.save()
 			self.append(group)
 			res.newGroupIds.add(group.id)
