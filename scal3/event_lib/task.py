@@ -59,6 +59,8 @@ from .common import dayLen
 
 @classes.group.register
 class TaskList(EventGroup):
+	"""Group for task events with a configurable default duration."""
+
 	name = "taskList"
 	desc = _("Task List")
 	params = EventGroup.params + ["defaultDuration"]
@@ -74,6 +76,7 @@ class TaskList(EventGroup):
 	sortByDefault = "start"
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for the given attribute."""
 		if event.name in self.acceptsEventTypes:
 			if attr == "start":
 				return event.getStartEpoch()
@@ -86,11 +89,13 @@ class TaskList(EventGroup):
 		self.defaultDuration = (0.0, 1)  # (value, unit)
 
 	def getDict(self) -> dict[str, Any]:
+		"""Return a dictionary representation of the group."""
 		data = EventGroup.getDict(self)
 		data["defaultDuration"] = durationEncode(*self.defaultDuration)
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Load group properties from a dictionary."""
 		super().setDict(data)
 		if "defaultDuration" in data:
 			self.defaultDuration = durationDecode(data["defaultDuration"])
@@ -98,11 +103,8 @@ class TaskList(EventGroup):
 
 @classes.event.register
 class TaskEvent(SingleStartEndEvent):
-	# overwrites getEndEpoch from Event
-	# overwrites setEndEpoch from SingleStartEndEvent
-	# overwrites setJdExact from SingleStartEndEvent
-	# Methods neccessery for modifying event by hand in timeline:
-	#   getStartEpoch, getEndEpoch, modifyStart, modifyEnd, modifyPos
+	"""Timed task with a start time and optional end time or duration."""
+
 	name = "task"
 	desc = _("Task")
 	iconName = "task"
@@ -115,6 +117,7 @@ class TaskEvent(SingleStartEndEvent):
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		duration = DurationEventRule.getFrom(self)
 		if duration is None:
 			durationUnit = 0
@@ -155,6 +158,7 @@ class TaskEvent(SingleStartEndEvent):
 		self._setDefaultDuration(group)
 
 	def setJdExact(self, jd: int) -> None:
+		"""Set the start Julian Day and reset duration to 24 hours."""
 		start = StartEventRule.getFrom(self)
 		assert start is not None
 		start.setJdExact(jd)
@@ -165,6 +169,7 @@ class TaskEvent(SingleStartEndEvent):
 		date: tuple[int, int, int],
 		dayTime: tuple[int, int, int],
 	) -> None:
+		"""Set the start date and time."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise KeyError('rule "start" not found')
@@ -172,6 +177,7 @@ class TaskEvent(SingleStartEndEvent):
 		start.time = dayTime
 
 	def setEndEpochOnly(self, epoch: int) -> None:
+		"""Set the end time by epoch, removing any duration rule."""
 		self.removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
@@ -180,6 +186,7 @@ class TaskEvent(SingleStartEndEvent):
 		endType: str,
 		*values: Any,
 	) -> None:
+		"""Set the end by type ('date', 'epoch', or 'duration')."""
 		if endType == "date":
 			date, time = values
 			self.setEndDateTime(date, time)
@@ -192,6 +199,7 @@ class TaskEvent(SingleStartEndEvent):
 			raise ValueError(f"invalid {endType=}")
 
 	def getStart(self) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
+		"""Return the start as (date, time) tuples."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise KeyError('rule "start" not found')
@@ -203,6 +211,7 @@ class TaskEvent(SingleStartEndEvent):
 		str,
 		tuple[tuple[int, int, int], tuple[int, int, int]] | tuple[float, int],
 	]:
+		"""Return the end as ('date', (date, time)) or ('duration', (value, unit))."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			return ("date", (end.date, end.time))
@@ -212,6 +221,7 @@ class TaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndEpoch(self) -> int:
+		"""Return the end time as an epoch, computing from duration if needed."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			return end.getEpoch()
@@ -224,6 +234,7 @@ class TaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def setEndEpoch(self, epoch: int) -> None:
+		"""Set the end time by epoch, adjusting duration if no end rule exists."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			end.setEpoch(epoch)
@@ -239,6 +250,7 @@ class TaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def modifyPos(self, newStartEpoch: int) -> None:
+		"""Move the task to start at the given epoch, preserving duration."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise KeyError
@@ -248,6 +260,7 @@ class TaskEvent(SingleStartEndEvent):
 		start.setEpoch(newStartEpoch)
 
 	def modifyStart(self, newStartEpoch: int) -> None:
+		"""Change the start time, adjusting duration to preserve the end time."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise KeyError
@@ -257,6 +270,7 @@ class TaskEvent(SingleStartEndEvent):
 		start.setEpoch(newStartEpoch)
 
 	def modifyEnd(self, newEndEpoch: int) -> None:
+		"""Change the end time, adjusting duration if no end rule exists."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			end.setEpoch(newEndEpoch)
@@ -288,6 +302,7 @@ class TaskEvent(SingleStartEndEvent):
 				myStart.time = otherDayTime.dayTime
 
 	def setIcsData(self, data: dict[str, str]) -> bool:
+		"""Import event data from an iCalendar dictionary."""
 		self.setStartEpoch(ics.getEpochByIcsTime(data["DTSTART"]))
 		self.setEndEpoch(ics.getEpochByIcsTime(data["DTEND"]))  # FIXME
 		return True
@@ -295,7 +310,8 @@ class TaskEvent(SingleStartEndEvent):
 
 @classes.event.register
 class AllDayTaskEvent(SingleStartEndEvent):
-	# overwrites getEndEpoch from SingleStartEndEvent
+	"""All-day task spanning one or more full days."""
+
 	name = "allDayTask"
 	desc = _("All-Day Task")
 	iconName = "task"
@@ -308,6 +324,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	isAllDay = True
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		if DurationEventRule.getFrom(self) is None:
 			durationEnable = False
 		else:
@@ -328,10 +345,12 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		start.setJdExact(jd)
 
 	def setStartDate(self, date: tuple[int, int, int]) -> None:
+		"""Set the start date."""
 		start = StartEventRule.addOrGetFrom(self)
 		start.setDate(date)
 
 	def setJdExact(self, jd: int) -> None:
+		"""Set the start Julian Day and duration to one day."""
 		self.setJd(jd)
 		self.setEndDurationDays(1)
 
@@ -346,12 +365,14 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		# 		self.setEndDurationDays(value)
 
 	def setEndDurationDays(self, value: float) -> None:
+		"""Set the end as a duration in days."""
 		self.removeSomeRuleTypes("duration")
 		rule = DurationEventRule.addOrGetFrom(self)
 		rule.value = value
 		rule.unit = dayLen
 
 	def setEnd(self, endType: str, value: tuple[int, int, int] | float) -> None:
+		"""Set the end by type ('date', 'epoch', 'duration', or 'jd')."""
 		if endType == "date":
 			assert isinstance(value, tuple), f"{value=}"
 			self.setEndDateTime(value, (0, 0, 0))
@@ -368,6 +389,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 			raise ValueError(f"invalid {endType=}")
 
 	def getEnd(self) -> tuple[str, tuple[int, int, int] | float]:
+		"""Return the end as ('date', date) or ('duration', days)."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			return ("date", end.date)
@@ -377,6 +399,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndJd(self) -> int:
+		"""Return the end Julian Day, computing from duration if needed."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			# assert isinstance(end.getJd(), int)
@@ -391,6 +414,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndEpoch(self) -> int:
+		"""Return the end time as an epoch."""
 		# if not isinstance(self.getEndJd(), int):
 		# 	raise TypeError(f"{self}.getEndJd() returned non-int: {self.getEndJd()}")
 		return self.getEpochFromJd(self.getEndJd())
@@ -399,6 +423,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	# 	EndEventRule.getFrom(self).setJdExact(jd)
 
 	def setEndJd(self, jd: int) -> None:
+		"""Set the end Julian Day, adjusting duration if no end rule exists."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			end.setJd(jd)
@@ -412,6 +437,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		raise ValueError("no end date neither duration specified for task")
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return iCalendar data for this all-day task."""
 		return [
 			("DTSTART", ics.getIcsDateByJd(self.getJd(), prettyDateTime)),
 			("DTEND", ics.getIcsDateByJd(self.getEndJd(), prettyDateTime)),
@@ -420,6 +446,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		]
 
 	def setIcsData(self, data: dict[str, str]) -> bool:
+		"""Import event data from an iCalendar dictionary."""
 		self.setJd(ics.getJdByIcsDate(data["DTSTART"]))
 		self.setEndJd(ics.getJdByIcsDate(data["DTEND"]))  # FIXME
 		return True

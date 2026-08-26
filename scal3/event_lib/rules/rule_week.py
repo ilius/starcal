@@ -51,6 +51,8 @@ __all__ = ["WeekDayEventRule", "WeekMonthEventRule", "WeekNumberModeEventRule"]
 
 @classes.rule.register
 class WeekNumberModeEventRule(EventRule):
+	"""Restrict occurrences to odd or even weeks from the event start."""
+
 	name = "weekNumMode"
 	desc = _("Week Number")
 	need: Sequence[str] = ("start",)  # FIXME
@@ -130,6 +132,8 @@ class WeekNumberModeEventRule(EventRule):
 
 @classes.rule.register
 class WeekDayEventRule(AllDayEventRule):
+	"""Rule that matches specific days of the week (e.g. Monday, Wednesday)."""
+
 	name = "weekDay"
 	desc = _("Day of Week")
 	conflict: Sequence[str] = (
@@ -184,6 +188,8 @@ class WeekDayEventRule(AllDayEventRule):
 
 @classes.rule.register
 class WeekMonthEventRule(EventRule):
+	"""Match a specific weekday within a month (e.g. last Friday)."""
+
 	name = "weekMonth"
 	desc = _("Week-Month")
 	conflict: Sequence[str] = (

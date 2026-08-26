@@ -44,6 +44,8 @@ accountsDir = join("event", "accounts")
 
 
 class DummyAccount:
+	"""Placeholder account used when the real account class is not yet loaded."""
+
 	loaded = False
 	enable = False
 	params: list[str] = []
@@ -76,6 +78,8 @@ class DummyAccount:
 # Should not be registered, or instantiate directly
 @classes.account.setMain
 class Account(HistoryEventObjBinaryModel):
+	"""Base class for remote calendar accounts, handling sync and group management."""
+
 	WidgetClass: Any
 	loaded = True
 	name = ""
@@ -148,6 +152,7 @@ class Account(HistoryEventObjBinaryModel):
 		super().save()
 
 	def setId(self, ident: int | None = None) -> None:
+		"""Assign an ID to this account, allocating a new one if not provided."""
 		assert state.lastIds is not None
 		with state.lock:
 			if ident is None or ident < 0:
@@ -159,6 +164,7 @@ class Account(HistoryEventObjBinaryModel):
 		self.file = self.getFile(self.id)
 
 	def stop(self) -> None:
+		"""Clear the account's sync status."""
 		self.status = None
 
 	def fetchGroups(self) -> None:

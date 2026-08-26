@@ -54,6 +54,8 @@ __all__ = ["RuleContainer"]
 
 
 class RuleContainer(SObj):
+	"""Container that manages a dictionary of event rules with dependency checking."""
+
 	requiredRules: list[str] = []
 	supportedRules: Sequence[str] | None = None  # None means all rules are supported
 	params: list[str] = [
@@ -69,6 +71,7 @@ class RuleContainer(SObj):
 
 	@staticmethod
 	def copyRulesDict(rulesDict: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
+		"""Return a shallow copy of the rules dictionary."""
 		newRulesOd = {}
 		for ruleName, rule in rulesDict.items():
 			newRulesOd[ruleName] = copy(rule)
@@ -83,6 +86,7 @@ class RuleContainer(SObj):
 		self.calType = 0
 
 	def clearRules(self) -> None:
+		"""Remove all rules from this container."""
 		self.rulesDict: dict[str, EventRuleType] = {}
 
 	def getRule(self, key: str) -> EventRuleType | None:
@@ -92,13 +96,16 @@ class RuleContainer(SObj):
 		self.rulesDict[key] = value
 
 	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
+		"""Yield (ruleName, ruleValue) pairs for all rules."""
 		for rule in self.rulesDict.values():
 			yield rule.name, rule.getRuleValue()
 
 	def getRulesData(self) -> list[tuple[str, Any]]:
+		"""Return all rules as a list of (name, value) tuples."""
 		return list(self.iterRulesData())
 
 	def getRulesHash(self) -> int:
+		"""Return a hash of the time zone and all rules for change detection."""
 		return hash(
 			str(
 				(
@@ -115,6 +122,7 @@ class RuleContainer(SObj):
 		self.rulesDict[rule.name] = rule
 
 	def addNewRule(self, ruleType: str) -> EventRuleType:
+		"""Create a new rule of the given type, attach it, and return it."""
 		# if TYPE_CHECKING:
 		# 	_container: RuleContainerType = self
 		rule = classes.rule.byName[ruleType](self)  # type: ignore[arg-type]
@@ -122,6 +130,7 @@ class RuleContainer(SObj):
 		return rule
 
 	def getAddRule(self, ruleType: str) -> EventRuleType:
+		"""Return an existing rule of the given type, or create and return a new one."""
 		rule = self.getRule(ruleType)
 		if rule is not None:
 			return rule
@@ -143,6 +152,7 @@ class RuleContainer(SObj):
 		return iter(self.rulesDict.values())
 
 	def setRulesData(self, rulesData: list[tuple[str, Any]]) -> None:
+		"""Replace all rules with those from the given serialized data."""
 		self.clearRules()
 		for ruleName, ruleData in rulesData:
 			rule = classes.rule.byName[ruleName](self)  # type: ignore[arg-type]
@@ -150,11 +160,13 @@ class RuleContainer(SObj):
 			self.addRule(rule)
 
 	def addRequirements(self) -> None:
+		"""Add any required rules that are not already present."""
 		for name in self.requiredRules:
 			if name not in self.rulesDict:
 				self.addNewRule(name)
 
 	def checkAndAddRule(self, rule: EventRuleType) -> tuple[bool, str]:
+		"""Validate rule dependencies and add it if valid."""
 		ok, msg = self.checkRulesDependencies(newRule=rule)
 		if ok:
 			self.addRule(rule)
@@ -164,11 +176,13 @@ class RuleContainer(SObj):
 		self,
 		*typesToRemove: str,
 	) -> None:
+		"""Remove rules matching the given type names if present."""
 		for ruleType in typesToRemove:
 			if ruleType in self.rulesDict:
 				del self.rulesDict[ruleType]
 
 	def checkAndRemoveRule(self, rule: EventRuleType) -> tuple[bool, str]:
+		"""Validate that removing a rule won't break dependencies, then remove it."""
 		ok, msg = self.checkRulesDependencies(disabledRule=rule)
 		if ok:
 			self.removeRule(rule)
@@ -179,6 +193,7 @@ class RuleContainer(SObj):
 		newRule: EventRuleType | None = None,
 		disabledRule: EventRuleType | None = None,
 	) -> tuple[bool, str]:
+		"""Check whether rule changes cause conflicts or missing dependencies."""
 		rulesDict = self.rulesDict.copy()
 		if newRule:
 			rulesDict[newRule.name] = newRule
@@ -213,6 +228,7 @@ class RuleContainer(SObj):
 		return (True, "")
 
 	def copyRulesFrom(self, other: RuleContainerType) -> None:
+		"""Copy all supported rules from another container."""
 		for ruleType, rule in other.rulesDict.items():
 			if self.supportedRules is None or ruleType in self.supportedRules:
 				rule2 = self.getAddRule(ruleType)
@@ -223,6 +239,7 @@ class RuleContainer(SObj):
 		other: RuleContainerType,
 		*ruleTypes: str,
 	) -> None:
+		"""Copy only the specified rule types from another container."""
 		assert self.supportedRules is not None
 		for ruleType in ruleTypes:
 			if ruleType not in self.supportedRules:

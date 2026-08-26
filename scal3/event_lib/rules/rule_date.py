@@ -49,6 +49,8 @@ __all__ = ["DateEventRule", "ExDatesEventRule"]
 
 @classes.rule.register
 class DateEventRule(EventRule):
+	"""Rule that matches a single specific calendar date."""
+
 	name = "date"
 	desc = _("Date")
 	need: Sequence[str] = ()
@@ -98,6 +100,7 @@ class DateEventRule(EventRule):
 		return self.getEpochFromJd(self.getJd())
 
 	def setJd(self, jd: int) -> None:
+		"""Set the date from a Julian day number."""
 		self.date = jd_to(jd, self.getCalType())
 
 	def calcOccurrence(
@@ -118,6 +121,8 @@ class DateEventRule(EventRule):
 
 @classes.rule.register
 class ExDatesEventRule(EventRule):
+	"""Rule that excludes specific dates from the event's occurrence set."""
+
 	name = "ex_dates"
 	desc = "[" + _("Exception") + "] " + _("Date")
 	# conflict: Sequence[str] =("date",)  # FIXME

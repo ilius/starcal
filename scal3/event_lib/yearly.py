@@ -58,6 +58,8 @@ icsMinStartYear = 1970
 
 @classes.group.register
 class YearlyGroup(EventGroup):
+	"""Group for events that repeat every year on the same date."""
+
 	name = "yearly"
 	desc = _("Yearly Events Group")
 	acceptsEventTypes: Sequence[str] = ("yearly",)
@@ -71,6 +73,8 @@ class YearlyGroup(EventGroup):
 
 @classes.event.register
 class YearlyEvent(Event):
+	"""Event that repeats every year on a specific month and day."""
+
 	name = "yearly"
 	desc = _("Yearly Event")
 	iconName = "birthday"
@@ -87,6 +91,7 @@ class YearlyEvent(Event):
 	isAllDay = True
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		data.update(
 			{
@@ -103,17 +108,20 @@ class YearlyEvent(Event):
 		return data
 
 	def getMonth(self) -> int | None:
+		"""Return the month number of the yearly occurrence."""
 		rule = MonthEventRule.getFrom(self)
 		if rule is not None:
 			return rule.values[0]
 		return None
 
 	def setMonth(self, month: int) -> MonthEventRule:
+		"""Set the month number of the yearly occurrence."""
 		rule = MonthEventRule.addOrGetFrom(self)
 		rule.setRuleValue(month)
 		return rule
 
 	def getDay(self) -> int | None:
+		"""Return the day of month of the yearly occurrence."""
 		rule = DayOfMonthEventRule.getFrom(self)
 		if rule is None:
 			return None
@@ -126,17 +134,20 @@ class YearlyEvent(Event):
 		return None
 
 	def setDay(self, day: int) -> DayOfMonthEventRule:
+		"""Set the day of month of the yearly occurrence."""
 		rule = DayOfMonthEventRule.addOrGetFrom(self)
 		rule.setRuleValue(day)
 		return rule
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set defaults using the current system date."""
 		super().setDefaults(group=group)
 		_y, m, d = getSysDate(self.calType)
 		self.setMonth(m)
 		self.setDay(d)
 
-	def getJd(self) -> int:  # used only for copyFrom
+	def getJd(self) -> int:
+		"""Return the Julian Day for the event in the current or start year."""
 		assert self.calType is not None
 		startRule = StartEventRule.getFrom(self)
 		if startRule is not None:
@@ -149,7 +160,8 @@ class YearlyEvent(Event):
 		assert day is not None
 		return to_jd(y, month, day, self.calType)
 
-	def setJd(self, jd: int) -> None:  # used only for copyFrom
+	def setJd(self, jd: int) -> None:
+		"""Set the event's month, day, and start year from a Julian Day."""
 		y, m, d = jd_to(jd, self.calType)
 		self.setMonth(m)
 		self.setDay(d)
@@ -157,6 +169,7 @@ class YearlyEvent(Event):
 		start.date = (y, 1, 1)
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Calculate all yearly occurrences within the given Julian Day range."""
 		# startJd and endJd can be float? or they are just int? FIXME
 		calType = self.calType
 		month = self.getMonth()
@@ -183,6 +196,7 @@ class YearlyEvent(Event):
 		return JdOccurSet(jds)
 
 	def getDict(self) -> dict[str, Any]:
+		"""Return a dictionary representation of the event."""
 		data = Event.getDict(self)
 		start = StartEventRule.getFrom(self)
 		if start is not None:
@@ -193,6 +207,7 @@ class YearlyEvent(Event):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Load event properties from a dictionary."""
 		super().setDict(data)
 		try:
 			startYear = int(data["startYear"])
@@ -217,6 +232,7 @@ class YearlyEvent(Event):
 			self.setDay(day)
 
 	def getSuggestedStartYear(self) -> int:
+		"""Return a suggested start year based on the parent group or current date."""
 		if self.parent is None:
 			startJd = getCurrentJd()
 		else:
@@ -224,6 +240,7 @@ class YearlyEvent(Event):
 		return jd_to(startJd, self.calType)[0]
 
 	def getSummary(self) -> str:
+		"""Return the event summary, optionally prefixed with the date."""
 		summary = Event.getSummary(self)
 		if self.parent and self.parent.name == "yearly":
 			if TYPE_CHECKING:
@@ -247,6 +264,7 @@ class YearlyEvent(Event):
 		return summary
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return iCalendar data with a yearly recurrence rule."""
 		if self.calType != GREGORIAN:
 			return None
 		month = self.getMonth()
@@ -275,6 +293,7 @@ class YearlyEvent(Event):
 		]
 
 	def setIcsData(self, data: dict[str, str]) -> bool:
+		"""Import event data from an iCalendar dictionary."""
 		rrule = dict(ics.splitIcsValue(data["RRULE"]))
 		try:
 			month = int(rrule["BYMONTH"])

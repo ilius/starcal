@@ -44,6 +44,8 @@ __all__ = ["DayOfMonthEventRule", "MonthEventRule", "YearEventRule"]
 
 @classes.rule.register
 class YearEventRule(MultiValueAllDayEventRule):
+	"""Rule that matches specific years or year ranges."""
+
 	name = "year"
 	desc = _("Year")
 	params = ["values"]
@@ -62,6 +64,8 @@ class YearEventRule(MultiValueAllDayEventRule):
 		self,
 		newCalType: int,
 	) -> list[int | tuple[int, int]]:
+		"""Convert the stored year values to a different calendar type."""
+
 		def yearConv(year: int) -> int:
 			return convert(year, 7, 1, curCalType, newCalType)[0]
 
@@ -86,6 +90,8 @@ class YearEventRule(MultiValueAllDayEventRule):
 
 @classes.rule.register
 class MonthEventRule(AllDayEventRule):
+	"""Rule that matches specific months of the year."""
+
 	name = "month"
 	desc = _("Month")
 	conflict: Sequence[str] = (
@@ -122,6 +128,8 @@ class MonthEventRule(AllDayEventRule):
 
 @classes.rule.register
 class DayOfMonthEventRule(MultiValueAllDayEventRule):
+	"""Rule that matches specific days of the month, with optional ranges."""
+
 	name = "day"
 	desc = _("Day of Month")
 	params = ["values"]
@@ -139,6 +147,8 @@ class DayOfMonthEventRule(MultiValueAllDayEventRule):
 
 @classes.rule.register
 class ExYearEventRule(YearEventRule):
+	"""Exception rule that excludes specific years from matching."""
+
 	name = "ex_year"
 	desc = "[" + _("Exception") + "] " + _("Year")
 
@@ -148,6 +158,8 @@ class ExYearEventRule(YearEventRule):
 
 @classes.rule.register
 class ExMonthEventRule(MonthEventRule):
+	"""Exception rule that excludes specific months from matching."""
+
 	name = "ex_month"
 	desc = "[" + _("Exception") + "] " + _("Month")
 	conflict: Sequence[str] = (
@@ -162,6 +174,8 @@ class ExMonthEventRule(MonthEventRule):
 
 @classes.rule.register
 class ExDayOfMonthEventRule(DayOfMonthEventRule):
+	"""Exception rule that excludes specific days of the month from matching."""
+
 	name = "ex_day"
 	desc = "[" + _("Exception") + "] " + _("Day of Month")
 

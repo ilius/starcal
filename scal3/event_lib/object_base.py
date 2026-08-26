@@ -31,7 +31,10 @@ __all__ = ["EventObjTextModel"]
 
 
 class EventObjTextModel(SObjTextModel):
+	"""Text-based model that respects the global read-only flag when saving."""
+
 	def save(self) -> None:
+		"""Save this object unless events are in read-only mode."""
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return

@@ -44,6 +44,8 @@ __all__ = ["IntervalOccurSet", "JdOccurSet", "TimeListOccurSet"]
 
 
 class OccurSet(SObj):
+	"""Base class representing the set of times an event occurs."""
+
 	def __init__(self) -> None:
 		self.event: EventType | None = None
 
@@ -67,6 +69,8 @@ class OccurSet(SObj):
 
 
 class JdOccurSet(OccurSet):
+	"""Occurrence set defined by a collection of Julian day numbers."""
+
 	name = "jdSet"
 
 	def __init__(self, jdSet: set[int] | None = None) -> None:
@@ -97,6 +101,7 @@ class JdOccurSet(OccurSet):
 		return max(self.jdSet) + 1
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
+		"""Return a new set containing only times present in both sets."""
 		if isinstance(occur, JdOccurSet):
 			return JdOccurSet(
 				self.jdSet.intersection(occur.jdSet),
@@ -126,6 +131,7 @@ class JdOccurSet(OccurSet):
 		]
 
 	def calcJdRanges(self) -> list[tuple[int, int]]:
+		"""Collapse individual JDs into contiguous (start, end) ranges."""
 		jdList = sorted(self.jdSet)  # jdList is sorted
 		if not jdList:
 			return []
@@ -144,6 +150,8 @@ class JdOccurSet(OccurSet):
 
 
 class IntervalOccurSet(OccurSet):
+	"""Occurrence set defined by a list of (startEpoch, endEpoch) intervals."""
+
 	name = "timeRange"
 
 	def __init__(self, rangeList: list[tuple[int, int]] | None = None) -> None:
@@ -175,6 +183,7 @@ class IntervalOccurSet(OccurSet):
 		return getJdFromEpoch(max(r[1] for r in self.rangeList))
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
+		"""Return a new set containing only times present in both sets."""
 		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			return IntervalOccurSet(
 				intersectionOfTwoIntervalList(
@@ -203,12 +212,15 @@ class IntervalOccurSet(OccurSet):
 
 	@staticmethod
 	def newFromStartEnd(startEpoch: int, endEpoch: int) -> OccurSetType:
+		"""Create a single-interval occurrence set from start and end epochs."""
 		if startEpoch > endEpoch:
 			return IntervalOccurSet([])
 		return IntervalOccurSet([(startEpoch, endEpoch)])
 
 
 class TimeListOccurSet(OccurSet):
+	"""Occurrence set defined by individual epoch timestamps."""
+
 	name = "repeativeTime"
 
 	def __init__(
@@ -232,6 +244,7 @@ class TimeListOccurSet(OccurSet):
 		endEpoch: int,
 		stepSeconds: int,
 	) -> TimeListOccurSet:
+		"""Create a TimeListOccurSet from a fixed-step range."""
 		obj = cls()
 		obj.setRange(startEpoch, endEpoch, stepSeconds)
 		return obj
@@ -256,6 +269,7 @@ class TimeListOccurSet(OccurSet):
 		return getJdFromEpoch(max(self.epochList) + 1)
 
 	def setRange(self, startEpoch: int, endEpoch: int, stepSeconds: int) -> None:
+		"""Populate the epoch list from a fixed-step range."""
 		try:
 			from numpy.multiarray import arange
 		except ImportError:
@@ -267,6 +281,7 @@ class TimeListOccurSet(OccurSet):
 		self.epochList = set(arange(startEpoch, endEpoch, stepSeconds))
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
+		"""Return a new set containing only times present in both sets."""
 		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			otherRanges = sorted(occur.getTimeRangeList())
 			if not otherRanges:

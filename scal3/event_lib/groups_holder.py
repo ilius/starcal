@@ -53,6 +53,8 @@ __all__ = ["EventGroupsHolder"]
 
 
 class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
+	"""Manages all event groups including import, export, and conversion."""
+
 	file = join("event", "group_list.json")
 
 	@classmethod
@@ -74,16 +76,19 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self.trash = trash
 
 	def create(self, groupName: str) -> EventGroupType:
+		"""Create a new group instance of the given type name."""
 		group = classes.group.byName[groupName]()
 		group.fs = self.fs
 		return group
 
 	def delete(self, group: EventGroupType) -> None:
+		"""Delete an empty group from the holder."""
 		assert not group.idList  # FIXME
 		group.parent = None
 		super().delete(group)
 
 	def setList(self, data: list[int]) -> None:
+		"""Load groups from ID list, creating defaults if the list is empty."""
 		self.clear()
 		if data:
 			super().setList(data)
@@ -125,6 +130,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		group: EventGroupType,
 		trash: EventTrash,
 	) -> None:
+		"""Move all events from a group into the trash and delete the group."""
 		if trash.addEventsToBeginning:
 			trash.idList = group.idList + trash.idList
 		else:
@@ -139,6 +145,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		group: EventGroupType,
 		newGroupType: str,
 	) -> EventGroupType:
+		"""Convert a group to a different type, replacing it in the holder."""
 		newGroup = group.deepConvertTo(newGroupType)
 		newGroup.setId(group.id)
 		newGroup.afterModify()
@@ -149,6 +156,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		# and then never use old `group` object
 
 	def exportData(self, gidList: list[int]) -> dict[str, Any]:
+		"""Export multiple groups as a dictionary with app info and group data."""
 		return {
 			"info": OrderedDict(
 				[
@@ -164,6 +172,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		idsList: list[tuple[int, int]],
 		groupTitle: str = "",
 	) -> dict[str, Any]:
+		"""Export events (by group/event ID pairs) as a single-group dict."""
 		eventsData = []
 		for groupId, eventId in idsList:
 			event = self.byId[groupId].getEvent(eventId)
@@ -198,6 +207,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		}
 
 	def importData(self, data: dict[str, Any]) -> EventGroupsImportResult:
+		"""Import groups from a data dict, creating or updating as needed."""
 		res = EventGroupsImportResult()
 		for gdata in data["groups"]:
 			guuid = gdata.get("uuid")
@@ -223,6 +233,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		return res
 
 	def exportToIcs(self, fpath: str, gidList: list[int]) -> None:
+		"""Export the specified groups to an ICS file at the given path."""
 		with self.fs.open(fpath, "w") as fp:
 			fp.write(ics.icsHeader)
 			for gid in gidList:
@@ -230,6 +241,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			fp.write("END:VCALENDAR\n")
 
 	def checkForOrphans(self) -> EventGroup | None:
+		"""Find orphaned events and return them in a new group, or None."""
 		fs = self.fs
 		newGroup = EventGroup()
 		newGroup.fs = fs

@@ -40,6 +40,8 @@ __all__ = ["ObjectsHolderTextModel"]
 
 
 class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
+	"""In-memory container for groups or accounts, backed by a JSON list of IDs."""
+
 	# keeps all objects in memory
 	# only for keeping groups and accounts, not events or rules
 	skipLoadNoFile = True
@@ -50,6 +52,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		ident: int,
 		fs: FileSystem,
 	) -> Self:
+		"""Load the holder and its objects from a JSON ID list file."""
 		fpath = cls.getFile(ident)
 		data: list[int] = []
 		if fs.isfile(fpath):
@@ -65,6 +68,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		return obj
 
 	def save(self) -> None:
+		"""Write the ID list to disk as a JSON file."""
 		if state.allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return
@@ -116,6 +120,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		return self.byId.__setitem__(ident, obj)
 
 	def insert(self, index: int, obj: T) -> None:
+		"""Insert an object at the given position in the ID list."""
 		assert obj.id is not None
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
@@ -123,6 +128,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		self.idList.insert(index, obj.id)
 
 	def append(self, obj: T) -> None:
+		"""Append an object to the end of the ID list."""
 		assert obj.id is not None
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
@@ -130,6 +136,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		self.idList.append(obj.id)
 
 	def delete(self, obj: T) -> None:
+		"""Remove an object from the holder and delete its file from disk."""
 		if obj.id not in self.idList:
 			raise ValueError(f"{self} does not contains id={obj.id}, {obj=}")
 		try:
@@ -162,6 +169,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		raise NotImplementedError
 
 	def setList(self, data: list[int]) -> None:
+		"""Load objects from a list of signed IDs (negative means disabled)."""
 		self.clear()
 		for signed_id in data:
 			if not isinstance(signed_id, int) or signed_id == 0:

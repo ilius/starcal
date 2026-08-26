@@ -39,6 +39,8 @@ __all__ = ["EventRule"]
 # Should not be registered, or instantiate directly
 @classes.rule.setMain
 class EventRule(SObjBase):
+	"""Base class for all event rules that define how events recur or appear."""
+
 	name = ""
 	tname = ""
 	nameAlias = ""
@@ -63,10 +65,12 @@ class EventRule(SObjBase):
 		self.fs = null_fs
 
 	def getRuleValue(self) -> Any:
+		"""Return the rule's value for serialization."""
 		log.warning(f"No implementation for {self.__class__.__name__}.getRuleValue")
 		return None
 
 	def setRuleValue(self, data: Any) -> None:  # noqa: ARG002
+		"""Set the rule's value from serialized data."""
 		log.warning(f"No implementation for {self.__class__.__name__}.setRuleValue")
 
 	def __copy__(self) -> Self:
@@ -79,6 +83,7 @@ class EventRule(SObjBase):
 		return self.parent.calType
 
 	def changeCalType(self, calType: int) -> bool:  # noqa: ARG002, PLR6301
+		"""Convert dates to a new calendar type. Return True if changed."""
 		return True
 
 	def calcOccurrence(
@@ -87,9 +92,11 @@ class EventRule(SObjBase):
 		endJd: int,
 		event: EventType,
 	) -> OccurSetType:
+		"""Calculate the set of occurrences within the given Julian day range."""
 		raise NotImplementedError
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of this rule."""
 		return self.desc + f": {self}"
 
 	def getEpochFromJd(self, jd: int) -> int:
@@ -99,19 +106,23 @@ class EventRule(SObjBase):
 		)
 
 	def getEpoch(self) -> int:
+		"""Return the epoch timestamp for this rule's primary time point."""
 		raise NotImplementedError
 
 	def getJd(self) -> int:
+		"""Return the Julian day number for this rule's date."""
 		raise NotImplementedError
 
 	@classmethod
 	def getFrom(cls, container: RuleContainerType) -> Self | None:
+		"""Return the rule of this type from the container, or None if absent."""
 		rule = container.rulesDict.get(cls.name)
 		assert isinstance(rule, cls | None), f"{rule=}, {cls=}"
 		return rule
 
 	@classmethod
 	def addOrGetFrom(cls, container: RuleContainerType) -> Self:
+		"""Return the rule of this type from the container, creating it if absent."""
 		rule = container.getAddRule(cls.name)
 		assert isinstance(rule, cls), f"{rule=}, {cls=}"
 		return rule

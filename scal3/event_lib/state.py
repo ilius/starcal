@@ -43,6 +43,8 @@ allReadOnly = False
 
 
 class InfoWrapper(EventObjTextModel):
+	"""Persistent wrapper for application version and last-run timestamp."""
+
 	file = join("event", "info.json")
 	skipLoadNoFile = True
 	params = [
@@ -59,15 +61,19 @@ class InfoWrapper(EventObjTextModel):
 		self.last_run = 0
 
 	def update(self) -> None:
+		"""Refresh version and timestamp to current values."""
 		self.version = VERSION
 		self.last_run = int(now())
 
 	def updateAndSave(self) -> None:
+		"""Update values and persist to disk."""
 		self.update()
 		self.save()
 
 
 class LastIdsWrapper(EventObjTextModel):
+	"""Persistent wrapper tracking the highest assigned IDs."""
+
 	skipLoadNoFile = True
 	file = join("event", "last_ids.json")
 	params = [
@@ -92,6 +98,7 @@ class LastIdsWrapper(EventObjTextModel):
 		)
 
 	def scanDir(self, dpath: str) -> int:
+		"""Scan a directory for .json files and return the highest numeric ID found."""
 		lastId = 0
 		for fname in self.fs.listdir(dpath):
 			idStr, ext = splitext(fname)
@@ -106,6 +113,7 @@ class LastIdsWrapper(EventObjTextModel):
 		return lastId
 
 	def scan(self) -> None:
+		"""Scan all entity directories and save the discovered last IDs."""
 		t0 = perf_counter()
 		with lock:
 			self.event = self.scanDir("event/events")

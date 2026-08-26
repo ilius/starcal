@@ -44,6 +44,8 @@ __all__ = ["WeeklyEvent"]
 
 @classes.event.register
 class WeeklyEvent(Event):
+	"""Event that repeats weekly within a cycle period."""
+
 	name = "weekly"
 	desc = _("Weekly Event")
 	iconName = ""
@@ -57,6 +59,7 @@ class WeeklyEvent(Event):
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		assert dayTimeRange is not None
@@ -79,6 +82,7 @@ class WeeklyEvent(Event):
 		return data
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default start to today and end to 60 days later."""
 		super().setDefaults(group=group)
 		jd = getCurrentJd()
 		start = StartEventRule.getFrom(self)

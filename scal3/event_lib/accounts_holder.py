@@ -56,6 +56,8 @@ _accountLoaderByName: dict[str, Callable[[], None]] = {
 
 
 class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
+	"""Manages the collection of remote calendar accounts."""
+
 	file = join("event", "account_list.json")
 
 	@classmethod
@@ -70,6 +72,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 
 	@staticmethod
 	def loadClass(name: str) -> type[AccountType] | None:
+		"""Load and return the account class for the given name."""
 		cls = classes.account.byName.get(name)
 		if cls is not None:
 			return cls
@@ -87,6 +90,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		return None
 
 	def loadData(self, ident: int) -> dict[str, Any] | None:
+		"""Read account data from its JSON file, returning None if not found."""
 		objFile = join(accountsDir, f"{ident}.json")
 		if not self.fs.isfile(objFile):
 			log.error(
@@ -107,6 +111,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 
 	# FIXME: types
 	def getLoadedObj(self, obj: AccountType) -> AccountType | None:
+		"""Replace a dummy account with a fully loaded instance from disk."""
 		ident = obj.id
 		assert ident is not None
 		data = self.loadData(ident)
@@ -121,6 +126,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		return objNew
 
 	def replaceDummyObj(self, obj: AccountType) -> AccountType:
+		"""Load the real account object and replace the dummy in the holder."""
 		ident = obj.id
 		assert ident is not None
 		objNew = self.getLoadedObj(obj)

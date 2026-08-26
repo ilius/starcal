@@ -43,6 +43,8 @@ __all__ = ["DailyNoteEvent", "NoteBook"]
 
 @classes.group.register
 class NoteBook(EventGroup):
+	"""Group for daily note events."""
+
 	name = "noteBook"
 	desc = _("Note Book")
 	acceptsEventTypes: Sequence[str] = ("dailyNote",)
@@ -55,6 +57,7 @@ class NoteBook(EventGroup):
 	sortByDefault = "date"
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for the given attribute."""
 		if event.name in self.acceptsEventTypes and attr == "date":
 			return event.getJd()
 		return EventGroup.getSortByValue(self, event, attr)
@@ -62,6 +65,8 @@ class NoteBook(EventGroup):
 
 @classes.event.register
 class DailyNoteEvent(Event):
+	"""Single-day note attached to a specific date."""
+
 	name = "dailyNote"
 	desc = _("Daily Note")
 	isSingleOccur = True
@@ -71,6 +76,7 @@ class DailyNoteEvent(Event):
 	isAllDay = True
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		data.update(
 			{
@@ -80,24 +86,28 @@ class DailyNoteEvent(Event):
 		return data
 
 	def getDate(self) -> tuple[int, int, int] | None:
+		"""Return the note date as (year, month, day)."""
 		rule = DateEventRule.getFrom(self)
 		if rule is not None:
 			return rule.date
 		return None
 
 	def setDate(self, year: int, month: int, day: int) -> None:
+		"""Set the note date."""
 		rule = DateEventRule.getFrom(self)
 		if rule is None:
 			raise KeyError("no date rule")
 		rule.date = (year, month, day)
 
 	def getJd(self) -> int:
+		"""Return the Julian Day of the note."""
 		rule = DateEventRule.getFrom(self)
 		if rule is not None:
 			return rule.getJd()
 		return self.getStartJd()
 
 	def setJd(self, jd: int) -> None:
+		"""Set the note date from a Julian Day."""
 		rule = DateEventRule.getFrom(self)
 		if rule is None:
 			log.error("DailyNoteEvent: setJd: no date rule")
@@ -105,17 +115,19 @@ class DailyNoteEvent(Event):
 		rule.setJd(jd)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default date to today's system date."""
 		super().setDefaults(group=group)
 		self.setDate(*getSysDate(self.calType))
 
-	# startJd and endJd can be float jd
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Calculate occurrence within the given Julian Day range."""
 		jd = self.getJd()
 		return JdOccurSet(
 			{jd} if startJd <= jd < endJd else set(),
 		)
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return iCalendar data for this note."""
 		jd = self.getJd()
 		return [
 			("DTSTART", ics.getIcsDateByJd(jd, prettyDateTime)),
@@ -125,5 +137,6 @@ class DailyNoteEvent(Event):
 		]
 
 	def setIcsData(self, data: dict[str, str]) -> bool:
+		"""Import event data from an iCalendar dictionary."""
 		self.setJd(ics.getJdByIcsDate(data["DTSTART"]))
 		return True

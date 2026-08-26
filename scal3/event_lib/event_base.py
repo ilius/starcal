@@ -67,6 +67,8 @@ eventsDir = join("event", "events")
 # Should not be registered, or instantiate directly
 @classes.event.setMain
 class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
+	"""Base class representing a single calendar event."""
+
 	name = "custom"  # or "event" or "" FIXME
 	tname = ""
 	nameAlias = ""
@@ -106,10 +108,12 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	@classmethod
 	def getFile(cls, ident: int) -> str:
+		"""Return the file path for the given event ID."""
 		return join(eventsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
+		"""Iterate over all event file paths in the filesystem."""
 		assert state.lastIds is not None
 		for ident in range(1, state.lastIds.event + 1):
 			fpath = cls.getFile(ident)
@@ -119,10 +123,12 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	@classmethod
 	def getSubclass(cls, typeName: str) -> type:
+		"""Return the registered event subclass for the given type name."""
 		return classes.event.byName[typeName]
 
 	@classmethod
 	def getDefaultIcon(cls) -> str:
+		"""Return the default icon path for this event type, or empty string."""
 		return (
 			join(
 				pixDir,
@@ -138,6 +144,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		revHash: str,
 		*args: Any,  # noqa: ARG002
 	) -> Self:
+		"""Return a historical revision of this event by hash."""
 		return SObjBinaryModel.getRevision(self, revHash, self.id or 0)
 
 	def __bool__(self) -> bool:
@@ -150,6 +157,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return f"{self.__class__.__name__}(id={self.id!r}, summary={self.summary!r})"
 
 	def icsUID(self) -> str:
+		"""Generate a unique ICS UID string for this event."""
 		if self.uuid is not None:
 			return self.uuid + "@starcal"
 		import socket
@@ -202,6 +210,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.lastMergeSha1 = None
 
 	def create(self, ruleName: str) -> EventRuleType:
+		"""Create and attach a new rule of the given type to this event."""
 		cont: RuleContainerType = self
 		rule = classes.rule.byName[ruleName](cont)
 		rule.fs = self.fs
@@ -211,6 +220,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		pass
 
 	def getShownDescription(self) -> str:
+		"""Return the first line of description, or full if allowed."""
 		if not self.description:
 			return ""
 		if self.parent is not None:
@@ -222,16 +232,19 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.description.split("\n")[0]
 
 	def afterModify(self) -> None:
+		"""Handle post-modification tasks including timestamping and group updates."""
 		self.afterModifyBasic()
 		# self.parent.eventsModified = self.modified
 		self.afterModifyInGroup()
 
 	def afterModifyBasic(self) -> None:
+		"""Assign an ID if needed and update the modification timestamp."""
 		if self.id is None:
 			self.setId()
 		self.modified = now()  # FIXME
 
 	def afterModifyInGroup(self) -> None:
+		"""Notify the parent group about occurrence changes."""
 		parent = self.parent
 		if not (parent and self.id in parent.idList):
 			self.rulesHash = None
@@ -259,6 +272,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				self.icon = group.icon
 
 	def getInfo(self) -> str:
+		"""Return a multi-line human-readable summary of this event."""
 		module = calTypes[self.calType]
 		if module is None:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
@@ -311,6 +325,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.description
 
 	def getTextParts(self, showDesc: bool = True) -> list[str]:
+		"""Return summary and optional description as a list of text parts."""
 		summary = self.getSummary()
 		# --
 		if self.timeZoneEnable and self.timeZone and mytz.gettz(self.timeZone) is None:
@@ -330,9 +345,11 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return [summary]
 
 	def getText(self, showDesc: bool = True) -> str:
+		"""Return the full display text for this event."""
 		return "".join(self.getTextParts(showDesc))
 
 	def setId(self, ident: int | None = None) -> None:
+		"""Assign a numeric ID to this event, auto-incrementing if None or negative."""
 		assert state.lastIds is not None
 		with state.lock:
 			if ident is None or ident < 0:
@@ -346,6 +363,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.loadFiles()
 
 	def invalidate(self) -> None:
+		"""Invalidate this event so it can no longer be saved to disk."""
 		# make sure it can't be written to file again, it's about to be deleted
 		self.id = None
 		self.file = ""
@@ -366,6 +384,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.addRequirements()
 
 	def copyFrom(self, other: EventType) -> None:
+		"""Copy rules and properties, converting dates if calendar types differ."""
 		self._copyFrom(other)
 		# ----
 		# copy dates between different rule types in different event types
@@ -375,6 +394,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				self.setJd(jd)
 
 	def copyFromExact(self, other: EventType) -> None:
+		"""Copy rules and properties, using exact JD conversion."""
 		self._copyFrom(other)
 		# ----
 		# copy dates between different rule types in different event types
@@ -384,6 +404,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				self.setJdExact(jd)
 
 	def getDict(self) -> dict[str, Any]:
+		"""Serialize this event to a dictionary for JSON storage."""
 		data = HistoryEventObjBinaryModel.getDict(self)
 		data.update(
 			{
@@ -401,11 +422,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		raise NotImplementedError
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate this event from a dictionary, skipping if already set."""
 		if self.dataIsSet:
 			return
 		self.setDictOverride(data)
 
 	def setDictOverride(self, data: dict[str, Any]) -> None:
+		"""Populate this event from a dictionary, clearing existing rules."""
 		HistoryEventObjBinaryModel.setDict(self, data)
 		if self.remoteIds:
 			assert isinstance(self.remoteIds, tuple), f"{self.remoteIds=}"
@@ -434,6 +457,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.iconRelativeToAbsInObj()
 
 	def getNotifiersData(self) -> list[tuple[str, dict[str, Any]]]:
+		"""Return serialized notifier data as a list of (name, data) tuples."""
 		return [(notifier.name, notifier.getDict()) for notifier in self.notifiers]
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
@@ -469,6 +493,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return occur  # FIXME
 
 	def calcEventOccurrence(self) -> OccurSetType:
+		"""Calculate the occurrence set within the parent container's date range."""
 		assert self.parent is not None
 		return self.calcEventOccurrenceIn(self.parent.startJd, self.parent.endJd)
 
@@ -495,6 +520,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.notify(finishFunc)
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
+		"""Trigger all notifiers for this event."""
 		# FIXME: get rid of self.n ??
 		self.n = len(self.notifiers)
 
@@ -541,6 +567,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return False
 
 	def changeCalType(self, calType: int) -> bool:
+		"""Change the calendar type, rolling back if any rule rejects it."""
 		backupRulesOd = RuleContainer.copyRulesDict(self.rulesDict)
 		if calType != self.calType:
 			for rule in self.rulesDict.values():
@@ -554,6 +581,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return True
 
 	def getStartJd(self) -> int:
+		"""Return the Julian day of this event's start, falling back to parent range."""
 		start = StartEventRule.getFrom(self)
 		if start is not None:
 			return start.getJd()
@@ -574,6 +602,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.parent.endJd
 
 	def getStartEpoch(self) -> int:
+		"""Return the epoch timestamp of this event's start."""
 		start = StartEventRule.getFrom(self)
 		if start is not None:
 			return start.getEpoch()
@@ -584,6 +613,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.parent.getStartEpoch()
 
 	def getEndEpoch(self) -> int:
+		"""Return the epoch timestamp of this event's end."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			return end.getEpoch()
@@ -603,6 +633,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.setJd(jd)
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return a v4-format dictionary with summary and display properties."""
 		data = {
 			"summary": self.getSummary(),
 			"description": self.getDescription(),
@@ -615,6 +646,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return data
 
 	def createPatchByHash(self, oldHash: str) -> dict[str, Any]:
+		"""Generate a diff patch between this event and a previous revision."""
 		oldEvent = self.getRevision(oldHash)
 
 		oldData = oldEvent.getV4Dict()
@@ -645,13 +677,17 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 
 class SingleStartEndEvent(Event):
+	"""Event with a single occurrence defined by explicit start and end times."""
+
 	isSingleOccur = True
 
 	def setStartEpoch(self, epoch: int) -> None:
+		"""Set the event start time from an epoch timestamp."""
 		start = StartEventRule.addOrGetFrom(self)
 		start.setEpoch(epoch)
 
 	def setEndEpoch(self, epoch: int) -> None:
+		"""Set the event end time from an epoch timestamp."""
 		end = EndEventRule.addOrGetFrom(self)
 		end.setEpoch(epoch)
 
@@ -668,18 +704,21 @@ class SingleStartEndEvent(Event):
 	def setEndDateTime(
 		self, date: tuple[int, int, int], hms: tuple[int, int, int]
 	) -> None:
+		"""Set the end time from a date and HMS tuple, removing any duration."""
 		self.removeSomeRuleTypes("duration")
 		end = EndEventRule.addOrGetFrom(self)
 		end.date = date
 		end.time = hms
 
 	def setEndDuration(self, value: float, unit: int) -> None:
+		"""Set the event duration, removing any explicit end-time rule."""
 		self.removeSomeRuleTypes("end")
 		duration = DurationEventRule.addOrGetFrom(self)
 		duration.value = value
 		duration.unit = unit
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return ICS-compatible DTSTART, DTEND, TRANSP, and CATEGORIES fields."""
 		return [
 			(
 				"DTSTART",
@@ -700,6 +739,7 @@ class SingleStartEndEvent(Event):
 		]
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Return the occurrence interval clamped to the given JD range."""
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getStartEpoch()),
 			min(self.getEpochFromJd(endJd), self.getEndEpoch()),

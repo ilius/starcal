@@ -1,5 +1,5 @@
 class AccountError(Exception):
-	pass
+	"""Raised when an event account operation fails."""
 
 
 __all__ = ["AccountError"]

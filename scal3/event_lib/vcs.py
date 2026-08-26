@@ -101,6 +101,8 @@ class VcsTagEvent(VcsEpochBaseEvent):
 
 @classes.group.register  # type: ignore[arg-type]
 class VcsCommitEventGroup(VcsEpochBaseEventGroup):
+	"""Group that displays individual VCS commits."""
+
 	name = "vcs"
 	desc = _("VCS Repository (Commits)")
 	_myParams = VcsEpochBaseEventGroup.myParams + [
@@ -118,6 +120,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
+		"""Fetch and store the commit list from the VCS repository."""
 		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
@@ -149,6 +152,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def updateEventDesc(self, event: EventType) -> None:
+		"""Populate the event description with stat, author, and hash info."""
 		assert isinstance(event, VcsCommitEvent), f"{event=}"
 		mod = self.getVcsModule()
 		if mod is None:
@@ -172,6 +176,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self,
 		commitId: str,  # type: ignore[override]
 	) -> EventType:
+		"""Build a full event object for the given commit ID."""
 		mod = self.getVcsModule()
 		if mod is None:
 			raise ValueError(f"VCS module {self.vcsType!r} not found")
@@ -188,6 +193,8 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 
 @classes.group.register  # type: ignore[arg-type]
 class VcsTagEventGroup(VcsEpochBaseEventGroup):
+	"""Group that displays VCS tags."""
+
 	name = "vcsTag"
 	desc = _("VCS Repository (Tags)")
 	params = VcsEpochBaseEventGroup.params + ["showStat"]
@@ -198,6 +205,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		self.showStat = True
 
 	def updateOccurrence(self) -> None:
+		"""Fetch and store the tag list from the VCS repository."""
 		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
@@ -226,6 +234,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def updateEventDesc(self, event: EventType) -> None:
+		"""Populate the event description with stat info."""
 		mod = self.getVcsModule()
 		if mod is None:
 			raise ValueError(f"VCS module {self.vcsType!r} not found")
@@ -248,6 +257,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		self,
 		tag: str,  # type: ignore[override]
 	) -> EventType:
+		"""Build a full event object for the given tag."""
 		tag = toStr(tag)
 		if tag not in self.vcsIds:  # type: ignore[comparison-overlap]
 			raise ValueError(f"No tag {tag!r}")
@@ -261,6 +271,8 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 
 
 class VcsDailyStatEvent(Event):
+	"""Virtual event representing daily VCS commit statistics."""
+
 	name = "vcsDailyStat"
 	desc = _("VCS Daily Stat")
 	readOnly = True
@@ -292,6 +304,7 @@ class VcsDailyStatEvent(Event):
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Calculate occurrence within the given Julian Day range."""
 		jd = self.id
 		if jd is not None and startJd <= jd < endJd:
 			return JdOccurSet({jd})
@@ -300,6 +313,8 @@ class VcsDailyStatEvent(Event):
 
 @classes.group.register  # type: ignore[arg-type]
 class VcsDailyStatEventGroup(VcsBaseEventGroup):
+	"""Group that aggregates VCS commits into daily statistics."""
+
 	name = "vcsDailyStat"
 	desc = _("VCS Repository (Daily Stat)")
 
@@ -309,10 +324,12 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		self.statByJd: dict[int, tuple[int, str]] = {}
 
 	def clear(self) -> None:
+		"""Clear all occurrences and daily statistics."""
 		super().clear()
 		self.statByJd = {}
 
 	def updateOccurrence(self) -> None:
+		"""Fetch commits and aggregate daily statistics from the VCS repository."""
 		stm0 = perf_counter()
 		self.clear()
 		if not self.vcsDir:
@@ -366,6 +383,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
 	def getEvent(self, jd: int) -> EventType:
+		"""Build a daily stat event for the given Julian Day."""
 		# cache commit data FIXME
 		from scal3.vcs_modules import encodeShortStat
 

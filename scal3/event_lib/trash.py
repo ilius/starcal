@@ -42,6 +42,8 @@ __all__ = ["EventTrash"]
 
 
 class EventTrash(EventContainer, WithIcon):
+	"""Container for deleted events, supporting permanent deletion and emptying."""
+
 	name = "trash"
 	desc = _("Trash")
 	file = join("event", "trash.json")
@@ -67,6 +69,7 @@ class EventTrash(EventContainer, WithIcon):
 			self.icon = self.defaultIcon
 
 	def delete(self, eid: int) -> None:
+		"""Permanently delete an event file and remove it from the trash list."""
 		# different from EventContainer.remove
 		# remove() only removes event from this group,
 		# but event file and data still available
@@ -83,6 +86,7 @@ class EventTrash(EventContainer, WithIcon):
 			self.idList.remove(eid)
 
 	def empty(self) -> None:
+		"""Permanently delete all event files and clear the trash."""
 		idList2 = self.idList.copy()
 		for eid in self.idList:
 			try:

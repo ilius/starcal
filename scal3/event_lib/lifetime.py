@@ -49,6 +49,8 @@ __all__ = ["LifetimeEvent", "LifetimeGroup"]
 
 @classes.group.register
 class LifetimeGroup(EventGroup):
+	"""Group for events that span a lifetime period."""
+
 	name = "lifetime"
 	nameAlias = "lifeTime"
 	desc = _("Lifetime Events Group")
@@ -59,6 +61,7 @@ class LifetimeGroup(EventGroup):
 	params = EventGroup.params + ["showSeparateYmdInputs"]
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for the given attribute."""
 		if event.name in self.acceptsEventTypes:
 			if attr == "start":
 				return event.getStartJd()
@@ -71,6 +74,7 @@ class LifetimeGroup(EventGroup):
 		super().__init__(ident)
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Load group properties from a dictionary."""
 		if "showSeperatedYmdInputs" in data:
 			# misspell in < 3.1.x
 			data["showSeparateYmdInputs"] = data["showSeperatedYmdInputs"]
@@ -79,6 +83,7 @@ class LifetimeGroup(EventGroup):
 		super().setDict(data)
 
 	def setDefaults(self) -> None:
+		"""Set default group properties."""
 		# only show in time line
 		self.showInDCal = False
 		self.showInWCal = False
@@ -88,6 +93,8 @@ class LifetimeGroup(EventGroup):
 
 @classes.event.register
 class LifetimeEvent(SingleStartEndEvent):
+	"""Event representing a lifetime period with start and end dates."""
+
 	name = "lifetime"
 	nameAlias = "lifeTime"
 	desc = _("Lifetime Event")
@@ -107,6 +114,7 @@ class LifetimeEvent(SingleStartEndEvent):
 	# 		start.date = ...
 
 	def getV4Dict(self) -> dict[str, str]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		data.update(
 			{
@@ -121,12 +129,14 @@ class LifetimeEvent(SingleStartEndEvent):
 		EndEventRule.addOrGetFrom(self).setJdExact(jd)
 
 	def addRule(self, rule: EventRuleType) -> None:
+		"""Add a rule, forcing time components to midnight for date rules."""
 		if rule.name in {"start", "end"}:
 			assert isinstance(rule, DateAndTimeEventRule), f"{rule=}"
 			rule.time = (0, 0, 0)
 		super().addRule(rule)
 
 	def modifyPos(self, newStartEpoch: int) -> None:
+		"""Move the event to start at the given epoch, preserving duration."""
 		start = StartEventRule.getFrom(self)
 		assert start is not None
 		end = EndEventRule.getFrom(self)
@@ -136,12 +146,14 @@ class LifetimeEvent(SingleStartEndEvent):
 		start.setJdExact(newStartJd)
 
 	def modifyStart(self, newEpoch: int) -> None:
+		"""Move the start date to the given epoch."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise RuntimeError("no start rule")
 		start.setEpoch(roundEpochToDay(newEpoch))
 
 	def modifyEnd(self, newEpoch: int) -> None:
+		"""Move the end date to the given epoch."""
 		end = EndEventRule.getFrom(self)
 		if end is None:
 			raise RuntimeError("no end rule")

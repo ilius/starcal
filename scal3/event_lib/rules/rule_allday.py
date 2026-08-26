@@ -39,7 +39,10 @@ __all__ = ["AllDayEventRule", "MultiValueAllDayEventRule"]
 
 
 class AllDayEventRule(EventRule):
+	"""Rule for events that recur on specific days, matching all-day occurrences."""
+
 	def jdMatches(self, jd: int) -> bool:  # noqa: ARG002, PLR6301
+		"""Return True if the given Julian day matches this rule."""
 		return True
 
 	def calcOccurrence(
@@ -56,8 +59,9 @@ class AllDayEventRule(EventRule):
 		return JdOccurSet(jds)
 
 
-# Should not be registered, or instantiate directly
 class MultiValueAllDayEventRule(AllDayEventRule):
+	"""All-day rule that matches against a list of individual values or ranges."""
+
 	conflict: Sequence[str] = ("date",)
 	params = ["values"]
 	expand = True  # FIXME
@@ -78,6 +82,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return textNumEncode(numRangesEncode(self.values, ", "))
 
 	def hasValue(self, value: Any) -> bool:
+		"""Return True if value falls within any of the stored values or ranges."""
 		for item in self.values:
 			if isinstance(item, tuple | list):
 				if item[0] <= value <= item[1]:
@@ -87,6 +92,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return False
 
 	def getValuesPlain(self) -> list[int | tuple[int, int]]:
+		"""Return values expanded from ranges into a flat list."""
 		ls: list[int | tuple[int, int]] = []
 		for item in self.values:
 			if isinstance(item, tuple | list):
@@ -96,6 +102,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return ls
 
 	def setValuesPlain(self, values: list[int]) -> None:
+		"""Set values from a flat list, simplifying into ranges where possible."""
 		self.values = simplifyNumList(values)
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301

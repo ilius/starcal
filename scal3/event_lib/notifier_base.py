@@ -37,6 +37,8 @@ __all__ = ["EventNotifier"]
 # Should not be registered, or instantiate directly
 @classes.notifier.setMain
 class EventNotifier(SObj):
+	"""Base class for all event notification mechanisms."""
+
 	WidgetClass: Any
 
 	name = ""

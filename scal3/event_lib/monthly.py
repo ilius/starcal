@@ -45,6 +45,8 @@ __all__ = ["MonthlyEvent"]
 
 @classes.event.register
 class MonthlyEvent(Event):
+	"""Event that repeats every month on a specific day."""
+
 	name = "monthly"
 	desc = _("Monthly Event")
 	iconName = ""
@@ -58,6 +60,7 @@ class MonthlyEvent(Event):
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		assert dayTimeRange is not None
@@ -78,6 +81,7 @@ class MonthlyEvent(Event):
 		return data
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default day to today and date range to one year from now."""
 		super().setDefaults(group=group)
 		year, month, day = jd_to(getCurrentJd(), self.calType)
 		start = StartEventRule.getFrom(self)
@@ -93,6 +97,7 @@ class MonthlyEvent(Event):
 		self.setDay(day)
 
 	def getDay(self) -> int:
+		"""Return the day of month on which this event repeats."""
 		rule = DayOfMonthEventRule.getFrom(self)
 		if rule is None:
 			raise RuntimeError("no day rule")
@@ -106,6 +111,7 @@ class MonthlyEvent(Event):
 		raise RuntimeError(f"bad {rule.values}")
 
 	def setDay(self, day: int) -> None:
+		"""Set the day of month on which this event repeats."""
 		rule = DayOfMonthEventRule.getFrom(self)
 		if rule is None:
 			raise RuntimeError("no day rule")

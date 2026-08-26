@@ -42,6 +42,8 @@ __all__ = ["AlarmNotifier", "FloatingMsgNotifier"]
 
 @classes.notifier.register
 class AlarmNotifier(EventNotifier):
+	"""Notifier that plays a sound file when an event triggers."""
+
 	name = "alarm"
 	desc = _("Alarm")
 	params = [
@@ -62,6 +64,8 @@ class AlarmNotifier(EventNotifier):
 
 @classes.notifier.register
 class FloatingMsgNotifier(EventNotifier):
+	"""Notifier that displays a scrolling floating message overlay."""
+
 	name = "floatingMsg"
 	desc = _("Floating Message")
 	params = [
@@ -87,6 +91,8 @@ class FloatingMsgNotifier(EventNotifier):
 
 @classes.notifier.register
 class WindowMsgNotifier(EventNotifier):
+	"""Notifier that opens a popup message window."""
+
 	name = "windowMsg"
 	desc = _("Message Window")  # FIXME
 	params = ["extraMessage"]
@@ -103,6 +109,8 @@ class WindowMsgNotifier(EventNotifier):
 
 # @classes.notifier.register  # FIXME
 class CommandNotifier(EventNotifier):
+	"""Notifier that runs an external command when an event triggers."""
+
 	name = "command"
 	desc = _("Run a Command")
 	params = [

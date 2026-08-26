@@ -30,12 +30,16 @@ from enum import IntEnum
 
 
 class ImportMode(IntEnum):
+	"""Strategy for handling events that already exist during import."""
+
 	APPEND = 0
 	SKIP_MODIFIED = 1
 	OVERRIDE_MODIFIED = 2
 
 
 class EventGroupsImportResult:
+	"""Accumulates IDs of new and modified entities created during import."""
+
 	def __init__(self) -> None:
 		self.newGroupIds: set[int] = set()
 		self.newEventIds: set[tuple[int, int]] = set()
