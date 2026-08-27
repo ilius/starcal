@@ -371,6 +371,11 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		rule.value = value
 		rule.unit = dayLen
 
+	def setEndEpochOnly(self, epoch: int) -> None:
+		"""Set the end time by epoch, removing any duration rule."""
+		self.removeSomeRuleTypes("duration")
+		return super().setEndEpoch(epoch)
+
 	def setEnd(self, endType: str, value: tuple[int, int, int] | float) -> None:
 		"""Set the end by type ('date', 'epoch', 'duration', or 'jd')."""
 		if endType == "date":
