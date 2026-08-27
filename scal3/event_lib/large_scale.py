@@ -127,8 +127,7 @@ class LargeScaleEvent(Event):
 		"""Set default values, optionally inheriting from a group."""
 		super().setDefaults(group=group)
 		if group and group.name == "largeScale":
-			if TYPE_CHECKING:
-				assert isinstance(group, LargeScaleEvent), f"{group=}"
+			assert isinstance(group, LargeScaleGroup), f"{group=}"
 			self.scale = group.scale
 			self.start = group.getStartValue()
 
