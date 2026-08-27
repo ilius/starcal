@@ -179,6 +179,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			self.setId(ident)
 		self.fs = null_fs
 		self.dataIsSet = False
+		self._invalidated = False
 		self.uuid: str | None = None
 		self.parent: EventContainerType | None = parent
 		self.calType: int
@@ -365,10 +366,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def invalidate(self) -> None:
 		"""Invalidate this event so it can no longer be saved to disk."""
 		# make sure it can't be written to file again, it's about to be deleted
+		self._invalidated = True
 		self.id = None
 		self.file = ""
 
 	def save(self) -> None:
+		if self._invalidated:
+			raise RuntimeError("can not save an invalidated event")
 		if self.id is None:
 			self.setId()
 		# self.fs.makeDir(self.dir)
