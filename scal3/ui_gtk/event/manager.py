@@ -1366,7 +1366,7 @@ class EventManagerDialog(CalObjWidget):
 			eventWriteMenuItem(
 				_("Empty Trash"),
 				imageName="sweep.svg",
-				func=self.editTrashFromMenu,
+				func=self.emptyTrash,
 				sensitive=bool(trash.idList),
 			),
 		)
