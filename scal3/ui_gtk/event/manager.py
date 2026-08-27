@@ -2403,7 +2403,7 @@ class EventManagerDialog(CalObjWidget):
 		while (childIter := self.treeModel.iter_children(gIter)) is not None:
 			self.treeModel.remove(childIter)
 
-	def emptyTrash(self, _menuItem: gtk.MenuItem) -> None:
+	def emptyTrash(self, _w: gtk.Widget) -> None:
 		assert self.trashIter is not None
 		errors = ev.trash.empty()
 		self.removeIterChildren(self.trashIter)
