@@ -102,12 +102,6 @@ class RuleContainerType(BaseClassType, Protocol):
 	def getAddRule(self, ruleType: str) -> EventRuleType:
 		"""Return the rule of the given type, creating it if absent."""
 
-	def setDict(self, data: dict[str, Any]) -> None:
-		"""Populate the container from a serialized dictionary."""
-
-	def getDict(self) -> dict[str, Any]:
-		"""Serialize the container to a dictionary."""
-
 	def getRulesHash(self) -> int:
 		"""Return a hash of the event's rules for change detection."""
 
@@ -150,10 +144,6 @@ class EventRuleType(BaseClassType, Protocol):
 
 	def getServerString(self) -> str:
 		"""Return a server-compatible string representation of this rule."""
-
-	@classmethod
-	def getFrom(cls, container: RuleContainerType) -> Self | None:
-		"""Return the rule of this type from the container, or None if absent."""
 
 	@classmethod
 	def addOrGetFrom(cls, container: RuleContainerType) -> Self:
@@ -348,12 +338,6 @@ class EventType(RuleContainerType, Protocol):
 	def getShownDescription(self) -> str:
 		"""Return the description to display for this event."""
 
-	def getNotifyBeforeMin(self) -> int:
-		"""Return the notification lead time in whole minutes."""
-
-	def setIcsData(self, data: dict[str, str]) -> bool:
-		"""Import event data from an iCalendar dictionary."""
-
 
 class EventContainerType(BaseTextModelType, Protocol):
 	"""Interface for containers that hold a list of events."""
@@ -474,9 +458,6 @@ class EventGroupType(EventContainerType, Protocol):
 	def getLastSync(self) -> tuple[float, float] | None:
 		"""Return the last sync time range, or None."""
 
-	def getStartEpoch(self) -> int:
-		"""Return the epoch timestamp of the group's start date."""
-
 	def setReadOnly(self, readOnly: bool) -> None:
 		"""Set this group's read-only flag."""
 
@@ -489,7 +470,6 @@ class EventGroupType(EventContainerType, Protocol):
 	def sort(self, attr: str = "summary", reverse: bool = False) -> None:
 		"""Sort the id list by the given attribute."""
 
-	def __iter__(self) -> Iterator[EventType]: ...
 	def updateOccurrence(self) -> None:
 		"""Rebuild the entire occurrence search tree for all events."""
 
@@ -507,13 +487,9 @@ class EventGroupType(EventContainerType, Protocol):
 	def showInCal(self) -> bool:
 		"""Return True if the group is shown in any calendar view."""
 
-	def index(self, ident: int) -> int:
-		"""Return the positional index of an event ID in the list."""
-
 	def search(self, conds: EventSearchConditionDict) -> Iterator[EventType]:
 		"""Yield events matching the given search conditions."""
 
-	def __len__(self) -> int: ...
 	def checkEventToAdd(self, event: EventType) -> bool:
 		"""Return True if the event type is accepted by this group."""
 
@@ -562,9 +538,6 @@ class AccountType(BaseTextModelType, Protocol):
 
 	def setDict(self, data: dict[str, Any]) -> None:
 		"""Populate the account from a serialized dictionary."""
-
-	def getDict(self) -> dict[str, Any]:
-		"""Serialize the account to a dictionary for JSON storage."""
 
 	def save(self) -> None:
 		"""Save the account to disk."""
