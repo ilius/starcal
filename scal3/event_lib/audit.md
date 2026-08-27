@@ -179,6 +179,13 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 
 **Recommended fix:** Remove both classes. If needed in the future, they can be re-added.
 
+#### 12. `checkForOrphans()` is not merely observational
+**File:** `groups_holder.py:243-306`
+
+Despite its name, `checkForOrphans()` deletes unlisted group files (`fs.removeFile`), persists recovered events (`newEvent.save()`), creates and saves a new group (`newGroup.save()`), appends it, and saves the holder (`self.save()`).
+
+**Recommended fix:** Rename to reflect the mutation (e.g. `recoverOrphans`), or split the read-only detection from the deletion/persistence logic.
+
 ---
 
 ### P2 — Medium Priority
@@ -206,6 +213,83 @@ No default generation for Gregorian or other calendar types.
 **Files:** `event_base.py` (`index`), `notifier_base.py` (`notify`), `rules/rule_base.py` (`getServerString`), `vcs_base.py` (`load`)
 
 **Recommended fix:** Make base classes inherit from `abc.ABC` and mark methods with `@abstractmethod`. This gives clearer error messages ("Can't instantiate abstract class X with abstract method Y") at instantiation time rather than at call time.
+
+#### 13. `trash.empty()` swallows deletion failures but clears IDs anyway
+**File:** `trash.py:88-98`
+
+`empty()` catches deletion exceptions (`log.exception`) but unconditionally removes every ID from `idList` and saves, leaving untracked files behind despite the "permanently delete" promise.
+
+**Recommended fix:** Only clear IDs whose file was successfully removed; surface or collect failures instead of swallowing them.
+
+#### 14. `setEndDurationDays()` removes the duration rule, not the explicit end rule
+**File:** `task.py:367-372`
+
+It calls `removeSomeRuleTypes("duration")`, discarding an existing duration rule instead of removing any explicit `end`/`date` rule. As a result the documented duration may not become the effective end, and `setJdExact()`'s "one day" promise is not guaranteed.
+
+**Recommended fix:** Remove the end/date rule (and any conflicting rules) before adding the duration rule.
+
+#### 15. `getEnd()` labels duration as days without checking the unit
+**File:** `task.py:396-404`
+
+Returns `("duration", duration.value)` described as days, but `DurationEventRule.value` is combined with `.unit` (seconds/minutes/hours/weeks). A non-day unit is reported as if it were days.
+
+**Recommended fix:** Convert the value to days using `duration.unit`, or return the unit alongside the value.
+
+#### 16. `Event.create()` claims to attach the rule but only constructs it
+**File:** `event_base.py:212-217`
+
+Docstring says "Create and attach", but the method only builds and returns the rule; callers must attach it separately.
+
+**Recommended fix:** Either attach the rule inside `create()` or reword the docstring to "create and return".
+
+#### 17. `invalidate()` does not prevent future saves
+**File:** `event_base.py:365-375`
+
+Sets `id=None`/`file=""`, but `save()` re-runs `setId()` when `id is None`, allocating a new ID/path and writing the event again.
+
+**Recommended fix:** Track an explicit invalidated state and have `save()` raise/skip when set.
+
+#### 18. `copyFrom()` checks event type names, not calendar types
+**File:** `event_base.py:386-394`
+
+Docstring says dates are converted when calendar types differ, but the code checks `self.name != other.name` (event type names), not calendar type.
+
+**Recommended fix:** Compare `calType` values (and perform the JD conversion when they differ), not event type names.
+
+#### 19. `changeCalType()` returns True without changing anything
+**File:** `rules/rule_base.py:85-87`
+
+Documents "Return True if changed", but the base implementation does nothing and returns True, which callers interpret as success.
+
+**Recommended fix:** Have the base return `False` (nothing to convert) or reword the contract to mean "handled successfully".
+
+#### 20. `Group.save()` only honors the per-group read-only flag
+**File:** `group.py:342-348`
+
+Docstring promises RuntimeError whenever read-only, but it checks only `self.__readOnly`; global read-only mode (`state.allReadOnly`, used by `isReadOnly()`) silently skips saving.
+
+**Recommended fix:** Check `state.allReadOnly` (or call `isReadOnly()`) and raise consistently.
+
+#### 21. `Handler.init()` does not initialize all subsystems
+**File:** `handler.py:30-39`
+
+Docstring says "Initialize all subsystems", but directories, `state.info`, and `state.lastIds` must be set up by `event_lib.init()` first; `Handler.init()` only loads accounts, groups, trash, and the notifier.
+
+**Recommended fix:** Reconcile responsibilities — either perform full init here or document the prerequisite and narrow the docstring.
+
+#### 22. `deepConvertTo()` task conversion fails for tag groups
+**File:** `vcs_base.py:192-210`
+
+Asserts `event.epoch is not None`, but `VcsTagEventGroup.getEvent()` builds tag events from only `summary`/`icon` and never sets an epoch, so the conversion asserts for tag groups.
+
+**Recommended fix:** Set the epoch when building tag events (and commit events) before conversion, or handle `epoch is None`.
+
+#### 23. `MultiValueAllDayEventRule` claims to match values but always matches
+**File:** `rules/rule_allday.py:62-63`
+
+Docstring says it "matches against a list of individual values or ranges", but it inherits `AllDayEventRule.jdMatches()`, which always returns True. The docstring commit also removed the `# Should not be registered, or instantiate directly` warning.
+
+**Recommended fix:** Override `jdMatches()` to use `hasValue()`, or reword the docstring and restore the warning.
 
 ---
 
