@@ -352,7 +352,7 @@ class EventGroup(EventContainer):
 
 	def save(self) -> None:
 		"""Save the group to disk, raising RuntimeError if read-only."""
-		if self.__readOnly:
+		if self.isReadOnly():
 			raise RuntimeError("event group is read-only right now")
 		if self.id is None:
 			self.setId()
