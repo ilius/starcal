@@ -240,8 +240,15 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 				self[gid].exportToIcsFp(fp)
 			fp.write("END:VCALENDAR\n")
 
-	def checkForOrphans(self) -> EventGroup | None:
-		"""Find orphaned events and return them in a new group, or None."""
+	def recoverOrphans(self) -> EventGroup | None:
+		"""
+		Remove unlisted group files, collect orphaned events into a new group.
+
+		Deletes group files not referenced by the holder, then gathers event
+		files and object blobs that belong to no group, persists them as a new
+		"Orphan Events" group, appends it to the holder, and returns it, or None
+		if no orphans were found.
+		"""
 		fs = self.fs
 		newGroup = EventGroup()
 		newGroup.fs = fs

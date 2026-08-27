@@ -1802,13 +1802,13 @@ class EventManagerDialog(CalObjWidget):
 	def onMenuBarImportClick(self, _menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self.dialog).present()
 
-	def _do_checkForOrphans(self) -> None:
-		newGroup = ev.groups.checkForOrphans()
+	def _do_recoverOrphans(self) -> None:
+		newGroup = ev.groups.recoverOrphans()
 		if newGroup is not None:
 			self.appendGroupTree(newGroup)
 
 	def onMenuBarOrphanClick(self, _menuItem: gtk.MenuItem) -> None:
-		self.dialog.waitingDo(self._do_checkForOrphans)
+		self.dialog.waitingDo(self._do_recoverOrphans)
 
 	def getSelectedPath(self) -> list[int] | None:
 		iter_ = self.treev.get_selection().get_selected()[1]
