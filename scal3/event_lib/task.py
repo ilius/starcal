@@ -366,7 +366,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 
 	def setEndDurationDays(self, value: float) -> None:
 		"""Set the end as a duration in days."""
-		self.removeSomeRuleTypes("duration")
+		self.removeSomeRuleTypes("end", "date")
 		rule = DurationEventRule.addOrGetFrom(self)
 		rule.value = value
 		rule.unit = dayLen
