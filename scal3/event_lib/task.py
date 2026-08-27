@@ -181,7 +181,7 @@ class TaskEvent(SingleStartEndEvent):
 		self.removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
-	def setEnd(
+	def _setEnd(
 		self,
 		endType: str,
 		*values: Any,
@@ -289,7 +289,7 @@ class TaskEvent(SingleStartEndEvent):
 		# --
 		if isinstance(other, TaskEvent):
 			endType, values = other.getEnd()
-			self.setEnd(endType, *values)
+			self._setEnd(endType, *values)
 		elif other.name == "dailyNote":
 			myStart.time = (0, 0, 0)
 			self.setEndDuration(24, 3600)
@@ -376,7 +376,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
-	def setEnd(self, endType: str, value: tuple[int, int, int] | int | float) -> None:
+	def _setEnd(self, endType: str, value: tuple[int, int, int] | int | float) -> None:
 		"""Set the end by type ('date', 'epoch', 'duration', or 'jd')."""
 		if endType == "date":
 			assert isinstance(value, tuple), f"{value=}"
@@ -461,4 +461,4 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		if other.name == self.name:
 			assert isinstance(other, AllDayTaskEvent), f"{other=}"
 			kind, value = other.getEnd()
-			self.setEnd(kind, value)
+			self._setEnd(kind, value)
