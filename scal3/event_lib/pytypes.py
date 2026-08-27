@@ -86,6 +86,7 @@ class RuleContainerType(BaseClassType, Protocol):
 	rulesDict: dict[str, EventRuleType]
 
 	def __getitem__(self, key: str) -> EventRuleType | None: ...
+
 	def getTimeZoneObj(self) -> tzinfo:
 		"""Return the time zone used by this container."""
 
@@ -106,6 +107,9 @@ class RuleContainerType(BaseClassType, Protocol):
 
 	def getDict(self) -> dict[str, Any]:
 		"""Serialize the container to a dictionary."""
+
+	def getRulesHash(self) -> int:
+		"""Return a hash of the event's rules for change detection."""
 
 
 class EventRuleType(BaseClassType, Protocol):
@@ -195,6 +199,12 @@ class EventType(RuleContainerType, Protocol):
 	isAllDay: bool
 	readOnly: bool
 
+	def __init__(
+		self,
+		ident: int | None = None,
+		parent: EventContainerType | None = None,
+	) -> None: ...
+
 	def setDict(self, data: dict[str, Any]) -> None:
 		"""Populate the event from a serialized dictionary."""
 
@@ -225,14 +235,6 @@ class EventType(RuleContainerType, Protocol):
 
 	def checkNotify(self, finishFunc: Callable[[], None]) -> None:
 		"""Check whether notification time has been reached and notify if so."""
-
-	def __init__(
-		self,
-		ident: int | None = None,
-		parent: EventContainerType | None = None,
-	) -> None: ...
-	def getRulesHash(self) -> int:
-		"""Return a hash of the event's rules for change detection."""
 
 	def getTextParts(self, showDesc: bool = True) -> list[str]:
 		"""Return summary and optional description as text parts."""
