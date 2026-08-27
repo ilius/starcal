@@ -2405,8 +2405,15 @@ class EventManagerDialog(CalObjWidget):
 
 	def emptyTrash(self, _menuItem: gtk.MenuItem) -> None:
 		assert self.trashIter is not None
-		ev.trash.empty()
+		errors = ev.trash.empty()
 		self.removeIterChildren(self.trashIter)
+		if errors:
+			msg = (
+				_("Could not delete some events:")
+				+ "\n"
+				+ "\n".join(f"ID {eid}: {errText}" for eid, errText in errors.items())
+			)
+			showError(msg, transient_for=self.dialog)
 		self.treeviewCursorChanged()
 
 	def editTrashFromMenu(self, _w: gtk.Widget) -> None:
