@@ -375,7 +375,8 @@ class EventGroup(EventContainer):
 		"""
 
 	def __bool__(self) -> bool:
-		return self.enable  # FIXME
+		"""Disabled group must be Falsy."""
+		return self.enable
 
 	def setId(self, ident: int | None = None) -> None:
 		assert state.lastIds is not None
