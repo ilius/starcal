@@ -376,7 +376,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
-	def setEnd(self, endType: str, value: tuple[int, int, int] | float) -> None:
+	def setEnd(self, endType: str, value: tuple[int, int, int] | int | float) -> None:
 		"""Set the end by type ('date', 'epoch', 'duration', or 'jd')."""
 		if endType == "date":
 			assert isinstance(value, tuple), f"{value=}"
