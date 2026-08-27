@@ -125,7 +125,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		self.clear()
 		if not self.vcsDir:
 			return
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
@@ -147,14 +147,14 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			epoch = epoch_
 			if not self.showSeconds:
 				epoch -= epoch % 60
-			self.addOccur(epoch, epoch, commitId)
+			self._addOccur(epoch, epoch, commitId)
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
-	def updateEventDesc(self, event: EventType) -> None:
+	def _updateEventDesc(self, event: EventType) -> None:
 		"""Populate the event description with stat, author, and hash info."""
 		assert isinstance(event, VcsCommitEvent), f"{event=}"
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
@@ -177,7 +177,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		commitId: str,  # type: ignore[override]
 	) -> EventType:
 		"""Build a full event object for the given commit ID."""
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			raise ValueError(f"VCS module {self.vcsType!r} not found")
 		data = mod.getCommitInfo(self, commitId)
@@ -187,7 +187,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		data["icon"] = self.icon
 		event = VcsCommitEvent(self, commitId)
 		event.setDict(data)
-		self.updateEventDesc(event)
+		self._updateEventDesc(event)
 		return event
 
 
@@ -210,7 +210,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		self.clear()
 		if not self.vcsDir:
 			return
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
@@ -229,13 +229,13 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			epoch = epoch_
 			if not self.showSeconds:
 				epoch -= epoch % 60
-			self.addOccur(epoch, epoch, tag)
+			self._addOccur(epoch, epoch, tag)
 		# ---
 		self.updateOccurrenceLog(perf_counter() - stm0)
 
-	def updateEventDesc(self, event: EventType) -> None:
+	def _updateEventDesc(self, event: EventType) -> None:
 		"""Populate the event description with stat info."""
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			raise ValueError(f"VCS module {self.vcsType!r} not found")
 		assert event.id is not None
@@ -266,7 +266,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		data["icon"] = self.icon  # type: ignore[assignment]
 		event = VcsTagEvent(self, tag)
 		event.setDict(data)
-		self.updateEventDesc(event)
+		self._updateEventDesc(event)
 		return event
 
 
@@ -336,7 +336,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		self.clear()
 		if not self.vcsDir:
 			return
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
@@ -376,7 +376,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 				continue
 			stat = mod.getShortStat(self, oldCommitId, newCommitId)
 			self.statByJd[jd] = (len(commitIds), stat)
-			self.addOccur(
+			self._addOccur(
 				getEpochFromJd(jd),
 				getEpochFromJd(jd + 1),
 				jd,
@@ -393,7 +393,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 			commitsCount, stat = self.statByJd[jd]
 		except KeyError:
 			raise ValueError(f"No commit for jd {jd}") from None
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			raise ValueError(f"VCS module {self.vcsType!r} not found")
 		event = VcsDailyStatEvent(self, jd)

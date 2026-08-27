@@ -408,7 +408,7 @@ class UniversityClassEvent(Event):
 					tm1 + (0,),
 				)
 
-	def getCourseName(self) -> str:
+	def _getCourseName(self) -> str:
 		"""Return the name of the course this class belongs to."""
 		# assert self.parent is not None
 		assert isinstance(self.parent, UniversityTerm), f"{self.parent=}"
@@ -425,7 +425,7 @@ class UniversityClassEvent(Event):
 	def updateSummary(self) -> None:
 		"""Set the summary from the course name and week day."""
 		self.summary = (
-			_("{courseName} Class").format(courseName=self.getCourseName())
+			_("{courseName} Class").format(courseName=self._getCourseName())
 			+ " ("
 			+ self.getWeekDayName()
 			+ ")"
@@ -539,7 +539,7 @@ class UniversityExamEvent(DailyNoteEvent):
 		if group and group.name == "universityTerm":
 			self.setJd(group.endJd)  # FIXME
 
-	def getCourseName(self) -> str:
+	def _getCourseName(self) -> str:
 		"""Return the name of the course this exam belongs to."""
 		# assert self.parent is not None
 		assert isinstance(self.parent, UniversityTerm), f"{self.parent=}"
@@ -549,7 +549,7 @@ class UniversityExamEvent(DailyNoteEvent):
 	def updateSummary(self) -> None:
 		"""Set the summary from the course name."""
 		self.summary = _("{courseName} Exam").format(
-			courseName=self.getCourseName(),
+			courseName=self._getCourseName(),
 		)
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:

@@ -358,13 +358,6 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		"""Update the occurrence tree for a single event; implemented by subclasses."""
 		raise NotImplementedError
 
-	def getCourseNameById(
-		self,
-		courseId: int,
-	) -> str:
-		"""Return the name of a course; implemented by subclasses."""
-		raise NotImplementedError
-
 	def getSortBys(self) -> tuple[str, list[tuple[str, str, bool]]]:
 		"""Return the default sort attribute and available sort options."""
 		if not self.enable:

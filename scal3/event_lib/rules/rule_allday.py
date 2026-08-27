@@ -23,7 +23,6 @@ log = logger.get()
 from typing import TYPE_CHECKING
 
 from scal3.event_lib.occur import JdOccurSet
-from scal3.interval_utils import simplifyNumList
 from scal3.locale_man import textNumEncode
 from scal3.utils import numRangesEncode
 
@@ -94,20 +93,22 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 				return True
 		return False
 
-	def getValuesPlain(self) -> list[int | tuple[int, int]]:
-		"""Return values expanded from ranges into a flat list."""
-		ls: list[int | tuple[int, int]] = []
-		for item in self.values:
-			if isinstance(item, tuple | list):
-				ls += list(range(item[0], item[1] + 1))
-			else:
-				ls.append(item)
-		return ls
-
-	def setValuesPlain(self, values: list[int]) -> None:
-		"""Set values from a flat list, simplifying into ranges where possible."""
-		self.values = simplifyNumList(values)
-
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
 		"""Return False since day values cannot convert between calendars."""
 		return False
+
+	# FIXME: I think getValuesPlain was meant to be used in getServerString
+
+	# def getValuesPlain(self) -> list[int | tuple[int, int]]:
+	# 	"""Return values expanded from ranges into a flat list."""
+	# 	ls: list[int | tuple[int, int]] = []
+	# 	for item in self.values:
+	# 		if isinstance(item, tuple | list):
+	# 			ls += list(range(item[0], item[1] + 1))
+	# 		else:
+	# 			ls.append(item)
+	# 	return ls
+
+	# def setValuesPlain(self, values: list[int]) -> None:
+	# 	"""Set values from a flat list, simplifying into ranges where possible."""
+	# 	self.values = simplifyNumList(values)
