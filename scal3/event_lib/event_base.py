@@ -411,7 +411,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		if self.name != other.name:
 			jd = other.getJd()
 			if jd is not None:
-				self.setJdExact(jd)
+				self._setJdExact(jd)
 
 	def getDict(self) -> dict[str, Any]:
 		"""Serialize this event to a dictionary for JSON storage."""
@@ -644,7 +644,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def setJd(self, jd: int) -> None:  # noqa: ARG002, PLR6301
 		"""Set the event date from a Julian day; implemented by subclasses."""
 
-	def setJdExact(self, jd: int) -> None:
+	def _setJdExact(self, jd: int) -> None:
 		"""Set the event date from a Julian day, with no time component."""
 		return self.setJd(jd)
 
@@ -712,7 +712,7 @@ class SingleStartEndEvent(Event):
 		start = StartEventRule.addOrGetFrom(self)
 		start.setJd(jd)
 
-	def setJdExact(self, jd: int) -> None:
+	def _setJdExact(self, jd: int) -> None:
 		"""Set start and end dates from a Julian day, spanning one full day."""
 		start = StartEventRule.addOrGetFrom(self)
 		end = EndEventRule.addOrGetFrom(self)

@@ -628,7 +628,7 @@ class EventGroup(EventContainer):
 			return
 
 		for t0, t1 in occur.getTimeRangeList():
-			self.addOccur(t0, t1, eid)
+			self._addOccur(t0, t1, eid)
 
 		if event.notifiers:
 			assert self.notifyOccur is not None
@@ -654,7 +654,7 @@ class EventGroup(EventContainer):
 		self.occurCount = 0
 		self.notificationEnabled = False
 
-	def addOccur(self, t0: float, t1: float, eid: int) -> None:
+	def _addOccur(self, t0: float, t1: float, eid: int) -> None:
 		"""Add an occurrence interval for the given event ID."""
 		assert self.occur is not None
 		self.occur.add(t0, t1, eid)
@@ -676,7 +676,7 @@ class EventGroup(EventContainer):
 		for event, occur in self.calcGroupOccurrences():
 			assert event.id is not None
 			for t0, t1 in occur.getTimeRangeList():
-				self.addOccur(t0, t1, event.id)
+				self._addOccur(t0, t1, event.id)
 			if event.notifiers:
 				notificationEnabled = True
 				assert self.notifyOccur is not None

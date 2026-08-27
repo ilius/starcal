@@ -62,7 +62,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		"""Return True if the day's year is selected."""
 		return self.hasValue(jd_to(jd, self.getCalType())[0])
 
-	def newCalTypeValues(
+	def _newCalTypeValues(
 		self,
 		newCalType: int,
 	) -> list[int | tuple[int, int]]:
@@ -87,7 +87,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 
 	def changeCalType(self, calType: int) -> bool:
 		"""Convert the year values to a new calendar type."""
-		self.values = self.newCalTypeValues(calType)
+		self.values = self._newCalTypeValues(calType)
 		return True
 
 

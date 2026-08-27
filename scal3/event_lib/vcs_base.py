@@ -119,7 +119,7 @@ class VcsBaseEventGroup(EventGroup):
 	# 	# len(commitId)==40 for git
 	# 	return self.getEvent(key)
 
-	def getVcsModule(self) -> Any:
+	def _getVcsModule(self) -> Any:
 		"""Return the VCS module (git or hg) for this group."""
 		name = toStr(self.vcsType)
 		# if not isinstance(name, str):
@@ -133,9 +133,9 @@ class VcsBaseEventGroup(EventGroup):
 			return None
 		return mod
 
-	def updateVcsModuleObj(self) -> None:
+	def _updateVcsModuleObj(self) -> None:
 		"""Initialize or clear the VCS module object for this group."""
-		mod = self.getVcsModule()
+		mod = self._getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
 			return
@@ -148,13 +148,13 @@ class VcsBaseEventGroup(EventGroup):
 
 	def afterModify(self) -> None:
 		"""Refresh the VCS module object after a group change."""
-		self.updateVcsModuleObj()
+		self._updateVcsModuleObj()
 		super().afterModify()
 
 	def setDict(self, data: dict[str, Any]) -> None:
 		"""Populate the group from a dictionary and refresh the VCS module."""
 		super().setDict(data)
-		self.updateVcsModuleObj()
+		self._updateVcsModuleObj()
 
 
 class VcsEpochBaseEventGroup(VcsBaseEventGroup):
@@ -173,9 +173,9 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		super().clear()
 		self.vcsIds = []
 
-	def addOccur(self, t0: float, t1: float, eid: int) -> None:
+	def _addOccur(self, t0: float, t1: float, eid: int) -> None:
 		"""Add an occurrence and track its VCS ID."""
-		super().addOccur(t0, t1, eid)
+		super()._addOccur(t0, t1, eid)
 		self.vcsIds.append(eid)
 
 	def getRulesHash(self) -> int:

@@ -158,7 +158,7 @@ class TaskEvent(SingleStartEndEvent):
 		)
 		self._setDefaultDuration(group)
 
-	def setJdExact(self, jd: int) -> None:
+	def _setJdExact(self, jd: int) -> None:
 		"""Set the start Julian Day and reset duration to 24 hours."""
 		start = StartEventRule.getFrom(self)
 		assert start is not None
@@ -352,7 +352,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		start = StartEventRule.addOrGetFrom(self)
 		start.setDate(date)
 
-	def setJdExact(self, jd: int) -> None:
+	def _setJdExact(self, jd: int) -> None:
 		"""Set the start Julian Day and duration to one day."""
 		self.setJd(jd)
 		self.setEndDurationDays(1)
