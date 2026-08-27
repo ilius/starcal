@@ -293,7 +293,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			self.append(event)
 
 	def getPath(self) -> list[int]:
-		"""Return the ID path from the root object to this container."""
+		"""Return the index path from the root object to this container."""
 		if self.parent is None:
 			raise RuntimeError("getPath: parent is None")
 		path = SObj.getPath(self)

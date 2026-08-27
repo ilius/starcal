@@ -188,12 +188,9 @@ class UniversityTerm(EventGroup):
 		currentWeekOnly: bool = False,
 	) -> list[list[list[WeeklyScheduleItem]]]:
 		"""
-		Returns `data` as a nested list that:
-			data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
-		where
-			weekDay: int, in range(7)
-			classIndex: int
-			intervalIndex: int.
+		Return weekly schedule data as a 3D nested list:
+			data[weekDay][intervalIndex] = [WeeklyScheduleItem(name, weekNumMode), ...]
+		where weekDay is 0..6 and intervalIndex corresponds to class time bound slots.
 		"""
 		boundsCount = len(self.classTimeBounds)
 		boundsHour = [h + m / 60.0 for h, m in self.classTimeBounds]
@@ -252,13 +249,7 @@ class UniversityTerm(EventGroup):
 		return data
 
 	def setCourses(self, courses: list[tuple[int, str, int]]) -> None:
-		"""
-		courses[index] == (
-		courseId: int,
-		courseName: str,
-		units: int,
-		).
-		"""
+		"""Set the course list as a list of (courseId, courseName, units)."""
 		self.courses = courses
 		# self.lastCourseId = max([1]+[course[0] for course in self.courses])
 		# log.debug(f"setCourses: {self.lastCourseId=}")
