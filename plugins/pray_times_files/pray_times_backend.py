@@ -76,8 +76,8 @@ class Method:
 		name: str,
 		desc: str,
 		fajr: float = 15,
-		isha: str | float = 15,
-		maghrib: str | float = "0 min",
+		isha: str | int | float = 15,
+		maghrib: str | int | float = "0 min",
 		midnight: int = MIDNIGHT_STANDARD,
 	) -> None:
 		self.name = name
@@ -149,11 +149,11 @@ methodsDict = {m.name: m for m in methodsList}
 # ------------------------- Functions ------------------------------------
 
 
-def isMin(tm: str | float) -> bool:
+def isMin(tm: str | int | float) -> bool:
 	return isinstance(tm, str) and tm.endswith("min")
 
 
-def minEval(tm: str | float) -> float:
+def minEval(tm: str | int | float) -> float:
 	return float(tm.split(" ")[0]) if isinstance(tm, str) else tm
 
 
@@ -234,7 +234,7 @@ class PrayTimes:
 		lng: float,
 		elv: float = 0,
 		methodName: str = "Tehran",
-		imsak: float | str = "10 min",
+		imsak: int | float | str = "10 min",
 		asrMode: int = ASR_STANDARD,
 		highLats: str = "NightMiddle",
 		timeFormat: str = "24h",

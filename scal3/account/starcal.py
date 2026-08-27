@@ -325,7 +325,7 @@ class StarCalendarAccount(Account):
 		groupId = group.remoteIds[1]
 		lastSyncTuple = group.getLastSync()
 		lastSyncStartEpoch: float
-		lastSyncEndEpoch: float | None
+		lastSyncEndEpoch: int | float | None
 		if lastSyncTuple is None:
 			lastSyncStartEpoch = group.getStartEpoch()
 			lastSyncEndEpoch = None  # FIXME

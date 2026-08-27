@@ -352,7 +352,7 @@ class EventGroup(EventContainer):
 		value, unit = self.remoteSyncDuration
 		return value * unit
 
-	def afterSync(self, startEpoch: float | None = None) -> None:
+	def afterSync(self, startEpoch: int | float | None = None) -> None:
 		"""Record the sync completion time range for the remote group."""
 		assert self.remoteIds is not None
 		endEpoch = now()
