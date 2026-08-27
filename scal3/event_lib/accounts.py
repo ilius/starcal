@@ -61,7 +61,7 @@ class DummyAccount:
 		self.title = title
 
 	def save(self) -> None:
-		pass
+		"""No-op save for a placeholder account."""
 
 	@classmethod
 	def load(
@@ -69,10 +69,10 @@ class DummyAccount:
 		ident: int,
 		fs: FileSystem,
 	) -> AccountType | None:
-		pass
+		"""Return None since dummy accounts are not loaded from disk."""
 
 	def getLoadedObj(self) -> None:
-		pass
+		"""No-op since a dummy account has no real data to load."""
 
 
 # Should not be registered, or instantiate directly
@@ -108,14 +108,17 @@ class Account(HistoryEventObjBinaryModel):
 		ident: int,
 		fs: FileSystem,
 	) -> AccountType | None:
+		"""Load an account from disk by ID."""
 		return cls.s_load(ident, fs)
 
 	@classmethod
 	def getFile(cls, ident: int) -> str:
+		"""Return the file path for the given account ID."""
 		return join(accountsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
+		"""Iterate over all account file paths in the filesystem."""
 		assert state.lastIds is not None
 		for ident in range(1, state.lastIds.account + 1):
 			fpath = cls.getFile(ident)
@@ -125,6 +128,7 @@ class Account(HistoryEventObjBinaryModel):
 
 	@classmethod
 	def getSubclass(cls, typeName: str) -> type:
+		"""Return the registered account subclass for the given type name."""
 		return classes.account.byName[typeName]
 
 	def __bool__(self) -> bool:
@@ -147,6 +151,7 @@ class Account(HistoryEventObjBinaryModel):
 		self.status: str | None = None
 
 	def save(self) -> None:
+		"""Save the account, assigning an ID first if needed."""
 		if self.id is None:
 			self.setId()
 		super().save()
@@ -168,9 +173,11 @@ class Account(HistoryEventObjBinaryModel):
 		self.status = None
 
 	def fetchGroups(self) -> None:
+		"""Fetch the list of remote groups; implemented by subclasses."""
 		raise NotImplementedError
 
 	def fetchAllEventsInGroup(self, _remoteGroupId: Any) -> list[dict[str, Any]]:
+		"""Fetch all events in a remote group; implemented by subclasses."""
 		raise NotImplementedError
 
 	def sync(
@@ -178,9 +185,11 @@ class Account(HistoryEventObjBinaryModel):
 		group: EventGroupType,
 		remoteGroupId: str,  # noqa: ARG002
 	) -> None:
+		"""Synchronize a local group with a remote group; implemented by subclasses."""
 		raise NotImplementedError
 
 	def getDict(self) -> dict[str, Any]:
+		"""Serialize this account to a dictionary for JSON storage."""
 		data = HistoryEventObjBinaryModel.getDict(self)
 		data["type"] = self.name
 		return data

@@ -147,10 +147,12 @@ class VcsBaseEventGroup(EventGroup):
 				log.exception("")
 
 	def afterModify(self) -> None:
+		"""Refresh the VCS module object after a group change."""
 		self.updateVcsModuleObj()
 		super().afterModify()
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate the group from a dictionary and refresh the VCS module."""
 		super().setDict(data)
 		self.updateVcsModuleObj()
 
@@ -177,6 +179,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		self.vcsIds.append(eid)
 
 	def getRulesHash(self) -> int:
+		"""Return a hash of the group's configuration rules."""
 		return hash(
 			str(
 				(
@@ -224,21 +227,24 @@ class VcsEpochBaseEvent(Event):
 		ident: int,
 		fs: FileSystem,
 	) -> Self:
+		"""VCS events are virtual and are never loaded from disk."""
 		raise NotImplementedError
 
 	def __bool__(self) -> bool:
 		return True
 
 	def save(self) -> None:
-		pass
+		"""VCS events are virtual and are never saved to disk."""
 
 	def afterModify(self) -> None:
-		pass
+		"""VCS events are virtual and are never modified."""
 
 	def getInfo(self) -> str:
+		"""Return the event text as its info."""
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Return the event's epoch as an occurrence if it falls within the range."""
 		assert isinstance(self.parent, VcsEpochBaseEventGroup), f"{self.parent=}"
 		epoch = self.epoch
 		if epoch is not None and self.getEpochFromJd(

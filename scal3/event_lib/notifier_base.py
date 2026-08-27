@@ -52,7 +52,8 @@ class EventNotifier(SObj):
 		self.extraMessage = ""
 
 	def getCalType(self) -> int:
+		"""Return the calendar type of the event being notified."""
 		return self.event.calType
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
-		pass
+		"""Trigger the notification; implemented by subclasses."""

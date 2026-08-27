@@ -52,6 +52,7 @@ class DateAndTimeEventRule(DateEventRule):
 	]
 
 	def getServerString(self) -> str:
+		"""Return date and time as a 'YYYY/MM/DD HH:MM:SS' string."""
 		y, m, d = self.date
 		H, M, S = self.time
 		return f"{y:04d}/{m:02d}/{d:02d} {H:02d}:{M:02d}:{S:02d}"
@@ -61,6 +62,7 @@ class DateAndTimeEventRule(DateEventRule):
 		self.time = localtime()[3:6]
 
 	def getEpoch(self) -> int:
+		"""Return the epoch timestamp for this date and time."""
 		return self.parent.getEpochFromJhms(
 			self.getJd(),
 			self.time[0],
@@ -75,16 +77,19 @@ class DateAndTimeEventRule(DateEventRule):
 		self.time = hms.tuple()
 
 	def setJdExact(self, jd: int) -> None:
+		"""Set the date from a Julian day, resetting time to midnight."""
 		self.setJd(jd)
 		self.time = (0, 0, 0)
 
 	def setDate(self, date: tuple[int, int, int]) -> None:
+		"""Set the date, resetting time to midnight."""
 		if len(date) != 3:
 			raise ValueError(f"DateAndTimeEventRule.setDate: bad {date = }")
 		self.date = date
 		self.time = (0, 0, 0)
 
 	def getDate(self, calType: int) -> tuple[int, int, int]:
+		"""Return the date converted to the given calendar type."""
 		return convert(
 			self.date[0],
 			self.date[1],
@@ -94,12 +99,14 @@ class DateAndTimeEventRule(DateEventRule):
 		)
 
 	def getRuleValue(self) -> Any:
+		"""Return date and time as a serializable dictionary."""
 		return {
 			"date": dateEncode(self.date),
 			"time": timeEncode(self.time),
 		}
 
 	def setRuleValue(self, arg: dict[str, str] | str) -> None:
+		"""Set date and time from serialized data, raising BadEventFile on bad input."""
 		if isinstance(arg, dict):
 			try:
 				self.date = dateDecode(arg["date"])
@@ -119,6 +126,7 @@ class DateAndTimeEventRule(DateEventRule):
 			raise BadEventFile(f"bad rule {self.name}={arg!r}")
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of this rule."""
 		return (
 			self.desc
 			+ ": "
@@ -147,6 +155,7 @@ class StartEventRule(DateAndTimeEventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return the interval from the start rule through the range end."""
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getEpoch()),
 			self.getEpochFromJd(endJd),
@@ -172,6 +181,7 @@ class EndEventRule(DateAndTimeEventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return the interval from the range start through the end rule."""
 		return IntervalOccurSet.newFromStartEnd(
 			self.getEpochFromJd(startJd),
 			min(self.getEpochFromJd(endJd), self.getEpoch()),

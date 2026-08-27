@@ -149,6 +149,7 @@ class TaskEvent(SingleStartEndEvent):
 		self.setEndDuration(value, unit)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default start to now and a duration from the group."""
 		super().setDefaults(group=group)
 		tt = localtime()
 		self.setStart(
@@ -282,6 +283,7 @@ class TaskEvent(SingleStartEndEvent):
 				raise RuntimeError("no end rule nor duration rule")
 
 	def copyFrom(self, other: EventType) -> None:
+		"""Copy properties from another event, adjusting time components."""
 		super().copyFrom(other)
 		myStart = StartEventRule.getFrom(self)
 		if myStart is None:
@@ -341,6 +343,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		return data
 
 	def setJd(self, jd: int) -> None:
+		"""Set the start date from a Julian day."""
 		start = StartEventRule.addOrGetFrom(self)
 		start.setJdExact(jd)
 
@@ -355,6 +358,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		self.setEndDurationDays(1)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set default start to today and a duration of one day."""
 		super().setDefaults(group=group)
 		jd = getCurrentJd()
 		self.setJd(jd)
@@ -457,6 +461,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		return True
 
 	def copyFrom(self, other: EventType) -> None:
+		"""Copy properties from another event, preserving the end configuration."""
 		super().copyFrom(other)
 		if other.name == self.name:
 			assert isinstance(other, AllDayTaskEvent), f"{other=}"

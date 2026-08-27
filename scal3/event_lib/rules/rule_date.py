@@ -73,6 +73,7 @@ class DateEventRule(EventRule):
 	# also conflict with "holiday" # FIXME
 
 	def getServerString(self) -> str:
+		"""Return the date as a YYYY/MM/DD string."""
 		y, m, d = self.date
 		return f"{y:04d}/{m:02d}/{d:02d}"
 
@@ -84,19 +85,23 @@ class DateEventRule(EventRule):
 		self.date = getSysDate(self.getCalType())
 
 	def getRuleValue(self) -> Any:
+		"""Return the date as an encoded string."""
 		return str(self)
 
 	def setRuleValue(self, data: str) -> None:
+		"""Set the date from an encoded string."""
 		try:
 			self.date = dateDecode(data)
 		except ValueError:
 			log.exception("")
 
 	def getJd(self) -> int:
+		"""Return the Julian day for this date."""
 		year, month, day = self.date
 		return to_jd(year, month, day, self.getCalType())
 
 	def getEpoch(self) -> int:
+		"""Return the epoch timestamp for this date."""
 		return self.getEpochFromJd(self.getJd())
 
 	def setJd(self, jd: int) -> None:
@@ -109,12 +114,14 @@ class DateEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return the single matching date within the range, if any."""
 		myJd = self.getJd()
 		if startJd <= myJd < endJd:
 			return JdOccurSet({myJd})
 		return JdOccurSet()
 
 	def changeCalType(self, calType: int) -> bool:
+		"""Convert the date to a new calendar type."""
 		self.date = jd_to(self.getJd(), calType)
 		return True
 
@@ -129,6 +136,7 @@ class ExDatesEventRule(EventRule):
 	params = ["dates"]
 
 	def getServerString(self) -> str:
+		"""Return all excluded dates as a space-separated string."""
 		return " ".join(f"{y:04d}/{m:02d}/{d:02d}" for y, m, d in self.dates)
 
 	def __str__(self) -> str:
@@ -139,6 +147,7 @@ class ExDatesEventRule(EventRule):
 		self.setDates([])
 
 	def setDates(self, dates: list[tuple[int, int, int]]) -> None:
+		"""Set the excluded dates and precompute their Julian days."""
 		self.dates = dates
 		self.jdList = [to_jd(y, m, d, self.getCalType()) for y, m, d in dates]
 
@@ -148,18 +157,21 @@ class ExDatesEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return every day in the range except the excluded dates."""
 		# improve performance # FIXME
 		return JdOccurSet(
 			set(range(startJd, endJd)).difference(self.jdList),
 		)
 
 	def getRuleValue(self) -> Any:
+		"""Return the excluded dates as a list of encoded strings."""
 		return [dateEncode(date) for date in self.dates]
 
 	def setRuleValue(
 		self,
 		datesConf: str | list[str | tuple[int, int, int] | list[int]],
 	) -> None:
+		"""Set the excluded dates from serialized data."""
 		dates: list[tuple[int, int, int]] = []
 		try:
 			if isinstance(datesConf, str):
@@ -179,5 +191,6 @@ class ExDatesEventRule(EventRule):
 			log.exception("")
 
 	def changeCalType(self, calType: int) -> bool:
+		"""Convert the excluded dates to a new calendar type."""
 		self.dates = [jd_to(jd, calType) for jd in self.jdList]
 		return True

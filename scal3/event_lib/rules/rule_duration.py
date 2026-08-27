@@ -65,6 +65,7 @@ class DurationEventRule(EventRule):
 		return f"{self.value} {self.getUnitDesc()}"
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the duration."""
 		return (
 			self.desc
 			+ ": "
@@ -74,6 +75,7 @@ class DurationEventRule(EventRule):
 		)
 
 	def getUnitDesc(self) -> str:
+		"""Return the human-readable name of the current unit."""
 		return {
 			1: "seconds",
 			60: "minutes",
@@ -83,9 +85,11 @@ class DurationEventRule(EventRule):
 		}[self.unit]
 
 	def getServerString(self) -> str:
+		"""Return the duration as a compact string."""
 		return str(self.value) + " " + self.getUnitSymbol()
 
 	def getUnitSymbol(self) -> str:
+		"""Return the short symbol of the current unit."""
 		return {
 			1: "s",
 			60: "m",
@@ -113,6 +117,7 @@ class DurationEventRule(EventRule):
 		self.unit, self.value = s, 1
 
 	def setRuleValue(self, data: str) -> None:
+		"""Set the duration value and unit from encoded data."""
 		try:
 			self.value, self.unit = durationDecode(data)
 		except Exception as e:
@@ -121,6 +126,7 @@ class DurationEventRule(EventRule):
 			)
 
 	def getRuleValue(self) -> Any:
+		"""Return the duration as an encoded string."""
 		return durationEncode(self.value, self.unit)
 
 	def calcOccurrence(
@@ -129,6 +135,7 @@ class DurationEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return the interval from the parent start for this duration, within range."""
 		parentStart = self.parent["start"]
 		if parentStart is None:
 			raise RuntimeError("parent has no start rule")

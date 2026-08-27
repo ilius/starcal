@@ -83,6 +83,7 @@ lockPath = join(confDir, "event", "lock.json")
 
 
 def init(fs: FileSystem) -> None:
+	"""Initialize the event data directories, state, and ID tracking."""
 	fs.makeDir(objectDirName)
 	fs.makeDir(eventsDir)
 	fs.makeDir(groupsDir)
@@ -104,6 +105,7 @@ def init(fs: FileSystem) -> None:
 
 
 def removeUnusedObjects(fs: FileSystem) -> None:
+	"""Delete object blobs not referenced by any event history."""
 	if state.allReadOnly:
 		raise RuntimeError("removeUnusedObjects: EVENTS ARE READ-ONLY")
 

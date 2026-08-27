@@ -38,6 +38,7 @@ class ClassGroup[T: BaseClassType]:
 		return self.lst[i]
 
 	def index(self, x: type[T]) -> int:
+		"""Return the registration index of the given class."""
 		return self.lst.index(x)
 
 	def register(

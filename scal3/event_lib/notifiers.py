@@ -57,6 +57,7 @@ class AlarmNotifier(EventNotifier):
 		self.playerCmd = "mplayer"
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
+		"""Play the alarm sound via the GTK alarm notifier."""
 		from scal3.ui_gtk.event.notifier.alarm import notify
 
 		notify(self, finishFunc)
@@ -84,6 +85,7 @@ class FloatingMsgNotifier(EventNotifier):
 		self.textColor: ColorType = RGB(0, 0, 0)
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
+		"""Show the scrolling floating message via the GTK notifier."""
 		from scal3.ui_gtk.event.notifier.floatingMsg import notify
 
 		notify(self, finishFunc)
@@ -102,6 +104,7 @@ class WindowMsgNotifier(EventNotifier):
 		# window icon, FIXME
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
+		"""Open the popup message window via the GTK notifier."""
 		from scal3.ui_gtk.event.notifier.windowMsg import notify
 
 		notify(self, finishFunc)
@@ -124,6 +127,7 @@ class CommandNotifier(EventNotifier):
 		self.pyEval = False
 
 	def notify(self, finishFunc: Callable[[], None]) -> None:
+		"""Run the external command; not yet implemented."""
 		raise NotImplementedError
 		# from scal3.ui_gtk.event.command.alarm import notify
 

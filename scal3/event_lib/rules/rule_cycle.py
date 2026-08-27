@@ -82,6 +82,7 @@ class CycleDaysEventRule(EventRule):
 	params = ["days"]
 
 	def getServerString(self) -> str:
+		"""Return the number of days as a string."""
 		return str(self.days)
 
 	def __str__(self) -> str:
@@ -92,9 +93,11 @@ class CycleDaysEventRule(EventRule):
 		self.days = 7
 
 	def getRuleValue(self) -> Any:
+		"""Return the cycle length in days."""
 		return self.days
 
 	def setRuleValue(self, days: int) -> None:
+		"""Set the cycle length in days."""
 		self.days = days
 
 	def calcOccurrence(
@@ -103,9 +106,11 @@ class CycleDaysEventRule(EventRule):
 		endJd: int,
 		event: EventType,
 	) -> OccurSetType:
+		"""Calculate occurrences repeating every N days."""
 		return cycleDaysCalcOccurrence(self.days, startJd, endJd, event)
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the cycle."""
 		return _("Repeat: Every {days} Days").format(days=_(self.days))
 
 
@@ -125,6 +130,7 @@ class CycleWeeksEventRule(EventRule):
 	params = ["weeks"]
 
 	def getServerString(self) -> str:
+		"""Return the number of weeks as a string."""
 		return str(self.weeks)
 
 	def __str__(self) -> str:
@@ -135,9 +141,11 @@ class CycleWeeksEventRule(EventRule):
 		self.weeks = 1
 
 	def getRuleValue(self) -> Any:
+		"""Return the cycle length in weeks."""
 		return self.weeks
 
 	def setRuleValue(self, weeks: int) -> None:
+		"""Set the cycle length in weeks."""
 		self.weeks = weeks
 
 	def calcOccurrence(
@@ -146,6 +154,7 @@ class CycleWeeksEventRule(EventRule):
 		endJd: int,
 		event: EventType,
 	) -> OccurSetType:
+		"""Calculate occurrences repeating every N weeks."""
 		return cycleDaysCalcOccurrence(
 			self.weeks * 7,
 			startJd,
@@ -154,6 +163,7 @@ class CycleWeeksEventRule(EventRule):
 		)
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the cycle."""
 		return _("Repeat: Every {weeks} Weeks").format(weeks=_(self.weeks))
 
 
@@ -179,6 +189,7 @@ class CycleLenEventRule(EventRule):
 	]
 
 	def getServerString(self) -> str:
+		"""Return days and extra time as a compact string."""
 		H, M, S = self.extraTime
 		return f"{self.days} {H:02d}:{M:02d}:{S:02d}"
 
@@ -192,12 +203,14 @@ class CycleLenEventRule(EventRule):
 		self.extraTime = (0, 0, 0)
 
 	def getRuleValue(self) -> Any:
+		"""Return days and extra time as a serializable dictionary."""
 		return {
 			"days": self.days,
 			"extraTime": timeEncode(self.extraTime),
 		}
 
 	def setRuleValue(self, arg: dict[str, Any]) -> None:
+		"""Set days and extra time from serialized data."""
 		self.days = arg["days"]
 		try:
 			self.extraTime = timeDecode(arg["extraTime"])
@@ -210,6 +223,7 @@ class CycleLenEventRule(EventRule):
 		endJd: int,
 		event: EventType,
 	) -> OccurSetType:
+		"""Calculate occurrences repeating every N days plus extra time."""
 		startEpoch = self.getEpochFromJd(startJd)
 		eventStartEpoch = event.getStartEpoch()
 		# --
@@ -229,6 +243,7 @@ class CycleLenEventRule(EventRule):
 		)
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the cycle."""
 		return _("Repeat: Every {days} Days and {hms}").format(
 			days=_(self.days),
 			hms=timeEncode(self.extraTime),
