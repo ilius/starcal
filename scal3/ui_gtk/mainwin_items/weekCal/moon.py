@@ -89,7 +89,7 @@ class MoonStatusColumn(Column):
 
 		def draw_arc(
 			imgCenterY: float,
-			arcScale: float | None,
+			arcScale: int | float | None,
 			upwards: bool,
 			clockWise: bool,
 		) -> None:

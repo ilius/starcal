@@ -586,7 +586,7 @@ def get_pixbuf_hash(pbuf: GdkPixbuf.Pixbuf) -> str:
 def window_set_size_aspect(
 	win: gtk.Window,
 	min_aspect: float,
-	max_aspect: float | None = None,
+	max_aspect: int | float | None = None,
 ) -> None:
 	if max_aspect is None:
 		max_aspect = min_aspect

@@ -1881,7 +1881,7 @@ class EventManagerDialog(CalObjWidget):
 
 	def treeviewCursorChangedPath(self, path: list[int]) -> None:
 		text = ""
-		modified: float | None = None
+		modified: int | float | None = None
 		if len(path) == 1:
 			group = self.getGroupOrTrashByPath(path)
 			assert group.id is not None

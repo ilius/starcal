@@ -183,7 +183,7 @@ loadConf()
 class TranslateFunc(Protocol):
 	def __call__(
 		self,
-		s: str | float,
+		s: str | int | float,
 		nums: bool = False,
 		ctx: str | None = None,
 		default: str | None = None,
@@ -195,7 +195,7 @@ class TranslateFunc(Protocol):
 
 
 def fallbackTranslate(
-	s: str | float,
+	s: str | int | float,
 	nums: bool = False,  # noqa: ARG001
 	ctx: str | None = None,  # noqa: ARG001
 	default: str | None = None,  # noqa: ARG001
@@ -395,7 +395,7 @@ def loadTranslator() -> TranslateFunc:
 		return fallbackTranslate
 
 	def tr(
-		s: str | float,
+		s: str | int | float,
 		nums: bool = False,
 		ctx: str | None = None,
 		default: str | None = None,

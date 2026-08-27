@@ -63,6 +63,8 @@ lint.select = [
 ]
 
 lint.ignore = [
+	"PYI041", # Use `float` instead of `int | float` -> because of mypy bug? see 2ebadaeb
+
 	"RUF067", # `__init__` module should only contain docstrings and re-exports
 
 	"ANN401",  # Dynamically typed expressions (typing.Any) are disallowed

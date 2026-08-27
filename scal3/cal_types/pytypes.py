@@ -12,7 +12,7 @@ __all__ = ["CalTypeModule", "OptionTuple", "TranslateFunc"]
 class TranslateFunc(Protocol):
 	def __call__(
 		self,
-		s: str | float,
+		s: str | int | float,
 		nums: bool = False,
 		ctx: str | None = None,
 		default: str | None = None,
