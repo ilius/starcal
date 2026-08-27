@@ -39,7 +39,7 @@ __all__ = [
 
 
 class BaseClassType(Protocol):
-	"""Common attributes shared by all registrable event classes."""
+	"""Common attributes shared by all registrable classes."""
 
 	name: str
 	tname: str
@@ -76,7 +76,7 @@ class OccurSetType(Protocol):
 		"""Return the first Julian day of this set, or None if empty."""
 
 	def getEndJd(self) -> int | None:
-		"""Return the last Julian day of this set, or None if empty."""
+		"""Return the exclusive end Julian day of this set, or None if empty."""
 
 
 class RuleContainerType(BaseClassType, Protocol):
@@ -374,7 +374,7 @@ class EventContainerType(BaseTextModelType, Protocol):
 		"""Return the ID path from the root object to this container."""
 
 	def getPath(self) -> list[int]:
-		"""Return the ID path from the root object to this container."""
+		"""Return the index path from the root object to this container."""
 
 	def updateOccurrenceEvent(self, event: EventType) -> None:
 		"""Update the occurrence tree for a single event."""
@@ -496,7 +496,7 @@ class EventGroupType(EventContainerType, Protocol):
 		data: dict[str, Any],
 		importMode: int,
 	) -> EventGroupsImportResult:
-		"""Import groups from a data dict, creating or updating as needed."""
+		"""Import events from data dict into group, creating or updating as needed."""
 
 	def exportToIcsFp(self, fp: IO[str]) -> None:
 		"""Write all events in this group to an ICS file object."""

@@ -66,7 +66,7 @@ class OccurSet(SObj):
 		raise NotImplementedError
 
 	def getEndJd(self) -> int | None:
-		"""Return the last Julian day of this set, or None if empty."""
+		"""Return the exclusive end Julian day of this set, or None if empty."""
 		raise NotImplementedError
 
 	# def __iter__(self) -> Iterator:
@@ -278,7 +278,7 @@ class TimeListOccurSet(OccurSet):
 		return getJdFromEpoch(min(self.epochList))
 
 	def getEndJd(self) -> int | None:
-		"""Return the Julian day after the latest epoch, or None if empty."""
+		"""Return the Julian day of the latest epoch (+1s), or None if empty."""
 		if not self.epochList:
 			return None
 		return getJdFromEpoch(max(self.epochList) + 1)

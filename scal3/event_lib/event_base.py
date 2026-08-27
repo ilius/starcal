@@ -429,7 +429,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return data
 
 	def index(self, eid: int) -> int:
-		"""Return the positional index of the event in its container."""
+		"""Return the positional index of an event ID in the container."""
 		raise NotImplementedError
 
 	def setDict(self, data: dict[str, Any]) -> None:

@@ -347,7 +347,7 @@ class EventGroup(EventContainer):
 		self.__readOnly = readOnly
 
 	def isReadOnly(self) -> bool:
-		"""Return True if events are globally or this group is read-only."""
+		"""Return True if events are globally read-only or this group is read-only."""
 		return state.allReadOnly or self.__readOnly
 
 	def save(self) -> None:

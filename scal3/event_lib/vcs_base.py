@@ -97,7 +97,7 @@ class VcsBaseEventGroup(EventGroup):
 		self.showInTimeLine = False
 
 	def getRulesHash(self) -> int:
-		"""Return a hash of the group's configuration rules."""
+		"""Return a hash of the group's configuration attributes."""
 		return hash(
 			str(
 				(
@@ -179,7 +179,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		self.vcsIds.append(eid)
 
 	def getRulesHash(self) -> int:
-		"""Return a hash of the group's configuration rules."""
+		"""Return a hash of the group's configuration attributes."""
 		return hash(
 			str(
 				(
