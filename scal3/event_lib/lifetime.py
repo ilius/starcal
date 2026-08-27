@@ -125,6 +125,7 @@ class LifetimeEvent(SingleStartEndEvent):
 		return data
 
 	def setJd(self, jd: int) -> None:
+		"""Set both the start and end dates from a Julian day."""
 		StartEventRule.addOrGetFrom(self).setJdExact(jd)
 		EndEventRule.addOrGetFrom(self).setJdExact(jd)
 

@@ -59,6 +59,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 
 	@classmethod
 	def getMainClass(cls) -> type[EventGroupType] | None:
+		"""Return the main group class from the registry."""
 		return classes.group.main
 
 	def __init__(
@@ -73,6 +74,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self.calType = 0  # not used? just for group.parent eligibilty
 
 	def setTrash(self, trash: EventTrash) -> None:
+		"""Set the trash container used when deleting groups."""
 		self.trash = trash
 
 	def create(self, groupName: str) -> EventGroupType:
@@ -123,6 +125,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			self.save()
 
 	def getEnableIds(self) -> list[int]:
+		"""Return the IDs of all enabled groups."""
 		return [group.id or -1 for group in self if group.enable]
 
 	def moveToTrash(

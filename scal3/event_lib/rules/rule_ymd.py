@@ -51,6 +51,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 	params = ["values"]
 
 	def getServerString(self) -> str:
+		"""Return the year values as a space-separated string."""
 		return numRangesEncode(self.values, " ")  # no comma
 
 	def __init__(self, parent: RuleContainerType) -> None:
@@ -58,6 +59,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		self.values = [getSysDate(self.getCalType())[0]]
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day's year is selected."""
 		return self.hasValue(jd_to(jd, self.getCalType())[0])
 
 	def newCalTypeValues(
@@ -84,6 +86,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		return values2
 
 	def changeCalType(self, calType: int) -> bool:
+		"""Convert the year values to a new calendar type."""
 		self.values = self.newCalTypeValues(calType)
 		return True
 
@@ -106,9 +109,11 @@ class MonthEventRule(AllDayEventRule):
 		self.values: list[int] = [1]
 
 	def getRuleValue(self) -> Any:
+		"""Return the list of matching months."""
 		return self.values
 
 	def setRuleValue(self, data: Any) -> None:
+		"""Set the month values, wrapping a scalar in a list."""
 		if not isinstance(data, tuple | list):
 			data = [data]
 		self.values = data
@@ -117,12 +122,15 @@ class MonthEventRule(AllDayEventRule):
 		return textNumEncode(", ".join(str(x) for x in self.values))
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
+		"""Return False since month numbers cannot be converted between calendars."""
 		return False
 
 	def getServerString(self) -> str:
+		"""Return the month values as a space-separated string."""
 		return " ".join(str(n) for n in self.values)
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day's month is selected."""
 		return jd_to(jd, self.getCalType())[1] in self.values
 
 
@@ -135,6 +143,7 @@ class DayOfMonthEventRule(MultiValueAllDayEventRule):
 	params = ["values"]
 
 	def getServerString(self) -> str:
+		"""Return the day values as a space-separated string."""
 		return numRangesEncode(self.values, " ")  # no comma
 
 	def __init__(self, parent: RuleContainerType) -> None:
@@ -142,6 +151,7 @@ class DayOfMonthEventRule(MultiValueAllDayEventRule):
 		self.values = [1]
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day of month is selected."""
 		return self.hasValue(jd_to(jd, self.getCalType())[2])
 
 
@@ -153,6 +163,7 @@ class ExYearEventRule(YearEventRule):
 	desc = "[" + _("Exception") + "] " + _("Year")
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day's year is not selected."""
 		return not YearEventRule.jdMatches(self, jd)
 
 
@@ -169,6 +180,7 @@ class ExMonthEventRule(MonthEventRule):
 	)
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day's month is not selected."""
 		return not MonthEventRule.jdMatches(self, jd)
 
 
@@ -180,4 +192,5 @@ class ExDayOfMonthEventRule(DayOfMonthEventRule):
 	desc = "[" + _("Exception") + "] " + _("Day of Month")
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the day of month is not selected."""
 		return not DayOfMonthEventRule.jdMatches(self, jd)

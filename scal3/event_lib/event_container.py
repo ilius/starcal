@@ -53,6 +53,8 @@ __all__ = ["DummyEventContainer", "EventContainer"]
 
 
 class DummyEventGroupsHolder(Protocol):
+	"""Minimal interface for a mapping of group IDs to groups."""
+
 	def __getitem__(self, ident: int) -> EventGroupType: ...
 
 
@@ -78,6 +80,8 @@ class DummyEventContainer:
 
 
 class Smallest:
+	"""Sentinel value that compares as less than any other value."""
+
 	def __eq__(self, other: object) -> bool:
 		return isinstance(other, Smallest)
 
@@ -185,6 +189,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		self.notificationEnabled = False
 
 	def getTimeZoneObj(self) -> tzinfo | None:
+		"""Return the container's time zone, or the local time zone."""
 		if self.timeZoneEnable and self.timeZone:
 			tz = mytz.gettz(self.timeZone)
 			if tz:
@@ -192,15 +197,19 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return locale_man.localTz
 
 	def getEpochFromJd(self, jd: int) -> int:
+		"""Convert a Julian day to an epoch timestamp in the container's time zone."""
 		return getEpochFromJd(jd, tz=self.getTimeZoneObj())
 
 	def getStartEpoch(self) -> int:
+		"""Return the epoch timestamp of the container's start date."""
 		return self.getEpochFromJd(self.startJd)
 
 	def getEndEpoch(self) -> int:
+		"""Return the epoch timestamp of the container's end date."""
 		return self.getEpochFromJd(self.endJd)
 
 	def afterModify(self) -> None:
+		"""Update the modification timestamp after a change."""
 		self.modified = now()
 
 	def getEvent(self, ident: int) -> EventType:
@@ -259,6 +268,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			)
 
 	def postAdd(self, event: EventType) -> None:
+		"""Set the event's parent to this container after adding."""
 		event.parent = self  # needed? FIXME
 
 	def insert(self, index: int, event: EventType) -> None:
@@ -283,6 +293,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			self.append(event)
 
 	def getPath(self) -> list[int]:
+		"""Return the ID path from the root object to this container."""
 		if self.parent is None:
 			raise RuntimeError("getPath: parent is None")
 		path = SObj.getPath(self)
@@ -291,6 +302,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return path
 
 	def index(self, ident: int) -> int:
+		"""Return the positional index of an event ID in the list."""
 		return self.idList.index(ident)
 
 	def moveUp(self, index: int) -> None:
@@ -343,12 +355,14 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		return event
 
 	def updateOccurrenceEvent(self, event: EventType) -> None:
+		"""Update the occurrence tree for a single event; implemented by subclasses."""
 		raise NotImplementedError
 
 	def getCourseNameById(
 		self,
 		courseId: int,
 	) -> str:
+		"""Return the name of a course; implemented by subclasses."""
 		raise NotImplementedError
 
 	def getSortBys(self) -> tuple[str, list[tuple[str, str, bool]]]:
@@ -362,6 +376,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 		]
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for an event and attribute."""
 		assert self.occur is not None
 		assert event.id is not None
 		if attr in {"time_last", "time_first"}:

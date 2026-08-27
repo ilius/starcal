@@ -77,12 +77,16 @@ __all__ = [
 
 
 class WeeklyScheduleItem(NamedTuple):
+	"""A single class entry shown in the weekly schedule grid."""
+
 	name: str  # Course Name
 	weekNumMode: str  # values: "odd", "even", "any"
 
 
 @classes.group.register
 class UniversityTerm(EventGroup):
+	"""Group representing a university term with courses, classes, and exams."""
+
 	name = "universityTerm"
 	desc = _("University Term (Semester)")
 	acceptsEventTypes: Sequence[str] = (
@@ -112,6 +116,7 @@ class UniversityTerm(EventGroup):
 	)
 
 	def getSortByValue(self, event: EventType, attr: str) -> Any:
+		"""Return the sort key value for course or time attributes."""
 		if event.name in self.acceptsEventTypes:
 			if attr == "course":
 				assert isinstance(event, UniversityClassEvent | UniversityExamEvent), (
@@ -157,6 +162,7 @@ class UniversityTerm(EventGroup):
 		]  # FIXME
 
 	def getClassBoundsFormatted(self) -> tuple[list[str], list[float]] | None:
+		"""Return formatted time titles and fractional positions for class bounds."""
 		count = len(self.classTimeBounds)
 		if count < 2:
 			return None
@@ -261,12 +267,14 @@ class UniversityTerm(EventGroup):
 	# 	return dict([c[:2] for c in self.courses])
 
 	def getCourseNameById(self, courseId: int) -> str:
+		"""Return the name of a course, or a placeholder if deleted."""
 		for course in self.courses:
 			if course[0] == courseId:
 				return course[1]
 		return _("Deleted Course")
 
 	def setDefaults(self) -> None:
+		"""Set default term date ranges based on the current date."""
 		calType = calTypes.names[self.calType]
 		# odd term or even term?
 		jd = getCurrentJd()
@@ -296,6 +304,7 @@ class UniversityTerm(EventGroup):
 	# 	return self.lastCourseId
 
 	def getDict(self) -> dict[str, Any]:
+		"""Serialize the term to a dictionary for JSON storage."""
 		data = EventGroup.getDict(self)
 		data.update(
 			{
@@ -306,6 +315,7 @@ class UniversityTerm(EventGroup):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate the term from a dictionary, decoding date and time fields."""
 		super().setDict(data)
 		# self.setCourses(data["courses"])
 		if "classesEndDate" in data:
@@ -319,6 +329,7 @@ class UniversityTerm(EventGroup):
 			)
 
 	def afterModify(self) -> None:
+		"""Refresh event summaries after the term changes."""
 		super().afterModify()
 		for event in self:
 			try:
@@ -336,6 +347,8 @@ class UniversityTerm(EventGroup):
 
 @classes.event.register
 class UniversityClassEvent(Event):
+	"""A recurring class meeting within a university term."""
+
 	name = "universityClass"
 	desc = _("Class")
 	iconName = "university"
@@ -353,6 +366,7 @@ class UniversityClassEvent(Event):
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		assert dayTimeRange is not None
@@ -385,6 +399,7 @@ class UniversityClassEvent(Event):
 		self,
 		group: EventGroupType | None = None,
 	) -> None:
+		"""Set a default time range from the term's class bounds."""
 		super().setDefaults(group=group)
 		if group and group.name == "universityTerm":
 			if TYPE_CHECKING:
@@ -403,18 +418,21 @@ class UniversityClassEvent(Event):
 				)
 
 	def getCourseName(self) -> str:
+		"""Return the name of the course this class belongs to."""
 		# assert self.parent is not None
 		assert isinstance(self.parent, UniversityTerm), f"{self.parent=}"
 		assert self.courseId is not None
 		return self.parent.getCourseNameById(self.courseId)
 
 	def getWeekDayName(self) -> str:
+		"""Return the localized name of the day of week this class meets."""
 		rule = WeekDayEventRule.getFrom(self)
 		if rule is None:
 			raise RuntimeError("no weekDay rule")
 		return weekDayName[rule.weekDayList[0]]
 
 	def updateSummary(self) -> None:
+		"""Set the summary from the course name and week day."""
 		self.summary = (
 			_("{courseName} Class").format(courseName=self.getCourseName())
 			+ " ("
@@ -423,6 +441,7 @@ class UniversityClassEvent(Event):
 		)
 
 	def setJd(self, jd: int) -> None:
+		"""Set the week day from a Julian day."""
 		rule = WeekDayEventRule.getFrom(self)
 		if rule is None:
 			raise RuntimeError("no weekDay rule")
@@ -430,6 +449,7 @@ class UniversityClassEvent(Event):
 		# set weekNumMode from absWeekNumber FIXME
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return iCalendar data with a weekly recurrence rule."""
 		start = StartEventRule.getFrom(self)
 		if start is None:
 			raise RuntimeError("no start rule")
@@ -477,6 +497,8 @@ class UniversityClassEvent(Event):
 
 @classes.event.register
 class UniversityExamEvent(DailyNoteEvent):
+	"""An exam event tied to a course within a university term."""
+
 	name = "universityExam"
 	desc = _("Exam")
 	iconName = "university"
@@ -492,6 +514,7 @@ class UniversityExamEvent(DailyNoteEvent):
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		assert dayTimeRange is not None
@@ -516,6 +539,7 @@ class UniversityExamEvent(DailyNoteEvent):
 		self.courseId: int | None = None  # FIXME
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
+		"""Set a default 09:00-11:00 time range and date from the term."""
 		super().setDefaults(group=group)
 		dayTimeRange = DayTimeRangeEventRule.getFrom(self)
 		if dayTimeRange is None:
@@ -525,17 +549,20 @@ class UniversityExamEvent(DailyNoteEvent):
 			self.setJd(group.endJd)  # FIXME
 
 	def getCourseName(self) -> str:
+		"""Return the name of the course this exam belongs to."""
 		# assert self.parent is not None
 		assert isinstance(self.parent, UniversityTerm), f"{self.parent=}"
 		assert self.courseId is not None
 		return self.parent.getCourseNameById(self.courseId)
 
 	def updateSummary(self) -> None:
+		"""Set the summary from the course name."""
 		self.summary = _("{courseName} Exam").format(
 			courseName=self.getCourseName(),
 		)
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
+		"""Return the exam's time interval within the given Julian day range."""
 		jd = self.getJd()
 		if not startJd <= jd < endJd:
 			return IntervalOccurSet()
@@ -555,6 +582,7 @@ class UniversityExamEvent(DailyNoteEvent):
 		)
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
+		"""Return iCalendar data for the exam."""
 		date = DateEventRule.getFrom(self)
 		if date is None:
 			raise RuntimeError("no date rule")

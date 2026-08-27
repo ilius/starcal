@@ -66,6 +66,7 @@ class WeekNumberModeEventRule(EventRule):
 	weekNumModeNames = ("any", "odd", "even")
 
 	def getServerString(self) -> str:
+		"""Return the week number mode name as a string."""
 		return self.weekNumModeNames[self.weekNumMode]
 
 	def __init__(self, parent: RuleContainerType) -> None:
@@ -73,9 +74,11 @@ class WeekNumberModeEventRule(EventRule):
 		self.weekNumMode = self.EVERY_WEEK
 
 	def getRuleValue(self) -> Any:
+		"""Return the week number mode name."""
 		return self.weekNumModeNames[self.weekNumMode]
 
 	def setRuleValue(self, wnModeName: str) -> None:
+		"""Set the week number mode by name, raising BadEventFile if invalid."""
 		if wnModeName not in self.weekNumModeNames:
 			raise BadEventFile(
 				f"bad rule value {wnModeName=}, "
@@ -90,6 +93,7 @@ class WeekNumberModeEventRule(EventRule):
 		endJd: int,
 		event: EventType,
 	) -> OccurSetType:
+		"""Return all days in the range restricted by the odd/even week mode."""
 		# improve performance FIXME
 		startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1
 		# 1st week # FIXME
@@ -120,6 +124,7 @@ class WeekNumberModeEventRule(EventRule):
 		return self.weekNumModeNames[self.weekNumMode]
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the week mode."""
 		if self.weekNumMode == self.EVERY_WEEK:
 			return ""
 		if self.weekNumMode == self.ODD_WEEKS:
@@ -143,6 +148,7 @@ class WeekDayEventRule(AllDayEventRule):
 	params = ["weekDayList"]
 
 	def getServerString(self) -> str:
+		"""Return the week day list as a joined string."""
 		return s_join(self.weekDayList)
 
 	def __init__(self, parent: RuleContainerType) -> None:
@@ -150,9 +156,11 @@ class WeekDayEventRule(AllDayEventRule):
 		self.weekDayList = list(range(7))  # select all days by default
 
 	def getRuleValue(self) -> Any:
+		"""Return the list of matching week days."""
 		return self.weekDayList
 
 	def setRuleValue(self, data: int | list[int]) -> None:
+		"""Set the week day list, raising BadEventFile on invalid input."""
 		if isinstance(data, int):
 			self.weekDayList = [data]
 		elif isinstance(data, tuple | list):
@@ -165,6 +173,7 @@ class WeekDayEventRule(AllDayEventRule):
 			)
 
 	def jdMatches(self, jd: int) -> bool:
+		"""Return True if the given day's week day is selected."""
 		return jwday(jd) in self.weekDayList
 
 	def __str__(self) -> str:
@@ -173,6 +182,7 @@ class WeekDayEventRule(AllDayEventRule):
 		return ", ".join([weekDayNameEnglish[wd] for wd in self.weekDayList])
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the selected week days."""
 		if self.weekDayList == list(range(7)):
 			return ""
 		sep = _(",") + " "
@@ -251,6 +261,7 @@ class WeekMonthEventRule(EventRule):
 		self.weekDay = firstWeekDay.v
 
 	def getRuleValue(self) -> Any:
+		"""Return month, week index, and week day as a dictionary."""
 		return {
 			"month": self.month,
 			"wmIndex": self.wmIndex,
@@ -258,12 +269,14 @@ class WeekMonthEventRule(EventRule):
 		}
 
 	def setRuleValue(self, data: Any) -> None:
+		"""Set month, week index, and week day from a dictionary."""
 		assert isinstance(data, dict), f"{data=}"
 		self.month = data["month"]
 		self.wmIndex = data["wmIndex"]
 		self.weekDay = data["weekDay"]
 
 	def getServerString(self) -> str:
+		"""Return the rule as a JSON string."""
 		return json.dumps(
 			{
 				"weekIndex": self.wmIndex,
@@ -287,6 +300,7 @@ class WeekMonthEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return all matching weekday-in-month occurrences within the range."""
 		calType = self.getCalType()
 		startYear, _startMonth, _startDay = jd_to(startJd, calType)
 		endYear, _endMonth, _endDay = jd_to(endJd, calType)

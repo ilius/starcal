@@ -71,6 +71,7 @@ groupsDir = join("event", "groups")
 
 
 def listToDict(value: Any) -> dict[Any, Any]:
+	"""Convert a list of (key, value) pairs into a dict, passing dicts through."""
 	if not isinstance(value, list):
 		assert isinstance(value, dict)
 		return value
@@ -170,10 +171,12 @@ class EventGroup(EventContainer):
 		ident: int,
 		fs: FileSystem,
 	) -> EventGroupType | None:
+		"""Load a group from disk by ID."""
 		return cls.s_load(ident, fs)
 
 	@property
 	def mustId(self) -> int:
+		"""Return the group ID, asserting it has been assigned."""
 		assert self.id is not None
 		return self.id
 
@@ -191,10 +194,12 @@ class EventGroup(EventContainer):
 
 	@classmethod
 	def getFile(cls, ident: int) -> str:
+		"""Return the file path for the given group ID."""
 		return join(groupsDir, f"{ident}.json")
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterator[str]:
+		"""Iterate over all group file paths in the filesystem."""
 		assert state.lastIds is not None
 		for ident in range(1, state.lastIds.group + 1):
 			fpath = cls.getFile(ident)
@@ -204,9 +209,11 @@ class EventGroup(EventContainer):
 
 	@classmethod
 	def getSubclass(cls, typeName: str) -> type[EventGroupType]:
+		"""Return the registered group subclass for the given type name."""
 		return classes.group.byName[typeName]
 
 	def showInCal(self) -> bool:
+		"""Return True if the group is shown in any of the calendar views."""
 		return self.showInDCal or self.showInWCal or self.showInMCal
 
 	def __getitem__(self, key: int) -> EventType:
@@ -234,6 +241,7 @@ class EventGroup(EventContainer):
 			)
 
 	def checkEventToAdd(self, event: EventType) -> bool:
+		"""Return True if the event type is accepted by this group."""
 		return event.name in self.acceptsEventTypes
 
 	def __repr__(self) -> str:
@@ -307,6 +315,7 @@ class EventGroup(EventContainer):
 		self.eventCache = LRUCache(maxsize=self.eventCacheSize)
 
 	def clearCache(self) -> None:
+		"""Clear all cached event objects."""
 		if self.eventCache:
 			self.eventCache.clear()
 
@@ -334,9 +343,11 @@ class EventGroup(EventContainer):
 		self.deletedRemoteEvents: dict[int, tuple[float, int, str, str]] = {}
 
 	def setReadOnly(self, readOnly: bool) -> None:
+		"""Set this group's read-only flag (used during remote sync)."""
 		self.__readOnly = readOnly
 
 	def isReadOnly(self) -> bool:
+		"""Return True if events are globally or this group is read-only."""
 		return state.allReadOnly or self.__readOnly
 
 	def save(self) -> None:
@@ -379,6 +390,7 @@ class EventGroup(EventContainer):
 		return self.enable
 
 	def setId(self, ident: int | None = None) -> None:
+		"""Assign a numeric ID to this group, auto-incrementing if None or negative."""
 		assert state.lastIds is not None
 		with state.lock:
 			if ident is None or ident < 0:
@@ -390,12 +402,15 @@ class EventGroup(EventContainer):
 		self.file = self.getFile(self.id)
 
 	def setTitle(self, title: str) -> None:
+		"""Set the group title."""
 		self.title = title
 
 	def setColor(self, color: RGB) -> None:
+		"""Set the group color."""
 		self.color = color
 
 	def getDict(self) -> dict[str, Any]:
+		"""Serialize this group to a dictionary for JSON storage."""
 		data = EventContainer.getDict(self)
 		data["type"] = self.name
 		for attr in (
@@ -408,6 +423,7 @@ class EventGroup(EventContainer):
 		return data
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate this group from a dictionary, resolving compatibility fields."""
 		eventCacheSize = self.eventCacheSize
 		if "showInCal" in data:  # for compatibility
 			data["showInDCal"] = data["showInWCal"] = data["showInMCal"] = data[
@@ -445,12 +461,14 @@ class EventGroup(EventContainer):
 	# getEvent, getEventNoCache, create
 
 	def removeFromCache(self, eid: int) -> None:
+		"""Remove an event from the cache by ID if present."""
 		if not self.eventCache:
 			return
 		if self.eventCache.get(eid) is not None:
 			self.eventCache.pop(eid)
 
 	def setToCache(self, event: EventType) -> None:
+		"""Store an event in the cache by its ID."""
 		if not self.eventCache:
 			return
 		self.eventCache[event.id] = event
@@ -586,6 +604,7 @@ class EventGroup(EventContainer):
 				yield event, occur
 
 	def afterModify(self) -> None:  # FIXME
+		"""Recompute occurrences after a change to the group."""
 		super().afterModify()
 		self.initOccurrence()
 		# ----
@@ -618,6 +637,7 @@ class EventGroup(EventContainer):
 				self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, eid)
 
 	def initOccurrence(self) -> None:
+		"""Create fresh, empty occurrence and notification search trees."""
 		from scal3.event_search_tree import EventSearchTree
 
 		# from scal3.time_line_tree import TimeLineTree
@@ -628,17 +648,20 @@ class EventGroup(EventContainer):
 		self.notifyOccur = EventSearchTree()
 
 	def clear(self) -> None:
+		"""Clear the occurrence tree, count, and notification flag."""
 		assert self.occur is not None
 		self.occur.clear()
 		self.occurCount = 0
 		self.notificationEnabled = False
 
 	def addOccur(self, t0: float, t1: float, eid: int) -> None:
+		"""Add an occurrence interval for the given event ID."""
 		assert self.occur is not None
 		self.occur.add(t0, t1, eid)
 		self.occurCount += 1
 
 	def updateOccurrenceLog(self, dt: float) -> None:
+		"""Log a debug message about an occurrence update."""
 		log.debug(
 			f"updateOccurrence, id={self.id}, title='{self.title}', "
 			f"count={self.occurCount}, time={dt:.1f}",

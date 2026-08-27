@@ -51,6 +51,7 @@ class AllDayEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return all matching days in the range as a JdOccurSet."""
 		# improve performance FIXME
 		jds = set()
 		for jd in range(startJd, endJd):
@@ -71,9 +72,11 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		self.values: list[int | tuple[int, int]] = []
 
 	def getRuleValue(self) -> Any:
+		"""Return the list of values for serialization."""
 		return self.values
 
 	def setRuleValue(self, data: Any) -> None:
+		"""Set the values from serialized data, wrapping scalars in a list."""
 		if not isinstance(data, tuple | list):
 			data = [data]
 		self.values = data
@@ -106,4 +109,5 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		self.values = simplifyNumList(values)
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
+		"""Return False since day values cannot convert between calendars."""
 		return False

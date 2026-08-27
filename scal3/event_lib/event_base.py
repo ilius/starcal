@@ -218,7 +218,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return rule
 
 	def updateSummary(self) -> None:
-		pass
+		"""Update the summary from other event properties; implemented by subclasses."""
 
 	def getShownDescription(self) -> str:
 		"""Return the first line of description, or full if allowed."""
@@ -256,9 +256,11 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			self.rulesHash = rulesHash
 
 	def getNotifyBeforeSec(self) -> float:
+		"""Return the notification lead time in seconds."""
 		return self.notifyBefore[0] * self.notifyBefore[1]
 
 	def getNotifyBeforeMin(self) -> int:
+		"""Return the notification lead time in whole minutes."""
 		return int(self.getNotifyBeforeSec() / 60)
 
 	def setDefaults(self, group: EventGroupType | None = None) -> None:
@@ -299,6 +301,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	# 			self.notifiers.append(classes.notifier.byName[name](self))
 
 	def loadFiles(self) -> None:
+		"""Load the list of attached files (currently a no-op)."""
 		self.files = []
 		# if os.path.isdir(self.filesDir):
 		# 	for fname in self.fs.listdir(self.filesDir):
@@ -320,9 +323,11 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	# 	]
 
 	def getSummary(self) -> str:
+		"""Return the event summary text."""
 		return self.summary
 
 	def getDescription(self) -> str:
+		"""Return the event description text."""
 		return self.description
 
 	def getTextParts(self, showDesc: bool = True) -> list[str]:
@@ -371,6 +376,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.file = ""
 
 	def save(self) -> None:
+		"""Save the event to disk, assigning an ID first if needed."""
 		if self._invalidated:
 			raise RuntimeError("can not save an invalidated event")
 		if self.id is None:
@@ -423,6 +429,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return data
 
 	def index(self, eid: int) -> int:
+		"""Return the positional index of the event in its container."""
 		raise NotImplementedError
 
 	def setDict(self, data: dict[str, Any]) -> None:
@@ -544,10 +551,12 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self,
 		prettyDateTime: bool = False,  # noqa: ARG002
 	) -> list[tuple[str, str]] | None:
+		"""Return ICS fields for this event, or None if not supported."""
 		# FIXME
 		return None
 
 	def setIcsData(self, data: dict[str, Any]) -> bool:  # noqa: ARG002, PLR6301
+		"""Import event data from an iCalendar dictionary; implemented by subclasses."""
 		# if "T" in data["DTSTART"]:
 		# 	return False
 		# if "T" in data["DTEND"]:
@@ -596,6 +605,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.parent.startJd
 
 	def getEndJd(self) -> int:  # FIXME
+		"""Return the Julian day of this event's end, falling back to parent range."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
 			return end.getJd()
@@ -628,12 +638,14 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return self.parent.getEndEpoch()
 
 	def getJd(self) -> int:
+		"""Return the Julian day of this event's start."""
 		return self.getStartJd()
 
 	def setJd(self, jd: int) -> None:  # noqa: ARG002, PLR6301
-		return None
+		"""Set the event date from a Julian day; implemented by subclasses."""
 
 	def setJdExact(self, jd: int) -> None:
+		"""Set the event date from a Julian day, with no time component."""
 		return self.setJd(jd)
 
 	def getV4Dict(self) -> dict[str, Any]:
@@ -696,10 +708,12 @@ class SingleStartEndEvent(Event):
 		end.setEpoch(epoch)
 
 	def setJd(self, jd: int) -> None:
+		"""Set the event start date from a Julian day."""
 		start = StartEventRule.addOrGetFrom(self)
 		start.setJd(jd)
 
 	def setJdExact(self, jd: int) -> None:
+		"""Set start and end dates from a Julian day, spanning one full day."""
 		start = StartEventRule.addOrGetFrom(self)
 		end = EndEventRule.addOrGetFrom(self)
 		start.setJdExact(jd)

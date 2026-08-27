@@ -285,6 +285,7 @@ class VcsDailyStatEvent(Event):
 		ident: int,
 		fs: FileSystem,
 	) -> Self:  # FIXME
+		"""VCS events are virtual and are never loaded from disk."""
 		raise NotImplementedError
 
 	def __bool__(self) -> bool:
@@ -295,12 +296,13 @@ class VcsDailyStatEvent(Event):
 		self.id = jd  # ID is Julian Day
 
 	def save(self) -> None:
-		pass
+		"""VCS events are virtual and are never saved to disk."""
 
 	def afterModify(self) -> None:
-		pass
+		"""VCS events are virtual and are never modified."""
 
 	def getInfo(self) -> str:
+		"""Return the event text as its info."""
 		return self.getText()  # FIXME
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:

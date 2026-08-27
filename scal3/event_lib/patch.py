@@ -33,6 +33,7 @@ def createPatchListFromGroup(
 	group: EventGroupType,
 	sinceEpoch: int,
 ) -> list[dict[str, Any]]:
+	"""Build a list of add/modify patches for events changed after sinceEpoch."""
 	patchList = []
 
 	for event in group:

@@ -93,6 +93,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		self.idByUuid: dict[str, int] = {}
 
 	def clear(self) -> None:
+		"""Remove all objects from this holder."""
 		self.byId = {}
 		self.idList = []
 
@@ -107,6 +108,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		return bool(self.idList)
 
 	def index(self, ident: int) -> int:
+		"""Return the positional index of an object ID in the list."""
 		return self.idList.index(ident)
 		# or get object instead of obj id? FIXME
 
@@ -114,6 +116,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		return self.byId[ident]
 
 	def byIndex(self, index: int) -> T:
+		"""Return the object at the given positional index."""
 		return self.byId[self.idList[index]]
 
 	def __setitem__(self, ident: int, obj: T) -> None:
@@ -156,16 +159,20 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			del self.idByUuid[obj.uuid]
 
 	def pop(self, index: int) -> T:
+		"""Remove and return the object at the given positional index."""
 		return self.byId.pop(self.idList.pop(index))
 
 	def moveUp(self, index: int) -> None:
+		"""Move the object at the given index one position earlier in the list."""
 		self.idList.insert(index - 1, self.idList.pop(index))
 
 	def moveDown(self, index: int) -> None:
+		"""Move the object at the given index one position later in the list."""
 		self.idList.insert(index + 1, self.idList.pop(index))
 
 	@classmethod
 	def getMainClass(cls) -> type[T] | None:
+		"""Return the main class of the held objects; implemented by subclasses."""
 		raise NotImplementedError
 
 	def setList(self, data: list[int]) -> None:
@@ -185,4 +192,5 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			self.byId[ident] = obj
 
 	def getList(self) -> list[int]:
+		"""Return signed IDs, negating the ID of disabled objects."""
 		return [ident if self.byId[ident] else -ident for ident in self.idList]

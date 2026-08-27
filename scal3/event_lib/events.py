@@ -38,11 +38,14 @@ __all__ = [
 
 @classes.event.register
 class CustomEvent(Event):
+	"""Generic user-defined event with free-form rules."""
+
 	name = "custom"
 	desc = _("Custom Event")
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:
+		"""Return v4 format dictionary representation."""
 		data = Event.getV4Dict(self)
 		data.update(
 			{

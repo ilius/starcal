@@ -53,6 +53,7 @@ class EventTrash(EventContainer, WithIcon):
 
 	@classmethod
 	def iterFiles(cls, fs: FileSystem) -> Iterable[str]:
+		"""Yield the trash file path if it exists."""
 		if fs.isfile(cls.file):
 			yield cls.file
 
@@ -63,6 +64,7 @@ class EventTrash(EventContainer, WithIcon):
 		self.addEventsToBeginning = True
 
 	def setDict(self, data: dict[str, Any]) -> None:
+		"""Populate the trash from a dictionary, falling back to the default icon."""
 		super().setDict(data)
 		if not self.icon or not os.path.isfile(self.icon):
 			log.info(f"Trash icon {self.icon} does not exist, using {self.defaultIcon}")

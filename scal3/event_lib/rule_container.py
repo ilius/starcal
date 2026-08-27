@@ -90,9 +90,11 @@ class RuleContainer(SObj):
 		self.rulesDict: dict[str, EventRuleType] = {}
 
 	def getRule(self, key: str) -> EventRuleType | None:
+		"""Return the rule with the given name, or None if absent."""
 		return self.rulesDict.get(key)
 
 	def setRule(self, key: str, value: EventRuleType) -> None:
+		"""Store the given rule under its key in the rules dictionary."""
 		self.rulesDict[key] = value
 
 	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
@@ -116,9 +118,11 @@ class RuleContainer(SObj):
 		)
 
 	def getRuleNames(self) -> list[str]:
+		"""Return the names of all rules in this container."""
 		return list(self.rulesDict)
 
 	def addRule(self, rule: EventRuleType) -> None:
+		"""Attach the given rule to this container."""
 		self.rulesDict[rule.name] = rule
 
 	def addNewRule(self, ruleType: str) -> EventRuleType:
@@ -137,6 +141,7 @@ class RuleContainer(SObj):
 		return self.addNewRule(ruleType)
 
 	def removeRule(self, rule: EventRuleType) -> None:
+		"""Remove the given rule from this container."""
 		del self.rulesDict[rule.name]
 
 	def __delitem__(self, key: str) -> None:
@@ -255,6 +260,7 @@ class RuleContainer(SObj):
 			copyParams(rule2, rule)
 
 	def getTimeZoneObj(self) -> tzinfo:
+		"""Return the configured time zone, or the local time zone."""
 		if self.timeZoneEnable and self.timeZone:
 			# mytz.gettz does not raise exception, returns None if invalid
 			tz = mytz.gettz(self.timeZone)
@@ -264,16 +270,21 @@ class RuleContainer(SObj):
 		return locale_man.localTz
 
 	def getTimeZoneStr(self) -> str:
+		"""Return the time zone name string."""
 		return str(self.getTimeZoneObj())
 
 	def getEpochFromJd(self, jd: int) -> int:
+		"""Convert a Julian day to an epoch timestamp in the container's time zone."""
 		return getEpochFromJd(jd, tz=self.getTimeZoneObj())
 
 	def getJdFromEpoch(self, jd: int) -> int:
+		"""Convert an epoch timestamp to a Julian day in the container's time zone."""
 		return getJdFromEpoch(jd, tz=self.getTimeZoneObj())
 
 	def getJhmsFromEpoch(self, epoch: int) -> tuple[int, HMS]:
+		"""Return the (jd, hms) for an epoch in the container's time zone."""
 		return getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
 
 	def getEpochFromJhms(self, jd: int, h: int, m: int, s: int) -> int:
+		"""Return the epoch for a Julian day and time in the container's time zone."""
 		return getEpochFromJhms(jd, h, m, s, tz=self.getTimeZoneObj())

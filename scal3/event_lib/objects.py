@@ -44,6 +44,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 	uuid: str | None
 
 	def set_uuid(self) -> None:
+		"""Assign a fresh random UUID to this object."""
 		from uuid import uuid4
 
 		self.uuid = uuid4().hex

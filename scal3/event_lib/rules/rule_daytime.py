@@ -60,6 +60,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 	params = ["dayTime"]
 
 	def getServerString(self) -> str:
+		"""Return the time of day as an 'HH:MM:SS' string."""
 		H, M, S = self.dayTime
 		return f"{H:02d}:{M:02d}:{S:02d}"
 
@@ -72,9 +73,11 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		self.dayTime = localtime()[3:6]
 
 	def getRuleValue(self) -> Any:
+		"""Return the time of day as an encoded string."""
 		return timeEncode(self.dayTime)
 
 	def setRuleValue(self, data: str) -> None:
+		"""Set the time of day from an encoded string."""
 		try:
 			self.dayTime = timeDecode(data)
 		except ValueError:
@@ -86,6 +89,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return one moment per day at this time of day."""
 		mySec = getSecondsFromHms(*self.dayTime)
 		return TimeListOccurSet.fromRange(  # FIXME
 			self.getEpochFromJd(startJd) + mySec,
@@ -94,6 +98,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		)
 
 	def getInfo(self) -> str:
+		"""Return a human-readable description of the time of day."""
 		return _("Time in Day") + ": " + timeEncode(self.dayTime)
 
 
@@ -118,6 +123,7 @@ class DayTimeRangeEventRule(EventRule):
 		return f"{H1:02d}:{M1:02d}:{S1:02d} - {H2:02d}:{M2:02d}:{S2:02d}"
 
 	def getServerString(self) -> str:
+		"""Return the time range as a space-separated string."""
 		H1, M1, S1 = self.dayTimeStart
 		H2, M2, S2 = self.dayTimeEnd
 		return f"{H1:02d}:{M1:02d}:{S1:02d} {H2:02d}:{M2:02d}:{S2:02d}"
@@ -151,9 +157,11 @@ class DayTimeRangeEventRule(EventRule):
 		)
 
 	def getRuleValue(self) -> Any:
+		"""Return start and end times as a tuple of encoded strings."""
 		return (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
 
 	def setRuleValue(self, data: tuple[str, str]) -> None:
+		"""Set the time range from encoded start and end strings."""
 		try:
 			self.setRange(timeDecode(data[0]), timeDecode(data[1]))
 		except ValueError:
@@ -165,6 +173,7 @@ class DayTimeRangeEventRule(EventRule):
 		endJd: int,
 		event: EventType,  # noqa: ARG002
 	) -> OccurSetType:
+		"""Return one interval per day covering the time range."""
 		daySecStart = getSecondsFromHms(*self.dayTimeStart)
 		daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
 		daySecEnd = max(daySecStart, daySecEnd)

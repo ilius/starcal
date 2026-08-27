@@ -54,6 +54,7 @@ class EventRule(SObjBase):
 	WidgetClass: Any
 
 	def getServerString(self) -> str:
+		"""Return a server-compatible string representation of this rule."""
 		raise NotImplementedError
 
 	def __bool__(self) -> bool:
@@ -80,6 +81,7 @@ class EventRule(SObjBase):
 		return newRule
 
 	def getCalType(self) -> int:
+		"""Return the calendar type of the parent container."""
 		return self.parent.calType
 
 	def changeCalType(self, calType: int) -> bool:  # noqa: ARG002, PLR6301
@@ -100,6 +102,7 @@ class EventRule(SObjBase):
 		return self.desc + f": {self}"
 
 	def getEpochFromJd(self, jd: int) -> int:
+		"""Convert a Julian day to an epoch in the parent's time zone."""
 		return getEpochFromJd(
 			jd,
 			tz=self.parent.getTimeZoneObj(),

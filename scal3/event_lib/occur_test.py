@@ -11,7 +11,11 @@ from scal3.event_lib.occur import (
 
 
 class TestTimeListOccurSetIntersection(unittest.TestCase):
+	"""Tests for TimeListOccurSet.intersection against other occurrence sets."""
+
 	def test_empty_self(self) -> None:
+		"""Intersecting an empty TimeListOccurSet yields an empty set."""
+		a = TimeListOccurSet()
 		a = TimeListOccurSet()
 		b = JdOccurSet({1, 2, 3})
 		result = cast("TimeListOccurSet", a.intersection(b))
@@ -19,6 +23,7 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, set())
 
 	def test_empty_other(self) -> None:
+		"""Intersecting with an empty JdOccurSet yields an empty set."""
 		a = TimeListOccurSet({100, 200, 300})
 		b = JdOccurSet()
 		result = cast("TimeListOccurSet", a.intersection(b))
@@ -26,12 +31,14 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, set())
 
 	def test_no_overlap_jd(self) -> None:
+		"""Intersecting with a JdOccurSet covering no epochs is empty."""
 		a = TimeListOccurSet({100, 200, 300})
 		b = JdOccurSet({1, 2, 3})
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, set())
 
 	def test_partial_overlap_jd(self) -> None:
+		"""Only epochs inside the selected JD ranges are kept."""
 		# JdOccurSet day ranges: jd=1 -> [epoch_1, epoch_1+86400)
 		from scal3.time_utils import getEpochFromJd
 
@@ -45,6 +52,7 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, {e1, e3})
 
 	def test_all_overlap_jd(self) -> None:
+		"""All epochs are kept when every JD is selected."""
 		from scal3.time_utils import getEpochFromJd
 
 		jd1, jd2 = 100, 200
@@ -56,6 +64,7 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, {e1, e2})
 
 	def test_boundary_exclusive_jd(self) -> None:
+		"""An epoch exactly at the end of a JD range is excluded."""
 		# Epoch exactly at end of a JD range should NOT be included
 		from scal3.time_utils import getEpochFromJd
 
@@ -69,30 +78,35 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertNotIn(e_end, result.epochList)
 
 	def test_no_overlap_interval(self) -> None:
+		"""Intersecting with a disjoint interval yields an empty set."""
 		a = TimeListOccurSet({100, 200, 300})
 		b = IntervalOccurSet([(0, 50)])
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, set())
 
 	def test_partial_overlap_interval(self) -> None:
+		"""Only epochs inside the interval are kept."""
 		a = TimeListOccurSet({10, 20, 30, 40, 50})
 		b = IntervalOccurSet([(15, 35)])
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, {20, 30})
 
 	def test_full_overlap_interval(self) -> None:
+		"""All epochs are kept when the interval covers everything."""
 		a = TimeListOccurSet({10, 20, 30})
 		b = IntervalOccurSet([(0, 100)])
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, {10, 20, 30})
 
 	def test_multiple_intervals(self) -> None:
+		"""Epochs are kept if they fall in any of several intervals."""
 		a = TimeListOccurSet({10, 20, 30, 40, 50, 60, 70, 80})
 		b = IntervalOccurSet([(5, 25), (55, 75)])
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, {10, 20, 60, 70})
 
 	def test_boundary_interval(self) -> None:
+		"""Interval starts are inclusive but ends are exclusive."""
 		# Epoch at start (inclusive) vs end (exclusive)
 		a = TimeListOccurSet({10, 20, 30})
 		b = IntervalOccurSet([(10, 20)])
@@ -101,12 +115,14 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertNotIn(20, result.epochList)
 
 	def test_empty_interval(self) -> None:
+		"""Intersecting with an empty interval yields an empty set."""
 		a = TimeListOccurSet({10, 20})
 		b = IntervalOccurSet([])
 		result = cast("TimeListOccurSet", a.intersection(b))
 		self.assertEqual(result.epochList, set())
 
 	def test_time_list_intersection(self) -> None:
+		"""Intersecting two TimeListOccurSets keeps common epochs."""
 		a = TimeListOccurSet({10, 20, 30, 40})
 		b = TimeListOccurSet({20, 40, 60})
 		result = cast("TimeListOccurSet", a.intersection(b))
@@ -114,6 +130,7 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, {20, 40})
 
 	def test_unsorted_epochs(self) -> None:
+		"""Unsorted input epochs do not break the intersection."""
 		# Ensure unsorted input doesn't break the algorithm
 		a = TimeListOccurSet({500, 100, 300, 200, 400})
 		b = IntervalOccurSet([(150, 350)])
@@ -121,6 +138,7 @@ class TestTimeListOccurSetIntersection(unittest.TestCase):
 		self.assertEqual(result.epochList, {200, 300})
 
 	def test_large_epoch_list(self) -> None:
+		"""Large epoch and interval lists still produce correct results."""
 		# Performance sanity check: 10k epochs, 100 intervals
 		epochs = set(range(0, 1_000_000, 100))
 		a = TimeListOccurSet(epochs)

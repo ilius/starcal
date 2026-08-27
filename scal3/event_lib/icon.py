@@ -14,6 +14,7 @@ class WithIcon(abc.ABC):
 	icon: str | None
 
 	def getIcon(self) -> str | None:
+		"""Return the absolute icon path, or None if unset."""
 		return self.icon
 
 	def getIconRel(self) -> str | None:

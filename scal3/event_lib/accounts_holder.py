@@ -62,6 +62,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 
 	@classmethod
 	def getMainClass(cls) -> type[AccountType] | None:
+		"""Return the main account class from the registry."""
 		return classes.account.main
 
 	def __init__(self, ident: int | None = None) -> None:
