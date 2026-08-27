@@ -85,14 +85,23 @@ class EventTrash(EventContainer, WithIcon):
 		else:
 			self.idList.remove(eid)
 
-	def empty(self) -> None:
-		"""Permanently delete all event files and clear the trash."""
+	def empty(self) -> dict[int, str]:
+		"""
+		Permanently delete all event files and clear the trash.
+
+		Returns a dict mapping each event ID whose file could not be removed
+		to the corresponding error text. IDs are removed from the trash even
+		when their file could not be deleted.
+		"""
+		errors: dict[int, str] = {}
 		idList2 = self.idList.copy()
 		for eid in self.idList:
 			try:
 				self.fs.removeFile(Event.getFile(eid))
-			except Exception:
-				log.exception("")
+			except Exception as exc:
+				log.exception(f"error while removing event id {eid} from trash")
+				errors[eid] = str(exc)
 			idList2.remove(eid)
 		self.idList = idList2
 		self.save()
+		return errors
