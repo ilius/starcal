@@ -6,6 +6,160 @@
 
 ______________________________________________________________________
 
+## Architecture Overview
+
+The `event_lib` package is the core event management system for StarCal. It provides:
+
+- **Event model** — composable rule-based event definitions (date, time, cycle, duration, etc.)
+- **Group model** — containers for events with occurrence tracking and search
+- **Occurrence engine** — computes which events occur on a given day/range
+- **Persistence** — JSON-based file storage with content-addressed binary objects and history tracking
+- **Plugin registry** — class registration system for extensible event types, rules, notifiers, accounts, and groups
+- **VCS integration** — git/hg commit and tag event groups
+- **ICS export** — iCalendar format export
+
+### Key Design Patterns
+
+| Pattern | Location | Description |
+|---|---|---|
+| Registry | `register.py` | `@classes.event.register` decorators auto-register types at import time |
+| Protocol typing | `pytypes.py` | Structural subtyping via `Protocol` for loose coupling |
+| Content-addressed storage | `objects.py`, `event_base.py` | Objects stored as `{hash}.json` with full revision history |
+| Rule composition | `rules/`, `rule_container.py` | Events defined by composable rules rather than fixed schemas |
+| Mixin inheritance | `event_base.py` | `Event` inherits from `HistoryEventObjBinaryModel`, `RuleContainer`, `WithIcon` |
+
+### Class Hierarchy
+
+```
+SObj (s_object)
+├── EventObjTextModel
+│   ├── InfoWrapper
+│   ├── LastIdsWrapper
+│   └── Event
+│       ├── SingleStartEndEvent
+│       │   ├── LifetimeEvent
+│       │   ├── TaskEvent
+│       │   └── AllDayTaskEvent
+│       ├── CustomEvent
+│       ├── LargeScaleEvent
+│       ├── MonthlyEvent
+│       ├── WeeklyEvent
+│       ├── YearlyEvent
+│       ├── DailyNoteEvent
+│       ├── UniversityClassEvent
+│       ├── UniversityExamEvent
+│       ├── VcsEpochBaseEvent
+│       │   ├── VcsCommitEvent
+│       │   └── VcsTagEvent
+│       └── VcsDailyStatEvent
+├── HistoryEventObjBinaryModel
+│   ├── Account
+│   │   └── DummyAccount
+│   ├── EventContainer
+│   │   ├── EventGroup
+│   │   │   ├── NoteBook
+│   │   │   ├── TaskList
+│   │   │   ├── YearlyGroup
+│   │   │   ├── LargeScaleGroup
+│   │   │   ├── LifetimeGroup
+│   │   │   ├── UniversityTerm
+│   │   │   ├── VcsBaseEventGroup
+│   │   │   │   └── VcsEpochBaseEventGroup
+│   │   │   │       ├── VcsCommitEventGroup
+│   │   │   │       └── VcsTagEventGroup
+│   │   │   └── VcsDailyStatEventGroup
+│   │   └── EventTrash
+│   └── EventNotifier
+│       ├── AlarmNotifier
+│       ├── FloatingMsgNotifier
+│       ├── WindowMsgNotifier
+│       └── CommandNotifier
+├── OccurSet
+│   ├── JdOccurSet
+│   ├── IntervalOccurSet
+│   └── TimeListOccurSet
+└── EventRule
+    ├── AllDayEventRule
+    │   └── WeekDayEventRule
+    ├── MultiValueAllDayEventRule
+    ├── DateEventRule
+    │   └── DateAndTimeEventRule
+    │       ├── StartEventRule
+    │       └── EndEventRule
+    ├── DayTimeEventRule
+    ├── DayTimeRangeEventRule
+    ├── DurationEventRule
+    ├── CycleDaysEventRule
+    ├── CycleWeeksEventRule
+    ├── CycleLenEventRule
+    ├── WeekNumberModeEventRule
+    ├── WeekMonthEventRule
+    ├── YearEventRule
+    ├── MonthEventRule
+    ├── DayOfMonthEventRule
+    ├── ExYearEventRule
+    ├── ExMonthEventRule
+    ├── ExDayOfMonthEventRule
+    └── ExDatesEventRule
+```
+
+## File-by-File Summary
+
+| File | Purpose |
+|---|---|
+| `__init__.py` | Package init, global `ev` Handler, `init()`, `removeUnusedObjects()` |
+| `event_base.py` | Core `Event` and `SingleStartEndEvent` classes |
+| `group.py` | `EventGroup` — main event container with caching, search, import/export |
+| `university.py` | University term scheduling (classes, exams, weekly schedule) |
+| `task.py` | Task events and all-day tasks |
+| `event_container.py` | Base container for events (holds event ID lists) |
+| `vcs.py` | VCS commit/tag/daily-stat event groups |
+| `pytypes.py` | Protocol definitions for all major types |
+| `rules/rule_week.py` | Week-based rules (weekday, week-month, week number) |
+| `yearly.py` | Yearly recurring events (birthdays, anniversaries) |
+| `occur.py` | Occurrence set types (JD, interval, time-list) |
+| `occur_test.py` | Ad-hoc occurrence set checks (not part of a test suite) |
+| `groups_holder.py` | Manages list of all event groups |
+| `rule_container.py` | Mixin for objects containing rules |
+| `vcs_base.py` | Base classes for VCS event groups |
+| `large_scale.py` | Large-scale (millennia/centuries) events |
+| `rules/rule_cycle.py` | Cycle-based recurrence rules |
+| `accounts.py` | Account base class |
+| `holders.py` | Generic container for ordered collections |
+| `rules/rule_date.py` | Date rules and exclusion dates |
+| `rules/rule_daytime.py` | Time-within-day rules |
+| `rules/rule_datetime.py` | Date+time rules |
+| `rules/rule_ymd.py` | Year/month/day matching rules |
+| `lifetime.py` | Lifetime (birth-death) events |
+| `occur_data.py` | Day/week/month occurrence data computation |
+| `rules/rule_duration.py` | Duration-based rule |
+| `accounts_holder.py` | Account loading/storing |
+| `note.py` | Daily notes (notebook) |
+| `notifiers.py` | Concrete notifier implementations |
+| `rules/rule_allday.py` | All-day event matching rules |
+| `monthly.py` | Monthly recurring events |
+| `state.py` | Global mutable state (`allReadOnly`, `info`, `lastIds`) |
+| `rules/rule_base.py` | Base `EventRule` class |
+| `event_ics.py` | ICS format export |
+| `typing_test.py` | Ad-hoc type checking (not a real test suite) |
+| `trash.py` | Trash container for deleted events |
+| `common.py` | Shared utilities (week days, JD, compression) |
+| `weekly.py` | Weekly recurring events |
+| `events.py` | Registers `CustomEvent` type |
+| `handler.py` | Facade wrapping accounts, groups, trash |
+| `register.py` | Class registry system |
+| `patch.py` | Patch list creation for sync |
+| `groups_import.py` | Import mode constants |
+| `icon.py` | Icon path handling |
+| `rules/__init__.py` | Re-exports all rule classes |
+| `objects.py` | Binary model for history-tracked objects |
+| `notifier_base.py` | Base notifier class |
+| `object_base.py` | Read-only respecting text model |
+| `errors.py` | `AccountError` exception |
+| `exceptions.py` | `BadEventFile` exception |
+
+______________________________________________________________________
+
 ## Quick Start
 
 ```python
