@@ -96,6 +96,9 @@ elif osName == "win":
 else:
 	raise OSError("Unkown operating system!")
 
+if os.getenv("PYTEST_VERSION"):
+	confDir = join(tmpDir, APP_NAME)
+
 deskDir = join(homeDir, "Desktop")  # in all operating systems? FIXME
 
 userPlugConf = join(confDir, "plugin.conf")
