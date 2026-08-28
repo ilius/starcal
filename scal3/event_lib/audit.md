@@ -17,9 +17,9 @@ See `README.md` for architecture overview and file-by-file summary.
 **Priority:** 4/5 — **Complexity:** 2/5 (score: 2)
 **File:** `rules/rule_allday.py:62-63`
 
-Docstring says it "matches against a list of individual values or ranges", but it inherits `AllDayEventRule.jdMatches()`, which always returns True. The docstring commit also removed the `# Should not be registered, or instantiate directly` warning.
+Docstring says it "matches against a list of individual values or ranges", but its inherited `AllDayEventRule.jdMatches()` implementation always returns True. The docstring commit also removed the `# Should not be registered, or instantiate directly` warning.
 
-**Recommended fix:** Override `jdMatches()` to use `hasValue()`, or reword the docstring and restore the warning.
+**Recommended fix:** Override `jdMatches()` to use `_hasValue()`, or reword the docstring and restore the warning.
 
 #### 2. `changeCalType()` returns True without changing anything
 **Priority:** 3/5 — **Complexity:** 1/5 (score: 2)
@@ -45,7 +45,7 @@ Asserts `event.epoch is not None`, but `VcsTagEventGroup.getEvent()` builds tag 
 
 **Recommended fix:** Set the epoch when building tag events (and commit events) before conversion, or handle `epoch is None`.
 
-#### 5. `university.py:setDefaults` only handles Jalali calendar
+#### 5. `UniversityTerm.setDefaults()` only handles Jalali calendar
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
 **File:** `university.py:269-291`
 
@@ -150,7 +150,7 @@ Runs code at import level (`print(isinstance(acc, AccountType))`). Contains most
 **Priority:** 1/5 — **Complexity:** 2/5 (score: -1)
 **Files:** `event_base.py` (lines 293-299, 300-319, 500-501, 546-567), `__init__.py` (lines 168-188), plus smaller blocks in `group.py`, `university.py`, `vcs_base.py`, `note.py`, `occur.py`
 
-Commented-out TODO classes (`HolidayEventRule`, `ShowInMCalEventRule`, `SunTimeRule`) and disabled methods (`loadFiles`, `getUrlForFile`, `getFilesUrls`).
+Commented-out TODO classes (`HolidayEventRule`, `ShowInMCalEventRule`, `SunTimeRule`), the no-op attachment loader (`_loadFiles`), and commented-out methods (`getUrlForFile`, `getFilesUrls`).
 
 **Recommended fix:** Remove all commented-out code. If the features are planned, track them as issues instead.
 
@@ -162,4 +162,3 @@ Commented-out TODO classes (`HolidayEventRule`, `ShowInMCalEventRule`, `SunTimeR
 - **Remove dead code** (#14, #19) — `WeekOccurData`, `MonthOccurData`, commented-out blocks
 - **Replace `assert` with proper exceptions** in `handler.py` and `holders.py`
 - **Resolve FIXME comments** (105 remaining) or convert them to tracked issues
-

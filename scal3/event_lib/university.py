@@ -415,7 +415,7 @@ class UniversityClassEvent(Event):
 		assert self.courseId is not None
 		return self.parent.getCourseNameById(self.courseId)
 
-	def getWeekDayName(self) -> str:
+	def _getWeekDayName(self) -> str:
 		"""Return the localized name of the day of week this class meets."""
 		rule = WeekDayEventRule.getFrom(self)
 		if rule is None:
@@ -427,7 +427,7 @@ class UniversityClassEvent(Event):
 		self.summary = (
 			_("{courseName} Class").format(courseName=self._getCourseName())
 			+ " ("
-			+ self.getWeekDayName()
+			+ self._getWeekDayName()
 			+ ")"
 		)
 

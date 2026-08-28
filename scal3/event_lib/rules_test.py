@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, cast
 
 from scal3.cal_types import GREGORIAN, to_jd
 from scal3.event_lib.handler import Handler
+from scal3.event_lib.rules.rule_allday import AllDayEventRule
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_base import Event
@@ -50,6 +51,27 @@ def assertRule(
 def startRule(date: str) -> tuple[str, dict[str, str]]:
 	"""Return a start rule tuple for the given date at 09:00."""
 	return ("start", {"date": date, "time": "09:00:00"})
+
+
+def test_legacy_jd_matches_override(fs: FileSystem) -> None:
+	"""The public jdMatches hook remains effective for existing rule subclasses."""
+	event = createEvent(fs, [])
+	matchingJd = jd(2030, 5, 16)
+
+	class LegacyRule(AllDayEventRule):
+		def jdMatches(self, jd: int) -> bool:
+			"""Match only the selected day through the legacy public hook."""
+			return jd == matchingJd
+
+	rule = LegacyRule(event)
+	occur = rule.calcOccurrence(
+		jd(2030, 5, 15),
+		jd(2030, 5, 18),
+		event,
+	)
+	assert occur.getStartJd() == matchingJd
+	assert occur.getEndJd() == matchingJd + 1
+	assert len(occur.getTimeRangeList()) == 1
 
 
 def test_rule_cycle_days(fs: FileSystem) -> None:

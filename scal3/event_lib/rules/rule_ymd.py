@@ -60,7 +60,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 
 	def jdMatches(self, jd: int) -> bool:
 		"""Return True if the day's year is selected."""
-		return self.hasValue(jd_to(jd, self.getCalType())[0])
+		return self._hasValue(jd_to(jd, self.getCalType())[0])
 
 	def _newCalTypeValues(
 		self,
@@ -152,7 +152,7 @@ class DayOfMonthEventRule(MultiValueAllDayEventRule):
 
 	def jdMatches(self, jd: int) -> bool:
 		"""Return True if the day of month is selected."""
-		return self.hasValue(jd_to(jd, self.getCalType())[2])
+		return self._hasValue(jd_to(jd, self.getCalType())[2])
 
 
 @classes.rule.register

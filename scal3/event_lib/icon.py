@@ -27,7 +27,7 @@ class WithIcon(abc.ABC):
 				return icon[len(direc) + 1 :]
 		return icon
 
-	def iconRelativeToAbsInObj(self) -> None:
+	def _iconRelativeToAbsInObj(self) -> None:
 		"""Resolve a relative icon path on this object to an absolute path in place."""
 		icon = self.icon
 		if icon and not isabs(icon):

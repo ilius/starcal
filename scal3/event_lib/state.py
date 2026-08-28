@@ -97,7 +97,7 @@ class LastIdsWrapper(EventObjTextModel):
 			f"LastIds(event={self.event}, group={self.group}, account={self.account})"
 		)
 
-	def scanDir(self, dpath: str) -> int:
+	def _scanDir(self, dpath: str) -> int:
 		"""Scan a directory for .json files and return the highest numeric ID found."""
 		lastId = 0
 		for fname in self.fs.listdir(dpath):
@@ -116,9 +116,9 @@ class LastIdsWrapper(EventObjTextModel):
 		"""Scan all entity directories and save the discovered last IDs."""
 		t0 = perf_counter()
 		with lock:
-			self.event = self.scanDir("event/events")
-			self.group = self.scanDir("event/groups")
-			self.account = self.scanDir("event/accounts")
+			self.event = self._scanDir("event/events")
+			self.group = self._scanDir("event/groups")
+			self.account = self._scanDir("event/accounts")
 			self.save()
 		log.info(
 			f"Scanning last_ids took {int((perf_counter() - t0) * 1000)} ms, {self}",

@@ -93,18 +93,18 @@ class RuleContainer(SObj):
 		"""Return the rule with the given name, or None if absent."""
 		return self.rulesDict.get(key)
 
-	def setRule(self, key: str, value: EventRuleType) -> None:
+	def _setRule(self, key: str, value: EventRuleType) -> None:
 		"""Store the given rule under its key in the rules dictionary."""
 		self.rulesDict[key] = value
 
-	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
+	def _iterRulesData(self) -> Iterator[tuple[str, Any]]:
 		"""Yield (ruleName, ruleValue) pairs for all rules."""
 		for rule in self.rulesDict.values():
 			yield rule.name, rule.getRuleValue()
 
-	def getRulesData(self) -> list[tuple[str, Any]]:
+	def _getRulesData(self) -> list[tuple[str, Any]]:
 		"""Return all rules as a list of (name, value) tuples."""
-		return list(self.iterRulesData())
+		return list(self._iterRulesData())
 
 	def getRulesHash(self) -> int:
 		"""Return a hash of the time zone and all rules for change detection."""
@@ -112,12 +112,12 @@ class RuleContainer(SObj):
 			str(
 				(
 					self.getTimeZoneStr(),
-					sorted(self.iterRulesData()),
+					sorted(self._iterRulesData()),
 				),
 			),
 		)
 
-	def getRuleNames(self) -> list[str]:
+	def _getRuleNames(self) -> list[str]:
 		"""Return the names of all rules in this container."""
 		return list(self.rulesDict)
 
@@ -140,7 +140,7 @@ class RuleContainer(SObj):
 			return rule
 		return self.addNewRule(ruleType)
 
-	def removeRule(self, rule: EventRuleType) -> None:
+	def _removeRule(self, rule: EventRuleType) -> None:
 		"""Remove the given rule from this container."""
 		del self.rulesDict[rule.name]
 
@@ -151,7 +151,7 @@ class RuleContainer(SObj):
 		return self.getRule(key)
 
 	def __setitem__(self, key: str, value: EventRuleType) -> None:
-		self.setRule(key, value)
+		self._setRule(key, value)
 
 	def __iter__(self) -> Iterator[EventRuleType]:
 		return iter(self.rulesDict.values())
@@ -164,7 +164,7 @@ class RuleContainer(SObj):
 			rule.setRuleValue(ruleData)
 			self.addRule(rule)
 
-	def addRequirements(self) -> None:
+	def _addRequirements(self) -> None:
 		"""Add any required rules that are not already present."""
 		for name in self.requiredRules:
 			if name not in self.rulesDict:
@@ -177,7 +177,7 @@ class RuleContainer(SObj):
 			self.addRule(rule)
 		return (ok, msg)
 
-	def removeSomeRuleTypes(
+	def _removeSomeRuleTypes(
 		self,
 		*typesToRemove: str,
 	) -> None:
@@ -190,7 +190,7 @@ class RuleContainer(SObj):
 		"""Validate that removing a rule won't break dependencies, then remove it."""
 		ok, msg = self.checkRulesDependencies(disabledRule=rule)
 		if ok:
-			self.removeRule(rule)
+			self._removeRule(rule)
 		return (ok, msg)
 
 	def checkRulesDependencies(
@@ -232,14 +232,14 @@ class RuleContainer(SObj):
 					)
 		return (True, "")
 
-	def copyRulesFrom(self, other: RuleContainerType) -> None:
+	def _copyRulesFrom(self, other: RuleContainerType) -> None:
 		"""Copy all supported rules from another container."""
 		for ruleType, rule in other.rulesDict.items():
 			if self.supportedRules is None or ruleType in self.supportedRules:
 				rule2 = self.getAddRule(ruleType)
 				copyParams(rule2, rule)
 
-	def copySomeRuleTypesFrom(
+	def _copySomeRuleTypesFrom(
 		self,
 		other: RuleContainerType,
 		*ruleTypes: str,

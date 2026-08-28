@@ -83,7 +83,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	def __str__(self) -> str:
 		return textNumEncode(numRangesEncode(self.values, ", "))
 
-	def hasValue(self, value: Any) -> bool:
+	def _hasValue(self, value: Any) -> bool:
 		"""Return True if value falls within any of the stored values or ranges."""
 		for item in self.values:
 			if isinstance(item, tuple | list):
