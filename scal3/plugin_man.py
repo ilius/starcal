@@ -70,8 +70,8 @@ def registerPlugin[T: BasePlugin](cls: type[T]) -> type[T]:
 	return cls
 
 
-def getPlugPath(_file: str) -> str:
-	return _file if isabs(_file) else join(plugDir, _file)
+def getPlugPath(file: str) -> str:
+	return file if isabs(file) else join(plugDir, file)
 
 
 class BasePlugin(SObjTextModel):
@@ -105,9 +105,9 @@ class BasePlugin(SObjTextModel):
 
 	def __init__(
 		self,
-		_file: str,
+		file: str,
 	) -> None:
-		self.file = _file
+		self.file = file
 		# ------
 		self.calType: int | None = GREGORIAN
 		self.title = ""
@@ -259,8 +259,8 @@ class DummyExternalPlugin(BasePlugin):
 	def __repr__(self) -> str:
 		return f"loadPlugin({self.file!r}, enable=False, show_date=False)"
 
-	def __init__(self, _file: str, title: str) -> None:
-		self.file = _file
+	def __init__(self, file: str, title: str) -> None:
+		self.file = file
 		self.title = title
 		self.hasConfig = False
 		self.hasImage = False
@@ -352,10 +352,10 @@ def loadExternalPlugin(
 class HolidayPlugin(BaseJsonPlugin):
 	name = "holiday"
 
-	def __init__(self, _file: str) -> None:
+	def __init__(self, file: str) -> None:
 		BaseJsonPlugin.__init__(
 			self,
-			_file,
+			file,
 		)
 		self.lastDayMerge = True  # FIXME
 		self.holidays: dict[int, list[tuple[int, int] | tuple[int, int, int]]] = {}
@@ -475,10 +475,10 @@ class YearlyTextPlugin(BaseJsonPlugin):
 	name = "yearlyText"
 	params = BaseJsonPlugin.params + ["dataFile"]
 
-	def __init__(self, _file: str) -> None:
+	def __init__(self, file: str) -> None:
 		BaseJsonPlugin.__init__(
 			self,
-			_file,
+			file,
 		)
 		self.dataFile = ""
 		self.yearlyData: list[list[str]] = []
@@ -589,18 +589,18 @@ class IcsTextPlugin(BasePlugin):
 
 	def __init__(
 		self,
-		_file: str,
+		file: str,
 		enable: bool = True,
 		show_date: bool = False,
 		all_years: bool = False,
 	) -> None:
-		title = splitext(_file)[0]
+		title = splitext(file)[0]
 		self.ymd: dict[tuple[int, int, int], str] | None = None
 		self.md: dict[tuple[int, int], str] | None = None
 		self.all_years = all_years
 		BasePlugin.__init__(
 			self,
-			_file,
+			file,
 		)
 		self.calType = GREGORIAN
 		self.title = title

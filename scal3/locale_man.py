@@ -240,8 +240,8 @@ class LangData(SObjTextModel):
 		"timeZoneList",
 	]
 
-	def __init__(self, _file: str) -> None:
-		self.file = _file  # json file path
+	def __init__(self, file: str) -> None:
+		self.file = file  # json file path
 		# ----
 		self.code = ""
 		self.name = ""

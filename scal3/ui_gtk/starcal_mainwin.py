@@ -399,8 +399,8 @@ class MainWin(CalObjWidget):
 		if self.rightPanel:
 			self.rightPanel.onWindowSizeChange()
 
-	def onMainButtonPress(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		return onMainButtonPress(self.win, self.menuMainCreate, _w, gevent)
+	def onMainButtonPress(self, w: gtk.Widget, gevent: gdk.EventButton) -> bool:
+		return onMainButtonPress(self.win, self.menuMainCreate, w, gevent)
 
 	def childButtonPress(
 		self,

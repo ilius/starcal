@@ -189,13 +189,13 @@ class TextPlugin(BaseJsonPlugin):
 		"isha",
 	)
 
-	def __init__(self, _file: str) -> None:
+	def __init__(self, file: str) -> None:
 		# log.debug("----------- praytime TextPlugin.__init__")
 		# log.debug("From plugin: core.VERSION=%s" + api.get("core", "VERSION"))
 		# log.debug("From plugin: core.aaa=%s" + api.get("core", "aaa"))
 		BaseJsonPlugin.__init__(
 			self,
-			_file,
+			file,
 		)
 		self.ui = TextPluginUI(self)
 		self.lastDayMerge = False
