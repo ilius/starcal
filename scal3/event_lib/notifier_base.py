@@ -51,7 +51,7 @@ class EventNotifier(SObj):
 		self.event = event
 		self.extraMessage = ""
 
-	def getCalType(self) -> int:
+	def _getCalType(self) -> int:
 		"""Return the calendar type of the event being notified."""
 		return self.event.calType
 

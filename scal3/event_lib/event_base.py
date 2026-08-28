@@ -178,7 +178,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		else:
 			self.setId(ident)
 		self.fs = null_fs
-		self.dataIsSet = False
+		self._dataIsSet = False
 		self._invalidated = False
 		self.uuid: str | None = None
 		self.parent: EventContainerType | None = parent
@@ -190,13 +190,13 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.icon: str | None = self.__class__.getDefaultIcon()
 		self.summary: str = self.desc  # + " (" + _(self.id) + ")"  # FIXME
 		self.description = ""
-		self.files: list[str] = []
+		self._files: list[str] = []
 		# ------
 		self.timeZoneEnable = not self.isAllDay
 		self.notifiers: list[EventNotifierType] = []
 		self.notifyBefore = (30.0, 60)  # (value, unit) like DurationEventRule
 		# self.snoozeTime = (5, 60)  # (value, unit) like DurationEventRule, FIXME
-		self.addRequirements()
+		self._addRequirements()
 		if parent:
 			# FIXME: we can't import EventGroup on runtime here!
 			# but bool(trash) is False, so we know it's a group
@@ -208,7 +208,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		# remoteIds is (accountId, remoteGroupId, remoteEventId, remoteSha1)
 
 		# self.lastMergeSha1 is [localSha1, remoteSha1] or None
-		self.lastMergeSha1 = None
+		self._lastMergeSha1 = None
 
 	def create(self, ruleName: str) -> EventRuleType:
 		"""Create and attach a new rule of the given type to this event."""
@@ -300,9 +300,9 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	# 		if not name in notifierNames:
 	# 			self.notifiers.append(classes.notifier.byName[name](self))
 
-	def loadFiles(self) -> None:
+	def _loadFiles(self) -> None:
 		"""Load the list of attached files (currently a no-op)."""
-		self.files = []
+		self._files = []
 		# if os.path.isdir(self.filesDir):
 		# 	for fname in self.fs.listdir(self.filesDir):
 		# 		# FIXME
@@ -366,7 +366,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.id = ident
 		self.file = self.getFile(self.id)
 		# self.filesDir = join(self.dir, "files")
-		self.loadFiles()
+		self._loadFiles()
 
 	def invalidate(self) -> None:
 		"""Invalidate this event so it can no longer be saved to disk."""
@@ -390,8 +390,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self.notifyBefore = other.notifyBefore[:]
 		# self.files = other.files.copy()
 		self.notifiers = deepcopy(other.notifiers)
-		self.copyRulesFrom(other)
-		self.addRequirements()
+		self._copyRulesFrom(other)
+		self._addRequirements()
 
 	def copyFrom(self, other: EventType) -> None:
 		"""Copy rules and properties, converting dates if calendar types differ."""
@@ -420,7 +420,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			{
 				"type": self.name,
 				"calType": calTypes.names[self.calType],
-				"rules": self.getRulesData(),
+				"rules": self._getRulesData(),
 				"notifiers": self.getNotifiersData(),
 				"notifyBefore": durationEncode(*self.notifyBefore),
 			},
@@ -434,7 +434,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	def setDict(self, data: dict[str, Any]) -> None:
 		"""Populate this event from a dictionary, skipping if already set."""
-		if self.dataIsSet:
+		if self._dataIsSet:
 			return
 		self.setDictOverride(data)
 
@@ -465,7 +465,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 				self.notifiers.append(notifier)
 		if "notifyBefore" in data:
 			self.notifyBefore = durationDecode(data["notifyBefore"])
-		self.iconRelativeToAbsInObj()
+		self._iconRelativeToAbsInObj()
 
 	def getNotifiersData(self) -> list[tuple[str, dict[str, Any]]]:
 		"""Return serialized notifier data as a list of (name, data) tuples."""
@@ -528,16 +528,16 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		if start > tm + self.getNotifyBeforeSec():
 			log.debug(f"checkNotify: event notif time has not reached, event={self}")
 			return
-		self.notify(finishFunc)
+		self._notify(finishFunc)
 
-	def notify(self, finishFunc: Callable[[], None]) -> None:
+	def _notify(self, finishFunc: Callable[[], None]) -> None:
 		"""Trigger all notifiers for this event."""
 		# FIXME: get rid of self.n ??
-		self.n = len(self.notifiers)
+		self._n = len(self.notifiers)
 
 		def notifierFinishFunc() -> None:
-			self.n -= 1
-			if self.n <= 0:
+			self._n -= 1
+			if self._n <= 0:
 				try:
 					finishFunc()
 				except Exception:
@@ -723,14 +723,14 @@ class SingleStartEndEvent(Event):
 		self, date: tuple[int, int, int], hms: tuple[int, int, int]
 	) -> None:
 		"""Set the end time from a date and HMS tuple, removing any duration."""
-		self.removeSomeRuleTypes("duration")
+		self._removeSomeRuleTypes("duration")
 		end = EndEventRule.addOrGetFrom(self)
 		end.date = date
 		end.time = hms
 
 	def setEndDuration(self, value: float, unit: int) -> None:
 		"""Set the event duration, removing any explicit end-time rule."""
-		self.removeSomeRuleTypes("end")
+		self._removeSomeRuleTypes("end")
 		duration = DurationEventRule.addOrGetFrom(self)
 		duration.value = value
 		duration.unit = unit

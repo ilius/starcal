@@ -43,7 +43,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 
 	uuid: str | None
 
-	def set_uuid(self) -> None:
+	def _set_uuid(self) -> None:
 		"""Assign a fresh random UUID to this object."""
 		from uuid import uuid4
 
@@ -58,7 +58,7 @@ class HistoryEventObjBinaryModel(SObjBinaryModel):
 			log.info(f"events are read-only, ignored file {self.file}")
 			return None
 		if hasattr(self, "uuid") and self.uuid is None:
-			self.set_uuid()
+			self._set_uuid()
 		return SObjBinaryModel.save(self, *args)
 
 

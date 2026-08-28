@@ -53,7 +53,7 @@ class OccurSet(SObj):
 		"""Return a new set containing only times present in both sets."""
 		raise NotImplementedError
 
-	def getDaysJdList(self) -> list[int]:  # noqa: PLR6301
+	def _getDaysJdList(self) -> list[int]:  # noqa: PLR6301
 		"""Return the list of Julian days covered by this occurrence set."""
 		return []  # make generator FIXME
 
@@ -84,34 +84,37 @@ class JdOccurSet(OccurSet):
 			jdSet = set()
 		else:
 			assert isinstance(jdSet, set), f"{jdSet=}"
-		self.jdSet = jdSet
+		self._jdSet = jdSet
 
 	def __repr__(self) -> str:
-		return f"JdOccurSet({list(self.jdSet)})"
+		return f"JdOccurSet({list(self._jdSet)})"
 
 	def __bool__(self) -> bool:
-		return bool(self.jdSet)
+		return bool(self._jdSet)
 
 	def __len__(self) -> int:
-		return len(self.jdSet)
+		return len(self._jdSet)
 
 	def getStartJd(self) -> int | None:
 		"""Return the earliest Julian day, or None if empty."""
-		if not self.jdSet:
+		if not self._jdSet:
 			return None
-		return min(self.jdSet)
+		return min(self._jdSet)
 
 	def getEndJd(self) -> int | None:
 		"""Return the day after the latest Julian day, or None if empty."""
-		if not self.jdSet:
+		if not self._jdSet:
 			return None
-		return max(self.jdSet) + 1
+		return max(self._jdSet) + 1
+
+	def getJdSet(self) -> set[int]:
+		return self._jdSet
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		"""Return a new set containing only times present in both sets."""
 		if isinstance(occur, JdOccurSet):
 			return JdOccurSet(
-				self.jdSet.intersection(occur.jdSet),
+				self._jdSet.intersection(occur.getJdSet()),
 			)
 		if isinstance(occur, IntervalOccurSet):
 			return IntervalOccurSet(
@@ -125,9 +128,9 @@ class JdOccurSet(OccurSet):
 
 		raise TypeError
 
-	def getDaysJdList(self) -> list[int]:
+	def _getDaysJdList(self) -> list[int]:
 		"""Return the sorted list of Julian days in this set."""
-		return sorted(self.jdSet)
+		return sorted(self._jdSet)
 
 	def getTimeRangeList(self) -> list[tuple[int, int]]:
 		"""Return each JD as a full-day (startEpoch, endEpoch) interval."""
@@ -136,12 +139,12 @@ class JdOccurSet(OccurSet):
 				getEpochFromJd(jd),
 				getEpochFromJd(jd + 1),
 			)
-			for jd in self.jdSet
+			for jd in self._jdSet
 		]
 
 	def calcJdRanges(self) -> list[tuple[int, int]]:
 		"""Collapse individual JDs into contiguous (start, end) ranges."""
-		jdList = sorted(self.jdSet)  # jdList is sorted
+		jdList = sorted(self._jdSet)  # jdList is sorted
 		if not jdList:
 			return []
 		startJd = jdList[0]
@@ -167,31 +170,31 @@ class IntervalOccurSet(OccurSet):
 		super().__init__()
 		if not rangeList:
 			rangeList = []
-		self.rangeList = rangeList
+		self._rangeList = rangeList
 
 	def __repr__(self) -> str:
-		return f"IntervalOccurSet({self.rangeList!r})"
+		return f"IntervalOccurSet({self._rangeList!r})"
 
 	def __bool__(self) -> bool:
-		return bool(self.rangeList)
+		return bool(self._rangeList)
 
 	def __len__(self) -> int:
-		return len(self.rangeList)
+		return len(self._rangeList)
 
 	# def __getitem__(i):
-	# 	self.rangeList.__getitem__(i)  # FIXME
+	# 	self._rangeList.__getitem__(i)  # FIXME
 
 	def getStartJd(self) -> int | None:
 		"""Return the Julian day of the earliest range start, or None if empty."""
-		if not self.rangeList:
+		if not self._rangeList:
 			return None
-		return getJdFromEpoch(min(r[0] for r in self.rangeList))
+		return getJdFromEpoch(min(r[0] for r in self._rangeList))
 
 	def getEndJd(self) -> int | None:
 		"""Return the Julian day of the latest range end, or None if empty."""
-		if not self.rangeList:
+		if not self._rangeList:
 			return None
-		return getJdFromEpoch(max(r[1] for r in self.rangeList))
+		return getJdFromEpoch(max(r[1] for r in self._rangeList))
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		"""Return a new set containing only times present in both sets."""
@@ -209,19 +212,19 @@ class IntervalOccurSet(OccurSet):
 			f"bad type {occur.__class__.__name__} ({occur!r})",
 		)
 
-	def getDaysJdList(self) -> list[int]:
+	def _getDaysJdList(self) -> list[int]:
 		"""Return the sorted unique Julian days covered by all intervals."""
 		return sorted(
 			{
 				jd
-				for startEpoch, endEpoch in self.rangeList
+				for startEpoch, endEpoch in self._rangeList
 				for jd in getJdListFromEpochRange(startEpoch, endEpoch)
 			},
 		)
 
 	def getTimeRangeList(self) -> list[tuple[int, int]]:
 		"""Return the list of (startEpoch, endEpoch) intervals."""
-		return self.rangeList
+		return self._rangeList
 
 	@staticmethod
 	def newFromStartEnd(startEpoch: int, endEpoch: int) -> OccurSetType:
@@ -243,7 +246,7 @@ class TimeListOccurSet(OccurSet):
 		super().__init__()
 		self.startEpoch = 0
 		self.endEpoch = 0
-		self.stepSeconds = -1
+		self._stepSeconds = -1
 		self.epochList: set[int]
 		if epochList is None:
 			self.epochList = set()
@@ -292,7 +295,7 @@ class TimeListOccurSet(OccurSet):
 		# ------
 		self.startEpoch = startEpoch
 		self.endEpoch = endEpoch
-		self.stepSeconds = stepSeconds
+		self._stepSeconds = stepSeconds
 		self.epochList = set(arange(startEpoch, endEpoch, stepSeconds))
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
@@ -319,7 +322,7 @@ class TimeListOccurSet(OccurSet):
 		raise TypeError
 
 	# FIXME: improve performance
-	def getDaysJdList(self) -> list[int]:
+	def _getDaysJdList(self) -> list[int]:
 		"""Return the sorted unique Julian days of all epochs."""
 		return sorted({getJdFromEpoch(epoch) for epoch in self.epochList})
 

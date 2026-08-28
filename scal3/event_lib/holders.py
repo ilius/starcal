@@ -64,7 +64,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 
 		obj = cls(ident)
 		obj.fs = fs
-		obj.setList(data)
+		obj._setList(data)
 		return obj
 
 	def save(self) -> None:
@@ -78,7 +78,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			)
 			return
 
-		jstr = dataToPrettyJson(self.getList())
+		jstr = dataToPrettyJson(self._getList())
 		with self.fs.open(self.file, "w") as fp:
 			fp.write(jstr)
 
@@ -87,19 +87,19 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		ident: int | None = None,  # noqa: ARG002 # FIXME?
 	) -> None:
 		self.fs = null_fs
-		self.clear()
-		self.byId: dict[int, T] = {}
+		self._clear()
+		self._byId: dict[int, T] = {}
 		self.idList: list[int] = []
-		self.idByUuid: dict[str, int] = {}
+		self._idByUuid: dict[str, int] = {}
 
-	def clear(self) -> None:
+	def _clear(self) -> None:
 		"""Remove all objects from this holder."""
-		self.byId = {}
+		self._byId = {}
 		self.idList = []
 
 	def __iter__(self) -> Iterator[T]:
 		for ident in self.idList:
-			yield self.byId[ident]
+			yield self._byId[ident]
 
 	def __len__(self) -> int:
 		return len(self.idList)
@@ -113,21 +113,21 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		# or get object instead of obj id? FIXME
 
 	def __getitem__(self, ident: int) -> T:
-		return self.byId[ident]
+		return self._byId[ident]
 
 	def byIndex(self, index: int) -> T:
 		"""Return the object at the given positional index."""
-		return self.byId[self.idList[index]]
+		return self._byId[self.idList[index]]
 
 	def __setitem__(self, ident: int, obj: T) -> None:
-		return self.byId.__setitem__(ident, obj)
+		return self._byId.__setitem__(ident, obj)
 
 	def insert(self, index: int, obj: T) -> None:
 		"""Insert an object at the given position in the ID list."""
 		assert obj.id is not None
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
-		self.byId[obj.id] = obj
+		self._byId[obj.id] = obj
 		self.idList.insert(index, obj.id)
 
 	def append(self, obj: T) -> None:
@@ -135,7 +135,7 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		assert obj.id is not None
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
-		self.byId[obj.id] = obj
+		self._byId[obj.id] = obj
 		self.idList.append(obj.id)
 
 	def delete(self, obj: T) -> None:
@@ -148,19 +148,19 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			# FileNotFoundError, PermissionError, etc
 			log.exception("")
 		try:
-			del self.byId[obj.id]
+			del self._byId[obj.id]
 		except KeyError:
 			log.exception("")
 		try:
 			self.idList.remove(obj.id)
 		except ValueError:
 			log.exception("")
-		if obj.uuid in self.idByUuid:
-			del self.idByUuid[obj.uuid]
+		if obj.uuid in self._idByUuid:
+			del self._idByUuid[obj.uuid]
 
-	def pop(self, index: int) -> T:
+	def _pop(self, index: int) -> T:
 		"""Remove and return the object at the given positional index."""
-		return self.byId.pop(self.idList.pop(index))
+		return self._byId.pop(self.idList.pop(index))
 
 	def moveUp(self, index: int) -> None:
 		"""Move the object at the given index one position earlier in the list."""
@@ -175,9 +175,9 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		"""Return the main class of the held objects; implemented by subclasses."""
 		raise NotImplementedError
 
-	def setList(self, data: list[int]) -> None:
+	def _setList(self, data: list[int]) -> None:
 		"""Load objects from a list of signed IDs (negative means disabled)."""
-		self.clear()
+		self._clear()
 		for signed_id in data:
 			if not isinstance(signed_id, int) or signed_id == 0:
 				raise RuntimeError(f"unexpected {signed_id=}, {self=}")
@@ -189,8 +189,8 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 			assert obj.id == ident
 			obj.enable = signed_id > 0
 			self.idList.append(ident)
-			self.byId[ident] = obj
+			self._byId[ident] = obj
 
-	def getList(self) -> list[int]:
+	def _getList(self) -> list[int]:
 		"""Return signed IDs, negating the ID of disabled objects."""
-		return [ident if self.byId[ident] else -ident for ident in self.idList]
+		return [ident if self._byId[ident] else -ident for ident in self.idList]

@@ -7,6 +7,7 @@ import pytest
 
 from scal3 import event_lib
 from scal3.cal_types import GREGORIAN, to_jd
+from scal3.event_lib.group import EventGroup
 from scal3.event_lib.groups_import import ImportMode
 from scal3.event_lib.handler import Handler
 from scal3.event_lib.large_scale import LargeScaleGroup
@@ -16,7 +17,6 @@ from scal3.event_lib.vcs import VcsCommitEventGroup, VcsTagEventGroup
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_container import EventContainer
-	from scal3.event_lib.group import EventGroup
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.filesystem import FileSystem
 
@@ -73,6 +73,94 @@ def assertGroupExport(group: EventGroupType, title: str) -> None:
 	fp = io.StringIO()
 	group.exportToIcsFp(fp)
 	assert isinstance(fp.getvalue(), str)
+
+
+def test_legacy_group_set_defaults_override() -> None:
+	"""Existing group subclasses can still override the public defaults hook."""
+
+	class LegacyGroup(EventGroup):
+		params = EventGroup.params + ["legacyDefault"]
+
+		def setDefaults(self) -> None:
+			"""Initialize a persisted plugin field through the legacy hook."""
+			super().setDefaults()
+			self.legacyDefault = "initialized"
+
+	group = LegacyGroup()
+	assert group.legacyDefault == "initialized"
+	assert group.getDict()["legacyDefault"] == "initialized"
+
+
+def test_legacy_group_mutation_hooks(fs: FileSystem) -> None:
+	"""Container operations retain public pre/post-add and clear dispatch."""
+
+	class LegacyGroup(EventGroup):
+		def __init__(self) -> None:
+			self.preAddCalled = False
+			self.postAddCalled = False
+			self.clearCalled = False
+			super().__init__()
+
+		def preAdd(self, event: EventType) -> None:
+			"""Record validation through the legacy public hook."""
+			self.preAddCalled = True
+			super().preAdd(event)
+
+		def postAdd(self, event: EventType) -> None:
+			"""Record finalization through the legacy public hook."""
+			self.postAddCalled = True
+			super().postAdd(event)
+
+		def clear(self) -> None:
+			"""Record occurrence clearing through the legacy public hook."""
+			self.clearCalled = True
+			super().clear()
+
+	group = LegacyGroup()
+	group.fs = fs
+	event = group.create("custom")
+	event.setId()
+	group.append(event)
+	assert group.preAddCalled
+	assert group.postAddCalled
+	assert event.parent is group
+
+	group.updateOccurrence()
+	assert group.clearCalled
+
+
+def test_legacy_group_insert_hooks(fs: FileSystem) -> None:
+	"""Insert also dispatches through the public pre/post-add hooks."""
+
+	class LegacyGroup(EventGroup):
+		def __init__(self) -> None:
+			self.preAddCalled = False
+			self.postAddCalled = False
+			super().__init__()
+
+		def preAdd(self, event: EventType) -> None:
+			"""Record validation through the legacy public hook."""
+			self.preAddCalled = True
+			super().preAdd(event)
+
+		def postAdd(self, event: EventType) -> None:
+			"""Record finalization through the legacy public hook."""
+			self.postAddCalled = True
+			super().postAdd(event)
+
+	group = LegacyGroup()
+	group.fs = fs
+	event = group.create("custom")
+	event.setId()
+	assert event.id is not None
+	group.insert(0, event)
+	assert group.preAddCalled
+	assert group.postAddCalled
+	assert event.parent is group
+	assert group.idList == [event.id]
+
+	with pytest.raises(ValueError, match="already contains"):
+		group.insert(0, event)
 
 
 def test_group_type_group(fs: FileSystem) -> None:

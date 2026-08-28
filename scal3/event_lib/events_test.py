@@ -7,6 +7,7 @@ import pytest
 from scal3 import event_lib
 from scal3.cal_types import GREGORIAN, to_jd
 from scal3.event_lib.common import eventTextSep
+from scal3.event_lib.event_base import Event
 from scal3.event_lib.events import CustomEvent
 from scal3.event_lib.handler import Handler
 from scal3.event_lib.large_scale import LargeScaleEvent
@@ -20,7 +21,6 @@ from scal3.event_lib.weekly import WeeklyEvent
 from scal3.event_lib.yearly import YearlyEvent
 
 if TYPE_CHECKING:
-	from scal3.event_lib.event_base import Event
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.filesystem import FileSystem
 
@@ -81,6 +81,25 @@ def assertExportRoundtrip(event: EventType) -> None:
 	reimported.setDict(ordered)
 	assert reimported.summary == event.summary
 	assert reimported.description == event.description
+
+
+def test_legacy_event_set_defaults_override(fs: FileSystem) -> None:
+	"""Existing event subclasses can still override the public defaults hook."""
+
+	class LegacyEvent(Event):
+		params = Event.params + ["legacyDefault"]
+
+		def setDefaults(self, group: EventGroupType | None = None) -> None:
+			"""Initialize a persisted plugin field through the legacy hook."""
+			super().setDefaults(group=group)
+			self.legacyDefault = "initialized"
+
+	handler = Handler()
+	handler.init(fs)
+	group = handler.groups.byIndex(0)
+	event = LegacyEvent(parent=group)
+	assert event.legacyDefault == "initialized"
+	assert event.getDict()["legacyDefault"] == "initialized"
 
 
 def test_custom_event(fs: FileSystem) -> None:

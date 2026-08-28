@@ -69,7 +69,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		super().__init__()
 		self.id = ident
 		self.parent = None
-		self.idByUuid: dict[str, int] = {}
+		self._idByUuid: dict[str, int] = {}
 
 	@staticmethod
 	def loadClass(name: str) -> type[AccountType] | None:
@@ -90,7 +90,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		)
 		return None
 
-	def loadData(self, ident: int) -> dict[str, Any] | None:
+	def _loadData(self, ident: int) -> dict[str, Any] | None:
 		"""Read account data from its JSON file, returning None if not found."""
 		objFile = join(accountsDir, f"{ident}.json")
 		if not self.fs.isfile(objFile):
@@ -111,11 +111,11 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		return data
 
 	# FIXME: types
-	def getLoadedObj(self, obj: AccountType) -> AccountType | None:
+	def _getLoadedObj(self, obj: AccountType) -> AccountType | None:
 		"""Replace a dummy account with a fully loaded instance from disk."""
 		ident = obj.id
 		assert ident is not None
-		data = self.loadData(ident)
+		data = self._loadData(ident)
 		assert data is not None
 		name = data["type"]
 		cls = self.loadClass(name)
@@ -130,7 +130,7 @@ class EventAccountsHolder(ObjectsHolderTextModel[AccountType]):
 		"""Load the real account object and replace the dummy in the holder."""
 		ident = obj.id
 		assert ident is not None
-		objNew = self.getLoadedObj(obj)
+		objNew = self._getLoadedObj(obj)
 		assert objNew is not None
-		self.byId[ident] = objNew
+		self._byId[ident] = objNew
 		return objNew

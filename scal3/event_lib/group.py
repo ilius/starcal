@@ -124,7 +124,7 @@ class EventGroup(EventContainer):
 		"remoteSyncData",
 		# "eventIdByRemoteIds",
 		"deletedRemoteEvents",
-		# "defaultEventType"
+		# "_defaultEventType"
 	]
 	paramsOrder = [
 		"enable",
@@ -265,23 +265,23 @@ class EventGroup(EventContainer):
 		self.showInStatusIcon = True
 		self.showInTimeLine = True
 		self.uuid: str | None = None
-		self.idByUuid: dict[str, int] = {}
+		self._idByUuid: dict[str, int] = {}
 		self.color: ColorType = RGB(0, 0, 0)  # FIXME
 		# self.defaultNotifyBefore = (10, 60)  # FIXME
-		self.defaultEventType: str
+		self._defaultEventType: str
 		if len(self.acceptsEventTypes) == 1:
-			self.defaultEventType = self.acceptsEventTypes[0]
-			cls = classes.event.byName[self.defaultEventType]
+			self._defaultEventType = self.acceptsEventTypes[0]
+			cls = classes.event.byName[self._defaultEventType]
 			icon = cls.getDefaultIcon()
 			if icon:
 				self.icon = icon
 		else:
-			self.defaultEventType = "custom"
+			self._defaultEventType = "custom"
 		# ---
 		self.eventCacheSize = 100
-		self.eventCache: LRUCache[int | None, EventType] | None
-		self.resetCache()
-		# eventCache: key is eid, value is Event object
+		self._eventCache: LRUCache[int | None, EventType] | None
+		self._resetCache()
+		# _eventCache: key is eid, value is Event object
 		# ---
 		year, _month, _day = getSysDate(self.calType)
 		self.startJd = to_jd(
@@ -301,23 +301,23 @@ class EventGroup(EventContainer):
 		# self.occurLoaded = False
 		self.occurCount = 0
 		self.notifyOccur: EventSearchTree | None = None
-		self.initOccurrence()
+		self._initOccurrence()
 		# ---
 		self.setDefaults()
 		# -----------
-		self.clearRemoteAttrs()
+		self._clearRemoteAttrs()
 
-	def resetCache(self) -> None:
+	def _resetCache(self) -> None:
 		"""Recreate the event LRU cache with the current cache size setting."""
 		if self.eventCacheSize < 1:
-			self.eventCache = None
+			self._eventCache = None
 			return
-		self.eventCache = LRUCache(maxsize=self.eventCacheSize)
+		self._eventCache = LRUCache(maxsize=self.eventCacheSize)
 
-	def clearCache(self) -> None:
+	def _clearCache(self) -> None:
 		"""Clear all cached event objects."""
-		if self.eventCache:
-			self.eventCache.clear()
+		if self._eventCache:
+			self._eventCache.clear()
 
 	def setRandomColor(self) -> None:
 		"""Assign a random HSL-based RGB color to this group."""
@@ -328,7 +328,7 @@ class EventGroup(EventContainer):
 		# TODO: improve this?
 		self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)  # noqa: S311
 
-	def clearRemoteAttrs(self) -> None:
+	def _clearRemoteAttrs(self) -> None:
 		"""Reset all remote synchronization attributes to their defaults."""
 		# self.remoteIds is (accountId: int, remoteGroupId: str) or None
 		self.remoteIds: tuple[int, str] | None = None
@@ -358,7 +358,7 @@ class EventGroup(EventContainer):
 			self.setId()
 		super().save()
 
-	def getSyncDurationSec(self) -> float:
+	def _getSyncDurationSec(self) -> float:
 		"""Return Sync Duration in seconds (int)."""
 		value, unit = self.remoteSyncDuration
 		return value * unit
@@ -448,13 +448,13 @@ class EventGroup(EventContainer):
 
 		if self.eventCacheSize != eventCacheSize:
 			self.eventCacheSize = max(self.eventCacheSize, self.eventCacheSizeMin)
-			self.resetCache()
+			self._resetCache()
 
 		# ----
-		# if "defaultEventType" in data:
-		# 	self.defaultEventType = data["defaultEventType"]
-		# 	if not self.defaultEventType in classes.event.names:
-		# 		raise ValueError(f"Invalid defaultEventType: {self.defaultEventType!r}")
+		# if "_defaultEventType" in data:
+		# 	self._defaultEventType = data["_defaultEventType"]
+		# 	if not self._defaultEventType in classes.event.names:
+		# 		raise ValueError("Invalid defaultEventType")
 
 	# event objects should be accessed from outside
 	# only via one of the following 4 methods:
@@ -462,29 +462,29 @@ class EventGroup(EventContainer):
 
 	def removeFromCache(self, eid: int) -> None:
 		"""Remove an event from the cache by ID if present."""
-		if not self.eventCache:
+		if not self._eventCache:
 			return
-		if self.eventCache.get(eid) is not None:
-			self.eventCache.pop(eid)
+		if self._eventCache.get(eid) is not None:
+			self._eventCache.pop(eid)
 
-	def setToCache(self, event: EventType) -> None:
+	def _setToCache(self, event: EventType) -> None:
 		"""Store an event in the cache by its ID."""
-		if not self.eventCache:
+		if not self._eventCache:
 			return
-		self.eventCache[event.id] = event
+		self._eventCache[event.id] = event
 
 	def getEvent(self, ident: int) -> EventType:
 		"""Retrieve an event by ID, using the cache when available."""
 		if ident not in self.idList:
 			raise ValueError(f"{self} does not contain {ident!r}")
-		if self.eventCache:
-			event = self.eventCache.get(ident)
+		if self._eventCache:
+			event = self._eventCache.get(ident)
 			if event is not None:
 				return event
 		event = EventContainer.getEvent(self, ident)
 		event.rulesHash = event.getRulesHash()
 		if self.enable:
-			self.setToCache(event)
+			self._setToCache(event)
 		return event
 
 	def create(self, eventType: str) -> EventType:
@@ -525,12 +525,12 @@ class EventGroup(EventContainer):
 	# clearEvents or excludeAll or removeAll?
 	def removeAll(self) -> None:
 		"""Remove all events from the group and clear occurrence data."""
-		if self.eventCache:
-			for event in self.eventCache.values():
+		if self._eventCache:
+			for event in self._eventCache.values():
 				event.parent = None  # needed? FIXME
 		# ---
 		self.idList = []
-		self.clearCache()
+		self._clearCache()
 		assert self.occur is not None
 		self.occur.clear()
 		self.occurCount = 0
@@ -538,7 +538,7 @@ class EventGroup(EventContainer):
 	def postAdd(self, event: EventType) -> None:
 		"""Finalize adding an event by caching it and updating occurrences."""
 		super().postAdd(event)
-		self.setToCache(event)
+		self._setToCache(event)
 		# if event.remoteIds:
 		# 	self.eventIdByRemoteIds[event.remoteIds] = event.id
 		# need to update self.occur?
@@ -549,8 +549,8 @@ class EventGroup(EventContainer):
 
 	def updateCache(self, event: EventType) -> None:
 		"""Update the cached event entry and notify of modification."""
-		if self.eventCache and self.eventCache.get(event.id) is not None:
-			self.setToCache(event)
+		if self._eventCache and self._eventCache.get(event.id) is not None:
+			self._setToCache(event)
 		event.afterModify()
 
 	def __copy__(self) -> Self:
@@ -560,7 +560,7 @@ class EventGroup(EventContainer):
 		newGroup.removeAll()
 		return newGroup
 
-	def copyAs(self, newGroupType: str) -> EventGroupType:
+	def _copyAs(self, newGroupType: str) -> EventGroupType:
 		"""Create an empty group of the given type, copying params."""
 		newGroup: EventGroupType = classes.group.byName[newGroupType]()
 		newGroup.fs = self.fs
@@ -579,7 +579,7 @@ class EventGroup(EventContainer):
 
 	def deepConvertTo(self, newGroupType: str) -> EventGroupType:
 		"""Convert this group to a different type, migrating all events."""
-		newGroup = self.copyAs(newGroupType)
+		newGroup = self._copyAs(newGroupType)
 		newEventType = newGroup.acceptsEventTypes[0]
 		newGroup.enable = False  # to prevent per-event node update
 		for event in self:
@@ -606,12 +606,12 @@ class EventGroup(EventContainer):
 	def afterModify(self) -> None:  # FIXME
 		"""Recompute occurrences after a change to the group."""
 		super().afterModify()
-		self.initOccurrence()
+		self._initOccurrence()
 		# ----
 		if self.enable:
 			self.updateOccurrence()
 		else:
-			self.clearCache()
+			self._clearCache()
 
 	def updateOccurrenceEvent(self, event: EventType) -> None:
 		"""Update the occurrence tree entries for a single event."""
@@ -636,7 +636,7 @@ class EventGroup(EventContainer):
 			for t0, t1 in occur.getTimeRangeList():
 				self.notifyOccur.add(t0 - event.getNotifyBeforeSec(), t1, eid)
 
-	def initOccurrence(self) -> None:
+	def _initOccurrence(self) -> None:
 		"""Create fresh, empty occurrence and notification search trees."""
 		from scal3.event_search_tree import EventSearchTree
 
@@ -660,7 +660,7 @@ class EventGroup(EventContainer):
 		self.occur.add(t0, t1, eid)
 		self.occurCount += 1
 
-	def updateOccurrenceLog(self, dt: float) -> None:
+	def _updateOccurrenceLog(self, dt: float) -> None:
 		"""Log a debug message about an occurrence update."""
 		log.debug(
 			f"updateOccurrence, id={self.id}, title='{self.title}', "
@@ -725,17 +725,17 @@ class EventGroup(EventContainer):
 		del data["idList"]
 		return data
 
-	def loadEventIdByUuid(self) -> dict[str, int]:
+	def _loadEventIdByUuid(self) -> dict[str, int]:
 		"""Build and return a mapping from event UUIDs to event IDs."""
-		existingIds = set(self.idByUuid.values())
+		existingIds = set(self._idByUuid.values())
 		for eid in self.idList:
 			if eid in existingIds:
 				continue
 			event = self.getEvent(eid)
 			if event.uuid is None:
 				continue
-			self.idByUuid[event.uuid] = eid
-		return self.idByUuid
+			self._idByUuid[event.uuid] = eid
+		return self._idByUuid
 
 	def appendByData(self, eventData: dict[str, Any]) -> EventType:
 		"""Create, configure, and append a new event from its dictionary data."""
@@ -765,7 +765,7 @@ class EventGroup(EventContainer):
 				res.newEventIds.add((gid, event.id))
 			return res
 
-		idByUuid = self.loadEventIdByUuid()
+		idByUuid = self._loadEventIdByUuid()
 
 		for eventData in data["events"]:
 			modified = eventData.get("modified")

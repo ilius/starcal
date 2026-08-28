@@ -194,7 +194,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 
 	def deepConvertTo(self, newGroupType: str) -> EventGroupType:
 		"""Convert this group to another type, creating events from VCS data."""
-		newGroup = self.copyAs(newGroupType)
+		newGroup = self._copyAs(newGroupType)
 		if newGroupType == "taskList":
 			newGroup.enable = False  # to prevent per-event node update
 			for vcsId in self.vcsIds:

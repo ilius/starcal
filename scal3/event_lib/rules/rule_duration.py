@@ -62,7 +62,7 @@ class DurationEventRule(EventRule):
 	units = (1, 60, 3600, dayLen, 7 * dayLen)
 
 	def __str__(self) -> str:
-		return f"{self.value} {self.getUnitDesc()}"
+		return f"{self.value} {self._getUnitDesc()}"
 
 	def getInfo(self) -> str:
 		"""Return a human-readable description of the duration."""
@@ -70,11 +70,11 @@ class DurationEventRule(EventRule):
 			self.desc
 			+ ": "
 			+ _(
-				"{count} " + self.getUnitDesc(),
+				"{count} " + self._getUnitDesc(),
 			).format(count=floatEncode(str(self.value)))
 		)
 
-	def getUnitDesc(self) -> str:
+	def _getUnitDesc(self) -> str:
 		"""Return the human-readable name of the current unit."""
 		return {
 			1: "seconds",
@@ -86,9 +86,9 @@ class DurationEventRule(EventRule):
 
 	def getServerString(self) -> str:
 		"""Return the duration as a compact string."""
-		return str(self.value) + " " + self.getUnitSymbol()
+		return str(self.value) + " " + self._getUnitSymbol()
 
-	def getUnitSymbol(self) -> str:
+	def _getUnitSymbol(self) -> str:
 		"""Return the short symbol of the current unit."""
 		return {
 			1: "s",

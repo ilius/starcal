@@ -168,7 +168,7 @@ class Account(HistoryEventObjBinaryModel):
 		self.id = ident
 		self.file = self.getFile(self.id)
 
-	def stop(self) -> None:
+	def _stop(self) -> None:
 		"""Clear the account's sync status."""
 		self.status = None
 

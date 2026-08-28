@@ -69,13 +69,13 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		super().__init__()
 		self.id = ident
 		self.parent = None
-		self.idByUuid = {}
-		self.trash: EventTrash | None = None
-		self.calType = 0  # not used? just for group.parent eligibilty
+		self._idByUuid = {}
+		self._trash: EventTrash | None = None
+		self.calType = 0  # not used? just for group.parent eligibility
 
 	def setTrash(self, trash: EventTrash) -> None:
 		"""Set the trash container used when deleting groups."""
-		self.trash = trash
+		self._trash = trash
 
 	def create(self, groupName: str) -> EventGroupType:
 		"""Create a new group instance of the given type name."""
@@ -89,11 +89,11 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		group.parent = None
 		super().delete(group)
 
-	def setList(self, data: list[int]) -> None:
+	def _setList(self, data: list[int]) -> None:
 		"""Load groups from ID list, creating defaults if the list is empty."""
-		self.clear()
+		self._clear()
 		if data:
-			super().setList(data)
+			super()._setList(data)
 			for group in self:
 				assert group.id is not None
 				# if TYPE_CHECKING:
@@ -103,7 +103,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 					group.save()
 					log.info(f"saved group {group.id} with uuid = {group.uuid}")
 					assert group.uuid
-				self.idByUuid[group.uuid] = group.id
+				self._idByUuid[group.uuid] = group.id
 				if group.enable:
 					group.updateOccurrence()
 		else:
@@ -120,7 +120,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 				obj.save()
 				assert obj.uuid is not None
 				assert obj.id is not None
-				self.idByUuid[obj.uuid] = obj.id
+				self._idByUuid[obj.uuid] = obj.id
 				self.append(obj)
 			self.save()
 
@@ -154,7 +154,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		newGroup.afterModify()
 		newGroup.save()
 		assert newGroup.id is not None
-		self.byId[newGroup.id] = newGroup
+		self._byId[newGroup.id] = newGroup
 		return newGroup
 		# and then never use old `group` object
 
@@ -167,7 +167,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 					("version", VERSION_TAG),
 				],
 			),
-			"groups": [self.byId[gid].exportData() for gid in gidList],
+			"groups": [self._byId[gid].exportData() for gid in gidList],
 		}
 
 	def eventListExportData(
@@ -178,7 +178,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		"""Export events (by group/event ID pairs) as a single-group dict."""
 		eventsData = []
 		for groupId, eventId in idsList:
-			event = self.byId[groupId].getEvent(eventId)
+			event = self._byId[groupId].getEvent(eventId)
 			if event.uuid is None:
 				event.save()
 			eventData = event.getDictOrdered()
@@ -215,7 +215,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		for gdata in data["groups"]:
 			guuid = gdata.get("uuid")
 			if guuid:
-				gid = self.idByUuid.get(guuid)
+				gid = self._idByUuid.get(guuid)
 				if gid is not None:
 					group = self[gid]
 					res += group.importData(

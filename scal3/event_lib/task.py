@@ -177,9 +177,9 @@ class TaskEvent(SingleStartEndEvent):
 		start.date = date
 		start.time = dayTime
 
-	def setEndEpochOnly(self, epoch: int) -> None:
+	def _setEndEpochOnly(self, epoch: int) -> None:
 		"""Set the end time by epoch, removing any duration rule."""
-		self.removeSomeRuleTypes("duration")
+		self._removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
 	def _setEnd(
@@ -192,7 +192,7 @@ class TaskEvent(SingleStartEndEvent):
 			date, time = values
 			self.setEndDateTime(date, time)
 		elif endType == "epoch":
-			self.setEndEpochOnly(values[0])
+			self._setEndEpochOnly(values[0])
 		elif endType == "duration":
 			value, unit = values
 			self.setEndDuration(value, unit)
@@ -296,8 +296,8 @@ class TaskEvent(SingleStartEndEvent):
 			myStart.time = (0, 0, 0)
 			self.setEndDuration(24, 3600)
 		elif other.name == "allDayTask":
-			self.removeSomeRuleTypes("end", "duration")
-			self.copySomeRuleTypesFrom(other, "start", "end", "duration")
+			self._removeSomeRuleTypes("end", "duration")
+			self._copySomeRuleTypesFrom(other, "start", "end", "duration")
 		else:
 			otherDayTime = DayTimeEventRule.getFrom(self)
 			if otherDayTime is not None:
@@ -370,14 +370,14 @@ class AllDayTaskEvent(SingleStartEndEvent):
 
 	def setEndDurationDays(self, value: float) -> None:
 		"""Set the end as a duration in days."""
-		self.removeSomeRuleTypes("end", "date")
+		self._removeSomeRuleTypes("end", "date")
 		rule = DurationEventRule.addOrGetFrom(self)
 		rule.value = value
 		rule.unit = dayLen
 
-	def setEndEpochOnly(self, epoch: int) -> None:
+	def _setEndEpochOnly(self, epoch: int) -> None:
 		"""Set the end time by epoch, removing any duration rule."""
-		self.removeSomeRuleTypes("duration")
+		self._removeSomeRuleTypes("duration")
 		return super().setEndEpoch(epoch)
 
 	def _setEnd(self, endType: str, value: tuple[int, int, int] | int | float) -> None:
@@ -387,13 +387,13 @@ class AllDayTaskEvent(SingleStartEndEvent):
 			self.setEndDateTime(value, (0, 0, 0))
 		elif endType == "epoch":
 			assert isinstance(value, int), f"{value=}"
-			self.setEndEpochOnly(value)
+			self._setEndEpochOnly(value)
 		elif endType == "duration":
 			assert isinstance(value, float), f"{value=}"
 			self.setEndDuration(value, dayLen)
 		elif endType == "jd":
 			assert isinstance(value, int), f"{value=}"
-			self.setEndEpochOnly(self.getEpochFromJd(value))
+			self._setEndEpochOnly(self.getEpochFromJd(value))
 		else:
 			raise ValueError(f"invalid {endType=}")
 
@@ -428,10 +428,10 @@ class AllDayTaskEvent(SingleStartEndEvent):
 		# 	raise TypeError(f"{self}.getEndJd() returned non-int: {self.getEndJd()}")
 		return self.getEpochFromJd(self.getEndJd())
 
-	# def setEndJd(self, jd):
+	# def _setEndJd(self, jd):
 	# 	EndEventRule.getFrom(self).setJdExact(jd)
 
-	def setEndJd(self, jd: int) -> None:
+	def _setEndJd(self, jd: int) -> None:
 		"""Set the end Julian Day, adjusting duration if no end rule exists."""
 		end = EndEventRule.getFrom(self)
 		if end is not None:
@@ -457,7 +457,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 	def setIcsData(self, data: dict[str, str]) -> bool:
 		"""Import event data from an iCalendar dictionary."""
 		self.setJd(ics.getJdByIcsDate(data["DTSTART"]))
-		self.setEndJd(ics.getJdByIcsDate(data["DTEND"]))  # FIXME
+		self._setEndJd(ics.getJdByIcsDate(data["DTEND"]))  # FIXME
 		return True
 
 	def copyFrom(self, other: EventType) -> None:

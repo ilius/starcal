@@ -66,15 +66,15 @@ class DummyEventContainer:
 		groups: DummyEventGroupsHolder,
 		idsDict: dict[int, list[int]],
 	) -> None:
-		self.groups = groups
-		self.idsDict = idsDict
+		self._groups = groups
+		self._idsDict = idsDict
 
 	def __len__(self) -> int:
-		return sum(len(eventIds) for eventIds in self.idsDict.values())
+		return sum(len(eventIds) for eventIds in self._idsDict.values())
 
 	def __iter__(self) -> Iterator[EventType]:
-		for groupId, eventIdList in self.idsDict.items():
-			group = self.groups[groupId]
+		for groupId, eventIdList in self._idsDict.items():
+			group = self._groups[groupId]
 			for eventId in eventIdList:
 				yield group.getEvent(eventId)
 
@@ -342,9 +342,9 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 			except ValueError:
 				raise ValueError(f"Invalid calType: '{calType}'") from None
 		# ---
-		self.iconRelativeToAbsInObj()
+		self._iconRelativeToAbsInObj()
 
-	def getEventNoCache(self, eid: int) -> EventType:
+	def _getEventNoCache(self, eid: int) -> EventType:
 		"""
 		No caching. and no checking if group contains eid
 		used only for sorting events.
@@ -410,7 +410,7 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 				return self.getSortByValue(event, attr)
 
 		self.idList.sort(
-			key=lambda eid: event_key(self.getEventNoCache(eid)),
+			key=lambda eid: event_key(self._getEventNoCache(eid)),
 			reverse=reverse,
 		)
 

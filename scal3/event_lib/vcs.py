@@ -149,7 +149,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 				epoch -= epoch % 60
 			self._addOccur(epoch, epoch, commitId)
 		# ---
-		self.updateOccurrenceLog(perf_counter() - stm0)
+		self._updateOccurrenceLog(perf_counter() - stm0)
 
 	def _updateEventDesc(self, event: EventType) -> None:
 		"""Populate the event description with stat, author, and hash info."""
@@ -224,14 +224,14 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			)
 			log.exception("")
 			return
-		# self.updateOccurrenceLog(perf_counter() - stm0)
+		# self._updateOccurrenceLog(perf_counter() - stm0)
 		for epoch_, tag in tagsData:
 			epoch = epoch_
 			if not self.showSeconds:
 				epoch -= epoch % 60
 			self._addOccur(epoch, epoch, tag)
 		# ---
-		self.updateOccurrenceLog(perf_counter() - stm0)
+		self._updateOccurrenceLog(perf_counter() - stm0)
 
 	def _updateEventDesc(self, event: EventType) -> None:
 		"""Populate the event description with stat info."""
@@ -382,7 +382,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 				jd,
 			)
 		# ---
-		self.updateOccurrenceLog(perf_counter() - stm0)
+		self._updateOccurrenceLog(perf_counter() - stm0)
 
 	def getEvent(self, jd: int) -> EventType:
 		"""Build a daily stat event for the given Julian Day."""
