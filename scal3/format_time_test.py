@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import atexit
+import shutil
+import tempfile
 import unittest
 
 from scal3 import logger
@@ -13,10 +16,33 @@ from typing import TYPE_CHECKING
 from scal3 import core, ui
 from scal3.cal_types import to_jd
 from scal3.cell import init as initCells
+from scal3.event_lib import ev, state
+from scal3.event_lib.state import InfoWrapper, LastIdsWrapper
+from scal3.filesystem import DefaultFileSystem
 from scal3.format_time import compileTmFormat
 
 if TYPE_CHECKING:
 	from scal3.pytypes import CompiledTimeFormat
+
+
+_tmpDir = tempfile.mkdtemp(prefix="starcal-format_time_test-")
+
+
+def _removeTempDir() -> None:
+	shutil.rmtree(_tmpDir)
+
+
+atexit.register(_removeTempDir)
+
+_fs = DefaultFileSystem(_tmpDir)
+_fs.makeDir("event/events")
+_fs.makeDir("event/groups")
+_fs.makeDir("event/accounts")
+_fs.makeDir("objects")
+state.allReadOnly = False
+state.info = InfoWrapper.s_load(0, fs=_fs)
+state.lastIds = LastIdsWrapper.s_load(0, fs=_fs)
+ev.init(_fs)
 
 
 def formatTime(

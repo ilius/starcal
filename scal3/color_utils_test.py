@@ -31,11 +31,14 @@ class TestColorUtils(unittest.TestCase):
 	def assertEqualHSL(self, first: HSL, second: HSL) -> None:
 		self.assertEqual(len(first), 3)
 		self.assertEqual(len(second), 3)
-		assert first[0] is not None
-		assert second[0] is not None
-		self.assertAlmostEqual(first[0], second[0], places=1)  # hue
-		self.assertAlmostEqual(first[1], second[1], places=3)  # saturation
-		self.assertAlmostEqual(first[2], second[2], places=3)  # lightness
+		firstH, firstS, firstL = first
+		secondH, secondS, secondL = second
+		if firstH is None or secondH is None:
+			self.assertEqual(firstH, secondH)  # hue is undefined (grey)
+		else:
+			self.assertAlmostEqual(firstH, secondH, places=1)  # hue
+		self.assertAlmostEqual(firstS, secondS, places=3)  # saturation
+		self.assertAlmostEqual(firstL, secondL, places=3)  # lightness
 
 	def test_rgbToHsl(self) -> None:
 		from scal3.color_utils import rgbToHsl
