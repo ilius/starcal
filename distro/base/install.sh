@@ -21,6 +21,42 @@ function getVersion {
 	"$sourceDir/scripts/version.py"
 }
 
+function buildAndInstallXfceApplet {
+	local targetDir="$1"
+	local prefix="$2"
+	local libdir="lib"
+	local multiarch=""
+	local d
+	local buildDir
+	if command -v dpkg-architecture >/dev/null 2>&1; then
+		multiarch="$(dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null || true)"
+		if [ -n "$multiarch" ]; then
+			libdir="lib/$multiarch"
+		fi
+	fi
+	## fall back to an existing xfce4-panel plugin module directory
+	if [ ! -d "$prefix/$libdir/xfce4/panel/plugins" ]; then
+		for d in "$prefix/lib64/xfce4/panel/plugins" "$prefix/lib/xfce4/panel/plugins" /usr/lib/*/xfce4/panel/plugins; do
+			if [ -d "$d" ] && ls "$d"/*.so >/dev/null 2>&1; then
+				libdir="${d#"$prefix"/}"
+				break
+			fi
+		done
+	fi
+	buildDir="$(mktemp -d 2>/dev/null || echo "${TMPDIR:-/tmp}/starcal-xfce-applet-build")"
+	if (
+		cd "$sourceDir/xfce-applet" &&
+			meson setup "$buildDir" -Dprefix="$prefix" -Dlibdir="$libdir" &&
+			meson compile -C "$buildDir" &&
+			DESTDIR="$targetDir" meson install -C "$buildDir"
+	); then
+		rm -Rf "$buildDir"
+		return 0
+	fi
+	rm -Rf "$buildDir"
+	return 1
+}
+
 pkgName=starcal3
 iconName=starcal32.png
 
@@ -162,6 +198,27 @@ fi
 #echo "targetDir: $targetDir"
 #exit 0
 
+includeXfceApplet=false
+if [ "$installType" != "portable" ]; then
+	if [ -n "${STARCAL_XFCE_APPLET:-}" ]; then
+		case "$STARCAL_XFCE_APPLET" in
+		1 | true | yes | y | on) includeXfceApplet=true ;;
+		*) includeXfceApplet=false ;;
+		esac
+	else
+		printf "Build and include the Xfce panel applet in the package? [y/N] (set STARCAL_XFCE_APPLET to skip this prompt) "
+		if read -r answer; then
+			case "$answer" in
+			[yY] | [yY][eE][sS] | 1 | on) includeXfceApplet=true ;;
+			*) includeXfceApplet=false ;;
+			esac
+		fi
+	fi
+	if $includeXfceApplet; then
+		echo "Xfce panel applet will be built and included"
+	fi
+fi
+
 targetPrefix="${targetDir}${prefix}"
 shareDir="${targetPrefix}/share"
 targetCodeDir="${shareDir}/$pkgName"
@@ -241,6 +298,15 @@ StartupNotify=true" >"${shareDir}/applications/$pkgName.desktop"
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
+if $includeXfceApplet; then
+	echo "Building and including the Xfce panel applet..."
+	if buildAndInstallXfceApplet "$targetDir" "$prefix"; then
+		echo "Xfce panel applet built and included in the package"
+	else
+		echo "WARNING: failed to build/include the Xfce panel applet" >&2
+	fi
+fi
+
 rm "$targetCodeDir/libs/bson/setup.py" || true
 
 if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ]; then
@@ -249,6 +315,7 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ]; then
 	rm -Rf "$DIR/.git" 2>/dev/null
 	rm -Rf "$DIR/.github" 2>/dev/null
 	rm -Rf "$DIR/.gitignore" 2>/dev/null
+	rm -Rf "$DIR/xfce-applet/build" 2>/dev/null
 	rm -Rf "$DIR/.Trash"* 2>/dev/null
 	rm -Rf "$DIR/google-api-python-client/.git" 2>/dev/null
 	rm -Rf "$DIR/google-api-python-client/.hg"* 2>/dev/null
