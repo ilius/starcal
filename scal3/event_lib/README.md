@@ -42,6 +42,11 @@ SObj (s_object)
 │       │   └── AllDayTaskEvent
 │       ├── CustomEvent
 │       ├── LargeScaleEvent
+│       ├── MenstrualCycleGroup (group)
+│       ├── MenstrualPeriodEvent
+│       ├── MenstrualFertileEvent
+│       ├── MenstrualOvulationEvent
+│       ├── MenstrualObservationEvent
 │       ├── MonthlyEvent
 │       ├── WeeklyEvent
 │       ├── YearlyEvent
@@ -123,6 +128,7 @@ SObj (s_object)
 | `rule_container.py` | Mixin for objects containing rules |
 | `vcs_base.py` | Base classes for VCS event groups |
 | `large_scale.py` | Large-scale (millennia/centuries) events |
+| `menstrual.py` | Menstrual cycle tracking (periods, fertile window, ovulation, observations) |
 | `rules/rule_cycle.py` | Cycle-based recurrence rules |
 | `accounts.py` | Account base class |
 | `holders.py` | Generic container for ordered collections |
@@ -376,6 +382,13 @@ from scal3.event_lib.weekly import WeeklyEvent
 from scal3.event_lib.monthly import MonthlyEvent
 from scal3.event_lib.large_scale import LargeScaleGroup, LargeScaleEvent
 from scal3.event_lib.lifetime import LifetimeGroup, LifetimeEvent
+from scal3.event_lib.menstrual import (
+	MenstrualCycleGroup,
+	MenstrualFertileEvent,
+	MenstrualObservationEvent,
+	MenstrualOvulationEvent,
+	MenstrualPeriodEvent,
+)
 from scal3.event_lib.university import (
 	UniversityTerm,
 	UniversityClassEvent,
@@ -441,6 +454,7 @@ from . import (
 	events,  # Registers CustomEvent
 	large_scale,  # Registers LargeScaleEvent/Group
 	lifetime,  # Registers LifetimeEvent/Group
+	menstrual,  # Registers MenstrualCycleGroup + period/fertile/ovulation/observation events
 	monthly,  # Registers MonthlyEvent
 	note,  # Registers NoteBook, DailyNoteEvent
 	notifiers,  # Registers AlarmNotifier, etc.
@@ -508,6 +522,7 @@ event_lib/
 ├── monthly.py           # MonthlyEvent
 ├── large_scale.py       # LargeScaleGroup, LargeScaleEvent
 ├── lifetime.py          # LifetimeGroup, LifetimeEvent
+├── menstrual.py         # MenstrualCycleGroup + period/fertile/ovulation/observation events
 ├── university.py        # UniversityTerm, UniversityClassEvent, UniversityExamEvent
 ├── vcs_base.py          # VcsBaseEventGroup, VcsEpochBaseEventGroup
 ├── vcs.py               # VcsCommitEventGroup, VcsTagEventGroup, etc.

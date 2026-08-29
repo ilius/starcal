@@ -71,6 +71,30 @@ def load_event_lifetime() -> ModuleType:
 	return lifetime  # type: ignore[return-value]
 
 
+def load_event_menstrualFertile() -> ModuleType:
+	from scal3.ui_gtk.event.event import menstrualFertile
+
+	return menstrualFertile  # type: ignore[return-value]
+
+
+def load_event_menstrualObservation() -> ModuleType:
+	from scal3.ui_gtk.event.event import menstrualObservation
+
+	return menstrualObservation  # type: ignore[return-value]
+
+
+def load_event_menstrualOvulation() -> ModuleType:
+	from scal3.ui_gtk.event.event import menstrualOvulation
+
+	return menstrualOvulation  # type: ignore[return-value]
+
+
+def load_event_menstrualPeriod() -> ModuleType:
+	from scal3.ui_gtk.event.event import menstrualPeriod
+
+	return menstrualPeriod  # type: ignore[return-value]
+
+
 def load_event_monthly() -> ModuleType:
 	from scal3.ui_gtk.event.event import monthly
 
@@ -123,6 +147,12 @@ def load_group_lifetime() -> ModuleType:
 	from scal3.ui_gtk.event.group import lifetime
 
 	return lifetime  # type: ignore[return-value]
+
+
+def load_group_menstrualCycle() -> ModuleType:
+	from scal3.ui_gtk.event.group import menstrualCycle
+
+	return menstrualCycle  # type: ignore[return-value]
 
 
 def load_group_noteBook() -> ModuleType:
@@ -271,6 +301,10 @@ widgetClassLoaderByName: dict[str, Callable[[], ModuleType]] = {
 	"event.dailyNote": load_event_dailyNote,
 	"event.largeScale": load_event_largeScale,
 	"event.lifetime": load_event_lifetime,
+	"event.menstrualFertile": load_event_menstrualFertile,
+	"event.menstrualObservation": load_event_menstrualObservation,
+	"event.menstrualOvulation": load_event_menstrualOvulation,
+	"event.menstrualPeriod": load_event_menstrualPeriod,
 	"event.monthly": load_event_monthly,
 	"event.task": load_event_task,
 	"event.universityClass": load_event_universityClass,
@@ -280,6 +314,7 @@ widgetClassLoaderByName: dict[str, Callable[[], ModuleType]] = {
 	"group.group": load_group_group,
 	"group.largeScale": load_group_largeScale,
 	"group.lifetime": load_group_lifetime,
+	"group.menstrualCycle": load_group_menstrualCycle,
 	"group.noteBook": load_group_noteBook,
 	"group.taskList": load_group_taskList,
 	"group.universityTerm": load_group_universityTerm,

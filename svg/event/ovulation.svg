@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
+  <title>Ovulation</title>
+  <g transform="scale(5)">
+    <path d="M32 5 C45 5 51 22 51 34 C51 46 42 59 32 59 C22 59 13 46 13 34 C13 22 19 5 32 5 Z" fill="#f9a825"/>
+    <path d="M32 15 C40 16 44 26 44 34 C44 42 39 51 32 53 C25 51 20 42 20 34 C20 26 24 16 32 15 Z" fill="#ffca28"/>
+    <circle cx="32" cy="34" r="5" fill="#fff59d"/>
+  </g>
+</svg>

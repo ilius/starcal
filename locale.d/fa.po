@@ -4029,6 +4029,221 @@ msgstr "امریکای شمالی"
 ################################################################################
 ################################################################################
 
+msgid "Menstrual Cycle"
+msgstr ""
+"چرخهٔ قاعدگی"
+
+msgid "Period"
+msgstr ""
+"عادت ماهانه"
+
+msgid "Fertile Window"
+msgstr ""
+"پنجرهٔ باروری"
+
+msgid "Ovulation"
+msgstr ""
+"تخمک‌گذاری"
+
+msgid "Cycle Observation"
+msgstr ""
+"مشاهدات چرخه"
+
+msgid "Predicted Period"
+msgstr ""
+"عادت ماهانهٔ پیش‌بینی‌شده"
+
+msgid "Fertile Window ({low}%-{high}%)"
+msgstr ""
+"پنجرهٔ باروری ({low}٪-{high}٪)"
+
+msgid "Fertile Window ({percent}%)"
+msgstr ""
+"پنجرهٔ باروری ({percent}٪)"
+
+msgid "Ovulation ({}%)"
+msgstr ""
+"تخمک‌گذاری ({}٪)"
+
+msgid "Predicted period, managed by the group"
+msgstr ""
+"عادت ماهانهٔ پیش‌بینی‌شده، مدیریت‌شده توسط گروه"
+
+msgid "Period Start Date"
+msgstr ""
+"تاریخ شروع عادت ماهانه"
+
+msgid "Measured Cycle Length (Days)"
+msgstr ""
+"طول چرخهٔ اندازه‌گیری‌شده (روز)"
+
+msgid "Ovulation Day Override"
+msgstr ""
+"جایگزینی روز تخمک‌گذاری"
+
+msgid "Woman"
+msgstr ""
+"زن"
+
+msgid "Partner"
+msgstr ""
+"شریک"
+
+msgid "Light"
+msgstr ""
+"سبک"
+
+msgid "Medium"
+msgstr ""
+"متوسط"
+
+msgid "Heavy"
+msgstr ""
+"سنگین"
+
+msgid "Not observed"
+msgstr ""
+"مشاهده نشده"
+
+msgid "Dry"
+msgstr ""
+"خشک"
+
+msgid "Sticky"
+msgstr ""
+"چسبناک"
+
+msgid "Creamy"
+msgstr ""
+"کرمی"
+
+msgid "Watery"
+msgstr ""
+"آبکی"
+
+msgid "Egg White"
+msgstr ""
+"سفیدهٔ تخم‌مرغ"
+
+msgid "Not tested"
+msgstr ""
+"آزمایش نشده"
+
+msgid "Negative"
+msgstr ""
+"منفی"
+
+msgid "Positive"
+msgstr ""
+"مثبت"
+
+msgid "Recorded By"
+msgstr ""
+"ثبت‌کننده"
+
+msgid "Flow"
+msgstr ""
+"شدت خونریزی"
+
+msgid "Cervical Mucus"
+msgstr ""
+"مخاط دهانهٔ رحم"
+
+msgid "Basal Body Temperature (°C)"
+msgstr ""
+"دمای پایهٔ بدن (°C)"
+
+msgid "Ovulation Predictor Kit"
+msgstr ""
+"کیت تشخیص تخمک‌گذاری"
+
+msgid "Intercourse occurred"
+msgstr ""
+"نزدیکی انجام شد"
+
+msgid "Recorded by: {who}"
+msgstr ""
+"ثبت‌کننده: {who}"
+
+msgid "Flow: {value}"
+msgstr ""
+"شدت خونریزی: {value}"
+
+msgid "Cervical Mucus: {value}"
+msgstr ""
+"مخاط دهانهٔ رحم: {value}"
+
+msgid "Basal Body Temperature: {value}°C"
+msgstr ""
+"دمای پایهٔ بدن: {value}°C"
+
+msgid "Ovulation Predictor Kit: {value}"
+msgstr ""
+"کیت تشخیص تخمک‌گذاری: {value}"
+
+msgid "Derived prediction generated from the recorded periods. Change the cycle settings in the group editor."
+msgstr ""
+"پیش‌بینی محاسبه‌شده بر اساس عادت‌های ماهانهٔ ثبت‌شده. تنظیمات چرخه را در ویرایشگر گروه تغییر دهید."
+
+msgid "Person Name"
+msgstr ""
+"نام شخص"
+
+msgid "Cycle Length (Days)"
+msgstr ""
+"طول چرخه (روز)"
+
+msgid "Auto from records"
+msgstr ""
+"خودکار از سوابق"
+
+msgid "Luteal Phase (Days)"
+msgstr ""
+"فاز لوتئال (روز)"
+
+msgid "Period Length (Days)"
+msgstr ""
+"طول عادت ماهانه (روز)"
+
+msgid "Fertile Window Mode"
+msgstr ""
+"حالت پنجرهٔ باروری"
+
+msgid "Fixed (based on estimated ovulation)"
+msgstr ""
+"ثابت (بر اساس تخمک‌گذاری تخمینی)"
+
+msgid "Knaus-Ogino (irregular cycles)"
+msgstr ""
+"کناس-اوجینو (چرخه‌های نامنظم)"
+
+msgid "Min Cycle (Days)"
+msgstr ""
+"حداقل چرخه (روز)"
+
+msgid "Max Cycle (Days)"
+msgstr ""
+"حداکثر چرخه (روز)"
+
+msgid "Show Predicted Periods"
+msgstr ""
+"نمایش عادت ماهانهٔ پیش‌بینی‌شده"
+
+msgid "Show Fertile Window"
+msgstr ""
+"نمایش پنجرهٔ باروری"
+
+msgid "Show Ovulation Day"
+msgstr ""
+"نمایش روز تخمک‌گذاری"
+
+msgid "Cycle Viability Factor"
+msgstr ""
+"ضریب باروری چرخه"
+
+################################################################################
+################################################################################
+
 msgid "Saeed Rasooli <saeed.gnu@gmail.com>"
 msgstr ""
 "سعید رسولی <saeed.gnu@gmail.com>"

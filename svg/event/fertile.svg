@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
+  <title>Fertile Window</title>
+  <g transform="scale(5)">
+    <path d="M32 56 L32 32" stroke="#2e7d32" stroke-width="5" stroke-linecap="round"/>
+    <path d="M32 34 C24 34 15 30 11 21 C13 12 24 9 32 16 C34 7 44 4 52 9 C54 21 46 31 32 34 Z" fill="#43a047"/>
+    <path d="M32 34 C40 34 49 30 53 21 C51 12 40 9 32 16 C30 7 20 4 12 9 C10 21 18 31 32 34 Z" fill="#66bb6a"/>
+  </g>
+</svg>
