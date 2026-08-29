@@ -21,8 +21,7 @@ myPath = realpath(__file__)
 sourceDir = dirname(dirname(dirname(myPath)))
 print(sourceDir)
 
-sys.path.insert(0, join(sourceDir, "xfce-applet"))
-import install as xfceAppletInstall  # noqa: E402
+from xfce_panel import get_libdir  # noqa: E402
 
 pkgName = "starcal3"
 iconName = "starcal32.png"
@@ -106,7 +105,7 @@ def buildAndInstallXfceApplet(targetDir: str, prefix: str) -> bool:
 	buildDir = tempfile.mkdtemp(prefix="starcal-xfce-applet-")
 	env = dict(os.environ, DESTDIR=targetDir)
 	try:
-		libdir = xfceAppletInstall.get_libdir(prefix)
+		libdir = get_libdir(prefix)
 		for cmd in [
 			["meson", "setup", buildDir, f"-Dprefix={prefix}", f"-Dlibdir={libdir}"],
 			["meson", "compile", "-C", buildDir],

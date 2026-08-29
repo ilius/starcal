@@ -31,62 +31,23 @@ Usage: ./install.py [prefix]   (default prefix: /usr)
 
 from __future__ import annotations
 
-import glob
 import os
 import pwd
 import shutil
 import subprocess
 import sys
-from os.path import abspath, dirname, isdir, join
+from os.path import abspath, dirname, join
 
 SCRIPT_DIR = dirname(abspath(__file__))
 REPO_DIR = dirname(SCRIPT_DIR)
+
+sys.path.insert(0, join(REPO_DIR, "distro", "base"))
+from xfce_panel import get_libdir  # noqa: E402
 
 
 def run(cmd: list[str]) -> None:
 	print(f"+ {' '.join(cmd)}")
 	subprocess.run(cmd, check=True)
-
-
-def get_multiarch() -> str:
-	try:
-		proc = subprocess.run(
-			["dpkg-architecture", "-qDEB_HOST_MULTIARCH"],
-			capture_output=True,
-			text=True,
-			check=False,
-		)
-	except OSError:
-		return ""
-	return proc.stdout.strip()
-
-
-def has_plugin_modules(path: str) -> bool:
-	if not isdir(path):
-		return False
-	try:
-		return any(name.endswith(".so") for name in os.listdir(path))
-	except OSError:
-		return False
-
-
-def get_libdir(prefix: str) -> str:
-	libdir = "lib"
-	multiarch = get_multiarch()
-	if multiarch:
-		libdir = join("lib", multiarch)
-	if isdir(join(prefix, libdir, "xfce4", "panel", "plugins")):
-		return libdir
-	for path in [
-		join(prefix, "lib64", "xfce4", "panel", "plugins"),
-		join(prefix, "lib", "xfce4", "panel", "plugins"),
-		*glob.glob("/usr/lib/*/xfce4/panel/plugins"),
-	]:
-		if has_plugin_modules(path):
-			if path.startswith(prefix + os.sep):
-				return path[len(prefix) + 1 :]
-			return path
-	return libdir
 
 
 def get_applet_dir() -> str:
