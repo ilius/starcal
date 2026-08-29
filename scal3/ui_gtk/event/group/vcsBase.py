@@ -23,19 +23,19 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("VCS Type"))
 		label.set_xalign(0)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.vcsTypeCombo = gtk.ComboBoxText()
 		for name in vcsModuleNames:
 			self.vcsTypeCombo.append_text(name)  # descriptive name FIXME
 		pack(hbox, self.vcsTypeCombo)
 		hbox.show_all()
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Directory"))
 		label.set_xalign(0)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.dirEntry = gtk.Entry()
 		hbox.show_all()
@@ -43,17 +43,17 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		# --
 		# self.dirBrowse = gtk.Button(label=_("Browse"))
 		hbox.show_all()
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		# ------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Branch"))
 		label.set_xalign(0)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.branchEntry = gtk.Entry()
 		pack(hbox, self.branchEntry)
 		hbox.show_all()
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 
 	def updateWidget(self) -> None:
 		NormalWidgetClass.updateWidget(self)

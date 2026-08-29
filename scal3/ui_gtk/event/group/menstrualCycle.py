@@ -4,12 +4,9 @@ from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
-from scal3.ui_gtk.customize import newSubPageButton
-from scal3.ui_gtk.event.group.group import WidgetClass as NormalGroupWidgetClass
+from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
-from scal3.ui_gtk.stack import MyStack, StackPage
 
 if TYPE_CHECKING:
 	from scal3.event_lib.menstrual import MenstrualCycleGroup
@@ -22,56 +19,16 @@ windowModeLabels = [
 	_("Knaus-Ogino (irregular cycles)"),
 ]
 
-mainPagePath = "main"
-cyclePagePath = "main.cycle"
 
-
-@registerSignals
-class CycleSettingsSignalHandler(SignalHandlerBase):
-	signals = [("goto-page", [str])]
-
-
-class WidgetClass(gtk.Box):
+class WidgetClass(NormalWidgetClass):
 	"""Group editor with the cycle settings on a separate stack page."""
 
 	group: MenstrualCycleGroup
 
 	def __init__(self, group: MenstrualCycleGroup) -> None:
-		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.w = self
-		self.group = group
-		# ---
-		self.stack = MyStack()
-		pack(self, self.stack, 1, 1)
-		# --- main page: normal group fields + cycle-settings button ---
-		self.normalWidget = NormalGroupWidgetClass(group)
-		mainBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		pack(mainBox, self.normalWidget, 1, 1)
-		cyclePage = StackPage()
-		cyclePage.pagePath = cyclePagePath
-		cyclePage.pageParent = mainPagePath
-		cyclePage.pageLabel = _("Cycle Settings")
-		cyclePage.pageTitle = _("Cycle Settings")
-		sig = CycleSettingsSignalHandler()
-		sig.connect("goto-page", self.gotoPage)
-		pack(
-			mainBox,
-			newSubPageButton(sig, cyclePage),
-			False,
-			False,
-		)
-		mainPage = StackPage()
-		mainPage.pagePath = mainPagePath
-		mainPage.pageWidget = mainBox
-		self.stack.addPage(mainPage)
-		# --- cycle settings page ---
-		cycleBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		self._addSettingsWidgets(cycleBox)
-		cyclePage.pageWidget = cycleBox
-		self.stack.addPage(cyclePage)
-
-	def gotoPage(self, _sig: object, pagePath: str) -> None:
-		self.stack.gotoPage(pagePath)
+		NormalWidgetClass.__init__(self, group)
+		# --- cycle settings go on the group-type-specific settings page ---
+		self._addSettingsWidgets(self.typeBox)
 
 	def _addSettingsWidgets(self, box: gtk.Box) -> None:
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -158,7 +115,7 @@ class WidgetClass(gtk.Box):
 		self.maxCycleSpin.set_sensitive(ogino)
 
 	def updateWidget(self) -> None:
-		self.normalWidget.updateWidget()
+		NormalWidgetClass.updateWidget(self)
 		group = self.group
 		self.personNameEntry.set_text(group.personName)
 		self.cycleLengthSpin.set_value(group.cycleLength)
@@ -177,7 +134,7 @@ class WidgetClass(gtk.Box):
 		self.windowModeChanged()
 
 	def updateVars(self) -> None:
-		self.normalWidget.updateVars()
+		NormalWidgetClass.updateVars(self)
 		group = self.group
 		group.personName = self.personNameEntry.get_text()
 		group.cycleLength = self.cycleLengthSpin.get_value()
@@ -191,6 +148,3 @@ class WidgetClass(gtk.Box):
 		group.showFertile = self.showFertileCheck.get_active()
 		group.showOvulation = self.showOvulationCheck.get_active()
 		group.viabilityFactor = self.viabilityFactorInput.get_value()
-
-	def show(self) -> None:
-		gtk.Box.show_all(self)

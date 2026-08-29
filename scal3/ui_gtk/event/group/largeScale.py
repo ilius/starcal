@@ -26,10 +26,10 @@ class WidgetClass(BaseWidgetClass):
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		self.scaleCombo = common.Scale10PowerComboBox()
 		pack(hbox, self.scaleCombo)
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		hbox.show_all()
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -37,10 +37,10 @@ class WidgetClass(BaseWidgetClass):
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		self.startSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.startSpin)
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		hbox.show_all()
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -48,10 +48,10 @@ class WidgetClass(BaseWidgetClass):
 		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.endSpin)
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		hbox.show_all()
 
 	def updateWidget(self) -> None:
