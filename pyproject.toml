@@ -238,6 +238,7 @@ wrap-pragma-comments = true
 
 [tool.mypy]
 exclude = [  # DOES NOT WORK!!
+	'^xfce-applet/install\.py$',
 	'^libs/bson/bson/*.py$',
 	'^scal3/json_utils\.py$',
 ]
