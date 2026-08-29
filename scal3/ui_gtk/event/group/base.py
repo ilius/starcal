@@ -21,7 +21,8 @@ from typing import TYPE_CHECKING
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.customize import newSubPageButton
-from scal3.ui_gtk.event import getWidgetClass
+from scal3.ui_gtk.event import common, getWidgetClass
+from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -231,6 +232,43 @@ class BaseWidgetClass(gtk.Box):
 			)
 			pack(hbox, self.addEventsToBeginningCheck)
 			pack(self.mainBox, hbox)
+		# ------ Online Service settings (sub-page)
+		self._addOnlineServiceWidgets()
+
+	def _addOnlineServiceWidgets(self) -> None:
+		sizeGroup = self.onlineSizeGroup
+		# --
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		label = gtk.Label(label=_("Account"))
+		label.set_xalign(0)
+		pack(hbox, label)
+		sizeGroup.add_widget(label)
+		self.accountCombo = AccountCombo()
+		pack(hbox, self.accountCombo)
+		pack(self.onlineBox, hbox)
+		# --
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		label = gtk.Label(label=_("Remote Group"))
+		label.set_xalign(0)
+		pack(hbox, label)
+		sizeGroup.add_widget(label)
+		accountGroupBox = AccountGroupBox(self.accountCombo)
+		pack(hbox, accountGroupBox, 1, 1)
+		pack(self.onlineBox, hbox)
+		self.accountGroupCombo = accountGroupBox.combo
+		# --
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		self.syncCheck = gtk.CheckButton(label=_("Synchronization Interval"))
+		pack(hbox, self.syncCheck)
+		sizeGroup.add_widget(self.syncCheck)
+		self.syncIntervalInput = common.DurationInputBox()
+		pack(hbox, self.syncIntervalInput)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(self.onlineBox, hbox)
+		self.syncCheck.connect(
+			"clicked",
+			lambda check: self.syncIntervalInput.set_sensitive(check.get_active()),
+		)
 
 	def addStartEndWidgets(self) -> None:
 		pass
@@ -295,6 +333,18 @@ class BaseWidgetClass(gtk.Box):
 		# self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
 		if self.userCanAddEvents:
 			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
+		# ---
+		if self.group.remoteIds:
+			aid, gid = self.group.remoteIds
+		else:
+			aid, gid = None, None
+		self.accountCombo.setActive(aid)
+		self.accountGroupCombo.setGroupId(gid)
+		self.syncCheck.set_active(self.group.remoteSyncEnable)
+		self.syncIntervalInput.set_sensitive(self.group.remoteSyncEnable)
+
+		value, unit = self.group.remoteSyncDuration
+		self.syncIntervalInput.setDuration(value, unit)
 
 	def updateVars(self) -> None:
 		self.group.title = self.titleEntry.get_text()
@@ -321,6 +371,15 @@ class BaseWidgetClass(gtk.Box):
 			self.group.addEventsToBeginning = (
 				self.addEventsToBeginningCheck.get_active()
 			)
+		# ---
+		self.group.remoteIds = None
+		aid = self.accountCombo.getActive()
+		if aid:
+			gid = self.accountGroupCombo.getGroupId()
+			if gid:
+				self.group.remoteIds = aid, gid
+		self.group.remoteSyncEnable = self.syncCheck.get_active()
+		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
 	def calTypeComboChanged(self, widget: gtk.Widget | None = None) -> None:
 		pass
