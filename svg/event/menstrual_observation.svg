@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
+  <title>Cycle Observation</title>
+  <g transform="scale(5)">
+    <rect x="22" y="5" width="20" height="9" rx="3" fill="#78909c" stroke="#546e7a" stroke-width="2"/>
+    <rect x="13" y="10" width="38" height="50" rx="5" fill="#ffffff" stroke="#546e7a" stroke-width="3"/>
+    <rect x="13" y="10" width="38" height="13" rx="5" fill="#90caf9"/>
+    <line x1="19" y1="32" x2="45" y2="32" stroke="#b0bec5" stroke-width="3" stroke-linecap="round"/>
+    <line x1="19" y1="40" x2="45" y2="40" stroke="#b0bec5" stroke-width="3" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="38" y2="48" stroke="#b0bec5" stroke-width="3" stroke-linecap="round"/>
+    <path d="M32 52 c-4 -3 -8 -2 -8 2 c0 4 4 6 8 8 c4 -2 8 -4 8 -8 c0 -4 -4 -5 -8 -2 Z" fill="#e53935"/>
+  </g>
+</svg>

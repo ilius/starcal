@@ -32,6 +32,7 @@ from . import (
 	events,  # noqa: F401
 	large_scale,  # noqa: F401
 	lifetime,  # noqa: F401
+	menstrual,  # noqa: F401
 	monthly,  # noqa: F401
 	note,  # noqa: F401
 	notifiers,  # noqa: F401

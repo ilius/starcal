@@ -36,3 +36,5 @@ mypy-analyzer.*
 /bson/bson/tests
 /bson/test.py
 /bson/.travis.yml
+
+*-sample.json

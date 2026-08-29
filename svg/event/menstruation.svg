@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
+  <title>Period</title>
+  <g transform="scale(5)">
+    <path d="M32 4 C32 4 12 26 12 40 a20 20 0 0 0 40 0 C52 26 32 4 32 4 Z" fill="#c62828"/>
+    <path d="M32 15 C32 15 21 29 21 40 a11 11 0 0 0 22 0 C43 29 32 15 32 15 Z" fill="#e53935"/>
+    <path d="M32 34 a6 6 0 1 0 6 6 A6 6 0 0 0 32 34 Z" fill="#ef9a9a"/>
+  </g>
+</svg>
