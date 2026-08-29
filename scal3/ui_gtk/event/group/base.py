@@ -20,10 +20,13 @@ from typing import TYPE_CHECKING
 
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
+from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.event import getWidgetClass
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+from scal3.ui_gtk.signals import SignalHandlerBase, registerSignals
+from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import set_tooltip
 
 if TYPE_CHECKING:
@@ -44,10 +47,21 @@ def makeGroupWidget(obj: EventGroupType) -> BaseWidgetClass | None:
 	return widget
 
 
+@registerSignals
+class GroupSubPageSignalHandler(SignalHandlerBase):
+	signals = [("goto-page", [str])]
+
+
 class BaseWidgetClass(gtk.Box):
 	userCanAddEvents = True
 
+	mainPagePath = "main"
+	onlinePagePath = "main.online"
+	typePagePath = "main.settings"
+	onlinePageLabel = "Online Service"
+
 	def show(self) -> None:
+		self._finalizeSubPages()
 		gtk.Box.show_all(self)
 
 	def __init__(self, group: EventGroup) -> None:
@@ -58,7 +72,22 @@ class BaseWidgetClass(gtk.Box):
 		self.w = self
 		self.group = group
 		# --------
+		self.stack = MyStack()
+		pack(self, self.stack, 1, 1)
+		# --------
 		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		self.typeSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		self.onlineSizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		# --------
+		self.mainBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		mainPage = StackPage()
+		mainPage.pagePath = self.mainPagePath
+		mainPage.pageWidget = self.mainBox
+		self.stack.addPage(mainPage)
+		# --------
+		self.typeBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self.onlineBox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+		self._subPagesFinalized = False
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Title"))
@@ -67,7 +96,7 @@ class BaseWidgetClass(gtk.Box):
 		self.sizeGroup.add_widget(label)
 		self.titleEntry = gtk.Entry()
 		pack(hbox, self.titleEntry, 1, 1)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Color"))
@@ -77,7 +106,7 @@ class BaseWidgetClass(gtk.Box):
 		self.colorButton = MyColorButton()
 		self.colorButton.set_use_alpha(True)  # FIXME
 		pack(hbox, self.colorButton)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Default Icon"))  # FIXME
@@ -86,7 +115,7 @@ class BaseWidgetClass(gtk.Box):
 		self.sizeGroup.add_widget(label)
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Default Calendar Type"))
@@ -97,7 +126,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, typeCombo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = typeCombo
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		self.addStartEndWidgets()
 		# -----
@@ -109,7 +138,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, tzCombo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.tzCombo = tzCombo
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		self.tzCheck.connect(
 			"clicked",
 			lambda check: self.tzCombo.set_sensitive(check.get_active()),
@@ -129,7 +158,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.showInMCalCheck)
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Show in"))
@@ -142,7 +171,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.showInStatusIconCheck)
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Event Cache Size"))
@@ -151,7 +180,7 @@ class BaseWidgetClass(gtk.Box):
 		self.sizeGroup.add_widget(label)
 		self.cacheSizeSpin = IntSpinButton(0, 9999)
 		pack(hbox, self.cacheSizeSpin)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# -----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Event Text Separator"))
@@ -160,7 +189,7 @@ class BaseWidgetClass(gtk.Box):
 		self.sizeGroup.add_widget(label)
 		self.sepInput = TextFrame()
 		pack(hbox, self.sepInput, 1, 1)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		set_tooltip(
 			hbox,
 			_(
@@ -201,10 +230,47 @@ class BaseWidgetClass(gtk.Box):
 				_("Add new events to beginning of event list, not to the end"),
 			)
 			pack(hbox, self.addEventsToBeginningCheck)
-			pack(self, hbox)
+			pack(self.mainBox, hbox)
 
 	def addStartEndWidgets(self) -> None:
 		pass
+
+	def _finalizeSubPages(self) -> None:
+		if self._subPagesFinalized:
+			return
+		self._subPagesFinalized = True
+		if self.onlineBox.get_children():
+			self._addSubPage(
+				self.onlineBox,
+				self.onlinePagePath,
+				_(self.onlinePageLabel),
+			)
+		if self.typeBox.get_children():
+			self._addSubPage(
+				self.typeBox,
+				self.typePagePath,
+				_("{groupType} Setting").format(groupType=self.group.desc),
+			)
+
+	def _addSubPage(
+		self,
+		box: gtk.Box,
+		pagePath: str,
+		pageLabel: str,
+	) -> None:
+		page = StackPage()
+		page.pagePath = pagePath
+		page.pageParent = self.mainPagePath
+		page.pageLabel = pageLabel
+		page.pageTitle = pageLabel
+		page.pageWidget = box
+		sig = GroupSubPageSignalHandler()
+		sig.connect("goto-page", self.gotoPage)
+		pack(self.mainBox, newSubPageButton(sig, page), False, False)
+		self.stack.addPage(page)
+
+	def gotoPage(self, _sig: object, pagePath: str) -> None:
+		self.stack.gotoPage(pagePath)
 
 	def updateWidget(self) -> None:
 		self.titleEntry.set_text(self.group.title)

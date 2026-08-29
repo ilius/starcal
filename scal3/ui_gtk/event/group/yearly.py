@@ -22,10 +22,10 @@ class WidgetClass(NormalWidgetClass):
 		label = gtk.Label(label=_("Show Date in Event Summary"))
 		label.set_xalign(0)
 		pack(hbox, label)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		self.showDateCheck = gtk.CheckButton()
 		pack(hbox, self.showDateCheck)
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 		hbox.show_all()
 
 	def updateWidget(self) -> None:  # FIXME

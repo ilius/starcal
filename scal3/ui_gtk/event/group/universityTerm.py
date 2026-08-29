@@ -359,7 +359,7 @@ class WidgetClass(NormalWidgetClass):
 		pack(totalVbox, expandHbox, 1, 1)
 		# -----
 		totalFrame.add(totalVbox)
-		pack(self, totalFrame, 1, 1)  # expand? FIXME
+		pack(self.typeBox, totalFrame, 1, 1)  # expand? FIXME
 
 	def updateWidget(self) -> None:  # FIXME
 		NormalWidgetClass.updateWidget(self)

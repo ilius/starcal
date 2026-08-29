@@ -21,13 +21,12 @@ class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Show Seconds"))
 		label.set_xalign(0)
-		self.sizeGroup.add_widget(label)
-		pack(hbox, label)
+		self.typeSizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.showSecondsCheck = gtk.CheckButton(label="")
 		pack(hbox, self.showSecondsCheck)
 		hbox.show_all()
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 
 	def updateWidget(self) -> None:
 		VcsBaseWidgetClass.updateWidget(self)

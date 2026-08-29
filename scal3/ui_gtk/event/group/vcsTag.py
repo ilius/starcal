@@ -23,14 +23,14 @@ class WidgetClass(BaseWidgetClass):
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Tag Description"))
 		label.set_xalign(0)
-		self.sizeGroup.add_widget(label)
+		self.typeSizeGroup.add_widget(label)
 		pack(hbox, label)
 		# --
 		self.statCheck = gtk.CheckButton(label=_("Stat"))
 		pack(hbox, self.statCheck)
 		# --
 		hbox.show_all()
-		pack(self, hbox)
+		pack(self.typeBox, hbox)
 
 	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)

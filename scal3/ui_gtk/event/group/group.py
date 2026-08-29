@@ -8,7 +8,6 @@ from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
-from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
 if TYPE_CHECKING:
@@ -26,7 +25,7 @@ class WidgetClass(BaseWidgetClass):
 		self.sizeGroup.add_widget(label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 		# ---
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("End"))
@@ -35,36 +34,30 @@ class WidgetClass(BaseWidgetClass):
 		self.sizeGroup.add_widget(label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
-		pack(self, hbox)
+		pack(self.mainBox, hbox)
 
 	def __init__(self, group: EventGroup) -> None:
 		BaseWidgetClass.__init__(self, group)
-		# ------
-		exp = ExpanderFrame(
-			label=_("Online Service"),
-		)
-		vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-		exp.add(vbox)
-		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		self.onlineServiceExpander = exp
+		# ------ Online Service settings (sub-page)
+		sizeGroup = self.onlineSizeGroup
 		# --
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Account"))
 		label.set_xalign(0)
 		pack(hbox, label)
-		sizeGroup.add_widget(label)  # FIXME
+		sizeGroup.add_widget(label)
 		self.accountCombo = AccountCombo()
 		pack(hbox, self.accountCombo)
-		pack(vbox, hbox)
+		pack(self.onlineBox, hbox)
 		# --
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 		label = gtk.Label(label=_("Remote Group"))
 		label.set_xalign(0)
 		pack(hbox, label)
-		sizeGroup.add_widget(label)  # FIXME
+		sizeGroup.add_widget(label)
 		accountGroupBox = AccountGroupBox(self.accountCombo)
 		pack(hbox, accountGroupBox, 1, 1)
-		pack(vbox, hbox)
+		pack(self.onlineBox, hbox)
 		self.accountGroupCombo = accountGroupBox.combo
 		# --
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
@@ -74,13 +67,11 @@ class WidgetClass(BaseWidgetClass):
 		self.syncIntervalInput = common.DurationInputBox()
 		pack(hbox, self.syncIntervalInput)
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(vbox, hbox)
+		pack(self.onlineBox, hbox)
 		self.syncCheck.connect(
 			"clicked",
 			lambda check: self.syncIntervalInput.set_sensitive(check.get_active()),
 		)
-		# --
-		pack(self, exp)
 
 	def updateWidget(self) -> None:
 		BaseWidgetClass.updateWidget(self)
@@ -108,8 +99,6 @@ class WidgetClass(BaseWidgetClass):
 
 		value, unit = self.group.remoteSyncDuration
 		self.syncIntervalInput.setDuration(value, unit)
-
-		self.onlineServiceExpander.set_expanded(False)
 
 	def updateVars(self) -> None:
 		BaseWidgetClass.updateVars(self)

@@ -1637,6 +1637,10 @@ msgid "Event Group"
 msgstr ""
 "گروه رویدادها"
 
+msgid "{groupType} Setting"
+msgstr ""
+"تنظیمات {groupType}"
+
 msgid "Group"
 msgstr ""
 "گروه"

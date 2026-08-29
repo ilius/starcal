@@ -344,7 +344,9 @@ widgetClassLoaderByName: dict[str, Callable[[], ModuleType]] = {
 def getWidgetClass(obj: BaseClassType) -> type[gtk.Widget] | None:
 	cls = obj.__class__
 
-	if hasattr(cls, "WidgetClass"):
+	# Check the class's own dict so the cached widget class is not inherited
+	# by subclasses of an already-resolved base class
+	if "WidgetClass" in cls.__dict__:
 		return cls.WidgetClass  # type: ignore[no-any-return]
 
 	try:
