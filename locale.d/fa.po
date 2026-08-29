@@ -2560,6 +2560,10 @@ msgid "Use AppIndicator"
 msgstr ""
 "استفاده از AppIndicator"
 
+msgid "Use Legacy Status Icon"
+msgstr ""
+"استفاده از نماد وضعیت قدیمی (Tray)"
+
 
 
 msgid "Window Controller"

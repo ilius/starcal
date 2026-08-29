@@ -81,6 +81,15 @@ confOptionsData: list[OptionData] = [
 		desc="Use AppIndicator",
 		default=True,
 	),
+	OptionData(
+		name="useLegacyStatusIcon",
+		v3Name="useLegacyStatusIcon",
+		flags=MAIN_CONF | NEED_RESTART,
+		type="bool",
+		where="Preferences: Status Icon",
+		desc="Use Legacy Status Icon",
+		default=True,
+	),
 	# ----------------- mainWin live info
 	OptionData(
 		name="mainWin.geo.x",

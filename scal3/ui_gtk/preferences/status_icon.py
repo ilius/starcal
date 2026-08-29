@@ -55,6 +55,15 @@ class PreferencesStatusIcon:
 		item: OptionUI
 		# ----
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
+		item = CheckOptionUI(
+			option=conf.useLegacyStatusIcon,
+			label=_("Use Legacy Status Icon"),
+		)
+		self.optionUIs.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
+		# ----
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=1)
 		label = newAlignLabel(sgroup=sgroup, label=_("Normal Days"))
 		pack(hbox, label)
 		item = ImageFileChooserOptionUI(

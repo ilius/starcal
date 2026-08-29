@@ -170,6 +170,7 @@ __all__ = [
 	"ud__mainToolbarData",
 	"ud__wcalToolbarData",
 	"useAppIndicator",
+	"useLegacyStatusIcon",
 	"useSystemIcons",
 	"wcalCursorLineWidthFactor",
 	"wcalCursorRoundingFactor",
@@ -235,6 +236,10 @@ winTaskbar: Final[Option[bool]] = Option(False)
 """Use AppIndicator
 Preferences: General"""
 useAppIndicator: Final[Option[bool]] = Option(True)
+
+"""Use Legacy Status Icon
+Preferences: Status Icon"""
+useLegacyStatusIcon: Final[Option[bool]] = Option(True)
 
 """Window X
 MainWin: Move"""
@@ -1275,6 +1280,7 @@ confOptions: dict[str, Option[Any]] = {
 	"showMain": showMain,
 	"winTaskbar": winTaskbar,
 	"useAppIndicator": useAppIndicator,
+	"useLegacyStatusIcon": useLegacyStatusIcon,
 	"fontCustomEnable": fontCustomEnable,
 	"fontCustom": fontCustom,
 	"buttonIconEnable": buttonIconEnable,
@@ -1452,6 +1458,7 @@ dayCalWinOptionsLive: dict[str, Option[Any]] = {
 needRestartList = [
 	winTaskbar,
 	useAppIndicator,
+	useLegacyStatusIcon,
 	buttonIconEnable,
 	useSystemIcons,
 	oldStyleProgressBar,
