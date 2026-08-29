@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from os.path import (
 	abspath,
 	dirname,
@@ -19,6 +20,9 @@ from shutil import rmtree
 myPath = realpath(__file__)
 sourceDir = dirname(dirname(dirname(myPath)))
 print(sourceDir)
+
+sys.path.insert(0, join(sourceDir, "xfce-applet"))
+import install as xfceAppletInstall  # noqa: E402
 
 pkgName = "starcal3"
 iconName = "starcal32.png"
@@ -72,6 +76,56 @@ def cleanup(cpath: str) -> None:
 			rmtree(cpath, ignore_errors=True)
 	except OSError:
 		pass
+
+
+def getXfceAppletIncluded() -> bool:
+	"""
+	Whether to build and include the Xfce panel applet in the package.
+
+	Set the STARCAL_XFCE_APPLET environment variable (1/true/yes/y/on to
+	include, 0/false/no/n/off to skip) to bypass the prompt.
+	"""
+	envValue = os.getenv("STARCAL_XFCE_APPLET")
+	if envValue is not None:
+		return envValue.strip().lower() in {"1", "true", "yes", "y", "on"}
+	try:
+		answer = (
+			input(
+				"Build and include the Xfce panel applet in the package? "
+				"[y/N] (set STARCAL_XFCE_APPLET to skip this prompt) ",
+			)
+			.strip()
+			.lower()
+		)
+	except EOFError:
+		return False
+	return answer in {"1", "true", "yes", "y", "on"}
+
+
+def buildAndInstallXfceApplet(targetDir: str, prefix: str) -> bool:
+	buildDir = tempfile.mkdtemp(prefix="starcal-xfce-applet-")
+	env = dict(os.environ, DESTDIR=targetDir)
+	try:
+		libdir = xfceAppletInstall.get_libdir(prefix)
+		for cmd in [
+			["meson", "setup", buildDir, f"-Dprefix={prefix}", f"-Dlibdir={libdir}"],
+			["meson", "compile", "-C", buildDir],
+			["meson", "install", "-C", buildDir],
+		]:
+			res = subprocess.call(
+				cmd,
+				cwd=join(sourceDir, "xfce-applet"),
+				env=env,
+			)
+			if res != 0:
+				printAsError(f"Failed to run: {' '.join(cmd)}")
+				return False
+	except Exception as e:
+		printAsError(f"Failed to build xfce applet: {e}")
+		return False
+	finally:
+		rmtree(buildDir, ignore_errors=True)
+	return True
 
 
 def lsb_release() -> str:
@@ -181,6 +235,12 @@ def main() -> int | None:
 	else:
 		prefix = "/usr/local"
 	print(f"{prefix = }")
+
+	includeXfceApplet = False
+	if installType != "portable":
+		includeXfceApplet = getXfceAppletIncluded()
+	if includeXfceApplet:
+		print("Xfce panel applet will be built and included")
 
 	pyCmd = options.get("python", "")
 	if pyCmd:
@@ -308,11 +368,18 @@ def main() -> int | None:
 	if res != 0:
 		return 1
 
+	if includeXfceApplet:
+		if buildAndInstallXfceApplet(targetDir, prefix):
+			print("Xfce panel applet built and included in the package")
+		else:
+			printAsError("WARNING: failed to build/include the Xfce panel applet")
+
 	if installType in {"for-pkg", "system"}:
 		print("cleaning")
 		cleanup(join(targetCodeDir, ".git"))
 		cleanup(join(targetCodeDir, ".github"))
 		cleanup(join(targetCodeDir, ".gitignore"))
+		cleanup(join(targetCodeDir, "xfce-applet", "build"))
 		# TODO: targetCodeDir/.Trash*
 		cleanup(join(targetCodeDir, "google-api-python-client/.git"))
 		cleanup(join(targetCodeDir, "google-api-python-client/.hg"))
