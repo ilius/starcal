@@ -119,6 +119,11 @@ def main() -> None:
 	action = ""
 	if conf.showMain.v:
 		action = "show"
+	if not conf.useLegacyStatusIcon.v:
+		# no legacy tray icon: serve the xfce applet instead and make sure
+		# the desktop widget is visible on startup
+		statusIconMode = 3
+		conf.showDesktopWidget.v = True
 	for arg in sys.argv[1:]:
 		if arg in {"--no-tray-icon", "--no-status-icon"}:
 			statusIconMode = 0
