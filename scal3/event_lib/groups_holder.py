@@ -212,6 +212,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 	def importData(self, data: dict[str, Any]) -> EventGroupsImportResult:
 		"""Import groups from a data dict, creating or updating as needed."""
 		res = EventGroupsImportResult()
+		newGroupIndex = 0
 		for gdata in data["groups"]:
 			guuid = gdata.get("uuid")
 			if guuid:
@@ -229,7 +230,8 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			assert group.id is not None
 			group.importData(gdata, importMode=ImportMode.SKIP_MODIFIED)
 			group.save()
-			self.append(group)
+			self.insert(newGroupIndex, group)
+			newGroupIndex += 1
 			res.newGroupIds.add(group.id)
 
 		self.save()

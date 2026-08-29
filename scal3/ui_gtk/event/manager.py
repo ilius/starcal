@@ -590,7 +590,12 @@ class EventManagerDialog(CalObjWidget):
 
 		elif action == "+g":  # new group with events inside it (imported)
 			assert isinstance(record.obj, EventGroup), f"{record.obj=}"
-			self.appendGroupTree(record.obj)
+			assert record.obj.id is not None
+			try:
+				groupIndex = ev.groups.index(record.obj.id)
+			except ValueError:
+				groupIndex = len(self.treeModel) - 1
+			self.insertGroupTree(groupIndex, record.obj)
 
 		elif action == "-g":
 			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
