@@ -119,17 +119,19 @@ def main() -> None:
 	action = ""
 	if conf.showMain.v:
 		action = "show"
-	if len(sys.argv) > 1:
-		if sys.argv[1] in {"--no-tray-icon", "--no-status-icon"}:
+	for arg in sys.argv[1:]:
+		if arg in {"--no-tray-icon", "--no-status-icon"}:
 			statusIconMode = 0
 			action = "show"
-		elif sys.argv[1] == "--hide":
+		elif arg == "--xfce-applet":
+			statusIconMode = 3
+		elif arg == "--hide":
 			action = ""
-		elif sys.argv[1] == "--show":
+		elif arg == "--show":
 			action = "show"
-		# elif sys.argv[1] == "--html":#????????????
+		# elif arg == "--html":#????????????
 		# 	action = "html"
-		# elif sys.argv[1] == "--svg":#????????????
+		# elif arg == "--svg":#????????????
 		# 	action = "svg"
 	# -------------------------------
 	ui.init()

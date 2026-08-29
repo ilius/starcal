@@ -1,0 +1,10 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+Name=StarCalendar
+Comment=StarCalendar calendar applet (replaces the status icon)
+Comment[fa]=ابزارک تقویم StarCalendar (جایگزین آیکون سینی)
+Icon=starcal32
+X-XFCE-Module=starcal-applet
+X-XFCE-Internal=false
+X-XFCE-API=2.0

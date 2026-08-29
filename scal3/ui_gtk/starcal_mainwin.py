@@ -142,6 +142,7 @@ class MainWin(CalObjWidget):
 		#   0: none (simple window)
 		#   1: (dropped) applet
 		#   2: standard status icon
+		#   3: xfce panel applet
 		self.statusIconMode = statusIconMode
 		# ---
 		# ui.eventManDialog = None
@@ -664,7 +665,17 @@ class MainWin(CalObjWidget):
 	"""
 
 	def statusIconInit(self) -> None:
+		from scal3.ui_gtk.starcal_xfce_applet import XfceAppletStatusIcon
+
+		self.statusIconPopupMenu: gtk.Menu | None = None
 		self.sicon = create_status_icon(self, self.statusIconMode)
+		if self.statusIconMode == 3:
+			self.xfceApplet = self.sicon
+		elif self.statusIconMode == 2:
+			# serve the xfce applet next to the tray/status icon
+			self.xfceApplet = XfceAppletStatusIcon(self)
+		else:
+			self.xfceApplet = None
 
 	def getMainWinMenuItem(self) -> gtk.MenuItem:
 		item = gtk.MenuItem(label=_("Main Window"))
@@ -764,8 +775,38 @@ class MainWin(CalObjWidget):
 			menu.add(item)
 		menu.show_all()
 		# log.debug("statusIconPopup", button, etime)
+		self._keepStatusIconMenu(menu)
 		menu.popup(None, None, get_pos_func, self.sicon, button, etime)
 		# self.sicon.do_popup_menu(self.sicon, button, etime)
+		ui.updateFocusTime()
+
+	def _keepStatusIconMenu(self, menu: gtk.Menu) -> None:
+		# keep a reference so the menu is not garbage-collected while shown
+		self.statusIconPopupMenu = menu
+		menu.connect("deactivate", self._onStatusIconMenuDeactivate)
+
+	def _onStatusIconMenuDeactivate(self, menu: gtk.Menu) -> None:
+		if getattr(self, "statusIconPopupMenu", None) is menu:
+			self.statusIconPopupMenu = None
+
+	def statusIconPopupAtPointer(self, button: int = 3) -> None:
+		menu = Menu()
+		if os.sep == "\\":
+			from scal3.ui_gtk.windows import setupMenuHideOnLeave
+
+			setupMenuHideOnLeave(menu)
+		for item in self.getStatusIconPopupItems():
+			menu.add(item)
+		menu.show_all()
+		self._keepStatusIconMenu(menu)
+		menu.popup(
+			None,
+			None,
+			None,
+			None,
+			button,
+			gtk.get_current_event_time(),
+		)
 		ui.updateFocusTime()
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
@@ -831,16 +872,23 @@ class MainWin(CalObjWidget):
 		# pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, None)
 
 		self.sicon.set_from_pixbuf(pixbuf)
+		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
+			self.xfceApplet.set_from_pixbuf(pixbuf)
 
 	def statusIconUpdateTooltip(self) -> None:
 		try:
 			sicon = self.sicon
 		except AttributeError:
 			return
-		if sicon is None:
+		tooltip = getStatusIconTooltip()
+		if sicon is not None:
+			sicon.set_tooltip_text(tooltip)
+		try:
+			xfceApplet = self.xfceApplet
+		except AttributeError:
 			return
-		# assert isinstance(sicon, gtk.StatusIcon), f"{sicon=}"
-		sicon.set_tooltip_text(getStatusIconTooltip())
+		if xfceApplet is not None and xfceApplet is not sicon:
+			xfceApplet.set_tooltip_text(tooltip)
 
 	def statusIconUpdate(
 		self,
@@ -864,8 +912,11 @@ class MainWin(CalObjWidget):
 				calTypes.primary,
 			)
 		# -------
-		assert self.sicon is not None
-		self.sicon.set_from_file(join(pixDir, "starcal-24.png"))
+		placeholder = join(pixDir, "starcal-24.png")
+		if self.sicon is not None:
+			self.sicon.set_from_file(placeholder)
+		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
+			self.xfceApplet.set_from_file(placeholder)
 		self.statusIconUpdateIcon(ddate)
 		# -------
 		self.statusIconUpdateTooltip()
@@ -941,6 +992,8 @@ class MainWin(CalObjWidget):
 		if self.statusIconMode > 1 and self.sicon:
 			self.sicon.set_visible(False)
 			# ^ needed for windows. before or after main_quit ?
+		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
+			self.xfceApplet.set_visible(False)
 		# ------
 		t0 = perf_counter()
 		core.stopRunningThreads()

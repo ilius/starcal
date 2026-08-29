@@ -8,6 +8,11 @@ from scal3.app_info import APP_DESC
 
 
 def create_status_icon(owner: Any, mode: int) -> Any | None:
+	if mode == 3:
+		from scal3.ui_gtk.starcal_xfce_applet import XfceAppletStatusIcon
+
+		return XfceAppletStatusIcon(owner)
+
 	if mode != 2:
 		return None
 
