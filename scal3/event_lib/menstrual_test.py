@@ -329,12 +329,12 @@ def test_observation_auto_description(fs: FileSystem) -> None:
 			"sex": True,
 		},
 	)
-	auto = event.getDescription()
+	auto = event.autoDescription
 	for field in ("Recorded by", "Flow", "Cervical Mucus", "Temperature", "Kit"):
 		assert field in auto
 	assert "36.6" in auto
 
-	description = event.getDescription()
+	description = event.autoDescription
 	assert description.startswith("cramps in the evening")
 	assert auto in description
 	# the stored description must remain the raw user input

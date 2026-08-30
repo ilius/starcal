@@ -66,7 +66,7 @@ def assertDictAttributes(
 	assert event.description == description
 	assert event.calType == GREGORIAN
 	assert summary in event.autoSummary
-	assert description in event.getDescription()
+	assert description in event.autoDescription
 	assert summary in event.getText()
 
 
