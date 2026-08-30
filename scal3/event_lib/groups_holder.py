@@ -40,6 +40,7 @@ from .groups_import import (
 	ImportMode,
 )
 from .holders import ObjectsHolderTextModel
+from .icon import WithIcon
 from .objects import iterObjectFiles
 from .pytypes import EventGroupType
 from .register import classes
@@ -49,7 +50,7 @@ if TYPE_CHECKING:
 
 	from .trash import EventTrash
 
-__all__ = ["EventGroupsHolder"]
+__all__ = ["EventArchivedGroupsHolder", "EventGroupsHolder"]
 
 
 class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
@@ -71,11 +72,19 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self.parent = None
 		self._idByUuid = {}
 		self._trash: EventTrash | None = None
+		self._archivedGroups: EventArchivedGroupsHolder | None = None
 		self.calType = 0  # not used? just for group.parent eligibility
 
 	def setTrash(self, trash: EventTrash) -> None:
 		"""Set the trash container used when deleting groups."""
 		self._trash = trash
+
+	def setArchivedGroups(
+		self,
+		archivedGroups: EventArchivedGroupsHolder,
+	) -> None:
+		"""Set the archived-groups holder used when archiving groups."""
+		self._archivedGroups = archivedGroups
 
 	def create(self, groupName: str) -> EventGroupType:
 		"""Create a new group instance of the given type name."""
@@ -142,6 +151,49 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		self.delete(group)
 		self.save()
 		trash.save()
+
+	def moveArchivedToTrash(
+		self,
+		group: EventGroupType,
+		trash: EventTrash,
+	) -> None:
+		"""Move all events from an archived group into the trash and delete it."""
+		archivedGroups = self._archivedGroups
+		assert archivedGroups is not None
+		if trash.addEventsToBeginning:
+			trash.idList = group.idList + trash.idList
+		else:
+			trash.idList += group.idList
+		group.idList = []
+		archivedGroups.delete(group)
+		archivedGroups.save()
+		trash.save()
+
+	def archiveGroup(self, group: EventGroupType) -> None:
+		"""Move a group from the main holder to the archived holder (as disabled)."""
+		archivedGroups = self._archivedGroups
+		assert archivedGroups is not None
+		group.enable = False
+		group.afterModify()
+		group.save()
+		self.exclude(group)
+		archivedGroups.append(group)
+		group.parent = archivedGroups
+		self.save()
+		archivedGroups.save()
+
+	def unarchiveGroup(self, group: EventGroupType) -> None:
+		"""Move a group from the archived holder back to the main holder (disabled)."""
+		archivedGroups = self._archivedGroups
+		assert archivedGroups is not None
+		group.enable = False
+		group.afterModify()
+		group.save()
+		archivedGroups.exclude(group)
+		self.append(group)
+		group.parent = self
+		self.save()
+		archivedGroups.save()
 
 	def convertGroupTo(
 		self,
@@ -252,9 +304,12 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		Deletes group files not referenced by the holder, then gathers event
 		files and object blobs that belong to no group, persists them as a new
 		"Orphan Events" group, appends it to the holder, and returns it, or None
-		if no orphans were found.
+		if no orphans were found. Archived groups (and their events) are not
+		treated as orphans.
 		"""
 		fs = self.fs
+		archivedGroups = self._archivedGroups
+		archivedGroupIds = set(archivedGroups.idList) if archivedGroups else set()
 		newGroup = EventGroup()
 		newGroup.fs = fs
 		newGroup.setTitle(_("Orphan Events"))
@@ -265,7 +320,7 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 				gid = int(splitext(gid_fname)[0])
 			except ValueError:
 				continue
-			if gid not in self.idList:
+			if gid not in self.idList and gid not in archivedGroupIds:
 				try:
 					fs.removeFile(join(groupsDir, gid_fname))
 				except Exception:
@@ -274,6 +329,9 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 		myEventIdList: list[int] = []
 		for group in self:
 			myEventIdList += group.idList
+		if archivedGroups is not None:
+			for group in archivedGroups:
+				myEventIdList += group.idList
 		myEventIdSet: set[int] = set(myEventIdList)
 		eventHashSet: set[str] = set()
 
@@ -316,3 +374,30 @@ class EventGroupsHolder(ObjectsHolderTextModel[EventGroupType]):
 			self.save()
 			return newGroup
 		return None
+
+
+class EventArchivedGroupsHolder(EventGroupsHolder, WithIcon):
+	"""Holder for event groups that have been archived (treated as always disabled)."""
+
+	file = join("event", "group_archive_list.json")
+	desc = _("Archived Groups")
+	defaultIcon = "./user-archive.svg"
+
+	def __init__(self, ident: int | None = None) -> None:
+		super().__init__(ident)
+		self.icon = self.defaultIcon
+
+	def _setList(self, data: list[int]) -> None:
+		self._clear()
+		if not data:
+			return
+		ObjectsHolderTextModel._setList(self, data)  # noqa: SLF001
+		for group in self:
+			assert group.id is not None
+			group.parent = self
+			if group.uuid is None:
+				group.save()
+				log.info(f"saved archived group {group.id} with uuid = {group.uuid}")
+				assert group.uuid
+			self._idByUuid[group.uuid] = group.id
+			group.enable = False  # archived groups are always treated as disabled

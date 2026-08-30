@@ -98,6 +98,10 @@ __all__ = ["EventManagerDialog"]
 
 type W = gtk.Widget
 
+# row ID in the tree for the "Archived Groups" holder node
+# (the trash row uses -1)
+archivedGroupsRowId = -2
+
 confPath = join(confDir, "event", "manager.json")
 
 eventManPos: Final[Option[tuple[int, int]]] = Option((0, 0))
@@ -194,6 +198,7 @@ class EventManagerDialog(CalObjWidget):
 		self.syncing = None  # or a tuple of (groupId, statusText)
 		self.groupIterById: dict[int, gtk.TreeIter] = {}
 		self.trashIter: gtk.TreeIter | None = None
+		self.archivedGroupsIter: gtk.TreeIter | None = None
 		self.isLoaded = False
 		self.loadedGroupIds: set[int] = set()
 		self.eventsIter: dict[int, gtk.TreeIter] = {}
@@ -675,6 +680,11 @@ class EventManagerDialog(CalObjWidget):
 			return
 
 		groupIndex = path[0]
+		groupId = self.getRowId(gIter)
+		if groupId <= 0:  # trash row or Archived Groups node
+			cell.set_property("inconsistent", False)
+			cell.set_active(value)
+			return
 		group = self.getGroupByPath(path)
 		assert isinstance(group, EventGroup), f"{group=}"
 		if groupIndex not in self.multiSelectPathDict:
@@ -866,6 +876,8 @@ class EventManagerDialog(CalObjWidget):
 		model = self.treeModel
 		if len(path) not in {1, 2}:
 			raise RuntimeError(f"invalid path depth={len(path)}, {path=}")
+		if self.isArchivedGroupsNode(path) or self.isArchivedGroupRow(path):
+			return
 		itr = model.get_iter(gtk.TreePath.new_from_indices(path))
 
 		active = not model.get_value(itr, 0)
@@ -1120,6 +1132,8 @@ class EventManagerDialog(CalObjWidget):
 	def canPasteToGroup(self, group: EventGroupType) -> bool:
 		if self.toPasteEvent is None:
 			return False
+		if group.id in ev.archivedGroups.idList:
+			return False
 		if not group.acceptsEventTypes:  # noqa: SIM103
 			return False
 		# FIXME: check event type here?
@@ -1239,9 +1253,10 @@ class EventManagerDialog(CalObjWidget):
 
 	def appendGroup(self, group: EventGroupType) -> gtk.TreeIter:
 		assert group.id is not None
+		beforeIter = self.archivedGroupsIter or self.trashIter
 		groupIter: gtk.TreeIter = self.treeModel.insert_before(  # type: ignore[no-untyped-call]
 			None,
-			self.trashIter,
+			beforeIter,
 			self.getGroupRow(group),
 		)
 		self.groupIterById[group.id] = groupIter
@@ -1266,13 +1281,37 @@ class EventManagerDialog(CalObjWidget):
 		for event in ev.trash:
 			self.appendEventRow(self.trashIter, event)
 
+	def appendArchivedGroupTree(self, group: EventGroupType) -> None:
+		assert self.archivedGroupsIter is not None
+		assert group.id is not None
+		groupIter: gtk.TreeIter = self.treeModel.append(
+			self.archivedGroupsIter,
+			list(self.getGroupRow(group)),
+		)
+		self.groupIterById[group.id] = groupIter
+
+	def appendArchivedGroups(self) -> None:
+		self.archivedGroupsIter = self.treeModel.insert_before(  # type: ignore[no-untyped-call]
+			None,
+			self.trashIter,
+			[
+				False,
+				archivedGroupsRowId,
+				eventTreeIconPixbuf(ev.archivedGroups.getIconRel()),
+				ev.archivedGroups.desc,
+				"",
+			],
+		)
+		for group in ev.archivedGroups:
+			self.appendArchivedGroupTree(group)
+
 	def reloadGroupEvents(self, gid: int) -> None:
 		groupIter = self.groupIterById[gid]
 		assert self.getRowId(groupIter) == gid
 		# --
 		self.removeIterChildren(groupIter)
 		# --
-		group = ev.groups[gid]
+		group = self.getGroupById(gid)
 		if gid not in self.loadedGroupIds:
 			return
 		for event in group:
@@ -1283,6 +1322,7 @@ class EventManagerDialog(CalObjWidget):
 		self.appendTrash()
 		for group in ev.groups:
 			self.appendGroupTree(group)
+		self.appendArchivedGroups()
 		self.treeviewCursorChanged()
 		# ----
 		self.isLoaded = True
@@ -1297,6 +1337,7 @@ class EventManagerDialog(CalObjWidget):
 		self, path: list[int]
 	) -> tuple[EventGroupType, EventType]:
 		assert len(path) == 2
+		assert not self.isArchivedGroupRow(path)
 		groupIndex = path[0]
 		eventId = self.getRowId(self.iterFromPath(path))
 		groupId = self.getRowId(self.iterFromPath([groupIndex]))
@@ -1307,6 +1348,7 @@ class EventManagerDialog(CalObjWidget):
 		self, path: list[int]
 	) -> tuple[EventGroupType | EventTrash, EventType]:
 		assert len(path) == 2
+		assert not self.isArchivedGroupRow(path)
 		groupIndex = path[0]
 		eventId = self.getRowId(self.iterFromPath(path))
 		groupId = self.getRowId(self.iterFromPath([groupIndex]))
@@ -1319,15 +1361,27 @@ class EventManagerDialog(CalObjWidget):
 
 	def getEventByPath(self, path: list[int]) -> EventType:
 		assert len(path) == 2
+		assert not self.isArchivedGroupRow(path)
 		groupIndex = path[0]
 		eventId = self.getRowId(self.iterFromPath(path))
 		groupId = self.getRowId(self.iterFromPath([groupIndex]))
 		group = ev.groups[groupId]
 		return group[eventId]
 
+	def getGroupById(self, gid: int) -> EventGroupType:
+		try:
+			return ev.groups[gid]
+		except KeyError:
+			return ev.archivedGroups[gid]
+
 	def getGroupByPath(self, path: list[int]) -> EventGroupType:
 		groupIndex = path[0]
 		groupId = self.getRowId(self.iterFromPath([groupIndex]))
+		if groupId == archivedGroupsRowId:
+			groupId = self.getRowId(self.iterFromPath(path))
+			return ev.archivedGroups[groupId]
+		if groupId <= 0:
+			raise ValueError(f"invalid group id {groupId}, {path=}")
 		return ev.groups[groupId]
 
 	def getGroupOrTrashByPath(self, path: list[int]) -> EventGroupType | EventTrash:
@@ -1335,7 +1389,21 @@ class EventManagerDialog(CalObjWidget):
 		groupId = self.getRowId(self.iterFromPath([groupIndex]))
 		if groupId == -1:
 			return ev.trash
+		if groupId <= 0:
+			raise ValueError(f"invalid group id {groupId}, {path=}")
 		return ev.groups[groupId]
+
+	def isArchivedGroupsNode(self, path: list[int]) -> bool:
+		return (
+			len(path) == 1
+			and self.getRowId(self.iterFromPath(path)) == archivedGroupsRowId
+		)
+
+	def isArchivedGroupRow(self, path: list[int]) -> bool:
+		return (
+			len(path) == 2
+			and self.getRowId(self.iterFromPath([path[0]])) == archivedGroupsRowId
+		)
 
 	@widgetActionCallback
 	def historyOfEventFromMenu(self, path: list[int]) -> None:
@@ -1479,6 +1547,13 @@ class EventManagerDialog(CalObjWidget):
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			eventWriteMenuItem(
+				_("Archive"),
+				imageName="user-archive.svg",
+				func=self.archiveGroupFromMenu(path),
+			),
+		)
+		menu.add(
+			eventWriteMenuItem(
 				_("Delete Group"),
 				imageName="edit-delete.svg",
 				func=self.deleteGroupFromMenu(path),
@@ -1557,6 +1632,38 @@ class EventManagerDialog(CalObjWidget):
 					func=self.onGroupActionClick(group, actionFuncName),
 				),
 			)
+
+	def archivedGroupAddRightClickMenuItems(
+		self,
+		menu: gtk.Menu,
+		path: list[int],
+	) -> None:
+		# log.debug("right click on archived group", group.title)
+		menu.add(
+			eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editGroupFromMenu(path),
+			),
+		)
+		# --
+		menu.add(gtk.SeparatorMenuItem())
+		menu.add(
+			eventWriteMenuItem(
+				_("Unarchive"),
+				imageName="user-archive.svg",
+				func=self.unarchiveGroupFromMenu(path),
+			),
+		)
+		# --
+		menu.add(gtk.SeparatorMenuItem())
+		menu.add(
+			eventWriteMenuItem(
+				_("Delete Group"),
+				imageName="edit-delete.svg",
+				func=self.deleteGroupFromMenu(path),
+			),
+		)
 
 	def eventAddRightClickMenuItems(
 		self,
@@ -1649,11 +1756,15 @@ class EventManagerDialog(CalObjWidget):
 				),
 			)
 
-	def genRightClickMenu(self, path: list[int]) -> gtk.Menu:
+	def genRightClickMenu(self, path: list[int]) -> gtk.Menu | None:
 		# and Select _All menu item
 		# log.debug(len(obj_list))
 		menu = Menu()
 		if len(path) == 2:
+			if self.isArchivedGroupRow(path):
+				self.archivedGroupAddRightClickMenuItems(menu, path)
+				menu.show_all()
+				return menu
 			group, event = self.getEventAndParentByPath(path)
 			self.eventAddRightClickMenuItems(menu, path, group, event)
 			menu.show_all()
@@ -1666,6 +1777,8 @@ class EventManagerDialog(CalObjWidget):
 			self.trashAddRightClickMenuItems(menu, path, ev.trash)
 			menu.show_all()
 			return menu
+		if groupId == archivedGroupsRowId:
+			return None
 
 		group = ev.groups[groupId]
 		self.groupAddRightClickMenuItems(menu, path, group)
@@ -1703,7 +1816,10 @@ class EventManagerDialog(CalObjWidget):
 			else:
 				treev.expand_row(pathObj, False)
 		elif len(path) == 2:
-			self.editEventByPath(path)
+			if self.isArchivedGroupRow(path):
+				self.editGroupByPath(path)
+			else:
+				self.editEventByPath(path)
 
 	def onKeyPress(self, _dialog: W, gevent: gdk.EventKey) -> bool:
 		kname = gdk.keyval_name(gevent.keyval)
@@ -1826,16 +1942,22 @@ class EventManagerDialog(CalObjWidget):
 		if path is None:
 			return
 		selected = bool(path)
-		eventSelected = selected and len(path) == 2
+		eventSelected = (
+			selected and len(path) == 2 and not self.isArchivedGroupRow(path)
+		)
 		# ---
 		self.mbarEditItem.set_sensitive(selected)
 		self.mbarCutItem.set_sensitive(eventSelected)
 		self.mbarCopyItem.set_sensitive(eventSelected)
 		self.mbarDupItem.set_sensitive(selected)
 		# ---
-		self.mbarPasteItem.set_sensitive(
-			selected and self.canPasteToGroup(self.getGroupByPath(path)),
-		)
+		try:
+			group = self.getGroupByPath(path)
+		except ValueError:
+			canPaste = False
+		else:
+			canPaste = self.canPasteToGroup(group)
+		self.mbarPasteItem.set_sensitive(selected and canPaste)
 
 	def onMenuBarEditClick(self, _menuItem: gtk.MenuItem) -> None:
 		path = self.getSelectedPath()
@@ -1844,7 +1966,10 @@ class EventManagerDialog(CalObjWidget):
 		if len(path) == 1:
 			self.editGroupByPath(path)
 		elif len(path) == 2:
-			self.editEventByPath(path)
+			if self.isArchivedGroupRow(path):
+				self.editGroupByPath(path)
+			else:
+				self.editEventByPath(path)
 
 	def onMenuBarCutClick(self, _menuItem: gtk.MenuItem) -> None:
 		path = self.getSelectedPath()
@@ -1888,6 +2013,14 @@ class EventManagerDialog(CalObjWidget):
 		text = ""
 		modified: int | float | None = None
 		if len(path) == 1:
+			groupId = self.getRowId(self.iterFromPath(path))
+			if groupId == archivedGroupsRowId:
+				text = _("contains {groupCount} archived groups").format(
+					groupCount=_(len(ev.archivedGroups)),
+				)
+				if hasattr(self, "sbar"):
+					self.sbar.push(0, text)
+				return
 			group = self.getGroupOrTrashByPath(path)
 			assert group.id is not None
 			if isinstance(group, EventTrash):
@@ -1911,13 +2044,28 @@ class EventManagerDialog(CalObjWidget):
 			modified = group.modified
 			# log.info(f"group, id = {group.id}, uuid = {group.uuid}")
 		elif len(path) == 2:
-			group, event = self.getEventAndParentByPath(path)
-			assert event.id is not None
-			text = _("Event ID: {eventId}").format(eventId=_(event.id))
-			modified = event.modified
-			# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
-			for rule in event.rulesDict.values():
-				log.debug(f"Rule {rule.name}: '{rule}', info='{rule.getInfo()}'")
+			if self.isArchivedGroupRow(path):
+				group = ev.archivedGroups[self.getRowId(self.iterFromPath(path))]
+				assert group.id is not None
+				text = (
+					_("contains {eventCount} events").format(
+						eventCount=_(len(group)),
+					)
+					+ _(",")
+					+ " "
+					+ _("Group ID: {groupId}").format(
+						groupId=_(group.id),
+					)
+				)
+				modified = group.modified
+			else:
+				group, event = self.getEventAndParentByPath(path)
+				assert event.id is not None
+				text = _("Event ID: {eventId}").format(eventId=_(event.id))
+				modified = event.modified
+				# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
+				for rule in event.rulesDict.values():
+					log.debug(f"Rule {rule.name}: '{rule}', info='{rule.getInfo()}'")
 
 		if modified is None:
 			raise RuntimeError("modified is None")
@@ -2028,7 +2176,7 @@ class EventManagerDialog(CalObjWidget):
 			return
 
 		groupId = self.getRowId(self.iterFromPath(path))
-		if groupId != -1 and col == self.pixbufCol:
+		if groupId > 0 and col == self.pixbufCol:
 			group = ev.groups[groupId]
 			self.toggleEnableGroup(group, path)
 			self.setCursorPath(path)
@@ -2078,10 +2226,9 @@ class EventManagerDialog(CalObjWidget):
 		ev.groups.insert(groupIndex, group)
 		ev.groups.save()
 		assert group.id is not None
-		beforeGroupIter = self.iterFromPath([groupIndex])
-		self.groupIterById[group.id] = self.treeModel.insert_before(  # type: ignore[no-untyped-call]
-			self.treeModel.iter_parent(beforeGroupIter),  # parent
-			beforeGroupIter,  # sibling
+		self.groupIterById[group.id] = self.treeModel.insert(  # type: ignore[no-untyped-call]
+			None,
+			groupIndex,
 			self.getGroupRow(group),
 		)
 		self.onGroupModify(group)
@@ -2094,11 +2241,11 @@ class EventManagerDialog(CalObjWidget):
 	def addGroupBeforeSelection(self, _w: W | None = None) -> None:
 		path = self.getSelectedPath()
 		if path is None:
-			groupIndex = len(self.treeModel) - 1
+			groupIndex = len(ev.groups)
 		else:
 			if not isinstance(path, list):
 				raise RuntimeError(f"invalid {path = }")
-			groupIndex = path[0]
+			groupIndex = min(len(ev.groups), path[0])
 		self.insertNewGroup(groupIndex)
 
 	def duplicateGroup(self, path: list[int]) -> None:
@@ -2197,6 +2344,8 @@ class EventManagerDialog(CalObjWidget):
 		if len(path) == 1:
 			self.duplicateGroup(path)
 		elif len(path) == 2:  # FIXME
+			if self.isArchivedGroupRow(path):
+				return
 			self.toPasteEvent = (self.iterFromPath(path), False)
 			self.pasteEventToPath(path)
 
@@ -2240,12 +2389,17 @@ class EventManagerDialog(CalObjWidget):
 			for eid in trashedIds:
 				event = group[eid]
 				self.appendEventRow(self.trashIter, event)
-		ev.groups.moveToTrash(group, ev.trash)
+		if group.id in ev.archivedGroups.idList:
+			ev.groups.moveArchivedToTrash(group, ev.trash)
+		else:
+			ev.groups.moveToTrash(group, ev.trash)
 		ui.eventUpdateQueue.put("-g", group, self)
 		self.treeModel.remove(self.iterFromPath(path))
 
 	def deleteGroup(self, path: list[int]) -> None:
-		if not (isinstance(path, list) and len(path) == 1):
+		if not (
+			isinstance(path, list) and (len(path) == 1 or self.isArchivedGroupRow(path))
+		):
 			raise RuntimeError(f"invalid {path = }")
 		group = self.getGroupByPath(path)
 		eventCount = len(group)
@@ -2266,6 +2420,54 @@ class EventManagerDialog(CalObjWidget):
 	@widgetActionCallback
 	def deleteGroupFromMenu(self, path: list[int]) -> None:
 		self.deleteGroup(path)
+
+	def _do_archiveGroup(
+		self,
+		_path: list[int],
+		group: EventGroupType,
+	) -> None:
+		assert group.id is not None
+		groupIter = self.groupIterById[group.id]
+		assert self.getRowId(groupIter) == group.id
+		self.removeIterChildren(groupIter)
+		self.loadedGroupIds.discard(group.id)
+		self.treeModel.remove(groupIter)
+		del self.groupIterById[group.id]
+		ev.groups.archiveGroup(group)
+		self.appendArchivedGroupTree(group)
+		self.treeviewCursorChanged()
+		ui.eventUpdateQueue.put("r", group, self)
+
+	@widgetActionCallback
+	def archiveGroupFromMenu(self, path: list[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid {path = }")
+		group = self.getGroupByPath(path)
+		self.dialog.waitingDo(self._do_archiveGroup, path, group)
+
+	def _do_unarchiveGroup(
+		self,
+		_path: list[int],
+		group: EventGroupType,
+	) -> None:
+		assert group.id is not None
+		groupIter = self.groupIterById[group.id]
+		assert self.getRowId(groupIter) == group.id
+		self.treeModel.remove(groupIter)
+		del self.groupIterById[group.id]
+		ev.groups.unarchiveGroup(group)
+		self.appendGroupTree(group)
+		self.treeviewCursorChanged()
+		ui.eventUpdateQueue.put("r", group, self)
+
+	@widgetActionCallback
+	def unarchiveGroupFromMenu(self, path: list[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 2):
+			raise RuntimeError(f"invalid {path = }")
+		assert self.isArchivedGroupRow(path)
+		groupId = self.getRowId(self.iterFromPath(path))
+		group = ev.archivedGroups[groupId]
+		self.dialog.waitingDo(self._do_unarchiveGroup, path, group)
 
 	@widgetActionCallback
 	def addEventToGroupFromMenu(
@@ -2388,8 +2590,12 @@ class EventManagerDialog(CalObjWidget):
 		if not path:
 			return
 		if len(path) == 1:
+			if self.isArchivedGroupsNode(path):
+				return
 			self.deleteGroup(path)
 		elif len(path) == 2:
+			if self.isArchivedGroupRow(path):
+				return
 			self.moveEventToTrashByPath(path)
 
 	@widgetActionCallback
@@ -2447,7 +2653,7 @@ class EventManagerDialog(CalObjWidget):
 		if len(path) == 1:
 			if path[0] == 0:
 				return
-			if self.getRowId(srcIter) == -1:
+			if self.getRowId(srcIter) in {-1, archivedGroupsRowId}:
 				return
 			tarIter = self.iterFromPath([path[0] - 1])
 			self.treeModel.move_before(srcIter, tarIter)
@@ -2455,6 +2661,8 @@ class EventManagerDialog(CalObjWidget):
 			ev.groups.save()
 			# do we need to put on ui.eventUpdateQueue?
 		elif len(path) == 2:
+			if self.isArchivedGroupRow(path):
+				return
 			parentObj, event = self.getEventAndParentByPath(path)
 			parentIndex, eventIndex = path
 			# log.debug(eventIndex, parentLen)
@@ -2497,10 +2705,10 @@ class EventManagerDialog(CalObjWidget):
 			raise TypeError(f"invalid {path = }")
 		srcIter = self.iterFromPath(path)
 		if len(path) == 1:
-			if self.getRowId(srcIter) == -1:
+			if self.getRowId(srcIter) in {-1, archivedGroupsRowId}:
 				return
 			tarIter = self.iterFromPath([path[0] + 1])
-			if self.getRowId(tarIter) == -1:
+			if self.getRowId(tarIter) in {-1, archivedGroupsRowId}:
 				return
 			self.treeModel.move_after(srcIter, tarIter)
 			# or use self.treeModel.swap FIXME
@@ -2508,6 +2716,8 @@ class EventManagerDialog(CalObjWidget):
 			ev.groups.save()
 			# do we need to put on ui.eventUpdateQueue?
 		elif len(path) == 2:
+			if self.isArchivedGroupRow(path):
+				return
 			parentObj, event = self.getEventAndParentByPath(path)
 			parentLen = len(parentObj)
 			parentIndex, eventIndex = path
@@ -2528,7 +2738,7 @@ class EventManagerDialog(CalObjWidget):
 					return
 				newParentIter = self.iterFromPath([parentIndex + 1])
 				newParentId = self.getRowId(newParentIter)
-				if newParentId == -1:
+				if newParentId <= 0:
 					return
 				newGroup = ev.groups[newParentId]
 				self.checkEventToAdd(newGroup, event)
@@ -2692,6 +2902,8 @@ class EventManagerDialog(CalObjWidget):
 		srcPath = srcPathObj.get_indices()
 		srcGroup, srcEvent = self.getEventAndGroupByPath(srcPath)
 		tarGroup = self.getGroupByPath(targetPath)
+		if tarGroup.id in ev.archivedGroups.idList:
+			raise RuntimeError(f"can not paste event into archived group {tarGroup.id}")
 		self.checkEventToAdd(tarGroup, srcEvent)
 		if len(targetPath) == 1:
 			tarGroupIter = self.iterFromPath(targetPath)

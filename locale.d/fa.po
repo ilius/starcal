@@ -1772,6 +1772,18 @@ msgid "Delete Group"
 msgstr ""
 "حذف گروه"
 
+msgid "Archive"
+msgstr ""
+"بایگانی کردن"
+
+msgid "Unarchive"
+msgstr ""
+"بازگردانی از بایگانی"
+
+msgid "Archived Groups"
+msgstr ""
+"گروه‌های بایگانی‌شده"
+
 msgid "Edit Group"
 msgstr ""
 "ویرایش گروه"
@@ -2030,6 +2042,11 @@ msgstr "{eventCount} رویداد"
 msgid "contains {eventCount} events"
 msgstr ""
 "شامل {eventCount} رویداد"
+
+
+msgid "contains {groupCount} archived groups"
+msgstr ""
+"شامل {groupCount} گروه بایگانی‌شده"
 
 
 msgid "contains {eventCount} events and {occurCount} occurrences"

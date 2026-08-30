@@ -6,7 +6,10 @@ from scal3.event_notification_thread import EventNotificationManager
 
 from . import state
 from .accounts_holder import EventAccountsHolder
-from .groups_holder import EventGroupsHolder
+from .groups_holder import (
+	EventArchivedGroupsHolder,
+	EventGroupsHolder,
+)
 from .trash import EventTrash
 
 if TYPE_CHECKING:
@@ -24,6 +27,7 @@ class Handler:
 		self._fs: FileSystem | None = None
 		self._accounts: EventAccountsHolder | None = None
 		self._groups: EventGroupsHolder | None = None
+		self._archivedGroups: EventArchivedGroupsHolder | None = None
 		self._trash: EventTrash | None = None
 		self._notif: EventNotificationManager | None = None
 
@@ -33,9 +37,12 @@ class Handler:
 		self._accounts = EventAccountsHolder.load(0, fs=fs)
 		self._groups = EventGroupsHolder.load(0, fs=fs)
 		assert self._groups is not None
+		self._archivedGroups = EventArchivedGroupsHolder.load(0, fs=fs)
+		assert self._archivedGroups is not None
 		self._trash = EventTrash.s_load(0, fs=fs)
 		assert self._trash is not None
 		self._groups.setTrash(self._trash)
+		self._groups.setArchivedGroups(self._archivedGroups)
 		self._notif = EventNotificationManager(self._groups)
 
 	@property
@@ -55,6 +62,12 @@ class Handler:
 		"""Return the group holder subsystem."""
 		assert self._groups is not None
 		return self._groups
+
+	@property
+	def archivedGroups(self) -> EventArchivedGroupsHolder:
+		"""Return the archived-groups holder subsystem."""
+		assert self._archivedGroups is not None
+		return self._archivedGroups
 
 	@property
 	def trash(self) -> EventTrash:
