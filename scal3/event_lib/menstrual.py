@@ -638,7 +638,8 @@ class MenstrualPeriodEvent(Event):
 		days = {jd + i for i in range(periodLength)}
 		return JdOccurSet({d for d in days if startJd <= d < endJd})
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the user summary, or translated auto text computed on demand."""
 		if self.summary:
 			return self.summary
@@ -718,7 +719,8 @@ class MenstrualFertileEvent(Event):
 			includeDayAfterProbability=0.08,
 		)
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the user summary, or the day-specific probability on demand."""
 		if self.summary:
 			return self.summary
@@ -769,7 +771,8 @@ class MenstrualOvulationEvent(Event):
 		self.predicted = True
 		self.summary = ""  # auto text is generated on demand, not saved
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the user summary, or translated auto text computed on demand."""
 		if self.summary:
 			return self.summary
@@ -867,7 +870,8 @@ class MenstrualObservationEvent(Event):
 		if rule is not None:
 			rule.date = getSysDate(self.calType)
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the user summary, or translated auto text computed on demand."""
 		if self.summary:
 			return self.summary

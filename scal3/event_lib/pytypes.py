@@ -259,7 +259,8 @@ class EventType(RuleContainerType, Protocol):
 	def getNotifyBeforeSec(self) -> float:
 		"""Return the notification lead time in seconds."""
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the event summary text."""
 
 	def getDescription(self) -> str:

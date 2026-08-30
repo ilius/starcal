@@ -270,7 +270,7 @@ def test_period_event_roundtrip(fs: FileSystem) -> None:
 	ordered = event.getDictOrdered()
 	reimported = MenstrualPeriodEvent(parent=group)
 	reimported.setDict(ordered)
-	assert reimported.getSummary() == event.getSummary()
+	assert reimported.autoSummary == event.autoSummary
 	assert reimported.actualCycle == 27
 	assert reimported.ovulationOverride == jd(2025, 6, 16)
 	assert reimported.getJd() == jd(2025, 6, 1)
@@ -361,13 +361,13 @@ def test_auto_summaries_on_demand(fs: FileSystem) -> None:
 	assert derived
 	for event in derived:
 		assert event.summary == ""  # nothing auto-generated is stored
-		assert event.getSummary() != ""  # translated text on demand
+		assert event.autoSummary != ""  # translated text on demand
 		assert event.getDict()["summary"] == ""
 
 	# a user-provided summary overrides the auto text and is persisted
 	fertile = next(e for e in group if e.name == "menstrualFertile")
 	fertile.summary = "my own text"
-	assert fertile.getSummary() == "my own text"
+	assert fertile.autoSummary == "my own text"
 	assert fertile.getDict()["summary"] == "my own text"
 
 	# recorded periods also show translated text on demand
@@ -377,7 +377,7 @@ def test_auto_summaries_on_demand(fs: FileSystem) -> None:
 		if e.name == "menstrualPeriod" and not getattr(e, "predicted", False)
 	)
 	assert period.summary == ""
-	assert period.getSummary() != ""
+	assert period.autoSummary != ""
 
 
 def test_daily_note_accepted_and_ignored(fs: FileSystem) -> None:
@@ -425,9 +425,9 @@ def test_fertile_day_specific_summary(fs: FileSystem) -> None:
 	assert byDay[ovulation - 5].dayProbability() == 0.10
 	assert byDay[ovulation + 1].dayProbability() == 0.08
 
-	peakSummary = byDay[ovulation - 1].getSummary()
-	assert peakSummary != byDay[ovulation - 2].getSummary()
-	assert peakSummary != byDay[ovulation - 5].getSummary()
+	peakSummary = byDay[ovulation - 1].autoSummary
+	assert peakSummary != byDay[ovulation - 2].autoSummary
+	assert peakSummary != byDay[ovulation - 5].autoSummary
 	assert peakSummary != ""
 	# computed on demand, not stored
 	assert byDay[ovulation - 1].summary == ""

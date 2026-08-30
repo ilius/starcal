@@ -154,7 +154,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return f"{self.__class__.__name__}(id={self.id!r})"
 
 	def __str__(self) -> str:
-		summary = self.getSummary()
+		summary = self.autoSummary
 		return f"{self.__class__.__name__}(id={self.id!r}, summary={summary!r})"
 
 	def icsUID(self) -> str:
@@ -284,7 +284,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		lines = [
 			_("Type") + ": " + self.desc,
 			_("Calendar Type") + ": " + module.desc,
-			_("Summary") + ": " + self.getSummary(),
+			_("Summary") + ": " + self.autoSummary,
 			_("Description") + ": " + self.description,
 		] + [rule.getInfo() for rule in rulesDict.values()]
 		# "notifiers",
@@ -323,7 +323,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	# 		for fname in self.files
 	# 	]
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the event summary text."""
 		return self.summary
 
@@ -333,7 +334,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 
 	def getTextParts(self, showDesc: bool = True) -> list[str]:
 		"""Return summary and optional description as a list of text parts."""
-		summary = self.getSummary()
+		summary = self.autoSummary
 		# --
 		if self.timeZoneEnable and self.timeZone and mytz.gettz(self.timeZone) is None:
 			invalidTZ = _("Invalid Time Zone: {timeZoneName}").format(
@@ -652,7 +653,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	def getV4Dict(self) -> dict[str, Any]:
 		"""Return a v4-format dictionary with summary and display properties."""
 		data = {
-			"summary": self.getSummary(),
+			"summary": self.autoSummary,
 			"description": self.getDescription(),
 			"calType": calTypes.names[self.calType],
 			"icon": self.getIcon(),

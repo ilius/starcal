@@ -101,7 +101,7 @@ def exportEvent(event: EventType) -> dict[str, Any] | None:
 		return None
 	gevent = {
 		"kind": "calendar#event",
-		"summary": toStr(event.getSummary()),
+		"summary": toStr(event.autoSummary),
 		"description": toStr(event.description),
 		"attendees": [],
 		"status": "confirmed",
@@ -562,7 +562,7 @@ class GoogleAccount(Account):
 				_lastSyncStartEpoch, lastSyncEndEpoch = lastSyncTuple
 				if event.modified < lastSyncEndEpoch:
 					log.info(
-						f"---------- skipping event {event.getSummary()}"
+						f"---------- skipping event {event.autoSummary}"
 						f"(modified = {event.modified} < {lastSyncEndEpoch =})",
 					)
 					continue
