@@ -385,10 +385,6 @@ class EventGroup(EventContainer):
 		not common parameters, like those are set in __init__.
 		"""
 
-	def __bool__(self) -> bool:
-		"""Disabled group must be Falsy."""
-		return self.enable
-
 	def setId(self, ident: int | None = None) -> None:
 		"""Assign a numeric ID to this group, auto-incrementing if None or negative."""
 		assert state.lastIds is not None

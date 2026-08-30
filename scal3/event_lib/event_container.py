@@ -258,6 +258,10 @@ class EventContainer(HistoryEventObjBinaryModel, WithIcon):
 	def __len__(self) -> int:
 		return len(self.idList)
 
+	def __bool__(self) -> bool:
+		"""Disabled containers (e.g. trash) must be Falsy."""
+		return self.enable
+
 	def preAdd(self, event: EventType) -> None:
 		"""Validate that the event can be added to this container."""
 		if event.id in self.idList:
