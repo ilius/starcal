@@ -475,7 +475,7 @@ class EventSearchWindow(CalObjWidget):
 						event.id,
 						group.title,
 						eventTreeIconPixbuf(event.getIcon()),
-						event.summary,
+						event.getSummary(),
 						event.getShownDescription(),
 					],
 				)
@@ -598,7 +598,7 @@ class EventSearchWindow(CalObjWidget):
 		eventIter = model.get_iter(path)
 
 		model.set_value(eventIter, 3, eventTreeIconPixbuf(event.icon))  # type: ignore[no-untyped-call]
-		model.set_value(eventIter, 4, event.summary)  # type: ignore[no-untyped-call]
+		model.set_value(eventIter, 4, event.getSummary())  # type: ignore[no-untyped-call]
 		model.set_value(eventIter, 5, event.getShownDescription())  # type: ignore[no-untyped-call]
 
 	def rowActivated(

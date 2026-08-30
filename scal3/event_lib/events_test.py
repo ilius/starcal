@@ -79,7 +79,7 @@ def assertExportRoundtrip(event: EventType) -> None:
 
 	reimported = event.__class__(parent=event.parent)
 	reimported.setDict(ordered)
-	assert reimported.summary == event.summary
+	assert reimported.getSummary() == event.getSummary()
 	assert reimported.description == event.description
 
 
@@ -490,7 +490,7 @@ def test_event_get_dict_roundtrip(fs: FileSystem) -> None:
 
 	fresh = event.__class__(parent=event.parent)
 	fresh.setDict(data)
-	assert fresh.summary == "orig"
+	assert fresh.getSummary() == "orig"
 	assert fresh.getRule("date") is not None
 
 
@@ -505,7 +505,7 @@ def test_event_copy_from(fs: FileSystem) -> None:
 	)
 	target = event.__class__(parent=event.parent)
 	target.copyFrom(event)
-	assert target.summary == "orig"
+	assert target.getSummary() == "orig"
 	assert target.getRule("date") is not None
 	assert target.getJd() == jd(2030, 5, 15)
 
@@ -521,7 +521,7 @@ def test_event_copy_from_exact(fs: FileSystem) -> None:
 	)
 	target = event.__class__(parent=event.parent)
 	target.copyFromExact(event)
-	assert target.summary == "orig"
+	assert target.getSummary() == "orig"
 	assert target.getJd() == jd(2030, 5, 15)
 
 
@@ -607,7 +607,7 @@ def test_event_get_revision_and_patch(fs: FileSystem) -> None:
 	oldHash = reloaded.lastHash
 
 	revision = reloaded.getRevision(oldHash)
-	assert revision.summary == "v1"
+	assert revision.getSummary() == "v1"
 
 	reloaded.summary = "v2"
 	reloaded.save()
@@ -665,7 +665,7 @@ def test_event_set_dict_override(fs: FileSystem) -> None:
 			"rules": [("date", "2031/01/01")],
 		},
 	)
-	assert event.summary == "override"
+	assert event.getSummary() == "override"
 	assert event.getRule("date") is not None
 
 

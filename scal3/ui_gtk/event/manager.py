@@ -1672,7 +1672,7 @@ class EventManagerDialog(CalObjWidget):
 		group: EventGroupType | EventTrash,
 		event: EventType,
 	) -> None:
-		# log.debug("right click on event", event.summary)
+		# log.debug("right click on event", event.getSummary())
 		menu.add(
 			eventWriteMenuItem(
 				_("Edit"),

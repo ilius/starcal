@@ -154,7 +154,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return f"{self.__class__.__name__}(id={self.id!r})"
 
 	def __str__(self) -> str:
-		return f"{self.__class__.__name__}(id={self.id!r}, summary={self.summary!r})"
+		summary = self.getSummary()
+		return f"{self.__class__.__name__}(id={self.id!r}, summary={summary!r})"
 
 	def icsUID(self) -> str:
 		"""Generate a unique ICS UID string for this event."""

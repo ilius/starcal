@@ -69,7 +69,7 @@ class EventHistoryDialog(CalObjWidget):
 		checkEventsReadOnly()
 		self.dialog = Dialog(transient_for=transient_for)
 		self.w: gtk.Widget = self.dialog
-		self.dialog.set_title(_("History") + ": " + event.summary)
+		self.dialog.set_title(_("History") + ": " + event.getSummary())
 		self._event = event
 		self.objectCache: dict[str, dict[str, Any]] = {}  # hash(str) -> data(dict)
 

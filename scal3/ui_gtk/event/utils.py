@@ -33,7 +33,7 @@ def confirmEventTrash(
 		_(
 			'Press Confirm if you want to move event "{eventSummary}" to {trashTitle}',
 		).format(
-			eventSummary=event.summary,
+			eventSummary=event.getSummary(),
 			trashTitle=ev.trash.title,
 		),
 		transient_for=transient_for,
