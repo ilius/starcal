@@ -242,7 +242,7 @@ class YearlyEvent(Event):
 	def getSummary(self) -> str:
 		"""Return the event summary, optionally prefixed with the date."""
 		summary = Event.getSummary(self)
-		if self.parent and self.parent.name == "yearly":
+		if self.parent is not None and self.parent.name == "yearly":
 			if TYPE_CHECKING:
 				assert isinstance(self.parent, YearlyGroup), f"{self.parent=}"
 			showDate = self.parent.showDate
