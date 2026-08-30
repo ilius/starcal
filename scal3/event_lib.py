@@ -3716,6 +3716,10 @@ class EventContainer(BsonHistEventObj):
 				"given to EventContainer.__getitem__"
 			)
 
+	def __bool__(self) -> bool:
+		"""Disabled containers (e.g. trash) must be Falsy."""
+		return False
+
 	def getTimeZoneStr(self):
 		if self.timeZoneEnable and self.timeZone:
 			return self.timeZone
