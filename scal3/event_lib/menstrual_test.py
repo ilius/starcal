@@ -329,7 +329,7 @@ def test_observation_auto_description(fs: FileSystem) -> None:
 			"sex": True,
 		},
 	)
-	auto = event.getAutoDescription()
+	auto = event.getDescription()
 	for field in ("Recorded by", "Flow", "Cervical Mucus", "Temperature", "Kit"):
 		assert field in auto
 	assert "36.6" in auto
