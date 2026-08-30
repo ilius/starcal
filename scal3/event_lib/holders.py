@@ -158,6 +158,21 @@ class ObjectsHolderTextModel[T: (EventGroupType, AccountType)](SObjTextModel):
 		if obj.uuid in self._idByUuid:
 			del self._idByUuid[obj.uuid]
 
+	def exclude(self, obj: T) -> None:
+		"""Remove an object from the holder without deleting its file."""
+		if obj.id not in self.idList:
+			raise ValueError(f"{self} does not contains id={obj.id}, {obj=}")
+		try:
+			del self._byId[obj.id]
+		except KeyError:
+			log.exception("")
+		try:
+			self.idList.remove(obj.id)
+		except ValueError:
+			log.exception("")
+		if obj.uuid in self._idByUuid:
+			del self._idByUuid[obj.uuid]
+
 	def _pop(self, index: int) -> T:
 		"""Remove and return the object at the given positional index."""
 		return self._byId.pop(self.idList.pop(index))

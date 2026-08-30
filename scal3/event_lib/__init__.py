@@ -46,7 +46,10 @@ from . import (
 from .accounts import Account, accountsDir
 from .event_base import Event, eventsDir
 from .group import EventGroup, groupsDir
-from .groups_holder import EventGroupsHolder
+from .groups_holder import (
+	EventArchivedGroupsHolder,
+	EventGroupsHolder,
+)
 from .handler import Handler
 from .note import NoteBook
 from .objects import iterObjectFiles
@@ -62,6 +65,7 @@ if TYPE_CHECKING:
 __all__ = [
 	"Account",
 	"Event",
+	"EventArchivedGroupsHolder",
 	"EventGroup",
 	"EventGroupsHolder",
 	"EventTrash",
