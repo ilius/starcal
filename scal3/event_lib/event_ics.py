@@ -52,7 +52,7 @@ def exportEventToIcsFileObj(
 				"DTSTAMP:" + currentTimeStamp,  # FIXME
 				"LAST-MODIFIED:" + currentTimeStamp,
 				"SUMMARY:" + event.autoSummary.replace("\n", "\\n"),
-				"DESCRIPTION:" + event.getDescription().replace("\n", "\\n"),
+				"DESCRIPTION:" + event.autoDescription.replace("\n", "\\n"),
 				# "CATEGORIES:" + self.title,  # FIXME
 				"CATEGORIES:" + event.name,  # FIXME
 				"LOCATION:",

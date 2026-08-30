@@ -328,7 +328,8 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		"""Return the event summary text."""
 		return self.summary
 
-	def getDescription(self) -> str:
+	@property
+	def autoDescription(self) -> str:
 		"""Return the event description text."""
 		return self.description
 
@@ -342,7 +343,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 			)
 			summary = "(" + invalidTZ + ")" + summary
 		# ----
-		description = self.getDescription()
+		description = self.autoDescription
 		if showDesc and description:
 			if self.parent is not None:
 				sep = self.parent.eventTextSep
@@ -654,7 +655,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		"""Return a v4-format dictionary with summary and display properties."""
 		data = {
 			"summary": self.autoSummary,
-			"description": self.getDescription(),
+			"description": self.autoDescription,
 			"calType": calTypes.names[self.calType],
 			"icon": self.getIcon(),
 			"timeZone": self.timeZone,

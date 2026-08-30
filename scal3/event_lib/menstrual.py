@@ -917,7 +917,8 @@ class MenstrualObservationEvent(Event):
 			lines.append(_("Intercourse occurred"))
 		return "\n".join(lines)
 
-	def getDescription(self) -> str:
+	@property
+	def autoDescription(self) -> str:
 		"""Return the user description with the auto-generated summary appended."""
 		auto = self._getAutoDescription()
 		if not self.description:

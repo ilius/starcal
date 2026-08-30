@@ -263,7 +263,8 @@ class EventType(RuleContainerType, Protocol):
 	def autoSummary(self) -> str:
 		"""Return the event summary text."""
 
-	def getDescription(self) -> str:
+	@property
+	def autoDescription(self) -> str:
 		"""Return the event description text."""
 
 	def getText(self, showDesc: bool = True) -> str:
