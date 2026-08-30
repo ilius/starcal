@@ -6,6 +6,8 @@ from typing import Any
 
 from scal3.app_info import APP_DESC
 
+__all__ = ["create_status_icon"]
+
 
 def create_status_icon(owner: Any, mode: int) -> Any | None:
 	if mode == 3:

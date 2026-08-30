@@ -71,6 +71,10 @@ __all__ = [
 	"computeCycleStats",
 	"dayProbabilityRelativeToOvulation",
 	"fertileWindowDays",
+	"observationFlowLabels",
+	"observationMucusLabels",
+	"observationOpkLabels",
+	"observationRecordedByLabels",
 	"predictNextPeriod",
 	"predictOvulation",
 ]

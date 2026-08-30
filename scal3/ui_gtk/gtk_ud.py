@@ -67,7 +67,6 @@ __all__ = [
 	"cssFunc",
 	"dateFormat",
 	"dateFormatBin",
-	"display",
 	"hasLightTheme",
 	"justificationByName",
 	"justificationList",

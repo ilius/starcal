@@ -5,6 +5,8 @@ from __future__ import annotations
 from scal3.color_utils import RGB
 from scal3.ui_gtk import gdk
 
+__all__ = ["gdkColorToRgb", "rgbToGdkColor", "rgbaToGdkRGBA"]
+
 
 def rgbaToGdkRGBA(r: int, g: int, b: int, a: int = 255) -> gdk.RGBA:
 	return gdk.RGBA(

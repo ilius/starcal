@@ -9,6 +9,8 @@ from scal3.locale_man import tr as _
 from scal3.ui import conf
 from scal3.ui_gtk import gtk, pack
 
+__all__ = ["TimeZoneComboBoxEntry"]
+
 
 class TimeZoneComboBoxEntry(gtk.Box):
 	def __init__(self) -> None:

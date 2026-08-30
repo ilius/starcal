@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"compressLongInt",
+	"dayLen",
 	"eventTextSep",
 	"firstWeekDay",
 	"getAbsWeekNumberFromJd",
