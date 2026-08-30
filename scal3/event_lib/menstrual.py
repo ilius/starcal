@@ -884,7 +884,7 @@ class MenstrualObservationEvent(Event):
 			{jd} if startJd <= jd < endJd else set(),
 		)
 
-	def getAutoDescription(self) -> str:
+	def _getAutoDescription(self) -> str:
 		"""Auto-generated summary of the recorded observation fields."""
 		lines = [
 			_("Recorded by: {who}").format(
@@ -919,7 +919,7 @@ class MenstrualObservationEvent(Event):
 
 	def getDescription(self) -> str:
 		"""Return the user description with the auto-generated summary appended."""
-		auto = self.getAutoDescription()
+		auto = self._getAutoDescription()
 		if not self.description:
 			return auto
 		return self.description + "\n" + auto
