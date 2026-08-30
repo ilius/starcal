@@ -58,7 +58,7 @@ https://ilius.github.io/starcal
 
 ## License:
 
-StartCalendar is licensed under GNU Affero Genaral Public License version 3+
+StarCalendar is licensed under GNU Affero General Public License version 3+
 
 ## Follow Us:
 
