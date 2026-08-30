@@ -1178,7 +1178,7 @@ class EventManagerDialog(CalObjWidget):
 			False,
 			event.id,
 			pixbuf,
-			event.summary,
+			event.getSummary(),
 			event.getShownDescription(),
 		]
 
