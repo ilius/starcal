@@ -1857,7 +1857,7 @@ msgstr ""
 
 msgid "Using to seperate Summary and Description when displaying event"
 msgstr ""
-"برای جدا کردن خلاصه و توضیح رویداد هنگاه نمایش رویداد استفاده می‌شود"
+"برای جدا کردن خلاصه و توضیح رویداد هنگام نمایش رویداد استفاده می‌شود"
 
 
 
@@ -2283,15 +2283,15 @@ msgstr ""
 
 msgid "Zooming"
 msgstr ""
-"بزرگنمایى"
+"بزرگنمایی"
 
 msgid "Zoom Factor by Mouse Scroll"
 msgstr ""
-"ضریب بزرگنمایى با اسکرول موس"
+"ضریب بزرگنمایی با اسکرول موس"
 
 msgid "Zoom Factor by Keyboard"
 msgstr ""
-"ضریب بزرگنمایى با کیبورد"
+"ضریب بزرگنمایی با کیبورد"
 
 msgid "Keys"
 msgstr ""
