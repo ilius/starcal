@@ -1178,7 +1178,7 @@ class EventManagerDialog(CalObjWidget):
 			False,
 			event.id,
 			pixbuf,
-			event.getSummary(),
+			event.autoSummary,
 			event.getShownDescription(),
 		]
 
@@ -1672,7 +1672,7 @@ class EventManagerDialog(CalObjWidget):
 		group: EventGroupType | EventTrash,
 		event: EventType,
 	) -> None:
-		# log.debug("right click on event", event.getSummary())
+		# log.debug("right click on event", event.autoSummary)
 		menu.add(
 			eventWriteMenuItem(
 				_("Edit"),
@@ -2109,7 +2109,7 @@ class EventManagerDialog(CalObjWidget):
 					self.treeModel.set_value(  # type: ignore[no-untyped-call]
 						eventIter,
 						self.summaryColIndex,
-						group[eid].getSummary(),
+						group[eid].autoSummary,
 					)
 		except Exception:
 			log.exception("")

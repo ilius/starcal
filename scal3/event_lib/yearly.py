@@ -239,9 +239,10 @@ class YearlyEvent(Event):
 			startJd = self.parent.startJd
 		return jd_to(startJd, self.calType)[0]
 
-	def getSummary(self) -> str:
+	@property
+	def autoSummary(self) -> str:
 		"""Return the event summary, optionally prefixed with the date."""
-		summary = Event.getSummary(self)
+		summary = super().autoSummary
 		if self.parent is not None and self.parent.name == "yearly":
 			if TYPE_CHECKING:
 				assert isinstance(self.parent, YearlyGroup), f"{self.parent=}"

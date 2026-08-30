@@ -93,7 +93,7 @@ def getDayOccurrenceData(
 		if not group.showInCal():
 			continue
 		assert group.occur is not None
-		# log.debug("\nupdateData: checking event", event.getSummary())
+		# log.debug("\nupdateData: checking event", event.autoSummary)
 		gid = group.id
 		assert gid is not None
 		color = group.color

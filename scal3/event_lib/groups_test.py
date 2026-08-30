@@ -524,10 +524,10 @@ def test_group_get_sort_bys_and_sort(fs: FileSystem) -> None:
 	addCustomEvent(group, "a")
 	addCustomEvent(group, "c")
 	group.sort("summary")
-	summaries = [group.getEvent(eid).getSummary() for eid in group.idList]
+	summaries = [group.getEvent(eid).autoSummary for eid in group.idList]
 	assert summaries == ["a", "b", "c"]
 	group.sort("summary", reverse=True)
-	summaries = [group.getEvent(eid).getSummary() for eid in group.idList]
+	summaries = [group.getEvent(eid).autoSummary for eid in group.idList]
 	assert summaries == ["c", "b", "a"]
 
 
@@ -539,9 +539,9 @@ def test_group_move_up_down_insert(fs: FileSystem) -> None:
 	addCustomEvent(group, "c")
 
 	group.moveUp(2)
-	assert [group.getEvent(eid).getSummary() for eid in group.idList] == ["a", "c", "b"]
+	assert [group.getEvent(eid).autoSummary for eid in group.idList] == ["a", "c", "b"]
 	group.moveDown(0)
-	assert [group.getEvent(eid).getSummary() for eid in group.idList] == ["c", "a", "b"]
+	assert [group.getEvent(eid).autoSummary for eid in group.idList] == ["c", "a", "b"]
 
 	extra = group.create("custom")
 	extra.setDict({"summary": "z", "calType": "gregorian"})
@@ -549,7 +549,7 @@ def test_group_move_up_down_insert(fs: FileSystem) -> None:
 	assert extra.id is not None
 	group.insert(1, extra)
 	extra.save()
-	assert [group.getEvent(eid).getSummary() for eid in group.idList] == [
+	assert [group.getEvent(eid).autoSummary for eid in group.idList] == [
 		"c",
 		"z",
 		"a",
@@ -600,7 +600,7 @@ def test_group_deep_copy(fs: FileSystem) -> None:
 	copy = group.deepCopy()
 	assert isinstance(copy, type(group))
 	assert len(copy.idList) == len(group.idList)
-	assert copy.getEvent(copy.idList[0]).getSummary() == "a"
+	assert copy.getEvent(copy.idList[0]).autoSummary == "a"
 
 
 def test_group_read_only(fs: FileSystem) -> None:

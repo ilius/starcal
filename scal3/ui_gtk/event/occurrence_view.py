@@ -401,8 +401,8 @@ class DayOccurrenceView(CustomizableCalObj):
 	) -> None:
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
 
-		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.getSummary())
-		winTitle = _("Edit") + ": " + event.getSummary()
+		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.autoSummary)
+		winTitle = _("Edit") + ": " + event.autoSummary
 
 		def editEvent(w: gtk.Widget) -> None:
 			self.onEditEventClick(w, winTitle, event, group.mustId)

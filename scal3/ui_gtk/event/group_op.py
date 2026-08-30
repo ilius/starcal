@@ -153,7 +153,7 @@ class GroupConvertCalTypeDialog(Dialog):
 			if event.changeCalType(calType):
 				event.save()
 			else:
-				failedSummaryList.append(event.getSummary())
+				failedSummaryList.append(event.autoSummary)
 		if failedSummaryList:  # FIXME
 			log.error(f"{failedSummaryList=}")
 		return True
