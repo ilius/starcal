@@ -270,7 +270,7 @@ def test_period_event_roundtrip(fs: FileSystem) -> None:
 	ordered = event.getDictOrdered()
 	reimported = MenstrualPeriodEvent(parent=group)
 	reimported.setDict(ordered)
-	assert reimported.summary == event.summary
+	assert reimported.getSummary() == event.getSummary()
 	assert reimported.actualCycle == 27
 	assert reimported.ovulationOverride == jd(2025, 6, 16)
 	assert reimported.getJd() == jd(2025, 6, 1)
