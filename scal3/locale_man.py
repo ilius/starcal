@@ -146,7 +146,7 @@ def getLangDigits(
 	return digits["en"]
 
 
-# ar: Aarbic   ar_* 	Arabic-indic				Arabic Contries
+# ar: Aarbic   ar_* 	Arabic-indic				Arabic Countries
 # fa: Persian  fa_IR	Eastern (Extended) Arabic-indic    Iran & Afghanintan
 # ur: Urdu     ur_PK	(Eastern) Arabic-indic		Pakistan (& Afghanintan??)
 # hi: Hindi    hi_IN	Devenagari					India

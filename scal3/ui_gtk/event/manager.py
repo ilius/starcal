@@ -561,7 +561,7 @@ class EventManagerDialog(CalObjWidget):
 	def onDeleteEvent(_dialog: Dialog, _ge: gdk.Event) -> bool:
 		# onResponse is called before onDeleteEvent
 		# just return True, no need to do anything else
-		# without this signal handler, the window will be distroyed
+		# without this signal handler, the window will be destroyed
 		# and can not be opened again
 		return True
 

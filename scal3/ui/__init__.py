@@ -383,7 +383,7 @@ def getActiveMonthCalOptions() -> list[tuple[int, CalTypeOptionsDict]]:
 
 
 def iterAllEvents() -> Iterable[EventType]:
-	# dosen"t include orphan events
+	# doesn't include orphan events
 	for group in ev.groups:
 		for event in group:
 			yield event

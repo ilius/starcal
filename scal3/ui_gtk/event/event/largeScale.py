@@ -65,7 +65,7 @@ class WidgetClass(common.WidgetClass):
 		rel = self.endRelCombo.get_active()
 		start = self.startSpin.get_value()
 		end = self.endSpin.get_value()
-		if rel == 0:  # reletive(duration)
+		if rel == 0:  # relative(duration)
 			self.endSpin.set_range(1, maxStart)
 			self.endSpin.set_value(max(1, end - start))
 		elif rel == 1:  # absolute(end)

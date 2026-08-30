@@ -123,7 +123,7 @@ def decodeRemoteEvent(
 	try:
 		decoder = remoteEventTypeDecoders[eventType]
 	except KeyError:
-		return None, f'bad remoteEventFull: unkown type "{eventType}"'
+		return None, f'bad remoteEventFull: unknown type "{eventType}"'
 	eventData = {
 		"summary": remoteEvent["summary"],
 		"description": remoteEvent["description"],
@@ -272,7 +272,7 @@ class StarCalendarAccount(Account):
 
 		if not token:
 			if not error:
-				error = "login failed, unkown error"
+				error = "login failed, unknown error"
 			return error
 
 		self.lastToken = token

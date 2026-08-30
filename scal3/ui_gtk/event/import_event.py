@@ -187,7 +187,7 @@ class EventsImportWindow(WizardWindow):
 					# TODO: res.newEventIds
 					# TODO: res.modifiedEventIds
 					msg = _(
-						"Imported successfuly: {newGroupCount} new groups"
+						"Imported successfully: {newGroupCount} new groups"
 						", {newEventCount} new events"
 						", {modifiedEventCount} modified events",
 					)

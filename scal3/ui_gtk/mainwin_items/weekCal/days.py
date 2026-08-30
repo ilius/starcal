@@ -241,9 +241,9 @@ class DaysOfMonthColumnGroup(CustomizableCalBox, ColumnBase):
 
 	def updateCols(self) -> None:
 		# self.foreach(gtk.DrawingArea.destroy)
-		# ^^^ Couses tray icon crash in gnome3
+		# ^^^ Causes tray icon crash in gnome3
 		# self.foreach(lambda child: self.remove(child))
-		# ^^^ Couses tray icon crash in gnome3
+		# ^^^ Causes tray icon crash in gnome3
 		# --------
 		columns = self.items
 		n = len(columns)

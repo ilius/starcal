@@ -48,7 +48,7 @@ def pack(
 	if isinstance(box, gtk.Box):
 		box.pack_start(child, expand=bool(expand), fill=bool(fill), padding=padding)
 	else:
-		raise TypeError(f"pack: unkown type {type(box)}")
+		raise TypeError(f"pack: unknown type {type(box)}")
 
 
 def imageFromIconName(

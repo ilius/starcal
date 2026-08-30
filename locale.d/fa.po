@@ -2405,7 +2405,7 @@ msgid "Top"
 msgstr ""
 "بالا"
 
-msgid "Buttom"
+msgid "Bottom"
 msgstr ""
 "پایین"
 

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 __all__ = ["IconSelectButton"]
 # FIXME
-# for uknown reason, the file chooser dialog comes logically behind it's parent
+# for unknown reason, the file chooser dialog comes logically behind it's parent
 # so it's not capturing mouse and keyboard unless you press Escape that closes
 # the parent, and so making this widget useless unless you use icons from the
 # right-click menu

@@ -94,7 +94,7 @@ elif osName == "win":
 	cacheDir = join(confDir, "Cache")  # FIXME: right directory?
 	# user = mustEnv("USERNAME")
 else:
-	raise OSError("Unkown operating system!")
+	raise OSError("Unknown operating system!")
 
 if os.getenv("PYTEST_VERSION"):
 	confDir = join(tmpDir, APP_NAME)

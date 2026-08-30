@@ -81,7 +81,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 		# ---
 		self.append_text(_("Top"))
 		self.append_text(_("Center"))
-		self.append_text(_("Buttom"))
+		self.append_text(_("Bottom"))
 		self.set_active(1)
 
 	def get(self) -> str | None:

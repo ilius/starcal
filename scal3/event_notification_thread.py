@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
-# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# Also available in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from __future__ import annotations
@@ -111,7 +111,7 @@ class EventGroupNotificationThread(Thread):
 
 		# self.sch: scheduler | None = None
 		# threading.Timer is a subclass of threading.Thread
-		# so probably too expensive to create a timer for each occurance or even event!
+		# so probably too expensive to create a timer for each occurrence or even event!
 		# try using sched.scheduler
 		# https://docs.python.org/3/library/sched.html#sched.scheduler
 		# Changed in Python 3.3: scheduler class can be safely used in multi-threaded

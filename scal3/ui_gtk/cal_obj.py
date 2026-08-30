@@ -115,7 +115,7 @@ class CalBase(CustomizableCalObj):
 		self.w.drag_dest_add_text_targets()
 		self.w.drag_dest_add_uri_targets()
 		# ACTION_MOVE, FIXME
-		# if source ACTION was ACTION_COPY, calendar recieves its own
+		# if source ACTION was ACTION_COPY, calendar receives its own
 		# dragged day just like gnome-calendar-applet
 		# (but it seems not a logical behaviar)
 		# self.drag_source_add_uri_targets()#???????

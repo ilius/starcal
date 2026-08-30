@@ -128,7 +128,7 @@ class PreferencesRegionalTab:
 		pack(pageVBox, hbox)
 		# ---------
 		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=int(spacing / 3))
-		pack(hbox, gtk.Label(label=_("First week of year containts")))
+		pack(hbox, gtk.Label(label=_("First week of year contains")))
 		combo = gtk.ComboBoxText()
 		texts = [
 			_("First {weekDay} of year").format(weekDay=name)

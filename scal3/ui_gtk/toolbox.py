@@ -439,7 +439,7 @@ class CustomizableToolBox(StaticToolBox):
 			yield item
 
 	# this method is for optimization
-	# otherwide can be replaced with updateItems
+	# otherwise can be replaced with updateItems
 	def onIconSizeChange(self) -> None:
 		for item in self._items:
 			item.build()

@@ -127,7 +127,7 @@ class BasePlugin(SObjTextModel):
 	def open_configure(self) -> None:
 		pass
 
-	# open_about returns True only if overriden by external plugin
+	# open_about returns True only if overridden by external plugin
 	def open_about(self) -> bool:  # noqa: PLR6301
 		return False
 
@@ -540,7 +540,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 				else:
 					raise OSError(f"Bad line in data file {self.dataFile}:\n{line}")
 		else:
-			raise ValueError(f'invalid plugin dataFile extention "{ext}"')
+			raise ValueError(f'invalid plugin dataFile extension "{ext}"')
 		self.yearlyData = yearlyData
 		self.yearlyDateData = yearlyDateData
 
@@ -801,7 +801,7 @@ def loadPlugin(_file: str | None = None, **kwargs: Any) -> PluginType | None:
 		return None
 	if ext != ".json":
 		log.error(
-			f"unsupported plugin extention {ext}, new style plugins have a json file",
+			f"unsupported plugin extension {ext}, new style plugins have a json file",
 		)
 		return None
 	try:

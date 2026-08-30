@@ -114,7 +114,7 @@ class PieGeoDict(TypedDict):
 
 class CustomizableToolBoxDict(TypedDict):
 	items: list[tuple[str, bool]]
-	iconSize: NotRequired[str]  # just for compatibilty
+	iconSize: NotRequired[str]  # just for compatibility
 	iconSizePixel: int
 	buttonBorder: int
 	buttonPadding: int

@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
-# Also avalable in /usr/share/common-licenses/LGPL on Debian systems
+# Also available in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from __future__ import annotations
@@ -136,7 +136,7 @@ class MultiSpinButton[F: Field[Any], V](gtk.Box):
 		# 5 = IconSize.DND
 		# 6 = IconSize.DIALOG
 		# ---
-		# in Gtk's sourc code, icon names are "value-decrease-symbolic" and
+		# in Gtk's source code, icon names are "value-decrease-symbolic" and
 		# "value-increase-symbolic" but I can not find these icons
 		# (and my Gtk does not either)
 		# instead "list-remove-symbolic" and "list-add-symbolic" used in this

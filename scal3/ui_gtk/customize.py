@@ -113,7 +113,7 @@ class CustomizableCalBox(CustomizableCalObj):
 
 	# Disabled the old implementation (with reorder_child) because it was
 	# very buggy with Gtk3. Removing all (active) items from gtk.Box and
-	# re-packing them all apears to be fast enough, so doing that instead
+	# re-packing them all appears to be fast enough, so doing that instead
 
 	def moveItem(self, i: int, j: int) -> None:
 		super().moveItem(i, j)

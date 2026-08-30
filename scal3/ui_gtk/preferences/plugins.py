@@ -296,7 +296,7 @@ class PreferencesPlugins:
 		# and at the center point of parent
 		# but if you call dialog.show() or dialog.present(), the parent is
 		# still active(clickabel widgets) before closing child "dialog"
-		# you may call dialog.run() to realy make it transient for parent
+		# you may call dialog.run() to really make it transient for parent
 		# d.set_has_separator(False)
 		d.connect("delete-event", self.plugAddDialogDeleteEvent)
 		d.set_title(_("Add Plugin"))
@@ -428,7 +428,7 @@ class PreferencesPlugins:
 		model = self.plugListStore
 		pIndex = model[index][0]
 		plug = core.allPlugList.v[pIndex]
-		# open_about returns True only if overriden by external plugin
+		# open_about returns True only if overridden by external plugin
 		if plug.open_about():
 			return
 		if plug.about is None:

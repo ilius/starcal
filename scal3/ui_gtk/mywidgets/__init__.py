@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
-# Also avalable in /usr/share/common-licenses/LGPL on Debian systems
+# Also available in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from __future__ import annotations
@@ -141,7 +141,7 @@ class MyColorButton(gtk.ColorButton):
 		# self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
 		# log.debug(self.get_tooltip_window())
 		self.set_tooltip_text(text)  # ???????????????? Right to left
-		# self.tt_label.set_label(text)--???????????? Dosent work
+		# self.tt_label.set_label(text)--???????????? Doesn't work
 		# self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)
