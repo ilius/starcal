@@ -34,6 +34,8 @@ import os
 import subprocess
 from os.path import isdir, join
 
+__all__ = ["get_libdir"]
+
 
 def get_multiarch() -> str:
 	try:

@@ -53,6 +53,7 @@ __all__ = [
 	"childButtonPress",
 	"copyCurrentDate",
 	"copyCurrentDateTime",
+	"copyDate",
 	"copyDateGetCallback",
 	"createPluginsText",
 	"eventSearchShow",

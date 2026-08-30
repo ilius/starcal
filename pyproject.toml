@@ -283,6 +283,7 @@ exclude = [
 	"scal3/ui/conf.py"
 ]
 exclude_toplevel_module = [
+	"pytest",
 	"apiclient",
 	"bson",
 	"cachetools",

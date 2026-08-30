@@ -8,16 +8,33 @@ from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
 __all__ = [
+	"CursorType",
 	"Dialog",
 	"Menu",
 	"MenuItem",
+	"WindowEdge",
+	"add_style_provider",
 	"begin_resize_drag",
 	"connect_dialog_response",
 	"connect_draw",
+	"connect_monitor_changes",
+	"connect_window_drag_source",
+	"event_hits_interactive_child",
 	"events_pending",
 	"getScrollValue",
+	"get_monitor",
+	"get_monitor_for_window",
+	"get_root_window_size",
+	"initialize_gtk",
+	"install_backend",
+	"install_default_icon",
 	"main_iteration_do",
+	"new_cursor",
 	"pack",
+	"popup_menu_at",
+	"quit_application",
+	"run_application",
+	"set_widget_cursor",
 	"should_present_main_window",
 ]
 

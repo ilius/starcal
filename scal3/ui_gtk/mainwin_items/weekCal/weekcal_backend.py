@@ -6,6 +6,8 @@ from typing import Any
 
 from scal3.ui_gtk import gtk
 
+__all__ = ["find_column_at"]
+
 
 def _contains(item_widget: gtk.Widget, window: Any) -> bool:
 	if window == item_widget.get_window():
