@@ -300,7 +300,7 @@ class SObjBinaryModel(SObj):
 			bsonBytes = fp.read()
 		if hashStr != sha1(bsonBytes).hexdigest():
 			raise OSError(
-				f"sha1 diggest does not match for object file '{fpath}'",
+				f"sha1 digest does not match for object file '{fpath}'",
 			)
 		data = bson.loads(bsonBytes)  # type: ignore[no-untyped-call]
 		assert isinstance(data, dict), f"{data=}"

@@ -54,7 +54,7 @@ def getOsName() -> str:
 		return "win"
 	if os.sep == "/":
 		return "unix"
-	raise OSError("Unkown operating system!")
+	raise OSError("Unknown operating system!")
 
 
 osName = getOsName()

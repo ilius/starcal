@@ -116,7 +116,7 @@ options: list[OptionTuple] = [
 ]
 optionButtons = [
 	(
-		"Tune Hijri Monthes",
+		"Tune Hijri Months",
 		"hijri",
 		"tuneHijriMonthes",
 	),

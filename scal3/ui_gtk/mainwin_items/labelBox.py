@@ -147,7 +147,7 @@ class MonthLabel(BaseLabel):
 		self.menu.show_all()
 
 	def setActive(self, active: int) -> None:
-		# (Performance) update menu here, or make menu entirly
+		# (Performance) update menu here, or make menu entirely
 		# before popup?
 		newStr = getMonthName(self.calType, active + 1)
 		oldStr = getMonthName(self.calType, self.active + 1)

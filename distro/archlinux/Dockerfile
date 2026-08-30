@@ -1,6 +1,6 @@
 FROM archlinux:multilib-devel
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
-LABEL Description="Dockefile to build StarCalendar package for ArchLinux"
+LABEL Description="Dockerfile to build StarCalendar package for ArchLinux"
 
 RUN useradd --shell=/bin/bash build
 

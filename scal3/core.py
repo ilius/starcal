@@ -187,7 +187,7 @@ def saveConf() -> None:
 fs: FileSystem = DefaultFileSystem(confDir)
 
 # ____________________________________________________________________ #
-# __________________ class and function defenitions __________________ #
+# __________________ class and function definitions __________________ #
 
 
 def getVersion() -> str:
@@ -392,7 +392,7 @@ def validatePlugList() -> None:
 
 def initPlugins() -> None:
 	# log.debug("----------------------- initPlugins")
-	# Assert that user configuarion for plugins is OK
+	# Assert that user configuration for plugins is OK
 	validatePlugList()
 	# ------------------------
 	names = [None if plug is None else split(plug.file)[1] for plug in allPlugList.v]
@@ -520,7 +520,7 @@ def init() -> None:
 
 
 # ___________________________________________________________________________ #
-# __________________ End of class and function defenitions __________________ #
+# __________________ End of class and function definitions __________________ #
 
 VERSION = getVersion()
 
@@ -557,7 +557,7 @@ if isdir(libDir):
 # holidayWeekDays:
 # 0 means Sunday (5 means Friday)
 # [5] or [4,5] in Iran
-# [0] in most of contries
+# [0] in most of countries
 
 # firstWeekDay: 0 means Sunday (6 means Saturday)
 

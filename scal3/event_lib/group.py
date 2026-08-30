@@ -789,7 +789,7 @@ class EventGroup(EventContainer):
 			event.setDictOverride(eventData)
 			event.save()
 			res.modifiedEventIds.add((gid, eid))
-			log.debug(f"overriden existing uuid={uuid!r}, eid={eid!r}")
+			log.debug(f"overridden existing uuid={uuid!r}, eid={eid!r}")
 
 		return res
 

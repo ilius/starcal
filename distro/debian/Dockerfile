@@ -1,6 +1,6 @@
 FROM bitnami/minideb
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
-LABEL Description="Dockefile to build StarCalendar package for Debian"
+LABEL Description="Dockerfile to build StarCalendar package for Debian"
 
 COPY . /root/starcal
 

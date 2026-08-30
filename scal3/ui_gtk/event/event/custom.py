@@ -107,7 +107,7 @@ class WidgetClass(common.WidgetClass):
 		# pack(hbox, gtk.Label(), 1, 1)
 		inputWidget = makeWidget(rule)
 		if not inputWidget:
-			log.error(f"failed to create inpout widget for rule {rule.name}")
+			log.error(f"failed to create input widget for rule {rule.name}")
 			return None
 		if rule.expand:
 			pack(hbox, inputWidget.w, True, True)

@@ -302,7 +302,7 @@ confOptionsData = [
 		name="",
 		type="int",
 		v3Name="movingUpdateTime",
-		default=10,  # miliseconds
+		default=10,  # milliseconds
 	),
 	# movingInitialVelocity: pixel/second, initial speed/velocity when moving time range
 	OptionData(

@@ -1,6 +1,6 @@
 FROM opensuse/tumbleweed
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
-LABEL Description="Dockefile to build StarCalendar package for openSUSE"
+LABEL Description="Dockerfile to build StarCalendar package for openSUSE"
 
 RUN zypper modifyrepo --disable repo-non-oss
 RUN zypper modifyrepo --disable repo-update

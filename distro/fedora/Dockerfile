@@ -1,6 +1,6 @@
 FROM fedora:latest
 MAINTAINER Saeed Rasooli saeed.gnu@gmail.com
-LABEL Description="Dockefile to build StarCalendar package for Fedora"
+LABEL Description="Dockerfile to build StarCalendar package for Fedora"
 
 COPY . /root/starcal
 

@@ -92,5 +92,5 @@ class WeeklyEvent(Event):
 		if end is None:
 			raise RuntimeError("no end rule")
 		start.setJd(jd)
-		# 60 days -> 8 occurances. This is just a default for user input. Not important.
+		# 60 days -> 8 occurrences. Just a default for user input, not important.
 		end.setJd(jd + 60)

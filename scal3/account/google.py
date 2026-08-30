@@ -314,8 +314,7 @@ class GoogleAccount(Account):
 					)
 				except OSError as e:
 					log.info(
-						f"-------- counld not use port {port} "
-						f"for local web server: {e}",
+						f"-------- could not use port {port} for local web server: {e}",
 					)
 				else:
 					success = True

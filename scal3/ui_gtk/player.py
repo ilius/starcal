@@ -1,6 +1,6 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
-# Based on program "pygme-0.0.6", writen by Vinay Reddy <vinayvinay@gmail.com>
+# Based on program "pygme-0.0.6", written by Vinay Reddy <vinayvinay@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by

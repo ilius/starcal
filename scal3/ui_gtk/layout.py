@@ -155,7 +155,7 @@ class WinLayoutObj(WinLayoutBase):
 
 	def set_visible(self, visible: bool) -> None:
 		# does not need to do anything, because self._item is already
-		# a child, aka a memeber of self.items
+		# a child, aka a member of self.items
 		pass
 
 	def getOptionsButtonBox(self) -> gtk.Box:

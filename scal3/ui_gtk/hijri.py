@@ -53,7 +53,7 @@ def getCurrentYm() -> int:
 class EditDbDialog(Dialog):
 	def __init__(self, transient_for: gtk.Window | None = None) -> None:
 		Dialog.__init__(self, transient_for=transient_for)
-		self.set_title(_("Tune Hijri Monthes"))
+		self.set_title(_("Tune Hijri Months"))
 		self.connect("delete-event", self.onDeleteEvent)
 		# ------------
 		self.altMode = 0

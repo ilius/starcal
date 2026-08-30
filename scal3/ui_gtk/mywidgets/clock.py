@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
-# Also avalable in /usr/share/common-licenses/LGPL on Debian systems
+# Also available in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from __future__ import annotations
@@ -80,7 +80,7 @@ class FClockLabel(gtk.Label):
 	) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
-		that apears in GtkLabel for example format can be "<b>%T</b>"
+		that appears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.
 		"""
@@ -117,7 +117,7 @@ class FClockWidget(gtk.DrawingArea):  # Time is in Local
 	) -> None:
 		"""
 		ClockFormat is a string that used in strftime(), it can contains markup
-		that apears in GtkLabel for example format can be "<b>%T</b>"
+		that appears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.
 		"""

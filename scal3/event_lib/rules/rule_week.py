@@ -285,7 +285,7 @@ class WeekMonthEventRule(EventRule):
 			},
 		)
 
-	# usefull? FIXME
+	# useful? FIXME
 	# def setJd(self, jd) -> None:
 	# 	self.month, self.wmIndex, self.weekDay = getMonthWeekNth(
 	# 	jd,
@@ -315,7 +315,7 @@ class WeekMonthEventRule(EventRule):
 					calType,
 				)
 				jd += (self.weekDay - jwday(jd)) % 7
-				# Last (Fouth or Fifth)
+				# Last (Fourth or Fifth)
 				if self.wmIndex == 4 and jd_to(jd, calType)[1] != month:
 					jd -= 7
 				if startJd <= jd < endJd:

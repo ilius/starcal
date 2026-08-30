@@ -181,9 +181,9 @@ class EventHistoryDialog(CalObjWidget):
 		cmpTreev.append_column(col)
 
 		wrap_width = 500
-		# despite the setColumnWidth handler, this inital wrap_width is needed
+		# despite the setColumnWidth handler, this initial wrap_width is needed
 		# 500px works with a typical display size (width >= 1200 px)
-		# FIXME: but how to calculate the optimal inital wrap_width??
+		# FIXME: but how to calculate the optimal initial wrap_width??
 
 		cell = gtk.CellRendererText(
 			wrap_mode=pango.WrapMode.WORD_CHAR,

@@ -116,5 +116,5 @@ def splitIcsValue(value: str) -> list[list[str]]:
 		elif len(pp) == 2:
 			data.append(pp)
 		else:
-			raise ValueError(f"unkown ics value {value!r}")
+			raise ValueError(f"unknown ics value {value!r}")
 	return data
