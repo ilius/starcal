@@ -20,6 +20,8 @@ from os.path import join
 from scal3.color_utils import RGBA
 from scal3.ui.options._base import LIVE, MAIN_CONF, NEED_RESTART, OptionData
 
+__all__ = ["confOptionsData"]
+
 confOptionsData: list[OptionData] = [
 	# ----------------- Preferences: Appearance
 	OptionData(

@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from scal3.ui.options._base import CUSTOMIZE, MAIN_CONF, OptionData
 
+__all__ = ["confOptionsData"]
+
 confOptionsData: list[OptionData] = [
 	# ----------------- Other
 	OptionData(
