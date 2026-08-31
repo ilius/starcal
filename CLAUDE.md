@@ -8,6 +8,7 @@ StarCal — a multi-calendar desktop application (Python/GTK).
 
 - Run `ruff format` before committing
 - Run `ruff check` before committing (use `ruff check --fix` for auto-fixes)
+- Always update `locale.d/*.po` (add the new `msgid`/`msgstr`) when adding UI strings.
 
 ## Git
 
