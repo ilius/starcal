@@ -46,6 +46,13 @@ if TYPE_CHECKING:
 
 	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
 
+__all__ = [
+	"MenstrualFertileEvent",
+	"MenstrualObservationEvent",
+	"MenstrualOvulationEvent",
+	"MenstrualPeriodEvent",
+]
+
 
 def _withSummaryPrefix(event: Event, summary: str) -> str:
 	"""Return ``summary`` prefixed with the group's custom prefix, if set."""

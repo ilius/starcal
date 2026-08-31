@@ -44,6 +44,8 @@ if TYPE_CHECKING:
 	)
 	from scal3.event_lib.pytypes import EventType
 
+__all__ = ["MenstrualCycleGroup"]
+
 
 @classes.group.register
 class MenstrualCycleGroup(EventGroup):
