@@ -380,6 +380,33 @@ def test_auto_summaries_on_demand(fs: FileSystem) -> None:
 	assert period.autoSummary != ""
 
 
+def test_summary_prefix(fs: FileSystem) -> None:
+	"""Group summaryPrefix is prepended to auto summaries, but not user text."""
+	group = createMenstrualGroup(fs)
+	addPeriod(group, jd(2025, 6, 1))
+	group.updateOccurrence()
+
+	events = list(group)
+	assert events
+	assert all(event.autoSummary == event.autoSummary for event in events)
+	plain = {event.autoSummary for event in events}
+	assert all(not s.startswith("Cycle") for s in plain)
+
+	group.summaryPrefix = "Cycle"
+	prefixed = {event.autoSummary for event in events}
+	assert all(s.startswith("Cycle ") for s in prefixed)
+	assert prefixed == {"Cycle " + s for s in plain}
+
+	# a user-provided summary is not prefixed
+	fertile = next(e for e in events if e.name == "menstrualFertile")
+	fertile.summary = "my own text"
+	assert fertile.autoSummary == "my own text"
+
+	# the prefix is persisted with the group
+	group.save()
+	assert group.getDict()["summaryPrefix"] == "Cycle"
+
+
 def test_daily_note_accepted_and_ignored(fs: FileSystem) -> None:
 	"""DailyNote events are accepted by the group but ignored in predictions."""
 	group = createMenstrualGroup(fs)

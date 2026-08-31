@@ -104,6 +104,12 @@ class WidgetClass(NormalWidgetClass):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(box, hbox)
 		# ---
+		hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+		pack(hbox, gtk.Label(label=_("Summary Prefix")))
+		self.summaryPrefixEntry = gtk.Entry()
+		pack(hbox, self.summaryPrefixEntry, 1, 1)
+		pack(box, hbox)
+		# ---
 		self.windowModeCombo.connect(
 			"changed",
 			self.windowModeChanged,
@@ -131,6 +137,7 @@ class WidgetClass(NormalWidgetClass):
 		self.showFertileCheck.set_active(group.showFertile)
 		self.showOvulationCheck.set_active(group.showOvulation)
 		self.viabilityFactorInput.set_value(group.viabilityFactor)
+		self.summaryPrefixEntry.set_text(group.summaryPrefix)
 		self.windowModeChanged()
 
 	def updateVars(self) -> None:
@@ -148,3 +155,4 @@ class WidgetClass(NormalWidgetClass):
 		group.showFertile = self.showFertileCheck.get_active()
 		group.showOvulation = self.showOvulationCheck.get_active()
 		group.viabilityFactor = self.viabilityFactorInput.get_value()
+		group.summaryPrefix = self.summaryPrefixEntry.get_text()

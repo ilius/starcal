@@ -72,6 +72,7 @@ class MenstrualCycleGroup(EventGroup):
 		"showFertile",
 		"showOvulation",
 		"viabilityFactor",
+		"summaryPrefix",
 	]
 	params = EventGroup.params + _myParams
 	paramsOrder = EventGroup.paramsOrder + _myParams
@@ -90,6 +91,7 @@ class MenstrualCycleGroup(EventGroup):
 		self.showFertile = True
 		self.showOvulation = True
 		self.viabilityFactor = 1.0
+		self.summaryPrefix = ""
 		self._syncingDerived = False
 
 	# --------------------------------------- recorded period starts
