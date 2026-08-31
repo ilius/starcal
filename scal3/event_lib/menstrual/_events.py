@@ -47,6 +47,14 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, OccurSetType
 
 
+def _withSummaryPrefix(event: Event, summary: str) -> str:
+	"""Return ``summary`` prefixed with the group's custom prefix, if set."""
+	prefix = getattr(event.parent, "summaryPrefix", "")
+	if prefix:
+		return f"{prefix} {summary}"
+	return summary
+
+
 @classes.event.register
 class MenstrualPeriodEvent(Event):
 	"""A recorded period start (or a predicted one when ``predicted`` is True)."""
@@ -134,8 +142,10 @@ class MenstrualPeriodEvent(Event):
 		if self.summary:
 			return self.summary
 		if self.predicted:
-			return _("Predicted Period")
-		return _("Period")
+			summary = _("Predicted Period")
+		else:
+			summary = _("Period")
+		return _withSummaryPrefix(self, summary)
 
 	def getIcsData(self, prettyDateTime: bool = False) -> list[tuple[str, str]] | None:
 		"""Return iCalendar data for this period occurrence."""
@@ -216,9 +226,12 @@ class MenstrualFertileEvent(Event):
 			return self.summary
 		probability = self.dayProbability()
 		if probability is None:
-			return _("Fertile Window")
-		return _("Fertile Window ({percent}%)").format(
-			percent=_(_percent(probability)),
+			return _withSummaryPrefix(self, _("Fertile Window"))
+		return _withSummaryPrefix(
+			self,
+			_("Fertile Window ({percent}%)").format(
+				percent=_(_percent(probability)),
+			),
 		)
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
@@ -268,9 +281,12 @@ class MenstrualOvulationEvent(Event):
 			return self.summary
 		parent = self.parent
 		if parent is None:
-			return _("Ovulation")
+			return _withSummaryPrefix(self, _("Ovulation"))
 		peak = 0.33 * getattr(parent, "viabilityFactor", 1.0)
-		return _("Ovulation ({}%)").format(_(_percent(peak)))
+		return _withSummaryPrefix(
+			self,
+			_("Ovulation ({}%)").format(_(_percent(peak))),
+		)
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		"""Return the single ovulation day for the anchored cycle."""
@@ -365,7 +381,7 @@ class MenstrualObservationEvent(Event):
 		"""Return the user summary, or translated auto text computed on demand."""
 		if self.summary:
 			return self.summary
-		return _("Cycle Observation")
+		return _withSummaryPrefix(self, _("Cycle Observation"))
 
 	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSetType:
 		"""Return the single observation day."""
