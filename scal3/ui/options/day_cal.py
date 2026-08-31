@@ -18,6 +18,8 @@ from __future__ import annotations
 from scal3.color_utils import RGB, RGBA
 from scal3.ui.options._base import CUSTOMIZE, DAYCAL_WIN_LIVE, MAIN_CONF, OptionData
 
+__all__ = ["confOptionsData"]
+
 confOptionsData: list[OptionData] = [
 	# ------------ daycal
 	OptionData(

@@ -18,6 +18,8 @@ from __future__ import annotations
 from scal3.color_utils import RGBA
 from scal3.ui.options._base import CUSTOMIZE, LIVE, OptionData
 
+__all__ = ["confOptionsData"]
+
 confOptionsData: list[OptionData] = [
 	# ------------ Month Calendar
 	OptionData(
