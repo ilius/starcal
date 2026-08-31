@@ -410,43 +410,43 @@ Preferences: ... (not usable)"""
 showDigClockTr: Final[Option[bool]] = Option(True)
 
 """Normal Days: Icon Path
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconImage: Final[Option[str]] = Option("status-icons/dark-green.svg")
 
 """Holidays: Icon Path
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconImageHoli: Final[Option[str]] = Option("status-icons/dark-red.svg")
 
 """[ ] Change font family to
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconFontFamilyEnable: Final[Option[bool]] = Option(False)
 
 """Font family
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconFontFamily: Final[Option[str | None]] = Option(None)
 
 """Holiday font color
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconHolidayFontColorEnable: Final[Option[bool]] = Option(False)
 
 """Holiday font color
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconHolidayFontColor: Final[Option[ColorType | None]] = Option(None)
 
 """Localize the number
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconLocalizeNumber: Final[Option[bool]] = Option(True)
 
 """[ ] Fixed Size
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconFixedSizeEnable: Final[Option[bool]] = Option(False)
 
 """Fixed Size (width, height)
-Preferences: Appearance: Status Icon"""
+Preferences: Status Icon"""
 statusIconFixedSizeWH: Final[Option[tuple[int, int]]] = Option((24, 24))
 
 """Show in Status Icon (for today)
-Preferences: Plugins"""
+Preferences: Status Icon"""
 pluginsTextStatusIcon: Final[Option[bool]] = Option(False)
 
 """Days maximum cache size

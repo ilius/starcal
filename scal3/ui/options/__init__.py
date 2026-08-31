@@ -24,12 +24,15 @@ from scal3.ui.options._base import (
 	NOT_SET,
 	OptionData,
 )
+from scal3.ui.options.advanced import confOptionsData as _advancedData
 from scal3.ui.options.appearance import confOptionsData as _appearanceData
 from scal3.ui.options.day_cal import confOptionsData as _day_calData
 from scal3.ui.options.main_panel import confOptionsData as _main_panelData
 from scal3.ui.options.mainwin import confOptionsData as _mainwinData
 from scal3.ui.options.misc import confOptionsData as _miscData
-from scal3.ui.options.month_week_cal import confOptionsData as _month_week_calData
+from scal3.ui.options.month_cal import confOptionsData as _month_calData
+from scal3.ui.options.status_icon import confOptionsData as _status_iconData
+from scal3.ui.options.week_cal import confOptionsData as _week_calData
 from scal3.ui.options.win_controller import confOptionsData as _win_controllerData
 
 __all__ = [
@@ -47,8 +50,11 @@ __all__ = [
 confOptionsData: list[OptionData] = [
 	*_mainwinData,
 	*_appearanceData,
+	*_status_iconData,
+	*_advancedData,
 	*_win_controllerData,
-	*_month_week_calData,
+	*_month_calData,
+	*_week_calData,
 	*_day_calData,
 	*_main_panelData,
 	*_miscData,
