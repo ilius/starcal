@@ -29,16 +29,22 @@ Codebase fit varies; items that lean on Persian-calendar concepts are noted as s
 
 2. **Recurring flexible task (postponable, no strict time)** — the concrete motivation for
    per-occurrence state. E.g. "water plants every 3 days" or "review budget weekly": a recurring
-   all-day task with a target date but no hard time; each occurrence can be postponed (marked
-   done late / moved later), in one of two modes:
-   - **Shift schedule** — postponing an occurrence delays all subsequent occurrences by the same
-     amount (fixed phase preserved; a weekly task stays on its weekday).
-   - **Rolling interval** — the next occurrence is recomputed from the actual completion date plus
-     the interval, preserving the average interval while letting the phase drift.
-   A core task-management feature across calendar apps. Builds on the existing
-   `TaskEvent`/`TaskList` (`task.py`); needs per-occurrence state storage (a `{eventId}.occ.json`
-   sidecar or a reschedule map in the event dict, kept out of the revision history), a
-   "Mark done / Postpone" occurrence UI, and a rule that recomputes the next due date.
+   all-day task with a target date but no hard time. Each occurrence carries a per-occurrence
+   **Done** flag (and optional completion date); a pending occurrence can be postponed, in one of
+   two modes:
+   - **Shift** — the current occurrence moves later and all subsequent occurrences shift by the
+     same delay, keeping the same gap between occurrences going forward. Examples: cleaning,
+     maintenance, watering plants — tasks where each occurrence should stay roughly `interval`
+     apart.
+   - **No-shift** — only the current occurrence moves; future occurrences keep their original
+     scheduled dates, so the lateness is absorbed and the schedule returns to the nominal
+     interval. Examples: taking medicine, feeding animals — tasks where getting back on schedule
+     matters more than the one missed day.
+   Both modes need the same per-occurrence **Done** state; they differ only in whether the
+   postponed date is an isolated override (no-shift) or cascades forward (shift). A core task-management feature across calendar apps. Builds on the
+   existing `TaskEvent`/`TaskList` (`task.py`); needs per-occurrence state storage (a
+   `{eventId}.occ.json` sidecar or a reschedule map in the event dict, kept out of the revision
+   history), a "Mark done / Postpone" occurrence UI, and a rule that recomputes the next due date.
    **Classes:** `FlexibleTaskEvent`, `OccurrenceStateStore`. **Complexity:** High.
 
 3. **Weekday-pattern events** — "second Tuesday of the month", "every weekday 9–17".
