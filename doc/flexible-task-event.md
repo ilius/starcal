@@ -31,8 +31,8 @@ date is an isolated override (no-shift) or cascades forward (shift).
 ## Occurrence state
 
 The event does not store an occurrence index. After shift/no-shift postponements are applied and the
-final user-facing occurrence intervals are extracted, their start epochs are checked against
-`doneEpochs: set[float]`. Postponing a pending occurrence does not update `doneEpochs`; marking it
+final user-facing occurrence intervals are extracted, their start epochs are checked for membership
+in `completedAtByStartEpoch`. Postponing a pending occurrence does not update that map; marking it
 done adds the start epoch of its final interval.
 
 ## Alternative: ask at postponement time (Google Calendar style)
