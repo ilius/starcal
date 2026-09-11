@@ -27,27 +27,7 @@ Codebase fit varies; items that lean on Persian-calendar concepts are noted as s
    with color/notifier when below threshold. Universally useful for deadlines, expirations, and
    due dates; small, high-visibility win. **Class:** `CountdownEvent`. **Complexity:** Low–Medium.
 
-2. **Recurring flexible task (postponable, no strict time)** — the concrete motivation for
-   per-occurrence state. E.g. "water plants every 3 days" or "review budget weekly": a recurring
-   all-day task with a target date but no hard time. Each occurrence carries a per-occurrence
-   **Done** flag (and optional completion date); a pending occurrence can be postponed, in one of
-   two modes:
-   - **Shift** — the current occurrence moves later and all subsequent occurrences shift by the
-     same delay, keeping the same gap between occurrences going forward. Examples: cleaning,
-     maintenance, watering plants — tasks where each occurrence should stay roughly `interval`
-     apart.
-   - **No-shift** — only the current occurrence moves; future occurrences keep their original
-     scheduled dates, so the lateness is absorbed and the schedule returns to the nominal
-     interval. Examples: taking medicine, feeding animals — tasks where getting back on schedule
-     matters more than the one missed day.
-   Both modes need the same per-occurrence **Done** state; they differ only in whether the
-   postponed date is an isolated override (no-shift) or cascades forward (shift). A core task-management feature across calendar apps. Builds on the
-   existing `TaskEvent`/`TaskList` (`task.py`); needs per-occurrence state storage (a
-   `{eventId}.occ.json` sidecar or a reschedule map in the event dict, kept out of the revision
-   history), a "Mark done / Postpone" occurrence UI, and a rule that recomputes the next due date.
-   **Classes:** `FlexibleTaskEvent`, `OccurrenceStateStore`. **Complexity:** High.
-
-3. **Weekday-pattern events** — "second Tuesday of the month", "every weekday 9–17".
+2. **Weekday-pattern events** — "second Tuesday of the month", "every weekday 9–17".
    Standing meetings, classes, recurring appointments, payday. `WeekMonthEventRule` +
    `WeekDayEventRule` + `DayTimeRangeEventRule` already exist. `WeekDayEventRule` is exercised by
    `UniversityClassEvent`/`UniversityExamEvent` (`university.py`), and `WeekMonthEventRule` is
@@ -55,52 +35,52 @@ Codebase fit varies; items that lean on Persian-calendar concepts are noted as s
    i.e. all rules). Neither has a dedicated event type — a thin composed type would package them.
    **Class:** `WeekdayPatternEvent`. **Complexity:** Low.
 
-4. **Travel / time-zone transition event** — departure and arrival with separate local times and
+3. **Travel / time-zone transition event** — departure and arrival with separate local times and
    zones, optionally including a date-line crossing. Useful for business and leisure travelers,
    itineraries, and remote-work planning. The existing start/end and duration model is close, but
    the event would expose the distinction between *instant* and *display time*. It would be a
    valuable test case for ICS import/export, calendar conversion, and all-day rendering.
    **Class:** `TravelEvent`. **Complexity:** High.
 
-5. **Habit / medication reminders** — recurring event with per-occurrence "done" marking.
+4. **Habit / medication reminders** — recurring event with per-occurrence "done" marking.
    Habit tracking and medication adherence are among the most popular personal-calendar use cases.
    **Requires occurrence-state persistence**, which doesn't exist today — the biggest structural
    gap. Worth designing before jumping in. **Classes:** `HabitEvent`, optionally
    `MedicationReminderEvent` as a domain-specific subclass. **Complexity:** High.
 
-6. **Anniversary / age milestone event** — birthdays, hire dates, sobriety anniversaries, and
+5. **Anniversary / age milestone event** — birthdays, hire dates, sobriety anniversaries, and
    similar dates whose summary includes the number of completed years. Universally useful; simpler
    than a general countdown: a yearly rule plus a stable anchor date and calendar-aware age
    calculation. Fits naturally beside `LifetimeEvent` and exercises localized summaries without
    adding a new recurrence rule. **Class:** `AnniversaryEvent`. **Complexity:** Low–Medium.
 
-7. **Event template / generated series** — a reusable event definition that creates ordinary
+6. **Event template / generated series** — a reusable event definition that creates ordinary
    events for a selected date range, instead of making every use a recurrence rule. Useful for
    shifts, conference agendas, travel itineraries, and multi-step projects. Also gives users a safe
    way to edit one generated occurrence without introducing the full persistent occurrence-state
    machinery described above. **Classes:** `EventTemplate`, `GeneratedSeriesGroup`.
    **Complexity:** High.
 
-8. **Recurring multi-day spans** — e.g. a 3-day festival repeating monthly. Broadly useful for
+7. **Recurring multi-day spans** — e.g. a 3-day festival repeating monthly. Broadly useful for
    holidays, conventions, and off-site events. Current recurrence engine produces day-level
    `JdOccurSet`s; multi-day recurrence needs a new occur-set variant — an `IntervalOccurSet`-per-
    occurrence (`IntervalOccurSet` itself already exists in `occur.py` and is used by
    `SingleStartEndEvent`/`LargeScaleEvent`) returned from `Event.calcEventOccurrenceIn`. Another
    real gap. **Classes:** `RecurringSpanEvent`, `RecurringIntervalOccurSet`. **Complexity:** High.
 
-9. **Availability / office-hours event** — a recurring interval that describes when a person,
+8. **Availability / office-hours event** — a recurring interval that describes when a person,
    room, or service is available rather than an appointment. Supports multiple intervals per day,
    exclusions, and a label such as "available" or "busy". A good composition of weekday, time-range,
    cycle, and exception rules, and could later power conflict checks without requiring a separate
    scheduling model. **Class:** `AvailabilityEvent`. **Complexity:** Medium.
 
-10. **Relative annual events** — "N days before/after Nowruz", "N days after Eid", Easter via
+9. **Relative annual events** — "N days before/after Nowruz", "N days after Eid", Easter via
     computus, Thanksgiving/Labor Day-style movable holidays. Movable holidays exist in every
     calendar culture, so this is broadly useful even though the anchor computation is per-culture.
     An offset-based rule around an anchor date. **Classes:** `RelativeAnnualEvent`,
     `RelativeAnnualEventRule`. **Complexity:** Medium.
 
-11. **Study-plan / course milestone event** — a group or event type for semesters, lessons,
+10. **Study-plan / course milestone event** — a group or event type for semesters, lessons,
     assignments, and exams, with a generated sequence of due dates from a start date and cadence.
     Useful for students, a large and engaged user segment. `UniversityTerm`,
     `UniversityClassEvent`, and `UniversityExamEvent` provide useful existing concepts to
@@ -108,36 +88,37 @@ Codebase fit varies; items that lean on Persian-calendar concepts are noted as s
     tracking would be a later occurrence-state extension. **Classes:** `StudyPlanGroup`,
     `StudyMilestoneEvent`. **Complexity:** Medium–High.
 
-12. **Health measurement / symptom event** — a timestamped observation with a value, unit, and
+11. **Health measurement / symptom event** — a timestamped observation with a value, unit, and
     optional tags (temperature, blood pressure, pain level, medication dose). The menstrual event
     types already demonstrate domain-specific events; a generic observation model could reuse their
     group pattern while keeping sensitive values out of summaries and default notifications.
     Useful for health-aware users. **Classes:** `HealthObservationEvent`,
     `HealthObservationGroup`. **Complexity:** Medium.
 
-13. **Celestial events** — new moon / full moon / equinox / solstice. `moon.py` and `season.py`
+12. **Celestial events** — new moon / full moon / equinox / solstice. `moon.py` and `season.py`
     already exist (`getSpringJdAfter`, `getMoonPhase`). Broadly appealing to astronomy enthusiasts
     and gardeners; the equinox/solstice tie-in to Nowruz is a Persian-calendar bonus. A
     `CelestialEvent`/`CelestialEventRule` computing occurrences and auto-summary from phase would
     mirror the commented-out `SunTimeRule`/`HolidayEventRule` in `event_base.py`. **Classes:**
     `CelestialEvent`, `CelestialEventRule`. **Complexity:** Medium.
 
-14. **Sun-time event** — sunrise, sunset, solar noon, or a configurable offset from one of them.
+13. **Sun-time event** — sunrise, sunset, solar noon, or a configurable offset from one of them.
     Niche but well-defined: photographers, farmers, and outdoor workers. The commented-out
     `SunTimeRule` in `event_base.py` is an explicit extension point. A practical implementation
     should define location ownership, polar-day/polar-night behavior, caching, and whether a
     location change is historical event data or a current preference. **Classes:** `SunTimeEvent`,
     `SunTimeRule`. **Complexity:** Medium–High.
 
-15. **Biweekly payday / "every 2nd week on Friday"** — trivial composition of `CycleWeeksEventRule`
-    + `WeekDayEventRule`. Mostly a special case of weekday-pattern events (#3); listed for
+14. **Biweekly payday / "every 2nd week on Friday"** — trivial composition of `CycleWeeksEventRule`
+    + `WeekDayEventRule`. Mostly a special case of weekday-pattern events (#2); listed for
     completeness. **Class:** `BiweeklyEvent`. **Complexity:** Low.
 
 ## Key takeaway
 
 The rule-composition model (`provide`/`need`/`conflict` + intersection in
 `Event.calcEventOccurrenceIn`) is the real extension point — most new types need zero new rules.
-The two genuinely hard problems are **(2, 5) per-occurrence state** and **(8) multi-day recurrence**;
-anything else is mostly a new file + a UI widget. Items 2, 5, and 8 all converge on the same missing
-infrastructure — a place to persist per-occurrence facts (done/postponed dates, overrides) separate
-from the event's revision history.
+The two genuinely hard problems are **per-occurrence state** (see `flexible-task-event.md`; also
+#4) and **multi-day recurrence** (#7); anything else is mostly a new file + a UI widget.
+Per-occurrence state and multi-day recurrence also converge on the same missing infrastructure — a
+place to persist per-occurrence facts (done/postponed dates, overrides) separate from the event's
+revision history.
