@@ -23,9 +23,15 @@ widget; **Medium** means a new model or calculation plus normal serialization/UI
 means changes to occurrence calculation, persistence, time-zone semantics, or generated data.
 Codebase fit varies; items that lean on Persian-calendar concepts are noted as such.
 
-1. **Countdown / deadline events** — autoSummary like "N days left" (computed from current JD)
-   with color/notifier when below threshold. Universally useful for deadlines, expirations, and
-   due dates; small, high-visibility win. **Class:** `CountdownEvent`. **Complexity:** Low–Medium.
+1. **Countdown / deadline events** — an event with an autoSummary like "N days left" (computed from
+   current JD) and color/notifier when below a threshold. Universally useful for deadlines,
+   expirations, and due dates; small, high-visibility win. This should remain a dedicated
+   `CountdownEvent` rather than a field on `SingleStartEndEvent`: its absolute start rule makes
+   adding countdown occurrences before the event start hacky and unexpectedly changes the meaning
+   of the existing event. Note that the existing `Event.notifyBefore` model provides one notification
+   lead time, unlike Google Calendar's multiple independently timed notifications; supporting
+   multiple countdown reminders would require a separate notification model. **Class:**
+   `CountdownEvent`. **Complexity:** Low–Medium.
 
 2. **Weekday-pattern events** — "second Tuesday of the month", "every weekday 9–17".
    Standing meetings, classes, recurring appointments, payday. `WeekMonthEventRule` +
