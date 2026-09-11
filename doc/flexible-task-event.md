@@ -56,9 +56,9 @@ occurrence, "this and following", or all occurrences, mirroring Google Calendar 
 ## Implementation notes
 
 - Builds on the existing `TaskEvent`/`TaskList` (`task.py`).
-- Uses `OccurrenceStateStore` as specified in
+- Uses the `Event.completedAtByStartEpoch` field specified in
   [occurrence-state-persistence.md](occurrence-state-persistence.md).
 - A "Mark done / Postpone" occurrence UI.
 - A rule that recomputes the next due date.
 
-**Classes:** `FlexibleTaskEvent`, `OccurrenceStateStore`. **Complexity:** High.
+**Class:** `FlexibleTaskEvent`. **Complexity:** High.
