@@ -1,6 +1,7 @@
 # Recurring Flexible Task Event Type
 
-Moved out of `event-type-ideas.md` (was idea #2 there) for its own design document.
+This event type depends on the shared [occurrence-state persistence](occurrence-state-persistence.md)
+infrastructure.
 
 ## Concept
 
@@ -27,6 +28,13 @@ the one missed day.
 Both modes need the same per-occurrence **Done** state; they differ only in whether the postponed
 date is an isolated override (no-shift) or cascades forward (shift).
 
+## Occurrence state
+
+The event does not store an occurrence index. After shift/no-shift postponements are applied and the
+final user-facing occurrence intervals are extracted, their start epochs are checked against
+`doneEpochs: set[float]`. Postponing a pending occurrence does not update `doneEpochs`; marking it
+done adds the start epoch of its final interval.
+
 ## Alternative: ask at postponement time (Google Calendar style)
 
 Instead of a fixed per-event mode, prompt the user when postponing whether to shift only the current
@@ -48,8 +56,8 @@ occurrence, "this and following", or all occurrences, mirroring Google Calendar 
 ## Implementation notes
 
 - Builds on the existing `TaskEvent`/`TaskList` (`task.py`).
-- Needs per-occurrence state storage: a `{eventId}.occ.json` sidecar or a reschedule map in the
-  event dict, kept out of the revision history.
+- Uses `OccurrenceStateStore` as specified in
+  [occurrence-state-persistence.md](occurrence-state-persistence.md).
 - A "Mark done / Postpone" occurrence UI.
 - A rule that recomputes the next due date.
 
