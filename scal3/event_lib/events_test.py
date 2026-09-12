@@ -9,6 +9,7 @@ from scal3.cal_types import GREGORIAN, to_jd
 from scal3.event_lib.common import eventTextSep
 from scal3.event_lib.event_base import Event
 from scal3.event_lib.events import CustomEvent
+from scal3.event_lib.exceptions import BadEventFile
 from scal3.event_lib.handler import Handler
 from scal3.event_lib.large_scale import LargeScaleEvent
 from scal3.event_lib.lifetime import LifetimeEvent
@@ -17,6 +18,7 @@ from scal3.event_lib.note import DailyNoteEvent
 from scal3.event_lib.objects import iterObjectFiles
 from scal3.event_lib.task import AllDayTaskEvent, TaskEvent
 from scal3.event_lib.university import UniversityClassEvent, UniversityExamEvent
+from scal3.event_lib.weekday import MonthlyWeekdayEvent, WeeklyWeekdayEvent
 from scal3.event_lib.weekly import WeeklyEvent
 from scal3.event_lib.yearly import YearlyEvent
 
@@ -425,6 +427,216 @@ def test_university_exam_event(fs: FileSystem) -> None:
 
 	assert event.setIcsData({"DTSTART": "20300520"}) is True
 	assert event.getJd() == jd(2030, 5, 20)
+
+
+def test_weekly_weekday_event(fs: FileSystem) -> None:
+	"""WeeklyWeekdayEvent: repeats weekly on selected days with a time range."""
+	event = createEvent(fs, "weeklyWeekday")
+	assert isinstance(event, WeeklyWeekdayEvent)
+	event.setDict(
+		{
+			"summary": "team lunch",
+			"description": "at noon",
+			"calType": "gregorian",
+			"rules": [
+				("start", {"date": "2030/01/01", "time": "09:00:00"}),
+				("end", {"date": "2030/01/08", "time": "09:00:00"}),
+				("dayTimeRange", ("09:00:00", "10:00:00")),
+				("weekDay", [1, 2, 3, 4, 5]),
+			],
+		},
+	)
+	assertDictAttributes(event)
+	assert event.isAllDay is False
+	weekDay = event.getRule("weekDay")
+	assert weekDay is not None
+	assert weekDay.getRuleValue() == [1, 2, 3, 4, 5]
+	assertExportRoundtrip(event)
+
+	# Mon-Fri in the Tue..Mon window = 5 weekdays
+	occur = event.calcEventOccurrenceIn(jd(2030, 1, 1), jd(2030, 1, 8))
+	assert len(occur.getTimeRangeList()) == 5
+
+	event.setWeekDayList([1, 3])
+	assert event.getRule("weekDay").getRuleValue() == [1, 3]  # type: ignore[union-attr]
+	with pytest.raises(BadEventFile):
+		event.setWeekDayList([])
+
+	assert event.setIcsData({}) is False
+
+
+def test_monthly_weekday_event(fs: FileSystem) -> None:
+	"""MonthlyWeekdayEvent: repeats on a weekday instance within each month."""
+	event = createEvent(fs, "monthlyWeekday")
+	assert isinstance(event, MonthlyWeekdayEvent)
+	event.setDict(
+		{
+			"summary": "payday",
+			"description": "",
+			"calType": "gregorian",
+			"rules": [
+				("start", {"date": "2030/01/01", "time": "00:00:00"}),
+				("end", {"date": "2030/04/01", "time": "00:00:00"}),
+				("dayTimeRange", ("09:00:00", "10:00:00")),
+				("weekMonth", {"month": 0, "wmIndex": 1, "weekDay": 2}),
+			],
+		},
+	)
+	assertDictAttributes(event, summary="payday", description="")
+	assert event.isAllDay is False
+	weekMonth = event.getRule("weekMonth")
+	assert weekMonth is not None
+	assert weekMonth.getRuleValue() == {"month": 0, "wmIndex": 1, "weekDay": 2}
+	assertExportRoundtrip(event)
+
+	occur = event.calcEventOccurrenceIn(jd(2030, 1, 1), jd(2030, 4, 1))
+	assert len(occur.getTimeRangeList()) == 3  # Jan, Feb, Mar
+
+	event.setWeekMonthPattern(11, 4, 5)
+	assert event.getRule("weekMonth").getRuleValue() == {  # type: ignore[union-attr]
+		"month": 11,
+		"wmIndex": 4,
+		"weekDay": 5,
+	}
+
+	assert event.setIcsData({}) is False
+
+
+def test_weekly_weekday_event_ics(fs: FileSystem) -> None:
+	"""WeeklyWeekdayEvent: exports and imports a weekly RRULE."""
+	event = createEvent(fs, "weeklyWeekday")
+	assert isinstance(event, WeeklyWeekdayEvent)
+	event.setDict(
+		{
+			"summary": "standup",
+			"calType": "gregorian",
+			"rules": [
+				("start", {"date": "2030/01/01", "time": "09:00:00"}),
+				("end", {"date": "2030/12/31", "time": "09:00:00"}),
+				("dayTimeRange", ("09:00:00", "10:00:00")),
+				("weekDay", [1, 2, 3, 4, 5]),
+			],
+		},
+	)
+	icsData = event.getIcsData()
+	assert icsData is not None
+	assert icsData[2][0] == "RRULE"
+	assert "FREQ=WEEKLY" in icsData[2][1]
+	assert "BYDAY=MO,TU,WE,TH,FR" in icsData[2][1]
+	assert "UNTIL=20301230" in icsData[2][1]
+
+	assert (
+		event.setIcsData(
+			{
+				"DTSTART": "20300506T090000",
+				"DTEND": "20300506T100000",
+				"RRULE": "FREQ=WEEKLY;UNTIL=20300520;BYDAY=TU,TH",
+			},
+		)
+		is True
+	)
+	weekDay = event.getRule("weekDay")
+	assert weekDay is not None
+	assert weekDay.getRuleValue() == [2, 4]  # TU, TH
+	dayTimeRange = event.getRule("dayTimeRange")
+	assert dayTimeRange is not None
+	assert dayTimeRange.getSecondsRange() == (9 * 3600, 10 * 3600)
+	assert event.getStartJd() == jd(2030, 5, 6)
+	assert event.getEndJd() == jd(2030, 5, 21)
+	assert (
+		len(
+			event.calcEventOccurrenceIn(
+				jd(2030, 5, 1), jd(2030, 6, 1)
+			).getTimeRangeList()
+		)
+		== 4
+	)
+
+
+def test_monthly_weekday_event_ics(fs: FileSystem) -> None:
+	"""MonthlyWeekdayEvent: exports and imports a monthly weekday RRULE."""
+	event = createEvent(fs, "monthlyWeekday")
+	assert isinstance(event, MonthlyWeekdayEvent)
+	event.setDict(
+		{
+			"summary": "payday",
+			"calType": "gregorian",
+			"rules": [
+				("start", {"date": "2030/01/01", "time": "09:00:00"}),
+				("end", {"date": "2030/12/31", "time": "09:00:00"}),
+				("dayTimeRange", ("09:00:00", "10:00:00")),
+				("weekMonth", {"month": 11, "wmIndex": 4, "weekDay": 5}),
+			],
+		},
+	)
+	icsData = event.getIcsData()
+	assert icsData is not None
+	assert "FREQ=MONTHLY" in icsData[2][1]
+	assert "BYDAY=-1FR" in icsData[2][1]
+	assert "BYMONTH=11" in icsData[2][1]
+	assert "UNTIL=20301230" in icsData[2][1]
+
+	assert (
+		event.setIcsData(
+			{
+				"DTSTART": "20300506T090000",
+				"DTEND": "20300506T100000",
+				"RRULE": "FREQ=MONTHLY;UNTIL=20300630;BYDAY=2TU",
+			},
+		)
+		is True
+	)
+	weekMonth = event.getRule("weekMonth")
+	assert weekMonth is not None
+	assert weekMonth.getRuleValue() == {"month": 0, "wmIndex": 1, "weekDay": 2}  # 2TU
+	assert event.getEndJd() == jd(2030, 7, 1)
+	assert (
+		len(
+			event.calcEventOccurrenceIn(
+				jd(2030, 5, 1), jd(2030, 7, 1)
+			).getTimeRangeList()
+		)
+		== 2
+	)
+
+	assert (
+		event.setIcsData(
+			{
+				"DTSTART": "20300506T090000",
+				"DTEND": "20300506T100000",
+				"RRULE": "FREQ=MONTHLY;BYDAY=-1FR;BYMONTH=11",
+			},
+		)
+		is True
+	)
+	weekMonth = event.getRule("weekMonth")
+	assert weekMonth is not None
+	assert weekMonth.getRuleValue() == {"month": 11, "wmIndex": 4, "weekDay": 5}  # -1FR
+
+	assert (
+		event.setIcsData(
+			{
+				"DTSTART": "20300506T090000",
+				"DTEND": "20300506T100000",
+				"RRULE": "FREQ=DAILY;BYDAY=TU",
+			},
+		)
+		is False
+	)
+
+	assert (
+		event.setIcsData(
+			{
+				"DTSTART": "20300506T090000",
+				"DTEND": "20300506T100000",
+				"RRULE": "FREQ=MONTHLY;INTERVAL=2;BYDAY=2TU",
+			},
+		)
+		is False
+	)
+
+	with pytest.raises(BadEventFile):
+		event.setWeekMonthPattern(13, 0, 0)
 
 
 def test_event_save_records_history(fs: FileSystem) -> None:

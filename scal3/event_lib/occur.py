@@ -191,10 +191,11 @@ class IntervalOccurSet(OccurSet):
 		return getJdFromEpoch(min(r[0] for r in self._rangeList))
 
 	def getEndJd(self) -> int | None:
-		"""Return the Julian day of the latest range end, or None if empty."""
+		"""Return the exclusive end Julian day of the latest interval, or None."""
 		if not self._rangeList:
 			return None
-		return getJdFromEpoch(max(r[1] for r in self._rangeList))
+		lastEndEpoch = max(r[1] for r in self._rangeList)
+		return getJdFromEpoch(lastEndEpoch - 0.01) + 1
 
 	def intersection(self, occur: OccurSetType) -> OccurSetType:
 		"""Return a new set containing only times present in both sets."""

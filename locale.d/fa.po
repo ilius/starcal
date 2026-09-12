@@ -1189,6 +1189,26 @@ msgid "Weekly Event"
 msgstr ""
 "رویداد هفتگی"
 
+msgid "Weekly Weekday Event"
+msgstr ""
+"رویداد هفتگی در روزهای هفته"
+
+msgid "Monthly Weekday Event"
+msgstr ""
+"رویداد ماهانه در روزِ هفته"
+
+msgid "Days of Week"
+msgstr ""
+"روزهای هفته"
+
+msgid "Nth Weekday of Month"
+msgstr ""
+"اُمین روزِ هفته در ماه"
+
+msgid "Select at least one day of week"
+msgstr ""
+"حداقل یک روز از روزهای هفته را انتخاب کنید"
+
 msgid "Repeat Every "
 msgstr ""
 "تکرار هر "

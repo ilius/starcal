@@ -154,3 +154,18 @@ msgstr "Salwāǧa"
 msgctxt "month-name-ps"
 msgid "Esfand"
 msgstr "Kab"
+
+msgid "Weekly Weekday Event"
+msgstr "Weekly Weekday Event"
+
+msgid "Monthly Weekday Event"
+msgstr "Monthly Weekday Event"
+
+msgid "Days of Week"
+msgstr "Days of Week"
+
+msgid "Nth Weekday of Month"
+msgstr "Nth Weekday of Month"
+
+msgid "Select at least one day of week"
+msgstr "Select at least one day of week"

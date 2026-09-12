@@ -6,10 +6,12 @@ from scal3.ui_gtk.event.event.dailyNote import WidgetClass
 from scal3.ui_gtk.event.event.largeScale import WidgetClass
 from scal3.ui_gtk.event.event.lifetime import WidgetClass
 from scal3.ui_gtk.event.event.monthly import WidgetClass
+from scal3.ui_gtk.event.event.monthlyWeekday import WidgetClass
 from scal3.ui_gtk.event.event.task import WidgetClass
 from scal3.ui_gtk.event.event.universityClass import WidgetClass
 from scal3.ui_gtk.event.event.universityExam import WidgetClass
 from scal3.ui_gtk.event.event.weekly import WidgetClass
+from scal3.ui_gtk.event.event.weeklyWeekday import WidgetClass
 from scal3.ui_gtk.event.event.yearly import WidgetClass
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.event.group.editor import GroupEditorDialog

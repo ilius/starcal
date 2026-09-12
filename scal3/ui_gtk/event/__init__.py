@@ -101,6 +101,12 @@ def load_event_monthly() -> ModuleType:
 	return monthly  # type: ignore[return-value]
 
 
+def load_event_monthlyWeekday() -> ModuleType:
+	from scal3.ui_gtk.event.event import monthlyWeekday
+
+	return monthlyWeekday  # type: ignore[return-value]
+
+
 def load_event_task() -> ModuleType:
 	from scal3.ui_gtk.event.event import task
 
@@ -123,6 +129,12 @@ def load_event_weekly() -> ModuleType:
 	from scal3.ui_gtk.event.event import weekly
 
 	return weekly  # type: ignore[return-value]
+
+
+def load_event_weeklyWeekday() -> ModuleType:
+	from scal3.ui_gtk.event.event import weeklyWeekday
+
+	return weeklyWeekday  # type: ignore[return-value]
 
 
 def load_event_yearly() -> ModuleType:
@@ -306,10 +318,12 @@ widgetClassLoaderByName: dict[str, Callable[[], ModuleType]] = {
 	"event.menstrualOvulation": load_event_menstrualOvulation,
 	"event.menstrualPeriod": load_event_menstrualPeriod,
 	"event.monthly": load_event_monthly,
+	"event.monthlyWeekday": load_event_monthlyWeekday,
 	"event.task": load_event_task,
 	"event.universityClass": load_event_universityClass,
 	"event.universityExam": load_event_universityExam,
 	"event.weekly": load_event_weekly,
+	"event.weeklyWeekday": load_event_weeklyWeekday,
 	"event.yearly": load_event_yearly,
 	"group.group": load_group_group,
 	"group.largeScale": load_group_largeScale,

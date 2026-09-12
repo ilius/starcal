@@ -125,6 +125,9 @@ class EventRuleType(BaseClassType, Protocol):
 	def setRuleValue(self, data: Any) -> None:
 		"""Set the rule's value from serialized data."""
 
+	def getSecondsRange(self) -> tuple[int, int]:
+		"""Return the rule's time range as seconds since midnight."""
+
 	def calcOccurrence(
 		self,
 		startJd: int,
