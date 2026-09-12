@@ -162,15 +162,22 @@ class WeekDayEventRule(AllDayEventRule):
 	def setRuleValue(self, data: int | list[int]) -> None:
 		"""Set the week day list, raising BadEventFile on invalid input."""
 		if isinstance(data, int):
-			self.weekDayList = [data]
+			data = [data]
 		elif isinstance(data, tuple | list):
-			self.weekDayList = data
+			data = list(data)
 		else:
 			raise BadEventFile(
 				f"bad rule weekDayList={data}, "
 				"value for weekDayList must be a list of integers"
 				" (0 for sunday)",
 			)
+		if any(
+			type(value) is not int or not 0 <= value <= 6 for value in data
+		):
+			raise BadEventFile(
+				f"bad rule weekDayList={data}, values must be integers from 0 to 6",
+			)
+		self.weekDayList = sorted(set(data))
 
 	def jdMatches(self, jd: int) -> bool:
 		"""Return True if the given day's week day is selected."""

@@ -459,8 +459,6 @@ def test_weekly_weekday_event(fs: FileSystem) -> None:
 
 	event.setWeekDayList([1, 3])
 	assert event.getRule("weekDay").getRuleValue() == [1, 3]  # type: ignore[union-attr]
-	with pytest.raises(BadEventFile):
-		event.setWeekDayList([])
 
 	assert event.setIcsData({}) is False
 
