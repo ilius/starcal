@@ -330,7 +330,7 @@ class WeekMonthEventRule(EventRule):
 		endYear, _endMonth, _endDay = jd_to(endJd, calType)
 		jds = set()
 		monthList = range(1, 13) if self.month == 0 else [self.month]
-		for year in range(startYear, endYear):
+		for year in range(startYear, endYear + 1):
 			for month in monthList:
 				jd = to_jd(
 					year,
