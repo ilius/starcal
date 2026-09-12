@@ -277,10 +277,27 @@ class WeekMonthEventRule(EventRule):
 
 	def setRuleValue(self, data: Any) -> None:
 		"""Set month, week index, and week day from a dictionary."""
-		assert isinstance(data, dict), f"{data=}"
-		self.month = data["month"]
-		self.wmIndex = data["wmIndex"]
-		self.weekDay = data["weekDay"]
+		if not isinstance(data, dict):
+			raise BadEventFile(f"bad rule {self.name}={data!r}")
+		try:
+			month = data["month"]
+			wmIndex = data["wmIndex"]
+			weekDay = data["weekDay"]
+		except KeyError as e:
+			raise BadEventFile(f"missing {e.args[0]!r} in rule {self.name}") from e
+		if (
+			any(type(value) is not int for value in (month, wmIndex, weekDay))
+			or not 0 <= month <= 12
+			or not 0 <= wmIndex <= 4
+			or not 0 <= weekDay <= 6
+		):
+			raise BadEventFile(
+				f"bad rule {self.name}={data!r}; expected month 0..12, "
+				"wmIndex 0..4, and weekDay 0..6",
+			)
+		self.month = month
+		self.wmIndex = wmIndex
+		self.weekDay = weekDay
 
 	def getServerString(self) -> str:
 		"""Return the rule as a JSON string."""
