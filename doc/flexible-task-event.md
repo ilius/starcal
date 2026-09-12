@@ -31,9 +31,10 @@ date is an isolated override (no-shift) or cascades forward (shift).
 ## Occurrence state
 
 The event does not store an occurrence index. After shift/no-shift postponements are applied and the
-final user-facing occurrence intervals are extracted, their start epochs are checked for membership
-in `completedAtByStartEpoch`. Postponing a pending occurrence does not update that map; marking it
-done adds the start epoch of its final interval.
+final user-facing occurrence intervals are extracted, their starts are checked for membership in
+`completedAtByStartJd`, keyed by the start Julian day with seconds-since-midnight `0` (all-day).
+Postponing a pending occurrence does not update that map; marking it done adds the key of its final
+interval.
 
 ## Alternative: ask at postponement time (Google Calendar style)
 
@@ -56,7 +57,9 @@ occurrence, "this and following", or all occurrences, mirroring Google Calendar 
 ## Implementation notes
 
 - Builds on the existing `TaskEvent`/`TaskList` (`task.py`).
-- Uses the `Event.completedAtByStartEpoch` field specified in
+- Keying by day works through the all-day routing even on the `SingleStartEndEvent` occurrence path
+  (as `AllDayTaskEvent` uses); generating `JdOccurSet` directly is cleaner but not required.
+- Uses the `Event.completedAtByStartJd` field specified in
   [occurrence-state-persistence.md](occurrence-state-persistence.md).
 - A "Mark done / Postpone" occurrence UI.
 - A rule that recomputes the next due date.
