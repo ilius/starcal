@@ -20,7 +20,7 @@ import json
 from typing import TYPE_CHECKING
 
 from scal3 import locale_man, logger
-from scal3.cal_types import jd_to, to_jd
+from scal3.cal_types import getMonthLen, jd_to, to_jd
 from scal3.date_utils import jwday
 from scal3.event_lib.common import (
 	firstWeekDay,
@@ -332,16 +332,23 @@ class WeekMonthEventRule(EventRule):
 		monthList = range(1, 13) if self.month == 0 else [self.month]
 		for year in range(startYear, endYear + 1):
 			for month in monthList:
-				jd = to_jd(
-					year,
-					month,
-					7 * self.wmIndex + 1,
-					calType,
-				)
-				jd += (self.weekDay - jwday(jd)) % 7
-				# Last (Fourth or Fifth)
-				if self.wmIndex == 4 and jd_to(jd, calType)[1] != month:
-					jd -= 7
+				if self.wmIndex == 4:
+					# Last: walk back from the month's actual last day
+					jd = to_jd(
+						year,
+						month,
+						getMonthLen(year, month, calType),
+						calType,
+					)
+					jd -= (jwday(jd) - self.weekDay) % 7
+				else:
+					jd = to_jd(
+						year,
+						month,
+						7 * self.wmIndex + 1,
+						calType,
+					)
+					jd += (self.weekDay - jwday(jd)) % 7
 				if startJd <= jd < endJd:
 					jds.add(jd)
 		return JdOccurSet(jds)

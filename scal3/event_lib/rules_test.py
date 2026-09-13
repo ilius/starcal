@@ -8,6 +8,7 @@ from scal3.event_lib.rules.rule_allday import AllDayEventRule
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_base import Event
+	from scal3.event_lib.occur import JdOccurSet
 	from scal3.filesystem import FileSystem
 
 
@@ -259,6 +260,43 @@ def test_rule_week_month(fs: FileSystem) -> None:
 		jd(2031, 1, 1),
 		minRanges=1,
 	)
+
+
+def test_rule_week_month_last_february(fs: FileSystem) -> None:
+	"""'Last' weekday-of-month must handle short months like February."""
+	event = createEvent(
+		fs,
+		[("weekMonth", {"month": 2, "wmIndex": 4, "weekDay": 6})],
+	)
+	rule = event.getRule("weekMonth")
+	assert rule is not None
+	occur = cast("JdOccurSet", rule.calcOccurrence(
+		jd(2024, 1, 1),
+		jd(2026, 1, 1),
+		event,
+	))
+	assert occur.getJdSet() == {jd(2024, 2, 24), jd(2025, 2, 22)}
+
+
+def test_rule_week_month_last_every_month_february(fs: FileSystem) -> None:
+	"""'Last X of every month' must not crash on non-leap February."""
+	event = createEvent(
+		fs,
+		[("weekMonth", {"month": 0, "wmIndex": 4, "weekDay": 6})],
+	)
+	rule = event.getRule("weekMonth")
+	assert rule is not None
+	occur = cast("JdOccurSet", rule.calcOccurrence(
+		jd(2024, 12, 1),
+		jd(2025, 4, 1),
+		event,
+	))
+	assert occur.getJdSet() == {
+		jd(2024, 12, 28),
+		jd(2025, 1, 25),
+		jd(2025, 2, 22),
+		jd(2025, 3, 29),
+	}
 
 
 def test_rule_year(fs: FileSystem) -> None:
