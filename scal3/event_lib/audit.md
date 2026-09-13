@@ -34,7 +34,7 @@ The docstring now states the contract correctly: `changeCalType()` returns `True
 
 `VcsEpochBaseEventGroup` now records each VCS id's epoch in `_addOccur()` and exposes it via `getEventEpoch()`. `VcsCommitEventGroup.getEvent()` and `VcsTagEventGroup.getEvent()` set `event.epoch` from it, and `deepConvertTo()` skips (with a warning) any event still lacking an epoch instead of asserting.
 
-#### 5. `UniversityTerm.setDefaults()` only handles Jalali calendar
+#### ~~5. `UniversityTerm.setDefaults()` only handles Jalali calendar~~ COMMENTED, NOT NEEEDED
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
 **File:** `university.py:267-290`
 

@@ -286,6 +286,10 @@ class UniversityTerm(EventGroup):
 				self.startJd = to_jd(year, 11, 15, self.calType)
 				self.classesEndDate = (year + 1, 3, 1)
 				self.endJd = to_jd(year + 1, 3, 20, self.calType)
+		# NOTE: only the Jalali calendar is handled here. Default term date
+		# ranges for other calendars are neither implemented nor practical to
+		# hard-code, because academic term schedules vary widely between
+		# countries and institutions. Users can set the dates manually.
 		# elif calType=="gregorian":
 		# 	pass
 
