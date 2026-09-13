@@ -116,7 +116,7 @@ class GroupConvertCalTypeDialog(Dialog):
 			label=_(
 				"This is going to convert calendar types of all events inside "
 				'group "{groupTitle}" to a specific type. This operation does not work '
-				"for Yearly events and also some of Custom events. You have to "
+				"for Yearly events and also some of Advanced events. You have to "
 				"edit those events manually to change calendar type.",
 			).format(groupTitle=group.title),
 		)

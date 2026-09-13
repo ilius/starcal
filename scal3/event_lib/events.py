@@ -42,7 +42,7 @@ class CustomEvent(Event):
 	"""Generic user-defined event with free-form rules."""
 
 	name = "custom"
-	desc = _("Custom Event")
+	desc = _("Advanced Event")
 	isAllDay = False
 
 	def getV4Dict(self) -> dict[str, Any]:

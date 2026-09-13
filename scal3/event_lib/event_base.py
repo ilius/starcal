@@ -72,7 +72,7 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 	name = "custom"  # or "event" or "" FIXME
 	tname = ""
 	nameAlias = ""
-	desc = _("Custom Event")
+	desc = _("Advanced Event")
 	iconName = ""
 	# requiredNotifiers = ()  # FIXME: needed?
 	readOnly = False

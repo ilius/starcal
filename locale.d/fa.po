@@ -1234,9 +1234,9 @@ msgid "Large Scale Events Group"
 msgstr ""
 "گروه رویدادهای مقیاس‌بالا"
 
-msgid "Custom Event"
+msgid "Advanced Event"
 msgstr ""
-"رویداد دلخواه"
+"رویداد پیشرفته"
 
 msgid "Events"
 msgstr ""
@@ -1960,9 +1960,9 @@ msgstr ""
 "تبدیل نوع تقویم"
 
 
-msgid "This is going to convert calendar types of all events inside group \"{groupTitle}\" to a specific type. This operation does not work for Yearly events and also some of Custom events. You have to edit those events manually to change calendar type."
+msgid "This is going to convert calendar types of all events inside group \"{groupTitle}\" to a specific type. This operation does not work for Yearly events and also some of Advanced events. You have to edit those events manually to change calendar type."
 msgstr ""
-"اینجا نوع تقویم تمام رویدادهای داخل گروه «{groupTitle}» قرار است به یک نوع خاص تبدیل شود. این عملیات برای رویدادهای سالیانه و همینطور برای بعضی از رویدادهای دلخواه کار نمی‌کند. شما برای تغییر نوع تقویم، باید آن رویدادها را دستی ویرایش کنید."
+"اینجا نوع تقویم تمام رویدادهای داخل گروه «{groupTitle}» قرار است به یک نوع خاص تبدیل شود. این عملیات برای رویدادهای سالیانه و همینطور برای بعضی از رویدادهای پیشرفته کار نمی‌کند. شما برای تغییر نوع تقویم، باید آن رویدادها را دستی ویرایش کنید."
 
 msgid "Bulk Edit Events"
 msgstr ""
