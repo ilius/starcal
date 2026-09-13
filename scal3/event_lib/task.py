@@ -404,7 +404,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 			return ("date", end.date)
 		duration = DurationEventRule.getFrom(self)
 		if duration is not None:
-			return ("duration", duration.value)
+			return ("duration", duration.value * duration.unit / dayLen)
 		raise ValueError("no end date neither duration specified for task")
 
 	def getEndJd(self) -> int:

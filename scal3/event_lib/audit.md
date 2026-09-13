@@ -25,15 +25,11 @@ Hardcoded check for `obituary.png` -> `green_clover.svg`.
 
 **Recommended fix:** Define a `ICON_REMAPPING: dict[str, str]` dict in `icon.py` or a config file.
 
-#### 3. `AllDayTaskEvent.getEnd()` reports duration as days without checking the unit
+#### ~~3. `AllDayTaskEvent.getEnd()` reports duration as days without checking the unit~~ FIXED
 **Priority:** 2/5 — **Complexity:** 2/5 (score: 0)
 **File:** `task.py:400-408`
 
-**Mostly fixed:** `TaskEvent.getEnd()` now returns `("duration", (value, unit))` — the unit is included (`task.py:209-222`). For `AllDayTaskEvent`, `getEnd()` still returns a bare `("duration", duration.value)`, which is correct only because every internal setter (`setEndDurationDays`, `_setEnd("duration", ...)` at `task.py:391-393`) uses `unit = dayLen`.
-
-**Residual risk:** `AllDayTaskEvent` inherits `SingleStartEndEvent.setEndDuration(value, unit)`, so a non-day unit can still be set and would then be reported as days.
-
-**Recommended fix:** Convert the value to days using `duration.unit` in `AllDayTaskEvent.getEnd()`, or restrict the accepted units there.
+**Fix:** `AllDayTaskEvent.getEnd()` now converts the duration to days using `duration.unit` (`task.py:407`): it returns `("duration", duration.value * duration.unit / dayLen)`. Non-day units set via the inherited `SingleStartEndEvent.setEndDuration(value, unit)` are now reported correctly as days. Covered by a test in `events_test.py` (`setEndDuration(48, 3600)` → `("duration", 2)`).
 
 #### 4. `WeekOccurData` and `MonthOccurData` are unused
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)

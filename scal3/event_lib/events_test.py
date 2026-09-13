@@ -190,6 +190,11 @@ def test_allday_task_event(fs: FileSystem) -> None:
 	assert event.getEndJd() == jd(2030, 5, 16)
 	assertExportRoundtrip(event)
 
+	event.setEndDuration(48, 3600)
+	assert event.getEnd() == ("duration", 2)
+	assert event.getEndJd() == jd(2030, 5, 17)
+	event.setEndDurationDays(1)
+
 	occur = event.calcEventOccurrenceIn(jd(2030, 5, 15), jd(2030, 5, 18))
 	assert occur.getStartJd() == jd(2030, 5, 15)
 
