@@ -147,7 +147,6 @@ SObj (s_object)
 | `state.py` | Global mutable state (`allReadOnly`, `info`, `lastIds`) |
 | `rules/rule_base.py` | Base `EventRule` class |
 | `event_ics.py` | ICS format export |
-| `typing_test.py` | Ad-hoc type checking (not a real test suite) |
 | `trash.py` | Trash container for deleted events |
 | `common.py` | Shared utilities (week days, JD, compression) |
 | `weekly.py` | Weekly recurring events |
@@ -526,7 +525,6 @@ event_lib/
 ├── university.py        # UniversityTerm, UniversityClassEvent, UniversityExamEvent
 ├── vcs_base.py          # VcsBaseEventGroup, VcsEpochBaseEventGroup
 ├── vcs.py               # VcsCommitEventGroup, VcsTagEventGroup, etc.
-├── typing_test.py       # Ad-hoc type checking (not a real test)
 ├── errors.py            # AccountError
 ├── exceptions.py        # BadEventFile
 └── rules/

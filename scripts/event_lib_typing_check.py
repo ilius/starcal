@@ -1,3 +1,13 @@
+"""
+Ad-hoc troubleshooting for mypy protocol errors.
+
+Run: python -m scripts.event_lib_typing_check
+
+Not a test suite: it runs code at import level to check that concrete
+event-library classes satisfy their protocol types. Kept in scripts/ so pytest
+does not collect it.
+"""
+
 from __future__ import annotations
 
 from scal3.event_lib.pytypes import EventGroupType

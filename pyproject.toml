@@ -141,7 +141,7 @@ exclude = [
 lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
-"scal3/event_lib/typing_test.py" = [
+"scripts/event_lib_typing_check.py" = [
 	"TC001", # Move application import ... into a type-checking block
 ]
 "scal3/event_lib_import_all.py" = [
