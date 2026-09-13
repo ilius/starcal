@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
 
 from scal3 import logger
 
@@ -80,6 +81,23 @@ class EventRule(SObjBase, ABC):
 		newRule = self.__class__(self.parent)
 		newRule.fs = self.fs
 		copyParams(newRule, self)
+		return newRule
+
+	def __deepcopy__(self, memo: dict) -> Self:
+		"""
+		Deep copy this rule while keeping the same parent container.
+
+		``copy.deepcopy`` on a rule would otherwise recurse into ``parent``
+		and duplicate the whole container. Copying all instance state
+		(including derived attributes not listed in ``params``, e.g.
+		``ExDatesEventRule.jdList``) keeps the copy consistent.
+		"""
+		newRule = self.__class__(self.parent)
+		newRule.fs = self.fs
+		for attr, value in self.__dict__.items():
+			if attr in ("parent", "fs"):
+				continue
+			setattr(newRule, attr, deepcopy(value))
 		return newRule
 
 	def getCalType(self) -> int:

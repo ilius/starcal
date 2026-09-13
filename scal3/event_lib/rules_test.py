@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, cast
 
 from scal3.cal_types import GREGORIAN, to_jd
 from scal3.event_lib.handler import Handler
+from scal3.event_lib.rule_container import RuleContainer
 from scal3.event_lib.rules.rule_allday import AllDayEventRule
 
 if TYPE_CHECKING:
@@ -381,3 +382,22 @@ def test_rule_ex_day(fs: FileSystem) -> None:
 		jd(2030, 12, 31),
 		minRanges=352,
 	)
+
+
+def test_copy_rules_dict_deep_copies(fs: FileSystem) -> None:
+	"""CopyRulesDict produces independent rules while keeping the parent."""
+	event = createEvent(fs, [("ex_dates", ["2030/05/16"]), ("weekDay", [1, 3])])
+	rulesDict = RuleContainer.copyRulesDict(event.rulesDict)
+	assert set(rulesDict) == set(event.rulesDict)
+	for name, rule in rulesDict.items():
+		assert rule is not event.rulesDict[name]
+		assert rule.parent is event
+
+	exDates = rulesDict["ex_dates"]
+	assert exDates.jdList == event.rulesDict["ex_dates"].jdList
+	exDates.dates.append((2030, 5, 17))
+	assert event.rulesDict["ex_dates"].dates == [(2030, 5, 16)]
+
+	weekDay = rulesDict["weekDay"]
+	weekDay.weekDayList.append(5)
+	assert event.rulesDict["weekDay"].weekDayList == [1, 3]

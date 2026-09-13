@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from copy import copy
+from copy import deepcopy
 
 from scal3 import logger
 from scal3.s_object import SObj, copyParams
@@ -71,10 +71,10 @@ class RuleContainer(SObj):
 
 	@staticmethod
 	def copyRulesDict(rulesDict: dict[str, EventRuleType]) -> dict[str, EventRuleType]:
-		"""Return a shallow copy of the rules dictionary."""
+		"""Return a deep copy of the rules dictionary, keeping the parent container."""
 		newRulesOd = {}
 		for ruleName, rule in rulesDict.items():
-			newRulesOd[ruleName] = copy(rule)
+			newRulesOd[ruleName] = deepcopy(rule)
 		return newRulesOd
 
 	def __init__(self) -> None:

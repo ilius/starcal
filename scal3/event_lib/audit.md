@@ -13,12 +13,10 @@ See `README.md` for architecture overview and file-by-file summary.
 > Issues are sorted by `Priority − Complexity` (higher first). Both are rated 1–5.
 > `Priority` = impact on usability/stability, `Complexity` = effort of the solution (1 = trivial, 5 = large).
 
-#### 1. `rule_container.py:copyRulesDict` creates shallow copies
+#### ~~1. `rule_container.py:copyRulesDict` creates shallow copies~~ FIXED
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
 **File:** `rule_container.py:72-78`
-Rules may share mutable state after copy, causing subtle cross-event bugs.
-
-**Recommended fix:** Use `copy.deepcopy` on each rule, or document that callers must not mutate copied rules.
+`copyRulesDict` now deep-copies each rule via `copy.deepcopy`, and `EventRule.__deepcopy__` (in `rule_base.py`) deep-copies all instance state while keeping the same `parent`, so mutable and derived rule state (e.g. `ExDatesEventRule.jdList`) is no longer shared or dropped. Regression test added in `rules_test.py:test_copy_rules_dict_deep_copies`.
 
 #### 2. `icon.py` hardcoded magic string
 **Priority:** 2/5 — **Complexity:** 1/5 (score: 1)
