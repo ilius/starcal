@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-27
 **License:** AGPL-3.0+
-**Last re-audit:** 2026-08-27 (all prior issues re-verified against current code)
+**Last re-audit:** 2026-09-13 (all prior issues re-verified against current code; line references updated)
 
 See `README.md` for architecture overview and file-by-file summary.
 
@@ -31,7 +31,7 @@ Documents "Return True if changed", but the base implementation does nothing and
 
 #### 3. `copyFrom()` checks event type names, not calendar types
 **Priority:** 4/5 — **Complexity:** 3/5 (score: 1)
-**File:** `event_base.py:386-394`
+**File:** `event_base.py:399-407`
 
 Docstring says dates are converted when calendar types differ, but the code checks `self.name != other.name` (event type names), not calendar type — so cross-calendar copies may keep unconverted dates.
 
@@ -39,7 +39,7 @@ Docstring says dates are converted when calendar types differ, but the code chec
 
 #### 4. `deepConvertTo()` task conversion fails for tag groups
 **Priority:** 4/5 — **Complexity:** 3/5 (score: 1)
-**File:** `vcs_base.py:192-210`
+**File:** `vcs_base.py:195-213`
 
 Asserts `event.epoch is not None`, but `VcsTagEventGroup.getEvent()` builds tag events from only `summary`/`icon` and never sets an epoch, so converting a tag group to a task list asserts.
 
@@ -47,7 +47,7 @@ Asserts `event.epoch is not None`, but `VcsTagEventGroup.getEvent()` builds tag 
 
 #### 5. `UniversityTerm.setDefaults()` only handles Jalali calendar
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
-**File:** `university.py:269-291`
+**File:** `university.py:267-290`
 
 No default generation for Gregorian or other calendar types.
 
@@ -55,13 +55,13 @@ No default generation for Gregorian or other calendar types.
 
 #### 6. `NotImplementedError` / silent no-op used as abstract method signal
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
-**Files:** `event_base.py` (`index`), `notifier_base.py` (`notify` — now a silent `pass`, no longer `NotImplementedError`), `rules/rule_base.py` (`getServerString`), `vcs_base.py` (`load`)
+**Files:** `event_base.py` (`index`, `event_base.py:434-436`), `notifier_base.py` (`notify` — now a silent `pass`, no longer `NotImplementedError`, `notifier_base.py:58-59`), `rules/rule_base.py` (`getServerString`, `rule_base.py:56-58`), `vcs_base.py` (`load`, `vcs_base.py:224-231`)
 
 **Recommended fix:** Make base classes inherit from `abc.ABC` and mark methods with `@abstractmethod`. This gives clearer error messages ("Can't instantiate abstract class X with abstract method Y") at instantiation time rather than at call time. The silent `pass` in `EventNotifier.notify()` is arguably worse than raising — a subclass that forgets to override it silently does nothing.
 
 #### 7. `rule_container.py:copyRulesDict` creates shallow copies
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
-**File:** `rule_container.py:71-75`
+**File:** `rule_container.py:72-78`
 Rules may share mutable state after copy, causing subtle cross-event bugs.
 
 **Recommended fix:** Use `copy.deepcopy` on each rule, or document that callers must not mutate copied rules.
@@ -71,7 +71,7 @@ Rules may share mutable state after copy, causing subtle cross-event bugs.
 
 #### 9. `defaultGroupTypeIndex = 0` has unresolved FIXME
 **Priority:** 2/5 — **Complexity:** 1/5 (score: 1)
-**File:** `__init__.py:152`
+**File:** `__init__.py:156`
 
 **Recommended fix:** Determine the correct default (likely `0` for "NoteBook") and remove the `# FIXME` comment, or make it configurable.
 
@@ -84,7 +84,7 @@ Hardcoded check for `obituary.png` -> `green_clover.svg`.
 
 #### 11. `holder.py` obscures root cause
 **Priority:** 2/5 — **Complexity:** 1/5 (score: 1)
-**File:** `holders.py:132-149`
+**File:** `holders.py:141-159`
 `delete` catches 3 separate exceptions with `log.exception("")` — hides the actual failure.
 
 **Recommended fix:** Use a single `except (FileNotFoundError, OSError) as e:` with a descriptive log message.
@@ -98,9 +98,9 @@ String concatenation for ICS is fragile. No escaping of special characters beyon
 
 #### 13. `AllDayTaskEvent.getEnd()` reports duration as days without checking the unit
 **Priority:** 2/5 — **Complexity:** 2/5 (score: 0)
-**File:** `task.py:396-404`
+**File:** `task.py:400-408`
 
-**Mostly fixed:** `TaskEvent.getEnd()` now returns `("duration", (value, unit))` — the unit is included (`task.py:220`). For `AllDayTaskEvent`, `getEnd()` still returns a bare `("duration", duration.value)`, which is correct only because every internal setter (`setEndDurationDays`, `_setEnd("duration", ...)`) uses `unit = dayLen`.
+**Mostly fixed:** `TaskEvent.getEnd()` now returns `("duration", (value, unit))` — the unit is included (`task.py:209-222`). For `AllDayTaskEvent`, `getEnd()` still returns a bare `("duration", duration.value)`, which is correct only because every internal setter (`setEndDurationDays`, `_setEnd("duration", ...)` at `task.py:391-393`) uses `unit = dayLen`.
 
 **Residual risk:** `AllDayTaskEvent` inherits `SingleStartEndEvent.setEndDuration(value, unit)`, so a non-day unit can still be set and would then be reported as days.
 
@@ -116,7 +116,7 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 
 #### 15. Missing `__repr__` on some classes
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**Partially fixed since last audit:** `Event` (`event_base.py:153`), `EventGroup` (`group.py:239`), `VcsCommitEvent` (`vcs.py:78`), and all `OccurSet` subclasses (`occur.py`) now have `__repr__`; `EventContainer` has `__str__` (`event_container.py:161`).
+**Partially fixed since last audit:** `Event` (`event_base.py:153`), `EventGroup` (`group.py:247`), `VcsCommitEvent` (`vcs.py:78`), and all `OccurSet` subclasses (`occur.py`) now have `__repr__`; `EventContainer` has `__str__` (`event_container.py:167`).
 
 **Remaining:** `EventNotifier` and `EventRule` (and their subclasses) still fall back to the default object representation, making debug logs less readable.
 
@@ -124,7 +124,7 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 
 #### 16. `Event.create()` claims to attach the rule but only constructs it
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**File:** `event_base.py:212-217`
+**File:** `event_base.py:214-219`
 
 Docstring says "Create and attach", but the method only builds and returns the rule; callers must attach it separately.
 
@@ -132,7 +132,7 @@ Docstring says "Create and attach", but the method only builds and returns the r
 
 #### 17. `Handler.init()` does not initialize all subsystems
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**File:** `handler.py:30-39`
+**File:** `handler.py:34-46`
 
 Docstring says "Initialize all subsystems", but directories, `state.info`, and `state.lastIds` must be set up by `event_lib.init()` first; `Handler.init()` only loads accounts, groups, trash, and the notifier.
 
@@ -148,7 +148,7 @@ Runs code at import level (`print(isinstance(acc, AccountType))`). Contains most
 
 #### 19. Large blocks of commented-out dead code
 **Priority:** 1/5 — **Complexity:** 2/5 (score: -1)
-**Files:** `event_base.py` (lines 293-299, 300-319, 500-501, 546-567), `__init__.py` (lines 168-188), plus smaller blocks in `group.py`, `university.py`, `vcs_base.py`, `note.py`, `occur.py`
+**Files:** `event_base.py` (lines 297-303, 304-311, 514-515, 563-582), `__init__.py` (lines 168-191), plus smaller blocks in `group.py`, `university.py`, `vcs_base.py`, `note.py`, `occur.py`
 
 Commented-out TODO classes (`HolidayEventRule`, `ShowInMCalEventRule`, `SunTimeRule`), the no-op attachment loader (`_loadFiles`), and commented-out methods (`getUrlForFile`, `getFilesUrls`).
 
@@ -161,4 +161,4 @@ Commented-out TODO classes (`HolidayEventRule`, `ShowInMCalEventRule`, `SunTimeR
 - **Add a proper test suite** (#18) — convert `typing_test.py` and add pytest-based tests
 - **Remove dead code** (#14, #19) — `WeekOccurData`, `MonthOccurData`, commented-out blocks
 - **Replace `assert` with proper exceptions** in `handler.py` and `holders.py`
-- **Resolve FIXME comments** (105 remaining) or convert them to tracked issues
+- **Resolve FIXME comments** (109 remaining) or convert them to tracked issues
