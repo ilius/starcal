@@ -153,7 +153,7 @@ assert classes.group
 assert classes.event
 assert classes.rule
 
-defaultGroupTypeIndex = 0  # FIXME
+defaultGroupTypeIndex = 0
 
 __plugin_api_get__ = [
 	"classes",

@@ -57,7 +57,7 @@ Rules may share mutable state after copy, causing subtle cross-event bugs.
 #### ~~8. `Group.save()` only honors the per-group read-only flag~~ FIXED
 `Group.save()` now checks `isReadOnly()` (which includes `state.allReadOnly`), so it raises RuntimeError consistently in global read-only mode.
 
-#### 9. `defaultGroupTypeIndex = 0` has unresolved FIXME
+#### ~~9. `defaultGroupTypeIndex = 0` has unresolved FIXME~~ FIXMED
 **Priority:** 2/5 — **Complexity:** 1/5 (score: 1)
 **File:** `__init__.py:156`
 
@@ -70,7 +70,7 @@ Hardcoded check for `obituary.png` -> `green_clover.svg`.
 
 **Recommended fix:** Define a `ICON_REMAPPING: dict[str, str]` dict in `icon.py` or a config file.
 
-#### 11. `holder.py` obscures root cause
+#### ~~11. `holder.py` obscures root cause~~ FALSE
 **Priority:** 2/5 — **Complexity:** 1/5 (score: 1)
 **File:** `holders.py:141-159`
 `delete` catches 3 separate exceptions with `log.exception("")` — hides the actual failure.
