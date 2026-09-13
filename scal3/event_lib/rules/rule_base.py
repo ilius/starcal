@@ -85,7 +85,7 @@ class EventRule(SObjBase):
 		return self.parent.calType
 
 	def changeCalType(self, calType: int) -> bool:  # noqa: ARG002, PLR6301
-		"""Convert dates to a new calendar type. Return True if changed."""
+		"""Convert dates to a new calendar type. Return True if successful."""
 		return True
 
 	def calcOccurrence(

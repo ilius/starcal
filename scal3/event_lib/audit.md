@@ -21,13 +21,10 @@ Docstring says it "matches against a list of individual values or ranges", but i
 
 **Recommended fix:** Override `jdMatches()` to use `_hasValue()`, or reword the docstring and restore the warning.
 
-#### 2. `changeCalType()` returns True without changing anything
-**Priority:** 3/5 — **Complexity:** 1/5 (score: 2)
-**File:** `rules/rule_base.py:85-87`
+#### ~~2. `changeCalType()` returns True without changing anything~~ FIXED
+**File:** `rules/rule_base.py:87-89`
 
-Documents "Return True if changed", but the base implementation does nothing and returns True, which callers interpret as success.
-
-**Recommended fix:** Have the base return `False` (nothing to convert) or reword the contract to mean "handled successfully".
+The docstring now states the contract correctly: `changeCalType()` returns `True` if the conversion was successful, not whether anything changed. All overrides (`rule_date.py`, `rule_ymd.py`, `rule_allday.py`) and the caller in `event_base.py:585` document the same semantics.
 
 #### 3. `copyFrom()` checks event type names, not calendar types
 **Priority:** 4/5 — **Complexity:** 3/5 (score: 1)

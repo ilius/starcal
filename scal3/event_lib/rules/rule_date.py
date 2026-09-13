@@ -121,7 +121,7 @@ class DateEventRule(EventRule):
 		return JdOccurSet()
 
 	def changeCalType(self, calType: int) -> bool:
-		"""Convert the date to a new calendar type."""
+		"""Convert the date to a new calendar type. Return True if successful."""
 		self.date = jd_to(self.getJd(), calType)
 		return True
 
@@ -191,6 +191,9 @@ class ExDatesEventRule(EventRule):
 			log.exception("")
 
 	def changeCalType(self, calType: int) -> bool:
-		"""Convert the excluded dates to a new calendar type."""
+		"""
+		Convert the excluded dates to a new calendar type.
+		Return True if successful.
+		"""
 		self.dates = [jd_to(jd, calType) for jd in self.jdList]
 		return True

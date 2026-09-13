@@ -94,7 +94,10 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return False
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
-		"""Return False since day values cannot convert between calendars."""
+		"""
+		Return False since day values cannot convert between calendars
+		(unsuccessful).
+		"""
 		return False
 
 	# FIXME: I think getValuesPlain was meant to be used in getServerString

@@ -86,7 +86,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		return values2
 
 	def changeCalType(self, calType: int) -> bool:
-		"""Convert the year values to a new calendar type."""
+		"""Convert the year values to a new calendar type. Return True if successful."""
 		self.values = self._newCalTypeValues(calType)
 		return True
 
@@ -122,7 +122,10 @@ class MonthEventRule(AllDayEventRule):
 		return textNumEncode(", ".join(str(x) for x in self.values))
 
 	def changeCalType(self, _calType: int) -> bool:  # noqa: PLR6301
-		"""Return False since month numbers cannot be converted between calendars."""
+		"""
+		Return False since month numbers cannot be converted between
+		calendars (unsuccessful).
+		"""
 		return False
 
 	def getServerString(self) -> str:

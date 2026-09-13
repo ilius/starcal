@@ -583,7 +583,10 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		return False
 
 	def changeCalType(self, calType: int) -> bool:
-		"""Change the calendar type, rolling back if any rule rejects it."""
+		"""
+		Change the calendar type, rolling back if any rule rejects it.
+		Return True if successful.
+		"""
 		backupRulesOd = RuleContainer.copyRulesDict(self.rulesDict)
 		if calType != self.calType:
 			for rule in self.rulesDict.values():
