@@ -83,7 +83,7 @@ class EventRule(SObjBase, ABC):
 		copyParams(newRule, self)
 		return newRule
 
-	def __deepcopy__(self, memo: dict) -> Self:
+	def __deepcopy__(self, memo: dict[int, Any]) -> Self:
 		"""
 		Deep copy this rule while keeping the same parent container.
 

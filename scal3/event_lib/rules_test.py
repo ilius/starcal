@@ -10,6 +10,9 @@ from scal3.event_lib.rules.rule_allday import AllDayEventRule
 if TYPE_CHECKING:
 	from scal3.event_lib.event_base import Event
 	from scal3.event_lib.occur import JdOccurSet
+	from scal3.event_lib.rules.rule_base import EventRule
+	from scal3.event_lib.rules.rule_date import ExDatesEventRule
+	from scal3.event_lib.rules.rule_week import WeekDayEventRule
 	from scal3.filesystem import FileSystem
 
 
@@ -391,13 +394,17 @@ def test_copy_rules_dict_deep_copies(fs: FileSystem) -> None:
 	assert set(rulesDict) == set(event.rulesDict)
 	for name, rule in rulesDict.items():
 		assert rule is not event.rulesDict[name]
-		assert rule.parent is event
+		assert cast("EventRule", rule).parent is event
 
-	exDates = rulesDict["ex_dates"]
-	assert exDates.jdList == event.rulesDict["ex_dates"].jdList
+	exDates = cast("ExDatesEventRule", rulesDict["ex_dates"])
+	assert (
+		exDates.jdList == cast("ExDatesEventRule", event.rulesDict["ex_dates"]).jdList
+	)
 	exDates.dates.append((2030, 5, 17))
-	assert event.rulesDict["ex_dates"].dates == [(2030, 5, 16)]
+	assert cast("ExDatesEventRule", event.rulesDict["ex_dates"]).dates == [
+		(2030, 5, 16)
+	]
 
-	weekDay = rulesDict["weekDay"]
+	weekDay = cast("WeekDayEventRule", rulesDict["weekDay"])
 	weekDay.weekDayList.append(5)
-	assert event.rulesDict["weekDay"].weekDayList == [1, 3]
+	assert cast("WeekDayEventRule", event.rulesDict["weekDay"]).weekDayList == [1, 3]
