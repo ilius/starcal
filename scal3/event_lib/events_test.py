@@ -16,6 +16,7 @@ from scal3.event_lib.lifetime import LifetimeEvent
 from scal3.event_lib.monthly import MonthlyEvent
 from scal3.event_lib.note import DailyNoteEvent
 from scal3.event_lib.objects import iterObjectFiles
+from scal3.event_lib.rules import DayTimeRangeEventRule
 from scal3.event_lib.task import AllDayTaskEvent, TaskEvent
 from scal3.event_lib.university import UniversityClassEvent, UniversityExamEvent
 from scal3.event_lib.weekday import MonthlyWeekdayEvent, WeeklyWeekdayEvent
@@ -537,7 +538,7 @@ def test_weekly_weekday_event_ics(fs: FileSystem) -> None:
 	assert weekDay is not None
 	assert weekDay.getRuleValue() == [2, 4]  # TU, TH
 	dayTimeRange = event.getRule("dayTimeRange")
-	assert dayTimeRange is not None
+	assert isinstance(dayTimeRange, DayTimeRangeEventRule)
 	assert dayTimeRange.getSecondsRange() == (9 * 3600, 10 * 3600)
 	assert event.getStartJd() == jd(2030, 5, 6)
 	assert event.getEndJd() == jd(2030, 5, 21)
