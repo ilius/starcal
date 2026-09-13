@@ -22,10 +22,10 @@ Serialized rules for "office hours" (Gregorian):
 
 ```python
 {
-    "start": {"date": "2030/01/01", "time": "09:00:00"},
-    "end":   {"date": "2031/01/01", "time": "00:00:00"},
-    "dayTimeRange": ("09:00:00", "17:00:00"),
-    "weekDay": [1, 2, 3, 4, 5],   # 0=Sunday .. 6=Saturday
+	"start": {"date": "2030/01/01", "time": "09:00:00"},
+	"end": {"date": "2031/01/01", "time": "00:00:00"},
+	"dayTimeRange": ("09:00:00", "17:00:00"),
+	"weekDay": [1, 2, 3, 4, 5],  # 0=Sunday .. 6=Saturday
 }
 ```
 
@@ -51,10 +51,10 @@ Serialized rules for "second Tuesday of every month":
 
 ```python
 {
-    "start": {"date": "2030/01/01", "time": "00:00:00"},
-    "end":   {"date": "2031/01/01", "time": "00:00:00"},
-    "dayTimeRange": ("09:00:00", "17:00:00"),
-    "weekMonth": {"month": 0, "wmIndex": 1, "weekDay": 2},
+	"start": {"date": "2030/01/01", "time": "00:00:00"},
+	"end": {"date": "2031/01/01", "time": "00:00:00"},
+	"dayTimeRange": ("09:00:00", "17:00:00"),
+	"weekMonth": {"month": 0, "wmIndex": 1, "weekDay": 2},
 }
 ```
 

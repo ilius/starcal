@@ -270,11 +270,14 @@ def test_rule_week_month_last_february(fs: FileSystem) -> None:
 	)
 	rule = event.getRule("weekMonth")
 	assert rule is not None
-	occur = cast("JdOccurSet", rule.calcOccurrence(
-		jd(2024, 1, 1),
-		jd(2026, 1, 1),
-		event,
-	))
+	occur = cast(
+		"JdOccurSet",
+		rule.calcOccurrence(
+			jd(2024, 1, 1),
+			jd(2026, 1, 1),
+			event,
+		),
+	)
 	assert occur.getJdSet() == {jd(2024, 2, 24), jd(2025, 2, 22)}
 
 
@@ -286,11 +289,14 @@ def test_rule_week_month_last_every_month_february(fs: FileSystem) -> None:
 	)
 	rule = event.getRule("weekMonth")
 	assert rule is not None
-	occur = cast("JdOccurSet", rule.calcOccurrence(
-		jd(2024, 12, 1),
-		jd(2025, 4, 1),
-		event,
-	))
+	occur = cast(
+		"JdOccurSet",
+		rule.calcOccurrence(
+			jd(2024, 12, 1),
+			jd(2025, 4, 1),
+			event,
+		),
+	)
 	assert occur.getJdSet() == {
 		jd(2024, 12, 28),
 		jd(2025, 1, 25),

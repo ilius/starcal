@@ -171,9 +171,7 @@ class WeekDayEventRule(AllDayEventRule):
 				"value for weekDayList must be a list of integers"
 				" (0 for sunday)",
 			)
-		if any(
-			type(value) is not int or not 0 <= value <= 6 for value in data
-		):
+		if any(type(value) is not int or not 0 <= value <= 6 for value in data):
 			raise BadEventFile(
 				f"bad rule weekDayList={data}, values must be integers from 0 to 6",
 			)
