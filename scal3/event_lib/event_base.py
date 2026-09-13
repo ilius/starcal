@@ -212,7 +212,11 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		self._lastMergeSha1 = None
 
 	def create(self, ruleName: str) -> EventRuleType:
-		"""Create and attach a new rule of the given type to this event."""
+		"""
+		Create and return a new rule of the given type, without attaching it.
+
+		Callers must attach it separately, e.g. via ``addRule`` or ``checkAndAddRule``.
+		"""
 		cont: RuleContainerType = self
 		rule = classes.rule.byName[ruleName](cont)
 		rule.fs = self.fs

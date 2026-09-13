@@ -43,13 +43,9 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
 **Fix:** `EventNotifier` (`notifier_base.py`) now has `__repr__` returning `EventNotifier(event=...)`, and `EventRule` (`rules/rule_base.py`) has `__repr__` returning `EventRule(parent=...)`; subclasses inherit both. Rules and notifiers have no `id` attribute, so the reprs use `event`/`parent` instead. Covered by `test_event_notifier_repr` (`events_test.py`) and `test_rule_repr` (`rules_test.py`).
 
-#### 6. `Event.create()` claims to attach the rule but only constructs it
+#### ~~6. `Event.create()` claims to attach the rule but only constructs it~~ FIXED
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**File:** `event_base.py:214-219`
-
-Docstring says "Create and attach", but the method only builds and returns the rule; callers must attach it separately.
-
-**Recommended fix:** Either attach the rule inside `create()` or reword the docstring to "create and return".
+**Fix:** `Event.create()` docstring now says "Create and return", clarifying that callers must attach the rule separately (e.g. via `addRule` or `checkAndAddRule`). Auto-attaching inside `create()` was avoided because `custom.py:202` uses it purely for dependency-checking.
 
 #### 7. `Handler.init()` does not initialize all subsystems
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
