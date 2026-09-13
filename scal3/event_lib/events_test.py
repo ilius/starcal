@@ -736,6 +736,64 @@ def test_event_copy_from_exact(fs: FileSystem) -> None:
 	assert target.getJd() == jd(2030, 5, 15)
 
 
+def test_event_copy_from_cross_caltype(fs: FileSystem) -> None:
+	"""CopyFrom converts dates when source and target calendar types differ."""
+	from scal3.cal_types import calTypes
+
+	event, _group = createSavedEvent(
+		fs,
+		"custom",
+		summary="orig",
+		calType="gregorian",
+		rules=[("date", "2030/05/15")],
+	)
+	target = event.__class__(parent=event.parent)
+	target.calType = calTypes.names.index("jalali")
+	target.copyFrom(event)
+	assert target.autoSummary == "orig"
+	assert target.getRule("date") is not None
+	assert target.getJd() == jd(2030, 5, 15)
+
+
+def test_event_copy_from_exact_cross_caltype(fs: FileSystem) -> None:
+	"""CopyFromExact converts dates when source and target calendar types differ."""
+	from scal3.cal_types import calTypes
+
+	event, _group = createSavedEvent(
+		fs,
+		"custom",
+		summary="orig",
+		calType="gregorian",
+		rules=[("date", "2030/05/15")],
+	)
+	target = event.__class__(parent=event.parent)
+	target.calType = calTypes.names.index("jalali")
+	target.copyFromExact(event)
+	assert target.autoSummary == "orig"
+	assert target.getRule("date") is not None
+	assert target.getJd() == jd(2030, 5, 15)
+
+
+def test_event_copy_from_different_type_same_caltype(fs: FileSystem) -> None:
+	"""CopyFrom re-derives dates when event types use different rule representations."""
+	from scal3.event_lib.rules.rule_datetime import StartEventRule
+	from scal3.event_lib.task import TaskEvent
+
+	note, _group = createSavedEvent(
+		fs,
+		"dailyNote",
+		summary="n",
+		calType="gregorian",
+		rules=[("date", "2030/05/15")],
+	)
+	task = TaskEvent(parent=note.parent)
+	task.copyFrom(note)
+	start = StartEventRule.getFrom(task)
+	assert start is not None
+	assert start.date == (2030, 5, 15)
+	assert task.getJd() == jd(2030, 5, 15)
+
+
 def test_event_get_rules_hash(fs: FileSystem) -> None:
 	"""GetRulesHash is stable for identical events and changes with rules."""
 	event, _group = createSavedEvent(

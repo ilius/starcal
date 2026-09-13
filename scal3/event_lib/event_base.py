@@ -400,8 +400,9 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		"""Copy rules and properties, converting dates if calendar types differ."""
 		self._copyFrom(other)
 		# ----
-		# copy dates between different rule types in different event types
-		if self.name != other.name:
+		# copy dates between different calendar types, and re-derive dates
+		# when the event types use different rule representations
+		if self.calType != other.calType or self.name != other.name:
 			jd = other.getJd()
 			if jd is not None:
 				self.setJd(jd)
@@ -410,8 +411,9 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		"""Copy rules and properties, using exact JD conversion."""
 		self._copyFrom(other)
 		# ----
-		# copy dates between different rule types in different event types
-		if self.name != other.name:
+		# copy dates between different calendar types, and re-derive dates
+		# when the event types use different rule representations
+		if self.calType != other.calType or self.name != other.name:
 			jd = other.getJd()
 			if jd is not None:
 				self._setJdExact(jd)
@@ -647,8 +649,15 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		"""Return the Julian day of this event's start."""
 		return self.getStartJd()
 
-	def setJd(self, jd: int) -> None:  # noqa: ARG002, PLR6301
-		"""Set the event date from a Julian day; implemented by subclasses."""
+	def setJd(self, jd: int) -> None:
+		"""Set the event date from a Julian day, in this event's calendar type."""
+		date = DateEventRule.getFrom(self)
+		if date is not None:
+			date.setJd(jd)
+			return
+		start = StartEventRule.getFrom(self)
+		if start is not None:
+			start.setJd(jd)
 
 	def _setJdExact(self, jd: int) -> None:
 		"""Set the event date from a Julian day, with no time component."""

@@ -23,13 +23,11 @@ See `README.md` for architecture overview and file-by-file summary.
 
 The docstring now states the contract correctly: `changeCalType()` returns `True` if the conversion was successful, not whether anything changed. All overrides (`rule_date.py`, `rule_ymd.py`, `rule_allday.py`) and the caller in `event_base.py:585` document the same semantics.
 
-#### 3. `copyFrom()` checks event type names, not calendar types
+#### ~~3. `copyFrom()` checks event type names, not calendar types~~ FIXED
 **Priority:** 4/5 — **Complexity:** 3/5 (score: 1)
 **File:** `event_base.py:399-407`
 
-Docstring says dates are converted when calendar types differ, but the code checks `self.name != other.name` (event type names), not calendar type — so cross-calendar copies may keep unconverted dates.
-
-**Recommended fix:** Compare `calType` values (and perform the JD conversion when they differ), not event type names.
+`copyFrom()` and `copyFromExact()` now also check `self.calType != other.calType` (in addition to the existing event-type-name check), so dates are converted (via JD) when the source and target calendar types differ, while the name check still re-derives dates when event types use different rule representations (e.g. `dailyNote` → `task`). `Event.setJd()` (base) now delegates to the `date`/`start` rule so the conversion also works for generic rule-based events (e.g. `CustomEvent`); events with their own `setJd` override are unchanged.
 
 #### ~~4. `deepConvertTo()` task conversion fails for tag groups~~ FIXED
 **File:** `vcs_base.py:195-213`
