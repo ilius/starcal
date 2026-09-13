@@ -59,8 +59,15 @@ class AllDayEventRule(EventRule):
 		return JdOccurSet(jds)
 
 
+# Should not be registered, or instantiate directly
 class MultiValueAllDayEventRule(AllDayEventRule):
-	"""All-day rule that matches against a list of individual values or ranges."""
+	"""
+	Base for all-day rules that match against a list of individual values
+	or ranges.
+
+	Subclasses define which calendar component the values represent (e.g.
+	year or day of month) and must implement `jdMatches` accordingly.
+	"""
 
 	conflict: Sequence[str] = ("date",)
 	params = ["values"]
@@ -69,6 +76,16 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	def __init__(self, parent: RuleContainerType) -> None:
 		super().__init__(parent)
 		self.values: list[int | tuple[int, int]] = []
+
+	def jdMatches(self, jd: int) -> bool:  # noqa: ARG002, PLR6301
+		"""
+		Raise NotImplementedError since the base class does not know which
+		calendar component the values represent; subclasses must override.
+		"""
+		raise NotImplementedError(
+			"MultiValueAllDayEventRule is an abstract base; "
+			"subclasses must override jdMatches",
+		)
 
 	def getRuleValue(self) -> Any:
 		"""Return the list of values for serialization."""

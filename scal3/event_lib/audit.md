@@ -13,13 +13,10 @@ See `README.md` for architecture overview and file-by-file summary.
 > Issues are sorted by `Priority − Complexity` (higher first). Both are rated 1–5.
 > `Priority` = impact on usability/stability, `Complexity` = effort of the solution (1 = trivial, 5 = large).
 
-#### 1. `MultiValueAllDayEventRule` claims to match values but always matches
-**Priority:** 4/5 — **Complexity:** 2/5 (score: 2)
-**File:** `rules/rule_allday.py:62-63`
+#### ~~1. `MultiValueAllDayEventRule` claims to match values but always matches~~ FIXED
+**File:** `rules/rule_allday.py:62-70`
 
-Docstring says it "matches against a list of individual values or ranges", but its inherited `AllDayEventRule.jdMatches()` implementation always returns True. The docstring commit also removed the `# Should not be registered, or instantiate directly` warning.
-
-**Recommended fix:** Override `jdMatches()` to use `_hasValue()`, or reword the docstring and restore the warning.
+`MultiValueAllDayEventRule` is now explicitly an abstract base: the `# Should not be registered, or instantiate directly` warning is restored, the docstring clarifies that subclasses define which calendar component the values represent, and its `jdMatches()` raises `NotImplementedError` instead of silently inheriting the always-True `AllDayEventRule.jdMatches()`.
 
 #### ~~2. `changeCalType()` returns True without changing anything~~ FIXED
 **File:** `rules/rule_base.py:87-89`
