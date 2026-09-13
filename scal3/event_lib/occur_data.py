@@ -60,26 +60,6 @@ class DayOccurData(NamedTuple):
 	showInStatusIcon: bool
 
 
-class WeekOccurData(NamedTuple):
-	"""A single event occurrence within a week calendar view."""
-
-	weekDay: int
-	time: str
-	text: str
-	icon: str
-	ids: tuple[int, int]
-
-
-class MonthOccurData(NamedTuple):
-	"""A single event occurrence within a month calendar view."""
-
-	day: int
-	time: str
-	text: str
-	icon: str
-	ids: tuple[int, int]
-
-
 def getDayOccurrenceData(
 	curJd: int,
 	groups: Iterable[EventGroupType],

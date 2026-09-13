@@ -31,7 +31,7 @@ Hardcoded check for `obituary.png` -> `green_clover.svg`.
 
 **Fix:** `AllDayTaskEvent.getEnd()` now converts the duration to days using `duration.unit` (`task.py:407`): it returns `("duration", duration.value * duration.unit / dayLen)`. Non-day units set via the inherited `SingleStartEndEvent.setEndDuration(value, unit)` are now reported correctly as days. Covered by a test in `events_test.py` (`setEndDuration(48, 3600)` → `("duration", 2)`).
 
-#### 4. `WeekOccurData` and `MonthOccurData` are unused
+#### ~~4. `WeekOccurData` and `MonthOccurData` are unused~~ FIXED
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
 **File:** `occur_data.py`
 
