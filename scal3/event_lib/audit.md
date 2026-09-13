@@ -34,13 +34,10 @@ Docstring says dates are converted when calendar types differ, but the code chec
 
 **Recommended fix:** Compare `calType` values (and perform the JD conversion when they differ), not event type names.
 
-#### 4. `deepConvertTo()` task conversion fails for tag groups
-**Priority:** 4/5 — **Complexity:** 3/5 (score: 1)
+#### ~~4. `deepConvertTo()` task conversion fails for tag groups~~ FIXED
 **File:** `vcs_base.py:195-213`
 
-Asserts `event.epoch is not None`, but `VcsTagEventGroup.getEvent()` builds tag events from only `summary`/`icon` and never sets an epoch, so converting a tag group to a task list asserts.
-
-**Recommended fix:** Set the epoch when building tag events (and commit events) before conversion, or handle `epoch is None`.
+`VcsEpochBaseEventGroup` now records each VCS id's epoch in `_addOccur()` and exposes it via `getEventEpoch()`. `VcsCommitEventGroup.getEvent()` and `VcsTagEventGroup.getEvent()` set `event.epoch` from it, and `deepConvertTo()` skips (with a warning) any event still lacking an epoch instead of asserting.
 
 #### 5. `UniversityTerm.setDefaults()` only handles Jalali calendar
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)

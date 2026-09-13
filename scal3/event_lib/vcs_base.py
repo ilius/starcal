@@ -166,17 +166,24 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 	def __init__(self, ident: int | None = None) -> None:
 		self.showSeconds = True
 		self.vcsIds: list[int] = []
+		self.vcsEpochById: dict[Any, int] = {}
 		super().__init__(ident)
 
 	def clear(self) -> None:
-		"""Clear all occurrences and VCS IDs."""
+		"""Clear all occurrences, VCS IDs and epoch records."""
 		super().clear()
 		self.vcsIds = []
+		self.vcsEpochById = {}
 
 	def _addOccur(self, t0: float, t1: float, eid: int) -> None:
-		"""Add an occurrence and track its VCS ID."""
+		"""Add an occurrence and track its VCS ID and epoch."""
 		super()._addOccur(t0, t1, eid)
 		self.vcsIds.append(eid)
+		self.vcsEpochById[eid] = int(t0)
+
+	def getEventEpoch(self, eid: int | str) -> int | None:
+		"""Return the epoch timestamp recorded for the given VCS ID."""
+		return self.vcsEpochById.get(eid)
 
 	def getRulesHash(self) -> int:
 		"""Return a hash of the group's configuration attributes."""
@@ -200,12 +207,17 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 			for vcsId in self.vcsIds:
 				event = self.getEvent(vcsId)
 				assert isinstance(event, VcsEpochBaseEvent), f"{event=}"
-				assert event.epoch is not None
+				epoch = event.epoch
+				if epoch is None:
+					log.warning(
+						f"Skipping conversion of {event!r}: no epoch recorded",
+					)
+					continue
 				newEvent = newGroup.create("task")
 				assert isinstance(newEvent, TaskEvent), f"{newEvent=}"
 				newEvent.changeCalType(event.calType)  # FIXME needed?
 				newEvent.copyFromExact(event)
-				newEvent.setStartEpoch(event.epoch)
+				newEvent.setStartEpoch(epoch)
 				newEvent.setEndDuration(0, 1)
 				newEvent.save()
 				newGroup.append(newEvent)

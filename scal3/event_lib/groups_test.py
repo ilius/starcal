@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 import pytest
@@ -13,7 +14,11 @@ from scal3.event_lib.handler import Handler
 from scal3.event_lib.large_scale import LargeScaleGroup
 from scal3.event_lib.task import TaskList
 from scal3.event_lib.university import UniversityTerm
-from scal3.event_lib.vcs import VcsCommitEventGroup, VcsTagEventGroup
+from scal3.event_lib.vcs import (
+	VcsCommitEventGroup,
+	VcsTagEvent,
+	VcsTagEventGroup,
+)
 
 if TYPE_CHECKING:
 	from scal3.event_lib.event_container import EventContainer
@@ -656,6 +661,41 @@ def test_group_deep_convert_to(fs: FileSystem) -> None:
 	assert converted.name == "noteBook"
 	converted.setId(group.id)
 	assert converted.id == group.id
+
+
+def test_vcs_tag_group_deep_convert_to_task_list(
+	fs: FileSystem,
+	monkeypatch: pytest.MonkeyPatch,
+) -> None:
+	"""DeepConvertTo converts a VCS tag group to a task list using epochs."""
+	group = cast("VcsTagEventGroup", createGroup(fs, "vcsTag"))
+	group.setDict(
+		{
+			"title": "tags",
+			"enable": True,
+			"calType": "gregorian",
+			"vcsType": "git",
+			"vcsDir": "/tmp/repo",
+			"vcsBranch": "main",
+			"showStat": False,
+		},
+	)
+
+	def getTagList(_obj: object, _startJd: int, _endJd: int) -> list[tuple[int, str]]:
+		return [(1000, "tag1"), (2000, "tag2")]
+
+	mod = SimpleNamespace(getTagList=getTagList)
+	monkeypatch.setattr(group, "_getVcsModule", lambda: mod)
+	group.updateOccurrence()
+	tagEvent = group.getEvent("tag1")
+	assert isinstance(tagEvent, VcsTagEvent)
+	assert tagEvent.epoch == 1000
+
+	converted = group.deepConvertTo("taskList")
+	assert converted.name == "taskList"
+	assert len(converted.idList) == 2
+	starts = sorted(event.getStartEpoch() for event in converted)
+	assert starts == [1000, 2000]
 
 
 def test_group_get_dict_roundtrip(fs: FileSystem) -> None:

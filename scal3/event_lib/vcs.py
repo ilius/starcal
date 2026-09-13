@@ -187,6 +187,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		data["icon"] = self.icon
 		event = VcsCommitEvent(self, commitId)
 		event.setDict(data)
+		event.epoch = self.getEventEpoch(commitId)
 		self._updateEventDesc(event)
 		return event
 
@@ -266,6 +267,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		data["icon"] = self.icon  # type: ignore[assignment]
 		event = VcsTagEvent(self, tag)
 		event.setDict(data)
+		event.epoch = self.getEventEpoch(tag)
 		self._updateEventDesc(event)
 		return event
 
