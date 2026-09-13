@@ -63,6 +63,9 @@ class EventRule(SObjBase, ABC):
 	def __bool__(self) -> bool:
 		return True
 
+	def __repr__(self) -> str:
+		return f"{self.__class__.__name__}(parent={self.parent!r})"
+
 	def __init__(self, parent: RuleContainerType) -> None:
 		"""Parent can be an event for now (maybe later a group too)."""
 		self.parent = parent

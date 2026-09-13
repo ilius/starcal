@@ -39,13 +39,9 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 
 **Recommended fix:** Remove both classes. If needed in the future, they can be re-added.
 
-#### 5. Missing `__repr__` on some classes
+#### ~~5. Missing `__repr__` on some classes~~ FIXED
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**Partially fixed since last audit:** `Event` (`event_base.py:153`), `EventGroup` (`group.py:247`), `VcsCommitEvent` (`vcs.py:78`), and all `OccurSet` subclasses (`occur.py`) now have `__repr__`; `EventContainer` has `__str__` (`event_container.py:167`).
-
-**Remaining:** `EventNotifier` and `EventRule` (and their subclasses) still fall back to the default object representation, making debug logs less readable.
-
-**Recommended fix:** Add `__repr__` returning e.g. `f"{self.__class__.__name__}(id={self.id})"` to `EventNotifier` and `EventRule`.
+**Fix:** `EventNotifier` (`notifier_base.py`) now has `__repr__` returning `EventNotifier(event=...)`, and `EventRule` (`rules/rule_base.py`) has `__repr__` returning `EventRule(parent=...)`; subclasses inherit both. Rules and notifiers have no `id` attribute, so the reprs use `event`/`parent` instead. Covered by `test_event_notifier_repr` (`events_test.py`) and `test_rule_repr` (`rules_test.py`).
 
 #### 6. `Event.create()` claims to attach the rule but only constructs it
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)

@@ -1002,3 +1002,12 @@ def test_event_text_and_icon_helpers(fs: FileSystem) -> None:
 	assert event.getText() == "sum" + eventTextSep + "desc"
 	assert event.getShownDescription() == "desc"
 	assert event.getIcon() is None or isinstance(event.getIcon(), str)
+
+
+def test_event_notifier_repr(fs: FileSystem) -> None:
+	"""EventNotifier.__repr__ shows the class name and its event."""
+	from scal3.event_lib.notifiers import AlarmNotifier
+
+	event = createEvent(fs, "custom")
+	notifier = AlarmNotifier(event)
+	assert repr(notifier) == f"AlarmNotifier(event={event!r})"

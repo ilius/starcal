@@ -53,6 +53,9 @@ class EventNotifier(SObj, ABC):
 		self.event = event
 		self.extraMessage = ""
 
+	def __repr__(self) -> str:
+		return f"{self.__class__.__name__}(event={self.event!r})"
+
 	def _getCalType(self) -> int:
 		"""Return the calendar type of the event being notified."""
 		return self.event.calType

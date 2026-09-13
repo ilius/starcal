@@ -408,3 +408,11 @@ def test_copy_rules_dict_deep_copies(fs: FileSystem) -> None:
 	weekDay = cast("WeekDayEventRule", rulesDict["weekDay"])
 	weekDay.weekDayList.append(5)
 	assert cast("WeekDayEventRule", event.rulesDict["weekDay"]).weekDayList == [1, 3]
+
+
+def test_rule_repr(fs: FileSystem) -> None:
+	"""EventRule.__repr__ shows the class name and its parent container."""
+	event = createEvent(fs, [("weekDay", [1, 3])])
+	rule = event.getRule("weekDay")
+	assert rule is not None
+	assert repr(rule) == f"WeekDayEventRule(parent={event!r})"
