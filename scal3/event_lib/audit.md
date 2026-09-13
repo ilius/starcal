@@ -42,11 +42,10 @@ No default generation for Gregorian or other calendar types.
 
 **Recommended fix:** Add Gregorian defaults or raise a clear error for unsupported calendar types.
 
-#### 6. `NotImplementedError` / silent no-op used as abstract method signal
+#### ~~6. `NotImplementedError` / silent no-op used as abstract method signal~~ FIXED
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)
-**Files:** `event_base.py` (`index`, `event_base.py:434-436`), `notifier_base.py` (`notify` — now a silent `pass`, no longer `NotImplementedError`, `notifier_base.py:58-59`), `rules/rule_base.py` (`getServerString`, `rule_base.py:56-58`), `vcs_base.py` (`load`, `vcs_base.py:224-231`)
 
-**Recommended fix:** Make base classes inherit from `abc.ABC` and mark methods with `@abstractmethod`. This gives clearer error messages ("Can't instantiate abstract class X with abstract method Y") at instantiation time rather than at call time. The silent `pass` in `EventNotifier.notify()` is arguably worse than raising — a subclass that forgets to override it silently does nothing.
+`EventNotifier` and `EventRule` now inherit from `abc.ABC`, and `notify()` / `getServerString()` are `@abstractmethod` — a subclass that forgets to override them fails at instantiation instead of silently no-op'ing. The dead `Event.index()` stub was removed (the real `index()` lives on `EventContainer`, `event_container.py:310`), and the dead `VcsEpochBaseEvent.load()` stub was removed (VCS events are virtual and never loaded; `Event` itself defines no `load`). `AllDayEventRule.getServerString()` returns `""` (matches every day, no values) so its unregistered abstract bases remain instantiable.
 
 #### 7. `rule_container.py:copyRulesDict` creates shallow copies
 **Priority:** 3/5 — **Complexity:** 2/5 (score: 1)

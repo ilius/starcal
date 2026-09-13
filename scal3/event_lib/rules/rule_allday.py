@@ -44,6 +44,10 @@ class AllDayEventRule(EventRule):
 		"""Return True if the given Julian day matches this rule."""
 		return True
 
+	def getServerString(self) -> str:
+		"""Return an empty string: this rule matches every day and has no values."""
+		return ""
+
 	def calcOccurrence(
 		self,
 		startJd: int,

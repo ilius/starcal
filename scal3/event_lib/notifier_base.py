@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
+
 from scal3 import logger
 
 log = logger.get()
@@ -36,7 +38,7 @@ __all__ = ["EventNotifier"]
 
 # Should not be registered, or instantiate directly
 @classes.notifier.setMain
-class EventNotifier(SObj):
+class EventNotifier(SObj, ABC):
 	"""Base class for all event notification mechanisms."""
 
 	WidgetClass: Any
@@ -55,5 +57,6 @@ class EventNotifier(SObj):
 		"""Return the calendar type of the event being notified."""
 		return self.event.calType
 
+	@abstractmethod
 	def notify(self, finishFunc: Callable[[], None]) -> None:
 		"""Trigger the notification; implemented by subclasses."""

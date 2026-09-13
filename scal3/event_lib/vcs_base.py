@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from scal3 import logger
 from scal3.utils import toStr
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 	from collections.abc import Callable, Sequence
 
 	from scal3.event_lib.pytypes import EventType, OccurSetType
-	from scal3.filesystem import FileSystem
 
 	from .pytypes import EventGroupType
 
@@ -231,16 +230,6 @@ class VcsEpochBaseEvent(Event):
 	readOnly = True
 	params = Event.params + ["epoch"]
 	epoch: int | None = None
-
-	# FIXME
-	@classmethod
-	def load(
-		cls,
-		ident: int,
-		fs: FileSystem,
-	) -> Self:
-		"""VCS events are virtual and are never loaded from disk."""
-		raise NotImplementedError
 
 	def __bool__(self) -> bool:
 		return True

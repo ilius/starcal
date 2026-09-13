@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
+
 from scal3 import logger
 
 log = logger.get()
@@ -38,7 +40,7 @@ __all__ = ["EventRule"]
 
 # Should not be registered, or instantiate directly
 @classes.rule.setMain
-class EventRule(SObjBase):
+class EventRule(SObjBase, ABC):
 	"""Base class for all event rules that define how events recur or appear."""
 
 	name = ""
@@ -53,9 +55,9 @@ class EventRule(SObjBase):
 	params: list[str] = []
 	WidgetClass: Any
 
+	@abstractmethod
 	def getServerString(self) -> str:
 		"""Return a server-compatible string representation of this rule."""
-		raise NotImplementedError
 
 	def __bool__(self) -> bool:
 		return True

@@ -433,10 +433,6 @@ class Event(HistoryEventObjBinaryModel, RuleContainer, WithIcon):
 		iconAbsToRelativelnData(data)
 		return data
 
-	def index(self, eid: int) -> int:
-		"""Return the positional index of an event ID in the container."""
-		raise NotImplementedError
-
 	def setDict(self, data: dict[str, Any]) -> None:
 		"""Populate this event from a dictionary, skipping if already set."""
 		if self._dataIsSet:
