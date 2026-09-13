@@ -32,7 +32,13 @@ class Handler:
 		self._notif: EventNotificationManager | None = None
 
 	def init(self, fs: FileSystem) -> None:
-		"""Initialize all subsystems from the given filesystem backend."""
+		"""
+		Load accounts, groups, trash, and the notifier from the given
+		filesystem backend.
+
+		Requires ``event_lib.init(fs)`` to have been called first: it creates the
+		data directories and sets up ``state.info`` and ``state.lastIds``.
+		"""
 		self._fs = fs
 		self._accounts = EventAccountsHolder.load(0, fs=fs)
 		self._groups = EventGroupsHolder.load(0, fs=fs)

@@ -47,13 +47,9 @@ Both NamedTuple classes are defined but never imported or used anywhere in the c
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
 **Fix:** `Event.create()` docstring now says "Create and return", clarifying that callers must attach the rule separately (e.g. via `addRule` or `checkAndAddRule`). Auto-attaching inside `create()` was avoided because `custom.py:202` uses it purely for dependency-checking.
 
-#### 7. `Handler.init()` does not initialize all subsystems
+#### ~~7. `Handler.init()` does not initialize all subsystems~~ FIXED
 **Priority:** 1/5 — **Complexity:** 1/5 (score: 0)
-**File:** `handler.py:34-46`
-
-Docstring says "Initialize all subsystems", but directories, `state.info`, and `state.lastIds` must be set up by `event_lib.init()` first; `Handler.init()` only loads accounts, groups, trash, and the notifier.
-
-**Recommended fix:** Reconcile responsibilities — either perform full init here or document the prerequisite and narrow the docstring.
+**Fix:** `Handler.init()` (`handler.py:34`) docstring now states it loads accounts, groups, trash, and the notifier, and documents that `event_lib.init(fs)` must run first to create the data directories and set up `state.info` and `state.lastIds`. Full init stays in `event_lib.init()` to avoid a circular import (the module-level `ev = Handler()` in `event_lib/__init__.py`).
 
 #### 8. `typing_test.py` is not a proper test
 **Priority:** 2/5 — **Complexity:** 3/5 (score: -1)
