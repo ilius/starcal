@@ -1183,7 +1183,7 @@ msgstr ""
 
 msgid "Monthly Event"
 msgstr ""
-"رویداد ماهیانه"
+"رویداد ماهانه"
 
 msgid "Weekly Event"
 msgstr ""
