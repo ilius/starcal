@@ -77,7 +77,7 @@ Hardcoded check for `obituary.png` -> `green_clover.svg`.
 
 **Recommended fix:** Use a single `except (FileNotFoundError, OSError) as e:` with a descriptive log message.
 
-#### 12. `event_ics.py` manually constructs ICS format
+#### ~~12. `event_ics.py` manually constructs ICS format~~ FIXED
 **Priority:** 3/5 — **Complexity:** 3/5 (score: 0)
 **File:** `event_ics.py:109 lines`
 String concatenation for ICS is fragile. No escaping of special characters beyond `\n` -> `\\n`, so exported events can be rejected by other calendar apps.

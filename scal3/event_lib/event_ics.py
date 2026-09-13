@@ -33,7 +33,21 @@ from .occur import (
 if TYPE_CHECKING:
 	from .pytypes import EventType
 
-__all__ = ["exportEventToIcsFileObj"]
+__all__ = ["escapeIcsText", "exportEventToIcsFileObj"]
+
+
+def escapeIcsText(value: str) -> str:
+	"""
+	Escape a TEXT value per RFC 5545 section 3.3.11.
+
+	Backslash must be escaped first, then semicolon and comma, then newline.
+	"""
+	return (
+		value.replace("\\", "\\\\")
+		.replace(";", "\\;")
+		.replace(",", "\\,")
+		.replace("\n", "\\n")
+	)
 
 
 def exportEventToIcsFileObj(
@@ -51,10 +65,10 @@ def exportEventToIcsFileObj(
 				"CREATED:" + currentTimeStamp,
 				"DTSTAMP:" + currentTimeStamp,  # FIXME
 				"LAST-MODIFIED:" + currentTimeStamp,
-				"SUMMARY:" + event.autoSummary.replace("\n", "\\n"),
-				"DESCRIPTION:" + event.autoDescription.replace("\n", "\\n"),
+				"SUMMARY:" + escapeIcsText(event.autoSummary),
+				"DESCRIPTION:" + escapeIcsText(event.autoDescription),
 				# "CATEGORIES:" + self.title,  # FIXME
-				"CATEGORIES:" + event.name,  # FIXME
+				"CATEGORIES:" + escapeIcsText(event.name),  # FIXME
 				"LOCATION:",
 				"SEQUENCE:0",
 				"STATUS:CONFIRMED",
@@ -68,7 +82,7 @@ def exportEventToIcsFileObj(
 	if icsData is not None:
 		vevent = commonText
 		for key, value in icsData:
-			vevent += key + ":" + value + "\n"
+			vevent += key + ":" + escapeIcsText(value) + "\n"
 		vevent += "END:VEVENT\n"
 		fp.write(vevent)
 		return
