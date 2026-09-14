@@ -1,6 +1,6 @@
 # Breaking Up Python Files Over 800 LOC
 
-## List of files over 800 LOC (11)
+## List of files over 800 LOC (9)
 
 | LOC | File | What it holds |
 |----:|------|---------------|
@@ -12,9 +12,12 @@
 | 940 | `scal3/ui_gtk/timeline_prefs.py` | single `TimeLinePreferencesWindow` |
 | 887 | `scal3/ui_gtk/event/search_events.py` | single `EventSearchWindow` |
 | 848 | `scal3/ui_gtk/option_ui_extra.py` | 6 independent `OptionUI` classes |
-| 848 | `scal3/plugin_man.py` | `BasePlugin` + Holiday/YearlyText/Ics + loader |
-| 835 | `scal3/event_lib/group.py` | `EventGroup` |
 | 803 | `scal3/ui_gtk/mainwin_items/labelBox.py` | labels + button boxes + `CalObj` |
+
+Removed from this list (no longer over 800 LOC):
+
+- `scal3/event_lib/group.py` (835 → 780) → import/export + `listToDict`
+  moved out; occurrence/cache + search extraction still pending
 
 ## Proposed plan (by technique)
 
@@ -22,8 +25,6 @@
 
 Module → dir + `__init__.py` re-export; all existing imports keep working
 
-- **`plugin_man.py`** → package: `base.py`, `holiday.py`, `yearly_text.py`,
-  `ics.py`, `loader.py`.
 - **`labelBox.py`** → `labels.py`, `buttons.py`, `calobj.py`.
 
 ### 2. Split independent classes into sibling modules
@@ -55,8 +56,9 @@ Most invasive; the class must either inherit mixins or call moved helpers.
   into per-page modules.
 - **`search_events.py`** — split search/export logic vs. context-menu /
   result-UI mixins.
-- **`group.py`** — occurrence/cache + search + import/export data into a
-  helper module.
+- **`group.py`** — occurrence/cache + search into a helper module
+  (import/export data already moved to `groups_import.py`, `listToDict` to
+  `event_lib/utils.py`; now 780 LOC).
 
 ## Notes
 
@@ -69,11 +71,10 @@ Most invasive; the class must either inherit mixins or call moved helpers.
 
 ## Suggested order
 
-1. Low-risk first: `plugin_man.py`, `labelBox.py`,
-   `option_ui_extra.py`.
-2. Medium: `starcal_mainwin.py`, `day_cal.py`, `timeline.py`, `group.py`,
+1. Low-risk first: `labelBox.py`, `option_ui_extra.py`.
+1. Medium: `starcal_mainwin.py`, `day_cal.py`, `timeline.py`, `group.py`,
    `search_events.py`, `timeline_prefs.py`.
-3. Last: `manager.py` (the biggest and most invasive).
+1. Last: `manager.py` (the biggest and most invasive).
 
 ## Future: conf.py namespace classes
 
