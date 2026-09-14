@@ -46,6 +46,7 @@ from .groups_import import (
 	importGroupEvents,
 )
 from .register import classes
+from .utils import listToDict
 
 if TYPE_CHECKING:
 	from collections.abc import Iterator, Sequence
@@ -69,21 +70,6 @@ __all__ = [
 ]
 
 groupsDir = join("event", "groups")
-
-
-def listToDict(value: Any) -> dict[Any, Any]:
-	"""Convert a list of (key, value) pairs into a dict, passing dicts through."""
-	if not isinstance(value, list):
-		assert isinstance(value, dict)
-		return value
-	valueDict = {}
-	for item in value:
-		if len(item) != 2:
-			continue
-		if not isinstance(item[0], tuple | list):
-			continue
-		valueDict[tuple(item[0])] = item[1]
-	return valueDict
 
 
 @classes.group.register
