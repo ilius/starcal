@@ -43,6 +43,7 @@ from .event_container import EventContainer
 from .groups_import import (
 	EventGroupsImportResult,
 	ImportMode,
+	importGroupEvents,
 )
 from .register import classes
 
@@ -721,8 +722,8 @@ class EventGroup(EventContainer):
 		del data["idList"]
 		return data
 
-	def _loadEventIdByUuid(self) -> dict[str, int]:
-		"""Build and return a mapping from event UUIDs to event IDs."""
+	def updateIdByUuid(self) -> dict[str, int]:
+		"""Populate the group's event UUID-to-ID cache and return it."""
 		existingIds = set(self._idByUuid.values())
 		for eid in self.idList:
 			if eid in existingIds:
@@ -749,49 +750,7 @@ class EventGroup(EventContainer):
 		"""The caller must call group.save() after this."""
 		if not self.dataIsSet or importMode == ImportMode.OVERRIDE_MODIFIED:
 			self.setDict(data)
-
-		res = EventGroupsImportResult()
-		gid = self.id
-		assert gid is not None
-
-		if importMode == ImportMode.APPEND:
-			for eventData in data["events"]:
-				event = self.appendByData(eventData)
-				assert event.id is not None
-				res.newEventIds.add((gid, event.id))
-			return res
-
-		idByUuid = self._loadEventIdByUuid()
-
-		for eventData in data["events"]:
-			modified = eventData.get("modified")
-			uuid = eventData.get("uuid")
-			if modified is None or uuid is None:
-				event = self.appendByData(eventData)
-				assert event.id is not None
-				res.newEventIds.add((gid, event.id))
-				continue
-
-			eid = idByUuid.get(uuid)
-			if eid is None:
-				log.debug(f"appending event uuid = {uuid}")
-				event = self.appendByData(eventData)
-				assert event.id is not None
-				res.newEventIds.add((gid, event.id))
-				continue
-
-			if importMode != ImportMode.OVERRIDE_MODIFIED:
-				# assumed ImportMode.SKIP_MODIFIED
-				log.debug(f"skipping to override existing uuid={uuid!r}, eid={eid!r}")
-				continue
-
-			event = self.getEvent(eid)
-			event.setDictOverride(eventData)
-			event.save()
-			res.modifiedEventIds.add((gid, eid))
-			log.debug(f"overridden existing uuid={uuid!r}, eid={eid!r}")
-
-		return res
+		return importGroupEvents(self, data["events"], importMode)
 
 	def _searchTimeFilter(self, conds: EventSearchConditionDict) -> Iterator[int]:
 		if not ("time_from" in conds or "time_to" in conds):
