@@ -53,7 +53,6 @@ from scal3.ui_gtk.starcal_funcs import (
 	childButtonPress,
 	liveConfChanged,
 	onMainButtonPress,
-	onResizeFromMenu,
 	onScreenSizeChange,
 	onToggleRightPanel,
 )
@@ -70,7 +69,6 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk.day_info import DayInfoDialog
 	from scal3.ui_gtk.export import ExportDialog
 	from scal3.ui_gtk.layout import WinLayoutBox
-	from scal3.ui_gtk.menuitems import ItemCallback
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.right_panel import MainWinRightPanel
 	from scal3.ui_gtk.selectdate import SelectDateDialog
@@ -87,14 +85,7 @@ class MainWin(CalObjWidget):
 	desc = _("Main Window")
 	Sig: ClassVar[type[SignalHandlerType]] = SignalHandler
 	timeout = 1  # second
-	# attributes set by the MainWinMenu / MainWinStatusIcon helpers
-	menuMain: gtk.Menu | None
-	menuCell: gtk.Menu | None
-	menuItemsCallback: dict[str, ItemCallback]
 	statusIconMode: int
-	sicon: Any | None
-	xfceApplet: Any | None
-	statusIconPopupMenu: gtk.Menu | None
 
 	def autoResize(self) -> None:
 		self.win.resize(conf.winWidth.v, conf.winHeight.v)
@@ -189,13 +180,23 @@ class MainWin(CalObjWidget):
 		# ------------- Building About Dialog
 		self.aboutDialog: AboutDialog | None = None
 		# ---------------
-		self.menu = MainWinMenu(self)
+		self.menu = MainWinMenu(
+			self,
+			win=self.win,
+			w=self.w,
+			eventMan=self.eventManInternal,
+		)
 		# -----
 		win.set_keep_above(conf.winKeepAbove.v)
 		if conf.winSticky.v:
 			win.stick()
 		# ------------------------------------------------------------
-		self.statusIcon = MainWinStatusIcon(self)
+		self.statusIcon = MainWinStatusIcon(
+			self,
+			win=self.win,
+			w=self.w,
+			statusIconMode=self.statusIconMode,
+		)
 		listener.dateChange.add(self)
 		# ---------
 		self.w.connect("delete-event", self.onDeleteEvent)
@@ -380,9 +381,6 @@ class MainWin(CalObjWidget):
 	) -> bool:
 		return childButtonPress(self.win, self.menuMainCreate, widget, gevent)
 
-	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
-		return onResizeFromMenu(self.menuMain, self.win, gevent)
-
 	def changeDate(self, year: int, month: int, day: int) -> None:
 		ui.cells.changeDate(year, month, day)
 		self.broadcastDateChange()
@@ -453,6 +451,9 @@ class MainWin(CalObjWidget):
 	def onStatusIconClick(self, _w: OptWidget = None) -> None:
 		self.statusIcon.onClick(_w)
 
+	def hasStatusIcon(self) -> bool:
+		return self.statusIcon.sicon is not None
+
 	def onDeleteEvent(
 		self,
 		_w: OptWidget = None,
@@ -462,12 +463,13 @@ class MainWin(CalObjWidget):
 		# FIXME: ^ gives bad position sometimes
 		# liveConfChanged()
 		# log.debug(conf.winX.v, conf.winY.v)
+		sicon = self.statusIcon.sicon
 		if ui.dayCalWin and ui.dayCalWin.is_visible():
 			self.hide()
-		elif self.statusIconMode == 0 or not self.sicon:
+		elif self.statusIconMode == 0 or not sicon:
 			self.quit()
 		elif self.statusIconMode > 1:
-			if self.sicon.is_embedded() or (ui.dayCalWin and ui.dayCalWin.is_visible()):
+			if sicon.is_embedded() or (ui.dayCalWin and ui.dayCalWin.is_visible()):
 				self.hide()
 			else:
 				self.quit()
@@ -478,11 +480,12 @@ class MainWin(CalObjWidget):
 		# FIXME: ^ gives bad position sometimes
 		# liveConfChanged()
 		# log.debug(conf.winX.v, conf.winY.v)
+		sicon = self.statusIcon.sicon
 		if self.statusIconMode == 0:
 			self.quit()
 		elif self.statusIconMode > 1:  # noqa: SIM102
-			assert self.sicon is not None
-			if self.sicon.is_embedded():
+			assert sicon is not None
+			if sicon.is_embedded():
 				self.hide()
 
 	# Callable[[int, FrameType | None], Any] | int | Handlers | None
@@ -501,11 +504,13 @@ class MainWin(CalObjWidget):
 			ui.saveLiveConf()
 		except Exception:
 			log.exception("")
-		if self.statusIconMode > 1 and self.sicon:
-			self.sicon.set_visible(False)
+		sicon = self.statusIcon.sicon
+		if self.statusIconMode > 1 and sicon:
+			sicon.set_visible(False)
 			# ^ needed for windows. before or after main_quit ?
-		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
-			self.xfceApplet.set_visible(False)
+		xfceApplet = self.statusIcon.xfceApplet
+		if xfceApplet is not None and xfceApplet is not sicon:
+			xfceApplet.set_visible(False)
 		# ------
 		t0 = perf_counter()
 		core.stopRunningThreads()
@@ -722,12 +727,7 @@ class MainWin(CalObjWidget):
 		self.exportShow(year, month)
 
 	def onConfigChange(self) -> None:
-		if self.menuMain:
-			self.menuMain.destroy()
-			self.menuMain = None
-		if self.menuCell:
-			self.menuCell.destroy()
-			self.menuCell = None
+		self.menu.destroyMenus()
 		super().onConfigChange()
 		self.autoResize()
 		# self.w.set_property("skip-taskbar-hint", not conf.winTaskbar.v)

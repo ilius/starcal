@@ -53,19 +53,35 @@ __all__ = ["MainWinStatusIcon"]
 class MainWinStatusIcon:
 	"""Status-icon / tray icon handling for MainWin."""
 
-	def __init__(self, mainWin: MainWin) -> None:
+	win: gtk.ApplicationWindow
+	w: gtk.Widget
+	statusIconMode: int
+	sicon: Any | None
+	xfceApplet: Any | None
+	statusIconPopupMenu: gtk.Menu | None
+
+	def __init__(
+		self,
+		mainWin: MainWin,
+		win: gtk.ApplicationWindow,
+		w: gtk.Widget,
+		statusIconMode: int,
+	) -> None:
 		self.mainWin = mainWin
-		mainWin.statusIconPopupMenu = None
-		mainWin.sicon = create_status_icon(mainWin, mainWin.statusIconMode)
-		if mainWin.statusIconMode == 3:
-			mainWin.xfceApplet = mainWin.sicon
-		elif mainWin.statusIconMode == 2:
+		self.win = win
+		self.w = w
+		self.statusIconMode = statusIconMode
+		self.statusIconPopupMenu = None
+		self.sicon = create_status_icon(mainWin, statusIconMode)
+		if statusIconMode == 3:
+			self.xfceApplet = self.sicon
+		elif statusIconMode == 2:
 			# serve the xfce applet next to the tray/status icon
 			from scal3.ui_gtk.starcal_xfce_applet import XfceAppletStatusIcon
 
-			mainWin.xfceApplet = XfceAppletStatusIcon(mainWin)
+			self.xfceApplet = XfceAppletStatusIcon(mainWin)
 		else:
-			mainWin.xfceApplet = None
+			self.xfceApplet = None
 
 	def getMainWinMenuItem(self) -> gtk.MenuItem:
 		item = gtk.MenuItem(label=_("Main Window"))
@@ -134,8 +150,7 @@ class MainWinStatusIcon:
 		]
 
 	def popup(self, sicon: gtk.StatusIcon, button: int, etime: int) -> None:
-		mainWin = self.mainWin
-		assert isinstance(mainWin.sicon, gtk.StatusIcon), f"{mainWin.sicon=}"
+		assert isinstance(self.sicon, gtk.StatusIcon), f"{self.sicon=}"
 		menu = Menu()
 		if os.sep == "\\":
 			from scal3.ui_gtk.windows import setupMenuHideOnLeave
@@ -157,9 +172,9 @@ class MainWinStatusIcon:
 		else:
 			y1 = geo.index(1)
 		try:  # new gi versions
-			y = gtk.StatusIcon.position_menu(menu, 0, 0, mainWin.sicon)[1]  # type: ignore[call-arg, arg-type]
+			y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]  # type: ignore[call-arg, arg-type]
 		except TypeError:  # old gi versions
-			y = gtk.StatusIcon.position_menu(menu, mainWin.sicon)[1]
+			y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
 		if y1 > 0 and y < y1:  # taskbar is on bottom
 			items.reverse()
 		get_pos_func = gtk.StatusIcon.position_menu
@@ -168,19 +183,18 @@ class MainWinStatusIcon:
 		menu.show_all()
 		# log.debug("statusIconPopup", button, etime)
 		self._keepMenu(menu)
-		menu.popup(None, None, get_pos_func, mainWin.sicon, button, etime)
-		# mainWin.sicon.do_popup_menu(mainWin.sicon, button, etime)
+		menu.popup(None, None, get_pos_func, self.sicon, button, etime)
+		# self.sicon.do_popup_menu(self.sicon, button, etime)
 		ui.updateFocusTime()
 
 	def _keepMenu(self, menu: gtk.Menu) -> None:
 		# keep a reference so the menu is not garbage-collected while shown
-		self.mainWin.statusIconPopupMenu = menu
+		self.statusIconPopupMenu = menu
 		menu.connect("deactivate", self._onMenuDeactivate)
 
 	def _onMenuDeactivate(self, menu: gtk.Menu) -> None:
-		mainWin = self.mainWin
-		if getattr(mainWin, "statusIconPopupMenu", None) is menu:
-			mainWin.statusIconPopupMenu = None
+		if getattr(self, "statusIconPopupMenu", None) is menu:
+			self.statusIconPopupMenu = None
 
 	def popupAtPointer(self, button: int = 3) -> None:
 		menu = Menu()
@@ -205,8 +219,7 @@ class MainWinStatusIcon:
 	def updateIcon(self, ddate: tuple[int, int, int]) -> None:  # FIXME
 		from scal3.utils import toBytes
 
-		mainWin = self.mainWin
-		assert mainWin.sicon is not None
+		assert self.sicon is not None
 
 		imagePath = (
 			conf.statusIconImageHoli.v
@@ -261,21 +274,20 @@ class MainWinStatusIcon:
 		# stream = Gio.MemoryInputStream.new_from_bytes(GLib.Bytes.new(data))
 		# pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, None)
 
-		mainWin.sicon.set_from_pixbuf(pixbuf)
-		if mainWin.xfceApplet is not None and mainWin.xfceApplet is not mainWin.sicon:
-			mainWin.xfceApplet.set_from_pixbuf(pixbuf)
+		self.sicon.set_from_pixbuf(pixbuf)
+		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
+			self.xfceApplet.set_from_pixbuf(pixbuf)
 
 	def updateTooltip(self) -> None:
-		mainWin = self.mainWin
 		try:
-			sicon = mainWin.sicon
+			sicon = self.sicon
 		except AttributeError:
 			return
 		tooltip = getStatusIconTooltip()
 		if sicon is not None:
 			sicon.set_tooltip_text(tooltip)
 		try:
-			xfceApplet = mainWin.xfceApplet
+			xfceApplet = self.xfceApplet
 		except AttributeError:
 			return
 		if xfceApplet is not None and xfceApplet is not sicon:
@@ -286,10 +298,9 @@ class MainWinStatusIcon:
 		gdate: tuple[int, int, int] | None = None,
 		checkStatusIconMode: bool = True,
 	) -> None:
-		mainWin = self.mainWin
-		if mainWin.sicon is None:
+		if self.sicon is None:
 			return
-		if checkStatusIconMode and mainWin.statusIconMode < 1:
+		if checkStatusIconMode and self.statusIconMode < 1:
 			return
 		if gdate is None:
 			gdate = localtime()[:3]
@@ -305,32 +316,31 @@ class MainWinStatusIcon:
 			)
 		# -------
 		placeholder = join(pixDir, "starcal-24.png")
-		if mainWin.sicon is not None:
-			mainWin.sicon.set_from_file(placeholder)
-		if mainWin.xfceApplet is not None and mainWin.xfceApplet is not mainWin.sicon:
-			mainWin.xfceApplet.set_from_file(placeholder)
+		if self.sicon is not None:
+			self.sicon.set_from_file(placeholder)
+		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
+			self.xfceApplet.set_from_file(placeholder)
 		self.updateIcon(ddate)
 		# -------
 		self.updateTooltip()
 
 	def onClick(self, _w: OptWidget = None) -> None:
-		mainWin = self.mainWin
-		if mainWin.w.get_property("visible"):
-			# conf.winX.v, conf.winY.v = mainWin.w.get_position()
+		if self.w.get_property("visible"):
+			# conf.winX.v, conf.winY.v = self.w.get_position()
 			# FIXME: ^ gives bad position sometimes
 			# liveConfChanged()
 			# log.debug(conf.winX.v, conf.winY.v)
-			mainWin.hide()
+			self.mainWin.hide()
 		else:
-			mainWin.win.move(conf.winX.v, conf.winY.v)
+			self.win.move(conf.winX.v, conf.winY.v)
 			# every calling of .hide() and .present(), makes dialog not on top
 			# (forgets being on top)
-			mainWin.win.set_keep_above(conf.winKeepAbove.v)
+			self.win.set_keep_above(conf.winKeepAbove.v)
 			if conf.winSticky.v:
-				mainWin.win.stick()
-			mainWin.win.deiconify()
-			mainWin.win.present()
-			mainWin.focusIn()
+				self.win.stick()
+			self.win.deiconify()
+			self.win.present()
+			self.mainWin.focusIn()
 			# in LXDE, the window was not focused without self.focusIn()
 			# while worked in Xfce and GNOME.
 

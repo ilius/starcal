@@ -167,7 +167,7 @@ def main() -> None:
 	# 	sys.exit(0)
 	if should_present_main_window(
 		action,
-		mainWin.sicon is not None,
+		mainWin.hasStatusIcon(),
 		conf.showDesktopWidget.v,
 	):
 		mainWin.win.present()

@@ -34,14 +34,17 @@ from scal3.ui_gtk.menuitems import (
 from scal3.ui_gtk.starcal_funcs import (
 	copyDateGetCallback,
 	menuMainPopup,
+	onResizeFromMenu,
 	yearWheelShow,
 )
 
 if TYPE_CHECKING:
+	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.mainwin import MainWin
 	from scal3.ui_gtk.menuitems import ItemCallback
 	from scal3.ui_gtk.pytypes import CustomizableCalObjType
 	from scal3.ui_gtk.signals import SignalHandlerType
+	from scal3.ui_gtk.starcal_classes import MainWinEventMan
 
 __all__ = ["MainWinMenu"]
 
@@ -49,12 +52,28 @@ __all__ = ["MainWinMenu"]
 class MainWinMenu:
 	"""Main menu and cell popup menu building for MainWin."""
 
-	def __init__(self, mainWin: MainWin) -> None:
+	win: gtk.ApplicationWindow
+	w: gtk.Widget
+	eventMan: MainWinEventMan
+	menuMain: gtk.Menu | None
+	menuCell: gtk.Menu | None
+	menuItemsCallback: dict[str, ItemCallback]
+
+	def __init__(
+		self,
+		mainWin: MainWin,
+		win: gtk.ApplicationWindow,
+		w: gtk.Widget,
+		eventMan: MainWinEventMan,
+	) -> None:
 		self.mainWin = mainWin
-		mainWin.menuMain = None
-		mainWin.menuCell = None
-		mainWin.menuItemsCallback = self.createMenuItemsCallback()
-		assert sorted(mainWin.menuItemsCallback) == sorted(menuMainItemDefs)
+		self.win = win
+		self.w = w
+		self.eventMan = eventMan
+		self.menuMain = None
+		self.menuCell = None
+		self.menuItemsCallback = self.createMenuItemsCallback()
+		assert sorted(self.menuItemsCallback) == sorted(menuMainItemDefs)
 
 	def createMenuItemsCallback(self) -> dict[str, ItemCallback]:
 		mainWin = self.mainWin
@@ -109,10 +128,10 @@ class MainWinMenu:
 				onActivate=mainWin.dayInfoShowFromMenu,
 			),
 		)
-		addToItem = mainWin.eventManInternal.getEventAddToMenuItem()
+		addToItem = self.eventMan.getEventAddToMenuItem()
 		if addToItem is not None:
 			menu.add(addToItem)
-		mainWin.eventManInternal.addEditEventCellMenuItems(menu)
+		self.eventMan.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(
 			ImageMenuItem(
@@ -219,34 +238,36 @@ class MainWinMenu:
 		menu.add(moreItem)
 		# ----
 		menu.show_all()
-		mainWin.menuCell = menu
-		popup_menu_at(menu, widget, x, y, root=mainWin.w, rtl=rtl)
+		self.menuCell = menu
+		popup_menu_at(menu, widget, x, y, root=self.w, rtl=rtl)
 		ui.updateFocusTime()
+
+	def onResizeFromMenu(self, _w: gtk.Widget, gevent: gdk.EventButton) -> bool:
+		return onResizeFromMenu(self.menuMain, self.win, gevent)
 
 	# TODO: customize list of main menu items (disable/enable/re-order)
 	def mainCreate(self) -> gtk.Menu:
-		mainWin = self.mainWin
-		if mainWin.menuMain:
-			return mainWin.menuMain
+		if self.menuMain:
+			return self.menuMain
 		menu = gtk.Menu(reserve_toggle_size=False)
 		# ----
 		menu.add(
 			ResizeMenuItem(
 				label=_("Resize"),
-				onButtonPress=mainWin.onResizeFromMenu,
+				onButtonPress=self.onResizeFromMenu,
 			)
 		)
 		for name, itemDict in menuMainItemDefs.items():
 			menu.add(
 				itemDict["cls"](
 					label=itemDict["label"],
-					onActivate=mainWin.menuItemsCallback[name],
+					onActivate=self.menuItemsCallback[name],
 					**itemDict["args"],
 				)
 			)
 		# -------
 		menu.show_all()
-		mainWin.menuMain = menu
+		self.menuMain = menu
 		return menu
 
 	# handler for "popup-main-menu" signal
@@ -257,21 +278,29 @@ class MainWinMenu:
 		y: int,
 		item: CustomizableCalObjType,
 	) -> None:
-		menuMainPopup(self.mainWin.w, self.mainWin.menuMainCreate, x, y, item)
+		menuMainPopup(self.w, self.mainCreate, x, y, item)
+
+	def destroyMenus(self) -> None:
+		if self.menuMain:
+			self.menuMain.destroy()
+			self.menuMain = None
+		if self.menuCell:
+			self.menuCell.destroy()
+			self.menuCell = None
 
 	def onKeepAboveClick(self, check: gtk.Widget) -> None:
 		assert isinstance(check, CheckMenuItem)
 		act = check.get_active()
-		self.mainWin.win.set_keep_above(act)
+		self.win.set_keep_above(act)
 		conf.winKeepAbove.v = act
 		ui.saveLiveConf()
 
 	def onStickyClick(self, check: gtk.Widget) -> None:
 		assert isinstance(check, CheckMenuItem)
 		if check.get_active():
-			self.mainWin.win.stick()
+			self.win.stick()
 			conf.winSticky.v = True
 		else:
-			self.mainWin.win.unstick()
+			self.win.unstick()
 			conf.winSticky.v = False
 		ui.saveLiveConf()
