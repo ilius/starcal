@@ -1,23 +1,16 @@
 # Breaking Up Python Files Over 800 LOC
 
-## List of files over 800 LOC (9)
+## List of files over 800 LOC
 
 | LOC | File | What it holds |
 |----:|------|---------------|
-| 2956 | `scal3/ui_gtk/event/manager.py` | `EventManagerDialog` — one ~2750-LOC class |
 | 1465 | `scal3/ui/conf.py` | flat module: 181 `Option` definitions with docstrings |
-| 1226 | `scal3/ui_gtk/starcal_mainwin.py` | `MainWin` class |
 | 1090 | `scal3/ui_gtk/day_cal.py` | `DayCal` class |
 | 1074 | `scal3/ui_gtk/timeline.py` | `TimeLine` class + small `TimeLineWindow` |
 | 940 | `scal3/ui_gtk/timeline_prefs.py` | single `TimeLinePreferencesWindow` |
 | 887 | `scal3/ui_gtk/event/search_events.py` | single `EventSearchWindow` |
-| 848 | `scal3/ui_gtk/option_ui_extra.py` | 6 independent `OptionUI` classes |
+| 848 | `scal3/ui_gtk/option_ui_extra.py` | 7 independent `OptionUI` classes |
 | 803 | `scal3/ui_gtk/mainwin_items/labelBox.py` | labels + button boxes + `CalObj` |
-
-Removed from this list (no longer over 800 LOC):
-
-- `scal3/event_lib/group.py` (835 → 780) → import/export + `listToDict`
-  moved out; occurrence/cache + search extraction still pending
 
 ## Proposed plan (by technique)
 
@@ -36,18 +29,6 @@ Module → dir + `__init__.py` re-export; all existing imports keep working
 
 Most invasive; the class must either inherit mixins or call moved helpers.
 
-- **`manager.py`** (2956) — method clusters:
-  - multi-select (664–1126)
-  - row/group model helpers (1129–1408)
-  - right-click menus (1413–1799)
-  - key/treeview event handlers (1804–2011)
-  - group ops (2097–2472)
-  - event/trash ops (2473–2648)
-  - move up/down (2649–2781)
-  - group convert/bulk/export (2781–2883)
-  - copy/cut/paste (2884–2956)
-- **`starcal_mainwin.py`** — extract menu building + status-icon/toolbar clock
-  sections.
 - **`day_cal.py`** — extract drawing code (drawAll, drawEventIcons,
   drawSeasonPie, drawWithContext, render helpers).
 - **`timeline.py`** — move `TimeLineWindow` to its own file; drawing methods →
@@ -62,7 +43,7 @@ Most invasive; the class must either inherit mixins or call moved helpers.
 
 ## Notes
 
-- Single-class files (`manager`, `timeline_prefs`, `search_events`) are the
+- Single-class files (`timeline_prefs`, `search_events`) are the
   highest-risk; multiple-file mixins change class layout.
 - The `conf` data file is mechanical but must preserve exact
   order and values.
@@ -72,9 +53,8 @@ Most invasive; the class must either inherit mixins or call moved helpers.
 ## Suggested order
 
 1. Low-risk first: `labelBox.py`, `option_ui_extra.py`.
-1. Medium: `starcal_mainwin.py`, `day_cal.py`, `timeline.py`, `group.py`,
+1. Medium: `day_cal.py`, `timeline.py`, `group.py`,
    `search_events.py`, `timeline_prefs.py`.
-1. Last: `manager.py` (the biggest and most invasive).
 
 ## Future: conf.py namespace classes
 
