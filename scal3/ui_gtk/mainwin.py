@@ -16,10 +16,8 @@
 
 from __future__ import annotations
 
-import os
-import os.path
 from os.path import join
-from time import localtime, perf_counter
+from time import perf_counter
 from typing import TYPE_CHECKING, ClassVar
 
 from scal3 import logger
@@ -28,53 +26,38 @@ log = logger.get()
 
 from gi.repository import Gio as gio
 
-from scal3 import cal_types, core, locale_man, ui
+from scal3 import cal_types, core, ui
 from scal3.app_info import APP_DESC, homePage
-from scal3.cal_types import calTypes, convert
-from scal3.color_utils import rgbToHtmlColor
+from scal3.cal_types import calTypes
 from scal3.event_lib import ev
-from scal3.locale_man import rtl  # import scal3.locale_man after core
 from scal3.locale_man import tr as _
-from scal3.path import pixDir, sourceDir
+from scal3.path import sourceDir
 from scal3.ui import conf
-from scal3.ui.mainmenuitems import menuMainItemDefs
 from scal3.ui_gtk import (
 	GdkPixbuf,
-	Menu,
 	connect_dialog_response,
 	gdk,
 	gtk,
 	listener,
 	pixcache,
-	popup_menu_at,
 	quit_application,
 	timeout_add,
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk.menuitems import (
-	CheckMenuItem,
-	ImageMenuItem,
-	ResizeMenuItem,
-)
+from scal3.ui_gtk.mainwin_menu import MainWinMenu
+from scal3.ui_gtk.mainwin_status_icon import MainWinStatusIcon
 from scal3.ui_gtk.starcal_classes import MainWinEventMan, MainWinVbox, SignalHandler
 from scal3.ui_gtk.starcal_funcs import (
 	childButtonPress,
-	copyCurrentDate,
-	copyCurrentDateTime,
-	copyDateGetCallback,
-	getStatusIconTooltip,
 	liveConfChanged,
-	menuMainPopup,
 	onMainButtonPress,
 	onResizeFromMenu,
 	onScreenSizeChange,
 	onToggleRightPanel,
-	yearWheelShow,
 )
 from scal3.ui_gtk.starcal_layout import makeMainWinLayout
-from scal3.ui_gtk.status_icon_backend import create_status_icon
 from scal3.ui_gtk.utils import openWindow, showError
 
 if TYPE_CHECKING:
@@ -104,6 +87,14 @@ class MainWin(CalObjWidget):
 	desc = _("Main Window")
 	Sig: ClassVar[type[SignalHandlerType]] = SignalHandler
 	timeout = 1  # second
+	# attributes set by the MainWinMenu / MainWinStatusIcon helpers
+	menuMain: gtk.Menu | None
+	menuCell: gtk.Menu | None
+	menuItemsCallback: dict[str, ItemCallback]
+	statusIconMode: int
+	sicon: Any | None
+	xfceApplet: Any | None
+	statusIconPopupMenu: gtk.Menu | None
 
 	def autoResize(self) -> None:
 		self.win.resize(conf.winWidth.v, conf.winHeight.v)
@@ -198,39 +189,18 @@ class MainWin(CalObjWidget):
 		# ------------- Building About Dialog
 		self.aboutDialog: AboutDialog | None = None
 		# ---------------
-		self.menuMain: gtk.Menu | None = None
-		self.menuCell: gtk.Menu | None = None
+		self.menu = MainWinMenu(self)
 		# -----
 		win.set_keep_above(conf.winKeepAbove.v)
 		if conf.winSticky.v:
 			win.stick()
 		# ------------------------------------------------------------
-		self.statusIconInit()
+		self.statusIcon = MainWinStatusIcon(self)
 		listener.dateChange.add(self)
 		# ---------
 		self.w.connect("delete-event", self.onDeleteEvent)
 		# -----------------------------------------
 		self.onConfigChange()
-		self.menuItemsCallback: dict[str, ItemCallback] = {
-			"onTop": self.onKeepAboveClick,
-			"onAllDesktops": self.onStickyClick,
-			"today": self.goToday,
-			"selectDate": self.selectDateShow,
-			"dayInfo": self.dayInfoShowFromMenu,
-			"customize": self.customizeShow,
-			"preferences": self.prefShow,
-			# "addCustomEvent": self.addCustomEvent,
-			"dayCalWin": self.dayCalWinShow,
-			"eventManager": self.eventManShow,
-			"timeLine": self.timeLineShow,
-			"yearWheel": yearWheelShow,
-			# "weekCal": self.weekCalShow,
-			"exportToHtml": self.onExportClick,
-			"adjustTime": self.adjustTime,
-			"about": self.aboutShow,
-			"quit": self.quitFromMenu,
-		}
-		assert sorted(self.menuItemsCallback) == sorted(menuMainItemDefs)
 
 	def makeLayout(self) -> WinLayoutBox:
 		return makeMainWinLayout(
@@ -438,167 +408,11 @@ class MainWin(CalObjWidget):
 		y: int,
 		item: CustomizableCalObjType,
 	) -> None:
-		widget = item.w
-		# item.objName is in ("weekCal", "monthCal", ...)
-		menu = Menu()
-		# ----
-		for calType in calTypes.active:
-			calTypeDesc = calTypes.getDesc(calType)
-			assert calTypeDesc
-			menu.add(
-				ImageMenuItem(
-					label=_("Copy {calType} Date").format(
-						calType=_(calTypeDesc, ctx="calendar"),
-					),
-					imageName="edit-copy.svg",
-					onActivate=copyDateGetCallback(calType),
-				),
-			)
-		menu.add(
-			ImageMenuItem(
-				label=_("Day Info"),
-				imageName="info.svg",
-				onActivate=self.dayInfoShowFromMenu,
-			),
-		)
-		addToItem = self.eventManInternal.getEventAddToMenuItem()
-		if addToItem is not None:
-			menu.add(addToItem)
-		self.eventManInternal.addEditEventCellMenuItems(menu)
-		menu.add(gtk.SeparatorMenuItem())
-		menu.add(
-			ImageMenuItem(
-				label=_("Select _Today"),
-				imageName="go-home.svg",
-				onActivate=self.goToday,
-			),
-		)
-		menu.add(
-			ImageMenuItem(
-				label=_("Select _Date..."),
-				imageName="select-date.svg",
-				onActivate=self.selectDateShow,
-			),
-		)
-		# if item.objName in {"weekCal", "monthCal"}:
-		# 	isWeek = item.objName == "weekCal"
-		# 	calDesc = "Month Calendar" if isWeek else "Week Calendar"
-		# 	menu.add(
-		# 		ImageMenuItem(
-		# 			label=_("Switch to " + calDesc),
-		# 			imageName="" if isWeek else "week-calendar.svg",
-		# 			onActivate=self.switchWcalMcal,
-		# 		),
-		# 	)
-		menu.add(
-			ImageMenuItem(
-				label=_("In Time Line"),
-				imageName="timeline.svg",
-				onActivate=self.timeLineShowSelectedDay,
-			),
-		)
-		if os.path.isfile("/usr/bin/evolution"):  # FIXME
-			menu.add(
-				ImageMenuItem(
-					label=_("In E_volution"),
-					imageName="evolution.png",
-					onActivate=ui.cells.current.dayOpenEvolution,
-				),
-			)
-		# ----
-		moreMenu = Menu()
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("_Customize"),
-				imageName="document-edit.svg",
-				onActivate=self.customizeShow,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("_Preferences"),
-				imageName="preferences-system.svg",
-				onActivate=self.prefShow,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("_Event Manager"),
-				imageName="list-add.svg",
-				onActivate=self.eventManShow,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("Year Wheel"),
-				imageName="year-wheel.svg",
-				onActivate=yearWheelShow,
-			),
-		)  # icon? FIXME
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("Day Calendar (Desktop Widget)"),
-				imageName="starcal.svg",
-				onActivate=self.dayCalWinShow,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("Export to {format}").format(format="HTML"),
-				imageName="export-to-html.svg",
-				onActivate=self.onExportClick,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("_About"),
-				imageName="dialog-information.svg",
-				onActivate=self.aboutShow,
-			),
-		)
-		moreMenu.add(
-			ImageMenuItem(
-				label=_("_Quit"),
-				imageName="application-exit.svg",
-				onActivate=self.onQuitClick,
-			),
-		)
-		# --
-		moreMenu.show_all()
-		moreItem = ImageMenuItem(label=_("More"))
-		moreItem.set_submenu(moreMenu)
-		# moreItem.show_all()
-		menu.add(moreItem)
-		# ----
-		menu.show_all()
-		self.menuCell = menu
-		popup_menu_at(menu, widget, x, y, root=self.w, rtl=rtl)
-		ui.updateFocusTime()
+		self.menu.cellPopup(_sig, x, y, item)
 
 	# TODO: customize list of main menu items (disable/enable/re-order)
 	def menuMainCreate(self) -> gtk.Menu:
-		if self.menuMain:
-			return self.menuMain
-		menu = gtk.Menu(reserve_toggle_size=False)
-		# ----
-		menu.add(
-			ResizeMenuItem(
-				label=_("Resize"),
-				onButtonPress=self.onResizeFromMenu,
-			)
-		)
-		for name, itemDict in menuMainItemDefs.items():
-			menu.add(
-				itemDict["cls"](
-					label=itemDict["label"],
-					onActivate=self.menuItemsCallback[name],
-					**itemDict["args"],
-				)
-			)
-		# -------
-		menu.show_all()
-		self.menuMain = menu
-		return menu
+		return self.menu.mainCreate()
 
 	# handler for "popup-main-menu" signal
 	def menuMainPopup(
@@ -608,338 +422,36 @@ class MainWin(CalObjWidget):
 		y: int,
 		item: CustomizableCalObjType,
 	) -> None:
-		menuMainPopup(self.w, self.menuMainCreate, x, y, item)
-
-	def onKeepAboveClick(self, check: gtk.Widget) -> None:
-		assert isinstance(check, CheckMenuItem)
-		act = check.get_active()
-		self.win.set_keep_above(act)
-		conf.winKeepAbove.v = act
-		ui.saveLiveConf()
-
-	def onStickyClick(self, check: gtk.Widget) -> None:
-		assert isinstance(check, CheckMenuItem)
-		if check.get_active():
-			self.win.stick()
-			conf.winSticky.v = True
-		else:
-			self.win.unstick()
-			conf.winSticky.v = False
-		ui.saveLiveConf()
-
-	"""
-	def updateToolbarClock(self):
-		if conf.showDigClockTb.v:
-			if self.clock is None:
-				from scal3.ui_gtk.mywidgets.clock import FClockLabel
-				self.clock = FClockLabel(ud.clockFormat)
-				pack(self.toolbBox, self.clock)
-				self.clock.show()
-			else:
-				self.clock.format = ud.clockFormat
-		else:
-			if self.clock is not None:
-				self.clock.destroy()
-				self.clock = None
-
-	def updateStatusIconClock(self, checkStatusIconMode=True):
-		if checkStatusIconMode and self.statusIconMode!=2:
-			return
-		if conf.showDigClockTr.v:
-			if self.clockTr is None:
-				from scal3.ui_gtk.mywidgets.clock import FClockLabel
-				self.clockTr = FClockLabel(ud.clockFormat)
-				try:
-					pack(self.statusIconHbox, self.clockTr)
-				except AttributeError:
-					self.clockTr.destroy()
-					self.clockTr = None
-				else:
-					self.clockTr.show()
-			else:
-				self.clockTr.format = ud.clockFormat
-		else:
-			if self.clockTr is not None:
-				self.clockTr.destroy()
-				self.clockTr = None
-	"""
-
-	def statusIconInit(self) -> None:
-		from scal3.ui_gtk.starcal_xfce_applet import XfceAppletStatusIcon
-
-		self.statusIconPopupMenu: gtk.Menu | None = None
-		self.sicon = create_status_icon(self, self.statusIconMode)
-		if self.statusIconMode == 3:
-			self.xfceApplet = self.sicon
-		elif self.statusIconMode == 2:
-			# serve the xfce applet next to the tray/status icon
-			self.xfceApplet = XfceAppletStatusIcon(self)
-		else:
-			self.xfceApplet = None
+		self.menu.mainPopup(_sig, x, y, item)
 
 	def getMainWinMenuItem(self) -> gtk.MenuItem:
-		item = gtk.MenuItem(label=_("Main Window"))
-		item.connect("activate", self.onStatusIconClick)
-		return item
+		return self.statusIcon.getMainWinMenuItem()
 
 	def getStatusIconPopupItems(self) -> list[gtk.MenuItem]:
-		return [
-			ImageMenuItem(
-				label=_("Copy Date and _Time"),
-				imageName="edit-copy.svg",
-				onActivate=copyCurrentDateTime,
-			),
-			ImageMenuItem(
-				label=_("Copy _Date"),
-				imageName="edit-copy.svg",
-				onActivate=copyCurrentDate,
-			),
-			ImageMenuItem(
-				label=_("Ad_just System Time"),
-				imageName="preferences-system.svg",
-				onActivate=self.adjustTime,
-			),
-			# ImageMenuItem(
-			# 	label=_("_Add Event"),
-			# 	imageName="list-add.svg",
-			# 	onActivate=ui.addCustomEvent,
-			# ),  # FIXME
-			ImageMenuItem(
-				label=_("Export to {format}").format(format="HTML"),
-				imageName="export-to-html.svg",
-				onActivate=self.onExportClickStatusIcon,
-			),
-			ImageMenuItem(
-				label=_("_Preferences"),
-				imageName="preferences-system.svg",
-				onActivate=self.prefShow,
-			),
-			ImageMenuItem(
-				label=_("_Event Manager"),
-				imageName="list-add.svg",
-				onActivate=self.eventManShow,
-			),
-			ImageMenuItem(
-				label=_("Time Line"),
-				imageName="timeline.svg",
-				onActivate=self.timeLineShow,
-			),
-			ImageMenuItem(
-				label=_("Year Wheel"),
-				imageName="year-wheel.svg",
-				onActivate=yearWheelShow,
-			),
-			ImageMenuItem(
-				label=_("_About"),
-				imageName="dialog-information.svg",
-				onActivate=self.aboutShow,
-			),
-			gtk.SeparatorMenuItem(),
-			ImageMenuItem(
-				label=_("_Quit"),
-				imageName="application-exit.svg",
-				onActivate=self.onQuitClick,
-			),
-		]
+		return self.statusIcon.popupItems()
 
 	def statusIconPopup(self, sicon: gtk.StatusIcon, button: int, etime: int) -> None:
-		assert isinstance(self.sicon, gtk.StatusIcon), f"{self.sicon=}"
-		menu = Menu()
-		if os.sep == "\\":
-			from scal3.ui_gtk.windows import setupMenuHideOnLeave
-
-			setupMenuHideOnLeave(menu)
-		items = self.getStatusIconPopupItems()
-		# items.insert(0, self.getMainWinMenuItem())-- FIXME
-		get_pos_func = None
-		y1 = 0
-		geo = sicon.get_geometry()
-		# Previously geo was None on windows
-		# and on Linux it had `geo.index(1)` (not sure about the type)
-		# Now it's tuple on both Linux and windows
-		if geo is None:
-			items.reverse()
-		elif isinstance(geo, tuple):
-			# geo == (True, screen, area, orientation)
-			y1 = geo[2].y
-		else:
-			y1 = geo.index(1)
-		try:  # new gi versions
-			y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]  # type: ignore[call-arg, arg-type]
-		except TypeError:  # old gi versions
-			y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
-		if y1 > 0 and y < y1:  # taskbar is on bottom
-			items.reverse()
-		get_pos_func = gtk.StatusIcon.position_menu
-		for item in items:
-			menu.add(item)
-		menu.show_all()
-		# log.debug("statusIconPopup", button, etime)
-		self._keepStatusIconMenu(menu)
-		menu.popup(None, None, get_pos_func, self.sicon, button, etime)
-		# self.sicon.do_popup_menu(self.sicon, button, etime)
-		ui.updateFocusTime()
-
-	def _keepStatusIconMenu(self, menu: gtk.Menu) -> None:
-		# keep a reference so the menu is not garbage-collected while shown
-		self.statusIconPopupMenu = menu
-		menu.connect("deactivate", self._onStatusIconMenuDeactivate)
-
-	def _onStatusIconMenuDeactivate(self, menu: gtk.Menu) -> None:
-		if getattr(self, "statusIconPopupMenu", None) is menu:
-			self.statusIconPopupMenu = None
+		self.statusIcon.popup(sicon, button, etime)
 
 	def statusIconPopupAtPointer(self, button: int = 3) -> None:
-		menu = Menu()
-		if os.sep == "\\":
-			from scal3.ui_gtk.windows import setupMenuHideOnLeave
-
-			setupMenuHideOnLeave(menu)
-		for item in self.getStatusIconPopupItems():
-			menu.add(item)
-		menu.show_all()
-		self._keepStatusIconMenu(menu)
-		menu.popup(
-			None,
-			None,
-			None,
-			None,
-			button,
-			gtk.get_current_event_time(),
-		)
-		ui.updateFocusTime()
+		self.statusIcon.popupAtPointer(button)
 
 	def onCurrentDateChange(self, gdate: tuple[int, int, int]) -> None:
 		self.broadcastDateChange()
-		self.statusIconUpdate(gdate=gdate)
-
-	def statusIconUpdateIcon(self, ddate: tuple[int, int, int]) -> None:  # FIXME
-		from scal3.utils import toBytes
-
-		assert self.sicon is not None
-
-		imagePath = (
-			conf.statusIconImageHoli.v
-			if ui.cells.today.holiday
-			else conf.statusIconImage.v
-		)
-		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
-		with open(imagePath, "rb") as fp:
-			data = fp.read()
-		if ext == "svg":
-			if conf.statusIconLocalizeNumber.v:
-				dayNum = locale_man.numEncode(
-					ddate[2],
-					localeMode="calendar",
-				)
-			else:
-				dayNum = str(ddate[2])
-			style: list[tuple[str, Any]] = []
-			if conf.statusIconFontFamilyEnable.v:
-				family = conf.statusIconFontFamily.v or ui.getFont().family
-				style.append(("font-family", family))
-			if (
-				conf.statusIconHolidayFontColorEnable.v
-				and conf.statusIconHolidayFontColor.v
-				and ui.cells.today.holiday
-			):
-				style.append(
-					("fill", rgbToHtmlColor(conf.statusIconHolidayFontColor.v)),
-				)
-			if style:
-				styleStr = "".join([f"{key}:{value};" for key, value in style])
-				dayNum = f'<tspan style="{styleStr}">{dayNum}</tspan>'
-			data = data.replace(
-				b"TX",
-				toBytes(dayNum),
-			)
-		loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
-		if conf.statusIconFixedSizeEnable.v:
-			try:
-				width, height = conf.statusIconFixedSizeWH.v
-				loader.set_size(width, height)
-			except Exception:
-				log.exception("")
-		try:
-			loader.write(data)
-		finally:
-			loader.close()
-		pixbuf = loader.get_pixbuf()
-		assert pixbuf is not None
-
-		# alternative way:
-		# stream = Gio.MemoryInputStream.new_from_bytes(GLib.Bytes.new(data))
-		# pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, None)
-
-		self.sicon.set_from_pixbuf(pixbuf)
-		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
-			self.xfceApplet.set_from_pixbuf(pixbuf)
+		self.statusIcon.update(gdate=gdate)
 
 	def statusIconUpdateTooltip(self) -> None:
-		try:
-			sicon = self.sicon
-		except AttributeError:
-			return
-		tooltip = getStatusIconTooltip()
-		if sicon is not None:
-			sicon.set_tooltip_text(tooltip)
-		try:
-			xfceApplet = self.xfceApplet
-		except AttributeError:
-			return
-		if xfceApplet is not None and xfceApplet is not sicon:
-			xfceApplet.set_tooltip_text(tooltip)
+		self.statusIcon.updateTooltip()
 
 	def statusIconUpdate(
 		self,
 		gdate: tuple[int, int, int] | None = None,
 		checkStatusIconMode: bool = True,
 	) -> None:
-		if self.sicon is None:
-			return
-		if checkStatusIconMode and self.statusIconMode < 1:
-			return
-		if gdate is None:
-			gdate = localtime()[:3]
-		if calTypes.primary == core.GREGORIAN:
-			ddate = gdate
-		else:
-			ddate = convert(
-				gdate[0],
-				gdate[1],
-				gdate[2],
-				core.GREGORIAN,
-				calTypes.primary,
-			)
-		# -------
-		placeholder = join(pixDir, "starcal-24.png")
-		if self.sicon is not None:
-			self.sicon.set_from_file(placeholder)
-		if self.xfceApplet is not None and self.xfceApplet is not self.sicon:
-			self.xfceApplet.set_from_file(placeholder)
-		self.statusIconUpdateIcon(ddate)
-		# -------
-		self.statusIconUpdateTooltip()
+		self.statusIcon.update(gdate, checkStatusIconMode)
 
 	def onStatusIconClick(self, _w: OptWidget = None) -> None:
-		if self.w.get_property("visible"):
-			# conf.winX.v, conf.winY.v = self.w.get_position()
-			# FIXME: ^ gives bad position sometimes
-			# liveConfChanged()
-			# log.debug(conf.winX.v, conf.winY.v)
-			self.hide()
-		else:
-			self.win.move(conf.winX.v, conf.winY.v)
-			# every calling of .hide() and .present(), makes dialog not on top
-			# (forgets being on top)
-			self.win.set_keep_above(conf.winKeepAbove.v)
-			if conf.winSticky.v:
-				self.win.stick()
-			self.win.deiconify()
-			self.win.present()
-			self.focusIn()
-			# in LXDE, the window was not focused without self.focusIn()
-			# while worked in Xfce and GNOME.
+		self.statusIcon.onClick(_w)
 
 	def onDeleteEvent(
 		self,
@@ -1223,4 +735,4 @@ class MainWin(CalObjWidget):
 		# skip-taskbar-hint need to restart ro be applied
 		# self.updateToolbarClock()  # FIXME
 		# self.updateStatusIconClock()
-		self.statusIconUpdate()
+		self.statusIcon.update()

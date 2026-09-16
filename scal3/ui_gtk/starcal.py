@@ -65,8 +65,8 @@ from scal3.ui_gtk import (
 	should_present_main_window,
 )
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.mainwin import MainWin
 from scal3.ui_gtk.starcal_import_all import doFullImport
-from scal3.ui_gtk.starcal_mainwin import MainWin
 
 if TYPE_CHECKING:
 	from scal3.ui_gtk.pytypes import CalObjType
