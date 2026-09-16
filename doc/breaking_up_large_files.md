@@ -25,18 +25,20 @@ Module → dir + `__init__.py` re-export; all existing imports keep working
 - **`option_ui_extra.py`** → one module per `OptionUI`
   (keep the coupled treeview/toolbar classes together).
 
-### 3. Extract cohesive chunks from single big classes via mixins/helper modules
+### 3. Extract cohesive chunks from single big classes via helper modules
 
-Most invasive; the class must either inherit mixins or call moved helpers.
+Most invasive; the class must delegate to helper objects (composition, holding
+a reference to the parent) or standalone functions. Avoid multiple inheritance.
 
 - **`day_cal.py`** — extract drawing code (drawAll, drawEventIcons,
-  drawSeasonPie, drawWithContext, render helpers).
+  drawSeasonPie, drawWithContext, render helpers) into a composition helper or
+  standalone functions.
 - **`timeline.py`** — move `TimeLineWindow` to its own file; drawing methods →
-  `timeline_drawing.py`.
+  helper object / functions in `timeline_drawing.py`.
 - **`timeline_prefs.py`** — split the ~5 tab-builders (nested funcs, 54–906)
-  into per-page modules.
+  into per-page modules (standalone functions).
 - **`search_events.py`** — split search/export logic vs. context-menu /
-  result-UI mixins.
+  result-UI helper objects.
 - **`group.py`** — occurrence/cache + search into a helper module
   (import/export data already moved to `groups_import.py`, `listToDict` to
   `event_lib/utils.py`; now 780 LOC).
@@ -44,7 +46,11 @@ Most invasive; the class must either inherit mixins or call moved helpers.
 ## Notes
 
 - Single-class files (`timeline_prefs`, `search_events`) are the
-  highest-risk; multiple-file mixins change class layout.
+  highest-risk; extracting into helper objects rewires the class.
+- Follow the refactoring rules in `CLAUDE.md`: avoid multiple inheritance —
+  use composition (helper objects holding a reference to the parent) or
+  standalone functions; helpers must access the parent only through its
+  methods, adding new parent methods if needed.
 - The `conf` data file is mechanical but must preserve exact
   order and values.
 - Verification: `ruff check`, `ruff format`, `pytest` (event_lib tests need
