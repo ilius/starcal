@@ -10,7 +10,7 @@ Before committing or finishing any change:
 
 - Run `ruff format`
 - Run `ruff check` and use `ruff check --fix` for auto-fixes
-- Run `mypy .` and fix all errors
+- Run `mypy . --strict --disallow-any-generics` and fix all errors
 
 ## UI strings and translations
 
