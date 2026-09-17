@@ -35,7 +35,7 @@ from scal3.plugin_man.ics import IcsTextPlugin
 if TYPE_CHECKING:
 	from scal3.pytypes import PluginType
 
-__all__ = ["loadExternalPlugin", "loadPlugin"]
+__all__ = ["loadPlugin"]
 
 
 def loadExternalPlugin(

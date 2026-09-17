@@ -33,7 +33,7 @@ from .occur import (
 if TYPE_CHECKING:
 	from .pytypes import EventType
 
-__all__ = ["escapeIcsText", "exportEventToIcsFileObj"]
+__all__ = ["exportEventToIcsFileObj"]
 
 
 def escapeIcsText(value: str) -> str:

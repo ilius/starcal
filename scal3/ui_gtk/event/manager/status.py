@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 	from scal3.ui_gtk import gtk
 	from scal3.ui_gtk.event.manager.dialog import EventManagerDialog
 
+__all__ = ["StatusBar"]
+
 log = logger.get()
 
 

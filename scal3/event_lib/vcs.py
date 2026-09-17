@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 
 	from .pytypes import EventType
 
-__all__ = ["VcsCommitEventGroup", "VcsTagEventGroup"]
+__all__ = ["VcsCommitEventGroup", "VcsTagEvent", "VcsTagEventGroup"]
 
 
 # @classes.event.register  # FIXME

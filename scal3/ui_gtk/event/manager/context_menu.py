@@ -42,6 +42,8 @@ if TYPE_CHECKING:
 	from scal3.event_lib.pytypes import EventGroupType, EventType
 	from scal3.ui_gtk.event.manager.dialog import EventManagerDialog
 
+__all__ = ["ContextMenu"]
+
 log = logger.get()
 
 type W = gtk.Widget

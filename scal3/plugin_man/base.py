@@ -49,6 +49,7 @@ __all__ = [
 	"BasePlugin",
 	"DummyExternalPlugin",
 	"getPlugPath",
+	"log",
 	"pluginClassByName",
 	"pluginsTitleByName",
 	"registerPlugin",

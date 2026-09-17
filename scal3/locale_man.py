@@ -72,6 +72,7 @@ __all__ = [
 	"langSh",
 	"loadTranslator",
 	"localTz",
+	"localTzStr",
 	"numDecode",
 	"numEncode",
 	"prepareLanguage",

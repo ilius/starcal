@@ -9,6 +9,8 @@ import os
 import os.path
 from collections import OrderedDict
 
+__all__ = ["getZoneInfoTree"]
+
 
 def findZoneInfoDir() -> str:
 	for dir_ in (

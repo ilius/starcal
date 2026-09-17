@@ -23,6 +23,14 @@ from scal3.config_utils import loadModuleConfig, saveSingleConfig
 from scal3.option import Option
 from scal3.path import confDir
 
+__all__ = [
+	"archivedGroupsRowId",
+	"eventManPos",
+	"eventManShowDescription",
+	"loadConf",
+	"saveConf",
+]
+
 # row ID in the tree for the "Archived Groups" holder node
 # (the trash row uses -1)
 archivedGroupsRowId = -2

@@ -24,6 +24,8 @@ from scal3.ui_gtk.toolbox import ToolBoxItem, VerticalStaticToolBox
 if TYPE_CHECKING:
 	from scal3.ui_gtk.event.manager.dialog import EventManagerDialog
 
+__all__ = ["EventManagerToolbar"]
+
 
 class EventManagerToolbar(VerticalStaticToolBox):
 	def __init__(self, dialog: EventManagerDialog) -> None:

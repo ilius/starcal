@@ -21,6 +21,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from typing import Any
 
+__all__ = ["listToDict"]
+
 
 def listToDict(value: Any) -> dict[Any, Any]:
 	"""Convert a list of (key, value) pairs into a dict, passing dicts through."""

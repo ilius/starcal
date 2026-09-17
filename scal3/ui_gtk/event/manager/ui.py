@@ -36,6 +36,8 @@ if TYPE_CHECKING:
 
 	from scal3.ui_gtk.event.manager.dialog import EventManagerDialog
 
+__all__ = ["EventManagerUi"]
+
 type W = gtk.Widget
 
 

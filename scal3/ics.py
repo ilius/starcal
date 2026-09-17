@@ -34,6 +34,7 @@ __all__ = [
 	"getJdByIcsDate",
 	"icsHeader",
 	"icsTmFormat",
+	"icsWeekDays",
 	"splitIcsValue",
 ]
 

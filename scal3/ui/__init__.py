@@ -72,6 +72,7 @@ __all__ = [
 	"dayCalWin",
 	"disableRedraw",
 	"dragGetCalType",
+	"dragRecMode",
 	"duplicateGroupTitle",
 	"eventManDialog",
 	"eventSearchWin",

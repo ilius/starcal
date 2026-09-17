@@ -11,7 +11,7 @@ from scal3.core import APP_NAME
 from scal3.os_utils import makeDir, osName
 from scal3.path import homeDir, sourceDir
 
-__all__ = ["addStartup", "checkStartup", "removeStartup"]
+__all__ = ["addStartup", "checkStartup", "comDesk", "removeStartup"]
 
 
 comDeskDir = f"{homeDir}/.config/autostart"

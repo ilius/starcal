@@ -81,6 +81,7 @@ __all__ = [
 	"getWeekDayAuto",
 	"getWeekDayN",
 	"getWeekNumber",
+	"getWeekNumberByJd",
 	"holidayWeekDays",
 	"init",
 	"jd_to",

@@ -16,33 +16,15 @@
 
 from __future__ import annotations
 
-from scal3.plugin_man.base import (
-	BaseJsonPlugin,
-	BasePlugin,
-	DummyExternalPlugin,
-	getPlugPath,
-	log,
-	pluginClassByName,
-	pluginsTitleByName,
-	registerPlugin,
-)
-from scal3.plugin_man.holiday import HolidayPlugin
-from scal3.plugin_man.ics import IcsTextPlugin
-from scal3.plugin_man.loader import loadExternalPlugin, loadPlugin
-from scal3.plugin_man.yearly_text import YearlyTextPlugin
+from scal3.plugin_man.base import BaseJsonPlugin
+
+# importing these registers the built-in plugin classes
+from scal3.plugin_man.holiday import HolidayPlugin  # noqa: F401
+from scal3.plugin_man.ics import IcsTextPlugin  # noqa: F401
+from scal3.plugin_man.loader import loadPlugin
+from scal3.plugin_man.yearly_text import YearlyTextPlugin  # noqa: F401
 
 __all__ = [
 	"BaseJsonPlugin",
-	"BasePlugin",
-	"DummyExternalPlugin",
-	"HolidayPlugin",
-	"IcsTextPlugin",
-	"YearlyTextPlugin",
-	"getPlugPath",
-	"loadExternalPlugin",
 	"loadPlugin",
-	"log",
-	"pluginClassByName",
-	"pluginsTitleByName",
-	"registerPlugin",
 ]

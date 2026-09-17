@@ -304,5 +304,6 @@ exclude_toplevel_module = [
 	"requests",
 	"win32api",
 	"win32com",
+	"xfce_panel",
 ]
 
