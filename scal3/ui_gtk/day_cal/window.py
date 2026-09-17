@@ -24,7 +24,7 @@ log = logger.get()
 import os
 from os.path import join
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any
 
 from scal3 import ui
 from scal3.config_utils import loadSingleConfig, saveSingleConfig
@@ -35,7 +35,7 @@ from scal3.ui import conf
 from scal3.ui_gtk import Dialog, Menu, gtk, pack, popup_menu_at, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_obj_base import CalObjWidget
-from scal3.ui_gtk.day_cal import DayCal
+from scal3.ui_gtk.day_cal.cal import DayCal
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
@@ -52,9 +52,8 @@ if TYPE_CHECKING:
 	from scal3.pytypes import CellType
 	from scal3.ui_gtk import gdk
 	from scal3.ui_gtk.cal_obj import CalBase
-	from scal3.ui_gtk.day_cal import ParentWindowType
+	from scal3.ui_gtk.day_cal.types import MainWinType, ParentWindowType
 	from scal3.ui_gtk.signals import SignalHandlerType
-	from scal3.ui_gtk.starcal_types import OptWidget
 
 __all__ = ["DayCalWindow"]
 
@@ -88,12 +87,6 @@ def liveConfChanged() -> None:
 			saveLiveConfLoop,
 		)
 		lastLiveConfChangeTime = tm
-
-
-class MainWinType(Protocol):
-	def dayInfoShow(self, _sig: SignalHandlerType | None = None) -> None: ...
-	def onStatusIconClick(self, _w: OptWidget = None) -> None: ...
-	def getStatusIconPopupItems(self) -> list[gtk.MenuItem]: ...
 
 
 class DayCalWindowCustomizeWindow(Dialog):

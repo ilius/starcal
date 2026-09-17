@@ -32,18 +32,18 @@ It is stored in user configs and compared in code.
 - `scal3/drawing.py:54` — `getAbsPos()` compares `yalign == "buttom"`
 - `scal3/ui_gtk/button_drawing.py:61` — validation set
   `{"top", "buttom", "center"}` (invalid values raise `ValueError`)
-- `scal3/ui_gtk/day_cal.py:736` — `elif yalign == "buttom":`; line 740 logs
+- `scal3/ui_gtk/day_cal/cal.py:374` — `elif yalign == "buttom":`; line 378 logs
   `invalid {yalign=}` otherwise
-- `scal3/ui_gtk/day_cal.py:236, 297` — reads `yalign` from config and passes it
+- `scal3/ui_gtk/day_cal/cal.py:213-214, 275` — reads `yalign` from config and passes it
   to `getAbsPos()`
 
 ### Migration plan
 
 1. Rename the defaults in `conf.py`, `options.py`, `timeline.py`,
-   `year_wheel.py`, `monthCal.py`, and `day_cal.py` from `"buttom"` to
+   `year_wheel.py`, `monthCal.py`, and `day_cal/cal.py` from `"buttom"` to
    `"bottom"`.
 2. Update the comparison/validation points in `drawing.py` (`oppositeAlign`,
-   `getAbsPos`), `button_drawing.py:61`, `day_cal.py:736`, and
+   `getAbsPos`), `button_drawing.py:61`, `day_cal/cal.py:374`, and
    `cal_type_options.py` (`YAlignComboBox.get`/`set`).
 3. Accept the legacy value on read: wherever a `yalign` string is loaded or
    compared, treat both `"bottom"` and `"buttom"` as bottom (e.g. normalize

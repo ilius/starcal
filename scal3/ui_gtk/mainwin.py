@@ -626,7 +626,7 @@ class MainWin(CalObjWidget):
 		_ge: OptEvent = None,
 	) -> None:
 		if not ui.dayCalWin:
-			from scal3.ui_gtk.day_cal_window import DayCalWindow
+			from scal3.ui_gtk.day_cal import DayCalWindow
 
 			ui.dayCalWin = DayCalWindow(self)
 		ui.dayCalWin.w.present()

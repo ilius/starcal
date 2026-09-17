@@ -5,7 +5,6 @@
 | LOC | File | What it holds |
 |----:|------|---------------|
 | 1465 | `scal3/ui/conf.py` | flat module: 181 `Option` definitions with docstrings |
-| 1090 | `scal3/ui_gtk/day_cal.py` | `DayCal` class |
 | 1074 | `scal3/ui_gtk/timeline.py` | `TimeLine` class + small `TimeLineWindow` |
 | 940 | `scal3/ui_gtk/timeline_prefs.py` | single `TimeLinePreferencesWindow` |
 | 887 | `scal3/ui_gtk/event/search_events.py` | single `EventSearchWindow` |
@@ -30,9 +29,6 @@ Module → dir + `__init__.py` re-export; all existing imports keep working
 Most invasive; the class must delegate to helper objects (composition, holding
 a reference to the parent) or standalone functions. Avoid multiple inheritance.
 
-- **`day_cal.py`** — extract drawing code (drawAll, drawEventIcons,
-  drawSeasonPie, drawWithContext, render helpers) into a composition helper or
-  standalone functions.
 - **`timeline.py`** — move `TimeLineWindow` to its own file; drawing methods →
   helper object / functions in `timeline_drawing.py`.
 - **`timeline_prefs.py`** — split the ~5 tab-builders (nested funcs, 54–906)
@@ -59,7 +55,7 @@ a reference to the parent) or standalone functions. Avoid multiple inheritance.
 ## Suggested order
 
 1. Low-risk first: `labelBox.py`, `option_ui_extra.py`.
-1. Medium: `day_cal.py`, `timeline.py`, `group.py`,
+1. Medium: `timeline.py`, `group.py`,
    `search_events.py`, `timeline_prefs.py`.
 
 ## Future: conf.py namespace classes
