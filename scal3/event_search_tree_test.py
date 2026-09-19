@@ -65,3 +65,29 @@ def test_delete_after_interleaved_adds() -> None:
 		if eid in deleted:
 			continue
 		assert _searchEid(tree, eid), f"event {eid} became unfindable after add/delete"
+
+
+def test_zero_duration_interval_is_found() -> None:
+	"""A zero-duration (t0 == t1) interval must remain searchable."""
+	tree = EventSearchTree()
+	tree.add(100.0, 100.0, 1)
+	tree.add(200.0, 250.0, 2)
+	tree.add(150.0, 160.0, 3)
+	for eid, (t0, t1) in (
+		(1, (100.0, 100.0)),
+		(2, (200.0, 250.0)),
+		(3, (150.0, 160.0)),
+	):
+		mid = (t0 + t1) / 2.0
+		assert any(item.eid == eid for item in tree.search(mid - 1, mid + 1)), (
+			f"event {eid} unfindable"
+		)
+
+
+def test_zero_duration_respects_half_open_range() -> None:
+	"""A zero-duration interval belongs to the window containing its point."""
+	tree = EventSearchTree()
+	tree.add(100.0, 100.0, 1)
+	# belongs to [100, 200), not to the preceding half-open [0, 100)
+	assert any(item.eid == 1 for item in tree.search(100.0, 200.0))
+	assert not any(item.eid == 1 for item in tree.search(0.0, 100.0))

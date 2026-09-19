@@ -32,6 +32,11 @@ if TYPE_CHECKING:
 
 __all__ = ["EventSearchTree", "OccurItem"]
 
+# seconds; widens zero-duration (t0 == t1) intervals so their tree nodes have
+# non-degenerate min_t/max_t bounds. Otherwise search() clamps to a point and
+# prunes the node, hiding the event entirely.
+epsTm = 0.01
+
 
 OccurItem = namedtuple(
 	"OccurItem",
@@ -244,6 +249,11 @@ class EventSearchTree:
 				f"\t{strftime(f, localtime(t1))}",
 			)
 		# ---
+		if t0 == t1:
+			# a zero-duration interval would give the node degenerate
+			# min_t == max_t bounds; search() would clamp the range to a point
+			# and prune the node, hiding the event entirely
+			t1 += epsTm
 		mt = (t0 + t1) / 2.0
 		dt = (t1 - t0) / 2.0
 		# ---
