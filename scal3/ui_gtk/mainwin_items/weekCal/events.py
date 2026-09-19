@@ -286,7 +286,7 @@ class EventsBoxColumn(Column):
 		self.w.queue_draw()
 
 	def drawBox(self, cr: ImageContext, box: TimeLineBox) -> None:
-		from scal3.ui_gtk import timeline_box as tbox
+		from scal3.ui_gtk.timeline.box import drawBoxBG, drawBoxText
 
 		# ---
 		x = box.y
@@ -294,8 +294,8 @@ class EventsBoxColumn(Column):
 		w = box.h
 		h = box.w
 		# ---
-		tbox.drawBoxBG(cr, box, x, y, w, h)
-		tbox.drawBoxText(cr, box, x, y, w, h, self.w)
+		drawBoxBG(cr, box, x, y, w, h)
+		drawBoxText(cr, box, x, y, w, h, self.w)
 
 	def drawColumn(self, cr: ImageContext) -> None:
 		self.drawBg(cr)

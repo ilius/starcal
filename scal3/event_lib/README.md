@@ -475,7 +475,7 @@ ______________________________________________________________________
 | **UI (GTK) — Group editors** | 12 | `scal3/ui_gtk/event/group/*.py` |
 | **UI (GTK) — Rule editors** | 14 | `scal3/ui_gtk/event/rule/*.py` |
 | **UI (GTK) — Notifier widgets** | 3 | `scal3/ui_gtk/event/notifier/*.py` |
-| **UI (GTK) — Core** | 12 | `scal3/ui_gtk/starcal*.py`, `scal3/ui_gtk/timeline.py`, etc. |
+| **UI (GTK) — Core** | 12 | `scal3/ui_gtk/starcal*.py`, `scal3/ui_gtk/timeline/`, etc. |
 | **Account modules** | 2 | `scal3/account/starcal.py`, `scal3/account/google.py` |
 | **VCS modules** | 3 | `scal3/vcs_modules/*.py` |
 | **Core modules** | 8 | `scal3/cell.py`, `scal3/core.py`, `scal3/show_event.py`, etc. |

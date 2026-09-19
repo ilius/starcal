@@ -17,8 +17,8 @@ It is stored in user configs and compared in code.
   lines 863, 882, 986, 1022, 1038, 1209, 1230, 1238
 - `scal3/ui/options.py` — `"yalign": "buttom"`: lines 1262, 1290, 1490, 1529,
   1549, 1886, 1912, 1920
-- `scal3/ui_gtk/timeline.py` — `yalign="buttom"`: lines 184, 195, 206, 217,
-  229, 249, 261, 272
+- `scal3/ui_gtk/timeline/widget.py` — `yalign="buttom"`: lines 189, 200, 211,
+  222, 234, 254, 266, 277
 - `scal3/ui_gtk/year_wheel.py` — lines 124, 134
 - `scal3/ui_gtk/mainwin_items/monthCal.py` — lines 426, 429
 - `scal3/ui_gtk/cal_type_options.py` — `YAlignComboBox`:
@@ -39,7 +39,7 @@ It is stored in user configs and compared in code.
 
 ### Migration plan
 
-1. Rename the defaults in `conf.py`, `options.py`, `timeline.py`,
+1. Rename the defaults in `conf.py`, `options.py`, `timeline/widget.py`,
    `year_wheel.py`, `monthCal.py`, and `day_cal/cal.py` from `"buttom"` to
    `"bottom"`.
 2. Update the comparison/validation points in `drawing.py` (`oppositeAlign`,

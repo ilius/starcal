@@ -5,8 +5,6 @@
 | LOC | File | What it holds |
 |----:|------|---------------|
 | 1465 | `scal3/ui/conf.py` | flat module: 181 `Option` definitions with docstrings |
-| 1074 | `scal3/ui_gtk/timeline.py` | `TimeLine` class + small `TimeLineWindow` |
-| 940 | `scal3/ui_gtk/timeline_prefs.py` | single `TimeLinePreferencesWindow` |
 | 887 | `scal3/ui_gtk/event/search_events.py` | single `EventSearchWindow` |
 | 848 | `scal3/ui_gtk/option_ui_extra.py` | 7 independent `OptionUI` classes |
 | 803 | `scal3/ui_gtk/mainwin_items/labelBox.py` | labels + button boxes + `CalObj` |
@@ -29,10 +27,6 @@ Module → dir + `__init__.py` re-export; all existing imports keep working
 Most invasive; the class must delegate to helper objects (composition, holding
 a reference to the parent) or standalone functions. Avoid multiple inheritance.
 
-- **`timeline.py`** — move `TimeLineWindow` to its own file; drawing methods →
-  helper object / functions in `timeline_drawing.py`.
-- **`timeline_prefs.py`** — split the ~5 tab-builders (nested funcs, 54–906)
-  into per-page modules (standalone functions).
 - **`search_events.py`** — split search/export logic vs. context-menu /
   result-UI helper objects.
 - **`group.py`** — occurrence/cache + search into a helper module
@@ -41,7 +35,7 @@ a reference to the parent) or standalone functions. Avoid multiple inheritance.
 
 ## Notes
 
-- Single-class files (`timeline_prefs`, `search_events`) are the
+- Single-class files (`search_events`) are the
   highest-risk; extracting into helper objects rewires the class.
 - Follow the refactoring rules in `CLAUDE.md`: avoid multiple inheritance —
   use composition (helper objects holding a reference to the parent) or
@@ -55,8 +49,7 @@ a reference to the parent) or standalone functions. Avoid multiple inheritance.
 ## Suggested order
 
 1. Low-risk first: `labelBox.py`, `option_ui_extra.py`.
-1. Medium: `timeline.py`, `group.py`,
-   `search_events.py`, `timeline_prefs.py`.
+1. Medium: `group.py`, `search_events.py`.
 
 ## Future: conf.py namespace classes
 
