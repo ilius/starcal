@@ -373,6 +373,7 @@ class EventSearchTree:
 				node = self.getMinNode(node2.right)
 				node.right = self.deleteMinNode(node2.right)
 				node.left = node2.left
+		node.updateMinMax()
 		# node.updateCount()
 		return node
 
