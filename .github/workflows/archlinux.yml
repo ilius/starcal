@@ -2,7 +2,7 @@ name: "ArchLinux package"
 
 on:
   push:
-    branches: ["next"]
+    branches: ["main", "next", "build-package"]
   workflow_dispatch:
 
 jobs:
