@@ -315,6 +315,8 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ]; then
 	rm -Rf "$DIR/.git" 2>/dev/null
 	rm -Rf "$DIR/.github" 2>/dev/null
 	rm -Rf "$DIR/.gitignore" 2>/dev/null
+	rm -Rf "$DIR/.gitattributes" 2>/dev/null
+	rm -Rf "$DIR/.gtk-version" 2>/dev/null
 	rm -Rf "$DIR/xfce-applet/build" 2>/dev/null
 	rm -Rf "$DIR/.Trash"* 2>/dev/null
 	rm -Rf "$DIR/google-api-python-client/.git" 2>/dev/null
