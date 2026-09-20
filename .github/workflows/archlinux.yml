@@ -25,6 +25,8 @@ jobs:
           useradd --shell=/bin/bash build
           chown -R build "$GITHUB_WORKSPACE"
       - name: Build package
+        env:
+          STARCAL_XFCE_APPLET: "no"
         run: |
           mkdir -p /tmp/starcal3-out
           chown build /tmp/starcal3-out

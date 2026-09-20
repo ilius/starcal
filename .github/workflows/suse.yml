@@ -25,6 +25,8 @@ jobs:
           zypper refresh
           zypper --no-refresh install -y rpm-build git-core
       - name: Build package
+        env:
+          STARCAL_XFCE_APPLET: "no"
         run: |
           mkdir -p /tmp/starcal3-out
           "$GITHUB_WORKSPACE/distro/suse/build.sh" /tmp/starcal3-out /usr/bin/python3
