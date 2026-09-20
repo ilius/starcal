@@ -1,0 +1,35 @@
+name: "openSUSE package"
+
+on:
+  push:
+    branches: ["main", "next", "build-package"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build openSUSE package"
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/tumbleweed
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare repositories and install build dependencies
+        run: |
+          zypper modifyrepo --disable repo-non-oss
+          zypper modifyrepo --disable repo-update
+          zypper modifyrepo --keep-packages repo-oss
+          zypper refresh
+          zypper --no-refresh install -y rpm-build git-core
+      - name: Build package
+        run: |
+          mkdir -p /tmp/starcal3-out
+          "$GITHUB_WORKSPACE/distro/suse/build.sh" /tmp/starcal3-out /usr/bin/python3
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: starcal3-opensuse
+          path: /tmp/starcal3-out/*.rpm
