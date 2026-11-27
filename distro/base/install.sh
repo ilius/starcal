@@ -142,6 +142,7 @@ if [ -z "$pyCmd" ]; then
 		exit 1
 	fi
 fi
+<<<<<<< HEAD
 if command -v "$pyCmd" &&
 	"$pyCmd" -c 'import sys;exit((3, 12) <= sys.version_info < (3, 15))'; then
 	pyVer=$("$pyCmd" --version)
@@ -149,6 +150,8 @@ if command -v "$pyCmd" &&
 	printf "\e[31mPress Enter to continue anyway.\e[m\n" >&2
 	read -r
 fi
+=======
+>>>>>>> main
 
 echo "Using $pyCmd"
 version=$(getVersion)
@@ -272,6 +275,7 @@ fi
 
 echo "#!/usr/bin/env bash
 export PYTHONPYCACHEPREFIX=~/.cache/python
+export GDK_BACKEND=x11
 $pyCmd $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" >"${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 

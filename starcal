@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 export PYTHONPYCACHEPREFIX=~/.cache/python
+export GDK_BACKEND=x11
 
 if [ -z "$WARNINGS" ] ; then
 	export WARNINGS=ignore

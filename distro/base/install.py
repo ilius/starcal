@@ -315,6 +315,8 @@ def main() -> int | None:
 	with open(executablePath, mode="w", encoding="utf-8") as file:
 		file.write(
 			"#!/usr/bin/env sh\n"
+			"export PYTHONPYCACHEPREFIX=~/.cache/python\n"
+			"export GDK_BACKEND=x11\n"
 			f'{pyCmd} {runDirStr}/scal3/ui_gtk/starcal-main.py "$@"\n',
 		)
 	os.chmod(executablePath, 0o755)
