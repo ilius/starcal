@@ -84,13 +84,6 @@ if [ -z "$pyCmd" ] ; then
 		exit 1
 	fi
 fi
-if which "$pyCmd" && \
-"$pyCmd" -c 'import sys;exit((3, 8) <= sys.version_info < (3, 15))' ; then
-	pyVer=$("$pyCmd" --version)
-	printf "\e[31mWarning: %s is not officially supported.\e[m\n" "$pyVer" >&2
-	printf "\e[31mPress Enter to continue anyway.\e[m\n" >&2
-	read
-fi
 
 echo "Using $pyCmd"
 version=$(getVersion)
