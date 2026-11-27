@@ -198,6 +198,7 @@ fi
 
 echo "#!/usr/bin/env bash
 export PYTHONPYCACHEPREFIX=~/.cache/python
+export GDK_BACKEND=x11
 $pyCmd $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 

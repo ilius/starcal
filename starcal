@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 export PYTHONPYCACHEPREFIX=~/.cache/python
+export GDK_BACKEND=x11
 
 python3 `dirname "$0"`/scal3/ui_gtk/starcal-main.py "$@"
